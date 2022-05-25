@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>post a new articles in the help category</shortname>
+  <description>post a new articles in the help category</description>
+  <url>/circabc/help/categories/{id}/articles</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

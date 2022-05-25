@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>get the comments related to one node</shortname>
+  <description>get the comments related to one node</description>
+    <url>/circabc/content/{id}/topics</url>
+  <format default="json"/>
+  <authentication>guest</authentication>
+  <transaction>required</transaction>
+</webscript>

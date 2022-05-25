@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Get the 10 first versions of one content</shortname>
+  <description>Get the 10 first versions of one content</description>
+    <url>/circabc/content/{id}/versions/first/ten</url>
+  <format default="json"/>
+  <authentication>guest</authentication>
+  <transaction>required</transaction>
+</webscript>

@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Update a forum</shortname>
+  <description>Update a forum </description>
+    <url>/circabc/forums/{id}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

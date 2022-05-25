@@ -1,0 +1,89 @@
+@keyframes ui-message-shown {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+.ui-message-show {
+  opacity: 0;
+  animation-name: ui-message-shown;
+  animation-duration: 0.4s;
+  animation-timing-function: ease-in;
+  animation-fill-mode: forwards;
+}
+
+.box--message {
+  color: #757575;
+  font-size: 14px;
+  background-color: #f3fafa;
+  border-radius: 5px;
+  box-shadow: 0 0 15px #5b5b5b;
+}
+
+.box--message--information {
+  border-bottom: 3px solid #035;
+  border-top: 3px solid #035;
+}
+
+.box--message--error {
+  border-bottom: 3px solid #7a0000;
+  border-top: 3px solid #7a0000;
+}
+
+.box--message--success {
+  border-bottom: 3px solid #58c37e;
+  border-top: 3px solid #58c37e;
+}
+
+.box--message--warning {
+  border-bottom: 3px solid #ffc133;
+  border-top: 3px solid #ffc133;
+}
+
+.box--message--content {
+  padding: 25px;
+  padding-left: 128px;
+  box-shadow: unset;
+
+  ::ng-deep ol {
+    margin-left: 30px;
+    list-style-type: decimal;
+  }
+
+  ::ng-deep ul {
+    margin-left: 30px;
+    list-style-type: circle;
+  }
+}
+
+.box--message--icon {
+  width: 128px;
+  padding: 8px 5px;
+  text-align: center;
+  float: left;
+  size: 50px;
+}
+
+.img--info--size {
+  width: 50px;
+  height: 50px;
+}
+
+.img--exclamation--size {
+  width: 50px;
+  height: 50px;
+}
+
+.img--error--size {
+  width: 25px;
+  height: 25px;
+}
+
+.img--check--size {
+  width: 25px;
+  height: 25px;
+}

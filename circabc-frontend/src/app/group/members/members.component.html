@@ -1,0 +1,409 @@
+{{ 'label.members.title' | transloco: { groupName: currentGroup?.name } |
+cbcSetTitle }}
+<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+<div class="wrap page-container">
+  <div class="page-header">
+    <span
+      class="page-header__title"
+      [innerHtml]="'members.page.title' | transloco"
+    ></span>
+    <div class="page-header__actions">
+      <cbc-reponsive-sub-menu>
+        <a
+          *ngIf="currentGroup && (isDirAdmin() || isDirManageMembers())"
+          [routerLink]="['./bulk-invite', nodeId]"
+          >{{ 'label.bulk.invite' | transloco }}</a
+        >
+        <a
+          *ngIf="currentGroup && (isMember() || isDirAdmin())"
+          [routerLink]="['./contact']"
+          >{{ 'label.send.email' | transloco }}</a
+        >
+        <a
+          *ngIf="currentGroup && (isDirAdmin() || isDirManageMembers())"
+          [routerLink]="['../applicants']"
+          >{{ 'label.member.requests' | transloco }}</a
+        >
+        <a [routerLink]="['.']" class="selected"
+          >{{ 'label.members' | transloco }}</a
+        >
+        <a *ngIf="currentGroup && isDirAdmin()" [routerLink]="['../profiles']"
+          >{{ 'label.profiles' | transloco }}</a
+        >
+      </cbc-reponsive-sub-menu>
+      <a
+        class="cta cta--plus"
+        (click)="showWizard = true"
+        *ngIf="currentGroup && (isDirAdmin() || isDirManageMembers()) && !isOSS"
+        >{{ 'members.invite.action' | transloco }}</a
+      >
+      <cbc-members-dropdown
+        *ngIf="currentGroup && (isDirAdmin() || isDirManageMembers()) && isOSS"
+        (showWizard)="showWizard = $event"
+        (showUserCreateWizard)="showUserCreateWizard = $event"
+      ></cbc-members-dropdown>
+    </div>
+  </div>
+
+  <section class="table-container">
+    <header class="header">
+      <cbc-pager
+        [length]="totalItems"
+        [pageSize]="listingOptions.limit"
+        [pageIndex]="listingOptions.page"
+        (pageChanged)="goToPage($event)"
+      ></cbc-pager>
+      <span class="icons col-hidable">
+        <a *ngIf="!showSearchBox" (click)="showSearchBox = true">
+          <img src="img/filter.png" alt="Filter" />
+        </a>
+        <a *ngIf="showSearchBox" (click)="showSearchBox = false">
+          <img src="img/filter-filled-tool-symbol.png" alt="Filter" />
+        </a>
+        <div class="dropdown-trigger">
+          <img src="img/icon-admin-blue.png" alt="Settings" />
+          <div class="dropdown dropdown--library-settings">
+            <div class="number-of-items">
+              {{ 'label.show' | transloco }}:
+              <a (click)="changeLimit(10)">10</a>
+              <a (click)="changeLimit(25)">25</a>
+              <a (click)="changeLimit(50)">50</a>
+              <a (click)="changeLimit(-1)">{{ 'label.all' | transloco }}</a>
+            </div>
+          </div>
+        </div>
+        <cbc-hint
+          [title]="'The member service'"
+          [text]="'members.page.help' | transloco"
+        ></cbc-hint>
+      </span>
+    </header>
+
+    <table class="main">
+      <thead>
+        <tr>
+          <th style="width: 5px"></th>
+          <th class="cell-checkbox col-hidable-last">
+            <input
+              *ngIf="isDirAdmin() || isDirManageMembers()"
+              type="checkbox"
+              (click)="selectAll()"
+              [checked]="allSelected"
+            />
+          </th>
+          <th class="col-hidable-last" style="width: 70px">
+            <!-- Profile picture -->
+          </th>
+          <th class="col-hidable-last">
+            <a (click)="changeSort('firstName')"
+              >{{ 'label.firstname' | transloco }}</a
+            >
+            <span
+              class="order-arrow-up"
+              *ngIf="listingOptions.sort === 'firstName_ASC'"
+            ></span>
+            <span
+              class="order-arrow-down"
+              *ngIf="listingOptions.sort === 'firstName_DESC'"
+            ></span>
+          </th>
+          <th>
+            <a (click)="changeSort('lastName')"
+              >{{ 'label.lastname' | transloco }}</a
+            >
+            <span
+              class="order-arrow-up"
+              *ngIf="listingOptions.sort === 'lastName_ASC'"
+            ></span>
+            <span
+              class="order-arrow-down"
+              *ngIf="listingOptions.sort === 'lastName_DESC'"
+            ></span>
+          </th>
+          <th class="col-hidable">
+            <a (click)="changeSort('email')">{{ 'label.email' | transloco }}</a>
+            <span
+              class="order-arrow-up"
+              *ngIf="listingOptions.sort === 'email_ASC'"
+            ></span>
+            <span
+              class="order-arrow-down"
+              *ngIf="listingOptions.sort === 'email_DESC'"
+            ></span>
+          </th>
+          <th>
+            <a (click)="changeSort('profileName')"
+              >{{ 'label.profile' | transloco }}</a
+            >
+            <span
+              class="order-arrow-up"
+              *ngIf="listingOptions.sort === 'profileName_ASC'"
+            ></span>
+            <span
+              class="order-arrow-down"
+              *ngIf="listingOptions.sort === 'profileName_DESC'"
+            ></span>
+          </th>
+          <th> {{ 'label.expiration.date' | transloco }} </th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+          <td colspan="7" *ngIf="selectedUsers.length > 0">
+            <ul class="bulk-actions">
+              <li>
+                <cbc-number-badge
+                  [number]="selectedUsers.length"
+                ></cbc-number-badge>
+              </li>
+              <li>
+                <a (click)="prepareMultipleDeletion()"
+                  >{{ 'label.remove' | transloco }}</a
+                >
+              </li>
+              <li>
+                <a (click)="prepareMultipleChangeProfile()"
+                  >{{ 'members.change.profiles' | transloco }}</a
+                >
+              </li>
+              <li>
+                <a (click)="prepareMultipleSetExpiration()"
+                  >{{ 'members.manage.expiration' | transloco }}</a
+                >
+              </li>
+            </ul>
+          </td>
+        </tr>
+
+        <tr *ngIf="showSearchBox">
+          <td></td>
+          <td colspan="2" class="filterActionColumn">
+            <a class="button" (click)="searchUsers()"
+              >{{ 'label.filter' | transloco }}</a
+            >
+            <a (click)="resetSearch()">{{ 'label.reset' | transloco }}</a>
+          </td>
+          <td colspan="5" class="filterColumn">
+            <form [formGroup]="searchForm">
+              <input
+                type="text"
+                name="searchText"
+                formControlName="searchText"
+                class="cell-user-name"
+              />
+              <div class="custom-select select--form">
+                <select
+                  name="searchProfile"
+                  id="groupContact3"
+                  formControlName="searchProfile"
+                >
+                  <option value="all" selected>
+                    {{ 'members.any.profile' | transloco }}
+                  </option>
+                  <option
+                    *ngFor="
+                      let profile of availableProfiles;
+                      trackBy: trackById
+                    "
+                    value="{{ profile.groupName }}"
+                  >
+                    {{ profile.title | cbcI18n }}
+                  </option>
+                </select>
+              </div>
+            </form>
+          </td>
+        </tr>
+
+        <tr
+          class="row empty-row"
+          *ngIf="members !== undefined && members.length === 0"
+        >
+          <td colspan="7">{{ 'members.display.none' | transloco }}</td>
+        </tr>
+
+        <tr class="row" *ngFor="let member of members; trackBy: trackMember">
+          <td class="cell-left-border"></td>
+          <td class="cell-checkbox col-hidable-last">
+            <input
+              *ngIf="isDirAdmin() || isDirManageMembers()"
+              type="checkbox"
+              [checked]="member.selected"
+              (click)="toggleSelectedUser(member)"
+              [disabled]="isConnectedUser(member.user?.userId)"
+            />
+          </td>
+          <td class="cell-photo col-hidable-last">
+            <div class="photo">
+              <img
+                *ngIf="member.user"
+                [attr.src]="member.user.avatar | cbcDownload | cbcSecure"
+                alt=""
+                width="50"
+                height="50"
+              />
+            </div>
+          </td>
+          <td class="cell-firstname col-hidable-last">
+            <div class="file-name">
+              <a [routerLink]="['.', 'account', member.user?.userId]"
+                >{{ member.user?.firstname }}</a
+              >
+            </div>
+            <ul class="actions">
+              <li *ngIf="!isConnectedUser(member.user?.userId)">
+                <a
+                  *ngIf="currentGroup && (isDirAdmin() || isDirManageMembers())"
+                  (click)="uninviteUser(member.user)"
+                >
+                  {{ 'label.remove' | transloco }}</a
+                >
+              </li>
+              <li *ngIf="!isConnectedUser(member.user?.userId)">
+                <a
+                  *ngIf="currentGroup && (isDirAdmin() || isDirManageMembers())"
+                  (click)="prepareChangeProfile(member)"
+                  >{{ 'members.change.profile' | transloco }}</a
+                >
+              </li>
+              <li *ngIf="!isConnectedUser(member?.user?.userId)">
+                <a
+                  *ngIf="currentGroup && (isDirAdmin() || isDirManageMembers())"
+                  (click)="prepareChangeExpiration(member)"
+                  >{{ 'members.manage.expiration' | transloco }}</a
+                >
+              </li>
+            </ul>
+          </td>
+          <td class="cell-lastname">
+            <a [routerLink]="['.', 'account', member.user?.userId]"
+              >{{ member.user?.lastname }}</a
+            >
+          </td>
+          <td class="cell-email col-hidable">
+            {{ member.user?.visibility || isDirAdmin() || isDirManageMembers() ?
+            member.user?.email : 'n/a' }}
+          </td>
+          <td class="cell-access-level">
+            {{ getProfileNameOrTitle(member.profile) }}
+          </td>
+          <td> {{ member.expirationDate | date: 'yyyy-MM-dd HH:mm' }} </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <ul
+      class="bulk-actions bulk-actions--grey"
+      *ngIf="selectedUsers.length > 0"
+    >
+      <li>
+        <cbc-number-badge [number]="selectedUsers.length"></cbc-number-badge>
+      </li>
+      <li>
+        <a (click)="prepareMultipleDeletion()"
+          >{{ 'label.remove' | transloco }}</a
+        >
+      </li>
+      <li>
+        <a (click)="prepareMultipleChangeProfile()"
+          >{{ 'members.change.profiles' | transloco }}</a
+        >
+      </li>
+      <li>
+        <a (click)="prepareMultipleSetExpiration()"
+          >{{ 'members.manage.expiration' | transloco }}</a
+        >
+      </li>
+    </ul>
+
+    <div class="footer">
+      <cbc-pager
+        [length]="totalItems"
+        [pageSize]="listingOptions.limit"
+        [pageIndex]="listingOptions.page"
+        (pageChanged)="goToPage($event)"
+      ></cbc-pager>
+    </div>
+  </section>
+
+  <section class="box">
+    <header
+      *ngIf="currentGroup && (isDirAdmin() || isDirManageMembers())"
+      class="header"
+      style="background-color: rgba(255, 255, 255, 0.3)"
+    >
+      <span class="title">{{ 'label.export.list' | transloco }}</span>
+    </header>
+
+    <div
+      class="main paddingMain export-box"
+      style="background-color: rgba(255, 255, 255, 0.3); box-shadow: unset"
+      *ngIf="currentGroup && (isDirAdmin() || isDirManageMembers())"
+    >
+      <div class="field export-select">
+        <div class="custom-select select--form">
+          <form [formGroup]="exportForm">
+            <select formControlName="export">
+              <option
+                *ngFor="let exportFormat of exportFormats"
+                [ngValue]="exportFormat"
+              >
+                {{ exportFormat.name }}
+              </option>
+            </select>
+          </form>
+        </div>
+        <a class="button" (click)="export()"
+          >{{ 'label.export' | transloco }}</a
+        >
+        <cbc-spinner *ngIf="exporting"></cbc-spinner>
+      </div>
+    </div>
+  </section>
+</div>
+
+<cbc-uninvite-user
+  [groupId]="nodeId"
+  [user]="selectedUser"
+  [showDialog]="showUninviteDialog"
+  (modalHide)="uninviteWizardClosed($event)"
+></cbc-uninvite-user>
+<cbc-uninvite-multiple
+  [groupId]="nodeId"
+  [users]="selectedUsers"
+  [showModal]="showUninviteMultipleDialog"
+  (modalHide)="uninviteWizardClosed($event)"
+></cbc-uninvite-multiple>
+<cbc-change-profiles-multiple
+  [groupId]="nodeId"
+  [users]="selectedUsers"
+  [showModal]="showMultipleChangeDialog"
+  (modalHide)="multipleChangeModalClosed($event)"
+></cbc-change-profiles-multiple>
+<cbc-change-user-profile
+  [groupId]="nodeId"
+  [showModal]="showChangeDialog"
+  [member]="selectChangeMember"
+  (modalHide)="changeModalClosed($event)"
+></cbc-change-user-profile>
+<cbc-invite-user
+  *ngIf="currentGroup"
+  [showWizard]="showWizard"
+  [groupId]="nodeId"
+  (modalHide)="inviteWizardClosed($event)"
+  (userRestored)="refreshUsers()"
+></cbc-invite-user>
+<cbc-create-user
+  *ngIf="currentGroup"
+  [showWizard]="showUserCreateWizard"
+  [groupId]="nodeId"
+  (modalHide)="createUserWizardClosed($event)"
+  (userRestored)="refreshUsers()"
+></cbc-create-user>
+<cbc-edit-expiration
+  [groupId]="nodeId"
+  [members]="selectedExpiredUsers"
+  [showModal]="showExpirationDialog"
+  (modalHide)="expirationModalClosed($event)"
+></cbc-edit-expiration>

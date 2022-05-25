@@ -1,0 +1,38 @@
+<cbc-modal
+  [title]="'label.expired.update.date'"
+  (ok)="saveConfiguration()"
+  (cancel)="cancel()"
+  [okLabel]="'label.save'"
+  [(visible)]="showModal"
+  [executing]="processing"
+  [executingLabel]="'label.saving'"
+>
+  <form [formGroup]="editExpiedDateNodeForm" style="padding: 10px">
+    <h2> {{editExpiedDateNodeForm.value.name}} </h2>
+    <div class="field field--with-icon field--date" style="line-height: 40px">
+      <mat-slide-toggle
+        formControlName="expirationDateActived"
+      ></mat-slide-toggle>
+
+      <label for="expirationDate" style="padding-right: 10px"
+        >{{ 'label.expiration.date' | transloco }}</label
+      >
+
+      <p-calendar
+        appendTo="body"
+        formControlName="expirationDate"
+        [dateFormat]="'dd/mm/yy'"
+        [placeholder]="'dd/mm/yyyy, HH:mm'"
+        [showIcon]="true"
+        [showTime]="true"
+        *ngIf="editExpiedDateNodeForm.value.expirationDateActived"
+        [class.expired]="isExpired()"
+      ></p-calendar>
+    </div>
+    <label
+      *ngIf="isExpired() && editExpiedDateNodeForm.value.expirationDateActived"
+      style="color: red"
+      >{{ 'label.expiration.date.alert' | transloco }}</label
+    >
+  </form>
+</cbc-modal>

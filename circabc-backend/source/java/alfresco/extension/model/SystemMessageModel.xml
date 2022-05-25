@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Copyright 2006 European Community
+  
+   Licensed under the EUPL, Version 1.1 or ? – as soon they
+   will be approved by the European Commission - subsequent
+   versions of the EUPL (the "Licence");
+   You may not use this work except in compliance with the
+   Licence.
+   You may obtain a copy of the Licence at:
+  
+   https://joinup.ec.europa.eu/software/page/eupl
+  
+   Unless required by applicable law or agreed to in
+   writing, software distributed under the Licence is
+   distributed on an "AS IS" basis,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+   express or implied.
+   See the Licence for the specific language governing
+   permissions and limitations under the Licence.
+-->
+    
+<model name="sm:systemMessageModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+  <!-- Optional meta-data about the model -->
+  <description>Circabc System Message Model</description>
+  <author>Markus Kölzer</author>
+  <version>1.0</version>
+
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.alfresco.org/model/system/1.0" prefix="sys" />
+	</imports>
+
+	<namespaces>
+		<namespace uri="http://www.cc.cec/circabc/model/systemmessage/1.0" prefix="sm" />
+	</namespaces>
+
+	<types>
+		<type name="sm:systemMessage">
+			<title>System Message</title>
+			<parent>sys:base</parent>
+			<properties>
+				<property name="sm:isSytemMessageEnabled">
+					<title>System Message Enabled</title>
+					<type>d:boolean</type>
+				</property>
+				<property name="sm:systemMessageText">
+					<title>System Message Text</title>
+					<type>d:text</type>
+				</property>
+			</properties>
+		</type>
+	</types>
+	 
+</model>

@@ -1,0 +1,454 @@
+<?xml version="1.0"?>
+
+<!--+
+    |     Copyright European Community 2006 - Licensed under the EUPL V.1.0
+    |
+    |		http://ec.europa.eu/idabc/en/document/6523
+    |
+    +-->
+
+<project name="Circabc Build File for Maven 2" basedir=".">
+	
+	<!-- path id="svnant.classpath">
+		<fileset dir="../Circabc 3rd Party">
+			<include name="**/*.jar"/>
+		</fileset>
+	</path -->
+	
+	<macrodef name="delFromZip">
+		<attribute name="zipFile"/>
+		<element   name="selectors" implicit="true" optional="true"/>
+		<sequential>
+			<mkdir dir="${dir.target.tmp}"/>
+			<unzip dest="${dir.target.tmp}" src="@{zipFile}"/>
+			<delete file="@{zipFile}" verbose="true"/>
+			<delete verbose="true">
+				<fileset dir="${dir.target.tmp}">
+					<selectors/>
+				</fileset>
+			</delete>
+			<zip destfile="@{zipFile}" basedir="${dir.target.tmp}"/>
+			<!--
+			<delete dir="${dir.target.tmp}"/>
+			-->
+		</sequential>
+	</macrodef>
+	
+	<property file="build_maven.properties" />
+	<property file="build_maven.credential.properties" />
+	<!--property file="./source/java/alfresco/extension/messages/circabc-version.properties" /-->
+	<property file="./source/java/alfresco/extension/config/circabc-settings.properties" />
+
+	<!-- load the svn task -->
+	<!-- typedef resource="org/tigris/subversion/svnant/svnantlib.xml" classpathref="svnant.classpath" / -->
+	<target name="-update-war" description="Main task that perform all necessary subtask to build a circabc war and ear">
+	<echo message="################################ updating war ######################"/>
+		<sequential>
+			<antcall target="-update-version"/>
+			<!-- later <antcall target="update-custom-values"/> -->
+			<antcall target="remove-export-file"/>
+			<antcall target="remove-libs"/>
+			<antcall target="deploy-circabc-web-service"/>
+			<antcall target="customise-war"/>
+			<antcall target="zip"/>
+			<antcall target="-perform-update"/>
+			<antcall target="amps"/>
+			<antcall target="delete-backup"/>
+			<antcall target="ear"/>
+		</sequential>
+	</target>
+
+	<target name="deploy-circabc-web-service" >
+		<copy todir="${dir.target}/${war_file}/wsdl">
+			<fileset dir="${dir.src.wsdl}" />
+		</copy>
+	</target>
+	<target name="test-for-customisation" description="Test if user wants to override custom stuff">
+		<condition property="customiseTargets">
+			<equals arg1="${backend-customise-from-buildconfig}" arg2="true" />
+		</condition>
+	</target>
+	<target name="customise-war" depends="test-for-customisation" if="customiseTargets">
+		<echo>Including all custom files from buildconfig/${build.profile}/ ${backend-customise-from-buildconfig}</echo>
+		<copy todir="${dir.target}/${war_file}" overwrite="true" >
+			  <fileset dir="buildconfig/${build.profile}/" excludes="application.xml"/>
+		</copy>
+	</target>
+
+	<target name="zip" description="Create AMP zip file">
+		<zip destfile="${dir.target}/${war_file}.amp" update="no">
+			<zipfileset  dir="${dir.target}/${war_file}" prefix="web" excludes="/**/.faces-config.xml.faceside, ${log4j.properties}" />
+			<zipfileset  dir="${dir.target}/WebRoot" excludes="**/*.svn, ${log4j.properties}"/>
+			<fileset dir="${dir.project}" includes="file-mapping.properties" excludes="${log4j.properties}"/>
+			<fileset dir="${dir.project}" includes="module.properties" excludes="${log4j.properties}"/>
+		</zip>
+	</target>
+	
+	<target name="ear" description="create ear file">	
+		<echo>Generate ear file</echo>
+		<echo>weblogic.version=${weblogic.version}</echo>
+		<copy file="${dir.target.circabc.war}" tofile="${dir.target}/circabc.war" overwrite="true"/>
+		<echo>new UI war</echo>
+		<copy file="../circabc-frontend-wrapper/target/circabc-frontend-wrapper-0.0.1.war" tofile="${dir.target}/new.war" overwrite="true"/>
+		<echo>${dir.target.circabc.war} is ready</echo>
+		<delete file="${dir.target.circabc.war}"/>
+		<echo>Adding custom application.xml file</echo>
+		<copy file="buildconfig/config1/application.xml" tofile="${dir.target}/${war_file}/META-INF/application.xml"/>
+		<copy file="buildconfig/${build.profile}/application.xml" tofile="${dir.target}/${war_file}/META-INF/application.xml" overwrite="true" failonerror="false"/>
+		<copy file="${dir.src.ear}/META-INF/weblogic-${weblogic.version}/weblogic-application.xml" tofile="${dir.target}/META-INF/weblogic-application.xml"/>
+		<zip destfile="${dir.target}/${war_file}.ear" update="no">
+			<zipfileset dir="${dir.src.ear}" excludes="**/*.svn,**/weblogic-*"/>
+            <zipfileset dir="${dir.target}">
+				<include name="circabc.war"/>
+                <include name="new.war"/>
+				<include name="META-INF/weblogic-application.xml"/>
+            </zipfileset>
+			<zipfileset dir="${dir.target}/${war_file}/META-INF" prefix="META-INF">
+			</zipfileset>
+		</zip>
+	</target>
+	
+	<target name="-perform-update" description="Install amps to the generated war">
+		
+		<!-- this is a trick: like a depends but name is created dynamicly -->
+		<copy file="${original.alfresco.war}" tofile="${dir.target.circabc.war}" overwrite="true"/>
+		
+		<echo>Remove log4j.properties from ${dir.target.circabc.war} (copy of original ${original.alfresco.war})</echo>
+		
+		<delFromZip zipFile="${dir.target.circabc.war}">
+			<include name="@{log4j.properties}" />
+		</delFromZip>
+		
+		<delFromZip zipFile="${dir.target.circabc.war}">
+			<include name="**/log4j*.jar" />
+		</delFromZip>
+		
+		<zip destfile="${dir.target.circabc.war}" update="true">
+			<zipfileset file="${dir.src}/web/images/favicon.ico" prefix=""/>
+		</zip>
+		
+		<echo>Remove log4j.properties from ${dir.target.circabc.war} (copy of original ${original.alfresco.war})</echo>
+		
+<!--		<echo>local var ${local.var}</echo> -->
+		
+		<delFromZip zipFile="${dir.target.circabc.war}">
+			<!-- TODO: use the ${log4j.properties} variable  -->
+			<include name="**/log4j.properties"/>
+		</delFromZip>
+		
+	</target>
+	
+	<target name ="amps">
+		
+		<echo>Installing the SDK Demo AMP into WAR</echo>
+		
+		<exec executable="java">
+			<arg value="-jar" />
+			<arg value="../circabc-resources/circabc-alfresco-embedded/lib/alfresco-mmt.jar" />
+			<arg value="install" />
+			<arg value="${dir.target}/${war_file}.amp" />
+			<arg value="${dir.target.circabc.war}" />
+			<arg value="-nobackup" />
+			<arg value="-force" />
+		</exec>
+		
+		<echo>Installing the Support Tools AMP into the Alfresco WAR - Usage: http://[host]:[port]/s/enterprise/admin/ as Alfresco admin</echo>
+		
+		<exec executable="java">
+			<arg value="-jar" />
+			<arg value="../circabc-resources/circabc-alfresco-embedded/lib/alfresco-mmt.jar" />
+			<arg value="install" />
+			<arg value="${original.support-tools.amp}" />
+			<arg value="${dir.target.circabc.war}" />
+			<arg value="-nobackup" />
+			<arg value="-force" />
+		</exec>
+		
+	</target>
+	
+	<target name="delete-backup">
+		<delFromZip zipFile="${dir.target.circabc.war}">
+			<include name="**/*.bin" />
+		</delFromZip>
+	</target>
+	<target name="-update-version" description="Update circabc-version.properties with values retrieved from git." >
+		
+		<property name="tmpfilename" value="tmpout.txt" /> 
+		<delete file="${tmpfilename}" failonerror="false" /> 
+		<exec executable="git" dir="${basedir}/../" output="${tmpfilename}"> 
+			<arg line="rev-parse --short HEAD" /> 
+		</exec> 
+		<loadfile property="head" srcFile="${tmpfilename}"/>
+		<delete file="${tmpfilename}" failonerror="false" />
+
+		<propertyfile file="./source/java/alfresco/extension/messages/circabc-version.properties">
+			<entry key="version.major" value="${version.major}" />
+			<entry key="version.minor" value="${version.minor}" />
+			<entry key="version.revision" value="${head}" />
+			<entry key="version.label" value="CIRCABC" />
+			<entry key="version.edition" value="${version.edition}" />
+			<!--<entry key="scm.repository.path" value="${svnprops.info.entry.url}" />-->
+			<entry key="build.date" type="date" value="now" pattern="MMM dd yyyy HH:mm:ss"/>
+		</propertyfile>
+		
+		<propertyfile file="${dir.target}/${war_file}/WEB-INF/classes/alfresco/extension/messages/circabc-version.properties">
+
+			<entry key="version.revision" value="${head}" />
+
+		</propertyfile>
+		
+  	</target>
+	
+	<target name="test-include-export" description="Test if the property excludeExportFiles is present and settted">
+		<condition property="excludeExportFiles">
+			<or>
+				<not>
+					<isset property="includeExport"/>
+				</not>
+				<not>
+					<equals arg1="${includeExport}" arg2="true" />
+				</not>
+			</or>
+		</condition>
+	</target>
+	
+	<target name="remove-export-file" depends="test-include-export" if="excludeExportFiles" description="Remove the imporation classes and files (using berkeley) if not needed (excludeExportFiles = true)">
+		<echo>Starting to remove circa export files ... </echo>
+		<delete dir="${dir.target}/${war_file}/WEB-INF/${dir.circa.export.classes}" verbose="false" failonerror="true"/>
+		<delete dir="${dir.target}/${war_file}/WEB-INF/${dir.circa.export.ibatis}" verbose="false" failonerror="true"/>
+		<delete file="${dir.target}/${war_file}/WEB-INF/${dir.circa.export.service.ctx}" verbose="false" failonerror="true"/>
+		<delete file="${dir.target}/${war_file}/WEB-INF/${dir.circa.export.reader.ctx}" verbose="false" failonerror="true"/>
+		<delete file="${dir.target}/${war_file}/WEB-INF/${dir.circa.export.config}" verbose="false" failonerror="true"/>
+		<delete dir="${dir.target}/${war_file}/WEB-INF/${dir.berkeley.classes}/"  verbose="false" failonerror="true"/>
+		<delete file="${dir.target}/${war_file}/WEB-INF/${dir.aida.export.service.ctx}"  verbose="false" failonerror="true"/>
+		<delete file="${dir.target}/${war_file}/WEB-INF/${dir.aida.export.cust.ctx}"  verbose="false" failonerror="true"/>
+	</target>
+	
+	<target name="remove-libs" >
+		<echo>Starting to remove unused libraries ... </echo>
+		<delete>
+		  <fileset  dir="${dir.target}/${war_file}/WEB-INF/lib/">
+		   <include name="abdera-extensions-html-0.4.0-incubating.jar"/>
+			<include name="abdera-extensions-main-0.4.0-incubating.jar"/>
+			<include name="abdera-server-0.4.0-incubating.jar"/>
+			<include name="activiti-bpmn-layout-5.13-alf-20140708.jar"/>
+			<include name="alfresco-enterprise-repository-4.2.4.15.jar"/>
+			<include name="alfresco-wdr-deployment-4.2.4.15.jar"/>
+			<include name="ant-launcher-1.7.1.jar"/>
+			<include name="ant-optional-1.5.1.jar"/>
+			<include name="antlr-2.7.7.jar"/>
+			<include name="antlr-3.5.2.jar"/>
+			<include name="antlr-runtime-3.5.2.jar"/>
+			<include name="aopalliance-1.0.jar"/>
+			<include name="avalon-framework-api-4.2.0.jar"/>
+			<include name="avalon-framework-api-4.3.1.jar"/>
+			<include name="avalon-framework-impl-4.2.0.jar"/>
+			<include name="avalon-framework-impl-4.3.1.jar"/>
+			<include name="axiom-api-1.2.7.jar"/>
+			<include name="axis-wsdl4j-1.5.1.jar"/>
+			<include name="batik-awt-util-1.6-1.jar"/>
+			<include name="batik-bridge-1.6-1.jar"/>
+			<include name="batik-css-1.6-1.jar"/>
+			<include name="batik-dom-1.6-1.jar"/>
+			<include name="batik-ext-1.6-1.jar"/>
+			<include name="batik-extension-1.6-1.jar"/>
+			<include name="batik-gui-util-1.6-1.jar"/>
+			<include name="batik-gvt-1.6-1.jar"/>
+			<include name="batik-parser-1.6-1.jar"/>
+			<include name="batik-script-1.6-1.jar"/>
+			<include name="batik-svg-dom-1.6-1.jar"/>
+			<include name="batik-transcoder-1.6-1.jar"/>
+			<include name="batik-util-1.6-1.jar"/>
+			<include name="batik-xml-1.6-1.jar"/>
+			<include name="bcel-5.1.jar"/>
+			<include name="bsh-core-2.0b4.jar"/>
+			<include name="chemistry-abdera-0.1-incubating-unreleased.jar"/>
+			<include name="chemistry-tck-atompub-0.1-incubating-unreleased.jar"/>
+			<include name="chiba-1.3.0-alfresco-patched.jar"/>
+			<include name="com.google.gdata.gdata-client-1.0.jar"/>
+			<include name="com.google.gdata.gdata-core-1.0.jar"/>
+			<include name="com.google.gdata.gdata-docs-3.0.jar"/>
+			<include name="com.google.gdata.gdata-media-1.0.jar"/>
+			<include name="com.google.ical-20110304.jar"/>
+			<include name="commons-beanutils-1.8.3.jar"/>
+			<include name="commons-beanutils-core-1.7.0.jar"/>
+			<include name="commons-configuration-1.5.jar"/>
+			<include name="commons-dbcp-1.4-DBCP330.jar"/>
+			<include name="commons-digester-1.8.jar"/>
+			<include name="commons-el-1.0.jar"/>
+			<include name="commons-email-1.2.jar"/>
+			<include name="commons-httpclient-3.1-HTTPCLIENT-1265.jar"/>
+			<include name="commons-modeler-1.1.jar"/>
+			<include name="ecas-weblogic-12.2.1-authprovider-4.26.3.jar"/>
+			<include name="facebook-java-api-070716.jar"/>
+			<include name="ftp4j-1.5.1.jar"/>
+			<include name="geronimo-activation_1.0.2_spec-1.1.jar"/>
+			<include name="geronimo-activation_1.1_spec-1.0.2.jar"/>
+			<include name="google-collections-1.0.jar"/>
+			<include name="greenmail-1.3-alfresco-20141112.jar"/>
+			<include name="h2-1.3.170.jar"/>
+			<include name="hamcrest-core-1.3.jar"/>
+			<include name="hibernate-3.2.6-alf-20131023.jar"/>
+			<include name="httpcore-4.1.jar"/>
+			<include name="icu4j-3.6.1.jar"/>
+			<include name="ipm-ws-client-1.0.0.jar"/>
+			<include name="itext-1.4.8.jar"/>
+			<include name="javaGeom-0.11.0.jar"/>
+			<include name="javax.inject-1.jar"/>
+			<include name="javax.mail-1.5.2.jar"/>
+			<include name="jaxrpc-api-1.1.jar"/>
+			<include name="jdom-b9.jar"/>
+			<include name="jetty-continuation-7.3.0.v20110203.jar"/>
+			<include name="jetty-http-7.3.0.v20110203.jar"/>
+			<include name="jetty-io-7.3.0.v20110203.jar"/>
+			<include name="jetty-security-7.3.0.v20110203.jar"/>
+			<include name="jetty-server-7.3.0.v20110203.jar"/>
+			<include name="jetty-servlet-7.3.0.v20110203.jar"/>
+			<include name="jetty-util-7.3.0.v20110203.jar"/>
+			<include name="jetty-webapp-7.3.0.v20110203.jar"/>
+			<include name="jetty-xml-7.3.0.v20110203.jar"/>
+			<include name="jgraphx-1.10.4.2.jar"/>
+			<include name="jmagick-6.2.4.jar"/>
+			<include name="jodconverter-2.1.0-alfresco-patched.jar"/>
+			<include name="jodconverter-core-3.0-alfresco-patched-20141024.jar"/>
+			<include name="js-1.6R7-patched.jar"/>
+			<include name="json-20090211.jar"/>
+			<include name="jsp-api-2.0.jar"/>
+			<include name="jsr305-1.3.9.jar"/>
+			<include name="jta-1.0.1b.jar"/>
+			<include name="jug-2.0.0-asl.jar"/>
+			<include name="juh-3.1.0.jar"/>
+			<include name="junit-4.11.jar"/>
+			<include name="jurt-3.1.0.jar"/>
+			<include name="jut-1.0-alfresco.jar"/>
+			<include name="list_new.txt"/>
+			<include name="mail-1.4.jar"/>
+			<include name="mx4j-jmx-1.1.jar"/>
+			<include name="mybatis-3.0.4-alfresco-patched.jar"/>
+			<include name="netcdf-4.2-min.jar"/>
+			<include name="oro-2.0.8.jar"/>
+			<include name="poi-3.10.1.jar"/>
+			<include name="poi-ooxml-3.10.1-20140922-alfresco-patched.jar"/>
+			<include name="poi-scratchpad-3.10.1.jar"/>
+			<include name="portlet-api-2.0.jar"/>
+			<include name="quartz-1.8.3-alfresco-patched.jar"/>
+			<include name="regexp-1.2.jar"/>
+			<include name="ridl-3.1.0.jar"/>
+			<include name="servlet-api-2.5.jar"/>
+			<include name="solr-solrj-1.4.1.jar"/>
+			<include name="spring-aop-3.0.6.RELEASE.jar"/>
+			<include name="spring-asm-3.0.5.RELEASE.jar"/>
+			<include name="spring-beans-3.0.5.RELEASE.jar"/>
+			<include name="spring-cmis-framework-1.2.0-M35.jar"/>
+			<include name="spring-context-3.0.5.RELEASE.jar"/>
+			<include name="spring-context-support-3.0.5.RELEASE.jar"/>
+			<include name="spring-core-3.0.5.RELEASE.jar"/>
+			<include name="spring-expression-3.0.6.RELEASE.jar"/>
+			<include name="spring-jdbc-3.0.5.RELEASE.jar"/>
+			<include name="spring-modules-jbpm31-0.5.jar"/>
+			<include name="spring-orm-3.0.5.RELEASE.jar"/>
+			<include name="spring-security-core-3.1.0.RELEASE.jar"/>
+			<include name="spring-security-crypto-3.1.3.RELEASE.jar"/>
+			<include name="spring-social-facebook-web-1.0.0.RELEASE.jar"/>
+			<include name="spring-social-linkedin-1.0.0-20110711.jar"/>
+			<include name="spring-surf-1.2.0-M35.jar"/>
+			<include name="spring-surf-core-1.2.0-M35.jar"/>
+			<include name="spring-surf-core-configservice-1.2.0-M35.jar"/>
+			<include name="spring-tx-3.0.5.RELEASE.jar"/>
+			<include name="spring-web-3.0.5.RELEASE.jar"/>
+			<include name="spring-webmvc-3.0.5.RELEASE.jar"/>
+			<include name="spring-webscripts-1.2.0-M35.jar"/>
+			<include name="spring-webscripts-api-1.2.0-M35.jar"/>
+			<include name="ST4-4.0.8.jar"/>
+			<include name="standard-1.1.0.jar"/>
+			<include name="tomahawk-1.1.8.jar"/>
+			<include name="truelicense-xml-1_29-patched.jar"/>
+			<include name="truezip-6.6.jar"/>
+			<include name="unoil-3.1.0.jar"/>
+			<include name="wstx-asl-3.2.7.jar"/>
+			<include name="xalan-2.7.0.jar"/>
+			<include name="xercesImpl-2.8.1.jar"/>
+			<include name="xml-apis-1.3.04.jar"/>
+			<include name="xmlParserAPIs-2.0.2.jar"/>
+			<include name="xmlParserAPIs-2.6.2.jar"/>
+			<include name="xom-1.1.jar"/>
+			<include name="xpp3_min-1.1.3.4.O.jar"/>
+			<include name="yuicompressor-2.4.7-patched.jar"/>
+		  </fileset>
+		</delete>
+	</target>
+
+	<target name="update-custom-values" description="Replace server custom configuration by valid values">
+		
+		<echo>Starting to replace tokens in configuration files ... </echo>
+		
+		<replace file="${dir.target}/WebRoot/WEB-INF/classes/alfresco-global.properties" propertyFile="${dir.target}/${war_file}/specific-config.properties">
+			<replacefilter token="@rmi.prefix.port@" property="rmi.prefix.port" />
+			<replacefilter token="@server.instance.identifier@" property="server.instance.identifier" />
+			<replacefilter token="@db.schema.update@" property="db.schema.update" />
+			<replacefilter token="@lucene.indexer.mergerMergeFactor@" property="lucene.indexer.mergerMergeFactor" />
+		</replace>
+		
+		<replace file="${dir.target}/WebRoot/WEB-INF/classes/alfresco/extension/config/circabc-settings.properties" propertyFile="${dir.target}/${war_file}/specific-config.properties">
+			<replacefilter token="@circabc.url@" property="circabc.url" />
+			<replacefilter token="@ipm.location@" property="ipm.location" />
+			<replacefilter token="@ipm.login@" property="ipm.login" />
+			<replacefilter token="@ipm.password@" property="ipm.password" />
+			<replacefilter token="@iam.location@" property="iam.location" />
+			<replacefilter token="@iam.login@" property="iam.login" />
+			<replacefilter token="@iam.password@" property="iam.password" />
+			<replacefilter token="@iam.error.email@" property="iam.error.email" />
+			<replacefilter token="@ldap.provider@" property="ldap.provider" />
+			<replacefilter token="@email.server@" property="email.server" />
+			<replacefilter token="@email.server.port@" property="email.server.port" />
+			<replacefilter token="@email.username@" property="email.username" />
+			<replacefilter token="@email.password@" property="email.password" />
+			<replacefilter token="@email.address@" property="email.address" />
+			<replacefilter token="@email.active@" property="email.active" />
+		</replace>
+		
+		<replace file="${dir.target}/WebRoot/WEB-INF/classes/alfresco/extension/build-config.properties" propertyFile="${dir.target}/${war_file}/specific-config.properties">
+			<replacefilter token="@server.instance.identifier@" property="build.configuration.profile" />
+			<replacefilter token="@build.configuration.description@" property="build.configuration.description" />
+		</replace>
+		
+		<replace file="${dir.target}/WebRoot/WEB-INF/classes/alfresco/extension/ehcache-custom.xml" propertyFile="${dir.target}/${war_file}/specific-config.properties">
+			<replacefilter token="@cache.multicastgroup.address@" property="cache.multicastgroup.address" />
+			<replacefilter token="@cache.multicastgroup.port@" property="cache.multicastgroup.port" />
+			<replacefilter token="@cache.listener.port@" property="cache.listener.port" />
+		</replace>
+		
+		<replace file="${dir.target}/WebRoot/WEB-INF/classes/alfresco/extension/ehcache-dynamic-authorities.xml" propertyFile="${dir.target}/${war_file}/specific-config.properties">
+			<replacefilter token="@cache.multicastgroup.address@" property="cache.multicastgroup.address" />
+			<replacefilter token="@cache.multicastgroup.port@" property="cache.multicastgroup.port" />
+			<replacefilter token="@cache.listener.port@" property="cache.listener.port" />
+		</replace>
+		
+		<replace file="${dir.target}/WebRoot/WEB-INF/classes/alfresco/extension/circabc-file-servers.properties" propertyFile="${dir.target}/${war_file}/specific-config.properties">
+			<replacefilter token="@ftp.port@" property="ftp.port" />
+		</replace>
+		
+		<replace file="${dir.target}/WebRoot/WEB-INF/classes/ecas-config.properties" propertyFile="${dir.target}/${war_file}/specific-config.properties">
+			<replacefilter token="@ecas.serviceurl@" property="ecas.serviceurl" />
+			<replacefilter token="@ecas.baseurl@" property="ecas.baseurl" />
+		</replace>
+		
+		<replace file="${dir.target}/WebRoot/WEB-INF/classes/log4j.xml" propertyFile="${dir.target}/${war_file}/specific-config.properties" >
+			<replacefilter token="@log.mails.to@" property="log.mails.to"  />
+			<replacefilter token="@log.mails.from@" property="log.mails.from" />
+			<replacefilter token="@log.mails.subject@" property="log.mails.subject" />
+			<replacefilter token="@log.level.alfresco@" property="log.level.alfresco" />
+			<replacefilter token="@log.level.alfresco.navigation@" property="log.level.alfresco.navigation" />
+			<replacefilter token="@log.level.alfresco.packages@" property="log.level.alfresco.packages" />
+			<replacefilter token="@log.level.alfresco.repo.packages@" property="log.level.alfresco.repo.packages" />
+			<replacefilter token="@log.level.indexes@" property="log.level.indexes" />
+			<replacefilter token="@log.level.circabc@" property="log.level.circabc" />
+			<replacefilter token="@log.level.ehcache@" property="log.level.ehcache" />
+			<replacefilter token="@log.level.root@" property="log.level.root" />
+		</replace>
+		
+		<delete file="${dir.target}/WebRoot/specific-config.properties" verbose="true" failonerror="true"/>
+		
+	</target>
+	
+</project>

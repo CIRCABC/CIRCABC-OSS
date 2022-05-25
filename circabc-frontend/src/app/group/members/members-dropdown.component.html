@@ -1,0 +1,17 @@
+<div class="cta cta--dots dropdown-trigger">
+  {{ 'label.actions' | transloco }}
+  <div class="dropdown dropdown--add-file" *ngIf="showActionsDropdown">
+    <ul>
+      <li>
+        <a class="create-user" (click)="showUserCreateWizardClick()">
+          {{ 'user.create.action' | transloco }}
+        </a>
+      </li>
+      <li>
+        <a class="request--group" (click)="showWizardClick()"
+          >{{ 'members.invite.action' | transloco }}</a
+        >
+      </li>
+    </ul>
+  </div>
+</div>

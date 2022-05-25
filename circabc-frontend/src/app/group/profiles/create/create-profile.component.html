@@ -1,0 +1,254 @@
+<!-- MODAL BOX -->
+<div
+  class="black-overlayer"
+  *ngIf="showDialog"
+  [class.overlayer-shown]="showDialog"
+  [class.overlayer-hidden]="!showDialog"
+>
+</div>
+<section
+  class="flexContainer modal modal--select-files"
+  *ngIf="showDialog"
+  [class.modal-shown]="showDialog"
+  [class.modal-hidden]="!showDialog"
+  style="margin-top: 0; max-width: 600px"
+>
+  <a class="close-icon" (click)="cancelWizard()"></a>
+
+  <header class="flexFullRow">
+    <h2 class="title" *ngIf="!profileToEdit"
+      >{{ 'label.new.profile' | transloco }}</h2
+    >
+    <h2 class="title" *ngIf="profileToEdit"
+      >{{ 'label.edit.profile' | transloco }}</h2
+    >
+  </header>
+
+  <section class="flexFullRow modal-content">
+    <form [formGroup]="createProfileForm" class="flexContainer">
+      <div class="flexFullRow" *ngIf="isGuestOrRegistered()">
+        <p>{{ 'permissions.edition.disabled.guest.registered' | transloco }}</p>
+      </div>
+
+      <div class="flexFullRow">
+        <cbc-multilingual-input
+          formControlName="title"
+          [label]="'Title'"
+          [placeholder]="'Title'"
+          [lang]="'EN'"
+          [enabled]="!isGuestOrRegistered()"
+        ></cbc-multilingual-input>
+      </div>
+
+      <div class="flexFullRow" *ngIf="isEditable()">
+        <div class="flexContainer" style="padding-top: 20px">
+          <div class="flex0 access">
+            <label for="name">{{ 'label.information' | transloco }}</label>
+          </div>
+          <div class="flexWrap" style="display: flex; flex-wrap: nowrap">
+            <div class="flexWrap">
+              <mat-slider
+                class="slider"
+                id="information"
+                formControlName="information"
+                min="0"
+                [step]="1"
+                [max]="getMaxInfoPerm()"
+              ></mat-slider>
+            </div>
+            <div class="flex0 permission">
+              <span>
+                {{ 'permissions.' +
+                getInfPerms(createProfileForm.value.information) | transloco }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="flexFullRow">
+        <cbc-permission-descriptor
+          [label]="
+            'permissions.' +
+            getInfPerms(createProfileForm.value.information) +
+            '.help'
+          "
+        >
+        </cbc-permission-descriptor>
+      </div>
+
+      <div class="flexFullRow" *ngIf="isEditable()">
+        <div class="flexContainer" style="padding-top: 20px">
+          <div class="flex0 access">
+            <label for="name">{{ 'label.library' | transloco }}</label>
+          </div>
+          <div class="flexWrap" style="display: flex; flex-wrap: nowrap">
+            <div class="flexWrap">
+              <mat-slider
+                class="slider"
+                id="library"
+                formControlName="library"
+                min="0"
+                [step]="1"
+                [max]="getMaxLibPerm()"
+              ></mat-slider>
+            </div>
+            <div class="flex0 permission">
+              <span
+                >{{ 'permissions.' +
+                getLibPerms(createProfileForm.value.library) | transloco
+                }}</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="flexFullRow">
+        <cbc-permission-descriptor
+          [label]="
+            'permissions.' +
+            getLibPerms(createProfileForm.value.library) +
+            '.help'
+          "
+        ></cbc-permission-descriptor>
+      </div>
+
+      <div class="flexFullRow" *ngIf="!isGuestOrRegistered() && isEditable()">
+        <div class="flexContainer" style="padding-top: 20px">
+          <div class="flex0 access">
+            <label for="name">{{ 'label.members' | transloco }}</label>
+          </div>
+          <div class="flexWrap" style="display: flex; flex-wrap: nowrap">
+            <div class="flexWrap">
+              <mat-slider
+                class="slider"
+                id="members"
+                formControlName="members"
+                min="0"
+                [step]="1"
+                [max]="getMaxMembersPerm()"
+              ></mat-slider>
+            </div>
+            <div class="flex0 permission">
+              <span
+                >{{ 'permissions.' +
+                getMemPerms(createProfileForm.value.members) | transloco
+                }}</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="flexFullRow">
+        <cbc-permission-descriptor
+          [label]="
+            'permissions.' +
+            getMemPerms(createProfileForm.value.members) +
+            '.help'
+          "
+        ></cbc-permission-descriptor>
+      </div>
+
+      <div class="flexFullRow" *ngIf="isEditable()">
+        <div class="flexContainer" style="padding-top: 20px">
+          <div class="flex0 access">
+            <label for="name">{{ 'label.agenda' | transloco }}</label>
+          </div>
+          <div class="flexWrap" style="display: flex; flex-wrap: nowrap">
+            <div class="flexWrap">
+              <mat-slider
+                class="slider"
+                id="events"
+                formControlName="events"
+                min="0"
+                [step]="1"
+                [max]="getMaxEventsPerm()"
+              ></mat-slider>
+            </div>
+            <div class="flex0 permission">
+              <span
+                >{{ 'permissions.' + getEvtPerms(createProfileForm.value.events)
+                | transloco }}</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="flexFullRow">
+        <cbc-permission-descriptor
+          [label]="
+            'permissions.' +
+            getEvtPerms(createProfileForm.value.events) +
+            '.help'
+          "
+        ></cbc-permission-descriptor>
+      </div>
+
+      <div class="flexFullRow" *ngIf="isEditable()">
+        <div class="flexContainer" style="padding-top: 20px">
+          <div class="flex0 access">
+            <label for="name">{{ 'label.forums' | transloco }}</label>
+          </div>
+          <div class="flexWrap" style="display: flex; flex-wrap: nowrap">
+            <div class="flexWrap">
+              <mat-slider
+                class="slider"
+                id="newsgroups"
+                formControlName="newsgroups"
+                min="0"
+                [step]="1"
+                [max]="getMaxForumsPerm()"
+              ></mat-slider>
+            </div>
+            <div class="flex0 permission">
+              <span
+                >{{ 'permissions.' +
+                getNwsPerms(createProfileForm.value.newsgroups) | transloco
+                }}</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="flexFullRow">
+        <cbc-permission-descriptor
+          [label]="
+            'permissions.' +
+            getNwsPerms(createProfileForm.value.newsgroups) +
+            '.help'
+          "
+        ></cbc-permission-descriptor>
+      </div>
+
+      <div class="field" *ngIf="!isEditable()">
+        <label for="name">{{ 'label.information' | transloco }}</label>
+        <p>{{ 'permissions.leader.exception.explanation' | transloco }}</p>
+      </div>
+
+      <div *ngIf="processing" class="field">
+        <label *ngIf="isEdition()"
+          >{{ 'label.updating' | transloco }}...
+          <cbc-spinner></cbc-spinner>
+        </label>
+        <label *ngIf="!isEdition()"
+          >{{ 'label.creating' | transloco }}...
+          <cbc-spinner></cbc-spinner>
+        </label>
+      </div>
+    </form>
+  </section>
+
+  <section class="flexFullRow modal-footer">
+    <!-- Buttons -->
+    <div *ngIf="!processing" class="buttons-group">
+      <a
+        class="cta"
+        (click)="!createProfileForm.valid ? '' : createOrEditProfile()"
+        [class.disabled]="!createProfileForm.valid"
+        >{{ getLabel() | transloco }}</a
+      >
+      <a class="button" (click)="cancelWizard()"
+        >{{ 'label.cancel' | transloco }}</a
+      >
+    </div>
+  </section>
+</section>

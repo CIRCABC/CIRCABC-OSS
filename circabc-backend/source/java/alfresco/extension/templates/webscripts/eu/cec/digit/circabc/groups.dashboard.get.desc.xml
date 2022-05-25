@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Get the dashboard of a IG</shortname>
+  <description>Get the dashboard / what's new of a IG</description>
+    <url>/circabc/groups/{igId}/dashboard</url>
+  <format default="json"/>
+  <authentication>guest</authentication>
+  <transaction>required</transaction>
+</webscript>

@@ -1,0 +1,22 @@
+.description {
+  color: #757575;
+  font-size: 12px;
+  padding-left: 163px;
+
+  .text {
+    height: 15px;
+    width: 380px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .expanded {
+    height: auto;
+    width: 380px;
+  }
+
+  .clickable {
+    cursor: pointer;
+  }
+}

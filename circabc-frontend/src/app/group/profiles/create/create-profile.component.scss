@@ -1,0 +1,103 @@
+:host {
+  ::ng-deep mat-slider {
+    width: 100%;
+    height: auto;
+    margin-top: -35px;
+
+    .mat-slider-track-wrapper {
+      background-color: #cecece !important;
+      height: 6px !important;
+      border-radius: 25px !important;
+    }
+
+    .mat-slider-track-fill {
+      background-color: #8ce196 !important;
+      height: 6px !important;
+      border-radius: 25px !important;
+    }
+
+    .mat-slider-thumb {
+      background-color: #fff !important;
+      top: -8px !important;
+      border: 2px solid #4caf50 !important;
+    }
+
+    .mat-slider-thumb:hover {
+      background-color: #8ce196 !important;
+    }
+
+    .mat-slider-track-background {
+      height: 0;
+    }
+  }
+}
+
+form {
+  display: flex;
+}
+
+.modal {
+  min-width: 280px;
+  width: auto;
+  max-height: none;
+}
+
+.modal-show {
+  display: flex;
+}
+
+.modal-content {
+  max-height: none;
+}
+
+.flexContainer {
+  display: flex;
+  flex-flow: row;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.flexGap {
+  gap: 15px;
+}
+
+.flexFullRow {
+  flex: 1 1 100%;
+}
+
+.flexWrap {
+  flex: 1 1 auto;
+  align-self: center;
+}
+
+.flex0 {
+  flex: 0;
+}
+
+:host ::ng-deep .description {
+  padding: 0 0 0 100px !important;
+}
+
+:host ::ng-deep .expanded {
+  width: auto !important;
+}
+
+@media screen and (max-width: 620px) {
+  :host ::ng-deep .description {
+    padding: 0 5px !important;
+  }
+}
+
+:host ::ng-deep .text {
+  width: 300px !important;
+}
+
+.permission {
+  min-width: 100px;
+  padding-left: 15px;
+}
+
+.access {
+  min-width: 100px;
+  padding-right: 15px;
+}

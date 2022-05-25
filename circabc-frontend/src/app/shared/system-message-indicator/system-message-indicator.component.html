@@ -1,0 +1,22 @@
+<a *ngIf="hasMessages()" (click)="forceDisplayMessages()">
+  <img
+    src="img/notifications-button.png"
+    title="{{ 'label.has.app.messages' | transloco }}"
+    *ngIf="!useBlueIcon"
+  />
+  <img
+    src="img/notifications-button-blue.png"
+    title="{{ 'label.has.app.messages' | transloco }}"
+    *ngIf="useBlueIcon"
+  />
+</a>
+<img
+  src="img/notifications-button-disabled.png"
+  *ngIf="!hasMessages() && !useBlueIcon"
+  title="{{ 'label.has.app.no.messages' | transloco }}"
+/>
+<img
+  src="img/notifications-button-blue-disabled.png"
+  *ngIf="!hasMessages() && useBlueIcon"
+  title="{{ 'label.has.app.no.messages' | transloco }}"
+/>

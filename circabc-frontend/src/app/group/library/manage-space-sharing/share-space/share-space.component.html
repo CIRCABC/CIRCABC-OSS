@@ -1,0 +1,131 @@
+<!-- MODAL BOX -->
+<div
+  class="black-overlayer"
+  *ngIf="showModal"
+  [class.overlayer-shown]="showModal"
+  [class.overlayer-hidden]="!showModal"
+></div>
+<section
+  class="modal modal--select-files"
+  *ngIf="showModal"
+  [class.modal-shown]="showModal"
+  [class.modal-hidden]="!showModal"
+  style="margin-top: 0"
+>
+  <a class="close-icon" (click)="cancel('close')"></a>
+  <header>
+    <a class="back-link" (click)="cancel('close')"
+      >{{ 'label.back' | transloco }}</a
+    >
+    <h2 *ngIf="!toChangePermission()" class="title"
+      >{{ 'spaces.sharing.share.with' | transloco }}</h2
+    >
+    <h2 *ngIf="toChangePermission()" class="title"
+      >{{ 'spaces.sharing.change.permission' | transloco }}</h2
+    >
+  </header>
+
+  <div
+    *ngIf="!toChangePermission() && !stillIGsToShare()"
+    style="
+      font-size: 20px;
+      text-align: center;
+      padding: 15px;
+      background-color: #fff;
+      line-height: 64px;
+    "
+  >
+    <img src="img/rounded-block-sign.png" height="18" width="18" />&nbsp;{{
+    'spaces.sharing.all.shared' | transloco }}
+  </div>
+
+  <div *ngIf="stillIGsToShare() || toChangePermission()">
+    <section class="modal-content">
+      <form [formGroup]="spaceSharingForm">
+        <div *ngIf="!toChangePermission()" class="field">
+          <label class="longer" for="selectIg"
+            >{{ 'spaces.sharing.select.an.ig' | transloco }}</label
+          >
+          <div class="custom-select select--form reset-width select-align">
+            <select name="" id="selectIg" formControlName="selectedIg">
+              <option
+                *ngFor="let ig of shareIGsAndPermissions.igs"
+                [value]="ig.value"
+                >{{ ig.name }}</option
+              >
+            </select>
+          </div>
+        </div>
+
+        <div *ngIf="toChangePermission()" class="field">
+          <label class="longer" for="selectIg"
+            >{{ 'spaces.sharing.current.permission' | transloco }}</label
+          >
+          <label>{{ 'permissions.' + currentPermission | transloco }}</label>
+        </div>
+
+        <div class="field">
+          <label class="longer" for="selectPermission"
+            >{{ 'spaces.sharing.select.max.permission' | transloco }}</label
+          >
+          <div class="custom-select select--form reset-width select-align">
+            <select
+              name="permissions"
+              id="selectPermission"
+              formControlName="selectedPermission"
+            >
+              <option
+                *ngFor="let permission of shareIGsAndPermissions.permissions"
+                [value]="permission"
+                >{{ 'permissions.' + permission | transloco }}</option
+              >
+            </select>
+          </div>
+        </div>
+
+        <div class="field switch">
+          <div class="label longer"
+            >{{ 'spaces.sharing.notify.users' | transloco }}</div
+          >
+          <input
+            id="notifyLeaders"
+            class="cmn-toggle cmn-toggle-round"
+            type="checkbox"
+            formControlName="notifyLeaders"
+          />
+          <label for="notifyLeaders" class="nonBlockLabel"></label>
+          <span
+            >{{ (spaceSharingForm.value.notifyLeaders === true ? 'label.yes' :
+            'label.no' ) | transloco }}</span
+          >
+        </div>
+      </form>
+
+      <div class="field" *ngIf="sharing">
+        <label
+          >{{ 'label.sharing' | transloco }}<cbc-spinner></cbc-spinner
+        ></label>
+      </div>
+      <div class="field" *ngIf="changing">
+        <label
+          >{{ 'label.changing' | transloco }}<cbc-spinner></cbc-spinner
+        ></label>
+      </div>
+    </section>
+
+    <section class="modal-footer">
+      <!-- Buttons -->
+      <div class="buttons-group">
+        <a
+          *ngIf="allSelected() && !toChangePermission()"
+          class="cta"
+          (click)="share()"
+          >{{ 'label.share' | transloco }}</a
+        >
+        <a *ngIf="toChangePermission()" class="cta" (click)="change()"
+          >{{ 'label.edit' | transloco }}</a
+        >
+      </div>
+    </section>
+  </div>
+</section>

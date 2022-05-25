@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>spaces.id.toshare.get</shortname>
+  <description>Get the IGs and permission that can be shared with this space (to build the shares)</description>
+    <url>/circabc/spaces/{id}/toshare</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

@@ -1,0 +1,39 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "module": "esnext",
+    "outDir": "./dist/out-tsc",
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": "src",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "target": "es5",
+    "typeRoots": ["node_modules/@types"],
+    "lib": ["es2020", "dom"],
+    "noUnusedLocals": false, // turn of because of generated files
+    "noUnusedParameters": true,
+    "noUncheckedIndexedAccess": false,
+    "diagnostics": true,
+    "listEmittedFiles": false,
+    "listFiles": false,
+    "importHelpers": true,
+    "removeComments": true,
+    "incremental": false,
+    "skipLibCheck": true,
+    "useUnknownInCatchVariables":false,
+    "noPropertyAccessFromIndexSignature": false,
+    "noImplicitOverride": true,
+    "explainFiles":false
+  },
+  "angularCompilerOptions": {
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  }
+}

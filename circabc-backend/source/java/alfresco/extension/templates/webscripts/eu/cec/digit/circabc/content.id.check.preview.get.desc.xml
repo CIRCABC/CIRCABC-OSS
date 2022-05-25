@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>content.id.check.preview.get</shortname>
+  <description>Check if the node with the given id is ready to be previewed</description>
+    <url>/circabc/content/{id}/check/preview</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

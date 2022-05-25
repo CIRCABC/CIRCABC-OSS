@@ -1,0 +1,36 @@
+.filtering {
+  background-color: #fff;
+  padding: 10px;
+  font-size: 13px;
+
+  ::ng-deep input[type='text'] {
+    width: 100px;
+    height: 23px;
+    padding: 0 5px;
+  }
+
+  ::ng-deep .ui-inputtext {
+    width: 100px;
+    height: 25px;
+    padding: 0 5px;
+  }
+}
+
+.apply-button {
+  height: 23px;
+  padding-top: 3px;
+  margin-right: 10px;
+  margin-top: 2px;
+}
+
+.export-select {
+  padding-left: 25px;
+}
+
+.export-box {
+  padding-bottom: 25px;
+}
+
+.link-underline {
+  text-decoration: underline;
+}

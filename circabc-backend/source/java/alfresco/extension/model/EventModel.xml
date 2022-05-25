@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Copyright 2006 European Community
+  
+   Licensed under the EUPL, Version 1.1 or \?as soon they
+   will be approved by the European Commission - subsequent
+   versions of the EUPL (the "Licence");
+   You may not use this work except in compliance with the
+   Licence.
+   You may obtain a copy of the Licence at:
+  
+   https://joinup.ec.europa.eu/software/page/eupl
+  
+   Unless required by applicable law or agreed to in
+   writing, software distributed under the Licence is
+   distributed on an "AS IS" basis,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+   express or implied.
+   See the Licence for the specific language governing
+   permissions and limitations under the Licence.
+-->
+<model name="ce:CalendarEventModel"
+	xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+	<!-- Optional meta-data about the model -->
+	<description>Circabc Event Service Model</description>
+	<author>Slobodan Filipovic</author>
+	<version>1.0</version>
+
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0"
+			prefix="d" />
+		<import uri="http://www.alfresco.org/model/content/1.0"
+			prefix="cm" />
+		<import uri="http://www.alfresco.org/model/system/1.0"
+			prefix="sys" />
+	</imports>
+
+	<!-- Introduction of new namespaces defined by this model -->
+	<namespaces>
+		<namespace uri="http://www.cc.cec/circabc/model/events/1.0"
+			prefix="ce" />
+	</namespaces>
+
+	<constraints>
+		<constraint name="ce:weekStartDayConstraint" type="LIST">
+			<parameter name="allowedValues">
+				<list>
+					<value>sunday</value>
+					<value>monday</value>
+					<value>tuesday</value>
+					<value>wednesday</value>
+					<value>thursday</value>
+					<value>friday</value>
+					<value>saturday</value>
+					<value>today</value>
+				</list>
+			</parameter>
+			<parameter name="caseSensitive">
+				<value>false</value>
+			</parameter>
+		</constraint>
+
+		<constraint name="ce:timeZoneConstraint" type="LIST">
+			<parameter name="allowedValues">
+				<list>
+					<value>GMT-12</value>
+					<value>GMT-11</value>
+					<value>GMT-10</value>
+					<value>GMT-9</value>
+					<value>GMT-8</value>
+					<value>GMT-7</value>
+					<value>GMT-6</value>
+					<value>GMT-5</value>
+					<value>GMT-4</value>
+					<value>GMT-3</value>
+					<value>GMT-2</value>
+					<value>GMT-1</value>
+					<value>GMT</value>
+					<value>GMT+1</value>
+					<value>GMT+2</value>
+					<value>GMT+3</value>
+					<value>GMT+4</value>
+					<value>GMT+5</value>
+					<value>GMT+6</value>
+					<value>GMT+7</value>
+					<value>GMT+8</value>
+					<value>GMT+9</value>
+					<value>GMT+10</value>
+					<value>GMT+11</value>
+					<value>GMT+11</value>
+				</list>
+			</parameter>
+			<parameter name="caseSensitive">
+				<value>false</value>
+			</parameter>
+		</constraint>
+
+		<constraint name="ce:kindOfEventConstraint" type="LIST">
+			<parameter name="allowedValues">
+				<list>
+					<value>Meeting</value>
+					<value>Event</value>
+				</list>
+			</parameter>
+			<parameter name="caseSensitive">
+				<value>false</value>
+			</parameter>
+		</constraint>
+
+		<constraint name="ce:availabilityConstraint" type="LIST">
+			<parameter name="allowedValues">
+				<list>
+					<value>Private</value>
+					<value>Public</value>
+				</list>
+			</parameter>
+			<parameter name="caseSensitive">
+				<value>false</value>
+			</parameter>
+		</constraint>
+		<constraint name="ce:audienceConstraint" type="LIST">
+			<parameter name="allowedValues">
+				<list>
+					<value>Open</value>
+					<value>Closed</value>
+				</list>
+			</parameter>
+			<parameter name="caseSensitive">
+				<value>false</value>
+			</parameter>
+		</constraint>
+		<constraint name="ce:eventPriorityConstraint" type="LIST">
+			<parameter name="allowedValues">
+				<list>
+					<value>Low</value>
+					<value>Medium</value>
+					<value>High</value>
+					<value>Urgent</value>
+				</list>
+			</parameter>
+			<parameter name="caseSensitive">
+				<value>false</value>
+			</parameter>
+		</constraint>
+		<constraint name="ce:eventTypeConstraint" type="LIST">
+			<parameter name="allowedValues">
+				<list>
+					<value>Task</value>
+					<value>Appointment</value>
+					<value>Other</value>
+				</list>
+			</parameter>
+			<parameter name="caseSensitive">
+				<value>false</value>
+			</parameter>
+		</constraint>
+	</constraints>
+	<types>
+		<type name="ce:datesContainer">
+			<title>Events Container</title>
+			<parent>sys:container</parent>
+			<associations>
+				<child-association name="ce:eventDatesAssociation">
+					<source>
+						<mandatory>false</mandatory>
+						<many>false</many>
+					</source>
+					<target>
+						<class>ce:event</class>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</target>
+					<duplicate>false</duplicate>
+				</child-association>
+			</associations>
+		</type>
+		<type name="ce:event">
+			<title>Circabc event</title>
+			<parent>cm:cmobject</parent>
+			<properties>
+				<property name="ce:date">
+					<type>d:datetime</type>
+				</property>
+				<property name="ce:kindOfEvent">
+					<type>d:text</type>
+					<constraints>
+						<constraint ref="ce:kindOfEventConstraint" />
+					</constraints>
+				</property>
+			</properties>
+			<mandatory-aspects>
+				<aspect>ce:commonProperties</aspect>
+				<aspect>ce:meetingProperties</aspect>
+				<aspect>ce:eventProperties</aspect>
+			</mandatory-aspects>
+		</type>
+
+		<type name="ce:baseEventDefinition">
+			<title>Circabc base event</title>
+			<parent>cm:cmobject</parent>
+			<properties>
+				<property name="ce:occurenceRate">
+					<type>d:text</type>
+				</property>
+				<property name="ce:startDate">
+					<type>d:datetime</type>
+				</property>
+			</properties>
+			<associations>
+				<child-association name="ce:baseEvantDateContainer">
+					<source>
+						<mandatory>false</mandatory>
+						<many>false</many>
+					</source>
+					<target>
+						<class>ce:datesContainer</class>
+						<mandatory>false</mandatory>
+						<many>false</many>
+					</target>
+					<duplicate>false</duplicate>
+				</child-association>
+			</associations>
+			<mandatory-aspects>
+				<aspect>ce:commonProperties</aspect>
+			</mandatory-aspects>
+		</type>
+		<type name="ce:meetingDefinition">
+			<title>Circabc meeting</title>
+			<parent>ce:baseEventDefinition</parent>
+			<properties>
+				<property name="ce:sequence">
+					<type>d:int</type>
+				</property>
+			</properties>
+			<mandatory-aspects>
+				<aspect>ce:meetingProperties</aspect>
+			</mandatory-aspects>
+		</type>
+		<type name="ce:eventDefinition">
+			<title>Circabc event</title>
+			<parent>ce:baseEventDefinition</parent>
+			<mandatory-aspects>
+				<aspect>ce:eventProperties</aspect>
+			</mandatory-aspects>
+		</type>
+	</types>
+	<aspects>
+		<aspect name="ce:commonProperties">
+			<title>Common event and meeting properties</title>
+			<properties>
+				<property name="ce:title">
+					<title>Title</title>
+					<type>d:mltext</type>
+				</property>
+				<property name="ce:invitedUsers">
+					<type>d:text</type>
+					<index enabled="true">
+						<atomic>true</atomic>
+						<stored>false</stored>
+						<tokenised>false</tokenised>
+					</index>
+				</property>
+				<property name="ce:startTime">
+					<type>d:text</type>
+				</property>
+				<property name="ce:endTime">
+					<type>d:text</type>
+				</property>
+				<property name="ce:language">
+					<type>d:text</type>
+				</property>
+				<property name="ce:abstract">
+					<type>d:mltext</type>
+				</property>
+				<property name="ce:audience">
+					<type>d:text</type>
+					<constraints>
+						<constraint ref="ce:audienceConstraint" />
+					</constraints>
+				</property>
+				<property name="ce:invitationMessage">
+					<type>d:text</type>
+				</property>
+
+				<property name="ce:timezone">
+					<type>d:text</type>
+					<constraints>
+						<constraint ref="ce:timeZoneConstraint" />
+					</constraints>
+				</property>
+
+				<property name="ce:name">
+					<type>d:text</type>
+				</property>
+
+				<property name="ce:email">
+					<type>d:text</type>
+				</property>
+
+				<property name="ce:phone">
+					<type>d:text</type>
+				</property>
+
+				<property name="ce:url">
+					<type>d:text</type>
+				</property>
+			</properties>
+		</aspect>
+		<aspect name="ce:meetingProperties">
+			<title>Meeting properties</title>
+			<properties>
+				<property name="ce:availability">
+					<type>d:text</type>
+					<constraints>
+						<constraint ref="ce:availabilityConstraint" />
+					</constraints>
+				</property>
+				<property name="ce:orgainzation">
+					<type>d:text</type>
+				</property>
+				<property name="ce:agenda">
+					<type>d:text</type>
+				</property>
+				<property name="ce:meetingType">
+					<type>d:text</type>
+				</property>
+				<property name="ce:librarySection">
+					<type>d:noderef</type>
+				</property>
+				<property name="ce:acceptUserList">
+					<type>d:text</type>
+				</property>
+				<property name="ce:rejectUserList">
+					<type>d:text</type>
+				</property>
+			</properties>
+		</aspect>
+		<aspect name="ce:eventProperties">
+			<title>Event properties</title>
+			<properties>
+				<property name="ce:eventPriority">
+					<type>d:text</type>
+					<constraints>
+						<constraint ref="ce:eventPriorityConstraint" />
+					</constraints>
+				</property>
+				<property name="ce:eventType">
+					<type>d:text</type>
+					<constraints>
+						<constraint ref="ce:eventTypeConstraint" />
+					</constraints>
+				</property>
+			</properties>
+		</aspect>
+	</aspects>
+</model>

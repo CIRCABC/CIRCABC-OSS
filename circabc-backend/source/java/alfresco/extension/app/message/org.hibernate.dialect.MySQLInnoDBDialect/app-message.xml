@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!-- Copyright 2006 European Community Licensed under the EUPL, Version 1.1 
+	or – as soon they will be approved by the European Commission - subsequent 
+	versions of the EUPL (the "Licence"); You may not use this work except in 
+	compliance with the Licence. You may obtain a copy of the Licence at: https://joinup.ec.europa.eu/software/page/eupl 
+	Unless required by applicable law or agreed to in writing, software distributed 
+	under the Licence is distributed on an "AS IS" basis, WITHOUT WARRANTIES 
+	OR CONDITIONS OF ANY KIND, either express or implied. See the Licence for 
+	the specific language governing permissions and limitations under the Licence. -->
+	
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="AppMessage">
+	
+	<select id="select_app_messages" resultType="AppMessageDAO" parameterType="map">
+		SELECT 
+			id,
+			message_content as messageContent,
+			date_closure as dateClosure,
+			message_level as messageLevel,
+			display_time as displayTime,
+			show_message as showMessage
+		FROM cbc_app_messages
+		<if test="limit > 0 ">
+		LIMIT #{limitMin} , #{limit}
+		</if>
+	</select>
+	
+	<select id="count_app_messages" resultType="int">
+		SELECT 
+			count(*)
+		FROM cbc_app_messages
+	</select>
+	
+	<select id="select_app_message" resultType="AppMessageDAO" parameterType="map">
+		SELECT 
+			id,
+			message_content as messageContent,
+			date_closure as dateClosure,
+			message_level as messageLevel,
+			display_time as displayTime,
+			show_message as showMessage
+		FROM cbc_app_messages
+		WHERE  id = #{id}
+	</select>
+
+	<insert id="insert_app_message" parameterType="map">
+		INSERT INTO cbc_app_messages(id,message_content,date_closure,message_level,display_time,
+		show_message )
+		values (#{id},#{content, jdbcType=VARCHAR}, #{dateClosure}, #{level, jdbcType=VARCHAR},
+		#{displayTime}, #{enabled})
+		<selectKey keyProperty="id" resultType="long">
+			select LAST_INSERT_ID() AS value
+		</selectKey>
+	</insert>
+	
+	<delete id="delete_app_message" parameterType="map">
+		DELETE FROM cbc_app_messages where id = #{id}
+	</delete>
+	
+		<update id="update_app_message" parameterType="map">
+		UPDATE cbc_app_messages
+		SET message_content=#{content, jdbcType=VARCHAR}, 
+			date_closure=#{dateClosure}, 
+			message_level=#{level, jdbcType=VARCHAR}, 
+			display_time=#{displayTime}, 
+			show_message=#{enabled}
+		WHERE id=#{id}
+	</update>
+	
+	<select id="select_distribution_emails"
+	resultType="DistributionEmailDAO" parameterType="map">
+	SELECT
+	id,
+	email as emailAddress
+	FROM cbc_distribution_list
+		<if test="search != ''">
+			WHERE email like '%' || #{search, jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="limit > 0 ">
+		LIMIT #{limitMin} , #{limit}
+		</if>
+	</select>
+	
+	<select id="count_distribution_emails" resultType="int" parameterType="map">
+		SELECT
+		count(*)
+		FROM cbc_distribution_list
+		<if test="search != ''">
+			WHERE email like '%' || #{search, jdbcType=VARCHAR} || '%'
+		</if>
+	</select>
+	
+	<insert id="insert_distribution_email" parameterType="map">
+		INSERT INTO cbc_distribution_list (id, email)
+		VALUES (#{id}, #{email, jdbcType=VARCHAR})
+		<selectKey keyProperty="id" resultType="long">
+			select LAST_INSERT_ID() AS value
+		</selectKey>
+	</insert>
+	
+	<select id="count_distribution_email" resultType="int" parameterType="map">
+		SELECT
+		count(*)
+		FROM cbc_distribution_list
+		WHERE email = #{email, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="get_distribution_email" resultType="DistributionEmailDAO"
+		parameterType="map">
+		SELECT
+		id, email as emailAddress
+		FROM cbc_distribution_list
+		WHERE email =
+		#{email, jdbcType=VARCHAR}
+	</select>
+	
+	<delete id="delete_distribution_email" parameterType="map">
+		DELETE FROM cbc_distribution_list
+		WHERE id = #{id, jdbcType=NUMERIC}
+	</delete>
+	
+</mapper>

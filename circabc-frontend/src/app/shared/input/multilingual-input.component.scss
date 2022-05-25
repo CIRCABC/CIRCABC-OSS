@@ -1,0 +1,82 @@
+@use '~css/global/variables-mixins-keyframes';
+
+.flexContainer {
+  display: flex;
+  flex-flow: row;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.flexGap {
+  gap: 15px;
+}
+
+.flexFullRow {
+  flex: 1 1 100%;
+}
+
+.flexWrap {
+  flex: 1 1 200px;
+  padding-bottom: 15px;
+}
+
+.flex0 {
+  flex: 0;
+}
+
+input {
+  width: 100%;
+}
+
+.icon--world {
+  background: url(^img/icon-world-20x20-grey.png) no-repeat;
+  opacity: 0.6;
+}
+
+.input-lang {
+  color: #ccc;
+  margin-right: 5px;
+}
+
+.checked {
+  background-color: #035;
+  color: #fff;
+}
+
+.clean-action {
+  font-size: bold;
+}
+
+.lang-selector {
+  select::-ms-expand {
+    display: none;
+  }
+
+  select {
+    padding: 10px;
+    padding-right: 24px;
+    border: 0;
+    cursor: pointer;
+    appearance: none;
+    color: #035;
+    text-transform: uppercase;
+    background-color: #fff;
+    background-image: url(^img/sort-down.png);
+    background-repeat: no-repeat, repeat;
+    background-position: right 0.8em top 50%, 0 0;
+    background-size: 0.75em auto, 100%;
+
+    &:hover {
+      background-color: #035;
+      color: #fff;
+      background-image: url(^img/sort-down-white.png);
+      border-radius: 3px;
+    }
+
+    option {
+      background-color: #fff;
+      color: #035;
+      text-transform: uppercase;
+    }
+  }
+}

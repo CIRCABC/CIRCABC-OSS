@@ -1,0 +1,20 @@
+<cbc-modal
+  [title]="editMode ? 'help.update.category' : 'help.add.category'"
+  (ok)="editMode ? updateCategory() : createCategory()"
+  (cancel)="cancel()"
+  [okLabel]="editMode ? 'label.update' : 'label.create'"
+  [(visible)]="showModal"
+  [executing]="creating"
+  [executingLabel]="editMode ? 'label.updating' : 'label.creating'"
+  [showOkButton]="isValid && !creating"
+>
+  <form [formGroup]="newCategoryForm">
+    <cbc-multilingual-input
+      formControlName="title"
+      [label]="'label.title' | transloco"
+      [placeholder]="'label.title' | transloco"
+      [lang]="'en'"
+      [required]="true"
+    ></cbc-multilingual-input>
+  </form>
+</cbc-modal>

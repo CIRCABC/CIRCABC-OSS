@@ -1,0 +1,36 @@
+h3 {
+  padding: 0 15px;
+  font-weight: normal;
+}
+
+.row {
+  .group-title {
+    font-size: 13px;
+    font-weight: bold;
+  }
+
+  .grey-name {
+    color: #757575;
+    font-size: 11px;
+  }
+
+  .profile {
+    float: right;
+    font-size: 14px;
+    color: #aaa;
+    line-height: 24px;
+    padding: 5px;
+
+    a {
+      background-image: url(^img/logout-grey.png);
+      height: 16px;
+      width: 16px;
+      display: inline-block;
+      vertical-align: middle;
+
+      &:hover {
+        background-image: url(^img/logout-blue.png);
+      }
+    }
+  }
+}

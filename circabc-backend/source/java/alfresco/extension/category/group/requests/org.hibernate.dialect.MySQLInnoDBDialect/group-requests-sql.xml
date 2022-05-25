@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!-- Copyright 2006 European Community Licensed under the EUPL, Version 1.1
+	or – as soon they will be approved by the European Commission - subsequent
+	versions of the EUPL (the "Licence"); You may not use this work except in
+	compliance with the Licence. You may obtain a copy of the Licence at: https://joinup.ec.europa.eu/software/page/eupl
+	Unless required by applicable law or agreed to in writing, software distributed
+	under the Licence is distributed on an "AS IS" basis, WITHOUT WARRANTIES
+	OR CONDITIONS OF ANY KIND, either express or implied. See the Licence for
+	the specific language governing permissions and limitations under the Licence. -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="GroupRequests">
+
+	<select id="select_count_category_group_requests"
+		parameterType="map" resultType="int">
+		SELECT
+		count(*)
+		FROM
+		cbc_group_requests
+		WHERE category_ref = #{categRef, jdbcType=VARCHAR}
+		<choose>
+			<when test="filter == 'waiting'">
+				AND AGREEMENT = 0
+			</when>
+			<when test="filter == 'approved'">
+				AND AGREEMENT = 1
+			</when>
+			<when test="filter == 'rejected'">
+				AND AGREEMENT = -1
+			</when>
+		</choose>
+	</select>
+
+	<select id="select_category_group_requests_titles"
+		parameterType="map" resultType="keyValueString">
+		SELECT
+		locale as 'key',
+		value
+		FROM
+		cbc_group_requests_values
+		WHERE id_request = #{reqId}
+		AND
+		parameter
+		= 'title'
+	</select>
+
+	<select id="select_category_group_requests_descriptions"
+		parameterType="map" resultType="keyValueString">
+		SELECT
+		locale as 'key',
+		value as value
+		FROM
+		cbc_group_requests_values
+		WHERE id_request = #{reqId}
+		AND
+		parameter
+		= 'description'
+	</select>
+
+	<select id="select_category_group_requests"
+		resultType="GroupCreationRequestDAO" parameterType="map">
+			SELECT
+			id,
+			from_username as fromUsername,
+			proposed_name as proposedName,
+			request_date as requestDate,
+			justification as justification,
+			category_ref as categoryReference,
+			leaders as leaders,
+			agreement as agreement,
+			reviewer as reviewer,
+			argument as argument,
+			agreement_date as agreementDate
+			FROM cbc_group_requests
+			WHERE category_ref =
+			#{categoryRef, jdbcType=VARCHAR}
+			<choose>
+				<when test="filter == 'waiting'">
+					AND AGREEMENT = 0
+				</when>
+				<when test="filter == 'approved'">
+					AND AGREEMENT = 1
+				</when>
+				<when test="filter == 'rejected'">
+					AND AGREEMENT = -1
+				</when>
+			</choose>
+			ORDER BY requestDate DESC
+		<if test="limit > 0 ">
+			LIMIT #{limitMin} , #{limit}
+		</if>
+	</select>
+
+	<select id="select_category_group_request"
+		resultType="GroupCreationRequestDAO" parameterType="map">
+
+			SELECT
+			id,
+			from_username as fromUsername,
+			proposed_name as proposedName,
+			request_date as requestDate,
+			justification as justification,
+			category_ref as categoryReference,
+			leaders as leaders,
+			agreement as agreement,
+			reviewer as reviewer,
+			argument as argument,
+			agreement_date as agreementDate
+			FROM cbc_group_requests
+			WHERE id=#{requestId}
+	</select>
+
+	<insert id="insert_category_group_request" parameterType="map">
+		INSERT INTO cbc_group_requests (id, from_username, proposed_name,
+		request_date, justification, leaders, category_ref, agreement)
+		VALUES (#{id},
+		#{fromUsername, jdbcType=VARCHAR}, #{proposedName, jdbcType=VARCHAR}, SYSDATE(),
+		#{justification, jdbcType=VARCHAR}, #{leaders, jdbcType=VARCHAR},
+		#{categoryRef, jdbcType=VARCHAR}, 0)
+		<selectKey resultType="int" keyProperty="id">
+      		select LAST_INSERT_ID() AS value
+    	</selectKey>
+	</insert>
+
+	<insert id="insert_category_group_request_title-description" parameterType="map">
+		INSERT INTO cbc_group_requests_values (id_request, parameter, value, locale)
+		VALUES (#{id}, #{parameter, jdbcType=VARCHAR}, #{value, jdbcType=VARCHAR}, #{locale, jdbcType=VARCHAR})
+	</insert>
+
+	<update id="update_category_group_request_approval">
+		UPDATE cbc_group_requests SET agreement=#{agreement, jdbcType=VARCHAR}, argument=#{argument, jdbcType=VARCHAR},
+		reviewer=#{reviewer, jdbcType=VARCHAR}, agreement_date=SYSDATE() where id=#{id}
+	</update>
+
+	<update id="update_category_group_request_name">
+		UPDATE cbc_group_requests
+		SET proposed_name=#{proposedName, jdbcType=VARCHAR}
+		where id=#{id}
+	</update>
+
+	<update id="update_category_group_request_title-or-description">
+		UPDATE cbc_group_requests_values
+		SET value=#{proposedTitle, jdbcType=VARCHAR}
+		WHERE id_request=#{id} AND parameter = #{parameter, jdbcType=VARCHAR}
+	</update>
+
+</mapper>

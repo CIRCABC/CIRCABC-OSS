@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>content.id.check.office.edit.get</shortname>
+  <description>Check if the node with the given id can be edited in office (checks type, permissions, state, etc.)</description>
+    <url>/circabc/content/check/office</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

@@ -1,0 +1,40 @@
+.breadcrumb {
+  font-size: 13px;
+  display: inline-block;
+  margin-left: 0;
+  margin-bottom: 25px;
+  position: relative;
+  top: 4px;
+  color: #757575;
+
+  li {
+    display: inline-block;
+
+    &::after {
+      margin-left: 10px;
+      margin-right: 10px;
+      content: '';
+      display: inline-block;
+      width: 5px;
+      height: 7px;
+      background: url(^img/small-arrow-right.png) no-repeat;
+      vertical-align: super;
+    }
+
+    &:last-of-type::after {
+      display: none;
+    }
+
+    span {
+      display: inline-block;
+      max-width: 300px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+}
+
+.no-margin-bottom {
+  margin-bottom: 0;
+}

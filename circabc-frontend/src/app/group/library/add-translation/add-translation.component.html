@@ -1,0 +1,120 @@
+<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+<div class="wrap page-container file-details">
+  <div class="page-header">
+    <span class="page-header__title"
+      >{{ 'label.add.translation' | transloco }}</span
+    >
+  </div>
+
+  <section class="box">
+    <header class="header">
+      <span class="title"></span>
+    </header>
+    <div class="main" *ngIf="currentNode && translations">
+      <div class="file-metadata">
+        <img src="img/text-file.png" alt="document" />
+        <p class="file-title">
+          {{ 'translations.add.translation.document.title' | transloco: {
+          docName: currentNode.name } }} [{{ pivotLocale }}]
+        </p>
+        <p>
+          {{ 'translations.add.translation.document.translations' | transloco: {
+          nbTranslations: getNbTranslations() } }}
+        </p>
+      </div>
+      <div class="form-translations">
+        <form [formGroup]="addTranslationForm">
+          <section class="step">
+            <div class="section-number"> 1 </div>
+
+            <div class="field" *ngIf="translations">
+              <label for="lang" style="width: 200px"
+                >{{ 'translations.add.translation.select.language' | transloco
+                }}</label
+              >
+              <div class="custom-select select--form reset-width">
+                <cbc-lang-selector
+                  formControlName="lang"
+                  [worldwide]="false"
+                  [disabledLangs]="disabledLangs"
+                ></cbc-lang-selector>
+              </div>
+            </div>
+            <div
+              class="step-action"
+              *ngIf="!processing && hasLanguageSelected()"
+            >
+              {{ 'label.by' | transloco }}
+              <a
+                class="button"
+                [class.selected]="isModeFileUpload()"
+                (click)="setModeFileUpload()"
+                >{{ 'label.file.upload' | transloco }}</a
+              >
+              {{ 'label.or' | transloco }}
+              <a
+                class="button"
+                [class.selected]="isModeMachineTranslation()"
+                (click)="setModeMachineTranslation()"
+                >{{ 'label.machine.translation' | transloco }}</a
+              >
+              <a class="button" *ngIf="!isModeSet()" (click)="cancel()"
+                >{{ 'label.cancel' | transloco }}</a
+              >
+            </div>
+          </section>
+
+          <section class="step" *ngIf="isModeFileUpload()">
+            <div class="section-number"> 2 </div>
+
+            <div class="field field--file">
+              <!-- Note: You need javascript here to know when the files are selected, see in the footer -->
+              <span class="file-span-label"
+                >{{ 'translations.add.translation.select.file' | transloco
+                }}</span
+              >
+              <input
+                type="file"
+                id="file"
+                class="inputfile inputfile-6"
+                (change)="fileChangeEvent($event)"
+              />
+              <label for="file"
+                ><span class="result"
+                  >{{ myfile !== undefined ? myfile.name : '' }}</span
+                ><span class="button"
+                  >{{ 'label.browse' | transloco }}</span
+                ></label
+              >
+              <br />
+            </div>
+            <div class="step-action" *ngIf="!processing && hasFileSelected()">
+              <a (click)="submit()" class="cta"
+                >{{ 'label.upload' | transloco }}</a
+              >
+              <a class="button" (click)="cancel()"
+                >{{ 'label.cancel' | transloco }}</a
+              >
+            </div>
+          </section>
+          <section class="step" *ngIf="isModeMachineTranslation()">
+            <div class="section-number"> 2 </div>
+            <div class="step-action" *ngIf="!processing">
+              <a (click)="submitMachineTranlationRequest()" class="cta"
+                >{{ 'label.machine.translation' | transloco }}</a
+              >
+              <a class="button" (click)="cancel()"
+                >{{ 'label.cancel' | transloco }}</a
+              >
+            </div>
+          </section>
+          <div class="field" *ngIf="processing">
+            <label
+              >{{ labelProcessing | transloco }}... <cbc-spinner></cbc-spinner
+            ></label>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+</div>

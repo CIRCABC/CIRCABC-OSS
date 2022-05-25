@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+	
+	<!-- NOTE: although we use iBatis here rather than Hibernate, for consistency we make use of single SQL dialect property (hibernate.dialect) -->
+	<properties resource="alfresco-global.properties" />
+	
+	<typeAliases>
+		<typeAlias alias="Configuration" type="eu.cec.digit.circabc.repo.config.auto.upload.Configuration" />
+		<typeAlias alias="LogRecord" type="eu.cec.digit.circabc.repo.log.LogRecordDAO" />
+		<typeAlias alias="LogActivity" type="eu.cec.digit.circabc.repo.log.LogActivityDAO" />
+		<typeAlias alias="LogRest" type="eu.cec.digit.circabc.repo.log.LogRestDAO" />
+		<typeAlias alias="LogTemplate" type="eu.cec.digit.circabc.repo.log.LogTemplateDAO" />
+		<typeAlias alias="LogSearchParameter" type="eu.cec.digit.circabc.repo.log.LogSearchParameterDAO" />
+		<typeAlias alias="LogSearchLimitParameter" type="eu.cec.digit.circabc.repo.log.LogSearchLimitParameterDAO" />
+		<typeAlias alias="LogSearchResult" type="eu.cec.digit.circabc.repo.log.LogSearchResultDAO" />
+		<typeAlias alias="LogCountResult" type="eu.cec.digit.circabc.repo.log.LogCountResultDAO" />
+		<typeAlias alias="ActivityCount" type="eu.cec.digit.circabc.repo.log.ActivityCountDAO" />
+		<typeAlias alias="Request" type="eu.cec.digit.circabc.repo.translation.Request" />
+		<typeAlias alias="Response" type="eu.cec.digit.circabc.repo.translation.Response" />
+		<typeAlias alias="Search" type="eu.cec.digit.circabc.repo.translation.Search" />
+		<typeAlias alias="SearchResult" type="eu.cec.digit.circabc.repo.translation.SearchResult" />
+		<typeAlias alias="SearchResultNotify" type="eu.cec.digit.circabc.repo.translation.SearchResultNotify" />
+		<typeAlias alias="RenditionRequest" type="eu.cec.digit.circabc.service.rendition.Request" />
+		<typeAlias alias="UserActionLogDAO" type="eu.cec.digit.circabc.repo.log.UserActionLogDAO" />
+		<typeAlias alias="UserNewsFeedRequest" type="eu.cec.digit.circabc.repo.log.UserNewsFeedRequest" />
+		<typeAlias alias="VisitedLogRestParameters" type="eu.cec.digit.circabc.repo.log.VisitedLogRestParametersDAO" />
+		<typeAlias alias="AppMessageDAO" type="eu.cec.digit.circabc.service.app.message.AppMessageDAO" />
+		<typeAlias alias="DistributionEmailDAO" type="eu.cec.digit.circabc.service.app.message.DistributionEmailDAO"/>
+		<typeAlias alias="GroupCreationRequestDAO" type="eu.cec.digit.circabc.service.category.group.requests.GroupCreationRequestDAO" />
+		<typeAlias alias="KeyValue" type="eu.cec.digit.circabc.repo.app.model.KeyValue"/>
+		<typeAlias alias="KeyValueString" type="eu.cec.digit.circabc.repo.app.model.KeyValueString"/>
+		<typeAlias alias="UserPropertyHistoryDAO" type="eu.cec.digit.circabc.repo.app.model.UserPropertyHistoryDAO"/>
+		<typeAlias alias="UserRevocationRequestDAO" type="eu.cec.digit.circabc.service.history.UserRevocationRequestDAO"/>
+		<typeAlias alias="MemberExpirationDAO" type="eu.cec.digit.circabc.service.history.MemberExpirationDAO"/>
+		<typeAlias alias="AresBridgeDAO" type="eu.cec.digit.circabc.repo.ares.AresBridgeDAO"/>
+	</typeAliases>
+	
+	<mappers>
+		<!-- note: dialect property is set in properties resource above -->
+		<mapper resource="alfresco/extension/log/${hibernate.dialect}/CircabcLog.xml" />
+		<mapper resource="alfresco/extension/lock/${hibernate.dialect}/CircabcLock.xml" />
+		<mapper resource="alfresco/extension/auto/upload/${hibernate.dialect}/CircabcAutoUploadConfiguration.xml" />
+		<mapper resource="alfresco/extension/ecorda/${hibernate.dialect}/CircabcEcorda.xml" />
+		<mapper resource="alfresco/extension/translation/${hibernate.dialect}/Translation.xml" />
+		<mapper resource="alfresco/extension/rendition/${hibernate.dialect}/Rendition.xml" />
+		<mapper resource="alfresco/extension/app/message/${hibernate.dialect}/app-message.xml" />
+		<mapper resource="alfresco/extension/category/group/requests/${hibernate.dialect}/group-requests-sql.xml" />
+		<mapper resource="alfresco/extension/history/${hibernate.dialect}/history-sql.xml" />
+		<mapper resource="alfresco/extension/aresbridge/${hibernate.dialect}/AresBridge.xml" />
+	</mappers>
+	
+</configuration>

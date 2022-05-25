@@ -1,0 +1,83 @@
+.box {
+  padding: 15px;
+  padding-left: 30px;
+  background-color: #fff;
+  border-radius: 5px;
+  font-size: 13px;
+  box-shadow: 0 0 3px rgb(0 0 0 / 0.1);
+  position: relative;
+  margin-bottom: 7px;
+
+  &:hover::before {
+    content: '';
+    width: 5px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    background: #8dcb6c;
+    background: -moz-linear-gradient(top, #8dcb6c 0%, #58c37e 100%);
+    background: -webkit-gradient(
+      linear,
+      left top,
+      left bottom,
+      color-stop(0%, #8dcb6c),
+      color-stop(100%, #58c37e)
+    );
+    background: -webkit-linear-gradient(top, #8dcb6c 0%, #58c37e 100%);
+    background: -o-linear-gradient(top, #8dcb6c 0%, #58c37e 100%);
+    background: -ms-linear-gradient(top, #8dcb6c 0%, #58c37e 100%);
+    background: linear-gradient(to bottom, #8dcb6c 0%, #58c37e 100%);
+    border-bottom-left-radius: 5px;
+    border-top-left-radius: 5px;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#8dcb6c', endColorstr='#58c37e', GradientType=0);
+  }
+
+  .index {
+    float: right;
+    font-size: 48px;
+    font-weight: bold;
+    color: #efefef;
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+  }
+
+  .type {
+    font-size: 13px;
+    font-weight: bold;
+    color: #035;
+    margin-bottom: 10px;
+  }
+
+  .possibleValues {
+    margin-top: 10px;
+
+    span {
+      color: #b3b3b1;
+      padding-left: 5px;
+
+      &::after {
+        content: ',';
+      }
+
+      &:last-child::after {
+        content: '';
+      }
+    }
+  }
+
+  .actions {
+    margin-top: 10px;
+
+    a {
+      font-size: 13px;
+      margin-right: 10px;
+      color: #b3b3b1;
+
+      &:hover {
+        color: #035;
+      }
+    }
+  }
+}

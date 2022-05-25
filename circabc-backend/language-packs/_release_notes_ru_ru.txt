@@ -1,0 +1,46 @@
+=====================================
+Alfresco 1.4 Russian language pack
+November 15, 2006
+
+by Alexey Chumakov
+alex@chumakov.ru
+=====================================
+
+
+State
+-----
+1. Glossary setup			Done
+2. Bulk translation			Done
+3. Visual compare with the source	Done
+4. Visual in place proof-reading	Left for 1.4-r2?
+5. Glossary finalization		Left for 1.4-r2?
+
+
+
+Release Notes
+-------------
+
+Translation Issues
+------------------
+none known
+
+
+Source Issues
+-------------
+
+webclient_en_US
+---------------
+ 'Go', 'To' , 'Post' and 'Reply' should be split to several instances
+ to make translation smooth.
+
+
+
+ 'Apply Dashboard' link should have separate
+  apply_dashboard_title companion to entitle assignment view.
+
+
+  'local' should be split to Local for Filter right menu
+  and table heading as translated separately
+
+  Search button at user administration is not translatable
+

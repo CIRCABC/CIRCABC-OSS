@@ -1,0 +1,34 @@
+.summary-box {
+  float: left;
+  width: 200px;
+  min-height: 87px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  background: #005c78;
+  border-radius: 5px;
+  padding: 10px;
+
+  .content-top {
+    line-height: 48px;
+    font-size: 48px;
+    color: #fff;
+    text-align: center;
+  }
+
+  .content-bottom {
+    text-align: center;
+    font-size: 16px;
+    color: #cecece;
+  }
+
+  section.big-icon {
+    float: right;
+    line-height: 64px;
+    margin: 0 10px;
+
+    img {
+      width: 36px;
+      margin-top: 6px;
+    }
+  }
+}

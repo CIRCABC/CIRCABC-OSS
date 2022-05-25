@@ -1,0 +1,62 @@
+<h2>{{ 'admin.category.support.title' | transloco }}</h2>
+<p> {{ 'admin.category.support.contact.explanation' | transloco }} </p>
+<form [formGroup]="categoryForm">
+  <div class="field switch">
+    <div class="label"
+      >{{ 'admin.category.support.contact.single' | transloco }}</div
+    >
+    <input
+      id="useSingleContact"
+      class="cmn-toggle cmn-toggle-round"
+      type="checkbox"
+      formControlName="useSingleContact"
+    />
+    <label for="useSingleContact" class="nonBlockLabel"></label>
+    <span
+      >{{ (categoryForm.value.useSingleContact === true ? 'label.yes' :
+      'label.no') | transloco }}</span
+    >
+  </div>
+
+  <div class="field" *ngIf="categoryForm.value.useSingleContact === true">
+    <div class="label">{{ 'label.email' | transloco }}</div>
+    <input
+      id="contactEmails"
+      type="email"
+      formControlName="contactEmail"
+      placeholder="email@domain.com"
+      email
+    />
+  </div>
+
+  <div *ngIf="categoryForm.value.useSingleContact === false">
+    <p> {{ 'admin.category.support.contact.many.explanation' | transloco }} </p>
+    <ul class="list-of-admins">
+      <li *ngFor="let admin of administrators" class="row">
+        <a (click)="toggleSelect(admin.email)">
+          <span class="admin-user"
+            >{{ admin.firstname + ' ' + admin.lastname }}</span
+          >&nbsp;<span class="admin-email">{{ admin.email }}</span>
+        </a>
+        <img
+          src="img/check.png"
+          alt="selected"
+          *ngIf="isEmailSelected(admin.email)"
+        />
+      </li>
+    </ul>
+  </div>
+
+  <div class="field" *ngIf="updating">
+    <label
+      >{{ 'label.updating' | transloco }}...<cbc-spinner></cbc-spinner
+    ></label>
+  </div>
+
+  <div class="buttons-group" *ngIf="!updating">
+    <a class="cta" (click)="update()" [class.disabled]="!isFormValid()"
+      >{{ 'label.update' | transloco }}</a
+    >
+    <a class="button" (click)="cancel()">{{ 'label.cancel' | transloco }}</a>
+  </div>
+</form>

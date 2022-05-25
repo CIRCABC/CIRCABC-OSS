@@ -1,0 +1,188 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+  Copyright 2006 European Community
+  
+   Licensed under the EUPL, Version 1.1 or \?as soon they
+   will be approved by the European Commission - subsequent
+   versions of the EUPL (the "Licence");
+   You may not use this work except in compliance with the
+   Licence.
+   You may obtain a copy of the Licence at:
+  
+   https://joinup.ec.europa.eu/software/page/eupl
+  
+   Unless required by applicable law or agreed to in
+   writing, software distributed under the Licence is
+   distributed on an "AS IS" basis,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+   express or implied.
+   See the Licence for the specific language governing
+   permissions and limitations under the Licence.
+-->
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+
+<beans>
+
+    <!-- CIRCABC Action Service -->
+
+  <bean id="mailwithattach"
+    class="eu.cec.digit.circabc.action.MailActionExecuterWithAttach"
+    parent="action-executer">
+    <property name="mailService">
+      <ref bean="circabcMailService"></ref>
+    </property>
+    <property name="templateService">
+      <ref bean="templateService"></ref>
+    </property>
+    <property name="personService">
+      <ref bean="personService"></ref>
+    </property>
+    <property name="authenticationService">
+      <ref bean="authenticationService"></ref>
+    </property>
+    <property name="nodeService">
+      <ref bean="nodeService"></ref>
+    </property>
+    <property name="authorityService">
+      <ref bean="authorityService"></ref>
+    </property>
+    <property name="serviceRegistry">
+      <ref bean="ServiceRegistry"></ref>
+    </property>
+    <property name="applicableTypes">
+      <list>
+        <value>{http://www.alfresco.org/model/content/1.0}content</value>
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="circabc-import"
+    class="eu.cec.digit.circabc.action.CircabcImporterActionExecuter"
+    parent="import">
+    <property name="myNodeService">
+      <ref bean="nodeService"></ref>
+    </property>
+     <property name="myContentService">
+      <ref bean="contentService"></ref>
+    </property>
+    <property name="myImporterService">
+      <ref bean="ImporterService"></ref>
+    </property>
+    <property name="myMimetypeService">
+      <ref bean="mimetypeService"></ref>
+    </property>
+    <property name="myFileFolderService">
+      <ref bean="FileFolderService"></ref>
+    </property>
+    <property name="mailService">
+      <ref bean="circabcMailService"></ref>
+    </property>
+    <property name="personService">
+      <ref bean="personService"></ref>
+    </property>
+    <property name="logService">
+      <ref bean="logService"></ref>
+    </property>
+    <property name="managementService">
+      <ref bean="managementService"></ref>
+    </property>
+    <property name="config">
+      <ref bean="importFileLimit"></ref>
+    </property>
+    <property name="bulkService">
+      <ref bean="bulkService"></ref>
+    </property>
+    <property name="policyBehaviourFilter">
+		<ref bean="policyBehaviourFilter" />
+	</property>
+  </bean>
+  
+   <!-- Replication Action executor -->
+   <bean id="circabcReplicationActionExecutor" parent="action-executer"
+      class="eu.cec.digit.circabc.action.CircabcReplicationActionExecutor">
+      <property name="publicAction">
+         <value>false</value>
+      </property>
+      <property name="applicableTypes">
+         <list>
+            <value>{http://www.alfresco.org/model/content/1.0}content</value>
+            <value>{http://www.alfresco.org/model/content/1.0}folder</value>
+         </list>
+      </property>
+      <property name="dictionaryService" ref="dictionaryService" />
+      <property name="trackStatus" value="true" />
+      <property name="nodeService" ref="NodeService" />
+      <property name="jobLockService" ref="JobLockService" />
+      <property name="transferService" ref="TransferService2" />
+      <property name="nodeCrawlerFactory" ref="NodeCrawlerFactory" />
+      <property name="actionTrackingService" ref="actionTrackingService" />
+      <property name="transactionService" ref="transactionService" />
+      <property name="replicationDefinitionPersister" ref="replicationDefinitionPersister" />
+      <property name="replicationParams" ref="replicationParams" />
+      <property name="excludedAspects">
+         <list>
+         </list>
+      </property>
+   </bean>
+  
+  
+  <bean id="advanced-import"
+    class="eu.cec.digit.circabc.action.AdvancedImporterActionExecuter"
+    parent="action-executer">
+            <property name="importerService">
+            <ref bean="ImporterService"/>
+        </property>
+        <property name="nodeService">
+            <ref bean="NodeService"></ref>
+        </property>
+        <property name="contentService">
+            <ref bean="ContentService" />
+        </property>
+        <property name="mimetypeService">
+            <ref bean="mimetypeService"/>
+        </property>
+        <property name="fileFolderService">
+            <ref bean="FileFolderService"/>
+        </property>
+
+  </bean>
+  
+  <bean id="scan-missing-user-referrences"
+  	class="eu.cec.digit.circabc.migration.post.cleaning.MissingUserReferrenceAction"
+  	parent="action-executer">
+  	    <property name="nodeService">
+            <ref bean="NodeService"></ref>
+        </property>	
+        <property name="gStatService">
+            <ref bean="GlobalStatisticsService"></ref>
+        </property>
+    	<property name="permissionService">
+            <ref bean="PermissionService"></ref>
+        </property>	
+        <property name="notificationSubscriptionService">
+            <ref bean="NotificationSubscriptionService"></ref>
+        </property>
+        <property name="ldapUserService">
+            <ref bean="ldapUserService"></ref>
+        </property>
+        <property name="userService">
+            <ref bean="userService"></ref>
+        </property>
+        <property name="managementService">
+            <ref bean="managementService"></ref>
+        </property>
+        <property name="fileFolderService">
+            <ref bean="fileFolderService"></ref>
+        </property>
+        <property name="profileManagerServiceFactory">
+            <ref bean="profileManagerServiceFactory"></ref>
+        </property>
+        <property name="transactionService">
+            <ref bean="transactionService"></ref>
+        </property>
+        <property name="contentService">
+            <ref bean="contentService"></ref>
+        </property>
+  </bean>
+  
+</beans>

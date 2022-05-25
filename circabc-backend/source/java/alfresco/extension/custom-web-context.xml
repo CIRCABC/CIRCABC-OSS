@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<!--+
+    |     Copyright European Community 2006 - Licensed under the EUPL V.1.0
+    |
+    |  		   http://ec.europa.eu/idabc/en/document/6523
+    |
+    +-->
+
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+
+<beans>
+
+   <!-- ===================================== -->
+   <!-- Web Client Config Sources             -->
+   <!-- ===================================== -->
+
+  <bean id="webClientConfigSource" parent="repoUrlConfigSource" >
+    <constructor-arg>
+      <list>
+			<!-- Overriding check-context-against-path is not working properly -->
+            <!--value>classpath:alfresco/web-client-config.xml</value-->
+            <!-- so we remove the original configuration file and replaced it by our config file -->
+			<value>classpath:alfresco/extension/circabc-web-client-config.xml</value>
+			
+	        <!-- Added for WAI Circabc and must be called AFTER web-client-config.xml BUT BEFORE web-client-config-properties.xml -->
+           	<value>classpath:alfresco/extension/circabc-web-client-config-properties-first.xml</value>
+
+            <value>classpath:alfresco/web-client-config-dialogs.xml</value>
+            <value>classpath:alfresco/web-client-config-wizards.xml</value>
+            <value>classpath:alfresco/web-client-config-properties.xml</value>
+            <value>classpath:alfresco/web-client-config-navigation.xml</value>
+            <value>classpath:alfresco/web-client-config-wcm.xml</value>
+            <value>classpath:alfresco/web-client-config-actions.xml</value>
+            <value>classpath:alfresco/web-client-config-forum-actions.xml</value>
+
+            <value>classpath:alfresco/web-client-config-wcm-actions.xml</value>
+            <value>classpath:alfresco/web-client-config-workflow-actions.xml</value>
+            <value>classpath:alfresco/extension/web-client-config-custom.xml</value>
+            <value>jar:*!/META-INF/web-client-config-custom.xml</value>
+            <value>workspace://SpacesStore/${spaces.company_home.childname}/${spaces.dictionary.childname}/app:webclient_extension/cm:web-client-config-custom.xml</value>
+
+	        <!-- Added for Circabc -->
+	        <value>classpath:alfresco/extension/circabc-web-client-config-navigation.xml</value>
+	        <value>classpath:alfresco/extension/circabc-web-client-config-forum-actions.xml</value>
+	        <value>classpath:alfresco/extension/circabc-web-client-config-actions.xml</value>
+	        <value>classpath:alfresco/extension/circabc-web-client-config-admin-actions.xml</value>
+
+	        <!-- Added for WAI Circabc -->
+	        <value>classpath:alfresco/extension/circabc-wai-web-client-config-dialogs.xml</value>
+	        <value>classpath:alfresco/extension/circabc-wai-web-client-config-wizards.xml</value>
+	        <value>classpath:alfresco/extension/circabc-wai-web-client-config-actions.xml</value>
+	        <value>classpath:alfresco/extension/circabc-wai-web-client-config-forum-actions.xml</value>
+	        <value>classpath:alfresco/extension/circabc-wai-web-client-config-events-actions.xml</value>
+	        <value>classpath:alfresco/extension/circabc-wai-web-client-config-workflow-actions.xml</value>
+           	<value>classpath:alfresco/extension/circabc-web-client-config-properties.xml</value>
+           	
+	        <!-- renamed to circabc-web-client-config-custom.xml (Circabc name pattern) -->
+	        <value>classpath:alfresco/extension/circabc-web-client-config-custom.xml</value>
+      </list>
+    </constructor-arg>
+  </bean>
+
+	<!-- 
+	Migration 3.1 -> 3.4.6 - 08/12/2011 - Changed the XMLConfigService and UrlConfigSource classes location to Spring surf.
+	 -->
+    <bean id="rootPreferenceConfigService" class="org.springframework.extensions.config.xml.XMLConfigService" init-method="init" >
+		<constructor-arg>
+			<bean class="org.springframework.extensions.config.source.UrlConfigSource">
+				<constructor-arg>
+					<list>
+						<value>classpath:alfresco/extension/customisation/root-preferences-config.xml</value>
+					</list>
+				</constructor-arg>
+			</bean>
+		</constructor-arg>
+   </bean>
+
+   <!--  -->
+	<!-- 
+	Migration 3.1 -> 3.4.6 - 08/12/2011 - Changed the XMLConfigService and UrlConfigSource classes location to Spring surf.
+	 -->
+   <bean id="navigationPreferencesConfigService" class="org.springframework.extensions.config.xml.XMLConfigService" init-method="init">
+      <constructor-arg>
+         <bean class="org.springframework.extensions.config.source.UrlConfigSource">
+            <constructor-arg>
+               <list>
+                  <value>classpath:alfresco/extension/customisation/nav-default-config.xml</value>
+               </list>
+            </constructor-arg>
+         </bean>
+      </constructor-arg>
+   </bean>
+
+
+   <bean id="navigationConfigService" class="eu.cec.digit.circabc.repo.customisation.nav.NavigationConfigServiceImpl">
+      <property name="configService">
+         <ref bean="navigationPreferencesConfigService" />
+      </property>
+      <property name="webClientConfig">
+         <ref bean="webClientConfigService" />
+      </property>
+      <property name="contentService">
+         <ref bean="contentService" />
+      </property>
+      <property name="nodeService">
+         <ref bean="nodeService" />
+      </property>
+   </bean>
+   
+	<!-- 
+	Migration 3.1 -> 3.4.6 - 08/12/2011 - FTP is now configured in alfresco-global.properties
+	circabc-file-servers.properties values have to be moved to the alfresco-global.properties file.
+	 -->
+<!--    <bean id="fileServersConfigService" class="org.springframework.extensions.config.xml.XMLConfigService" init-method="init"> -->
+<!--       <constructor-arg> -->
+<!--          <ref bean="fileServersConfigSource" /> -->
+<!--       </constructor-arg> -->
+<!--       <property name="properties"> -->
+<!--          <list> -->
+<!-- 	        <value>classpath:alfresco/file-servers.properties</value> -->
+<!-- 	        <value>classpath:alfresco/extension/circabc-file-servers.properties</value> -->
+<!-- 	      </list> -->
+<!--       </property> -->
+<!--       <property name="systemPropertiesModeName"> -->
+<!--          <value>SYSTEM_PROPERTIES_MODE_OVERRIDE</value> -->
+<!--       </property> -->
+<!--    </bean> -->
+   
+  <bean id="AsyncThreadPoolExecutor" class="org.alfresco.util.ThreadPoolExecutorFactoryBean">
+	<property name="poolName">
+   		<value>AsyncThreadPoolExecutor</value>
+	</property>
+	<property name="corePoolSize">
+		<value>5</value>
+	</property>
+	<property name="maximumPoolSize">
+		<value>40</value>
+	</property>
+	<property name="threadPriority">
+		<value>5</value>
+	</property>
+   </bean>
+</beans>

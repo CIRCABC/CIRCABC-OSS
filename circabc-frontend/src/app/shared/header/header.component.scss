@@ -1,0 +1,60 @@
+.wrap-header {
+  padding: 0 50px;
+  display: flex;
+
+  @media screen and (max-width: 600px) {
+    padding: 0 25px;
+  }
+
+  .home-link,
+  .app-message-container {
+    display: inline-block;
+  }
+}
+
+.app-message-container {
+  margin-top: 22px;
+}
+
+.right-side {
+  flex: 1;
+  text-align: right;
+}
+
+@media screen and (max-width: 600px) {
+  .home-link {
+    display: none;
+  }
+
+  .app-message-container {
+    padding-left: 0;
+    top: 22px;
+  }
+
+  .responsive-hidden {
+    display: none;
+  }
+}
+
+.switch-ui {
+  display: none;
+
+  .switch-ui--link {
+    display: inline-block;
+    height: 24px;
+    width: 24px;
+    background-image: url(^img/switch-ui-white.png);
+  }
+
+  .switch-ui--link:hover {
+    background-image: url(^img/switch-ui-grey.png);
+  }
+
+  @media screen and (max-width: 840px) {
+    & {
+      display: initial;
+      margin-top: 23px;
+      margin-left: 10px;
+    }
+  }
+}

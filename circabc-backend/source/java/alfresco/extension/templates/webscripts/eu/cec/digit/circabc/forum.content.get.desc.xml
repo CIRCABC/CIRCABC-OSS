@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Browse library space</shortname>
+  <description>Browse library space </description>
+    <url>/circabc/forums/{id}/content</url>
+  <format default="json"/>
+  <authentication>guest</authentication>
+  <transaction>required</transaction>
+</webscript>

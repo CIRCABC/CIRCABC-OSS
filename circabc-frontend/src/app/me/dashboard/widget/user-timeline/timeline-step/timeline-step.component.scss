@@ -1,0 +1,38 @@
+.timeline-step {
+  margin-bottom: 25px;
+
+  header {
+    font-size: 24px;
+    font-weight: bold;
+    color: #035;
+    margin-bottom: 15px;
+  }
+
+  .summary {
+    margin-bottom: 15px;
+    padding-left: 15px;
+    min-height: 87px;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+
+    @media screen and (max-width: 900px) {
+      justify-content: flex-start;
+    }
+  }
+
+  .groups {
+    clear: both;
+    margin-top: 15px;
+  }
+}
+
+.empty {
+  padding: 25px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: bold;
+  color: #757575;
+}

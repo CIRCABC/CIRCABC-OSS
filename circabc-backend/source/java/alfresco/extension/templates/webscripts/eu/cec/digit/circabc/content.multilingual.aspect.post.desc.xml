@@ -1,0 +1,9 @@
+<webscript>
+  <shortname>enable the multilingual aspect for a node</shortname>
+  <description>enable the multilingual aspect for a node</description>
+    <url>/circabc/content/{id}/multilingual/aspect</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+  
+</webscript>

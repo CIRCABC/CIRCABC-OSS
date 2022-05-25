@@ -1,0 +1,92 @@
+<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+<div class="help-article-container">
+  <header class="breadcrumb" *ngIf="category">
+    <aside class="switch-to">
+      <form [formGroup]="switchCategoryForm">
+        <div class="field">
+          <div class="custom-select select--form">
+            <select
+              formControlName="categoryId"
+              (change)="refreshAfterSelection()"
+            >
+              <option
+                *ngFor="let category of categories"
+                value="{{ category.id }}"
+                >{{ category.title | cbcI18n }}</option
+              >
+            </select>
+          </div>
+        </div>
+      </form>
+    </aside>
+
+    <span class="crumb">
+      <a [routerLink]="['/help']" class="home">
+        <img src="img/icon-dashboard-blue.png" />
+        {{ 'label.help' | transloco }}
+      </a>
+      <img src="img/small-arrow-right.png" class="separator" *ngIf="category" />
+      <a [routerLink]="['../..']"> {{ category.title | cbcI18n }} </a>
+      <img src="img/small-arrow-right.png" class="separator" *ngIf="article" />
+      <span *ngIf="article"> {{ article.title | cbcI18n }} </span>
+    </span>
+  </header>
+  <br class="cleaner" />
+
+  <header
+    class="actions"
+    *ngIf="isAdminOrSupport() && !loadingError && article"
+  >
+    <a (click)="showEditModal = true">{{ 'label.edit' | transloco }}</a>
+    <a (click)="toggleHighlight()"
+      >{{ (article.highlighted ? 'help.article.demote' : 'help.article.promote')
+      | transloco }}</a
+    >
+    <a (click)="showDeleteModal = true">{{ 'label.delete' | transloco }}</a>
+  </header>
+
+  <section class="article-contained">
+    <aside class="list-articles" *ngIf="article">
+      <cbc-article-list-select
+        [currentId]="article.id"
+        [articles]="articles"
+      ></cbc-article-list-select>
+    </aside>
+
+    <section class="article" *ngIf="article">
+      <img
+        src="img/bookmark.png"
+        *ngIf="article.highlighted"
+        class="promoted"
+      />
+      <h2>{{ getTitle() }}</h2>
+      <p class="metadata">
+        {{ 'label.last.updated.on' | transloco }} {{ article.lastUpdate | date
+        }}
+      </p>
+      <hr />
+      <p class="content-container" [innerHTML]="getContent()"> </p>
+    </section>
+
+    <section class="article" *ngIf="loadingError">
+      <h2>{{ 'help.error.loading.article' | transloco }}</h2>
+      <hr />
+      <p class="content-container">
+        {{ 'help.error.loading.article.description' | transloco }}
+      </p>
+    </section>
+  </section>
+</div>
+
+<cbc-delete-help-article
+  *ngIf="article"
+  [articleId]="article.id"
+  [(showModal)]="showDeleteModal"
+  (articleDeleted)="redirectAfterDeletion($event)"
+></cbc-delete-help-article>
+<cbc-add-help-article
+  *ngIf="article"
+  [articleId]="article.id"
+  [(showModal)]="showEditModal"
+  (articleUpdated)="refresh($event)"
+></cbc-add-help-article>

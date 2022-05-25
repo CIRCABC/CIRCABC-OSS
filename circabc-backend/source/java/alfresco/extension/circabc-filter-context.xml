@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--+
+    |     Copyright European Community 2012 - Licensed under the EUPL V.1.0
+    |
+    |  		   http://ec.europa.eu/idabc/en/document/6523
+    |
+    +-->
+
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+	
+	<!-- Login Bean Filter -->
+	
+	<bean id="LoginBeanFilter" class="eu.cec.digit.circabc.web.servlet.LoginBeanFilter">
+		<property name="dispatchUrl">
+			<value>/faces/jsp/extension/wai/navigation/container.jsp</value>
+		</property>
+		<property name="personService">
+			<ref bean="PersonService" />
+		</property>
+		<property name="nodeService">
+			<ref bean="NodeService" />
+		</property>
+		<property name="userService">
+			<ref bean="UserService" />
+		</property>
+		<property name="logService">
+			<ref bean="logService" />
+		</property>
+		<property name="managementService">
+			<ref bean="ManagementService" />
+		</property>
+	</bean>
+	
+</beans>

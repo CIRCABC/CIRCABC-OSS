@@ -1,0 +1,183 @@
+<div class="flex-calendar main" style="margin-top: 5px">
+  <div
+    *ngFor="let item of calendarDays"
+    class="day flex-day"
+    [class.day--previous-month]="item.type === 'previousMonth'"
+    [class.day--next-month]="item.type === 'nextMonth'"
+    [class.weekend-day]="isWeekendDay(item)"
+    [class.today]="isToday(item)"
+    (mouseenter)="enableDetailsBox(item.date)"
+    (mouseleave)="disableDetailsBox(item.date)"
+  >
+    <div class="date"
+      >{{ item.date.getDate() }} {{ item.date.getDay() + '' | i18nSelect:
+      dayNames }}</div
+    >
+    <div class="events" *ngIf="checkIfDateAfterToday(item.date)">
+      <a
+        class="empty-events"
+        (click)="onPopupCreateEventWithCalendarDate(item.date)"
+        *ngIf="item.events.length === 0 && isEveAdmin()"
+      >
+        <img src="img/add-plus-grey.png" />
+      </a>
+    </div>
+    <div style="overflow-y: auto; height: 80%">
+      <div *ngFor="let event of item.events" class="event-line">
+        <span *ngIf="event.appointmentType === 'Event'">
+          <img width="10" height="10" src="img/event-155D79.png" />
+          <a
+            *ngIf="isEveAdmin()"
+            (click)="deleteEvent(event)"
+            title="{{ 'label.delete.appointment' | transloco }}"
+          >
+            <img width="10" height="10" src="img/icon-delete-818181.png" />
+          </a>
+          <a [routerLink]="[event.id, 'details']">
+            <span style="color: #155d79"
+              >{{ event.startTime }} {{ event.endTime }}</span
+            >
+            <span style="color: black">{{ event.title }}</span>
+          </a>
+        </span>
+        <span *ngIf="event.appointmentType === 'Meeting'">
+          <img width="10" height="10" src="img/meeting-155D79.png" />
+          <a
+            *ngIf="isEveAdmin()"
+            (click)="deleteEvent(event)"
+            title="{{ 'label.delete.appointment' | transloco }}"
+          >
+            <img width="10" height="10" src="img/icon-delete-818181.png" />
+          </a>
+          <a [routerLink]="[event.id, 'details']">
+            <span style="color: #155d79"
+              >{{ event.startTime }} {{ event.endTime }}</span
+            >
+            <span style="color: black">{{ event.title }}</span>
+          </a>
+        </span>
+      </div>
+    </div>
+    <!-- Hover popup with meeting details -->
+    <div
+      id="detailsPopup"
+      class="popup popup--calendar"
+      *ngIf="
+        !(
+          item.date.getDay() === 0 ||
+          item.date.getDay() === 5 ||
+          item.date.getDay() === 6
+        ) && item.showDetailsBox
+      "
+    >
+      <div class="events-of-the-day">
+        <div class="title">{{ item.date | date }}</div>
+        <ul class="events">
+          <li class="event" *ngFor="let event of item.events">
+            <div>
+              <span class="hour">{{ event.startTime }}</span>
+              <a [routerLink]="[event.id, 'details']" class="event-name"
+                >{{ event.title }}</a
+              >
+            </div>
+            <div class="details">
+              <span class="abstract"
+                >{{ event.eventAbstract === '' ? ('label.na' | transloco) :
+                event.eventAbstract }}</span
+              >
+              <br />
+              <br />
+              <span class="duration">{{ event.endTime }}</span>
+              <span class="location"
+                >{{ event.location === '' ? ('label.na' | transloco) :
+                event.location }}</span
+              >
+              <span
+                *ngIf="getRepetition(event.occurrenceRate).length === 1"
+                class="repetition"
+                >{{ 'label.' + getRepetition(event.occurrenceRate)[0] |
+                transloco }}</span
+              >
+              <span
+                *ngIf="getRepetition(event.occurrenceRate).length === 3"
+                class="repetition"
+                >{{ 'update-event.repeats.legend.when' | transloco : {
+                timesOccurrence: 'label.' +
+                getRepetition(event.occurrenceRate)[1] | transloco, times:
+                getRepetition(event.occurrenceRate)[2] } }}</span
+              >
+              <span
+                *ngIf="getRepetition(event.occurrenceRate).length === 4"
+                class="repetition"
+                >{{ 'update-event.repeats.legend.every' | transloco : {
+                everyTime: getRepetition(event.occurrenceRate)[2],
+                everyTimesOccurence: getRepetition(event.occurrenceRate)[1] |
+                transloco, times: getRepetition(event.occurrenceRate)[3] }
+                }}</span
+              >
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div
+      class="left-popup left-popup--calendar"
+      *ngIf="
+        (item.date.getDay() === 0 ||
+          item.date.getDay() === 5 ||
+          item.date.getDay() === 6) &&
+        item.showDetailsBox
+      "
+    >
+      <div class="events-of-the-day">
+        <div class="title">{{ item.date | date }}</div>
+        <ul class="events">
+          <li class="event" *ngFor="let event of item.events">
+            <div>
+              <span class="hour">{{ event.startTime }}</span>
+              <a [routerLink]="[event.id, 'details']" class="event-name"
+                >{{ event.title }}</a
+              >
+            </div>
+            <div class="details">
+              <span class="abstract"
+                >{{ event.eventAbstract === '' ? ('label.na' | transloco) :
+                event.eventAbstract }}</span
+              >
+              <br />
+              <br />
+              <span class="duration">{{ event.endTime }}</span>
+              <span class="location"
+                >{{ event.location === '' ? ('label.na' | transloco) :
+                event.location }}</span
+              >
+              <span
+                *ngIf="getRepetition(event.occurrenceRate).length === 1"
+                class="repetition"
+                >{{ 'label.' + getRepetition(event.occurrenceRate)[0] |
+                transloco }}</span
+              >
+              <span
+                *ngIf="getRepetition(event.occurrenceRate).length === 3"
+                class="repetition"
+                >{{ 'update-event.repeats.legend.when' | transloco : {
+                timesOccurrence: 'label.' +
+                getRepetition(event.occurrenceRate)[1] | transloco, times:
+                getRepetition(event.occurrenceRate)[2] } }}</span
+              >
+              <span
+                *ngIf="getRepetition(event.occurrenceRate).length === 4"
+                class="repetition"
+                >{{ 'update-event.repeats.legend.every' | transloco : {
+                everyTime: getRepetition(event.occurrenceRate)[2],
+                everyTimesOccurence: getRepetition(event.occurrenceRate)[1] |
+                transloco, times: getRepetition(event.occurrenceRate)[3] }
+                }}</span
+              >
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>contents.email.post</shortname>
+  <description>Email this content zip file link to the user with the given id. If userId is not provided, it emails to the current authenticated user</description>
+    <url>/circabc/contents/email</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

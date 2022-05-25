@@ -1,0 +1,21 @@
+<cbc-modal
+  [title]="'memberships.expiration.user.modal.title' | transloco"
+  [visible]="showModal"
+  (cancel)="cancel()"
+  (ok)="schedule()"
+  [contentClass]="'modal-content-visible'"
+>
+  {{ 'memberships.expiration.user.explanation' | transloco }} {{
+  'memberships.revocation.user.list.count' | transloco: { nbusers:
+  requests.length } }}
+  <h2>{{ 'create-event.frequency.when' | transloco }}</h2>
+  <form [formGroup]="scheduleForm">
+    <p-calendar
+      formControlName="scheduleDate"
+      [dateFormat]="'dd/mm/yy'"
+      [placeholder]="'dd/mm/yyyy, HH:mm'"
+      [showIcon]="true"
+      [showTime]="true"
+    ></p-calendar>
+  </form>
+</cbc-modal>

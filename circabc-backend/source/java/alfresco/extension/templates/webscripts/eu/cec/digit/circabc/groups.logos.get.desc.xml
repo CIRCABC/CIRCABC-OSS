@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Browse available logos of an IG</shortname>
+  <description>Browse available logos of an IG</description>
+    <url>/circabc/groups/{id}/logos</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

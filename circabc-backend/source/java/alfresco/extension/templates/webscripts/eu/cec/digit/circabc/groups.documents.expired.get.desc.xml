@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>get the expired nodes of an IG</shortname>
+  <description>get the expired nodes of an IG</description>
+    <url>/circabc/groups/{igId}/documents/expired</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

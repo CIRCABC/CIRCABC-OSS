@@ -1,0 +1,256 @@
+@use 'sass:color';
+@use '../global/variables-mixins-keyframes';
+
+/* BUTTONS */
+
+/* cta is for Call-To-Action */
+.cta {
+  display: inline-block;
+  border-radius: 3px;
+  font-size: 13px;
+  font-size: 1.3rem;
+  background: #8dcb6c;
+  background: -moz-linear-gradient(
+    top,
+    variables-mixins-keyframes.$light-green 0%,
+    variables-mixins-keyframes.$dark-green 100%
+  );
+  background: -webkit-gradient(
+    linear,
+    left top,
+    left bottom,
+    color-stop(0%, variables-mixins-keyframes.$light-green),
+    color-stop(100%, variables-mixins-keyframes.$dark-green)
+  );
+  background: -webkit-linear-gradient(
+    top,
+    variables-mixins-keyframes.$light-green 0%,
+    variables-mixins-keyframes.$dark-green 100%
+  );
+  background: -o-linear-gradient(
+    top,
+    variables-mixins-keyframes.$light-green 0%,
+    variables-mixins-keyframes.$dark-green 100%
+  );
+  background: -ms-linear-gradient(
+    top,
+    variables-mixins-keyframes.$light-green 0%,
+    variables-mixins-keyframes.$dark-green 100%
+  );
+  background: linear-gradient(
+    to bottom,
+    variables-mixins-keyframes.$light-green 0%,
+    variables-mixins-keyframes.$dark-green 100%
+  );
+  filter: progid:DXImageTransform.Microsoft.gradient(
+    startColorstr='#8dcb6c',
+    endColorstr='#58c37e',
+    GradientType=0
+  );
+  color: #fff;
+  font-family: variables-mixins-keyframes.$titling;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-decoration: none;
+  text-align: center;
+  text-shadow: 0 0 6px rgb(0 0 0 / 0.45);
+  padding: 12px;
+  padding: 1.2rem;
+  cursor: pointer;
+
+  &:hover {
+    background: variables-mixins-keyframes.$dark-green;
+    text-decoration: none;
+  }
+
+  &:disabled,
+  &.disabled {
+    background: variables-mixins-keyframes.$light-grey;
+    background: -moz-linear-gradient(
+      top,
+      variables-mixins-keyframes.$light-grey 0%,
+      variables-mixins-keyframes.$dark-green 100%
+    );
+    background: -webkit-gradient(
+      linear,
+      left top,
+      left bottom,
+      color-stop(0%, variables-mixins-keyframes.$light-grey),
+      color-stop(100%, variables-mixins-keyframes.$dark-grey)
+    );
+    background: -webkit-linear-gradient(
+      top,
+      variables-mixins-keyframes.$light-grey 0%,
+      variables-mixins-keyframes.$dark-grey 100%
+    );
+    background: -o-linear-gradient(
+      top,
+      variables-mixins-keyframes.$light-grey 0%,
+      variables-mixins-keyframes.$dark-grey 100%
+    );
+    background: -ms-linear-gradient(
+      top,
+      variables-mixins-keyframes.$light-grey 0%,
+      variables-mixins-keyframes.$dark-grey 100%
+    );
+    background: linear-gradient(
+      to bottom,
+      variables-mixins-keyframes.$light-grey 0%,
+      variables-mixins-keyframes.$dark-grey 100%
+    );
+    filter: progid:DXImageTransform.Microsoft.gradient(
+      startColorstr='#CCCCCC',
+      endColorstr='#757575',
+      GradientType=0
+    );
+    border: 0;
+    cursor: default;
+  }
+}
+
+.cta--plus,
+.cta--dots {
+  position: relative;
+  padding: 12px 47px 12px 12px;
+
+  &::after {
+    content: '';
+    display: inline-block;
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    padding: 12px;
+    width: 35px;
+    background-color: rgb(0 0 0 / 0.3);
+    background-position: center center;
+    background-repeat: no-repeat;
+    border-radius: 0 3px 3px 0;
+  }
+}
+
+.cta--plus {
+  &::after {
+    background-image: url(^img/icon-plus.png);
+  }
+}
+
+.cta--dots {
+  &::after {
+    background-image: url(^img/icon-more-white.png);
+  }
+}
+
+.cta--homepage {
+  position: relative;
+  border: 0;
+  padding: 12px 12px 12px 47px;
+
+  &::before {
+    content: '';
+    display: inline-block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding: 12px;
+    width: 35px;
+    height: 100%;
+    background-color: rgb(0 0 0 / 0.3);
+    background-image: url(^img/icon-cadenas.png);
+    background-position: center center;
+    background-repeat: no-repeat;
+    border-radius: 3px 0 0 3px;
+  }
+}
+
+.button {
+  display: inline-block;
+  border-radius: 3px;
+  border: 1px solid variables-mixins-keyframes.$button-border;
+  font-size: 13px;
+  font-size: 1.3rem;
+  color: variables-mixins-keyframes.$link;
+  font-family: variables-mixins-keyframes.$titling;
+  font-weight: 700;
+  text-decoration: none;
+  text-align: center;
+  padding: 12px;
+  padding: 1.2rem;
+
+  &:hover:enabled {
+    background: color.adjust(
+      variables-mixins-keyframes.$button-filled,
+      $lightness: 4%
+    );
+    color: #fff;
+    text-decoration: none;
+  }
+
+  &:disabled,
+  &.disabled {
+    color: lightgray;
+    border: 1px solid lightgray;
+  }
+
+  &:disabled:hover,
+  &.disabled:hover {
+    background: white;
+    color: lightgray;
+    text-decoration: none;
+    cursor: default;
+  }
+}
+
+.button--red {
+  border: 1px solid variables-mixins-keyframes.$dark-red;
+  background: #fff;
+  color: variables-mixins-keyframes.$dark-red;
+
+  &:hover {
+    background: color.adjust(
+      variables-mixins-keyframes.$light-red,
+      $lightness: 4%
+    );
+    color: #fff;
+    text-decoration: none;
+  }
+
+  &:hover:enabled {
+    background: color.adjust(
+      variables-mixins-keyframes.$dark-red,
+      $lightness: 4%
+    );
+    color: #fff;
+    text-decoration: none;
+  }
+
+  &:disabled,
+  &.disabled {
+    color: lightgray;
+    border: 1px solid lightgray;
+  }
+
+  &:disabled:hover,
+  &.disabled:hover {
+    background: white;
+    color: lightgray;
+    text-decoration: none;
+    cursor: default;
+  }
+}
+
+.buttons-group {
+  .cta,
+  .button {
+    width: 148px;
+    margin-right: 10px;
+  }
+
+  .cta {
+    text-transform: uppercase;
+  }
+
+  .button {
+    font-weight: 500;
+  }
+}

@@ -1,0 +1,290 @@
+<section
+  *ngIf="request"
+  class="g-request"
+  [class.waiting]="request.agreement === 0"
+  [class.approved]="request.agreement === 1"
+  [class.rejected]="request.agreement === -1"
+>
+  <div *ngIf="showMode === 'show'">
+    <table class="request-details">
+      <tr>
+        <td class="label big-label">
+          {{ ('label.request' | transloco) + ' ' + ('label.by' | transloco) }}
+        </td>
+        <td>
+          <cbc-user-card
+            [userId]="request.from.userId"
+            [rightSide]="true"
+          ></cbc-user-card>
+          <strong>{{ 'label.on' | transloco }}</strong>
+          {{ request.requestDate | date: 'dd/MM/yyyy - HH:mm' }}
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <span class="label">{{ 'label.justification' | transloco }}</span>
+        </td>
+        <td [innerHTML]="request.justification"> </td>
+      </tr>
+
+      <tr>
+        <td>
+          <span class="label big-label">{{ 'label.name' | transloco }}</span>
+        </td>
+        <td> {{ request.proposedName }} </td>
+      </tr>
+
+      <tr>
+        <td>
+          <span class="label big-label">{{ 'label.title' | transloco }}</span>
+        </td>
+        <td>
+          {{ request.proposedTitle ? (request.proposedTitle | cbcI18n) : '' }}
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <span class="label big-label"
+            >{{ 'label.description' | transloco }}</span
+          >
+        </td>
+        <td
+          [innerHTML]="
+            request.proposedDescription
+              ? (request.proposedDescription | cbcI18n)
+              : ''
+          "
+        >
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <span class="label">{{ 'label.leaders' | transloco }}</span>
+        </td>
+        <td>
+          <ul class="leaders">
+            <li *ngFor="let user of request.leaders">
+              <cbc-simple-leader-card
+                [user]="user"
+                [showDelete]="false"
+              ></cbc-simple-leader-card>
+            </li>
+          </ul>
+        </td>
+      </tr>
+    </table>
+
+    <aside class="actions">
+      <a
+        class="cta"
+        *ngIf="request.agreement === 0"
+        (click)="showMode = 'accept'"
+        >{{ 'label.approve' | transloco }}</a
+      >
+      <a
+        class="button"
+        *ngIf="request.agreement === 0"
+        (click)="showMode = 'decline'"
+        >{{ 'label.reject' | transloco }}</a
+      >
+    </aside>
+    <aside class="actions" *ngIf="request.agreement === -1">
+      <h4 class="rejected"
+        ><img src="img/Rejected-white.png" alt="rejected" /> {{ 'label.rejected'
+        | transloco }}</h4
+      >
+      <span class="label big-label">{{ 'label.by' | transloco }}</span>
+      <cbc-user-card
+        *ngIf="request.reviewer && request.reviewer.userId"
+        [userId]="request.reviewer.userId"
+        [rightSide]="false"
+      ></cbc-user-card>
+      <br />
+      <span class="label big-label">{{ 'label.on' | transloco }}</span>{{
+      request.agreementDate | date: 'dd/MM/yyy : HH:mm' }}
+    </aside>
+    <aside class="actions" *ngIf="request.agreement === 1">
+      <h4 class="approved"
+        ><img src="img/Accepted-white.png" alt="accepted" />{{ 'label.approved'
+        | transloco }}</h4
+      >
+      <span class="label big-label">{{ 'label.by' | transloco }}</span>
+      <cbc-user-card
+        *ngIf="request.reviewer && request.reviewer.userId"
+        [userId]="request.reviewer.userId"
+        [rightSide]="false"
+      ></cbc-user-card>
+      <br />
+      <span class="label big-label">{{ 'label.on' | transloco }}</span>{{
+      request.agreementDate | date: 'dd/MM/yyy : HH:mm' }}
+    </aside>
+  </div>
+  <div *ngIf="showMode === 'accept'">
+    <form [formGroup]="acceptingForm">
+      <img
+        src="img/Accepted.png"
+        alt="accept"
+        style="float: left; margin-right: 25px"
+      />
+      <h4 [innerHTML]="'group.request.accepting.title' | transloco"> </h4>
+
+      <div class="field">
+        <label for="argument">{{ 'label.comment' | transloco }}</label>
+        <br /><br />
+        <p-editor
+          id="argument"
+          formControlName="argument"
+          [style]="{ height: '250px' }"
+        >
+          <p-header>
+            <span class="ql-formats">
+              <select class="ql-header">
+                <option value="1"></option>
+                <option value="2"></option>
+                <option value="3"></option>
+                <option selected></option>
+                <option value="4"></option>
+                <option value="5"></option>
+                <option value="6"></option>
+              </select>
+            </span>
+            <span class="ql-formats">
+              <button class="ql-bold" aria-label="Bold"></button>
+              <button class="ql-italic" aria-label="Italic"></button>
+              <button class="ql-underline" aria-label="Underline"></button>
+              <button class="ql-strike" aria-label="Strike"></button>
+            </span>
+            <span class="ql-formats">
+              <button
+                class="ql-list"
+                aria-label="list"
+                value="ordered"
+              ></button>
+              <button class="ql-list" aria-label="list" value="bullet"></button>
+            </span>
+            <span class="ql-formats">
+              <button class="ql-blockquote" aria-label="Strike"></button>
+              <button class="ql-link" aria-label="link"></button>
+            </span>
+          </p-header>
+        </p-editor>
+      </div>
+      <h4 [innerHTML]="'group.request.edit.before.sending' | transloco"> </h4>
+      <div class="field">
+        <label for="name">{{ 'label.name' | transloco }}</label>
+        <input type="text" id="name" formControlName="name" />
+        <cbc-control-message
+          [showInvalid]="true"
+          [control]="nameControl"
+        ></cbc-control-message>
+      </div>
+      <div class="field">
+        <label for="title">{{ 'label.title' | transloco }}</label>
+        <input type="text" id="title" formControlName="title" />
+        <cbc-control-message
+          [showInvalid]="true"
+          [control]="titleControl"
+        ></cbc-control-message>
+      </div>
+      <div class="field">
+        <label for="description">{{ 'label.description' | transloco }}</label>
+        <textarea id="name" formControlName="description"></textarea>
+        <cbc-control-message
+          [showInvalid]="true"
+          [control]="descriptionControl"
+        ></cbc-control-message>
+      </div>
+
+      <div class="actions" *ngIf="processing">
+        <p
+          >{{ 'label.processing' | transloco }}...
+          <cbc-spinner></cbc-spinner>
+        </p>
+      </div>
+      <div class="actions buttons-group" *ngIf="!processing">
+        <a
+          class="cta"
+          (click)="!acceptingForm.valid ? '' : accept()"
+          [class.disabled]="!acceptingForm.valid"
+          >{{ 'label.send' | transloco }}</a
+        >
+        <a class="button" (click)="cancelAccept()"
+          >{{ 'label.cancel' | transloco }}</a
+        >
+      </div>
+    </form>
+  </div>
+
+  <div *ngIf="showMode === 'decline'">
+    <form [formGroup]="decliningForm">
+      <img
+        src="img/Rejected.png"
+        alt="refuse"
+        style="float: left; margin-right: 25px"
+      />
+      <h4 [innerHTML]="'group.request.declining.title' | transloco"> </h4>
+      <div class="field">
+        <label for="argument">{{ 'label.justification' | transloco }}</label>
+        <br /><br />
+        <p-editor
+          id="argument"
+          formControlName="argument"
+          [style]="{ height: '250px' }"
+        >
+          <p-header>
+            <span class="ql-formats">
+              <select class="ql-header">
+                <option value="1"></option>
+                <option value="2"></option>
+                <option value="3"></option>
+                <option selected></option>
+                <option value="4"></option>
+                <option value="5"></option>
+                <option value="6"></option>
+              </select>
+            </span>
+            <span class="ql-formats">
+              <button class="ql-bold" aria-label="Bold"></button>
+              <button class="ql-italic" aria-label="Italic"></button>
+              <button class="ql-underline" aria-label="Underline"></button>
+              <button class="ql-strike" aria-label="Strike"></button>
+            </span>
+            <span class="ql-formats">
+              <button
+                class="ql-list"
+                aria-label="list"
+                value="ordered"
+              ></button>
+              <button class="ql-list" aria-label="list" value="bullet"></button>
+            </span>
+            <span class="ql-formats">
+              <button class="ql-blockquote" aria-label="Strike"></button>
+              <button class="ql-link" aria-label="link"></button>
+            </span>
+          </p-header>
+        </p-editor>
+      </div>
+    </form>
+
+    <div class="actions" *ngIf="processing">
+      <p
+        >{{ 'label.processing' | transloco }}...
+        <cbc-spinner></cbc-spinner>
+      </p>
+    </div>
+    <div class="actions buttons-group" *ngIf="!processing">
+      <a
+        class="cta"
+        (click)="!decliningForm.valid ? '' : reject()"
+        [class.disabled]="!decliningForm.valid"
+        >{{ 'label.send' | transloco }}</a
+      >
+      <a class="button" (click)="cancelDecline()"
+        >{{ 'label.cancel' | transloco }}</a
+      >
+    </div>
+  </div>
+</section>

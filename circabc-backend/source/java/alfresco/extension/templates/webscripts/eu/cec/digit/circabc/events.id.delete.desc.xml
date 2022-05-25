@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>events.id.delete</shortname>
+  <description>Delete an event or meeting given its id and deletion mode (Single, AllOccurences, FuturOccurences)</description>
+    <url>/circabc/events/{id}</url>
+  <format default="json"/>
+  <authentication>guest</authentication>
+  <transaction>required</transaction>
+</webscript>

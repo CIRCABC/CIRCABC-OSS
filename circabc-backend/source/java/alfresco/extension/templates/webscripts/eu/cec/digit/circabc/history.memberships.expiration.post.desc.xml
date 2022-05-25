@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Plan a new user memberships expiration</shortname>
+  <description>>Plan a new user memberships expiration</description>
+    <url>/circabc/history/memberships/expiration</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

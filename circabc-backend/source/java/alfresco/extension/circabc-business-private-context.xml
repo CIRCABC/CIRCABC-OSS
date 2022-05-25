@@ -1,0 +1,459 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+  Copyright 2006 European Community
+  
+   Licensed under the EUPL, Version 1.1 or \?as soon they
+   will be approved by the European Commission - subsequent
+   versions of the EUPL (the "Licence");
+   You may not use this work except in compliance with the
+   Licence.
+   You may obtain a copy of the Licence at:
+  
+   https://joinup.ec.europa.eu/software/page/eupl
+  
+   Unless required by applicable law or agreed to in
+   writing, software distributed under the Licence is
+   distributed on an "AS IS" basis,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+   express or implied.
+   See the Licence for the specific language governing
+   permissions and limitations under the Licence.
+-->
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans-2.0.dtd'>
+<beans>
+
+	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+	<!-- You specify here Spring beans related to CIRCABC Business Layer  -->
+	<!-- You ONLY add PRIVATE business services                           -->
+	<!-- You DO NOT MODIFY here beans related to Alfresco                 -->
+	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+
+	<bean id="business-properties"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="ignoreUnresolvablePlaceholders">
+            <value>true</value>
+        </property>
+        <property name="locations">
+            <list>
+                <value>classpath:alfresco/extension/circabc-business-srv.properties</value>
+            </list>
+        </property>
+    </bean>
+
+	<bean id="_mailMeContentBusinessSrv"
+		class="eu.cec.digit.circabc.business.impl.mail.MailMeContentBusinessImpl">
+		<property name="mailService">
+			<ref bean="circabcMailService"></ref>
+		</property>
+		<property name="mailPreferencesService">
+			<ref bean="mailPreferencesService"></ref>
+		</property>
+		<property name="nodeTypeManager">
+			<ref bean="_nodeTypeManager"></ref>
+		</property>
+		<property name="validationManager">
+			<ref bean="_validationManager"></ref>
+		</property>
+		<property name="userManager">
+			<ref bean="_userManager"></ref>
+		</property>
+		<property name="contentManager">
+			<ref bean="_contentManager"></ref>
+		</property>
+	</bean>
+
+	<bean id="_contentBusinessSrv"
+		class="eu.cec.digit.circabc.business.impl.content.ContentBusinessImpl">
+		<property name="policyBehaviourFilter">
+			<ref bean="policyBehaviourFilter" />
+		</property>
+		<property name="validationManager">
+			<ref bean="_validationManager" />
+		</property>
+		<property name="contentManager">
+			<ref bean="_contentManager" />
+		</property>
+	</bean>
+
+
+	<bean id="_cociContentBusinessSrv"
+		class="eu.cec.digit.circabc.business.impl.content.CociContentBusinessImpl">
+		<property name="contentService">
+			<ref bean="contentService" />
+		</property>
+		<property name="nodeService">
+			<ref bean="nodeService" />
+		</property>
+		<property name="policyBehaviourFilter">
+			<ref bean="policyBehaviourFilter" />
+		</property>
+		<property name="checkOutCheckInService">
+			<ref bean="checkOutCheckInService" />
+		</property>
+		<property name="workflowService">
+			<ref bean="workflowServiceImpl" />
+		</property>
+		<property name="lockService">
+			<ref bean="lockService" />
+		</property>
+		<property name="metadataManager">
+			<ref bean="_metadataManager" />
+		</property>
+		<property name="permissionManager">
+			<ref bean="_permissionManager" />
+		</property>
+		<property name="validationManager">
+			<ref bean="_validationManager" />
+		</property>
+	</bean>
+
+	<bean id="_propertiesBusinessSrv"
+		class="eu.cec.digit.circabc.business.impl.props.PropertiesBusinessImpl">
+		<property name="nodeService">
+			<ref bean="nodeService" />
+		</property>
+		<property name="contentFilterLanguagesService">
+			<ref bean="contentFilterLanguagesService" />
+		</property>
+		<property name="metadataManager">
+			<ref bean="_metadataManager" />
+		</property>
+		<property name="objectManager">
+			<ref bean="_alfrescoObjectsManager" />
+		</property>
+		<property name="configManager">
+			<ref bean="_applicationConfigManager" />
+		</property>
+		<property name="validationManager">
+			<ref bean="_validationManager" />
+		</property>
+	</bean>
+
+	<bean id="_containerAbstractBusinessSrv"
+		class="eu.cec.digit.circabc.business.impl.space.ContainerBaseBusinessService" abstract="true">
+		<property name="fileFolderService">
+			<ref bean="fileFolderService" />
+		</property>
+		<property name="nodeService">
+			<ref bean="nodeService" />
+		</property>
+		<property name="metadataManager">
+			<ref bean="_metadataManager" />
+		</property>
+		<property name="validationManager">
+			<ref bean="_validationManager" />
+		</property>
+		<property name="configManager">
+			<ref bean="_applicationConfigManager" />
+		</property>
+	</bean>
+
+	<bean id="_spaceBusinessSrv"
+		class="eu.cec.digit.circabc.business.impl.space.SpaceBusinessImpl" parent="_containerAbstractBusinessSrv">
+	</bean>
+
+	<bean id="_dossierBusinessSrv"
+		class="eu.cec.digit.circabc.business.impl.space.DossierBusinessImpl" parent="_containerAbstractBusinessSrv">
+	</bean>
+
+	<bean id="_linksBusinessSrv"
+		class="eu.cec.digit.circabc.business.impl.link.LinksBusinessImpl">
+		<property name="fileFolderService">
+			<ref bean="fileFolderService" />
+		</property>
+		<property name="nodeService">
+			<ref bean="nodeService" />
+		</property>
+		<property name="shareSpaceService">
+			<ref bean="shareSpaceService" />
+		</property>
+		<property name="metadataManager">
+			<ref bean="_metadataManager" />
+		</property>
+		<property name="validationManager">
+			<ref bean="_validationManager" />
+		</property>
+		<property name="configManager">
+			<ref bean="_applicationConfigManager" />
+		</property>
+		<property name="nodeTypeManager">
+			<ref bean="_nodeTypeManager" />
+		</property>
+	</bean>
+
+	<bean id="_navigationBusinessSrv"
+		class="eu.cec.digit.circabc.business.impl.nav.NavigationBusinessImpl">
+		<property name="nodeService">
+			<ref bean="nodeService" />
+		</property>
+		<property name="tenantService">
+			<ref bean="tenantService" />
+		</property>
+		<property name="managementService">
+			<ref bean="managementService" />
+		</property>
+		<property name="validationManager">
+			<ref bean="_validationManager" />
+		</property>
+		<property name="nodeTypeManager">
+			<ref bean="_nodeTypeManager" />
+		</property>
+	</bean>
+
+	<bean id="_profileBusinessSrv"
+		class="eu.cec.digit.circabc.business.impl.security.ProfileBusinessImpl">
+	</bean>
+
+	<bean id="_permissionsBusinessSrv"
+		class="eu.cec.digit.circabc.business.impl.security.PermissionsBusinessImpl">
+	</bean>
+
+	<bean id="_userDetailsBusinessSrv"
+		class="eu.cec.digit.circabc.business.impl.user.UserDetailsBusinessImpl">
+		<property name="nodeService">
+			<ref bean="nodeService" />
+		</property>
+		<property name="nodePreferencesService">
+			<ref bean="nodePreferencesService" />
+		</property>
+		<property name="managementService">
+			<ref bean="managementService" />
+		</property>
+		<property name="transactionService">
+			<ref bean="transactionService" />
+		</property>
+		<property name="permissionService">
+			<ref bean="permissionService" />
+		</property>
+		<property name="remoteUserBusinessSrv">
+			<ref bean="_remoteUserBusinessSrv" />
+		</property>
+		<property name="validationManager">
+			<ref bean="_validationManager" />
+		</property>
+		<property name="contentManager">
+			<ref bean="_contentManager" />
+		</property>
+		<property name="userManager">
+			<ref bean="_userManager" />
+		</property>
+	</bean>
+
+	<bean id="_remoteUserBusinessSrv"
+		class="eu.cec.digit.circabc.business.impl.user.LdapBusinessImpl">
+		<property name="userService">
+			<ref bean="userService" />
+		</property>
+		<property name="remoteManagementAvailable" >
+			<value>${business.remote.user.available}</value>
+		</property>
+	</bean>
+
+	<bean id="_attachementBusinessSrv"
+		class="eu.cec.digit.circabc.business.impl.content.AttachementBusinessImpl">
+		<property name="nodeService">
+			<ref bean="nodeService" />
+		</property>
+		<property name="attachementService">
+			<ref bean="attachementService" />
+		</property>
+		<property name="validationManager">
+			<ref bean="_validationManager" />
+		</property>
+		<property name="contentManager">
+			<ref bean="_contentManager" />
+		</property>
+		<property name="temporaryFileManager">
+			<ref bean="_temporaryFileManager" />
+		</property>
+	</bean>
+
+
+	<!-- Here the definition of Business Manager (IOC aware helpers) -->
+
+	<bean id="_applicationConfigManager"
+		class="eu.cec.digit.circabc.business.helper.ApplicationConfigManager">
+		<property name="namespaceService">
+			<ref bean="namespaceService" />
+		</property>
+		<property name="webConfigService">
+			<ref bean="webClientConfigService" />
+		</property>
+		<property name="dynamicConfig">
+			<value>false</value>
+		</property>
+	</bean>
+
+	<bean id="_metadataManager"
+		class="eu.cec.digit.circabc.business.helper.MetadataManager">
+		<property name="metadataExtracterRegistry">
+			<ref bean="metadataExtracterRegistry" />
+		</property>
+		<property name="mimetypeService">
+			<ref bean="mimetypeService" />
+		</property>
+		<property name="nodeService">
+			<ref bean="nodeService" />
+		</property>
+		<property name="nodeTypeManager">
+			<ref bean="_nodeTypeManager" />
+		</property>
+		<property name="configManager">
+			<ref bean="_applicationConfigManager" />
+		</property>
+	</bean>
+
+	<bean id="_validationManager"
+		class="eu.cec.digit.circabc.business.helper.ValidationManager">
+		<property name="nodeService">
+			<ref bean="nodeService" />
+		</property>
+		<property name="metadataManager">
+			<ref bean="_metadataManager" />
+		</property>
+		<property name="nodeTypeManager">
+			<ref bean="_nodeTypeManager" />
+		</property>
+		<property name="permissionManager">
+			<ref bean="_permissionManager" />
+		</property>
+		<property name="userManager">
+			<ref bean="_userManager" />
+		</property>
+	</bean>
+
+	<bean id="_alfrescoObjectsManager"
+		class="eu.cec.digit.circabc.business.helper.AlfrescoObjectsManager">
+		<property name="namespaceService">
+			<ref bean="namespaceService" />
+		</property>
+	</bean>
+
+	<bean id="_nodeTypeManager"
+		class="eu.cec.digit.circabc.business.helper.NodeTypeManager">
+		<property name="nodeService">
+			<ref bean="nodeService" />
+		</property>
+		<property name="dictionaryService">
+			<ref bean="dictionaryService" />
+		</property>
+		<property name="lockService">
+			<ref bean="lockService" />
+		</property>
+	</bean>
+
+	<bean id="_permissionManager"
+		class="eu.cec.digit.circabc.business.helper.PermissionManager">
+		<property name="permissionService">
+			<ref bean="permissionService" />
+		</property>
+	</bean>
+
+	<bean id="_contentManager"
+		class="eu.cec.digit.circabc.business.helper.ContentManager" >
+		<property name="contentService">
+			<ref bean="contentService" />
+		</property>
+		<property name="nodeService">
+			<ref bean="nodeService" />
+		</property>
+		<property name="ownableService">
+			<ref bean="ownableService" />
+		</property>
+		<property name="metadataManager">
+			<ref bean="_metadataManager" />
+		</property>
+		<property name="configManager">
+			<ref bean="_applicationConfigManager" />
+		</property>
+		<property name="validationManager">
+			<ref bean="_validationManager" />
+		</property>
+	</bean>
+
+	<bean id="_rulesManager"
+		class="eu.cec.digit.circabc.business.helper.RulesManager" >
+		<property name="actionService">
+			<ref bean="actionService" />
+		</property>
+		<property name="ruleService">
+			<ref bean="ruleService" />
+		</property>
+	</bean>
+
+	<bean id="_userManager"
+		class="eu.cec.digit.circabc.business.helper.UserManager" >
+		<property name="nodeService">
+			<ref bean="nodeService" />
+		</property>
+		<property name="personService">
+			<ref bean="personService" />
+		</property>
+		<property name="authorityService">
+			<ref bean="authorityService" />
+		</property>
+		<property name="configurableService">
+			<ref bean="configurableService" />
+		</property>
+		<property name="searchService">
+			<ref bean="searchService" />
+		</property>
+		<property name="namespaceService">
+			<ref bean="namespaceService" />
+		</property>
+	</bean>
+
+	<bean id="_temporaryFileManager"
+		class="eu.cec.digit.circabc.business.helper.TemporaryFileManager" >
+		<property name="nodeService">
+			<ref bean="nodeService" />
+		</property>
+		<property name="managementService">
+			<ref bean="managementService" />
+		</property>
+		<property name="fileFolderService">
+			<ref bean="fileFolderService" />
+		</property>
+		<property name="tempRootFolderName">
+			<value>${business.temp.folder.name}</value>
+		</property>
+		<property name="timeBeforeDeletion">
+			<value>${business.temp.time.before.deletion}</value>
+		</property>
+		<property name="contentManager">
+			<ref bean="_contentManager" />
+		</property>
+	</bean>
+
+	<!-- Here the cron definition -->
+
+	<bean id="tempFileCleanerJob" class="org.alfresco.util.TriggerBean">
+		<property name="jobDetail">
+			<bean id="tempFileCleanerJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
+				<property name="jobClass">
+					<value>eu.cec.digit.circabc.business.api.job.TempFileCleanerJob</value>
+				</property>
+				<property name="jobDataAsMap">
+					<map>
+						<entry key="temporaryFileManager">
+							<ref bean="_temporaryFileManager" />
+						</entry>
+						<entry key="transactionService">
+							<ref bean="transactionService" />
+						</entry>
+					</map>
+				</property>
+			</bean>
+		</property>
+		<property name="startDelay">
+			<value>${business.temp.cron.start.delay}</value>
+		</property>
+		<property name="repeatInterval">
+			<value>${business.temp.cron.repeat.interval}</value>
+		</property>
+		<property name="scheduler">
+			<ref bean="schedulerFactory" />
+		</property>
+	</bean>
+
+</beans>

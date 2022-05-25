@@ -1,0 +1,18 @@
+<section class="group-box">
+  <div class="profile" *ngIf="membership && membership.profile">
+    <strong>{{ membership.profile.title | cbcI18n }}</strong>
+    <br />
+    {{ membership.profile.name }}
+  </div>
+  <div class="group" *ngIf="membership && membership.interestGroup">
+    <strong>{{ membership.interestGroup.title | cbcI18n }}</strong>
+    <br />
+    {{ membership.interestGroup.name }}
+  </div>
+  <div class="actions">
+    <cbc-inline-delete
+      [deleteLabel]="'label.remove' | transloco"
+      (deletionConfirmed)="uninviteUSer()"
+    ></cbc-inline-delete>
+  </div>
+</section>

@@ -1,0 +1,62 @@
+.reset-width {
+  width: initial;
+}
+
+.short-label {
+  width: 30px;
+}
+
+.times-width {
+  width: 100px;
+}
+
+.when-width {
+  width: 100px;
+}
+
+.select-align {
+  margin-top: -3px;
+}
+
+.when2-width {
+  width: 205px;
+}
+
+.center {
+  margin-left: auto;
+  margin-right: auto;
+  width: 60%;
+}
+
+.margin-l {
+  margin-left: 166px;
+}
+
+.notice {
+  font-weight: bold;
+  color: darkgreen;
+}
+
+.legend-width {
+  width: 300px;
+}
+
+.hide-relevant-space {
+  display: none;
+}
+
+.box {
+  margin-bottom: 0;
+}
+
+input::-webkit-calendar-picker-indicator {
+  display: none;
+  color: rgb(0 0 0 / 0);
+  opacity: 1;
+}
+
+#meeting-type {
+  background-image: url(^img/arrow-dropdown.png);
+  background-repeat: no-repeat;
+  background-position: 95% 50%;
+}

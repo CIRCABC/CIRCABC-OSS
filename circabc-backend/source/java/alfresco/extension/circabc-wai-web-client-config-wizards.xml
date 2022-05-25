@@ -1,0 +1,425 @@
+<!--+
+    |     Copyright European Community 2006 - Licensed under the EUPL V.1.0
+    |
+    |  		   http://ec.europa.eu/idabc/en/document/6523
+    |
+    +-->
+
+<alfresco-config>
+  <config>
+    <wizards>
+
+      <!--                                                  -->
+      <!-- CIRCABC                                          -->
+      <!--                                                  -->
+
+      <!-- define new share space -->
+      <wizard name="sharingSpace"
+        managed-bean="SharingSpaceWizard"
+        title-id="sharing_space_title"
+        description-id="sharing_space_desc"
+        icon="/images/extension/icons/create_circabc_user_large.gif">
+        <step name="select_ig" title-id="select_ig_step_title"
+          description-id="">
+          <page
+            path="/jsp/extension/wai/wizard/share-space/select-ig.jsp"
+            title-id="select_ig_title"
+            description-id="select_ig_desc"
+            instruction-id="wizard_click_next"/>
+        </step>
+
+        <step name="notify_ig_leader" title-id="notify_ig_leader_step_title"
+          description-id="">
+          <!-- condition always true -->
+          <!-- used to build the message -->
+          <condition
+            if="#{SharingSpaceWizard.buildTextMessage == 'true'}">
+          <page
+            path="/jsp/extension/wai/wizard/share-space/notify-ig-leader.jsp"
+            title-id="notify_ig_leader_title"
+            description-id="notify_ig_leader_desc"
+            instruction-id="wizard_click_finish"/>
+			</condition>
+        </step>
+
+      </wizard>
+
+
+      <!-- define new dynamic property -->
+      <wizard name="defineNewPropertyWizard"
+        managed-bean="DefineNewPropertyWizard"
+        title-id="new_dynamic_property_title"
+        description-id="new_dynamic_property_desc"
+        icon="/images/extension/icons/create_circabc_user_large.gif">
+        <step name="define-description" title-id="define_description_step_tittle"
+          description-id="">
+          <page
+            path="/jsp/extension/wai/wizard/new-dynamic-property/define-descriptions.jsp"
+            title-id="define_description_title"
+            description-id="define_description_desc"
+            instruction-id="wizard_click_next"/>
+        </step>
+        <step name="specify_type" title-id="specify_type_step_title"
+          description-id="">
+          <page
+            path="/jsp/extension/wai/wizard/new-dynamic-property/specify-type.jsp"
+            title-id="specify_type_title"
+            description-id="specify_type_desc"
+            instruction-id="wizard_click_next"/>
+        </step>
+        <step name="summary" title-id="summary"
+          description-id="summary_step_description">
+          <page path="/jsp/wizard/summary.jsp" title-id="summary_title"
+	        instruction-id="wizard_click_finish"
+            description-id="summary_desc"/>
+        </step>
+      </wizard>
+      
+      <!-- Create a new circa users, user will be stored at the CIRCABC level -->
+      <!-- OSS Only -->
+      <wizard name="createCircabcUserWizard"
+        managed-bean="createCircabcUserWizard"
+        title-id="new_circabc_user_title"
+        description-id="new_circabc_user_desc"
+        icon="/images/extension/icons/create_circabc_user_large.gif">
+        <step name="new-user-step1" title-id="user_properties"
+          description="">
+          <page
+            path="/jsp/extension/wai/wizard/new-circabc-user/person-properties.jsp"
+            title-id="new_user_step1_title"
+            description-id="new_user_step1_desc"
+            instruction-id="default_instruction" />
+        </step>
+        <step name="new-user-step2" title-id="user_properties"
+          description="">
+          <page
+            path="/jsp/extension/wai/wizard/new-circabc-user/user-properties.jsp"
+            title-id="new_user_step2_title"
+            description-id="new_user_step2_desc"
+            instruction-id="default_instruction" />
+        </step>
+        <step name="new-user-summary" title-id="summary"
+          description-id="summary_step_description">
+          <page path="/jsp/wizard/summary.jsp" title-id="summary"
+
+            description-id="summary_desc"
+            instruction-id="create_rule_finish_instruction" />
+        </step>
+      </wizard>
+
+
+      <!-- create new meeting -->
+      <wizard name="createMeetingWai"
+        managed-bean="CreateMeetingWizard"
+        title-id="event_create_meetings_wizard_title"
+        description-id="event_create_meetings_wizard_description"
+        icon="/images/icons/project-icon-forums.gif">
+        <step name="general-info" title-id="event_create_meetings_wizard_step1_title"
+          description-id="event_create_meetings_wizard_step1_description">
+          <page
+            path="/jsp/extension/wai/wizard/create-event-meeting/meeting-general-info.jsp"
+            title-id="event_create_meetings_wizard_step1_description"
+            instruction-id="wizard_click_next"/>
+        </step>
+        <step name="select-space" title-id="event_create_meetings_wizard_step2_title"
+          description-id="event_create_meetings_wizard_step2_description">
+          <page
+            path="/jsp/extension/wai/wizard/create-event-meeting/select-space.jsp"
+            title-id="event_create_meetings_wizard_step2_description"
+            instruction-id="wizard_click_next"/>
+        </step>
+        <step name="audience" title-id="event_create_meetings_wizard_step3_title"
+          description-id="event_create_meetings_wizard_step3_description">
+          <page
+            path="/jsp/extension/wai/wizard/create-event-meeting/audience.jsp"
+            title-id="event_create_meetings_wizard_step3_description"
+            instruction-id="wizard_click_next"/>
+        </step>
+        <step name="contact-info" title-id="event_create_meetings_wizard_step4_title"
+          description-id="event_create_meetings_wizard_step4_description">
+          <page
+            path="/jsp/extension/wai/wizard/create-event-meeting/contact-info.jsp"
+            title-id="event_create_meetings_wizard_step4_description"
+            instruction-id="wizard_click_finish"/>
+        </step>
+      </wizard>
+
+      <!-- create new Event -->
+      <wizard name="createEventWai"
+        managed-bean="CreateEventWizard"
+        title-id="event_create_event_wizard_title"
+        description-id="event_create_event_wizard_description"
+        icon="/images/icons/project-icon-forums.gif">
+        <step name="general-info" title-id="event_create_meetings_wizard_step1_title"
+          description-id="event_create_event_wizard_step1_description">
+          <page
+            path="/jsp/extension/wai/wizard/create-event-meeting/event-general-info.jsp"
+            title-id="event_create_event_wizard_step1_description"
+            instruction-id="wizard_click_next"/>
+        </step>
+        <step name="audience" title-id="event_create_meetings_wizard_step3_title"
+          description-id="event_create_event_wizard_step2_description">
+          <page
+            path="/jsp/extension/wai/wizard/create-event-meeting/audience.jsp"
+            title-id="event_create_event_wizard_step2_description"
+            instruction-id="wizard_click_next"/>
+        </step>
+        <step name="contact-info" title-id="event_create_meetings_wizard_step4_title"
+          description-id="event_create_event_wizard_step3_description">
+          <page
+            path="/jsp/extension/wai/wizard/create-event-meeting/contact-info.jsp"
+            title-id="event_create_event_wizard_step3_description"
+            instruction-id="wizard_click_finish"/>
+        </step>
+      </wizard>
+
+      <!-- Definitions for inviting Circabc users to Node -->
+      <wizard name="inviteCircabcUsers"
+        managed-bean="InviteCircabcUsersWizard"
+        title-id="invite_circabc_user_title"
+        description-id="invite_circabc_user_desc"
+        icon="/images/extension/icons/invite_circabc_users_large.gif">
+        <step name="invite-user-step1" title-id="select_invited_users"
+          description-id="">
+          <page
+            path="/jsp/extension/wai/wizard/invite-circabc-users/invite.jsp"
+            title-id="invite_user_step1_title"
+            description-id="invite_user_step1_desc"
+            instruction-id="wizard_click_next" />
+        </step>
+        <step name="invite-user-step2" title-id="notify_invited_users"
+          description-id="">
+          <!-- condition always true -->
+          <!-- used to build the message -->
+          <condition
+            if="#{InviteCircabcUsersWizard.buildTextMessage == 'true'}">
+            <page
+              path="/jsp/extension/wai/wizard/invite-circabc-users/notify.jsp"
+              title-id="invite_user_step2_title"
+              description-id="invite_user_step2_desc"
+              instruction-id="wizard_click_finish" />
+          </condition>
+        </step>
+      </wizard>
+      
+      <!-- Definitions for bulk inviting Circabc users to Node -->
+      <wizard name="bulkInviteCircabcUsers"
+        managed-bean="BulkInviteCircabcUsersWizard"
+        title-id="bulk_invite_circabc_user_title"
+        description-id="bulk_invite_circabc_user_desc"
+        icon="/images/extension/icons/invite_circabc_users_large.gif">
+        <step name="bulk_invite-user-step1" title-id="bulk_invite_user_first_step_title"
+          description-id="">
+          <page
+            path="/jsp/extension/wai/wizard/invite-circabc-users/bulk-invite.jsp"
+            title-id="bulk_invite_user_step1_title"
+            description-id="bulk_invite_user_step1_desc"
+            instruction-id="wizard_click_next" />
+        </step>
+         <!-- <step name="bulk_invite-user-step2" title-id="bulk_invite_user_select_invited_groups"
+          description-id="">
+          <page
+            path="/jsp/extension/wai/wizard/invite-circabc-users/bulk-invite-groups.jsp"
+            title-id="bulk_invite_user_step2_title"
+            description-id="bulk_invite_user_step2_desc"
+            instruction-id="wizard_click_next" />
+        </step>-->
+        <step name="bulk_invite-user-step3" title-id="bulk_invite_user_last_step_title"
+          description-id="">
+          <page
+            path="/jsp/extension/wai/wizard/invite-circabc-users/bulk-invite-last-step.jsp"
+            title-id="bulk_invite_user_step3_title"
+            description-id="bulk_invite_user_step3_desc"
+            instruction-id="wizard_click_next" />
+        </step>
+      </wizard>
+
+      <!-- Definitions for inviting Circabc users to Node -->
+      <wizard name="mailToMembersWizard"
+        managed-bean="MailToMembersWizard"
+        title-id="mail_to_members_wizard_action_title"
+        description-id="mail_to_members_wizard_action_description"
+        icon="/images/icons/email_users.gif">
+        <step name="mail-to-members-step1" title-id="select_members"
+          description-id="">
+          <page
+            path="/jsp/extension/wai/wizard/mail-to-members/select-members.jsp"
+            title-id="mail_to_members_step1"
+            description-id="mail_to_members_step1_desc"
+            instruction-id="wizard_click_next" />
+        </step>
+        <step name="mail-to-members-step2" title-id="mail_to_members"
+          description-id="">
+          <!-- condition always true -->
+          <!-- used to build the message -->
+
+            <page
+              path="/jsp/extension/wai/wizard/mail-to-members/mail-to-members.jsp"
+              title-id="mail_to_members_step2"
+              description-id="mail_to_members_step2_desc"
+              instruction-id="wizard_click_next" />
+
+        </step>
+        <step name="mail-to-members-step3" title-id="select_files"
+          description-id="">
+          <!-- condition always true -->
+          <!-- used to build the message -->
+
+            <page
+              path="/jsp/extension/wai/wizard/mail-to-members/select-files.jsp"
+              title-id="mail_to_members_step3"
+              description-id="mail_to_members_step3_desc"
+              instruction-id="wizard_click_finish" />
+
+        </step>
+      </wizard>
+
+      <!-- Definitions for changing Circabc users roles inside a Interest Group -->
+      <wizard name="changeCircabcAccessRight"
+        managed-bean="ChangeCircabcAccessRightWizard"
+        title-id="change_circabc_access_right_title"
+        description-id="change_circabc_access_right_desc"
+        icon="/images/extension/icons/change_circabc_access_right_large.gif">
+        <step name="change-access-right-step1"
+          title-id="change_access_right_step1_title" description-id="">
+          <page
+            path="/jsp/extension/wai/wizard/change-access-right/invite.jsp"
+            title-id="change_access_right_step1_title"
+            description-id="select_change_access_right_step1_desc"
+            instruction-id="wizard_click_next" />
+        </step>
+         <step name="change-access-right-step2" title-id="notify_invited_users"
+          description-id="">
+          <!-- condition always true -->
+          <!-- used to build the message -->
+          <condition
+            if="#{ChangeCircabcAccessRightWizard.buildTextMessage == 'true'}">
+            <page
+              path="/jsp/extension/wai/wizard/invite-circabc-users/notify.jsp"
+              title-id="invite_user_step2_title"
+              description-id="invite_user_step2_desc"
+              instruction-id="wizard_click_finish" />
+          </condition>
+        </step>
+      </wizard>
+
+         <!--                                                             -->
+         <!-- Definition of an advanced interest group creation wizard    -->
+         <!--                                                             -->
+         <wizard name="createInterestGroupWizard" managed-bean="CreateCircabcNodesWizard"
+                 title-id="create_interest_group_wizard_title"
+                 description-id="create_interest_group_wizard_description"
+                 icon="/images/icons/create_space_large.gif"
+                 error-message-id="create_new_interest_group_error">
+
+          	<step name="enter_ig_information"
+          			title-id="create_ig_wizard_step1_space_detail_title"
+          			description-id="create_ig_wizard_step1_space_detail_tooltip">
+	           <page path="/jsp/extension/wai/wizard/create-circabc-nodes/enter-space-details.jsp"
+    	               title-id="create_ig_wizard_page1_space_detail_title"
+                       description-id="create_ig_wizard_page1_space_detail_description"
+		               instruction-id="wizard_click_next" />
+          	</step>
+
+          	<step name="select_ig_leaders"
+          		   title-id="create_ig_wizard_step2_select_leader_title"
+          		   description-id="create_ig_wizard_step2_select_leader_tooltip">
+           <page path="/jsp/extension/wai/wizard/create-circabc-nodes/select-admins.jsp"
+                   title-id="create_ig_wizard_page2_select_leader_title"
+                   description-id="create_ig_wizard_page2_select_leader_description"
+                   instruction-id="wizard_click_next" />
+          	</step>
+
+          	<!-- condition always true -->
+          	<!-- used to build the message -->
+          	<step name="notify_ig_leaders"
+          	        title-id="create_ig_wizard_step3_notify_leader_title"
+          	        description-id="create_ig_wizard_step3_notify_leader_tooltip">
+          	   <condition if="#{CreateCircabcNodesWizard.buildTextMessage == 'true'}">
+	              <page path="/jsp/extension/wai/wizard/invite-circabc-users/notify.jsp"
+	                      title-id="create_ig_wizard_page3_notify_leader_title"
+	                      description-id="create_ig_wizard_page3_notify_leader_description"
+	                      instruction-id="wizard_click_finish" />
+          	   </condition>
+          	</step>
+         </wizard>
+
+
+         <!--                                                             -->
+         <!-- Definition of an advanced category creation wizard          -->
+         <!--                                                             -->
+         <wizard name="createCategoryWizard" managed-bean="CreateCircabcNodesWizard"
+                 title-id="create_category_wizard_title"
+                 description-id="create_category_wizard_description"
+                 icon="/images/icons/create_space_large.gif"
+                 error-message-id="create_new_category_error" >
+
+          	<step name="enter_category_information"
+          			title-id="create_category_wizard_step1_space_detail_title"
+          			description-id="create_category_wizard_step1_space_detail_tooltip">
+	           <page path="/jsp/extension/wai/wizard/create-circabc-nodes/enter-space-details.jsp"
+    	               title-id="create_category_wizard_page1_space_detail_title"
+                       description-id="create_category_wizard_page1_space_detail_description"
+		               instruction-id="wizard_click_next" />
+          	</step>
+
+          	<step name="select_category_headers"
+          		   title-id="create_category_wizard_step2_select_category_title"
+          		   description-id="create_category_wizard_step2_select_category_tooltip">
+                <page path="/jsp/extension/wai/wizard/create-circabc-nodes/select-category-headers.jsp"
+                       title-id="create_category_wizard_page2_select_category_title"
+                       description-id="create_category_wizard_page2_select_category_description"
+                       instruction-id="wizard_click_next" />
+          	</step>
+
+          	<step name="select_category_leaders"
+          		   title-id="create_category_wizard_step3_select_leader_title"
+          		   description-id="create_category_wizard_step3_select_leader_tooltip">
+                <page path="/jsp/extension/wai/wizard/create-circabc-nodes/select-admins.jsp"
+                       title-id="create_category_wizard_page3_select_leader_title"
+                       description-id="create_category_wizard_page3_select_leader_description"
+                       instruction-id="wizard_click_next" />
+          	</step>
+
+          	<!-- condition always true -->
+          	<!-- used to build the message -->
+          	<step name="notify_category_leaders"
+          	        title-id="create_category_wizard_step4_notify_leader_title"
+          	        description-id="create_category_wizard_step4_notify_leader_tooltip">
+          	   <condition if="#{CreateCircabcNodesWizard.buildTextMessage == 'true'}">
+	              <page path="/jsp/extension/wai/wizard/invite-circabc-users/notify.jsp"
+	                      title-id="create_category_wizard_page4_notify_leader_title"
+	                      description-id="create_category_wizard_page4_notify_leader_description"
+	                      instruction-id="wizard_click_finish" />
+          	   </condition>
+          	</step>
+         </wizard>
+         
+         <!-- Definition of the Start Workflow wizard -->
+         <wizard name="startWorkflow" managed-bean="CircabcStartWorkflowWizard"
+                 description-id="start_workflow_desc" icon="/images/icons/new_workflow_large.gif">
+            <step name="choose-workflow" title-id="step_choose_workflow"
+                  description-id="start_workflow_choose_desc">
+               <page path="/jsp/extension/workflow/start-workflow-wizard/choose-workflow.jsp"
+                     title-id="start_workflow_choose_title"
+                     description-id="start_workflow_choose_desc"
+                     instruction-id="default_instruction" />
+            </step>
+            <step name="options" title-id="step_workflow_options"
+                  description-id="start_workflow_options_desc">
+               <page path="/jsp/extension/workflow/start-workflow-wizard/workflow-options.jsp"
+                     title-id="start_workflow_options_title"
+                     description-id="start_workflow_options_desc"
+                     instruction-id="default_instruction" />
+            </step>
+            <step name="summary" title-id="summary" description-id="summary_step_description">
+               <page path="/jsp/extension/wizard/summary.jsp"
+                     title-id="summary"
+                     description-id="summary_desc"
+                     instruction-id="start_workflow_finish_instruction" />
+            </step>
+         </wizard>
+
+    </wizards>
+  </config>
+</alfresco-config>

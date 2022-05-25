@@ -1,0 +1,52 @@
+<cbc-modal
+  [title]="'members.manage.expiration'"
+  [okLabel]="'label.update'"
+  [visible]="showModal"
+  (cancel)="cancel()"
+  (ok)="editExpiration()"
+  [executing]="processing"
+  [executingLabel]="'label.updating'"
+  [contentClass]="'modal-content-visible'"
+>
+  <div style="margin-left: 20px; margin-bottom: 20px">
+    <p *ngFor="let member of membersDisplay">
+      {{ member.user?.firstname + ' ' + member.user?.lastname }}
+
+      <span
+        *ngIf="member.expirationDate; else elseBlock"
+        style="font-weight: bold"
+        >{{ 'members.current.user.will.expire.on' | transloco }}
+      </span>
+      <ng-template #elseBlock>
+        <span style="font-weight: bold"
+          >{{ 'members.current.user.will.not.expire' | transloco }}
+        </span>
+      </ng-template>
+      {{ member.expirationDate | date: 'yyyy-MM-dd HH:mm' }}
+    </p>
+
+    <form [formGroup]="expirationForm">
+      <span class="cell-checkbox">
+        <input
+          id="expirationDate"
+          class="cmn-toggle cmn-toggle-round"
+          type="checkbox"
+          (change)="expirationChanged()"
+          formControlName="expiration"
+        />
+        <label for="expirationDate" class="nonBlockLabel"></label>
+        <span class="label"> {{ 'label.expiry.date' | transloco }} </span>
+      </span>
+      <span class="field field--with-icon field--date">
+        <p-calendar
+          formControlName="expirationDateTime"
+          [dateFormat]="'dd/mm/yy'"
+          [showTime]="true"
+          [hourFormat]="'24'"
+          (onSelect)="dateSelected($event)"
+          [showIcon]="true"
+        ></p-calendar>
+      </span>
+    </form>
+  </div>
+</cbc-modal>

@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>groups.id.members.export</shortname>
+  <description>Exports the members of an IG in different formats: CSV, XLS, or XML</description>
+    <url>/circabc/groups/{igId}/members/export</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

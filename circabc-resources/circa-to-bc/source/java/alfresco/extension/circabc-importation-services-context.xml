@@ -1,0 +1,280 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+   	<!-- Bean in charge of the migration  -->
+    <bean id="importService" class="eu.cec.digit.circabc.repo.migration.ImportServiceImpl">
+    	<property name="transactionService">
+			<ref bean="transactionService" />
+    	</property>
+		<property name="taskExecutor">
+			<ref bean="importationTaskExecutor" />
+    	</property>
+    	<property name="serviceRegistry">
+			<ref bean="circabcServiceRegistry" />
+    	</property>
+		<property name="validationHandler">
+			<ref bean="migrationValidationHandler" />
+    	</property>
+		<property name="fileArchiver">
+			<ref bean="migration.fileArchiver" />
+    	</property>
+		<property name="lockHandler">
+			<ref bean="migration.lockHandler" />
+    	</property>
+		<property name="failOnError">
+			<value>${import.fail.on.error}</value>
+		</property>
+		<property name="preProcessors">
+			<list>
+				<!-- Must be called first ! -->
+				<value>eu.cec.digit.circabc.migration.processor.impl.PrepareNodes</value>
+			</list>
+		</property>
+		<property name="runProcessors">
+			<list >
+				<!-- The order is important -->
+				<value>eu.cec.digit.circabc.migration.processor.impl.MigrateUsers</value>
+				<value>eu.cec.digit.circabc.migration.processor.impl.MigrateSpaces</value>
+				<value>eu.cec.digit.circabc.migration.processor.impl.MigrateContents</value>
+				<value>eu.cec.digit.circabc.migration.processor.impl.MigrateMLDetails</value>
+				<value>eu.cec.digit.circabc.migration.processor.impl.MigrateDiscussions</value>
+				<value>eu.cec.digit.circabc.migration.processor.impl.MigrateSharedSpace</value>
+				<value>eu.cec.digit.circabc.migration.processor.impl.MigrateLinks</value>
+				<value>eu.cec.digit.circabc.migration.processor.impl.MigratePermissionsAndProperties</value>
+				<value>eu.cec.digit.circabc.migration.processor.impl.MigrateLogFiles</value>
+			</list>
+		</property>
+		<property name="dryRunProcessors">
+			<list>
+				<value>eu.cec.digit.circabc.migration.processor.impl.ReportStructure</value>
+			</list>
+		</property>
+		<property name="postProcessors">
+			<list>
+				<!--  Check result? Send Mail? Set a special property? ...  -->
+			</list>
+		</property>
+	</bean>
+
+	<!-- Proxied Migration Service -->
+	<bean id="ImportService"  class="org.springframework.aop.framework.ProxyFactoryBean">
+      <property name="proxyInterfaces">
+         <value>
+		      eu.cec.digit.circabc.service.migration.ImportService
+   		</value>
+      </property>
+      <property name="target">
+            <ref bean="importService"/>
+      </property>
+      <property name="interceptorNames">
+         <list>
+		    <idref local="ImportService_transaction"/>
+		    <idref bean="AuditMethodInterceptor"/>
+		    <idref local="ImportService_security"/>
+         </list>
+      </property>
+    </bean>
+
+    <!-- Transaction interceptor  -->
+	<bean id="ImportService_transaction" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+         <property name="transactionManager">
+            <ref bean="transactionManager"/>
+         </property>
+         <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+	</bean>
+
+	 <bean id="ImportService_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
+        <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+        <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+        <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+        <property name="objectDefinitionSource">
+            <value>
+               	eu.cec.digit.circabc.service.migration.ImportService.asynchRun=ACL_METHOD.ROLE_ADMINISTRATOR
+               	eu.cec.digit.circabc.service.migration.ImportService.run=ACL_METHOD.ROLE_ADMINISTRATOR
+               	eu.cec.digit.circabc.service.migration.ImportService.dryRun=ACL_METHOD.ROLE_ADMINISTRATOR
+				eu.cec.digit.circabc.service.migration.ImportService.validate=ACL_METHOD.ROLE_ADMINISTRATOR
+				eu.cec.digit.circabc.service.migration.ImportService.storeNewImportFile=ACL_METHOD.ROLE_ADMINISTRATOR
+				eu.cec.digit.circabc.service.migration.ImportService.getIterations=ACL_METHOD.ROLE_ADMINISTRATOR
+				eu.cec.digit.circabc.service.migration.ImportService.getRunningIterations=ACL_METHOD.ROLE_ADMINISTRATOR
+				eu.cec.digit.circabc.service.migration.ImportService.getRunningIterationsJournal=ACL_METHOD.ROLE_ADMINISTRATOR
+            </value>
+        </property>
+    </bean>
+
+	<!-- Bean in charge of the migration ETL facilities  -->
+    <bean id="migrationEtlService" class="eu.cec.digit.circabc.repo.migration.LdapUsersETLServiceImpl">
+		<property name="userService">
+			<ref bean="userService" />
+    	</property>
+		<property name="validationHandler">
+			<ref bean="migrationValidationHandler" />
+    	</property>
+		<property name="fileArchiver">
+			<ref bean="migration.fileArchiver" />
+    	</property>
+	</bean>
+	
+	<!-- Proxied ETL Service -->
+	<bean id="MigrationEtlService"  class="org.springframework.aop.framework.ProxyFactoryBean">
+      <property name="proxyInterfaces">
+         <value>
+		      eu.cec.digit.circabc.service.migration.ETLService
+   		</value>
+      </property>
+      <property name="target">
+            <ref bean="migrationEtlService"/>
+      </property>
+      <property name="interceptorNames">
+         <list>
+		    <idref local="MigrationEtlService_transaction"/>
+		    <idref bean="AuditMethodInterceptor"/>
+		    <idref local="MigrationEtlService_security"/>
+         </list>
+      </property>
+    </bean>
+
+    <!-- Transaction interceptor  -->
+	<bean id="MigrationEtlService_transaction" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+         <property name="transactionManager">
+            <ref bean="transactionManager"/>
+         </property>
+         <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+	</bean>
+
+	 <bean id="MigrationEtlService_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
+        <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+        <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+        <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+        <property name="objectDefinitionSource">
+            <value>
+               	eu.cec.digit.circabc.service.migration.ETLService.proposeEtl=ACL_METHOD.ROLE_ADMINISTRATOR
+               	eu.cec.digit.circabc.service.migration.ETLService.proposeUsers=ACL_METHOD.ROLE_ADMINISTRATOR
+               	eu.cec.digit.circabc.service.migration.ETLService.applyEtl=ACL_METHOD.ROLE_ADMINISTRATOR
+               	eu.cec.digit.circabc.service.migration.ETLService.getIterations=ACL_METHOD.ROLE_ADMINISTRATOR
+            </value>
+        </property>
+    </bean>
+    
+    <!-- Bean in charge of the migration ETL facilities one shot migrate   -->
+    <bean id="migrationEtlOneShotService"  parent="migrationEtlService"  class="eu.cec.digit.circabc.repo.migration.LdapUsersETLOneShotServiceImpl">
+    	<property name="personService">
+			<ref bean="personService" />
+    	</property>
+	</bean>
+	
+	<!-- Proxied ETL Service -->
+	<bean id="MigrationEtlOneShotService"  class="org.springframework.aop.framework.ProxyFactoryBean">
+      <property name="proxyInterfaces">
+         <value>
+		      eu.cec.digit.circabc.service.migration.ETLService
+   		</value>
+      </property>
+      <property name="target">
+            <ref bean="migrationEtlOneShotService"/>
+      </property>
+      <property name="interceptorNames">
+         <list>
+		    <idref local="MigrationEtlOneShotService_transaction"/>
+		    <idref bean="AuditMethodInterceptor"/>
+		    <idref local="MigrationEtlOneShotService_security"/>
+         </list>
+      </property>
+    </bean>
+
+    <!-- Transaction interceptor  -->
+	<bean id="MigrationEtlOneShotService_transaction" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+         <property name="transactionManager">
+            <ref bean="transactionManager"/>
+         </property>
+         <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+	</bean>
+
+	 <bean id="MigrationEtlOneShotService_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
+        <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+        <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+        <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+        <property name="objectDefinitionSource">
+            <value>
+               	eu.cec.digit.circabc.service.migration.ETLService.proposeEtl=ACL_METHOD.ROLE_ADMINISTRATOR
+               	eu.cec.digit.circabc.service.migration.ETLService.proposeUsers=ACL_METHOD.ROLE_ADMINISTRATOR
+               	eu.cec.digit.circabc.service.migration.ETLService.applyEtl=ACL_METHOD.ROLE_ADMINISTRATOR
+               	eu.cec.digit.circabc.service.migration.ETLService.getIterations=ACL_METHOD.ROLE_ADMINISTRATOR
+            </value>
+        </property>
+    </bean>
+	
+    
+
+   	<!-- Bean in charge of the Bulk User Importation -->
+    <bean id="plannedMigrationService" class="eu.cec.digit.circabc.repo.migration.PlannedMigrationServiceImpl">
+		<property name="fileArchiver">
+			<ref bean="migration.fileArchiver" />
+    	</property>
+		<property name="exportStatisticsService">
+			<ref bean="ExportStatisticsService" />
+    	</property>
+	</bean>
+
+	<!-- Proxied bulk User Import Service -->
+	<bean id="PlannedMigrationService"  class="org.springframework.aop.framework.ProxyFactoryBean">
+      <property name="proxyInterfaces">
+         <value>
+		      eu.cec.digit.circabc.service.migration.jobs.PlannedMigrationService
+   		</value>
+      </property>
+      <property name="target">
+            <ref bean="plannedMigrationService"/>
+      </property>
+      <property name="interceptorNames">
+         <list>
+		    <idref local="PlannedMigrationService_transaction"/>
+		    <idref bean="AuditMethodInterceptor"/>
+		    <idref local="PlannedMigrationService_security"/>
+         </list>
+      </property>
+    </bean>
+
+    <!-- Transaction interceptor  -->
+	<bean id="PlannedMigrationService_transaction" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+         <property name="transactionManager">
+            <ref bean="transactionManager"/>
+         </property>
+         <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+	</bean>
+
+	 <bean id="PlannedMigrationService_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
+        <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+        <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+        <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+        <property name="objectDefinitionSource">
+            <value>
+               	eu.cec.digit.circabc.service.migration.jobs.PlannedMigrationService.registerUserExportation=ACL_METHOD.ROLE_ADMINISTRATOR
+               	eu.cec.digit.circabc.service.migration.jobs.PlannedMigrationService.registerIterationExportation=ACL_METHOD.ROLE_ADMINISTRATOR
+               	eu.cec.digit.circabc.service.migration.jobs.PlannedMigrationService.registerIterationImportation=ACL_METHOD.ROLE_ADMINISTRATOR
+               	eu.cec.digit.circabc.service.migration.jobs.PlannedMigrationService.registerStatisticExportation=ACL_METHOD.ROLE_ADMINISTRATOR
+               	eu.cec.digit.circabc.service.migration.jobs.PlannedMigrationService.getRegistredUserExportation=ACL_METHOD.ROLE_ADMINISTRATOR
+               	eu.cec.digit.circabc.service.migration.jobs.PlannedMigrationService.getRegistredIterationExportation=ACL_METHOD.ROLE_ADMINISTRATOR
+               	eu.cec.digit.circabc.service.migration.jobs.PlannedMigrationService.getRegistredIterationImportation=ACL_METHOD.ROLE_ADMINISTRATOR
+               	eu.cec.digit.circabc.service.migration.jobs.PlannedMigrationService.getRegistredExportationStatistics=ACL_METHOD.ROLE_ADMINISTRATOR
+               	eu.cec.digit.circabc.service.migration.jobs.PlannedMigrationService.fire=ACL_METHOD.ROLE_ADMINISTRATOR
+            </value>
+        </property>
+    </bean>
+
+</beans>

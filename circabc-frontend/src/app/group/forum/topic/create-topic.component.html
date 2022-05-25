@@ -1,0 +1,28 @@
+<cbc-modal
+  [title]="'label.create.topic'"
+  (ok)="createTopic()"
+  (cancel)="cancelWizard('close')"
+  [okLabel]="'label.create'"
+  [(visible)]="showWizard"
+  [executing]="creating"
+  [executingLabel]="'label.creating'"
+  [showOkButton]="newTopicForm.valid && !creating"
+>
+  <form [formGroup]="newTopicForm">
+    <cbc-multilingual-input
+      formControlName="title"
+      [label]="'label.title' | transloco"
+      [placeholder]="'label.title' | transloco"
+      [lang]="'EN'"
+      [required]="true"
+    ></cbc-multilingual-input>
+    <cbc-control-message [control]="titleControl"></cbc-control-message>
+
+    <cbc-multilingual-input
+      formControlName="description"
+      [textarea]="true"
+      [label]="'label.description' | transloco"
+      [lang]="'EN'"
+    ></cbc-multilingual-input>
+  </form>
+</cbc-modal>

@@ -1,0 +1,138 @@
+<div *ngIf="post" class="post">
+  <div class="comment-author">
+    <div *ngIf="avatar"
+      ><img
+        *ngIf="creator"
+        [attr.src]="avatar | cbcDownload | cbcSecure"
+        width="50"
+        height="50"
+    /></div>
+  </div>
+  <div class="comment-content">
+    <cbc-hint
+      *ngIf="waitingForApproval()"
+      [text]="'post.waiting.approval' | transloco"
+    ></cbc-hint>
+    <cbc-user-card [userId]="creator"></cbc-user-card>
+    {{ 'label.on' | transloco }} {{ created | date: 'y MMM d, H:mm' }}
+    <span
+      class="popup-sm"
+      *ngIf="hasBeenEdited()"
+      (click)="toggleShowModifiedDate()"
+      >({{ 'label.edited' | transloco }})
+      <div
+        class="popuptext"
+        [class.show]="showModifiedDate"
+        style="min-width: 230px; background-color: #abdbe7; color: #555"
+      >
+        &nbsp;&nbsp;{{ 'label.modified' | transloco }}: {{ modified | date: 'y
+        MMM d, H:mm' }}<br />
+        &nbsp;&nbsp;{{ 'label.by' | transloco }}
+        <cbc-user-card [userId]="modifier"></cbc-user-card>
+      </div>
+    </span>
+    <span *ngIf="hasBeenRejected()" style="color: red"
+      >- {{ 'label.rejected.by' | transloco }}: {{ rejectedBy }} ({{ rejectedOn
+      | date: 'y MMM d, H:mm' }})</span
+    >
+    <img
+      *ngIf="hasBeenRejected()"
+      src="img/prohibition.png"
+      width="15"
+      height="15"
+    />
+    <div class="popup-sm" (click)="toggleShowAbuses()">
+      <img
+        *ngIf="abuseSignaled()"
+        src="img/danger-signs.png"
+        width="15"
+        height="15"
+      />
+      <div class="popuptext" [class.show]="showSignaledAbuses"
+        >&nbsp;{{ 'label.abuse.reports' | transloco }}:<br /><br />
+        <div *ngFor="let abuse of abuses">
+          &nbsp;{{ abuse.reportDate }} {{ 'label.by' | transloco }}
+          <cbc-user-card [userId]="abuse.reporter"></cbc-user-card>:<br />
+          &nbsp;{{ abuse.message }}<br />
+        </div>
+      </div>
+    </div>
+    <span *ngIf="abuseSignaled() && isModerator()"
+      ><a (click)="removeAbuses()" style="float: right; font-size: 12px"
+        ><img src="img/delete.png" width="12" height="12" />&nbsp;{{
+        'label.remove.abuse' | transloco }}</a
+      ><br /><br
+    /></span>
+    <div
+      *ngIf="waitingForApproval() && isModerator()"
+      style="float: right; font-size: 12px"
+    >
+      <a (click)="approve()"
+        ><img src="img/checked.png" width="13" height="13" />&nbsp;{{
+        'label.approve' | transloco }}&nbsp;&nbsp;</a
+      >
+      <a (click)="reject()"
+        ><img src="img/cancel.png" width="13" height="13" />&nbsp;{{
+        'label.reject' | transloco }}&nbsp;&nbsp;</a
+      >
+    </div>
+    <p *ngIf="message" class="comment-message" [innerHtml]="message"></p>
+
+    <div>
+      <span *ngFor="let attachment of post.attachments" class="attachment">
+        <a (click)="accessAttachment(attachment)" title="{{ attachment.name }}">
+          <div class="attachment-icon">
+            <img
+              *ngIf="!attachment.isLink"
+              src="img/paper-clip-155D79.png"
+              width="20"
+              height="20"
+            />
+            <img
+              *ngIf="attachment.isLink"
+              src="img/bigicon-link.png"
+              width="24"
+              height="24"
+            />
+          </div>
+          {{ displayName(attachment.name) }}
+        </a>
+      </span>
+    </div>
+
+    <div class="comment-actions">
+      <a
+        *ngIf="canPostComment() && !waitingForApproval() && !hasBeenRejected()"
+        (click)="fireReply()"
+        >{{ 'label.reply' | transloco }}</a
+      >
+      <a *ngIf="canEditComment()" (click)="fireEdit()"
+        >{{ 'label.edit' | transloco }}</a
+      >
+      <a
+        *ngIf="
+          !waitingForApproval() && !isOwner()
+            | cbcIfRoleGE: [topic, 'NwsAccess', []]
+        "
+        (click)="signalAbuse()"
+        >{{ 'label.signal.abuse' | transloco }}</a
+      >
+      <cbc-inline-delete
+        *ngIf="canDeleteComment()"
+        (deletionConfirmed)="deletePost()"
+      ></cbc-inline-delete> </div
+    ><br />
+  </div>
+</div>
+
+<cbc-reject-post
+  [showModal]="showRejectModal"
+  [post]="post"
+  (modalHide)="refreshPostAfterReject($event)"
+></cbc-reject-post>
+
+<cbc-signal-abuse
+  [showModal]="showSignalModal"
+  [post]="post"
+  (modalHide)="refreshPostAfterAbuse($event)"
+></cbc-signal-abuse>

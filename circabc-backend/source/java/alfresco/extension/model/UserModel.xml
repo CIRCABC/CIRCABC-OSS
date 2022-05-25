@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Copyright 2006 European Community
+  
+   Licensed under the EUPL, Version 1.1 or \?as soon they
+   will be approved by the European Commission - subsequent
+   versions of the EUPL (the "Licence");
+   You may not use this work except in compliance with the
+   Licence.
+   You may obtain a copy of the Licence at:
+  
+   https://joinup.ec.europa.eu/software/page/eupl
+  
+   Unless required by applicable law or agreed to in
+   writing, software distributed under the Licence is
+   distributed on an "AS IS" basis,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+   express or implied.
+   See the Licence for the specific language governing
+   permissions and limitations under the Licence.
+-->
+
+<!-- Definition of Circabc User Model. It extends the cm:person contentModel -->
+<model name="cu:circausermodel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+   <!-- Optional meta-data about the model -->
+   <description>CircaUsersModel Model</description>
+   <author>Trasys</author>
+   <version>1.0</version>
+
+   <!-- Imports are required to allow references to definitions in other models -->
+   <imports>
+   	  <!-- Import Alfresco Dictionary Definitions -->
+      <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+      <!-- Import Alfresco Content Domain Model Definitions -->
+      <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+   </imports>
+
+   <!-- Introduction of new namespaces defined by this model -->
+   <namespaces>
+      <namespace uri="http://www.cc.cec/circabc/model/user/1.0" prefix="cu"/>
+   </namespaces>
+
+   <aspects>
+      <!-- Definition of new User Aspects: -->
+      <aspect name="cu:circauseraspect">
+		 <title>CircaUser</title>
+		 <properties>
+				<property name="cu:title">
+					<type>d:text</type>
+					<mandatory>false</mandatory>
+				</property>
+				<property name="cu:phone">
+					<type>d:text</type>
+					<mandatory>false</mandatory>
+				</property>
+				<property name="cu:fax">
+					<type>d:text</type>
+					<mandatory>false</mandatory>
+				</property>
+				<property name="cu:url">
+					<type>d:text</type>
+					<mandatory>false</mandatory>
+				</property>
+				<property name="cu:postaladress">
+					<type>d:text</type>
+					<mandatory>false</mandatory>
+				</property>
+				<property name="cu:description">
+					<type>d:text</type>
+					<mandatory>false</mandatory>
+				</property>
+				<property name="cu:orgdepnumber">
+					<type>d:text</type>
+					<mandatory>false</mandatory>
+				</property>
+				<property name="cu:domain">
+					<type>d:text</type>
+					<mandatory>false</mandatory>
+				</property>
+				<property name="cu:visibility">
+					<type>d:boolean</type>
+					<mandatory>false</mandatory>
+				</property>
+				<property name="cu:globalNotification">
+					<type>d:boolean</type>
+					<mandatory>false</mandatory>
+				</property>
+				<property name="cu:lastLoginTime">
+					<type>d:datetime</type>
+					<mandatory>false</mandatory>
+				</property>
+				<property name="cu:lastModificationDetailsTime">
+					<type>d:datetime</type>
+					<mandatory>false</mandatory>
+				</property>
+				<property name="cu:creationDate">
+					<type>d:datetime</type>
+					<mandatory>false</mandatory>
+				</property>
+				<property name="cu:ecasUserName">
+					<type>d:text</type>
+					<mandatory>false</mandatory>
+				</property>
+				<property name="cu:preference">
+					<type>d:text</type>
+					<mandatory>false</mandatory>
+				</property>
+			</properties>
+		</aspect>
+   </aspects>
+</model>

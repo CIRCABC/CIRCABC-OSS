@@ -1,0 +1,31 @@
+.total-container {
+  float: right;
+  font-size: 13px;
+  color: #035;
+  margin-bottom: 25px;
+}
+
+.no-margin {
+  margin-bottom: 0 !important;
+}
+
+.request-container {
+  clear: both;
+}
+
+.empty-request {
+  text-align: center;
+  color: #757575;
+  font-size: 13px;
+  line-height: 64px;
+  margin-top: 25px;
+  background-color: #fff;
+  padding: 50px 0;
+  border-radius: 5px;
+  box-shadow: 0 0 15px rgb(125 125 125 / 0.5);
+
+  img {
+    padding-left: 25px;
+    vertical-align: middle;
+  }
+}

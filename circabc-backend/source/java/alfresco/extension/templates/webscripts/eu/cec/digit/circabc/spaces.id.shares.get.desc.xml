@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>spaces.id.shares.get</shortname>
+  <description>Get the shares of the given space</description>
+    <url>/circabc/spaces/{id}/shares</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

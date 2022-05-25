@@ -1,0 +1,22 @@
+{{ 'label.dashboard' | transloco | cbcSetTitle }}
+<div class="fluid page-container">
+  <div class="flex-container">
+    <div class="flex-item">
+      <cbc-user-favourites></cbc-user-favourites>
+      <cbc-recent-consultation></cbc-recent-consultation>
+      <cbc-visited-groups></cbc-visited-groups>
+    </div>
+    <div class="flex-timeline">
+      <cbc-user-timeline [when]="'today'"></cbc-user-timeline>
+      <cbc-user-timeline [when]="'week'"></cbc-user-timeline>
+      <cbc-user-timeline [when]="'previousWeek'"></cbc-user-timeline>
+    </div>
+    <div class="flex-item">
+      <cbc-user-memberships
+        [memberships]="memberships"
+        [loading]="loadingMemberships"
+      ></cbc-user-memberships>
+      <cbc-user-events></cbc-user-events>
+    </div>
+  </div>
+</div>

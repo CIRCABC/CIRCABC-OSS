@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+ 
+<beans>
+   <!--  overwrite alfresco bean to force EU like order of languages -->   
+   <bean id="contentFilterLanguagesConfigService" class="org.springframework.extensions.config.xml.XMLConfigService" init-method="init">
+      <constructor-arg>
+         <bean class="org.springframework.extensions.config.source.UrlConfigSource">
+            <constructor-arg>
+               <list>
+                  <value>classpath:alfresco/extension/ml/content-filter-lang.xml</value>
+               </list>
+            </constructor-arg>
+         </bean>
+      </constructor-arg>
+   </bean>
+
+   <bean id="contentFilterLanguagesService" class="org.alfresco.repo.model.ml.ContentFilterLanguagesMap" init-method="init" >
+      <property name="configService">
+         <ref bean="contentFilterLanguagesConfigService" />
+      </property>
+   </bean>
+   
+   
+</beans>

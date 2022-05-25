@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>CIRCABC FAQ</title>
+        <link href="../css/style2.css" type="text/css" rel="stylesheet"/>
+         <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico">
+        <script src="../js/jquery-1.10.2.min.js" type="application/javascript"></script>
+        <script type="application/javascript">
+        	$(document).ready(function(){
+        		
+        		if($("#links h2 img").attr("alt") == "open")
+        			{
+        				$("#links h2 img").attr("src","../imgs/arrow_carrot-up_alt2.png");
+        				$("#links ul#linkList").css("display","block");
+        				$("#links h2 img").attr("alt","closed");
+        			}
+        			else
+        			{
+        				$("#links h2 img").attr("src","../imgs/arrow_carrot-down_alt2.png");
+        				$("#links ul#linkList").css("display","none");
+        				$("#links h2 img").attr("alt","open");
+        			}
+        		
+        		$("#links h2").click(function(){
+        			
+        			
+        			if($("#links h2 img").attr("alt") == "open")
+        			{
+        				$("#links h2 img").attr("src","../imgs/arrow_carrot-up_alt2.png");
+        				$("#links ul#linkList").css("display","block");
+        				$("#links h2 img").attr("alt","closed");
+        			}
+        			else
+        			{
+        				$("#links h2 img").attr("src","../imgs/arrow_carrot-down_alt2.png");
+        				$("#links ul#linkList").css("display","none");
+        				$("#links h2 img").attr("alt","open");
+        			}
+        		});
+        		
+        	});
+        </script>
+        <style type="text/css">
+        	body
+        	{
+        		background-image: url(../imgs/bigbackground.jpg) ;
+        	}
+        </style>
+    </head>
+    <body>
+ 		<div style="background-image: url(../imgs/white-overground.png); border-top: 1px solid #EEE; border-bottom: 1px solid #FFF; margin-top:150px; padding-top:25px; padding-bottom:25px;">
+ 	
+	        <div class="summary" >
+	        	<div class="summaryHeader">
+	        	
+	        		
+	        		<h1><img src="../imgs/Help-File-icon.png" width="76" style="float:left;"/>CIRCABC Help
+					<!--<span class="no-hover" style="font-size:14px; font-weight:normal; float: right;">
+						<a href="../en/known_bugs.html" style="margin-right:10px;">[EN]</a>
+						<a href="../fr/known_bugs.html" style="margin-right:10px;">[FR]</a>
+						<a href="../de/known_bugs.html" style="margin-right:10px;">[DE]</a>
+					</span>-->
+					</h1>
+	        	
+	        	</div>
+	        	
+	        	<ul>
+	        		<li ><a href="authentication.html"><img src="../imgs/icon_profile.png"/><br/>Authentication</a><p class="description">How to manage your account</p></li>
+	        		<li ><a href="administration.html"><img src="../imgs/icon_adjust-vert.png"/><br/>Administration</a><p class="description">Invitation &amp; access management</p></li>
+	        		<li ><a href="library.html"><img src="../imgs/icon_document_alt.png"/><br/>Library</a><br/><p class="description">Questions about the library</p></li>
+	        		<li ><a href="newsgroups.html"><img src="../imgs/icon_comment_alt.png"/><br/>Newsgroups</a><p class="description">Questions about the Newsgroups</p></li>
+	        		<li ><a href="events.html"><img src="../imgs/icon_calendar.png"/><br/>Events</a><p class="description">Questions about the Events</p></li>
+	        		<li ><a href="information.html"><img src="../imgs/icon_info_alt.png"/><br/>Information</a><p class="description">How to set up your information page</p></li>
+	        		<li ><a href="notification.html"><img src="../imgs/icon_mail_alt.png"/><br/>Notification</a><p class="description">Informs you about new uploads and posts</p></li>
+	        		<li ><a href="search.html"><img src="../imgs/icon_search.png"/><br/>Search</a><p class="description">How to search for documents</p></li>
+	        		<li ><a href="known_bugs.html"><img src="../imgs/icon_error-triangle_alt.png"/><br/>Known bugs</a><p class="description"></p></li>
+	        	</ul>
+	        	
+	        	<br style="clear:both;"/>
+	      </div> 
+	      
+        </div>
+
+    </body>
+</html>

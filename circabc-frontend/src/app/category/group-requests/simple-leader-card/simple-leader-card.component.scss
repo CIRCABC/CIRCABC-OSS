@@ -1,0 +1,26 @@
+:host {
+  display: inline-block;
+  margin: 5px;
+}
+
+section.user {
+  width: 300px;
+  border-radius: 3px;
+  background-color: rgb(250 250 250);
+  padding: 8px;
+  font-size: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  .avatar {
+    width: 64px;
+    height: 64px;
+    float: left;
+    margin-right: 8px;
+  }
+
+  .remove {
+    float: right;
+  }
+}

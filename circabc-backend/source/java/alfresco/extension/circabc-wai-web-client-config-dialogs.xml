@@ -1,0 +1,1025 @@
+<!--+
+	|     Copyright European Community 2006 - Licensed under the EUPL V.1.0
+	|
+	|  		   http://ec.europa.eu/idabc/en/document/6523
+	|
+	+-->
+
+<!-- Here Only the new Circabc specific WAI (and not Alfresco native) Dialogs -->
+<!-- The dialog back beans must be an extension of the WaiDialog interface (should extend BaseWaiDialog) -->
+
+<alfresco-config>
+	<config>
+		<dialogs>
+
+			<!-- Definition of the wai circabc Add content -->
+			<!-- Since no JSF upload tag exists, we can't be used in this context.
+				<dialog name="addContentWai" page="/jsp/extension/wai/dialog/content/add-content.jsp" managed-bean="CircabcAddContentDialog"
+				icon="/images/icons/add_content_large.gif" title-id="add_content_title" description-id="add_content_title_desc" />
+			-->
+
+			<dialog name="createSpaceWai"
+				page="/jsp/extension/wai/dialog/space/create-space.jsp"
+				managed-bean="CircabcCreateSpaceDialog"
+				icon="/images/icons/create_space_large.gif"
+				title-id="library_create_space_title"
+				description-id="library_create_space_description" />
+
+			<dialog name="addUrlWai"
+				page="/jsp/extension/wai/dialog/content/add-url.jsp"
+				managed-bean="CircabcAddUrlDialog"
+				icon="/images/icons/create_space_large.gif"
+				title-id="library_add_url_title"
+				description-id="library_add_url_description" />
+
+			<!-- Definition of the make multilingual dialog WAI -->
+			<dialog name="makeMultilingualWai"
+				page="/jsp/extension/wai/dialog/ml/make-multilingual.jsp"
+				managed-bean="CircabcMakeMultilingualDialog"
+				icon="/images/icons/make_ml_large.gif"
+				title-id="make_multilingual_title_wai"
+				description-id="make_multilingual_description_wai"
+				error-message-id="error_make_multilingual_dialog_wai" />
+
+			<dialog name="addTranslationWithoutContentWai"
+				page="/jsp/extension/wai/dialog/ml/add-translation-without-content.jsp"
+				managed-bean="CircabcAddTranslationWithoutContentDialog"
+				icon="/images/icons/make_ml_large.gif"
+				title-id="add_translation_without_content_action_wai"
+				description-id="add_translation_without_content_title_desc"
+				error-message-id="error_add_translation_without_content_wai" />
+
+			<!-- Definition of the new edition dialog WAI -->
+			<dialog name="newEditionWai"
+				page="/jsp/extension/wai/dialog/ml/new-edition.jsp"
+				managed-bean="CircabcNewEditionDialog"
+				icon="/images/icons/new_edition_large.gif"
+				title-id="new_edition_dialog_title_wai"
+				description-id="new_edition_dialog_desc_wai" />
+				
+			<dialog name="machineTranslationContentWai"
+				page="/jsp/extension/wai/dialog/ml/machine-translation-content.jsp"
+				managed-bean="MachineTranslationContentDialog"
+				icon="/images/icons/make_ml_large.gif"
+				title-id="machine_translate_doc_title_wai"
+				description-id="machine_translate_doc_description_wai"/>
+			
+			<dialog name="machineTranslationPropertyWai"
+				page="/jsp/extension/wai/dialog/ml/machine-translation-property.jsp"
+				managed-bean="MachineTranslationPropertyDialog"
+				icon="/images/icons/make_ml_large.gif"
+				title-id="machine_translate_prop_title_wai"
+				description-id="machine_translate_prop_description_wai"/>
+
+			<!-- Definition of the generic delete node dialog -->
+			<dialog name="deleteNodeWai" page="/jsp/extension/wai/dialog/generic/delete-node.jsp"
+				managed-bean="DeleteNodeDialog"
+				icon="/images/icons/delete_large.gif"
+				title-id="delete_content_dialog_title"
+				description-id="delete_content_dialog_description" />
+
+			<!-- Definition of the wai generic manage node details -->
+			<dialog name="manageNodeDetailsWai"
+				page="/jsp/extension/wai/dialog/generic/manage-node-details.jsp"
+				managed-bean="ManageNodeDetailsDialog"
+				icon="/images/icons/details_large.gif" show-ok-button="false" />
+
+			<!-- Definition of the wai generic edit node properties -->
+			<dialog name="editNodePropertiesWai"
+				page="/jsp/extension/wai/dialog/generic/edit-node-properties.jsp"
+				managed-bean="EditNodePropertiesDialog"
+				icon="/images/icons/edit_properties_large.gif" />
+
+			<!-- Definition of the edit own user dialog -->
+			<dialog name="userConsoleWai"
+				page="/jsp/extension/wai/dialog/users/edit-user-details.jsp"
+				managed-bean="EditUserDetailsDialog"
+				icon="/images/icons/edituser_large.gif"
+				title-id="edit_user_details_title"
+				description-id="edit_user_details_title_desc" />
+
+			<!-- Definition of the create forum dialog WAI -->
+			<dialog name="createForumWai"
+				page="/jsp/extension/wai/dialog/forums/create-forum.jsp"
+				managed-bean="CircabcCreateForumDialog"
+				icon="/images/icons/create_forum_large.gif"
+				title-id="create_forum"
+				description-id="create_forum_description"
+				error-message-id="error_create_forum_dialog" />
+
+			<!-- Definition of the create post dialog WAI -->
+			<dialog name="createPostWai"
+				page="/jsp/extension/wai/dialog/content/edit/edit-online.jsp"
+				managed-bean="CircabcCreatePostDialog"
+				icon="/images/icons/create_post_large.gif"
+				title-id="create_post_title_wai"
+				description-id="create_post_description_wai"
+				error-message-id="error_create_post_dialog_wai" />
+
+			<!-- Definition of the edit post dialog WAI -->
+			<dialog name="editPostWai"
+				page="/jsp/extension/wai/dialog/forums/edit-post.jsp"
+				managed-bean="CircabcEditPostDialog"
+				icon="/images/icons/edit_post_large.gif"
+				title-id="edit_post_dialog_title"
+				description-id="edit_post_dialog_description" />
+
+			<!-- Definition of the create reply (to a post) dialog WAI -->
+			<dialog name="createReplyWai"
+				page="/jsp/extension/wai/dialog/content/edit/edit-online.jsp"
+				managed-bean="CircabcCreateReplyDialog"
+				icon="/images/icons/post_reply_large.gif"
+				title-id="create_reply_title_wai"
+				description-id="create_reply_description_wai" />
+
+			<!-- Definition of the create topic dialog WAI -->
+			<dialog name="createTopicWai"
+				page="/jsp/extension/wai/dialog/forums/create-topic.jsp"
+				managed-bean="CircabcCreateTopicDialog"
+				icon="/images/icons/create_topic_large.gif"
+				title-id="create_topic_title_wai"
+				description-id="create_topic_description_wai" />
+
+			<!-- Definition of the create discussion dialog WAI -->
+			<dialog name="createDiscussionWai"
+				page="/jsp/extension/wai/dialog/forums/create-discussion.jsp"
+				managed-bean="CircabcCreateDiscussionDialog"
+				icon="/images/icons/create_topic_large.gif"
+				title-id="create_discussion_title_wai"
+				description-id="create_discussion_description_wai" />
+
+			<!-- Definition of the apply for membership dialog WAI -->
+			<dialog name="applyForMembershipWai"
+				page="/jsp/extension/wai/dialog/applicant/apply-for-membership.jsp"
+				managed-bean="ApplyForMembershipDialog"
+				icon="/images/icons/space-icon-default.gif"
+				show-ok-button="false" />
+
+			<!-- Definition of the reset (other) user dialog WAI -->
+			<dialog name="resetUserPasswordWai"
+				page="/jsp/extension/wai/dialog/users/change-other-password.jsp"
+				managed-bean="ResetUserPasswordDialog"
+				icon="/images/icons/edituser_large.gif"
+				title-id="change_other_password_title"
+				description-id="change_other_password_title_desc" />
+
+			<!-- Definition of the reset own password dialog WAI -->
+			<dialog name="changeOwnPasswordWai"
+				page="/jsp/extension/wai/dialog/users/change-my-password.jsp"
+				managed-bean="ChangeOwnPasswordDialog"
+				icon="/images/icons/edituser_large.gif"
+				title-id="change_own_password_title"
+				description-id="change_own_password_title_desc" />
+
+			<!-- Definition of the view user details (Read Only) WAI -->
+			<dialog name="viewUserDetailsWai"
+				page="/jsp/extension/wai/dialog/users/view-user-details.jsp"
+				managed-bean="CircabcViewUserDetailsDialog"
+				icon="/images/icons/user_console_large.gif"
+				title-id="view_user_details_title"
+				description-id="view_user_details_title_desc" />
+
+			<!-- Definition of the view user details (Read Only) WAI but 
+				without action panel -->
+			<dialog name="viewUserDetailsNoActionsWai"
+				page="/jsp/extension/wai/dialog/users/view-user-details.jsp"
+				managed-bean="CircabcViewUserDetailsNoActionsDialog"
+				icon="/images/icons/user_console_large.gif"
+				title-id="view_user_details_title"
+				description-id="view_user_details_title_desc" />
+
+			<!-- Definition of the wai Self registration dialog -->
+			<dialog name="selfRegisterWai"
+				page="/jsp/extension/wai/dialog/signup/signup.jsp"
+				managed-bean="SelfRegistrationDialog"
+				icon="/images/icons/add_user_large.gif"
+				title-id="self_registration_page_title"
+				description-id="self_registration_page_description"
+				show-ok-button="false" />
+
+			<!-- Definition of the wai Self registration Congratulation dialog -->
+			<dialog name="selfRegisterSuccessWai"
+				page="/jsp/extension/wai/dialog/signup/signup-success.jsp"
+				managed-bean="SignupCongratulationDialog"
+				title-id="self_registration_congratulation_page_title"
+				description-id="self_registration_congratulation_page_description" />
+
+			<!-- Definition of the wai Self resend password dialog -->
+			<dialog name="resendOwnPasswordWai"
+				page="/jsp/extension/wai/dialog/resend/resend.jsp"
+				managed-bean="SelfResendDialog"
+				icon="/images/icons/add_user_large.gif"
+				title-id="resend_page_title"
+				description-id="resend_page_description"
+				show-ok-button="false" />
+
+			<!-- Definition of the wai Self resend password success dialog -->
+			<dialog name="resendOwnPasswordSuccessWai"
+				page="/jsp/extension/wai/dialog/resend/resend-success.jsp"
+				managed-bean="SelfResendSuccessDialog"
+				title-id="resend_congratulation_page_title"
+				description-id="resend_congratulation_page_description" />
+
+			<!-- Definition of the wai show ml content details dialog -->
+			<dialog name="showMLContentHistoryWai"
+				page="/jsp/extension/wai/dialog/ml/ml-container-history.jsp"
+				managed-bean="CircabcMLContainerHistoryDialog"
+				icon="/images/icons/details_large.gif"
+				title-id="manage_multilingual_details_title"
+				description-id="manage_multilingual_details_title_desc" />
+
+			<!-- Definition of the wai show content details  dialog -->
+			<dialog name="showContentHistoryWai"
+				page="/jsp/extension/wai/dialog/content/versionned-properties.jsp"
+				managed-bean="CircabcContentHistoryDialog"
+				icon="/images/icons/details_large.gif"
+				title-id="version_details_page_title"
+				description-id="version_details_page_subtitle" />
+
+			<!-- Definition of the administration console dialog -->
+			<dialog name="adminConsoleWai"
+				page="/jsp/extension/wai/dialog/admin/admin-console.jsp"
+				managed-bean="CircabcAdminConsoleDialog"
+				icon="/images/icons/admin_console_large.gif" title-id="admin_console_dialog_title"
+				description-id="admin_console_dialog_description"
+				show-ok-button="false" />
+
+			<!-- Definition of the create forum dialog WAI -->
+			<dialog name="createCatHeaderWai"
+				page="/jsp/extension/wai/dialog/headers/create-headers.jsp"
+				managed-bean="AddCategoryHeaderDialog"
+				icon="/images/icons/create_category_large.gif"
+				title-id="create_cat_header_dialog_title"
+				description-id="create_cat_header_dialog_description"/>
+
+			<!-- Definition of the undo check out dialog -->
+			<dialog name="undoCheckOutWai"
+				page="/jsp/extension/wai/dialog/coci/undocheckout-file.jsp"
+				managed-bean="UndoCheckoutDialog"
+				icon="/images/icons/delete_large.gif" />
+
+			<!-- Definition of the manage keywords dialog -->
+			<dialog name="manageKeywordsDialogWai"
+				page="/jsp/extension/wai/dialog/keywords/manage-keywords.jsp"
+				managed-bean="ManageKeywordsDialog"
+				icon="/images/icons/category.gif"
+				title-id="manage_keyword_dialog_title"
+				description-id="manage_keyword_dialog_description"
+				show-ok-button="false"/>
+			
+			<!-- Definition of the manage support dialog -->
+			<dialog name="manageForSupportDialogWai"
+				page="/jsp/extension/wai/dialog/support/manage-for-support.jsp"
+				managed-bean="ManageForSupportDialog"
+				icon="/images/icons/category.gif"
+				title-id="manage_for_support_dialog_title"
+				description-id="manage_for_support_dialog_description"
+				show-ok-button="false"/>
+
+			<!-- Definition of the delete keyword dialog -->
+			<dialog name="deleteKeywordDialogWai"
+				page="/jsp/extension/wai/dialog/keywords/delete-keyword.jsp"
+				managed-bean="DeleteKeywordDialog"
+				icon="/images/icons/delete_category_large.gif"
+				title-id="delete_keyword_dialog_title"
+				description-id="delete_keyword_dialog_description"/>
+
+			<!-- Definition of the define new keyword dialog -->
+			<dialog name="defineKeywordDialogWai"
+				page="/jsp/extension/wai/dialog/keywords/add-new-keyword.jsp"
+				managed-bean="DefineKeywordDialog"
+				icon="/images/icons/create_category_large.gif"
+				title-id="add_new_keyword_dialog_title"
+				description-id="add_new_keyword_dialog_description"/>
+
+			<!-- Definition of the edit existing keyword dialog -->
+			<dialog name="editKeywordDialogWai"
+				page="/jsp/extension/wai/dialog/keywords/add-new-keyword.jsp"
+				managed-bean="DefineKeywordDialog"
+				icon="/images/icons/edit_category_large.gif"
+				title-id="modify_keyword_dialog_title"
+				description-id="modify_keyword_dialog_description"/>
+
+			<!-- Definition of the add keyword(s) to document dialog -->
+			<dialog name="setKeywordsDialogWai"
+				page="/jsp/extension/wai/dialog/keywords/set-keyword.jsp"
+				managed-bean="SetKeywordsDialog"
+				icon="/images/icons/create_category_large.gif"
+				title-id="set_document_keyword_dialog_browser_title"
+				description-id="set_document_keyword_dialog_icon_tooltip" />
+
+			<!-- Definition of the select keyword(s) for advanced search dialog -->
+			<dialog name="selectKeywordsForSearchDialogWai"
+				page="/jsp/extension/wai/dialog/keywords/select-keyword.jsp"
+				managed-bean="SelectKeywordsForSearchDialog"
+				icon="/images/icons/create_category_large.gif"
+				title-id="select_keyword_for_search_dialog_title"
+				description-id="select_keyword_for_search_dialog_description" />
+
+			<!-- Definition of the notification on copy move -->
+			<dialog name="notificationPasteDialogWai"
+				page="/jsp/extension/wai/dialog/notification/notification-paste.jsp"
+				managed-bean="NotificationPasteDialog"
+				icon="/images/extension/icons/edit_notification_large.png"
+				title-id="define_notification_paste_dialog_title"
+				description-id="define_notification_paste_dialog_description"/>
+
+			<!-- Definition of the manage notification dialog -->
+			<dialog name="manageNotificationDialogWai"
+				page="/jsp/extension/wai/dialog/notification/manage-notification.jsp"
+				managed-bean="ManageNotificationDialog"
+				icon="/images/extension/icons/edit_notification_large.png"
+				description-id="notification_view_other_dialog_description"
+				show-ok-button="false" />
+
+			<!-- Definition of the edit othres' Authority Notification Dialog -->
+			<dialog name="editAuthorityNotificationDialogWai"
+				page="/jsp/extension/wai/dialog/notification/edit-others-notification.jsp"
+				managed-bean="EditAuthorityNotificationDialog"
+				icon="/images/icons/user_large.gif"
+				description-id="notification_edit_other_dialog_description"/>
+
+			<!-- Definition of the edit own Notification Dialog -->
+			<dialog name="editOwnNotificationDialogWai"
+				page="/jsp/extension/wai/dialog/notification/edit-own-notification.jsp"
+				managed-bean="EditOwnNotificationDialog"
+				icon="/images/extension/icons/edit_notification_large.png"
+				title-id="notification_edit_own_dialog_title"
+				description-id="notification_edit_own_dialog_description"/>
+
+			<!-- Definition of the edit othres' Authority Notification Dialog -->
+			<dialog name="defineOthersNotificationWai"
+				page="/jsp/extension/wai/dialog/notification/define-others-notification.jsp"
+				managed-bean="DefineOthersNotification"
+				icon="/images/icons/user_large.gif"
+				description-id="notification_define_other_dialog_description"/>
+
+			<!-- Definition of the manage dynamic properties dialog -->
+			<dialog name="managePropertiesDialogWai"
+				page="/jsp/extension/wai/dialog/properties/manage-properties.jsp"
+				managed-bean="ManagePropertiesDialog"
+				icon="/images/icons/category.gif"
+				title-id="manage_properties_dialog_title"
+				description-id="manage_properties_dialog_description"
+				show-ok-button="false"/>
+
+			<!-- Definition of the delete property dialog -->
+			<dialog name="deletePropertyDialogWai"
+				page="/jsp/extension/wai/dialog/properties/delete-property.jsp"
+				managed-bean="DeletePropertyDialog"
+				icon="/images/icons/delete_category_large.gif"
+				title-id="delete_property_dialog_title"
+				description-id="delete_property_dialog_description"/>
+
+			<!-- Definition of the edit property dialog -->
+			<dialog name="editPropertyDialogWai"
+				page="/jsp/extension/wai/dialog/properties/edit-property.jsp"
+				managed-bean="EditPropertyDialog"
+				icon="/images/icons/edit_category_large.gif"
+				title-id="edit_property_dialog_title"
+				description-id="edit_property_dialog_description"/>
+				
+			<!-- Definition of the editselection property dialog -->
+			<dialog name="editSelectionPropertyDialogWai"
+				page="/jsp/extension/wai/dialog/properties/edit-selection-property.jsp"
+				managed-bean="EditSelectionPropertyDialog"
+				icon="/images/icons/edit_category_large.gif"
+				title-id="edit_property_dialog_title"
+				description-id="edit_property_dialog_description"/>
+
+			<!-- Definition of the delete Ig dialog -->
+			<dialog name="deleteIgNodeDialogWai"
+				page="/jsp/extension/wai/dialog/ig/delete-ig.jsp"
+				managed-bean="DeleteIgNodeDialog"
+				icon="/images/icons/delete.gif"
+				title-id="delete_ig_node_dialog_title"
+				description-id="delete_ig_node_dialog_description"/>
+				
+			<!-- Definition of the move Ig dialog -->
+			<dialog name="moveIgDialog"
+				page="/jsp/extension/wai/dialog/ig/move-ig.jsp"
+				managed-bean="MoveIgDialog"
+				icon="/images/icons/delete.gif"
+				title-id="move_ig_dialog_title"
+				description-id="move_ig_dialog_description"/>
+
+			<!-- Definition of an advanced circabc creation wizard           -->
+			<dialog name="createCircabcDialogWai"
+				title-id="create_survey_space_title"
+				description-id="create_survey_space_description"
+				icon="/images/icons/create_space_large.gif"
+				error-message-id="create_survey_space_error"
+				page="/jsp/extension/wai/wizard/create-circabc-nodes/enter-circabc-details.jsp"
+				managed-bean="CreateCircabcNodesWizard"/>
+
+			<!-- Definition of an advanced circabc creation wizard           -->
+			<dialog name="createSurveyDialogWai"
+				title-id="create_survey_space_title"
+				description-id="create_survey_space_description"
+				icon="/images/icons/create_space_large.gif"
+				error-message-id="create_survey_space_error"
+				page="/jsp/extension/wai/wizard/create-circabc-nodes/enter-circabc-details.jsp"
+				managed-bean="CreateSurveySpaceDialog"/>
+
+			<!-- Definition of the refuse applicant dialog -->
+			<dialog name="refuseApplicantDialogWai"
+				page="/jsp/extension/wai/dialog/applicant/refuse-applicant.jsp"
+				managed-bean="RefuseApplicantDialog"
+				icon="/images/icons/change_expire_date_large.gif" />
+
+			<!-- Definition of the manage applicants dialog -->
+			<dialog name="manageApplicantsDialogWai"
+				page="/jsp/extension/wai/dialog/applicant/manage-applicants.jsp"
+				managed-bean="ManageApplicantsDialog"
+				icon="/images/icons/users_large.gif"
+				show-ok-button="false" />
+
+			<!-- Definition of the audit dialog -->
+			<dialog name="auditSearchPagedDialogWai"
+				page="/jsp/extension/wai/dialog/audit/audit-search-paged.jsp"
+				managed-bean="AuditSearchPagedDialog"
+				icon="/images/extension/icons/edit_circabc_user_role_large.gif" />
+
+			<dialog name="auditSearchDialogWai"
+				page="/jsp/extension/wai/dialog/audit/audit-search.jsp"
+				managed-bean="AuditSearchDialog"
+				icon="/images/extension/icons/edit_circabc_user_role_large.gif" />
+
+			<dialog name="documentHistoryDialogWai"
+				page="/jsp/extension/wai/dialog/audit/history.jsp"
+				managed-bean="DocumentHistoryDialog"
+				icon="/images/extension/icons/edit_circabc_user_role_large.gif"
+				show-ok-button="false"
+				/>
+
+			<dialog name="importDialogWai"
+				page="/jsp/extension/wai/dialog/actions/import.jsp"
+				managed-bean="ImportDialogWai"
+				icon="/images/extension/icons/edit_circabc_user_role_large.gif"
+				show-ok-button="false"
+				/>
+
+			<!-- Definition of the manage permission dialog -->
+			<dialog name="managePermissionsWai"
+				page="/jsp/extension/wai/dialog/permissions/manage-permissions.jsp"
+				managed-bean="ManagePermissionsDialog"
+				icon="/images/icons/users_large.gif"
+				show-ok-button="false" />
+
+			<!-- Definition of the edit userpermission dialog -->
+			<dialog name="editPermissionWai"
+				page="/jsp/extension/wai/dialog/permissions/edit-user-permission.jsp"
+				managed-bean="EditPermissionDialog"
+				icon="/images/icons/edituser_large.gif"/>
+
+			<!-- Definition of the edit userpermission dialog -->
+			<dialog name="removePermissionWai"
+				page="/jsp/extension/wai/dialog/permissions/remove-user-permission.jsp"
+				managed-bean="RemovePermissionDialog"
+				icon="/images/icons/delete_large.gif"/>
+
+			<!-- Definition of the manage profile dialog -->
+			<dialog name="manageAccessProfilesDialogWai"
+				page="/jsp/extension/wai/dialog/profile/manage-access-profiles.jsp"
+				managed-bean="ManageAccessProfilesDialog"
+				icon="/images/icons/group_large.gif"
+				title-id="edit_circabc_profiles"
+				description-id="edit_circabc_ig_profiles_description"
+				show-ok-button="false" />
+
+			<!-- Definition of the delete profile dialog -->
+			<dialog name="deleteAccessProfilesDialogWai"
+				page="/jsp/extension/wai/dialog/profile/remove-access-profile.jsp"
+				managed-bean="DeleteAccessProfilesDialog"
+				icon="/images/icons/delete_group_large.gif"
+				title-id="remove_access_profile_dialog_page_title"
+				description-id="edit_access_profile_dialog_page_description" />
+
+			<!-- Definition of the edit profile dialog -->
+			<dialog name="editAccessProfilesDialogWai"
+				page="/jsp/extension/wai/dialog/profile/edit-access-profile.jsp"
+				managed-bean="EditAccessProfileDialog"
+				icon="/images/icons/edit_group_large.gif"
+				title-id="edit_access_profile_dialog_page_title"
+				description-id="edit_access_profile_dialog_page_description" />
+
+			<!-- Definition of the create profile dialog -->
+			<dialog name="createAccessProfilesDialogWai"
+				page="/jsp/extension/wai/dialog/profile/edit-access-profile.jsp"
+				managed-bean="CreateAccessProfileDialog"
+				icon="/images/icons/add_group_large.gif"
+				title-id="create_access_profile_dialog_page_title"
+				description-id="create_access_profile_dialog_page_description" />
+
+			<!-- Definition of the Circabc profile dialog -->
+			<dialog name="manageUserProfilesDialogWai"
+				page="/jsp/extension/wai/dialog/profile/manage-user-profile.jsp"
+				managed-bean="ManageUserProfilesDialog"
+				icon="/images/extension/icons/edit_circabc_user_role_large.gif"
+				title-id="manage_invited_users_dialog_title"
+				show-ok-button="false" />
+
+			<!-- Definition of the Circabc management dialog -->
+			<dialog name="removeUserProfileDialogWai"
+				page="/jsp/extension/wai/dialog/profile/remove-user-profile.jsp"
+				managed-bean="RemoveUserProfileDialog"
+				icon="/images/extension/icons/remove_circabc_user_rights_large.gif"/>
+
+			<!-- Definition of the Circabc users right dialog -->
+			<dialog name="editUserProfileDialogWai"
+				page="/jsp/extension/wai/dialog/profile/edit-user-profile.jsp"
+				managed-bean="EditUserProfileDialog"
+				icon="/images/extension/icons/edit_circabc_user_role_large.gif"
+				title-id="edit_circabc_user_rights"
+				description-id="edit_circabc_user_rights_description" />
+				
+			<!-- Definition of the user todo dialog WAI -->
+			<dialog name="viewUserCompletedWai"
+				page="/jsp/extension/workflow/tasks-completed-dashlet.jsp"
+				managed-bean="CircabcWorkflowBean"
+				title-id="view_completed_title"
+				description-id="view_completed_title_desc"
+				show-ok-button="false" />
+			
+			<!-- Definition of the user todo dialog WAI -->
+			<dialog name="viewUserPooledToDoWai"
+				page="/jsp/extension/workflow/pooled-tasks-todo-dashlet.jsp"
+				managed-bean="CircabcWorkflowBean"
+				title-id="view_pooled_todo_title"
+				description-id="view_pooled_todo_title_desc"
+				show-ok-button="false" />
+			
+			<!-- Definition of the user todo dialog WAI -->
+			<dialog name="viewAllActiveWai"
+				page="/jsp/extension/workflow/tasks-active-dashlet.jsp"
+				managed-bean="CircabcWorkflowBean"
+				title-id="view_active_title"
+				description-id="view_active_title_desc"
+				show-ok-button="false" />
+				
+			<!-- Definition of the ig active tsaks dialog WAI -->
+			<dialog name="viewIgActiveWai"
+				page="/jsp/extension/workflow/tasks-ig-active-dashlet.jsp"
+				managed-bean="CircabcWorkflowBean"
+				title-id="view_active_title"
+				description-id="view_active_title_desc"
+				show-ok-button="false" />
+				
+			<!-- Definition of the category active tsaks dialog WAI -->
+			<dialog name="viewCatActiveWai"
+				page="/jsp/extension/workflow/tasks-cat-active-dashlet.jsp"
+				managed-bean="CircabcWorkflowBean"
+				title-id="view_active_title"
+				description-id="view_active_title_desc"
+				show-ok-button="false" />
+				
+			<!-- Definition of the user todo dialog WAI -->
+			<dialog name="viewUserToDoWai"
+				page="/jsp/extension/workflow/tasks-todo-dashlet.jsp"
+				managed-bean="CircabcWorkflowBean"
+				title-id="view_to_do_title"
+				description-id="view_to_do_title_desc"
+				show-ok-button="false" />
+
+			<!-- Definition of the view user membership dialog WAI -->
+			<dialog name="viewUserMembershipWai"
+				page="/jsp/extension/wai/dialog/users/view-user-membership.jsp"
+				managed-bean="ViewUserMembershipDialog"
+				title-id="view_user_membership_title"
+				description-id="view_user_membership_title_desc"
+				show-ok-button="false" />
+				
+			<!-- Definition of the view user saved search dialog WAI -->
+			<dialog name="viewUserSavedSearchWai"
+				page="/jsp/extension/wai/dialog/users/view-saved-search.jsp"
+				managed-bean="ViewUserSavedSearchDialog"
+				title-id="view_saved_search_title"
+				description-id="view_saved_search_title_desc"
+				show-ok-button="false" />
+
+			<!-- Definition of the advanced search dialog -->
+			<dialog name="advancedSearchDialogWai"
+				page="/jsp/extension/wai/dialog/search/advanced-search.jsp"
+				managed-bean="CircabcAdvancedSearchDialog"
+				icon="/images/icons/search_large.gif"
+				title-id="advanced_search_dialog_title"
+				description-id="advanced_search_dialog_description" />
+
+			<!-- Definition of the search result dialog -->
+			<dialog name="searchResultDialogWai"
+				page="/jsp/extension/wai/dialog/search/search-result.jsp"
+				managed-bean="SearchResultDialog"
+				icon="/images/icons/search_results_large.gif"
+				title-id="search_results_title"
+				description-id="search_results_title_desc"/>
+			
+			<!-- Definition of the Autonomy search result dialog -->
+			<dialog name="autonomySearchResultDialogWai"
+				page="/jsp/extension/wai/dialog/search/autonomy-search-result.jsp"
+				managed-bean="AutonomySearchResultDialog"
+				icon="/images/extension/autonomy_search_results_large.png"
+				title-id="autonomy_search_results_title"
+				description-id="autonomy_search_results_title_desc"
+				show-ok-button="false" />
+				
+			<dialog name="editSearchWai"
+				page="/jsp/extension/wai/dialog/search/edit-search.jsp"
+				managed-bean="CircabcEditSearchDialog"
+				icon="/images/icons/save_search_large.gif"
+				title-id="save_edit_search"
+				description-id="save_search_description" />
+				
+			<dialog name="deleteSearchWai"
+				page="/jsp/extension/wai/dialog/search/delete-search.jsp"
+				managed-bean="CircabcDeleteSearchDialog"
+				icon="/images/icons/delete_large.gif"
+				title-id="delete_content_dialog_title"
+				description-id="delete_search_dialog_description" />
+
+			<dialog name="saveSearchWai"
+				page="/jsp/extension/wai/dialog/search/save-search.jsp"
+				managed-bean="CircabcSaveSearchDialog"
+				icon="/images/icons/edit_search_large.gif"
+				title-id="save_new_search"
+				description-id="save_search_description" />
+
+			<!-- Definition of the Circabc manage deleted items dialog -->
+			<dialog name="circabcManageDeletedItems"
+				page="/jsp/extension/wai/dialog/trashcan/trash-list.jsp"
+				managed-bean="CircabcTrashcanDialog"
+				label="manage_deleted_items"
+				icon="/images/icons/trashcan_large.gif"
+				title-id="manage_deleted_items"
+				description-id="manage_deleted_items_description"
+				show-ok-button="false" />
+			
+			<!-- Definition of the Circabc dialog to show and manage expired items -->
+			<dialog name="circabcShowExpiredItems"
+				page="/jsp/extension/wai/dialog/expiration/showExpiredItemsDialog.jsp"
+				managed-bean="ExpiredItemsDialog"
+				label="show_expired_items_dialog_label"
+				icon="/images/icons/trashcan_large.gif"
+				title-id="show_expired_items_dialog_label"
+				description-id="show_expired_items_dialog_description"
+				show-ok-button="false" />
+				
+			<!-- Definition of the Circabc dialog to delete expired items -->
+			<dialog name="circabcDeleteExpiredItems"
+				page="/jsp/extension/wai/dialog/expiration/deleteExpiredItemsDialog.jsp"
+				managed-bean="ExpiredItemsDialog"
+				icon="/images/icons/trashcan_large.gif"
+				label="delete_expired_items_dialog_label"
+				title-id="delete_expired_items_dialog_label"
+				description-id="delete_expired_items_dialog_description" />
+
+			<!-- Definition of the Circabc recover listed dialog -->
+			<dialog name="circabcDeleteItem"
+				page="/jsp/extension/wai/dialog/trashcan/delete-item.jsp"
+				managed-bean="CircabcTrashcanDeleteItemDialog"
+				label="manage_deleted_items"
+				icon="/images/icons/trashcan_large.gif"
+				title-id="delete_item"
+				description-id="delete_item_info" />
+
+			<!-- Definition of the Circabc recover listed dialog -->
+			<dialog name="circabcDeleteListedItems"
+				page="/jsp/extension/wai/dialog/trashcan/delete-listed.jsp"
+				managed-bean="CircabcTrashcanDeleteListedItemsDialog"
+				label="manage_deleted_items"
+				icon="/images/icons/trashcan_large.gif"
+				title-id="delete_listed_items"
+				description-id="delete_listed_items_info" />
+
+
+			<!-- Definition of the Circabc recover listed dialog -->
+			<dialog name="circabcRecoverItem"
+				page="/jsp/extension/wai/dialog/trashcan/recover-item.jsp"
+				managed-bean="CircabcTrashcanRecoverItemDialog"
+				label="manage_deleted_items"
+				icon="/images/icons/recover_large.gif"
+				title-id="recover_item"
+				description-id="recover_item_info"/>
+
+			<!-- Definition of the Circabc recover listed dialog -->
+			<dialog name="circabcRecoverListedItems"
+				page="/jsp/extension/wai/dialog/trashcan/recover-listed.jsp"
+				managed-bean="CircabcTrashcanRecoverListedItemsDialog"
+				label="manage_deleted_items"
+				icon="/images/icons/recover_large.gif"
+				title-id="recover_listed_items"
+				description-id="recover_listed_items_info"/>
+
+			<dialog name="circabcRecoveryReport"
+				page="/jsp/extension/wai/dialog/trashcan/recovery-report.jsp"
+				managed-bean="CircabcTrashcanRecoveryReportDialog"
+				label="manage_deleted_items"
+				icon="/images/icons/recover_large.gif"
+				title-id="recover_listed_items"
+				description-id="recover_listed_items_info"
+				show-ok-button="false" />
+
+			<dialog name="editDocumentInlineWai"
+				page="/jsp/extension/wai/dialog/content/edit/edit-online.jsp"
+				managed-bean="EditOnlineDocumentDialog"
+				icon="/images/icons/edit_online_large.gif"
+				title-id="editfile_description"
+				description-id="editfileinline_description" />
+
+			<!-- Definition of the translate property Dialog -->
+			<dialog name="translatePropertyDialogWai"
+				page="/jsp/extension/wai/dialog/ml/translate-property.jsp"
+				managed-bean="TranslatePropertyDialog"
+				icon="/images/icons/edit_form_large.gif" />
+
+ 			<dialog name="modifyMeetingInfoWai"
+				page="/jsp/extension/wai/dialog/event/edit-meeting-general-info.jsp"
+				managed-bean="ModifyAppointmentInfoDialog"
+				icon="/images/icons/edit_form_large.gif" />
+
+ 			<dialog name="modifyEventInfoWai"
+				page="/jsp/extension/wai/dialog/event/edit-event-general-info.jsp"
+				managed-bean="ModifyAppointmentInfoDialog"
+				icon="/images/icons/edit_form_large.gif" />
+
+			<dialog name="modifyMeetingRelevantSpaceWai"
+				page="/jsp/extension/wai/dialog/event/edit-select-space.jsp"
+				managed-bean="ModifyRelevantSpaceDialog"
+				icon="/images/extension/icons/add_attachment_large.gif"
+				title-id="event_modif_space_dialog_title" />
+
+			<dialog name="modifyAppointmentContactInfoWai"
+				page="/jsp/extension/wai/dialog/event/edit-contact-info.jsp"
+				managed-bean="ModifyContactInfoWaiDialog"
+				icon="/images/icons/project-icon-blog.gif" />
+
+			<dialog name="modifyAppointmentAudienceWai"
+				page="/jsp/extension/wai/dialog/event/edit-audience.jsp"
+				managed-bean="ModifyAudienceWaiDialog"
+				icon="/images/icons/users_large.gif" />
+
+			<dialog name="deleteAppointmentWai"
+				page="/jsp/extension/wai/dialog/event/delete.jsp"
+				managed-bean="DeleteAppointmentDialog"
+				icon="/images/icons/delete_large.gif" />
+
+			<dialog name="acceptMeetingRequestWai"
+				page="/jsp/extension/wai/dialog/event/accept.jsp"
+				managed-bean="AcceptMeetingRequestDialog"
+				icon="/images/extension/blog_post_large.png" />
+
+			<dialog name="declineMeetingRequestWai"
+				page="/jsp/extension/wai/dialog/event/decline.jsp"
+				managed-bean="DeclineMeetingRequestDialog"
+				icon="/images/extension/blog_remove_large.png" />
+
+			<dialog name="modifyReccurenceDialogWai"
+				page="/jsp/extension/wai/dialog/event/decline.jsp"
+				managed-bean="ModifyReccurenceDialog"
+				icon="/images/icons/project-icon-forums.gif" />
+
+			<dialog name="viewEventsMeetingWai"
+				page="/jsp/extension/wai/dialog/event/view-appointments.jsp"
+				managed-bean="ViewAppointments"
+				icon="/images/icons/users_large.gif"
+				title-id="event_view_appointments_dialog_title"
+				description-id="event_view_appointments_dialog_description"
+				show-ok-button="true"  />
+
+			<!-- Definition of the manage share space dialog -->
+			<dialog name="manageShareSpaceDialog"
+				page="/jsp/extension/wai/dialog/share-space/manage-share-space.jsp"
+				managed-bean="ManageShareSpaceDialog"
+				icon="/images/icons/import_website_large.gif"
+				title-id="manage_share_space_dialog_title"
+				description-id="manage_share_space_dialog_description"
+				show-ok-button="false"/>
+
+			<!-- Definition of the remove ig from  shared spacedialog -->
+			<dialog name="removeIGShareSpaceDialog"
+				page="/jsp/extension/wai/dialog/share-space/remove-ig.jsp"
+				managed-bean="RemoveIGShareSpaceDialog"
+				icon="/images/icons/delete_large.gif"
+				title-id="remove_ig_share_space_dialog_title"
+				description-id="remove_ig_share_space_dialog_description"/>
+
+			<dialog name="manageNavigationPreferenceDialog"
+				page="/jsp/extension/wai/dialog/customization/manage-navigation.jsp"
+				managed-bean="ManageNavigationPreference"
+				icon="/images/icons/view_properties_large.gif"
+				description-id="manage_navigation_dialog_description"
+				show-ok-button="false"/>
+
+			<dialog name="editNavigationPreferenceDialog"
+				page="/jsp/extension/wai/dialog/customization/edit-navigation.jsp"
+				managed-bean="EditNavigationPreference"
+				icon="/images/icons/edit_form_large.gif"
+				description-id="edit_navigation_dialog_description" />
+
+			<dialog name="removeNavigationPreferenceDialog"
+				page="/jsp/extension/wai/dialog/customization/remove-navigation.jsp"
+				managed-bean="RemoveNavigationPreference"
+				icon="/images/icons/cancel_editing_large.gif"
+				description-id="remove_navigation_dialog_description" />
+
+			<dialog name="manageLogoPreferenceDialog"
+				page="/jsp/extension/wai/dialog/customization/manage-iglogo.jsp"
+				managed-bean="ManageLogoPreference"
+				icon="/images/icons/view_properties_large.gif"
+				description-id="manage_iglogo_dialog_description" />
+							
+			<dialog name="libraryBulkOperationDialog"
+				page="/jsp/extension/wai/dialog/customization/library-bulk-operation.jsp"
+				managed-bean="LibraryBulkOperationDialog"
+				icon="/images/icons/view_properties_large.gif"
+				description-id="library_bulk_operation_dialog_description" />	
+
+			<dialog name="removeLogoPreferenceDialog"
+				page="/jsp/extension/wai/dialog/customization/remove-logo.jsp"
+				managed-bean="RemoveLogoPreference"
+				icon="/images/icons/delete_large.gif"
+				description-id="remove_iglogo_dialog_description" />
+
+			<dialog name="signalAnAbuseDialog"
+				page="/jsp/extension/wai/dialog/forums/signal-abuse.jsp"
+				managed-bean="SignalPostDialog"
+				icon="/images/icons/warning_large.gif"
+				title-id="moderation_signal_abuse_dialog_title"
+				description-id="moderation_signal_abuse_dialog_description"/>
+
+			<dialog name="rejectPostDialog"
+				page="/jsp/extension/wai/dialog/forums/reject-post.jsp"
+				managed-bean="RejectPostDialog"
+				icon="/images/icons/error_large.gif"
+				title-id="moderation_reject_post_dialog_title"
+				description-id="moderation_reject_post_dialog_description"/>
+
+			<!-- Definition of the view node links dialog WAI -->
+			<dialog name="nodeLinksWai"
+				page="/jsp/extension/wai/dialog/generic/node-links.jsp"
+				managed-bean="NodeLinksDialog"
+				icon="/images/icons/edit_website_large.gif"
+				show-ok-button="false" />
+				
+			<dialog name="manageSystemMessageDialog"
+				page="/jsp/extension/wai/dialog/system/manageSystemMessageUi.jsp"
+				managed-bean="ManageSystemMessageBean"
+				icon="/images/icons/edit_website_large.gif"
+				title-id="manage_system_message_title"
+				description-id="manage_system_message_description"  />
+				
+			<dialog name="deleteCategoryDialog"
+				page="/jsp/extension/wai/dialog/category/deleteCategory.jsp"
+				managed-bean="DeleteCategoryDialogBean"
+				icon="/images/icons/delete_large.gif"
+				show-ok-button="true" 
+				title-id="delete_category_title"
+				description-id="delete_category_description"  />
+				
+			<dialog name="cleanCategoryDialog"
+				page="/jsp/extension/wai/dialog/category/deleteCategory.jsp"
+				managed-bean="DeleteCategoryDialogBean"
+				icon="/images/icons/delete_large.gif"
+				show-ok-button="true" 
+				title-id="clean_category_title"
+				description-id="clean_category_description"  />
+				
+			<dialog name="systemMonitor"
+				page="/jsp/extension/wai/dialog/system/system-monitor.jsp"
+				managed-bean="SystemMonitorDialog"
+				icon="/images/icons/admin_console_large.gif"
+				show-ok-button="true" 
+				title-id="show_system_monitor_title"
+				description-id="show_system_monitor_description" />
+				
+				<!-- Definition of the Ig Summary dialog -->
+			<dialog name="IgSummaryDialogWai"
+				page="/jsp/extension/wai/dialog/ig/ig-summary.jsp"
+				managed-bean="IgSummaryDialog"
+				icon="/images/icons/admin_console_large.gif"
+				title-id="ig_summary_dialog_title"
+				description-id="ig_summary_dialog_description"/>
+				
+				<!-- Definition of the Ig Summary dialog -->
+			<dialog name="CustomiseCategoryDialogWai"
+				page="/jsp/extension/wai/dialog/category/customiseCategory.jsp"
+				managed-bean="CustomiseCategoryDialog"
+				icon="/images/icons/edit_website_large.gif"
+				title-id="category_customise_dialog_title"
+				description-id="category_customise_dialog_description"/>
+				
+				
+				<!-- Definition of the Ig Summary dialog -->
+			<dialog name="showGlobalStatisticsDialog"
+				page="/jsp/extension/wai/dialog/admin/global-statistics.jsp"
+				managed-bean="GlobalStatisticsDialog"
+				icon="/images/icons/admin_console_large.gif"
+				title-id="global_statistics_dialog_title"
+				description-id="global_statistics_dialog_description"
+				show-ok-button="false"/>
+
+				<!-- View the user IG memberships -->
+			<dialog name="viewUserMembershipsDialog"
+				page="/jsp/extension/wai/dialog/admin/view-user-memberships.jsp"
+				managed-bean="ViewUserMembershipsDialog"
+				icon="/images/icons/group_large.gif"
+				title-id="view_user_memberships_dialog_title"
+				description-id="view_user_memberships_dialog_description" 
+				show-ok-button="false" />
+				
+				<!-- Definition of the auto bulk upload dialog -->
+			<dialog name="manageAutoUploadDialogWai"
+				page="/jsp/extension/wai/dialog/ig/manage-auto-upload.jsp"
+				managed-bean="ManageAutoUploadDialog"
+				icon="/images/icons/admin_console_large.gif"
+				title-id="manage_auto_upload_dialog_title"
+				description-id="manage_auto_upload_dialog_description"/>
+				
+				<!-- Definition of the external repositories management -->
+			<dialog name="manageExternalRepositoriesDialogWai"
+				page="/jsp/extension/wai/dialog/ig/manage-external-repositories.jsp"
+				managed-bean="ManageExternalRepositoriesDialog"
+				icon="/images/extension/storage_icon.png"
+				title-id="manage_external_repositories_dialog_title"
+				description-id="manage_external_repositories_dialog_description" 
+				show-ok-button="false" />
+				
+				<!-- Definition of the external repositories publishing -->
+			<dialog name="publishInExternalRepositoriesWai"
+				page="/jsp/extension/wai/dialog/ig/publish-in-external-repositories.jsp"
+				managed-bean="PublishInExternalRepositoriesDialog"
+				icon="/images/extension/publish_in_external_repository.png"
+				title-id="publish_in_external_repositories_dialog_title"
+				description-id="publish_in_external_repositories_dialog_description" 
+				show-ok-button="true" />
+				
+				<!-- Definition of the auto bulk upload dialog -->
+			<dialog name="configureAutoUploadWai"
+				page="/jsp/extension/wai/dialog/content/configure-auto-upload.jsp"
+				managed-bean="ConfigureAutoUploadDialog"
+				icon="/images/icons/edit_properties_large.gif"
+				title-id="configure_auto_upload_action_title"
+				description-id="configure_auto_upload_action_description"/>
+				
+				<!-- Definition of the auto bulk upload dialog -->
+			<dialog name="contactFormWai"
+				page="/jsp/extension/wai/dialog/generic/contact-form.jsp"
+				managed-bean="ContactFormDialog"
+				icon="/images/icons/admin_console_large.gif"
+				title-id="contact_dialog_title"
+				description-id="contact_dialog_description"/>
+				
+			<dialog name="switchForumModerationWai"
+				page="/jsp/extension/wai/dialog/forums/switch-forum-moderation.jsp"
+				managed-bean="SwitchForumModerationDialog"
+				icon="/images/icons/edit_properties_large.gif"
+				title-id="switch_forum_moderation_dialog_title"
+				description-id="switch_forum_moderation_dialog_description"/>
+			
+			<!--                  -->
+         	<!-- Workflow Dialogs -->
+         
+         	<dialog name="circabcManageTask" 
+         		 page="/jsp/extension/workflow/manage-task-dialog.jsp"
+                 managed-bean="CircabcManageTaskDialog" 
+                 icon="/images/icons/manage_workflow_task_large.gif" 
+                 description-id="manage_task_desc" />
+                 
+            <dialog name="circabcViewCompletedTask" 
+            	 page="/jsp/extension/workflow/view-completed-task-dialog.jsp"
+                 managed-bean="CircabcViewCompletedTaskDialog" 
+                 icon="/images/icons/completed_workflow_task_large.gif" 
+                 description-id="view_completed_task_desc" 
+                 show-ok-button="false" />
+                 
+         	<dialog name="circabcCancelWorkflow" 
+         		 page="/jsp/extension/workflow/cancel-workflow-dialog.jsp"
+                 managed-bean="CircabcCancelWorkflowDialog" 
+                 icon="/images/icons/cancel_workflow_large.gif" 
+                 title-id="cancel_workflow" 
+                 description-id="cancel_workflow_info" />
+                 
+         	<dialog name="circabcReassignTask" 
+         		 page="/jsp/extension/workflow/reassign-task-dialog.jsp"
+                 managed-bean="CircabcReassignTaskDialog" 
+                 icon="/images/icons/reassign_workflow_task_large.gif" 
+                 title-id="reassign_task_title" 
+                 description-id="reassign_task_desc" />
+                 
+            <dialog name="circabcCustomisationConsole" 
+         		 page="/jsp/extension/wai/dialog/admin/customisation-console.jsp"
+                 managed-bean="CircabcCustomisationDialog" 
+                 icon="/images/icons/reassign_workflow_task_large.gif" 
+                 title-id="customisation_console_title" 
+                 description-id="customisation_console_description" />
+                 
+            <dialog name="categoryGroupStatisticsConsole" 
+         		 page="/jsp/extension/wai/dialog/category/category-group-statistics.jsp"
+                 managed-bean="CategoryGroupStatisticsBean" 
+                 icon="/images/icons/edit_properties_large.gif" 
+                 title-id="view_category_group_statistics_action" 
+                 description-id="view_category_group_statistics_action_title" />
+                 
+				
+		</dialogs>
+	</config>
+</alfresco-config>

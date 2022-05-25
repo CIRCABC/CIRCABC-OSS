@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2006 European Community Licensed under the EUPL, Version 1.1 
+	or – as soon they will be approved by the European Commission - subsequent 
+	versions of the EUPL (the "Licence"); You may not use this work except in 
+	compliance with the Licence. You may obtain a copy of the Licence at: https://joinup.ec.europa.eu/software/page/eupl 
+	Unless required by applicable law or agreed to in writing, software distributed 
+	under the Licence is distributed on an "AS IS" basis, WITHOUT WARRANTIES 
+	OR CONDITIONS OF ANY KIND, either express or implied. See the Licence for 
+	the specific language governing permissions and limitations under the Licence. -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="AresBridge">
+
+    <insert id="insert_request" parameterType="map">
+        insert into
+        cbc_ab_request ( ab_transaction_id, node_uuid, version_label, name, group_uuid, request_date)
+        values ( #{transactionId}, #{nodeId}, #{versionLabel}, #{name}, #{groupId}, sysdate())
+    </insert>
+
+    <insert id="insert_response" parameterType="map">
+        insert into
+        cbc_ab_response ( ab_transaction_id, request_type, document_id, save_number, registration_number, response_date)
+        values ( #{transactionId}, #{requestType}, #{documentId,jdbcType=VARCHAR}, #{saveNumber,jdbcType=VARCHAR},
+        #{registrationNumber,jdbcType=VARCHAR}, sysdate() )
+    </insert>
+
+    <select id="select_responses" resultType="AresBridgeDAO">
+        SELECT
+        cbc_ab_request.node_uuid nodeId,
+        cbc_ab_request.version_label versionLabel,
+        cbc_ab_request.ab_transaction_id transactionId,
+        cbc_ab_response.request_type requestType,
+        cbc_ab_response.document_id documentId,
+        cbc_ab_response.save_number saveNumber,
+        cbc_ab_response.registration_number registrationNumber
+        FROM
+        cbc_ab_response,
+        cbc_ab_request
+        WHERE cbc_ab_request.ab_transaction_id= cbc_ab_response.ab_transaction_id
+        AND cbc_ab_response.processed_date is null
+        ORDER BY response_date
+    </select>
+    <select id="select_responses_by_node_id" resultType="AresBridgeDAO" parameterType="map">
+		SELECT
+		cbc_ab_request.node_uuid nodeId,
+		cbc_ab_request.name nodeName,
+		cbc_ab_request.version_label versionLabel,
+		cbc_ab_request.ab_transaction_id transactionId,
+		cbc_ab_response.request_type requestType,
+		cbc_ab_response.document_id documentId,
+		cbc_ab_response.save_number saveNumber,
+		cbc_ab_response.registration_number registrationNumber
+		FROM
+		cbc_ab_response,
+		cbc_ab_request
+		WHERE cbc_ab_request.ab_transaction_id= cbc_ab_response.ab_transaction_id
+		AND cbc_ab_request.node_uuid = #{nodeId}
+		ORDER BY response_date desc
+	</select>
+
+	<select id="select_responses_by_group_id" resultType="AresBridgeDAO" parameterType="map">
+		SELECT
+		cbc_ab_request.node_uuid nodeId,
+		cbc_ab_request.name nodeName,
+		cbc_ab_request.version_label versionLabel,
+		cbc_ab_request.ab_transaction_id transactionId,
+		cbc_ab_response.request_type requestType,
+		cbc_ab_response.document_id documentId,
+		cbc_ab_response.save_number saveNumber,
+		cbc_ab_response.registration_number registrationNumber
+		FROM
+		cbc_ab_response,
+		cbc_ab_request
+		WHERE cbc_ab_request.ab_transaction_id= cbc_ab_response.ab_transaction_id
+		AND cbc_ab_request.group_uuid = #{groupId}
+		ORDER BY response_date desc
+	</select>
+    
+    <update id="update_response" parameterType="map">
+		UPDATE cbc_ab_response
+		SET processed_date = sysdate()
+		WHERE ab_transaction_id= #{transactionId} AND request_type = #{requestType}
+	</update>
+</mapper>

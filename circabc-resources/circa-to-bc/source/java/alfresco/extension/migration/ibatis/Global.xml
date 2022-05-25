@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+	<mapper namespace="Global">
+		<select id="getGlobalDocument" resultType="eu.cec.digit.circabc.migration.reader.impl.circa.domain.Global">
+			SELECT
+				DC_IDENTIFIER          as identifier,
+				DC_TITLE               as title,
+				DCTERMS_ALTERNATIVE    as alternative,
+				DC_LANGUAGE            as language,
+				CLASSIFICATION         as classification,
+				CREATED                as created,
+				CIRCA_VERSION          as version,
+				DCTERMS_MODIFIED       as modified,
+				USERS_PERMS            as usersPermissions,
+				CLASS_PERMS            as classPermissions,
+				DC_SUBJECT             as subject,
+				DCTERMS_ABSTRACT       as abstractDesc,
+				DC_CREATOR             as creator,
+				CIRCA_OWNER            as owner,
+				date_format(DCTERMS_ISSUED,'%Y-%m-%d')     as issued,
+				date_format(DCTERMS_AVAILABLE,'%Y-%m-%d')  as expiration
+			FROM $virtualCirca$_$interestGroup$
+			WHERE dc_identifier = #identifier#
+		</select>
+
+		<select id="getAllGlobalDocuments"  resultType="eu.cec.digit.circabc.migration.reader.impl.circa.domain.Global">
+			SELECT
+				DC_IDENTIFIER          as identifier,
+				DC_TITLE               as title,
+				DCTERMS_ALTERNATIVE    as alternative,
+				DC_LANGUAGE            as language,
+				CLASSIFICATION         as classification,
+				CREATED                as created,
+				CIRCA_VERSION          as version,
+				DCTERMS_MODIFIED       as modified,
+				USERS_PERMS            as usersPermissions,
+				CLASS_PERMS            as classPermissions,
+				DC_SUBJECT             as subject,
+				DCTERMS_ABSTRACT       as abstractDesc,
+				DC_CREATOR             as creator,
+				CIRCA_OWNER            as owner,
+				date_format(DCTERMS_ISSUED,'%Y-%m-%d')     as issued,
+				date_format(DCTERMS_AVAILABLE,'%Y-%m-%d')  as expiration
+			FROM $virtualCirca$_$interestGroup$
+		</select>
+	</mapper>

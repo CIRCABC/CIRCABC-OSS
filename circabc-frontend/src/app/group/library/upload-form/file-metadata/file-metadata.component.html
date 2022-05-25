@@ -1,0 +1,417 @@
+<section
+  class="metadata-container"
+  *ngIf="file"
+  style="background-color: #fff; padding: 25px"
+>
+  <form [formGroup]="fileForm">
+    <!-- menu -->
+    <div class="field">
+      <div class="secondary-action">
+        <a
+          class="step-link"
+          (click)="step = 'main'"
+          [class.step-link-selected]="step === 'main'"
+        >
+          {{ 'label.properties' | transloco }}</a
+        >&nbsp;
+        <a
+          class="step-link"
+          (click)="step = 'showTranslationPanel'"
+          [class.step-link-selected]="step === 'showTranslationPanel'"
+        >
+          {{ 'label.multilingualism' | transloco }}</a
+        >&nbsp;
+        <a
+          class="step-link"
+          (click)="step = 'showKeywordsPanel'"
+          [class.step-link-selected]="step === 'showKeywordsPanel'"
+        >
+          {{ 'label.keywords' | transloco }}</a
+        >
+        &nbsp;
+        <a
+          class="step-link"
+          (click)="step = 'showDynPropPanel'"
+          [class.step-link-selected]="step === 'showDynPropPanel'"
+        >
+          {{ 'label.dynamic.properties' | transloco }}</a
+        >
+      </div>
+      <div class="field--separator"></div>
+    </div>
+
+    <!-- main -->
+    <section class="main-panel flexContainer flexGap" *ngIf="step === 'main'">
+      <div class="flexWrap flexContainer">
+        <div class="flexFullRow">
+          <label for="name">{{ 'label.name' | transloco }}</label>
+        </div>
+        <div class="flexWrap">
+          <input type="text" id="name" formControlName="name" />
+          <cbc-control-message
+            *ngIf="fileForm"
+            [showInvalid]="true"
+            [control]="nameControl"
+          ></cbc-control-message>
+        </div>
+      </div>
+
+      <div class="flexWrap">
+        <cbc-multilingual-input
+          formControlName="title"
+          [label]="'label.title' | transloco"
+          [placeholder]="'label.title' | transloco"
+          [lang]="'en'"
+        ></cbc-multilingual-input>
+      </div>
+
+      <div class="flexFullRow">
+        <cbc-multilingual-input
+          formControlName="description"
+          [label]="'label.description' | transloco"
+          [placeholder]="'label.description' | transloco"
+          [lang]="'en'"
+          [textarea]="true"
+        ></cbc-multilingual-input>
+      </div>
+
+      <div class="flexWrap flexContainer">
+        <div class="flexFullRow">
+          <label for="author">{{ 'label.author' | transloco }}</label>
+        </div>
+        <div class="flexWrap">
+          <input type="text" id="author" formControlName="author" />
+          <cbc-control-message
+            *ngIf="fileForm"
+            [showInvalid]="true"
+            [control]="authorControl"
+          ></cbc-control-message>
+        </div>
+      </div>
+
+      <div class="flexWrap flexContainer">
+        <div class="flexFullRow">
+          <label for="reference">{{ 'label.reference' | transloco }}</label>
+        </div>
+        <div class="flexWrap">
+          <input type="text" id="reference" formControlName="reference" />
+          <cbc-control-message
+            *ngIf="fileForm"
+            [showInvalid]="true"
+            [control]="referenceControl"
+          ></cbc-control-message>
+        </div>
+      </div>
+
+      <div class="flexWrap flexContainer field--with-icon field--date">
+        <div class="flexFullRow">
+          <label for="expirationDate"
+            >{{ 'label.expiration.date' | transloco }}</label
+          >
+        </div>
+        <div class="flexWrap">
+          <p-calendar
+            formControlName="expirationDate"
+            [dateFormat]="'dd/mm/yy'"
+            [placeholder]="'dd/mm/yyyy'"
+            [showIcon]="true"
+            [style]="{ width: '100%' }"
+            [inputStyle]="{ width: '100%', height: '37px' }"
+          ></p-calendar>
+        </div>
+      </div>
+
+      <div class="flexWrap flexContainer">
+        <div class="flexFullRow">
+          <label for="status">{{ 'label.status' | transloco }}</label>
+        </div>
+        <div class="flexWrap">
+          <div class="custom-select select--form">
+            <select name="" id="status" formControlName="status">
+              <option value="DRAFT">{{ 'label.draft' | transloco }}</option>
+              <option value="FINAL">{{ 'label.final' | transloco }}</option>
+              <option value="RELEASE">
+                {{ 'label.released' | transloco }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="flexWrap flexContainer">
+        <div class="flexFullRow">
+          <label for="security"
+            >{{ 'label.security.marking' | transloco }}</label
+          >
+        </div>
+        <div class="flexWrap">
+          <div class="custom-select select--form">
+            <select name="" id="security" formControlName="securityRanking">
+              <option value="NORMAL"> {{ 'label.normal' | transloco }} </option>
+              <option value="SENSITIVE">
+                {{ 'label.sensitive' | transloco }}
+              </option>
+              <option value="SPECIAL_HANDLING">
+                {{ 'label.special.handling' | transloco }}
+              </option>
+              <option value="PUBLIC">{{ 'label.public' | transloco }}</option>
+              <option value="INTERNAL">
+                {{ 'label.internal' | transloco }}
+              </option>
+              <option value="LIMITED">
+                {{ 'label.limited' | transloco }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="flexWrap flexContainer">
+        <div class="flexFullRow">
+          <label>{{ 'label.keywords' | transloco }}</label>
+        </div>
+        <div class="flexWrap">
+          <div class="keyword-inline">
+            <ul>
+              <li *ngFor="let keyword of selectedKeywords">
+                <cbc-keyword-tag
+                  [keyword]="keyword"
+                  [lang]="lang"
+                ></cbc-keyword-tag>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- showKeywordsPanel -->
+    <section
+      class="secondary-panel"
+      [class.secondary-panel--show]="step === 'showKeywordsPanel'"
+    >
+      <h2> {{ 'label.keywords' | transloco }} </h2>
+      <div class="secondary-container">
+        <form [formGroup]="filterForm">
+          <div class="field">
+            <div class="flexWrap flexContainer">
+              <div class="flexFullRow">
+                <label>{{ 'label.search' | transloco }}</label>
+              </div>
+              <div class="flexWrap">
+                <input type="text" formControlName="keywordSearch" />
+              </div>
+              <div class="flex0">
+                <a (click)="resetKeywordSearch()" style="margin-left: 25px"
+                  >{{ 'label.reset' | transloco }}</a
+                >
+              </div>
+            </div>
+          </div>
+        </form>
+
+        <ul class="keyword-list">
+          <li *ngFor="let keyword of filteredKeywords">
+            <div class="field">
+              <input
+                type="checkbox"
+                [checked]="isSelectedKeyword(keyword)"
+                (click)="toggleKeyword(keyword)"
+              />
+              &nbsp;
+              <cbc-keyword-tag
+                [keyword]="keyword"
+                [lang]="lang"
+              ></cbc-keyword-tag>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- showTranslationPanel -->
+    <section
+      class="secondary-panel"
+      [class.secondary-panel--show]="step === 'showTranslationPanel'"
+    >
+      <h2>{{ 'label.multilingualism' | transloco }}</h2>
+      <div class="secondary-container" *ngIf="!file.isTranslation">
+        <h2>{{ 'label.make.as.pivot' | transloco }}</h2>
+        <h3 *ngIf="file.isPivot">
+          {{ 'text.is.pivot' | transloco: { lang: file.lang } }}
+        </h3>
+
+        <form [formGroup]="pivotForm">
+          <div class="field" *ngIf="!file.isPivot">
+            <div class="flexWrap flexContainer">
+              <div class="flexFullRow">
+                <label for="pivotLang"
+                  >{{ 'label.select.pivot.language' | transloco }}</label
+                >
+              </div>
+              <div class="flexWrap">
+                <div class="custom-select select--form">
+                  <cbc-lang-selector
+                    [worldwide]="false"
+                    [disabledLangs]="[]"
+                    formControlName="pivotLang"
+                  ></cbc-lang-selector>
+                </div>
+              </div>
+              <div class="flex0">
+                <a class="button" (click)="makeAsPivot()"
+                  >{{ 'label.ok' | transloco }}</a
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for=""></label>
+            <a class="button" (click)="cancelPivot()" *ngIf="file.isPivot">
+              {{ 'label.cancel.pivot' | transloco }}</a
+            >
+          </div>
+        </form>
+      </div>
+
+      <div class="secondary-container" *ngIf="!file.isPivot">
+        <h2>{{ 'label.make.as.translation' | transloco }}</h2>
+        <h3 *ngIf="file.isTranslation">
+          {{ 'text.is.translation' | transloco: { lang: file.lang, of:
+          file.translationOf } }}
+        </h3>
+        <form [formGroup]="translationForm">
+          <div class="flexWrap flexContainer" *ngIf="!file.isTranslation">
+            <div class="flexFullRow">
+              <label for="pivotId"
+                >{{ 'label.pivot.document.available' | transloco }}</label
+              >
+            </div>
+            <div class="flexWrap">
+              <div class="custom-select select--form">
+                <select name="pivotId" id="header" formControlName="pivotId">
+                  <option [value]="pivot.id" *ngFor="let pivot of pivots">
+                    {{ pivot.id }}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div
+            class="field"
+            *ngIf="
+              translationForm.value.pivotId !== undefined &&
+              translationForm.value.pivotId !== null &&
+              translationForm.value.pivotId !== '' &&
+              !file.isTranslation
+            "
+          >
+            <label for="translationLang">{{ 'label.in' | transloco }}</label>
+            <div class="custom-select select--form">
+              <cbc-lang-selector
+                [worldwide]="false"
+                [disabledLangs]="disabledLangs"
+                formControlName="translationLang"
+              ></cbc-lang-selector>
+            </div>
+            &nbsp;<a class="button" (click)="defineAsTranslation()"
+              >{{ 'label.ok' | transloco }}</a
+            >
+          </div>
+
+          <div class="field" *ngIf="file.isTranslation">
+            <label for="lang"></label>
+            <a class="button" (click)="cancelTranslation()"
+              >{{ 'label.cancel.translation' | transloco }}</a
+            >
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- showDynPropPanel -->
+    <section
+      class="secondary-panel"
+      [class.secondary-panel--show]="step === 'showDynPropPanel'"
+    >
+      <h2> {{ 'label.dynamic.properties' | transloco }} </h2>
+      <div class="secondary-container">
+        <div
+          class="field field--textarea"
+          *ngFor="let dynprop of dynamicProperties"
+          [class.field--with-icon]="isDateField(dynprop)"
+          [class.field--date]="isDateField(dynprop)"
+        >
+          <label for="{{ 'dynAttr' + getIndex(dynprop) }}"
+            >{{ dynprop.title | cbcI18n }}</label
+          >
+
+          <input
+            *ngIf="isTextField(dynprop)"
+            type="text"
+            id="{{ 'dynAttr' + getIndex(dynprop) }}"
+            formControlName="{{ 'dynAttr' + getIndex(dynprop) }}"
+          />
+
+          <p-calendar
+            *ngIf="isDateField(dynprop)"
+            formControlName="{{ 'dynAttr' + getIndex(dynprop) }}"
+            [dateFormat]="'dd/mm/yy'"
+            [placeholder]="'dd/mm/yyyy'"
+          ></p-calendar>
+
+          <div *ngIf="isTextArea(dynprop)" class="editor-container">
+            <p-editor
+              id="{{ 'dynAttr' + getIndex(dynprop) }}"
+              formControlName="{{ 'dynAttr' + getIndex(dynprop) }}"
+            >
+              <p-header>
+                <span class="ql-formats">
+                  <button class="ql-bold" aria-label="Bold"></button>
+                  <button class="ql-italic" aria-label="Italic"></button>
+                  <button class="ql-underline" aria-label="Underline"></button>
+                </span>
+              </p-header>
+            </p-editor>
+          </div>
+
+          <div
+            class="custom-select"
+            [class.select--form]="!isMultiSelection(dynprop)"
+            [class.select--multiple]="isMultiSelection(dynprop)"
+            *ngIf="isSelectionOrMultiSelection(dynprop)"
+          >
+            <select
+              *ngIf="isMultiSelection(dynprop)"
+              formControlName="{{ 'dynAttr' + getIndex(dynprop) }}"
+              multiple
+            >
+              <option value="" *ngIf="!isMultiSelection(dynprop)"></option>
+              <option
+                *ngFor="let opt of dynprop.possibleValues"
+                value="{{ opt }}"
+              >
+                {{ opt }}
+              </option>
+            </select>
+            <select
+              *ngIf="isSelection(dynprop)"
+              formControlName="{{ 'dynAttr' + getIndex(dynprop) }}"
+            >
+              <option value="" *ngIf="!isMultiSelection(dynprop)"></option>
+              <option
+                *ngFor="let opt of dynprop.possibleValues"
+                value="{{ opt }}"
+              >
+                {{ opt }}
+              </option>
+            </select>
+          </div>
+
+          <span class="icon" *ngIf="isDateField(dynprop)"></span>
+        </div>
+      </div>
+    </section>
+  </form>
+</section>

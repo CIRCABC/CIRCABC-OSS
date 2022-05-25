@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>users.id.events.period.get</shortname>
+  <description>Get the list of events of a given respect to a period (previous, exact, future)</description>
+  <url>/circabc/users/{userId}/events/period</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

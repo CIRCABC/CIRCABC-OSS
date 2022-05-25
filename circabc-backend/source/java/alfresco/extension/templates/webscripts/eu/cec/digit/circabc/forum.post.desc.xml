@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Create a new forum</shortname>
+  <description>Create a new forum </description>
+    <url>/circabc/forums/{id}/subforums</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

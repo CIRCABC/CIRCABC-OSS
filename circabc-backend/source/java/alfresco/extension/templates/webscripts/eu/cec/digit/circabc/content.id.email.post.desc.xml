@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>content.id.email.post</shortname>
+  <description>Sends an email with the current content to the given user</description>
+    <url>/circabc/content/{id}/email</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

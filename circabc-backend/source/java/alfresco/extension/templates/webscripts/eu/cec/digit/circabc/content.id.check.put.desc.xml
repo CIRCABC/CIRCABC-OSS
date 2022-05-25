@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>content.id.check.put</shortname>
+  <description>Checkin - Checks the given item in (given the id of the original document) - minorChange and keepCheckedOut default to false</description>
+    <url>/circabc/content/{id}/check</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

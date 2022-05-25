@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>users.id.events.get</shortname>
+  <description>Get the list of events of a give user within a date range</description>
+  <url>/circabc/users/{userId}/events</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

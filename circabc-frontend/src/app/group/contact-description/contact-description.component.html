@@ -1,0 +1,15 @@
+<section class="box box--contact" *ngIf="group">
+  <div class="header">
+    <span class="title">{{ 'label.contact.information' | transloco }}</span>
+  </div>
+  <div class="main">
+    <p
+      *ngIf="group.contact && hasContact()"
+      [innerHtml]="getLang() | i18nSelect: group.contact"
+    ></p>
+    <p *ngIf="!hasContact()">
+      {{ 'descriptor.no-group-contact' | transloco }}
+    </p>
+    <div style="clear: both"> </div>
+  </div>
+</section>

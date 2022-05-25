@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Add the distribution emails</shortname>
+  <description>Add the distribution emails</description>
+  <url>/circabc/app/distribution/emails</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

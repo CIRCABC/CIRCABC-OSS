@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>exported profiles categories</shortname>
+  <description>Get all exported profiles for given categories</description>
+  <url>/circabc/categories/{id}/exported/profiles</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

@@ -1,0 +1,20 @@
+.box--contact {
+  .main {
+    padding: 10px 25px 25px;
+
+    p {
+      font-size: 12px;
+      line-height: 21px;
+    }
+  }
+
+  ::ng-deep ul {
+    list-style: disc;
+    margin-left: 20px;
+  }
+
+  ::ng-deep ol {
+    list-style: decimal;
+    margin-left: 20px;
+  }
+}

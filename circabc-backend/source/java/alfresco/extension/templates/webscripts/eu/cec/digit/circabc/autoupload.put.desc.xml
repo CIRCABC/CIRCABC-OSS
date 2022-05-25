@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>autoupload.put</shortname>
+  <description>Enable/disable the given autoupload configuration</description>
+  <url>/circabc/groups/{id}/autoupload</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

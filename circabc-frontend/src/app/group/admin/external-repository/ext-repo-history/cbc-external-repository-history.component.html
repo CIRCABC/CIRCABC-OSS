@@ -1,0 +1,71 @@
+<section class="modal-content table-container">
+  <div class="wrapping scroll-body">
+    <p *ngIf="groupLog !== undefined && groupLog.length > 0">
+      {{ 'label.records.found' | transloco: { total: groupLog.length } }}
+    </p>
+    <table class="main no-border-spacing">
+      <thead style="color: #035">
+        <tr>
+          <th>
+            <label>{{ 'label.areslog.repository' | transloco }}</label>
+          </th>
+          <th>
+            <label>{{ 'label.areslog.registrationnumber' | transloco }}</label>
+          </th>
+          <th>
+            <label>{{ 'label.areslog.savenumber' | transloco }}</label>
+          </th>
+          <th>
+            <label>{{ 'label.name' | transloco }}</label>
+          </th>
+          <th>
+            <label>{{ 'label.areslog.versionlabel' | transloco }}</label>
+          </th>
+          <th>
+            <label>{{ 'label.areslog.action' | transloco }}</label>
+          </th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr class="row empty-row" *ngIf="groupLog !== undefined">
+          <td colspan="6" *ngIf="groupLog.length === 0">
+            {{ 'label.nothing.to.display' | transloco }}
+          </td>
+        </tr>
+        <tr class="row left-text" *ngFor="let item of groupLog">
+          <td>ARES</td>
+          <td>
+            <a
+              *ngIf="!isExternalUser"
+              href="{{aresDocumentLink(item.documentId)}}"
+              target="_blank"
+              >{{ item.registrationNumber }}</a
+            >
+            <span *ngIf="isExternalUser">{{ item.registrationNumber }}</span>
+          </td>
+          <td>
+            <a
+              *ngIf="!isExternalUser"
+              href="{{aresDocumentLink(item.documentId)}}"
+              target="_blank"
+              >{{ item.saveNumber }}</a
+            >
+            <span *ngIf="isExternalUser">{{ item.saveNumber }}</span>
+          </td>
+          <td>
+            <a
+              *ngIf="!isExternalUser"
+              href="{{circabcDocumentLink(item.nodeId)}}"
+              target="_blank"
+              >{{ item.nodeName }}</a
+            >
+            <span *ngIf="isExternalUser">{{ item.nodeName }}</span>
+          </td>
+          <td>{{ item.versionLabel }}</td>
+          <td>{{ item.requestType }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>

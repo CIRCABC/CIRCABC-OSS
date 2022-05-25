@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>create a link in the library</shortname>
+  <description>create a link in the library</description>
+    <url>/circabc/spaces/{id}/url</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

@@ -1,0 +1,162 @@
+{{ 'admin.tab.summary' | transloco | cbcSetTitle }}
+<h2>{{ 'admin.summary.page.title' | transloco }}</h2>
+<div class="field" style="float: left">
+  <h3>{{ 'admin.summary.statistics.available' | transloco }}</h3>
+  <div class="custom-select select--form reset-width select-align">
+    <form [formGroup]="summaryForm">
+      <select formControlName="selectedStatistics">
+        <option value="1">
+          {{ 'admin.summary.statistics.global' | transloco }}
+        </option>
+        <option value="2">
+          {{ 'admin.summary.statistics.timeline' | transloco }}
+        </option>
+        <option value="3">
+          {{ 'admin.summary.statistics.structure' | transloco }}
+        </option>
+      </select>
+    </form>
+  </div>
+  <a class="button" (click)="changeSummary()"
+    >{{ 'label.select' | transloco }}</a
+  >
+</div>
+<section
+  *ngIf="selectedStatistics !== '3'"
+  style="float: left; margin-left: 30px"
+>
+  <h3>{{ 'label.export.options' | transloco }}</h3>
+  <div
+    class="main paddingMain export-box"
+    style="background-color: rgba(255, 255, 255, 0.3); box-shadow: unset"
+  >
+    <div class="field export-select">
+      <div class="custom-select select--form">
+        <form [formGroup]="exportForm">
+          <select formControlName="export">
+            <option
+              *ngFor="let exportFormat of exportFormats"
+              [ngValue]="exportFormat"
+            >
+              {{ exportFormat.name }}
+            </option>
+          </select>
+        </form>
+      </div>
+      <a
+        *ngIf="selectedStatistics === '1'"
+        class="button"
+        (click)="export('statistics', 'GlobalStatistics')"
+        >{{ 'label.export' | transloco }}</a
+      >
+      <a
+        *ngIf="selectedStatistics === '2'"
+        class="button"
+        (click)="export('timeline', 'TimelineActivity')"
+        >{{ 'label.export' | transloco }}</a
+      >
+    </div>
+  </div>
+</section>
+<div class="stats-container" *ngIf="selectedStatistics === '1'">
+  <h3>{{ 'admin.summary.statistics.global' | transloco }}</h3>
+  <div style="max-width: 725px; float: left">
+    {{ 'admin.summary.statistics.calculation.disclaimer' | transloco }}
+  </div>
+  <div>
+    <a class="button" (click)="calculateStatistics()"
+      >{{ 'label.calculate' | transloco }}</a
+    >
+  </div>
+
+  <br /><br /><br /><br />
+
+  <div
+    class="statistics-container"
+    *ngFor="let prettyProps of prettyProperties"
+  >
+    <header class="header">
+      <span class="title"
+        >{{ ((prettyProps.section === 'label.newsgroups')? 'label.forums':
+        prettyProps.section) | transloco }}
+      </span>
+    </header>
+    <div>
+      <table>
+        <tbody>
+          <tr class="row" *ngFor="let property of prettyProps.data">
+            <td class="tds">
+              <img
+                src="img/{{ property.icon }}"
+                height="30"
+                width="30"
+                style="vertical-align: middle"
+              />&nbsp;{{ 'admin.' + property.name | transloco }}
+            </td>
+            <td class="tds">{{ property.value }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="stats-container" *ngIf="selectedStatistics === '2'">
+  <h3>{{ 'admin.summary.statistics.timeline' | transloco }}</h3>
+  <section class="table-container">
+    <table class="main">
+      <thead>
+        <tr>
+          <th></th>
+          <th style="width: 22px"></th>
+          <th>{{ 'label.month' | transloco }}</th>
+          <th>{{ 'label.service' | transloco }}</th>
+          <th>{{ 'label.activity' | transloco }}</th>
+          <th>{{ 'label.number.of.actions' | transloco }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          class="row empty-row"
+          *ngIf="activities === undefined || activities.length === 0"
+        >
+          <td style="padding-left: 22px" colspan="6">
+            {{ 'admin.summary.statistics.timeline.calculating' | transloco
+            }}&nbsp;
+            <cbc-spinner *ngIf="loading"></cbc-spinner>
+          </td>
+        </tr>
+        <tr class="row" *ngFor="let activity of activities">
+          <td class="cell-left-border"></td>
+          <td class="cell-checkbox"></td>
+          <td>{{ activity.monthActivity }}</td>
+          <td>{{ activity.service }}</td>
+          <td>{{ activity.activity }}</td>
+          <td>{{ activity.actionNumber }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</div>
+<div class="stats-container" *ngIf="selectedStatistics === '3'">
+  <h3>{{ 'admin.summary.statistics.structure' | transloco }}</h3>
+  {{ 'admin.summary.statistics.structure.description' | transloco }}
+  <br />
+  <section style="margin-left: 20px">
+    <br />
+    <div class="flex-structure">
+      <div style="display: inline; margin-right: 100px">
+        <cbc-structure-tree
+          *ngIf="structureHolder !== undefined"
+          [tree]="getStructure(1)"
+        ></cbc-structure-tree>
+        <br />
+      </div>
+      <div style="display: inline">
+        <cbc-structure-tree
+          *ngIf="structureHolder !== undefined"
+          [tree]="getStructure(2)"
+        ></cbc-structure-tree>
+      </div>
+    </div>
+  </section>
+</div>

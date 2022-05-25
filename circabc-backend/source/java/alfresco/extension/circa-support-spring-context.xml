@@ -1,0 +1,8 @@
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+    <bean id="webscript.eu.circasupport.circabc.user.create.post" class="eu.circasupport.circabc.CreateUser" parent="webscript">
+        <property name="userService" ref="UserService"/>
+        <property name="usersApi" ref="UsersApi"/>
+        <property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+    </bean>
+</beans>

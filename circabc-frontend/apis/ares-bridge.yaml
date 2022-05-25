@@ -1,0 +1,624 @@
+openapi: 3.0.0
+servers:
+  - url: https://webgate.ec.testa.eu/Ares/bridge/services/v1
+    description: Production
+  - url: https://intragate.test.ec.europa.eu/Ares/bridge/services/v1
+    description: Production like
+info:
+  title: AresBridge
+  description: AresBridge back-end services
+  contact:
+    name: AresBridge Support
+    url: https://webgate.ec.europa.eu/CITnet/confluence/display/DIGITHAN/AresBridge+-+Technical+Integration+Guide
+    email: DIGIT-ARESBRIDGE-SUPPORT@ec.europa.eu
+  version: 1.0.0
+security:
+  - AresBridgeToken: []
+paths:
+  '/user/access/{username}':
+    get:
+      summary: Verifies user access rights in AresBridge UI
+      tags:
+        - AresBridge
+      description: |
+        Just like Ares, AresBridge is only accessible to a certain set of users. Users external to
+        the EC (or other integrated institutions) do not have access to Ares(Bridge).\
+        Also for e.g. intra-muros users access could be blocked.\
+        This service allows to check the access rights for a given EU Login username. It's also
+        verified whether the user has the right to register a document.\
+        In case of unsufficient access the DMO (Document Management Officer) needs to be consulted.
+      operationId: hasUserAccess
+      parameters:
+        - name: Date
+          in: header
+          description: |
+            The date and time when the request is sent (and the authentication token is
+            built) in RFC1123 format.\
+            Used for authentication purposes.
+          schema:
+            type: string
+            example: Thu, 20 Apr 2017 11:16:08 GMT
+        - name: X-AB-Date
+          in: header
+          description: |
+            Alternative to the `Date` header in case it would not be allowed to specify
+            the `Date` header in the request.\
+            Either `Date` or `X-AB-Date` must be provided but `Date` takes precedence.
+          schema:
+            type: string
+            example: Thu, 20 Apr 2017 11:16:08 GMT
+        - name: X-AB-Client-Version
+          in: header
+          description: |
+            Optional HTTP header that a client library can populate to indicate the version of the
+            library that's being used. Useful for support purposes only.
+          schema:
+            type: string
+        - name: username
+          in: path
+          description: EU Login username for which access must be checked.
+          required: true
+          schema:
+            type: string
+            example: autredr
+      responses:
+        '200':
+          $ref: '#/components/responses/UserAccessResponse'
+        '400':
+          $ref: '#/components/responses/ClientErrorResponse'
+        '401':
+          $ref: '#/components/responses/AuthenticationFailureResponse'
+        '403':
+          $ref: '#/components/responses/AuthorizationFailureResponse'
+        '500':
+          $ref: '#/components/responses/ServerErrorResponse'
+  /document:
+    post:
+      summary: Store a document which needs to be saved/registered in Ares
+      tags:
+        - AresBridge
+      description: >
+        Service which allows to send the document and attachment metadata, the attachment
+        binary content and the AresBridge UI preferences to the AresBridge server
+      operationId: storeDocument
+      parameters:
+        - name: Date
+          in: header
+          description: >
+            The date and time when the request is sent (and the authentication token is built) in
+            RFC1123 format. Used for authentication purposes.
+          schema:
+            type: string
+            example: Thu, 20 Apr 2017 11:16:08 GMT
+        - name: X-AB-Date
+          in: header
+          description: |
+            Alternative to the `Date` header in case it would not be allowed to specify
+            the `Date` header in the request.\
+            Either `Date` or `X-AB-Date` must be provided but `Date`takes precedence.
+          schema:
+            type: string
+            example: Thu, 20 Apr 2017 11:16:08 GMT
+        - name: X-AB-Client-Version
+          in: header
+          description: |
+            Optional HTTP header that a client library can populate to indicate the version of the
+            library that's being used. Useful for support purposes only.
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/StoreDocumentResponse'
+        '400':
+          $ref: '#/components/responses/ClientErrorResponse'
+        '401':
+          $ref: '#/components/responses/AuthenticationFailureResponse'
+        '403':
+          $ref: '#/components/responses/AuthorizationFailureResponse'
+        '500':
+          $ref: '#/components/responses/ServerErrorResponse'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - body
+                - attachment
+              properties:
+                body:
+                  $ref: '#/components/schemas/StoreDocumentRequest'
+                attachment:
+                  type: array
+                  description: |
+                    The order of the attachment is important and MUST match the order of the
+                    attachments in the JSON. Basically attachment with sequence 1 must be the first
+                    attachment in this array.
+                  minimum: 1
+                  maximum: 20
+                  items:
+                    type: string
+                    format: binary
+            encoding:
+              attachment:
+                contentType: application/octet-stream
+        description: The actual JSON request containing all metadata of the document, its
+                     attachments and the UI preferences of AresBridge
+        required: true
+components:
+  schemas:
+    StoreDocumentRequest:
+      type: object
+      required:
+        - username
+        - document
+      properties:
+        username:
+          type: string
+          description: EU Login username who should save / register the document in AresBridge UI.
+          example: autredr
+        document:
+          $ref: '#/components/schemas/Document'
+        uiPreferences:
+          $ref: '#/components/schemas/UIPreferences'
+        requestOptions:
+          $ref: '#/components/schemas/RequestOptions'
+    Document:
+      type: object
+      required:
+        - attachments
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: |
+            * Maximum length must not exceed 255 characters (after trim).
+            * Maximum length must not exceed 255 UTF-8 bytes (after trim).
+            * Must not contain a carriage return, line feed, tab or NULL character.
+          example: A sample document
+        levelOfSensitivity:
+          type: string
+          description: |
+            Currently only `NORMAL` is supported.
+          enum:
+            - NORMAL
+        comments:
+          type: string
+          minLength: 1
+          maxLength: 1000
+          description: |
+            * Optional.
+            * Maximum length must not exceed 1000 characters (after trim).
+            * Maximum length must not exceed 2000 UTF-8 bytes (after trim).
+          example: Some comments
+        documentDate:
+          type: integer
+          format: int64
+          description: |
+            The document date in epoch/unix format.\
+            Alternatively a string in ISO 8601 format could be used.
+            * Optional.
+            * Time information is irrelevant.
+            * Could be max 1 day in the future, according to CET timezone
+            * Cannot be before January 1, 1970, 00:00:00 CET.
+          example: 1504648800000
+        sentOrReceivedDate:
+          type: integer
+          format: int64
+          description: |
+            The date the document was sent / received in epoch/unix format.\
+            Alternatively a string in ISO 8601 format could be used.
+            * Optional.
+            * Time information is irrelevant.
+            * Could be max 1 day in the future, according to CET timezone
+            * Cannot be before January 1, 1970, 00:00:00 CET.
+          example: 1504648800000
+        attachments:
+          type: array
+          description: |
+            The order of the attachments must match the order of the attachment parts from the
+            multi-part request.
+          minItems: 1
+          maxItems: 20
+          items:
+            $ref: '#/components/schemas/Attachment'
+        senders:
+          type: array
+          items:
+            $ref: '#/components/schemas/Sender'
+        recipients:
+          type: array
+          items:
+            $ref: '#/components/schemas/Recipient'
+        files:
+          type: array
+          description: |
+            The files in which the document should be filed into. 
+            Cannot be combined with `tasks`.
+          items:
+            $ref: '#/components/schemas/File'
+        tasks:
+          type: array
+          minimum: 1
+          maximum: 1
+          description: |
+            Currently only a single CLASS task is supported. 
+            A CLASS task cannot be combined with `files`.
+          items:
+            $ref: '#/components/schemas/Task'
+    UIPreferences:
+      type: object
+      description: |
+        Preferences to control the AresBridge UI.
+      properties:
+        titleEditable:
+          type: boolean
+          description: >
+            Specify whether the document title is editable by the user in the AresBridge UI.
+            Cannot be disabled if the title is not provided or blank.
+        commentsEditable:
+          type: boolean
+          description: >
+            Specify whether the document comments are editable by the user in the AresBridge UI.
+        levelOfSensitivityEditable:
+          type: boolean
+          description: >
+            Specify whether the level of sensitivity of the document is editable by the user in 
+            the AresBridge UI.
+        documentDateEditable:
+          type: boolean
+          description: >
+            Specify whether the document date is editable by the user in the AresBridge UI.
+        sentReceivedDateEditable:
+          type: boolean
+          description: >
+            Specify whether the sent date / received date is editable by the user
+            in the AresBridge UI.
+        saveButtonVisible:
+          type: boolean
+          description: |
+            Specify whether the save button should be visible to the user in the AresBridge UI.
+            Note that it's not allowed to hide both the save and register button.
+        registerButtonVisible:
+          type: boolean
+          description: |
+            Specify whether the register button should be visible to the user in the AresBridge UI.
+            Note that it's not allowed to hide both the save and register button.
+        attachmentAttachButtonVisible:
+          type: boolean
+          description: >
+            Specify whether the "attach" button to import a new attachment should be visible.
+        attachmentScanButtonVisible:
+          type: boolean
+          description: >
+            Specify whether the "scan" to import scanned attachments should be visible.
+        attachmentManagementButtonsVisible:
+          type: boolean
+          description: |
+            Specify whether buttons like delete attachment, manage versions, move up/down and
+            disable automatic sorting should be visible.\
+            Cannot be hidden if the attachment "scan" or "attach" button is visible.
+        attachmentMetadataEditable:
+          type: boolean
+          description: |
+            Specify whether attachment metadata such as language, name, type and external reference
+            is editable.\
+            Cannot be disabled if the attachment "scan" or "attach" button is visible.
+        fromEntityEditable:
+          type: boolean
+          description: >
+            Specify whether the from field, used to enter an entity which is sender of the document,
+            is editable.
+        toEntityEditable:
+          type: boolean
+          description: >
+            Specify whether the to field, used to enter an entity which is TO recipient of the
+            document, is editable.
+        ccEntityEditable:
+          type: boolean
+          description: >
+            Specify whether the cc field, used to enter an entity which is CC recipient of the
+            document, is editable.
+        entitySearchButtonsEnabled:
+          type: boolean
+          description: >
+            Specify whether the buttons for advanced searching entities that are senders (from) or
+            recipients (to / cc) of the document should be enabled.
+        distributionListButtonsVisible:
+          type: boolean
+          description: >
+            Specify whether buttons for importing distribution lists for recipients (to or cc)
+            should be visible.
+    RequestOptions:
+      type: object
+      description: |
+        Request specific options.
+      properties:
+        redirectURL:
+          type: string
+          description: |
+            For this specific request, specify to which URL AresBridge UI must redirect the user to after completion in the
+            AresBridge UI. This is useful if AresBridge UI should redirect to a specific URL (e.g. pointing to the document in
+            the source system) rather than a generic one.\
+            Only trusted URLs are allowed, a URL is trusted if the host has been configured at AresBridge server.
+          example: http://webgate.ec.testa.eu/MyApp/document/1234
+    Attachment:
+      title: Attachment
+      description: |
+        The metadata of the attachment.
+      type: object
+      required:
+        - sequence
+        - filename
+        - type
+        - language
+      properties:
+        sequence:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 20
+          description: |
+            The attachment sequence (1-based).\
+            Must be incremental.\
+            The sequence number has been made explicit to emphasize that the order is important as
+            the order must match with the parts of the multi-part request body.\
+            Might be used for correlation in a future release.
+          example: 1
+        filename:
+          description: |
+            The attachment file name. 
+            * Should contain a valid extension to ensure a correct format recognition and to ensure
+            a rendition is produced upon registration.
+            * Mandatory.
+            * Cannot be blank.
+            * Maximum length must not exceed 250 characters (after trim).
+            * Maximum length must not exceed 255 UTF-8 bytes (after trim).
+            * Must have an extension.
+            * Must not contain any of the following characters: \n \r \0 \t \ / : * ? " > < | ' %
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: attachment.pdf
+        type:
+          type: string
+          nullable: false
+          enum:
+            - MAIN
+            - COVER_NOTE
+            - ANNEX
+          default: MAIN
+        language:
+          description: |
+            The language of the attachment content
+          type: string
+          nullable: false
+          enum:
+            - BG
+            - HR
+            - CS
+            - DA
+            - NL
+            - EN
+            - ET
+            - FI
+            - FR
+            - GA
+            - DE
+            - EL
+            - HU
+            - IT
+            - LV
+            - LT
+            - MT
+            - PL
+            - PT
+            - RO
+            - SK
+            - SL
+            - ES
+            - SV
+            - AU
+            - NS
+            - ML
+          default: NS
+        externalReference:
+          type: string
+          maxLength: 255
+          description: |
+            * Attachment external reference.
+            * Maximum length must not exceed 255 characters (after trim).
+            * Maximum length must not exceed 255 UTF-8 bytes (after trim).
+        internalId:
+          type: string
+          maxLength: 255
+          description: |
+            * The attachment's internal ID of the client system. Not displayed (or
+            used in Hermes/Ares), currently only useful for support purposes.
+            * Maximum length must not exceed 255 characters.
+            * Maximum length must not exceed 255 UTF-8 bytes.          
+    File:
+      description: Define the File (or Subfile), either by its ID or code, in which the
+                   document should be filed.
+      type: object
+      properties:
+        id:
+          type: string
+          pattern: '^0b[a-f0-9]{14}$'
+          example: 0b0166e58003bacc
+        code:
+          type: string
+          pattern: '^[0-9]{4}-[A-Z]{2}[0-9]{4}(-[0-9]+)?$'
+          example: 2017-AA5320
+    Task:
+      title: Task
+      description: Define an assignment task to be created.
+      type: object
+      required:
+        - code
+        - assignee
+      properties:
+        code:
+          type: string
+          enum:
+            - CLASS
+        assignee:
+          $ref: '#/components/schemas/Entity'
+    Entity:
+      title: Internal or external entity
+      description: |
+        Define the criteria to identify an entity.
+
+        Internal entities are e.g. Ares/Hermes users & organizations or virtual entities. 
+        External entities can be persons or organizations.
+
+        Not all criteria have to be entered. At least one is required in addition to indicate if it's an internal or external
+        entity. If multiple the criteria provided, they are all taken into account (AND operator) and the values must exactly
+        match.
+      type: object
+      required:
+        - internal
+      properties:
+        internal:
+          description: Indicate whether it's an internal or external entity
+          type: boolean
+          default: true
+        personUsername:
+          description: The person's username. Only applicable to internals.
+          type: string
+          example: autredr
+        personLastName:
+          description: The person's last name (case insensitive).
+          type: string
+          example: VAN AUTREVE
+        personFirstName:
+          description: The person's first name (case insensitive).
+          type: string
+          example: Dries
+        personEmail:
+          description: The person's email address (case insensitive).
+          type: string
+          example: Dries.VAN-AUTREVE@ext.ec.europa.eu
+        personFullName:
+          description: The person's full name (case insensitive). Useful in cases where the split between first name / last name
+            is unknown. The format could be either first name + last name or last name + first name.
+          type: string
+          example: VAN AUTREVE Dries
+        organizationName:
+          description: The organization name (case insensitive).
+          type: string
+          example: DIGIT.B.2.004
+        organizationEmail:
+          description: The organization's email address (case insensitive). Only applicable to external entities.
+          type: string
+          example: info@google.com
+    Recipient:
+      title: Recipient
+      description: Criteria to identify a recipient of a document
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/Entity'
+        - properties:
+            type:
+              type: string
+              enum:
+                - TO
+                - CC
+              default: TO
+    Sender:
+      title: Sender
+      description: Sender of a document
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/Entity'
+    StoreDocumentResponse:
+      type: object
+      required:
+        - transactionId
+      properties:
+        transactionId:
+          type: string
+          pattern: '^ABT-[0-9]+-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+          description: |
+            The AresBridge transaction ID to be used for redirecting the user to AresBridge UI and
+            for correlation when a callback / redirect arrives from the AresBridge server.
+          example: ABT-1504699787697-d64c-4d67-877b-7b0f7936da59
+    UserAccessResponse:
+      type: object
+      required:
+        - access
+        - registrationRights
+      properties:
+        access:
+          type: boolean
+          description: flag indicating wether the user has access to AresBridge UI
+        registrationRights:
+          type: boolean
+          description: flag indicating wether the user can register a document in AresBridge UI
+    Error:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: ea731365-b121-4a73-a49e-0f7ebeaac203
+          description: |
+            A unique error ID.\
+            Ensure that it's properly logged in order it can be provided to the AresBridge support
+            team in case of problems.
+        message:
+          type: string
+          description: The error message.
+  responses:
+    UserAccessResponse:
+      description: >
+        A response indicating the user access rights.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserAccessResponse'
+    StoreDocumentResponse:
+      description: >
+        A response obtained when the document has been successfully stored.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/StoreDocumentResponse'
+    AuthenticationFailureResponse:
+      description: >
+        Authentication failed. Authentication information missing or invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    AuthorizationFailureResponse:
+      description: >
+        Not authorized to use this service.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ServerErrorResponse:
+      description: >
+        An internal server error occurred. Please contact the support team if this problem persists.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ClientErrorResponse:
+      description: > 
+        A client error occurred. Please correct the problem.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  securitySchemes:
+    AresBridgeToken:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: >
+        The AresBridge authentication token for example `AresBridge 8300cec79fba4496bacba02beef70bf8:d9075126e22ab9d2b035b2771eab58116766fb5eaac2b9bb749fd7ea2531ac66`

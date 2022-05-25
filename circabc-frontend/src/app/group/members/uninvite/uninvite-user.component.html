@@ -1,0 +1,18 @@
+<cbc-modal
+  [executing]="removing"
+  [executingLabel]="'label.removing'"
+  [cancelLabel]="'label.cancel'"
+  [okLabel]="'label.remove'"
+  [title]="'label.remove.membership'"
+  (cancel)="cancelWizard('close')"
+  (ok)="uninviteMember()"
+  [visible]="showDialog"
+>
+  <section class="modal-content" *ngIf="user">
+    {{ 'memberships.remove.question.part.1' | transloco }}
+    <span style="font-weight: bold"
+      >{{ user.firstname + ' ' + user.lastname }}</span
+    >
+    {{ 'memberships.remove.question.part.2' | transloco }}
+  </section>
+</cbc-modal>

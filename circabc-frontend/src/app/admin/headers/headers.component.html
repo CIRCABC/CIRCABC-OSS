@@ -1,0 +1,53 @@
+<div *ngIf="isAdmin()" class="wrap page-container">
+  <section class="table-container">
+    <header class="header">
+      <div style="float: right; font-size: 14px">
+        <a (click)="loadHeaders()">
+          <img src="img/icon-autoupload-20x20.png" />&nbsp;{{ 'label.refresh' |
+          transloco }}&nbsp;&nbsp;
+        </a>
+      </div>
+    </header>
+
+    <table class="main">
+      <thead>
+        <tr>
+          <th></th>
+          <th style="width: 22px"> </th>
+          <th> {{ 'label.name' | transloco }} </th>
+          <th> {{ 'label.description' | transloco }} </th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr class="row empty-row" *ngIf="headers !== undefined">
+          <td
+            style="padding-left: 22px"
+            colspan="4"
+            *ngIf="headers.length === 0"
+            >{{ 'headers.display.none' | transloco }}</td
+          >
+        </tr>
+
+        <tr class="row" *ngFor="let header of headers">
+          <td class="cell-left-border"></td>
+          <td class="cell-checkbox"></td>
+          <td class="cell-file-name" style="width: 80px">
+            {{ header.name }}
+            <ul class="actions" style="width: 300px">
+              <li *ngIf="!hasCategories(header)">
+                <cbc-inline-delete
+                  (deletionConfirmed)="deleteHeader(header)"
+                ></cbc-inline-delete>
+              </li>
+              <li *ngIf="hasCategories(header)">
+                {{ 'headers.has.categories' | transloco }}
+              </li>
+            </ul>
+          </td>
+          <td>{{ getDescription(header) }} </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</div>

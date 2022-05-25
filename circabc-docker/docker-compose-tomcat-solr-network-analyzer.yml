@@ -1,0 +1,101 @@
+version: "3"
+services:
+  db:
+    container_name: db
+    image: mysql:5.6
+    ports:
+      - "3306:3306"  
+    environment:
+        - MYSQL_ROOT_PASSWORD=password
+    volumes:
+        - ./mysql/init:/docker-entrypoint-initdb.d/:ro
+    command: --lower_case_table_names=1 --transaction-isolation=READ-COMMITTED
+  db_admin:
+    container_name: db_admin
+    image: phpmyadmin/phpmyadmin
+    depends_on:
+      - db
+    environment: 
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    ports:
+      - "83:80"
+  tomcat:
+    build: tomcat
+    image: tomcat-circabc
+    ports:
+      - "81:8080"
+    container_name: tomcat
+    depends_on:
+      - db
+  solr:
+    build: solr
+    image: solr-circabc
+    ports:
+      - "84:8080"
+    container_name: solr
+    depends_on:
+      - tomcat
+  angular:
+    build: angular
+    image: angular-circabc
+    ports:
+        - "82:80"
+    container_name: angular
+    depends_on:
+      - tomcat
+  proxy: 
+    image: nginx:alpine
+    container_name: proxy-circabc
+    depends_on:
+      - angular
+    volumes:
+      - ./proxy/conf:/etc/nginx
+    ports:
+      - 80:80
+      - 443:443
+      - 14500:14500
+  elasticsearch:
+    image: elasticsearch:5
+    ports:
+      - "19200:9200"
+      - "19300:9300"
+    environment:
+      - "discovery.type=single-node"
+#    networks:
+#      - skynet
+
+  skydive-analyzer:
+    image: skydive/skydive
+    ports:
+      - "8082:8082"
+      - "8082:8082/udp"
+    links:
+      - elasticsearch
+    command: analyzer --listen=0.0.0.0:8082
+    environment:
+      - SKYDIVE_STORAGE_ELASTICSEARCH_HOST=elasticsearch:9200
+      - SKYDIVE_ANALYZER_STORAGE_BACKEND=elasticsearch
+      - SKYDIVE_GRAPH_BACKEND=elasticsearch
+      - SKYDIVE_ETCD_LISTEN=0.0.0.0:12379
+#    networks:
+#      - skynet
+
+  skydive-agent:
+    image: skydive/skydive
+    depends_on:
+      - skydive-analyzer
+    ports:
+      - "8081:8081"
+    network_mode: "host"
+    pid: "host"
+    command: agent --listen=0.0.0.0:8081
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/netns:/host/run
+      - /var/run/openvswitch/db.sock:/var/run/openvswitch/db.sock
+    environment:
+      - SKYDIVE_AGENT_TOPOLOGY_NETNS_RUN_PATH=/host/run
+      - SKYDIVE_ANALYZERS=127.0.0.1:8082

@@ -1,0 +1,122 @@
+<!-- MODAL BOX -->
+<div
+  (dragenter)="dragenter($event)"
+  (dragover)="dragover($event)"
+  (drop)="drop($event)"
+>
+  <div
+    class="black-overlayer"
+    *ngIf="showWizard"
+    [class.overlayer-shown]="showWizard"
+    [class.overlayer-hidden]="!showWizard"
+  ></div>
+  <section
+    class="modal modal--select-files"
+    *ngIf="showAddWizardStep1"
+    [class.modal-shown]="showAddWizardStep1"
+    [class.modal-hidden]="!showAddWizardStep1"
+    style="margin-top: 0"
+  >
+    <a class="close-icon" (click)="cancelWizard('close')"></a>
+    <header>
+      <h2 class="title">{{ 'label.select.files.upload' | transloco }}</h2>
+    </header>
+
+    <section class="modal-content">
+      <!--  file -->
+      <div class="field field--file">
+        <span style="margin-right: 35px">{{ 'label.file' | transloco }}</span>
+        <input
+          type="file"
+          id="file"
+          class="inputfile inputfile-6"
+          (change)="fileChangeEvent($event)"
+          data-multiple-caption="{count} files selected"
+          multiple
+        />
+        <label for="file"
+          ><span class="result"></span
+          ><span class="button">{{ 'label.browse' | transloco }}</span></label
+        >
+      </div>
+
+      <div class="drop-zone"> {{ 'label.upload.drag.help' | transloco }} </div>
+      <div class="field">
+        <label>{{ 'label.upload.future.files' | transloco }} </label> ( {{
+        'label.upload.total.size' | transloco }}: {{ filesSize() | cbcSize: true
+        }} )
+        <br />
+        <div class="listToBeUploaded">
+          <ul>
+            <li *ngFor="let file of filesToUpload"
+              >{{ file.file.name }}&nbsp;<a (click)="deleteSelectedFile(file)"
+                ><img
+                  src="img/icon-delete-818181.png"
+                  height="15"
+                  width="15" /></a
+            ></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+    <section class="modal-footer">
+      <!-- Buttons -->
+      <div class="buttons-group">
+        <a
+          class="cta"
+          (click)="launchAddWizardStep2()"
+          [class.disabled]="filesToUpload.length === 0"
+          >{{ 'label.upload' | transloco }}</a
+        >
+        <a class="button" (click)="cancelWizard('close')"
+          >{{ 'label.cancel' | transloco }}</a
+        >
+      </div>
+    </section>
+  </section>
+</div>
+
+<section
+  class="modal"
+  *ngIf="showAddWizardStep2"
+  [class.modal-shown]="showAddWizardStep2"
+  [class.modal-hidden]="!showAddWizardStep2"
+  style="margin-top: 0"
+>
+  <a class="close-icon" (click)="cancelWizard('close')"></a>
+  <header>
+    <h2 class="title">{{ 'label.uploading.files' | transloco }}</h2>
+  </header>
+
+  <section class="modal-content" id="idUploadContentSection">
+    <div class="field">
+      <label
+        >{{ 'label.progress' | transloco }}
+        <cbc-spinner *ngIf="!isUploadFinished()"></cbc-spinner
+      ></label>
+      <progress
+        class="progressUploadBar"
+        [value]="progressValue"
+        [max]="progressMax"
+      ></progress>
+    </div>
+
+    <div class="vertical-wrapper">
+      <cbc-file-details *ngFor="let file of filesUploaded" [file]="file">
+      </cbc-file-details>
+    </div>
+  </section>
+
+  <section class="modal-footer">
+    <!-- Buttons -->
+    <div class="buttons-group">
+      <a
+        class="cta"
+        (click)="!isUploadFinished() ? '' : cancelWizard('finish')"
+        id="idButtonFinishUpload"
+        [class.disabled]="!isUploadFinished()"
+        >{{ 'label.finish' | transloco }}</a
+      >
+    </div>
+  </section>
+</section>

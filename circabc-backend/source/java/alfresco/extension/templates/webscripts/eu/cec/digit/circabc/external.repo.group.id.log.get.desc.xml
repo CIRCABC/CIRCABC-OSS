@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>external.repo.group.id.log</shortname>
+  <description>Get external repository log for interest group</description>
+    <url>/circabc/groups/{id}/repositories/{repoId}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

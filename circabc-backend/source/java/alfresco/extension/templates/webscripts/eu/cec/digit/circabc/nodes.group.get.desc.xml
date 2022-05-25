@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Get the respective Interest group of a node</shortname>
+  <description>Get the respective Interest group of a node</description>
+  <url>/circabc/nodes/{id}/group</url>
+  <format default="json"/>
+  <authentication>guest</authentication>
+  <transaction>required</transaction>
+</webscript>

@@ -1,0 +1,72 @@
+table.calendarTableStyle {
+	border-top: 		#c1cdd8 1px solid;
+	border-bottom: 	    #c1cdd8 1px solid;
+	border-left: 		#c1cdd8 1px solid;
+	border-right: 		#c1cdd8 1px solid;
+}
+
+table.calendarTableStyle .calendarPreviousLinkStyle  {
+	font-weight:		bold;
+	font-size: 			16px;
+	color: 				#000066;
+	text-align: 		left;
+}
+
+table.calendarTableStyle .calendarNextLinkStyle  {
+	font-weight: 		bold;
+	font-size: 			16px;
+	color: 				#000066;
+	text-align: 		right;
+}
+
+table.calendarTableStyle .calendarTitleStyle  {
+	font-weight: 		bold;
+	text-align:         center;
+	font-size: 			16px;
+	color: 				#000066;
+	letter-spacing: 	10px;
+}
+
+table.calendarTableStyle .calendarWeekdayStyle  {
+	border-top:         #c1cdd8 1px solid;
+	border-bottom:      #c1cdd8 1px solid;
+	border-right:       #c1cdd8 2px solid;
+	border-left:        #c1cdd8 1px solid;
+	color:              #10659e;
+	background-color:   #e1e2f3;
+	text-align:         left;
+	padding-left:       10px;
+}
+
+table.calendarTableStyle .calendarOddMonthStyle, .calendarEvenMonthStyle, .calendarActiveDayStyle, .calendarEvenMonthStyle, .calendarEmptyDayStyle {
+	font-size: 14px;
+	color: black;
+	text-align: left;
+	border-right: solid 1px #c1cdd8;
+	border-bottom: solid 1px #c1cdd8;
+	vertical-align: top;
+	padding-left: 10px;
+}
+
+table.calendarTableStyle .calendarEmptyDayStyle {
+	background-color: #e1e2f3;
+}
+
+table.calendarTableStyle .calendarEvenMonthStyle  {
+	background-color:   #F0F0F0;
+}
+
+table.calendarTableStyle .calendarOddMonthStyle  {
+	background-color:   #F0F0F0;
+}
+
+table.calendarTableStyle .calendarActiveDayStyle {
+	background-color: #f0f7fd;
+	cursor: hand;
+}
+
+table.calendarTableStyle a, a:visited .a:active {
+ 	color: #000099;
+	text-decoration: none;
+	height: 20px;
+}

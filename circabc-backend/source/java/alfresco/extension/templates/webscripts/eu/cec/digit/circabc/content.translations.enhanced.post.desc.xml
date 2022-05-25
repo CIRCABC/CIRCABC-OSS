@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>post a new translation on one content</shortname>
+  <description>post a new translation on one content</description>
+    <url>/circabc/content/{id}/translations/enhanced</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

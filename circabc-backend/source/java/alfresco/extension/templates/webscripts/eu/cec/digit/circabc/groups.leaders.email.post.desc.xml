@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Send an email to the leaders (group admin) of a group</shortname>
+  <description>Send and email to the leaders (group admin), it does not accept attachement</description>
+    <url>/circabc/groups/{igId}/email/leaders</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

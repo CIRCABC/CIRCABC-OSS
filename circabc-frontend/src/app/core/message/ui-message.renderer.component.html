@@ -1,0 +1,56 @@
+<section
+  class="box box--message ui-message-show"
+  style="width: 100%"
+  [class.box--message--information]="message.level === 0"
+  [class.box--message--warning]="message.level === 1"
+  [class.box--message--error]="message.level === 2"
+  [class.box--message--success]="message.level === 3"
+>
+  <header class="header" style="background-color: rgba(255, 255, 255, 0.3)">
+    <span class="title" [ngSwitch]="message.level">
+      <ng-template [ngSwitchCase]="0">
+        {{ 'label.information' | transloco }}
+      </ng-template>
+      <ng-template [ngSwitchCase]="1">
+        {{ 'label.warning' | transloco }}
+      </ng-template>
+      <ng-template [ngSwitchCase]="2">
+        {{ 'label.error' | transloco }}
+      </ng-template>
+      <ng-template [ngSwitchCase]="3">
+        {{ 'label.success' | transloco }}
+      </ng-template>
+    </span>
+    <span style="float: right">
+      <a (click)="closeMessage()">{{ 'label.close' | transloco }}</a>
+    </span>
+  </header>
+  <div class="box--message--icon" [ngSwitch]="message.level">
+    <ng-template [ngSwitchCase]="0">
+      <img src="{{ imageInfoLink }}" />
+    </ng-template>
+    <ng-template [ngSwitchCase]="1">
+      <img src="{{ imageExclamationLink }}" />
+    </ng-template>
+    <ng-template [ngSwitchCase]="2">
+      <img src="{{ imageErrorLink }}" />
+    </ng-template>
+    <ng-template [ngSwitchCase]="3">
+      <img src="{{ imageCheckMarkLink }}" />
+    </ng-template>
+  </div>
+  <div class="box--message--content">
+    <div [innerHTML]="message.body"></div>
+    <p *ngIf="message.level === 2">
+      {{ 'error.ui.additional.message' | transloco }}
+      <a [routerLink]="['/help']" (click)="closeMessage()"
+        >{{ 'error.ui.additional.message.help.service' | transloco }}</a
+      >
+      {{ 'error.ui.additional.message.bug.found' | transloco }}
+      <a [routerLink]="['/help/contact']" (click)="closeMessage()"
+        >{{ 'error.ui.additional.message.bug.found.contact' | transloco }}</a
+      >
+    </p>
+  </div>
+  <br style="clear: both" />
+</section>

@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>external.repo.id.delete</shortname>
+  <description>Get external ticket id</description>
+    <url>/circabc/groups/{id}/repositories/{repoId}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

@@ -1,0 +1,19 @@
+.box--big-number {
+  width: 260px;
+  min-height: 100px;
+  overflow: auto;
+  float: left;
+  color: #035;
+  margin-bottom: 15px;
+
+  .value {
+    font-size: 4em;
+    text-align: center;
+    margin: 5px;
+  }
+
+  .label {
+    font-size: 1.5em;
+    text-align: center;
+  }
+}

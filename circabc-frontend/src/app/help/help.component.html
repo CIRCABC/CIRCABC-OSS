@@ -1,0 +1,19 @@
+<div class="">
+  <cbc-header (searchPropagated)="searchInHelp($event)"></cbc-header>
+  <cbc-navigator></cbc-navigator>
+  <div>
+    <router-outlet></router-outlet>
+  </div>
+
+  <div class="help-search-wrap" [class.visible]="showSearch">
+    <a class="button" (click)="closeSearch()"
+      >{{ 'label.close' | transloco }}</a
+    >
+
+    <cbc-help-search-displayer
+      [result]="resultSearch"
+      [searching]="searching"
+      (linkClick)="linkClick()"
+    ></cbc-help-search-displayer>
+  </div>
+</div>

@@ -1,0 +1,46 @@
+
+POST http://localhost/service/api/person/changepassword/origabe
+content-type: application/json
+Authorization: Basic admin:admin
+
+{
+    "newpw": "password"
+}
+
+###
+POST http://localhost/service/api/person/changepassword/morleal
+content-type: application/json
+Authorization: Basic admin:admin
+
+{
+    "newpw": "password"
+}
+
+###
+POST http://localhost/service/api/person/changepassword/collipe
+content-type: application/json
+Authorization: Basic admin:admin
+
+{
+    "newpw": "password"
+}
+
+
+###
+POST http://localhost/service/api/person/changepassword/maluisa
+content-type: application/json
+Authorization: Basic admin:admin
+
+{
+    "newpw": "password"
+}
+
+
+###
+POST http://localhost/service/api/person/changepassword/moulodo
+content-type: application/json
+Authorization: Basic admin:admin
+
+{
+    "newpw": "password"
+}

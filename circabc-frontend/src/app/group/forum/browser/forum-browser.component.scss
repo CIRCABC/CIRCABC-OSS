@@ -1,0 +1,146 @@
+@use '~css/global/variables-mixins-keyframes';
+
+.action-layout {
+  display: inline-block;
+  font-size: 11px;
+  padding-left: 0 !important;
+  padding-right: 5px !important;
+}
+
+.force-inline {
+  display: inline-block;
+}
+
+.action-right {
+  float: right;
+  font-size: 13px;
+  margin-left: 10px;
+}
+
+.sub-forum {
+  .action-layout {
+    display: none;
+  }
+
+  &:hover {
+    .action-layout {
+      display: inline-block;
+      font-size: 11px;
+      padding-left: 0 !important;
+      padding-right: 5px !important;
+    }
+  }
+}
+
+.home {
+  vertical-align: text-bottom;
+}
+
+.sub-forum--list-title {
+  padding-left: 25px;
+
+  img {
+    vertical-align: top;
+  }
+}
+
+.pennant--new {
+  padding: 5px 10px;
+  border-radius: 5px;
+  float: right;
+  font-size: 10px;
+  color: white;
+  background: #8dcb6c;
+  background: -moz-linear-gradient(
+    top,
+    variables-mixins-keyframes.$light-green 0%,
+    variables-mixins-keyframes.$dark-green 100%
+  );
+  background: -webkit-gradient(
+    linear,
+    left top,
+    left bottom,
+    color-stop(0%, variables-mixins-keyframes.$light-green),
+    color-stop(100%, variables-mixins-keyframes.$dark-green)
+  );
+  background: -webkit-linear-gradient(
+    top,
+    variables-mixins-keyframes.$light-green 0%,
+    variables-mixins-keyframes.$dark-green 100%
+  );
+  background: -o-linear-gradient(
+    top,
+    variables-mixins-keyframes.$light-green 0%,
+    variables-mixins-keyframes.$dark-green 100%
+  );
+  background: -ms-linear-gradient(
+    top,
+    variables-mixins-keyframes.$light-green 0%,
+    variables-mixins-keyframes.$dark-green 100%
+  );
+  background: linear-gradient(
+    to bottom,
+    variables-mixins-keyframes.$light-green 0%,
+    variables-mixins-keyframes.$dark-green 100%
+  );
+  filter: progid:DXImageTransform.Microsoft.gradient(
+    startColorstr='#8dcb6c',
+    endColorstr='#58c37e',
+    GradientType=0
+  );
+}
+
+.forum-actions {
+  display: inline-block;
+
+  li {
+    a {
+      font-size: 13px;
+    }
+  }
+}
+
+.fix-line {
+  line-height: initial !important;
+}
+
+.topic-metadata {
+  width: 40%;
+  display: inline-block;
+  position: absolute;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: right;
+  line-height: 20px;
+
+  @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+    font-size: 10px;
+  }
+
+  @media screen and (max-width: variables-mixins-keyframes.$break-tiny) {
+    display: none;
+  }
+}
+
+.box--message--content2 {
+  padding: 10px;
+  padding-left: 128px;
+  box-shadow: unset;
+
+  ::ng-deep ol {
+    margin-left: 30px;
+    list-style-type: decimal;
+  }
+
+  ::ng-deep ul {
+    margin-left: 30px;
+    list-style-type: circle;
+  }
+}
+
+.box--message--icon {
+  width: 128px;
+  padding: 10px 0;
+  text-align: center;
+  float: left;
+}

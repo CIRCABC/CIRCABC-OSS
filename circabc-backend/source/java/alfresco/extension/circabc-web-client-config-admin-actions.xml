@@ -1,0 +1,1244 @@
+<!--+
+    |     Copyright European Community 2006 - Licensed under the EUPL V.1.0
+    |
+    |  		   http://ec.europa.eu/idabc/en/document/6523
+    |
+    +-->
+
+<!-- Here Only the new Circabc specific WAI (and not Alfresco native) actions and action groups -->
+
+<alfresco-config>
+
+	<config>
+		<actions>
+
+			<!-- Edit own notification status -->
+			<action id="edit_own_notification_status">
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.EditOwnNotificationStatusEvaluator
+				</evaluator>
+				<label-id>notification_edit_own_action_title</label-id>
+				<tooltip-id>
+					notification_edit_own_action_tooltip
+				</tooltip-id>
+				<image>/images/extension/icons/edit_notification.png</image>
+			    <action>wai:dialog:editOwnNotificationDialogWai</action>
+			    <action-listener>
+				    #{WaiDialogManager.setupParameters}
+			    </action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+				    <param name="imageName">edit_own_notification_status</param>
+				    <param name="service">Administration</param>
+				    <param name="activity">Change notification status</param>
+				</params>
+			</action>
+
+			<!-- Reported from Admin Console: manage the system users -->
+			<action id="manage_users">
+				<permissions>
+					<permission allow="true">Administrator</permission>
+				</permissions>
+				<label-id>manage_users</label-id>
+				<tooltip-id>manage_users</tooltip-id>
+				<image>/images/icons/users.gif</image>
+				<style-class>title</style-class>
+				<action>dialog:manageUsers</action>
+				<action-listener>#{NewUserWizard.setupUsers}</action-listener>
+				<params>
+				   <param name="imageName">manage_users</param>
+				</params>
+			</action>
+			<!-- Reported from Admin Console: manage the system groups -->
+			<action id="manage_groups">
+				<permissions>
+					<permission allow="true">Administrator</permission>
+				</permissions>
+				<label-id>manage_groups</label-id>
+				<tooltip-id>manage_groups</tooltip-id>
+				<image>/images/icons/group.gif</image>
+				<style-class>title</style-class>
+				<action>dialog:manageGroups</action>
+				<params>
+				   <param name="imageName">manage_groups</param>
+				</params>
+			</action>
+			<!-- Reported from Admin Console: manage the system categories -->
+			<!--   action id="category_management">
+				<permissions>
+					<permission allow="true">Administrator</permission>
+				</permissions>
+				<label-id>category_management</label-id>
+				<tooltip-id>category_management</tooltip-id>
+				<image>/images/icons/categories.gif</image>
+				<style-class>title</style-class>
+				<action>dialog:manageCategories</action>
+				<action-listener>#{CategoriesDialog.setupCategoryAction}</action-listener>
+				<params>
+				   <param name="imageName">category_management</param>
+				</params>
+			</action> -->
+			<!-- Reported from Admin Console: import in the current space -->
+			<action id="import">
+				<label-id>import</label-id>
+				<tooltip-id>import</tooltip-id>
+				<image>/images/icons/import.gif</image>
+				<style-class>title</style-class>
+				<action>dialog:import</action>
+				<action-listener>#{BrowseBean.setupSpaceAction}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+				   <param name="imageName">import</param>
+				</params>
+			</action>
+			<!-- Reported from Admin Console: export in the current space -->
+			<action id="export">
+				<label-id>export</label-id>
+				<tooltip-id>export</tooltip-id>
+				<image>/images/icons/export.gif</image>
+				<style-class>title</style-class>
+				<action>dialog:export</action>
+				<action-listener>#{BrowseBean.setupSpaceAction}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+				   <param name="imageName">export</param>
+				</params>
+			</action>
+			<!-- Reported from Admin Console: view the system information -->
+			<action id="system_info">
+				<label-id>system_info</label-id>
+				<tooltip-id>system_info</tooltip-id>
+				<image>/images/icons/info_icon.gif</image>
+				<style-class>title</style-class>
+				<action>dialog:showSystemInfo</action>
+				<params>
+				   <param name="imageName">system_info</param>
+				</params>
+			</action>
+			<!-- NEW Console: view the system information -->
+			<action id="extended_system_info">
+				<label-id>system_info_extended_action_title</label-id>
+				<tooltip-id>system_info_extended_action_tooltip</tooltip-id>
+				<image>/images/icons/info_icon.gif</image>
+				<style-class>title</style-class>
+				<action>dialog:showCircabcSystemInfo</action>
+				<params>
+				   <param name="imageName">extended_system_info</param>
+				</params>
+			</action>
+
+			<!-- Reported from Admin Console: the useful node browser  -->
+			<action id="node_browser">
+				<label-id>node_browser</label-id>
+				<tooltip-id>node_browser</tooltip-id>
+				<image>/images/icons/node_browser.gif</image>
+				<style-class>title</style-class>
+				<action>dialog:showNodeBrowser</action>
+				<params>
+				   <param name="imageName">node_browser</param>
+				</params>
+			</action>
+
+			<!-- For each authenticated user: Manage the properties of the current user  -->
+			<action id="user_console">
+				<label-id>self_my_account</label-id>
+				<tooltip-id>self_my_account_tooltip</tooltip-id>
+				<image>/images/icons/node_browser.gif</image>
+				<action>wai:dialog:userConsoleWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.person.id}</param>
+				    <param name="imageName">user_console</param>
+				    <param name="service">Directory</param>
+					<param name="activity">Edit user account</param>
+
+				</params>
+			</action>
+			
+			<!-- Under circabc: Create a user -->
+			<action id="create_circabc_user_on_circabc">
+				<permissions>
+					<permission allow="true">CircaBCAdmin</permission>
+				</permissions>
+				<label-id>create_circabc_user</label-id>
+				<image>/images/extension/icons/create_circabc_user.gif</image>
+				<action>wai:wizard:createCircabcUserWizard</action>
+				<action-listener>#{WaiWizardManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+				    <param name="imageName">create_circabc_user_on_circabc</param>
+				</params>
+			</action>
+
+			<!-- Under Circabc: Manage the properties of the current user  -->
+			<action id="create_cat_header">
+				<permissions>
+					<permission allow="true">Administrator</permission>
+				</permissions>
+				<label-id>create_cat_header_action_title</label-id>
+				<tooltip-id>create_cat_header_action_tooltip</tooltip-id>
+				<image>/images/icons/categories.gif</image>
+				<action>wai:dialog:createCatHeaderWai</action>
+				<params>
+				   <param name="imageName">create_cat_header</param>
+				</params>
+			</action>
+
+			<!-- Under circabc: Create Category Wizard. -->
+			<action id="create_category_wizard">
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.CreateCategoryEvaluator
+				</evaluator>
+				<label-id>create_category_wizard_action</label-id>
+				<tooltip-id>create_category_wizard_action_tooltip</tooltip-id>
+				<image>/images/icons/create_space.gif</image>
+				<action>wai:wizard:createCategoryWizard</action>
+				<action-listener>#{WaiWizardManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">create_category_wizard</param>
+					<param name="service">Administration</param>
+				    <param name="activity">Create category</param>
+				</params>
+			</action>
+			
+			<!-- Under circabc: Create Link in Category Header -->
+			<action id="create_external_link">
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.CategoryHeaderEvaluator
+				</evaluator>
+				<label-id>create_external_link_action</label-id>
+				<tooltip-id>create_external_link_action_tooltip</tooltip-id>
+				<image>/images/icons/LinkRelated_small.gif</image>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+			    </action-listener>
+			    <action>wai:dialog:addUrlWai</action>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+				</params>
+			</action>
+			
+			<!-- Under circabc: View recursive audit search -->
+			<action id="search_audit_dialog_on_circabc">
+				<permissions>
+					<permission allow="true">CircaBCAdmin</permission>
+				</permissions>
+				<label-id>audit_search_action_title</label-id>
+				<tooltip-id>audit_search_action_tooltip_for_circabc</tooltip-id>
+				<image>/images/icons/create_space.gif</image>
+				<action>wai:dialog:auditSearchDialogWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+				   <param name="imageName">search_audit_dialog_on_circabc</param>
+				</params>
+			</action>
+			<!-- Under circabc: inivite users -->
+			<action id="invite_user_on_circabc">
+				<permissions>
+					<permission allow="true">CircaBCManageMembers</permission>
+				</permissions>
+				<label-id>invite_circabc_user_on_circabc</label-id>
+				<image>/images/extension/icons/invite_circabc_users.gif</image>
+				<action>wai:wizard:inviteCircabcUsers</action>
+				<action-listener>#{WaiWizardManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+				    <param name="imageName">invite_user_on_circabc</param>
+				    <param name="service">Administration</param>
+				    <param name="activity">Invite user to CIRCABC</param>
+				</params>
+			</action>
+			<!-- Under circabc: Manage access profiles -->
+			<action id="manage_user_profile_on_circabc">
+				<permissions>
+					<permission allow="true">CircaBCManageMembers</permission>
+				</permissions>
+				<label-id>uninvite_change_circabc_user_profile</label-id>
+				<image>/images/extension/icons/invite_circabc_users.gif</image>
+				<action>wai:dialog:manageUserProfilesDialogWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+				    <param name="imageName">manage_user_profile_on_circabc</param>
+				</params>
+			</action>
+
+			<!-- Under category: Create Interest Group Wizard. -->
+			<action id="create_interest_group_wizard">
+				<permissions>
+					<permission allow="true">CircaCategoryAdmin</permission>
+				</permissions>
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.CreateInterestGroupEvaluator
+				</evaluator>
+				<label-id>create_interestgroup_wizard_action</label-id>
+				<tooltip-id>create_interestgroup_wizard_action_tooltip</tooltip-id>
+				<image>/images/icons/create_space.gif</image>
+				<action>wai:wizard:createInterestGroupWizard</action>
+				<action-listener>#{WaiWizardManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+				    <param name="imageName">create_interest_group_wizard</param>
+				    <param name="service">Administration</param>
+				    <param name="activity">Create interest group</param>
+				</params>
+			</action>
+			<!-- Under circabc: View recursive audit search -->
+			<action id="search_audit_dialog_on_category">
+				<permissions>
+					<permission allow="true">CircaCategoryAdmin</permission>
+				</permissions>
+				<label-id>audit_search_action_title</label-id>
+				<tooltip-id>audit_search_action_tooltip_for_cat</tooltip-id>
+				<image>/images/icons/create_space.gif</image>
+				<action>wai:dialog:auditSearchDialogWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+				   <param name="imageName">search_audit_dialog_on_category</param>
+				</params>
+			</action>
+			<!-- Under category: invite users -->
+			<action id="invite_user_on_cat">
+				<permissions>
+					<permission allow="true">CircaCategoryManageMembers</permission>
+				</permissions>
+				<label-id>invite_circabc_user_on_circabcCategory</label-id>
+				<image>/images/extension/icons/invite_circabc_users.gif</image>
+				<action>wai:wizard:inviteCircabcUsers</action>
+				<action-listener>#{WaiWizardManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+				    <param name="imageName">invite_user_on_cat</param>
+				    <param name="service">Administration</param>
+				    <param name="activity">Invite user to category</param>
+				</params>
+			</action>
+			<!-- Under category: manage access profiles -->
+			<action id="manage_user_profile_on_cat">
+				<permissions>
+					<permission allow="true">CircaCategoryManageMembers</permission>
+				</permissions>
+				<label-id>uninvite_change_circabc_user_profile</label-id>
+				<image>/images/extension/icons/invite_circabc_users.gif</image>
+				<action>wai:dialog:manageUserProfilesDialogWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">manage_user_profile_on_cat</param>
+				</params>
+			</action>
+			<action id="view_category_group_statistics">
+				<permissions>
+					<permission allow="true">CircaCategoryAdmin</permission>
+				</permissions>
+				<label-id>view_category_group_statistics_action</label-id>
+				<tooltip-id>view_category_group_statistics_action_tooltip</tooltip-id>
+				<image>/images/icons/create_space.gif</image>
+				<action>wai:dialog:categoryGroupStatisticsConsole</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+				    <param name="imageName">create_interest_group_wizard</param>
+				    <param name="service">Administration</param>
+				    <param name="activity">Category IG statistics</param>
+				</params>
+			</action>
+
+			<!-- Under ig root: Create a survey space -->
+			<action id="circabc_create_survey">
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.CreateSurveyEvaluator
+				</evaluator>
+				<label-id>create_survey_space_action_name</label-id>
+				<tooltip-id>
+					create_survey_space_action_tooltip
+				</tooltip-id>
+				<image>/images/icons/create_space.gif</image>
+				<action>wai:dialog:createSurveyDialogWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">circabc_create_survey</param>
+				</params>
+			</action>
+			<!-- Under ig root: create a user -->
+			<action id="create_circabc_user_on_ig">
+				<permissions>
+					<permission allow="true">DirAdmin</permission>
+				</permissions>
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.CircabcOSSEvaluator
+				</evaluator>
+				<label-id>create_circabc_user</label-id>
+				<image>/images/extension/icons/create_circabc_user.gif</image>
+				<action>wai:wizard:createCircabcUserWizard</action>
+				<action-listener>#{WaiWizardManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">create_circabc_user_on_ig</param>
+				</params>
+			</action>
+			<!-- Under ig root: invite users -->
+			<action id="invite_user_on_ig">
+				<permissions>
+					<permission allow="true">DirManageMembers</permission>
+				</permissions>
+				<label-id>invite_circabc_user_on_circabcIGRoot</label-id>
+				<image>/images/extension/icons/invite_circabc_users.gif</image>
+				<action>wai:wizard:inviteCircabcUsers</action>
+				<action-listener>#{WaiWizardManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">invite_user_on_ig</param>
+					<param name="service">Administration</param>
+				    <param name="activity">Add user and allocate profile</param>
+				</params>
+			</action>
+			<action id="bulk_invite_user_on_ig">
+				<permissions>
+					<permission allow="true">DirManageMembers</permission>
+				</permissions>
+				<label-id>bulk_invite_circabc_user_on_circabc</label-id>
+				<image>/images/extension/icons/invite_circabc_users.gif</image>
+				<action>wai:wizard:bulkInviteCircabcUsers</action>
+				<action-listener>#{WaiWizardManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">bulk_invite_user_on_ig</param>
+					<param name="service">Administration</param>
+				    <param name="activity">Add user and allocate profile</param>
+				</params>
+			</action>
+			<!-- Under ig root: manage access profiles -->
+			<action id="manage_user_profile_on_ig">
+				<permissions>
+					<permission allow="true">DirManageMembers</permission>
+				</permissions>
+				<label-id>uninvite_change_circabc_user_profile</label-id>
+				<tooltip-id>uninvite_change_circabc_user_profile_tooltip</tooltip-id>
+				<image>/images/extension/icons/invite_circabc_users.gif</image>
+				<action>wai:dialog:manageUserProfilesDialogWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">manage_user_profile_on_ig</param>
+					<param name="service">Administration</param>
+				    <param name="activity">Manage User Profile</param>
+				</params>
+			</action>
+			<!-- Under ig root: View recursive audit search -->
+			<action id="search_audit_dialog_on_ig">
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.AllIgServicesAdminEvaluator
+				</evaluator>
+				<label-id>audit_search_action_title</label-id>
+				<tooltip-id>audit_search_action_tooltip_for_ig</tooltip-id>
+				<image>/images/icons/create_space.gif</image>
+				<action>wai:dialog:auditSearchDialogWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">search_audit_dialog_on_ig</param>
+				</params>
+			</action>
+			<!-- Under ig root: View Member Applicants -->
+			<action id="view_member_applicants">
+				<permissions>
+					<permission allow="true">DirManageMembers</permission>
+				</permissions>
+				<label-id>manage_applicants_action_title</label-id>
+				<tooltip-id>manage_applicants_action_tooltip</tooltip-id>
+				<image>/images/icons/users.gif</image>
+				<action>wai:dialog:manageApplicantsDialogWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">view_member_applicants</param>
+				</params>
+			</action>
+			<!-- Under ig root: Edit the profiles associated to the interest group -->
+			<action id="edit_igroot_profiles">
+				<permissions>
+					<permission allow="true">DirAdmin</permission>
+				</permissions>
+				<label-id>edit_circabc_profiles</label-id>
+				<image>/images/extension/icons/create_circabc_user.gif</image>
+				<action>wai:dialog:manageAccessProfilesDialogWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">edit_igroot_profiles</param>
+					<param name="service">Administration</param>
+				    <param name="activity">Edit Access Profile</param>
+				</params>
+			</action>
+			<!-- Under Ig root: manage the deleted items -->
+			<action id="manage_deleted_items">
+				<permissions>
+					<permission allow="true">AdminDeletedItems</permission>
+				</permissions>
+				<label-id>manage_deleted_items</label-id>
+				<tooltip-id>manage_deleted_items</tooltip-id>
+				<image>/images/icons/trashcan.gif</image>
+				<action>wai:dialog:circabcManageDeletedItems</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">manage_deleted_items</param>
+				</params>
+			</action>
+			<!-- Under Ig root: manage the expired items -->
+			<action id="show_expired_items">
+				<permissions>
+					<permission allow="true">LibAdmin</permission>
+				</permissions>
+				<label-id>manage_expired_items_action_label</label-id>
+				<tooltip-id>manage_expired_items_action_tooltip</tooltip-id>
+				<image>/images/icons/trashcan.gif</image>
+				<action>wai:dialog:circabcShowExpiredItems</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">manage_expired_items</param>
+				</params>
+			</action>
+			<!-- Under ig root: Manage keywords -->
+			<action id="manage_keywords">
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.AllIgServicesAdminEvaluator
+				</evaluator>
+				<label-id>manage_keyword_dialog_action_title</label-id>
+				<tooltip-id>
+					manage_keyword_dialog_action_tooltip
+				</tooltip-id>
+				<image>/images/icons/category_small.gif</image>
+				<action>wai:dialog:manageKeywordsDialogWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">manage_keywords</param>
+				</params>
+			</action>
+			<!-- Under ig root: Gegenrate an error -->
+			<action id="manage_for_support">
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.SupportOnlyEvaluator
+				</evaluator>
+				<label-id>manage_for_support_title</label-id>
+				<tooltip-id>manage_for_support_tooltip</tooltip-id>
+				<image>/images/icons/error.gif</image>
+				<action>wai:dialog:manageForSupportDialogWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">manage_for_support</param>
+				</params>
+			</action>
+			
+			<!-- Under ig root: Notification on copy, move-->
+			<action id="notification_paste">
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.AllIgServicesAdminEvaluator
+				</evaluator>
+				<label-id>define_notification_paste_action_title</label-id>
+				<tooltip-id>define_notification_paste_action_tooltip</tooltip-id>
+				<image>/images/extension/icons/edit_notification.png</image>
+				<action>wai:dialog:notificationPasteDialogWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">notification_paste</param>
+				</params>
+			</action>
+			<!-- Under ig root: View Notification status -->
+			<action id="view_notification_for_ig">
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.AllIgServicesAdminEvaluator
+				</evaluator>
+				<label-id>notification_view_other_action_title</label-id>
+				<tooltip-id>notification_view_other_action_tooltip</tooltip-id>
+				<image>/images/extension/icons/edit_notification.png</image>
+				<action>wai:dialog:manageNotificationDialogWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">view_notification_for_ig</param>
+				</params>
+			</action>
+			<!-- Under ig root: Manage dynamic properties -->
+			<action id="manage_properties">
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.AllIgServicesAdminEvaluator
+				</evaluator>
+				<label-id>manage_properties_dialog_action_title</label-id>
+				<tooltip-id>
+					manage_properties_dialog_action_tooltip
+				</tooltip-id>
+				<image>/images/icons/category_small.gif</image>
+				<action>wai:dialog:managePropertiesDialogWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">manage_properties</param>
+				</params>
+			</action>
+			<!-- Under ig root: Delete IG -->
+			<action id="delete_ig">
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.DeleteIgNodeEvaluator
+				</evaluator>
+				<label-id>delete_ig_node_dialog_action_title</label-id>
+				<tooltip-id>
+					delete_ig_node_dialog_action_tooltip
+				</tooltip-id>
+				<image>/images/icons/delete.gif</image>
+				<action>wai:dialog:deleteIgNodeDialogWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">delete_ig_node</param>
+				</params>
+			</action>
+			<!-- Move IG -->
+			<action id="move_ig">
+				<label-id>move_ig_dialog_action_title</label-id>
+				<tooltip-id>move_ig_dialog_action_tooltip</tooltip-id>
+				<image>/images/icons/delete.gif</image>
+				<action>wai:dialog:moveIgDialog</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">move_ig</param>
+				</params>
+			</action>
+			<!-- Under ig root: IG summary -->
+			<action id="ig_summary">
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.AllIgServicesAdminEvaluator
+				</evaluator>
+				<label-id>ig_summary_dialog_action_title</label-id>
+				<tooltip-id>
+					ig_summary_dialog_action_tooltip
+				</tooltip-id>
+				<image>/images/icons/admin_console.gif</image>
+				<action>wai:dialog:IgSummaryDialogWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">admin_console</param>
+				</params>
+			</action>
+			<!-- Under category and ig root: Mail To Members -->
+			<action id="mail_to_members">
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.MailToMembersEvaluator
+				</evaluator>
+				<label-id>mail_to_members_wizard_action_title</label-id>
+				<tooltip-id>
+					mail_to_members_wizard_action_tooltip
+				</tooltip-id>
+				<image>/images/icons/email_users.gif</image>
+				<action>wai:wizard:mailToMembersWizard</action>
+				<action-listener>#{WaiWizardManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">mail_to_members</param>
+					<param name="service">Administration</param>
+				    <param name="activity">Mail to members</param>
+				</params>
+			</action>
+
+			<!-- Service Level: manage permissions -->
+			<!-- Under a newsgroup child: manage the permissions for a space (cut inheritance) -->
+			<action id="manage_permissions">
+				<permissions>
+					<permission allow="true">AdminPermissions</permission>
+				</permissions>
+				<label-id>manage_permissions_page_action_title</label-id>
+				<tooltip-id>manage_permissions_page_action_tooltip</tooltip-id>
+				<image>/images/icons/users.gif</image>
+				<action>wai:dialog:managePermissionsWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">manage_permission</param>
+				</params>
+			</action>
+
+
+			<!-- Under a library child: manage the permissions for a space (cut inheritance) -->
+			<action id="manage_space_permission_for_lib">
+				<permissions>
+					<permission allow="true">LibManageMembers</permission>
+				</permissions>
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.ManageSpacePermissionEvaluator
+				</evaluator>
+				<label-id>manage_space_permissions_page_action_title</label-id>
+				<tooltip-id>manage_space_permissions_page_action_tooltip</tooltip-id>
+				<image>/images/icons/users.gif</image>
+				<action>wai:dialog:managePermissionsWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">manage_space_permission_for_lib</param>
+				</params>
+			</action>
+			<!-- Under library child: View Notification status -->
+			<action id="view_notification_for_lib">
+				<permissions>
+					<permission allow="true">LibAdmin</permission>
+				</permissions>
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.ViewNotificationEvaluator
+				</evaluator>
+				<label-id>notification_view_other_action_title</label-id>
+				<tooltip-id>notification_view_other_action_tooltip</tooltip-id>
+				<image>/images/extension/icons/edit_notification.png</image>
+				<action>wai:dialog:manageNotificationDialogWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">view_notification_for_lib</param>
+				</params>
+			</action>
+
+			<!-- Under a newsgroup child: manage the permissions for a space (cut inheritance) -->
+			<action id="manage_space_permission_for_news">
+				<permissions>
+					<permission allow="true">NwsAdmin</permission>
+				</permissions>
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.ManageSpacePermissionEvaluator
+				</evaluator>
+				<label-id>manage_space_permissions_page_action_title</label-id>
+				<tooltip-id>manage_space_permissions_page_action_tooltip</tooltip-id>
+				<image>/images/icons/users.gif</image>
+				<action>wai:dialog:managePermissionsWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">manage_space_permission_for_news</param>
+				</params>
+			</action>
+			<!-- Under newsgroup child: View Notification status -->
+			<action id="view_notification_for_news">
+				<permissions>
+					<permission allow="true">NwsAdmin</permission>
+				</permissions>
+				<label-id>notification_view_other_action_title</label-id>
+				<tooltip-id>notification_view_other_action_tooltip</tooltip-id>
+				<image>/images/extension/icons/edit_notification.png</image>
+				<action>wai:dialog:manageNotificationDialogWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">view_notification_for_news</param>
+				</params>
+			</action>
+
+			<!-- Under a survey child: manage the permissions for a space (cut inheritance) -->
+			<action id="manage_space_permission_for_sur">
+				<permissions>
+					<permission allow="true">SurAdmin</permission>
+				</permissions>
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.ManageSpacePermissionEvaluator
+				</evaluator>
+				<label-id>manage_space_permissions_page_action_title</label-id>
+				<tooltip-id>manage_space_permissions_page_action_tooltip</tooltip-id>
+				<image>/images/icons/users.gif</image>
+				<action>wai:dialog:managePermissionsWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">manage_space_permission_for_sur</param>
+				</params>
+			</action>
+			<!-- Under survey child: View Notification status -->
+			<action id="view_notification_for_sur">
+				<permissions>
+					<permission allow="true">SurAdmin</permission>
+				</permissions>
+				<label-id>notification_view_other_action_title</label-id>
+				<tooltip-id>notification_view_other_action_tooltip</tooltip-id>
+				<image>/images/extension/icons/edit_notification.png</image>
+				<action>wai:dialog:manageNotificationDialogWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">view_notification_for_sur</param>
+				</params>
+			</action>
+
+			<!-- Under Information: View Notification status -->
+			<action id="view_notification_for_information">
+				<permissions>
+					<permission allow="true">InfAdmin</permission>
+				</permissions>
+				<label-id>notification_view_other_action_title</label-id>
+				<tooltip-id>notification_view_other_action_tooltip</tooltip-id>
+				<image>/images/extension/icons/edit_notification.png</image>
+				<action>wai:dialog:manageNotificationDialogWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">view_notification_for_inf</param>
+				</params>
+			</action>
+			<!-- Under a information child: manage the permissions for a space (cut inheritance) -->
+			<action id="manage_space_permission_for_inf">
+				<permissions>
+					<permission allow="true">InfAdmin</permission>
+				</permissions>
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.ManageSpacePermissionEvaluator
+				</evaluator>
+				<label-id>manage_space_permissions_page_action_title</label-id>
+				<tooltip-id>manage_space_permissions_page_action_tooltip</tooltip-id>
+				<image>/images/icons/users.gif</image>
+				<action>wai:dialog:managePermissionsWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">manage_space_permission_for_inf</param>
+				</params>
+			</action>
+
+			<!--  Define at several levels -->
+
+			<action id="manage_navigation_preferences">
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.EditNodePrefrencesEvaluator
+				</evaluator>
+				<label-id>manage_navigation_action</label-id>
+				<tooltip-id>manage_navigation_action_tooltip</tooltip-id>
+				<image>/images/icons/view_properties.gif</image>
+				<action>wai:dialog:manageNavigationPreferenceDialog</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">manage_nav_preferences</param>
+				</params>
+			</action>
+
+			<action id="manage_iglogo_preferences">
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.EditNodePrefrencesEvaluator
+				</evaluator>
+				<label-id>manage_iglogo_action</label-id>
+				<tooltip-id>manage_iglogo_action_tooltip</tooltip-id>
+				<image>/images/icons/view_properties.gif</image>
+				<action>wai:dialog:manageLogoPreferenceDialog</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">manage_iglogo_preferences</param>
+					<param name="service">Administration</param>
+					<param name="activity">Change logo preference</param>
+				</params>
+			</action>
+			
+			<action id="manageSystemMessageAction">
+				<label-id>manage_system_message_action</label-id>
+				<tooltip-id>manage_system_message_action_tooltip</tooltip-id>
+				<image>/images/icons/info_icon.gif</image>
+				<action>wai:dialog:manageSystemMessageDialog</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+			</action>
+			
+			<action id="deleteCategoryAction">
+				<permissions>
+					<permission allow="true">CircaCategoryAdmin</permission>
+				</permissions>
+				<label-id>delete_category_title</label-id>
+				<tooltip-id>delete_category_description</tooltip-id>
+				<image>/images/icons/delete.gif</image>
+				<action>wai:dialog:deleteCategoryDialog</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="operation">delete</param>
+				</params>
+			</action>
+			
+			<action id="cleanCategoryAction">
+				<permissions>
+					<permission allow="true">CircaCategoryAdmin</permission>
+				</permissions>
+				<label-id>clean_category_title</label-id>
+				<tooltip-id>clean_category_description</tooltip-id>
+				<image>/images/icons/delete.gif</image>
+				<action>wai:dialog:cleanCategoryDialog</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="operation">clean</param>
+				</params>
+			</action>
+			
+			<action id="showSystemMonitorAction">
+				<label-id>show_system_monitor_title</label-id>
+				<tooltip-id>show_system_monitor_description</tooltip-id>
+				<image>/images/icons/admin_console.gif</image>
+				<action>wai:dialog:systemMonitor</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+			</action>
+			
+			<!-- Under category root: category customisation -->
+			<action id="customiseCategoryAction">
+				<permissions>
+					<permission allow="true">CircaCategoryAdmin</permission>
+				</permissions>
+				<label-id>category_customise_dialog_action_title</label-id>
+				<tooltip-id>
+					category_customise_dialog_action_tooltip
+				</tooltip-id>
+				<image>/images/icons/edit_website.gif</image>
+				<action>wai:dialog:CustomiseCategoryDialogWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">edit_website</param>
+				</params>
+			</action>
+			
+			<action id="cutTreeFolderInheritance">
+				<permissions>
+					<permission allow="true">CircaCategoryAdmin</permission>
+				</permissions>
+				<label-id>library_cut_inheritance_folder_tree_action_title</label-id>
+				<tooltip-id>
+					library_cut_inheritance_folder_tree_action_tooltip
+				</tooltip-id>
+				<image>/images/icons/edit_website.gif</image>
+				<action>wai:dialog:CutTreeFolderInheritanceDialogWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">edit_website</param>
+				</params>
+			</action>
+			
+			
+			<action id="showGlobalStatistics">
+				<permissions>
+					<permission allow="true">CircaBCAdmin</permission>
+				</permissions>
+				<label-id>global_statistics_dialog_title</label-id>
+				<tooltip-id>
+					global_statistics_dialog_action_tooltip
+				</tooltip-id>
+				<image>/images/icons/info_icon.gif</image>
+				<action>wai:dialog:showGlobalStatisticsDialog</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">info_icon</param>
+				</params>
+			</action>
+			
+			<action id="viewUserMemberships">
+				<permissions>
+					<permission allow="true">CircaBCAdmin</permission>
+				</permissions>
+				<label-id>view_user_memberships_dialog_title</label-id>
+				<tooltip-id>
+					view_user_memberships_dialog_action_tooltip
+				</tooltip-id>
+				<image>/images/icons/group.gif</image>
+				<action>wai:dialog:viewUserMembershipsDialog</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">info_icon</param>
+				</params>
+			</action>
+			<action id="viewCategoryUserMemberships">
+				<permissions>
+					<permission allow="true">CircaCategoryAdmin</permission>
+				</permissions>
+				<label-id>view_user_memberships_dialog_title</label-id>
+				<tooltip-id>
+					view_user_memberships_dialog_action_tooltip
+				</tooltip-id>
+				<image>/images/icons/group.gif</image>
+				<action>wai:dialog:viewUserMembershipsDialog</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">info_icon</param>
+				</params>
+			</action>
+			
+			
+			<action id="manage_auto_upload">
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.AllIgServicesAdminEvaluator
+				</evaluator>
+				<label-id>manage_auto_upload_dialog_title</label-id>
+				<tooltip-id>
+					manage_auto_upload_dialog_action_tooltip
+				</tooltip-id>
+				<image>/images/icons/info_icon.gif</image>
+				<action>wai:dialog:manageAutoUploadDialogWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">info_icon</param>
+				</params>
+			</action>
+
+			<action id="manage_external_repositories">
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.ManageExternalRepositoriesActionEvaluator
+				</evaluator>
+				<label-id>manage_external_repositories_dialog_title</label-id>
+				<tooltip-id>
+					manage_external_repositories_dialog_action_tooltip
+				</tooltip-id>
+				<image>/images/extension/storage_icon_small.png</image>
+				<action>wai:dialog:manageExternalRepositoriesDialogWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">info_icon</param>
+				</params>
+			</action>
+			
+			<!-- Under CIRCABC root: customisation console -->
+			<action id="customisation_console">
+				<permissions>
+					<permission allow="true">CircaBCAdmin</permission>
+				</permissions>
+				<label-id>customisation_console_title</label-id>
+				<tooltip-id>
+					customisation_console_title
+				</tooltip-id>
+				<image>/images/icons/admin_console.gif</image>
+				<action>wai:dialog:circabcCustomisationConsole</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">admin_console</param>
+				</params>
+			</action>
+
+			<!-- Administrative task available for authenticated user -->
+			<action-group id="personal_admin_actions_wai">
+				<!-- action idref="view_user_to_do_wai" / -->
+				<!-- action idref="view_user_completed_wai" / -->
+				<!-- action idref="view_user_pooled_to_do_wai" / -->
+				<action idref="user_console" />
+				<action idref="change_own_password_wai" />
+				<action idref="view_user_membership_wai" />
+				<action idref="view_user_calendar_wai" />
+				<action idref="view_user_saved_serch_wai" />
+			</action-group>
+
+			<!-- Administrative task available for authenticated user -->
+			<action-group id="personal_node_admin_actions_wai">
+				<action idref="edit_own_notification_status" />
+			</action-group>
+
+			<!-- Administrative task available for the Alfresco admin -->
+			<action-group id="super_admin_global_actions_wai">
+				<action idref="manage_users" />
+				<action idref="manage_groups" />
+				<action idref="create_circabc_user_on_circabc" />
+				<!-- action idref="category_management" / -->
+				<action idref="system_info" />
+				<action idref="extended_system_info" />
+				<action idref="node_browser" />
+			</action-group>
+
+			<!-- Administrative task available for the Alfresco admin ON Circabc-->
+			<action-group id="super_admin_circabc_actions_wai">
+				<action idref="invite_user_on_circabc" />
+				<action idref="create_circabc_user_on_circabc" />
+				<action idref="manage_user_profile_on_circabc" />
+				<action idref="create_cat_header" />
+				<!-- action idref="view_all_active_wai" /-->
+				<action idref="search_audit_dialog_on_circabc" />
+				<action idref="edit_space_properties_wai" />
+				<action idref="mail_to_members" />
+				<action idref="manageSystemMessageAction" />
+				<action idref="showSystemMonitorAction" />
+				<action idref="move_ig" />
+			</action-group>
+
+			<!-- Administrative task available for the Circabc admin ON Circabc -->
+			<action-group id="circabc_admin_actions_wai">
+				<action idref="create_category_wizard" />
+				<action idref="invite_user_on_circabc" />
+				<action idref="manage_user_profile_on_circabc" />
+				<!-- action idref="view_all_active_wai" /-->
+				<action idref="search_audit_dialog_on_circabc" />
+				<action idref="edit_space_properties_wai" />
+				<action idref="mail_to_members" />
+				<action idref="manageSystemMessageAction" />
+				<action idref="showSystemMonitorAction" />
+				<action idref="showGlobalStatistics" />
+				<action idref="viewUserMemberships" />
+				<action idref="customisation_console" />
+			</action-group>
+
+			<!-- Administrative task available for the Alfresco admin ON Category Header-->
+			<action-group id="admin_header_actions_wai">
+				<action idref="create_category_wizard" />
+				<action idref="create_external_link" />
+				<action idref="create_cat_header" />
+				<action idref="edit_space_properties_wai" />
+			</action-group>
+
+			<!-- Administrative task available for the Category admin (user/perm part) -->
+			<action-group id="category_admin_actions_wai_user">
+				<action idref="invite_user_on_cat" />
+				<action idref="manage_user_profile_on_cat" />
+				<action idref="mail_to_members" />
+				<action idref="viewCategoryUserMemberships" />
+			</action-group>
+
+			<!-- Administrative task available for the Category admin (admin part) -->
+			<action-group id="category_admin_actions_wai_adm">
+				<action idref="create_interest_group_wizard" />
+				<!-- action idref="view_cat_active_wai" /-->
+				<action idref="search_audit_dialog_on_category" />
+				<action idref="edit_space_properties_wai" />
+				<action idref="deleteCategoryAction" />
+    			<action idref="cleanCategoryAction" />
+    			<action idref="customiseCategoryAction" />
+				<action idref="view_category_group_statistics"/>
+			</action-group>
+
+			<!-- Administrative task available for the Category admin (look and feel part) -->
+			<action-group id="category_admin_actions_wai_look">
+				<action idref="manage_navigation_preferences" />
+				<action idref="manage_iglogo_preferences" />
+			</action-group>
+
+			<!-- Administrative task available for the Ig Leader (documents part) -->
+			<action-group id="igroot_leader_actions_wai_doc">
+				<action idref="manage_keywords" />
+				<action idref="manage_properties" />
+				<action idref="view_notification_for_ig" />
+				<action idref="notification_paste" />
+				<action idref="view_global_saved_serch_wai" />
+			</action-group>
+
+			<!-- Administrative task available for the Ig Leader  (user/perm part) -->
+			<action-group id="igroot_leader_actions_wai_user">
+				<action idref="create_circabc_user_on_ig" />
+				<action idref="invite_user_on_ig" />
+				<action idref="bulk_invite_user_on_ig" />
+				<action idref="manage_user_profile_on_ig" />
+				<action idref="view_member_applicants" />
+				<action idref="edit_igroot_profiles" />
+				<action idref="mail_to_members" />
+			</action-group>
+
+			<!-- Administrative task available for the Ig Leader  (admin part) -->
+			<action-group id="igroot_leader_actions_wai_admin">
+				<!-- action idref="view_ig_active_wai" /-->
+				<action idref="search_audit_dialog_on_ig" />
+				<action idref="edit_space_properties_wai" />
+				<action idref="delete_ig" />
+				<action idref="ig_summary" />
+				<action idref="manage_auto_upload" />
+				<!-- Comment the next line out if you want to disable the external repository publishing (Hermes) -->
+				<action idref="manage_external_repositories" />
+			</action-group>
+
+			<!-- Administrative task available for the Ig Leader  (look and feel part) -->
+			<action-group id="igroot_leader_actions_wai_look">
+				<!-- <action idref="circabc_create_survey" />-->
+				<action idref="manage_navigation_preferences" />
+				<action idref="manage_iglogo_preferences" />
+				<action idref="manage_for_support" />
+			</action-group>
+
+			<!-- Administrative task available for the Library admin -->
+			<action-group id="lib_admin_actions_wai">
+				<action idref="edit_space_properties_wai" />
+				<action idref="manage_deleted_items" />
+				<action idref="show_expired_items" />
+				<action idref="view_notification_for_lib" />
+				<action idref="manage_iglogo_preferences" />
+			</action-group>
+
+			<!-- Administrative task available for the Library admin (not under the Library Root) -->
+			<action-group id="lib_child_admin_actions_wai">
+				<action idref="manage_deleted_items" />
+				<action idref="show_expired_items" />
+				<action idref="view_notification_for_lib" />
+				<action idref="manage_space_permission_for_lib" />
+				<action idref="manage_navigation_preferences" />
+				<action idref="manage_iglogo_preferences" />
+			</action-group>
+
+			<!-- Administrative task available for the Newsgroup admin -->
+			<action-group id="news_admin_actions_wai">
+				<action idref="edit_space_properties_wai" />
+				<action idref="manage_deleted_items" />
+				<action idref="view_notification_for_news" />
+				<action idref="manage_iglogo_preferences" />
+			</action-group>
+
+			<!-- Administrative task available for the Newsgroup admin (not under the Newsgroup Root) -->
+			<action-group id="forum_child_admin_actions_wai">
+				<action idref="manage_deleted_items" />
+				<action idref="view_notification_for_news" />
+				<action idref="manage_space_permission_for_news" />
+				<action idref="manage_navigation_preferences" />
+				<action idref="manage_iglogo_preferences" />
+			</action-group>
+
+			<!-- Administrative task available for the Directory admin -->
+			<action-group id="dir_admin_actions_wai">
+				<action idref="manage_iglogo_preferences" />
+			</action-group>
+
+			<!-- Administrative task available for the Survey admin -->
+			<action-group id="survey_admin_actions_wai">
+				<action idref="edit_space_properties_wai" />
+				<action idref="manage_deleted_items" />
+				<action idref="manage_iglogo_preferences" />
+			</action-group>
+
+			<!-- Administrative task available for the Survey admin (not under the Survey Root) -->
+			<action-group id="survey_child_admin_actions_wai">
+				<action idref="manage_deleted_items" />
+				<action idref="manage_space_permission_for_sur" />
+				<action idref="manage_iglogo_preferences" />
+			</action-group>
+
+			<!-- Administrative task available for the Information admin -->
+			<action-group id="information_admin_actions_wai">
+				<action idref="edit_space_properties_wai" />
+				<action idref="manage_deleted_items" />
+				<action idref="view_notification_for_information" />
+				<action idref="manage_iglogo_preferences" />
+			</action-group>
+
+			<!-- Administrative task available for the Information admin (not under Information Root) -->
+			<action-group id="information_child_admin_actions_wai">
+				<action idref="manage_deleted_items" />
+				<action idref="view_notification_for_information" />
+				<action idref="manage_space_permission_for_inf" />
+				<action idref="manage_navigation_preferences" />
+				<action idref="manage_iglogo_preferences" />
+			</action-group>
+
+			<!-- Administrative task available for the Event admin -->
+			<action-group id="events_admin_actions_wai">
+				<action idref="edit_space_properties_wai" />
+				<action idref="manage_iglogo_preferences" />
+			</action-group>
+			
+			<action-group id="library_tool_box">
+			</action-group>
+		</actions>
+	</config>
+
+</alfresco-config>

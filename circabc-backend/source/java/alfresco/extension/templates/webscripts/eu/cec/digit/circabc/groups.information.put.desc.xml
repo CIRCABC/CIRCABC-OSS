@@ -1,0 +1,7 @@
+<webscript>
+  <shortname>Update the details of the information service of a IG</shortname>
+  <url>/circabc/groups/{igId}/information</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

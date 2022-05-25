@@ -1,0 +1,5 @@
+src/main/webapp/assets
+src/main/webapp/img
+src/main/webapp/*.*
+target/
+.project

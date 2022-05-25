@@ -1,0 +1,325 @@
+@use '~css/global/variables-mixins-keyframes';
+
+.flex-calendar {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+
+  .day-hour {
+    width: 33px !important;
+    height: 48px !important;
+    color: #757575;
+  }
+
+  .day-events {
+    width: calc((100% - 82px) / 4) !important;
+    height: 48px !important;
+    color: #757575;
+
+    .events--container {
+      overflow-x: auto;
+      width: 90%;
+      height: 100%;
+    }
+  }
+}
+
+.day-events-multiple {
+  background: #cce8ec !important;
+}
+
+.popup {
+  border-radius: 3px;
+  background: #fff;
+  box-shadow: 0 0 8px rgb(0 0 0 / 0.3);
+  width: 385px;
+  position: absolute;
+  top: 0;
+  z-index: 1;
+  margin-bottom: 30px;
+
+  .title {
+    font-family: Ubuntu, Verdana, Helvetica, sans-serif;
+    font-weight: 200;
+    text-transform: uppercase;
+    color: #5b5b5b;
+  }
+
+  &::before {
+    content: '';
+    width: 17px;
+    height: 52px;
+    position: absolute;
+    top: -1px;
+    left: -17px;
+    background: url(^img/popup-arrow-left-grey.png) no-repeat;
+  }
+}
+
+.left-popup {
+  border-radius: 3px;
+  background: #fff;
+  box-shadow: 0 0 8px rgb(0 0 0 / 0.3);
+  width: 385px;
+  position: absolute;
+  top: 0;
+  z-index: 1;
+  margin-bottom: 30px;
+
+  .title {
+    font-family: Ubuntu, Verdana, Helvetica, sans-serif;
+    font-weight: 200;
+    text-transform: uppercase;
+    color: #5b5b5b;
+  }
+
+  &::after {
+    content: '';
+    width: 17px;
+    height: 52px;
+    position: absolute;
+    top: 10px;
+    right: -17px;
+    background: url(^img/popup-arrow-right-grey.png) no-repeat;
+  }
+}
+
+.left-popup--calendar {
+  left: -390px;
+  box-shadow: 0 0 20px rgb(0 0 0 / 0.4);
+
+  .events-of-the-day {
+    padding: 15px;
+    background: #f5fafa;
+    overflow-y: scroll;
+    max-height: 300px;
+    border-top: 1px solid #e1e3e8;
+    border-radius: 0 0 3px 3px;
+    min-height: 100px;
+
+    &::-webkit-scrollbar {
+      width: 14px;
+      height: 18px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      height: 6px;
+      border: 4px solid transparent;
+      -webkit-border-radius: 7px;
+      background-color: rgb(0 0 0 / 0.15);
+      background-clip: padding-box;
+      -webkit-box-shadow: inset -1px -1px 0 rgb(0 0 0 / 0.05),
+        inset 1px 1px 0 rgb(0 0 0 / 0.05);
+    }
+
+    &::-webkit-scrollbar-button {
+      display: none;
+      width: 0;
+      height: 0;
+    }
+
+    &::-webkit-scrollbar-corner {
+      background-color: transparent;
+    }
+
+    .events {
+      margin-top: 15px;
+    }
+  }
+
+  .event {
+    margin: 7px 0;
+
+    .hour {
+      display: block;
+      color: #0070bb;
+      min-width: 50px;
+      font-size: 12px;
+      float: left;
+      position: relative;
+      top: 2px;
+    }
+
+    .event-name {
+      color: #035;
+      font-size: 14px;
+      display: block;
+      margin-left: 50px;
+      margin-bottom: 6px;
+    }
+
+    .details {
+      margin-left: 50px;
+
+      p {
+        color: #757575;
+        margin: 0;
+        margin-bottom: 6px;
+        font-size: 13px;
+      }
+
+      .duration,
+      .location,
+      .abstract,
+      .repetition {
+        display: inline-block;
+        margin-right: 15px;
+        font-size: 12px;
+        color: #b3b3b1;
+        margin-bottom: 6px;
+
+        &::before {
+          content: '';
+          display: inline-block;
+          vertical-align: bottom;
+          margin-right: 5px;
+          width: 16px;
+          height: 16px;
+          background-position: center center;
+          background-repeat: no-repeat;
+        }
+      }
+
+      .duration::before {
+        background-image: url(^img/icon-clock.png);
+      }
+
+      .location::before {
+        background-image: url(^img/icon-location.png);
+      }
+
+      .repetition::before {
+        background-image: url(^img/icon-repetition.png);
+      }
+
+      .abstract::before {
+        background-image: url(^img/open-book-top-view-C4C6C4.png);
+      }
+    }
+  }
+}
+
+.popup--calendar {
+  .events-of-the-day {
+    padding: 15px;
+    background: #f5fafa;
+    overflow-y: scroll;
+    max-height: 300px;
+    border-top: 1px solid #e1e3e8;
+    border-radius: 0 0 3px 3px;
+    min-height: 100px;
+
+    &::-webkit-scrollbar {
+      width: 14px;
+      height: 18px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      height: 6px;
+      border: 4px solid transparent;
+      -webkit-border-radius: 7px;
+      background-color: rgb(0 0 0 / 0.15);
+      background-clip: padding-box;
+      -webkit-box-shadow: inset -1px -1px 0 rgb(0 0 0 / 0.05),
+        inset 1px 1px 0 rgb(0 0 0 / 0.05);
+    }
+
+    &::-webkit-scrollbar-button {
+      display: none;
+      width: 0;
+      height: 0;
+    }
+
+    &::-webkit-scrollbar-corner {
+      background-color: transparent;
+    }
+
+    .events {
+      margin-top: 15px;
+    }
+  }
+
+  .event {
+    margin: 7px 0;
+
+    .hour {
+      display: block;
+      color: #0070bb;
+      min-width: 50px;
+      font-size: 12px;
+      float: left;
+      position: relative;
+      top: 2px;
+    }
+
+    .event-name {
+      color: #035;
+      font-size: 14px;
+      display: block;
+      margin-left: 50px;
+      margin-bottom: 6px;
+    }
+
+    .details {
+      margin-left: 50px;
+
+      p {
+        color: #757575;
+        margin: 0;
+        margin-bottom: 6px;
+        font-size: 13px;
+      }
+
+      .duration,
+      .location,
+      .abstract,
+      .repetition {
+        display: inline-block;
+        margin-right: 15px;
+        font-size: 12px;
+        color: #b3b3b1;
+        margin-bottom: 6px;
+
+        &::before {
+          content: '';
+          display: inline-block;
+          vertical-align: bottom;
+          margin-right: 5px;
+          width: 16px;
+          height: 16px;
+          background-position: center center;
+          background-repeat: no-repeat;
+        }
+      }
+
+      .duration::before {
+        background-image: url(^img/icon-clock.png);
+      }
+
+      .location::before {
+        background-image: url(^img/icon-location.png);
+      }
+
+      .repetition::before {
+        background-image: url(^img/icon-repetition.png);
+      }
+
+      .abstract::before {
+        background-image: url(^img/open-book-top-view-C4C6C4.png);
+      }
+    }
+  }
+}
+
+.appointment-ribbon {
+  border-radius: 20px;
+  height: 10px;
+  margin-top: 2px;
+  display: inline-block;
+}
+
+.arrow--start {
+  height: 8px;
+  margin-top: 4px;
+  display: inline-block;
+}

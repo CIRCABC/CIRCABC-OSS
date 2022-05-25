@@ -1,0 +1,91 @@
+<cbc-modal
+  [title]="'admin.category.admins.add.modal.title'"
+  (ok)="addAdmins()"
+  (cancel)="cancel()"
+  [okLabel]="'label.add'"
+  [(visible)]="showModal"
+  [showOkButton]="futureMembers && futureMembers.length > 0"
+  [executing]="processing"
+  [executingLabel]="'label.inviting'"
+>
+  <form [formGroup]="addUserForm">
+    <div *ngIf="!isOSS" class="field switch">
+      <div class="label longer"> {{ 'label.search.type' | transloco }} </div>
+      <input
+        id="filter"
+        class="cmn-toggle cmn-toggle-round"
+        type="checkbox"
+        formControlName="filter"
+      />
+      <label for="filter" class="nonBlockLabel"></label>
+      <span
+        >{{ (addUserForm.value.filter === true ? 'label.search.eulogin' :
+        'label.search.all.central.database' ) | transloco }}</span
+      >
+    </div>
+    <div class="field">
+      <label for="name">{{ 'label.search' | transloco }}</label>
+      <input
+        type="text"
+        id="name"
+        value=""
+        placeholder="User name / email / ..."
+        formControlName="name"
+      />
+      <button class="button" (click)="searchUsers()"
+        >{{ 'label.search' | transloco }}</button
+      >
+      <a (click)="resetForm()">{{ 'label.clear' | transloco }}</a>
+      <cbc-spinner *ngIf="searchingUsers"></cbc-spinner>
+    </div>
+
+    <!-- Select Multiple-->
+    <div class="field">
+      <label for="sMultiple">{{ 'label.results' | transloco }}</label>
+      <div
+        class="custom-select select--multiple"
+        style="width: 585px; height: 150px"
+      >
+        <select
+          multiple
+          id="sMultiple"
+          style="width: 585px; height: 150px"
+          formControlName="possibleUsers"
+        >
+          <option
+            *ngFor="let user of availableUsers"
+            value="{{ user.userId }}"
+            [disabled]="isAlreadyAdmin(user)"
+            >{{ user.firstname + ' ' + user.lastname + ' (' + user.email + ')'
+            }}</option
+          >
+        </select>
+      </div>
+    </div>
+
+    <!-- Select Multiple-->
+    <div class="field">
+      <label for="sMultiple">{{ 'label.invitations' | transloco }}</label>
+      <input
+        type="button"
+        value="{{ 'label.add.selection' | transloco }}"
+        (click)="selectUsers()"
+        *ngIf="hasSelectedUser()"
+      />
+      <br />
+      <br />
+      <ul>
+        <li *ngFor="let futureMember of futureMembers">
+          {{ '[ Category Administrator ] ' + futureMember.firstname + ' ' +
+          futureMember.lastname + ' (' + futureMember.email + ')' }}
+          <a (click)="removeFromFutureMember(futureMember)">
+            <img
+              src="img/icon-close-20x20.png"
+              style="vertical-align: middle"
+            />
+          </a>
+        </li>
+      </ul>
+    </div>
+  </form>
+</cbc-modal>

@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>GROUP GUARD</shortname>
+  <description>return if the access is granted to the current authority ugest or user</description>
+  <url>/circabc/guards/group/{id}</url>
+  <format default="json"/>
+  <authentication>guest</authentication>
+  <transaction>required</transaction>
+</webscript>

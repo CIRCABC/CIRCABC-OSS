@@ -1,0 +1,397 @@
+{{ 'label.my.calendar' | transloco | cbcSetTitle }}
+<div class="fluid page-container">
+  <div class="page-header">
+    <span class="page-header__title"
+      >{{ 'label.view.anounce.events.meetings' | transloco }}</span
+    >
+  </div>
+  <section class="calendar-container">
+    <header class="header">
+      <div class="float-left">
+        <div class="nav-months">
+          <div *ngIf="view === 'month'" class="buttons">
+            <a class="previous-month" (click)="previousMonth()"
+              >{{ 'label.previous.month' | transloco }}</a
+            >
+            <span class="current-month"
+              >{{ date.getMonth() + 1 + '' | i18nSelect: monthNames }} {{
+              date.getFullYear() }}</span
+            >
+            <a class="next-month" (click)="nextMonth()"
+              >{{ 'label.next.month' | transloco }}</a
+            >
+          </div>
+          <div *ngIf="view === 'day'" class="buttons">
+            <a class="previous-month" (click)="previousDay()"
+              >{{ 'label.previous.day' | transloco }}</a
+            >
+            <span class="current-day"
+              >{{ date.getDay() + '' | i18nSelect: completeDayNames }} {{
+              getFormattedDate() }}</span
+            >
+            <a class="next-month" (click)="nextDay()"
+              >{{ 'label.next.day' | transloco }}</a
+            >
+          </div>
+          <div *ngIf="view === 'week'" class="buttons">
+            <a class="previous-month" (click)="previousWeek()"
+              >{{ 'label.previous.week' | transloco }}</a
+            >
+            <span class="current-week"
+              >{{ 'label.week.for' | transloco }} {{ date.getDay() + '' |
+              i18nSelect: completeDayNames }} {{ getFormattedDate() }}</span
+            >
+            <a class="next-month" (click)="nextWeek()"
+              >{{ 'label.next.week' | transloco }}</a
+            >
+          </div>
+        </div>
+      </div>
+      <div *ngIf="!processing" class="field field-select">
+        <label class="view-label" for="view"
+          >{{ 'label.view.as' | transloco }}</label
+        >
+        <div class="custom-select select--form view-select">
+          <select
+            #viewSelect
+            (change)="selectView(viewSelect.value)"
+            [value]="view"
+          >
+            <option value="month">{{ 'label.month' | transloco }}</option>
+            <option value="day">{{ 'label.day' | transloco }}</option>
+            <option value="week">{{ 'label.week' | transloco }}</option>
+          </select>
+        </div>
+      </div>
+      <div
+        *ngIf="!processing && (view === 'day' || view === 'week')"
+        class="field field-select"
+      >
+        <span *ngIf="view === 'week'">
+          <label class="view-label" for="workWeekSelect"
+            >{{ 'label.workweek' | transloco }}</label
+          >
+          <input
+            id="workWeekSelect"
+            class="cmn-toggle cmn-toggle-round"
+            type="checkbox"
+            [checked]="workWeek"
+            (change)="toggleWorkWeek()"
+          />
+          <label
+            for="workWeekSelect"
+            class="nonBlockLabel"
+            style="width: 60px !important"
+          ></label>
+          <span>{{ (workWeek ? 'label.yes' : 'label.no') | transloco }}</span
+          >&nbsp;&nbsp;
+        </span>
+        <label class="view-label" for="from"
+          >{{ 'label.from' | transloco }}</label
+        >
+        <div class="custom-select select--form view-select">
+          <select
+            #fromSelect
+            (change)="selectFrom(fromSelect.value)"
+            [value]="from"
+          >
+            <option
+              *ngFor="
+                let hour of [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7,
+                  8,
+                  9,
+                  10,
+                  11,
+                  12,
+                  13,
+                  14,
+                  15,
+                  16,
+                  17,
+                  18,
+                  19,
+                  20,
+                  21,
+                  22,
+                  23
+                ]
+              "
+              [value]="hour"
+            >
+              {{ hour }}
+            </option>
+          </select>
+        </div>
+        <label class="view-label" for="to">{{ 'label.to' | transloco }}</label>
+        <div class="custom-select select--form view-select">
+          <select #to (change)="selectTo(to.value)" [value]="to">
+            <option
+              *ngFor="
+                let hour of [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7,
+                  8,
+                  9,
+                  10,
+                  11,
+                  12,
+                  13,
+                  14,
+                  15,
+                  16,
+                  17,
+                  18,
+                  19,
+                  20,
+                  21,
+                  22,
+                  23
+                ]
+              "
+              [value]="hour"
+            >
+              {{ hour }}
+            </option>
+          </select>
+        </div>
+      </div>
+      <div *ngIf="!processing && view === 'day'" class="field">
+        <form [formGroup]="changeDateForm">
+          <p-calendar
+            dateFormat="yy-mm-dd"
+            [placeholder]="getFormattedDate()"
+            formControlName="dateDayView"
+          ></p-calendar>
+          <a class="button apply-button" (click)="applyToCurrentDate()"
+            >{{ 'label.apply' | transloco }}</a
+          >
+        </form>
+      </div>
+      <div class="div-spinner" *ngIf="processing">
+        <label class="padding-spinner-text"
+          >{{ 'label.loading' | transloco }}...</label
+        ><cbc-spinner></cbc-spinner>
+      </div>
+    </header>
+    <!-- Actual calendar -->
+    <div
+      *ngIf="view === 'month'"
+      class="flex-calendar main"
+      style="margin-top: 5px"
+    >
+      <div
+        *ngFor="let item of calendarDays"
+        class="day flex-day"
+        [class.day--previous-month]="item.type === 'previousMonth'"
+        [class.day--next-month]="item.type === 'nextMonth'"
+        [class.weekend-day]="isWeekendDay(item)"
+        [class.today]="isToday(item)"
+        (mouseenter)="enableDetailsBox(item.date)"
+        (mouseleave)="disableDetailsBox(item.date)"
+      >
+        <div class="date">
+          {{ item.date.getDate() }} {{ item.date.getDay() + '' | i18nSelect:
+          dayNames }}
+        </div>
+        <div style="overflow-y: auto; height: 80%">
+          <div *ngFor="let event of item.events" class="event-line">
+            <a
+              *ngIf="event.appointmentType === 'Event'"
+              [routerLink]="[
+                '/group',
+                event.igId,
+                'agenda',
+                event.id,
+                'details'
+              ]"
+              ><img width="10" height="10" src="img/event-155D79.png" />
+              <span style="color: #155d79"
+                >{{ event.startTime }} {{ event.endTime }}</span
+              >
+              <span style="color: black">{{ event.title }}</span></a
+            >
+            <a
+              *ngIf="event.appointmentType === 'Meeting'"
+              [routerLink]="[
+                '/group',
+                event.igId,
+                'agenda',
+                event.id,
+                'details'
+              ]"
+              ><img width="10" height="10" src="img/meeting-155D79.png" />
+              <span style="color: #155d79"
+                >{{ event.startTime }} {{ event.endTime }}</span
+              >
+              <span style="color: black">{{ event.title }}</span></a
+            >
+          </div>
+        </div>
+        <!-- Hover popup with meeting details -->
+        <div
+          id="detailsPopup"
+          class="popup popup--calendar"
+          *ngIf="
+            !(
+              item.date.getDay() === 0 ||
+              item.date.getDay() === 5 ||
+              item.date.getDay() === 6
+            ) && item.showDetailsBox
+          "
+        >
+          <div class="events-of-the-day">
+            <div class="title">{{ item.date | date }}</div>
+            <ul class="events">
+              <li class="event" *ngFor="let event of item.events">
+                <div>
+                  <span class="hour">{{ event.startTime }}</span>
+                  <a
+                    [routerLink]="[
+                      '/group',
+                      event.igId,
+                      'agenda',
+                      event.id,
+                      'details'
+                    ]"
+                    class="event-name"
+                    >{{ event.title }}</a
+                  >
+                </div>
+                <div class="details">
+                  <span class="abstract"
+                    >{{ event.eventAbstract === '' ? ('label.na' | transloco) :
+                    event.eventAbstract }}</span
+                  >
+                  <br /><br />
+                  <span class="duration">{{ event.endTime }}</span>
+                  <span class="location"
+                    >{{ event.location === '' ? ('label.na' | transloco) :
+                    event.location }}</span
+                  >
+                  <span
+                    *ngIf="getRepetition(event.occurrenceRate).length === 1"
+                    class="repetition"
+                    >{{ 'label.' + getRepetition(event.occurrenceRate)[0] |
+                    transloco }}</span
+                  >
+                  <span
+                    *ngIf="getRepetition(event.occurrenceRate).length === 3"
+                    class="repetition"
+                    >{{ 'update-event.repeats.legend.when' | transloco : {
+                    timesOccurrence: 'label.' +
+                    getRepetition(event.occurrenceRate)[1] | transloco, times:
+                    getRepetition(event.occurrenceRate)[2] } }}</span
+                  >
+                  <span
+                    *ngIf="getRepetition(event.occurrenceRate).length === 4"
+                    class="repetition"
+                    >{{ 'update-event.repeats.legend.every' | transloco : {
+                    everyTime: getRepetition(event.occurrenceRate)[2],
+                    everyTimesOccurence: getRepetition(event.occurrenceRate)[1]
+                    | transloco, times: getRepetition(event.occurrenceRate)[3] }
+                    }}</span
+                  >
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div
+          class="left-popup left-popup--calendar"
+          *ngIf="
+            (item.date.getDay() === 0 ||
+              item.date.getDay() === 5 ||
+              item.date.getDay() === 6) &&
+            item.showDetailsBox
+          "
+        >
+          <div class="events-of-the-day">
+            <div class="title">{{ item.date | date }}</div>
+            <ul class="events">
+              <li class="event" *ngFor="let event of item.events">
+                <div>
+                  <span class="hour">{{ event.startTime }}</span>
+                  <a
+                    [routerLink]="[
+                      '/group',
+                      event.igId,
+                      'agenda',
+                      event.id,
+                      'details'
+                    ]"
+                    class="event-name"
+                    >{{ event.title }}</a
+                  >
+                </div>
+                <div class="details">
+                  <span class="abstract"
+                    >{{ event.eventAbstract === '' ? ('label.na' | transloco) :
+                    event.eventAbstract }}</span
+                  >
+                  <br /><br />
+                  <span class="duration">{{ event.endTime }}</span>
+                  <span class="location"
+                    >{{ event.location === '' ? ('label.na' | transloco) :
+                    event.location }}</span
+                  >
+                  <span
+                    *ngIf="getRepetition(event.occurrenceRate).length === 1"
+                    class="repetition"
+                    >{{ 'label.' + getRepetition(event.occurrenceRate)[0] |
+                    transloco }}</span
+                  >
+                  <span
+                    *ngIf="getRepetition(event.occurrenceRate).length === 3"
+                    class="repetition"
+                    >{{ 'update-event.repeats.legend.when' | transloco : {
+                    timesOccurrence: 'label.' +
+                    getRepetition(event.occurrenceRate)[1] | transloco, times:
+                    getRepetition(event.occurrenceRate)[2] } }}</span
+                  >
+                  <span
+                    *ngIf="getRepetition(event.occurrenceRate).length === 4"
+                    class="repetition"
+                    >{{ 'update-event.repeats.legend.every' | transloco : {
+                    everyTime: getRepetition(event.occurrenceRate)[2],
+                    everyTimesOccurence: getRepetition(event.occurrenceRate)[1]
+                    | transloco, times: getRepetition(event.occurrenceRate)[3] }
+                    }}</span
+                  >
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <cbc-day
+      *ngIf="view === 'day'"
+      [date]="date"
+      [displayFromHour]="from"
+      [displayToHour]="to"
+      [meMode]="true"
+    ></cbc-day>
+    <cbc-week
+      *ngIf="view === 'week'"
+      [date]="date"
+      [displayFromHour]="from"
+      [displayToHour]="to"
+      [workWeek]="workWeek"
+      [meMode]="true"
+    ></cbc-week>
+  </section>
+</div>

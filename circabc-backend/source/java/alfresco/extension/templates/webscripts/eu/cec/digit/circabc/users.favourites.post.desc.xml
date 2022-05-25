@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Post a Favourite for a user</shortname>
+  <description>add a new noderef for the user's favourites</description>
+  <url>/circabc/users/{userId}/favourites</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

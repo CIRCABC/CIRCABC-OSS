@@ -1,0 +1,46 @@
+.template {
+  height: 250px;
+  margin: 20px 0 0;
+  border-radius: 5px;
+  box-shadow: 0 0 15px #ccc;
+  padding: 25px;
+
+  h2 {
+    margin: 0;
+  }
+
+  .side-information {
+    width: 300px;
+    padding: 25px;
+    float: right;
+    border-left: 1px solid;
+
+    .label {
+      font-weight: bold;
+    }
+
+    @media screen and (max-width: 1000px) {
+      width: 100%;
+      float: none;
+      border-left: 0;
+    }
+  }
+
+  .template-content {
+    padding: 0 0 25px;
+    height: 170px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    ::ng-deep ol {
+      margin-left: 30px;
+      list-style-type: decimal;
+    }
+
+    ::ng-deep ul {
+      margin-left: 30px;
+      list-style-type: circle;
+    }
+  }
+}

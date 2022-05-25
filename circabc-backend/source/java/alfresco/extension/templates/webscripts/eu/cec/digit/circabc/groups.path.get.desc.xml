@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Get the path of an Interest Group</shortname>
+  <description>Get the path of an Interest Group</description>
+  <url>/circabc/groups/{id}/path</url>
+  <format default="json"/>
+  <authentication>guest</authentication>
+  <transaction>required</transaction>
+</webscript>

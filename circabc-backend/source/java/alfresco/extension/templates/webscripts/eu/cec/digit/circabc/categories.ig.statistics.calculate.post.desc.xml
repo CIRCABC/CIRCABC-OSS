@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>categories.ig.statistics.calculate.post</shortname>
+  <description>Calculate current IG statistics</description>
+    <url>/circabc/categories/{id}/statistics</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

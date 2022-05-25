@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Copyright 2006 European Community
+  
+   Licensed under the EUPL, Version 1.1 or \?as soon they
+   will be approved by the European Commission - subsequent
+   versions of the EUPL (the "Licence");
+   You may not use this work except in compliance with the
+   Licence.
+   You may obtain a copy of the Licence at:
+  
+   https://joinup.ec.europa.eu/software/page/eupl
+  
+   Unless required by applicable law or agreed to in
+   writing, software distributed under the Licence is
+   distributed on an "AS IS" basis,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+   express or implied.
+   See the Licence for the specific language governing
+   permissions and limitations under the Licence.
+-->
+
+<!-- Definition of Moderation Model.  -->
+<model name="mo:moderationmodel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+   <!-- Optional meta-data about the model -->
+   <description>Moderation Model</description>
+   <author>Yanick Pignot</author>
+   <version>1.0</version>
+
+  <!-- Imports are required to allow references to definitions in other models -->
+   <imports>
+	  	<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+   </imports>
+
+   <!-- Introduction of new namespaces defined by this model -->
+   <namespaces>
+      <namespace uri="http://www.cc.cec/circabc/model/moderation/1.0" prefix="mo"/>
+   </namespaces>
+
+	<aspects>
+		<!-- Moderated aspect: -->
+		<aspect name="mo:moderated">
+			<title>Moderated</title>
+			<properties>
+				<property name="mo:ismoderated">
+					<type>d:boolean</type>
+					<mandatory>true</mandatory>
+				</property>
+			</properties>
+		</aspect>
+
+		<!-- Waiting for approval aspect: -->
+		<aspect name="mo:waittingApproval">
+			<title>WaitingForAproval</title>
+		</aspect>
+
+		<!-- Node approved aspect: -->
+		<aspect name="mo:approved">
+			<title>Approved</title>
+			<properties>
+				<property name="mo:approvedBy">
+					<type>d:text</type>
+					<mandatory>true</mandatory>
+				</property>
+				<property name="mo:approvedOn">
+					<type>d:date</type>
+					<mandatory>true</mandatory>
+					<index enabled="true">
+					  <atomic>true</atomic>
+					  <stored>false</stored>
+        	          <tokenised>both</tokenised>
+            	    </index>
+				</property>
+			</properties>
+		</aspect>
+
+		<!-- Node rejected aspect: -->
+		<aspect name="mo:rejected">
+			<title>Rejected</title>
+			<properties>
+				<property name="mo:rejectedBy">
+					<type>d:text</type>
+					<mandatory>true</mandatory>
+				</property>
+				<property name="mo:rejectedOn">
+					<type>d:date</type>
+					<mandatory>true</mandatory>
+					<index enabled="true">
+					  <atomic>true</atomic>
+					  <stored>false</stored>
+        	          <tokenised>both</tokenised>
+            	    </index>
+				</property>
+				<property name="mo:rejectMessage">
+					<type>d:text</type>
+					<mandatory>false</mandatory>
+				</property>
+			</properties>
+		</aspect>
+
+		<!-- Node approved aspect: -->
+		<aspect name="mo:abuseSignaled">
+			<title>Abise signaled</title>
+			<properties>
+				<property name="mo:messages">
+					<type>d:any</type>
+					<mandatory>true</mandatory>
+	                <multiple>true</multiple>
+				</property>
+			</properties>
+		</aspect>
+
+	</aspects>
+</model>

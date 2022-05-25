@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Browse library space</shortname>
+  <description>Browse library space </description>
+    <url>/circabc/spaces/{id}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

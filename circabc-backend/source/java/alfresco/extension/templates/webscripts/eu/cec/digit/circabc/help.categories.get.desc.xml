@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>get all the help categories</shortname>
+  <description>get all the help categories</description>
+  <url>/circabc/help/categories</url>
+  <format default="json"/>
+  <authentication>guest</authentication>
+  <transaction>required</transaction>
+</webscript>

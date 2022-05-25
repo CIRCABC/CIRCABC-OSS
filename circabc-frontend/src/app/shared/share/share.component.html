@@ -1,0 +1,53 @@
+<span class="share">
+  <a class="share-link" (click)="toggle()" *ngIf="showLabel"
+    >{{ 'descriptor.share' | transloco }}</a
+  >
+  <a (click)="toggle()" *ngIf="!showLabel"
+    ><img src="{{ imageLink }}" alt="Share"
+  /></a>
+  <span class="share-box" *ngIf="showBox" [class.left]="!orientationRight">
+    <input type="text" value="{{ getLink() }}" #copyTarget />
+    <br />
+    <a
+      class="action"
+      [ngxClipboard]="copyTarget"
+      (cbOnSuccess)="showSnackBar()"
+      *ngIf="isCopyAvailable()"
+      >{{ 'label.copy' | transloco }}</a
+    >
+    <a
+      class="action"
+      href="mailto:?Subject=Link to CIRCABC&Body={{ getLink() }}"
+      >{{ 'label.email.me.link' | transloco }}</a
+    >
+    <a (click)="hide()" class="close">{{ 'label.close' | transloco }}</a>
+    <br />
+    <form
+      [formGroup]="customisationForm"
+      *ngIf="enableDirectDownload"
+      class="parameters"
+    >
+      <br />
+      <h3>{{ 'descriptor.share.link.parameter' | transloco }}</h3>
+      <div class="field switch">
+        <div class="label"
+          >{{ 'descriptor.share.direct.download' | transloco }}</div
+        >
+        <input
+          id="notifyUser"
+          class="cmn-toggle cmn-toggle-round"
+          type="checkbox"
+          formControlName="addDownload"
+        />
+        <label for="notifyUser" class="nonBlockLabel"></label>
+        <span
+          >{{ (customisationForm.controls['addDownload'].value === true ?
+          'label.yes' : 'label.no' ) | transloco }}</span
+        >
+      </div>
+    </form>
+  </span>
+</span>
+<div id="snackbar" [class.show]="copied"
+  >{{ 'label.copied.to.clipboard' | transloco }}</div
+>

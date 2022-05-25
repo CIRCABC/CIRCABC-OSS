@@ -1,0 +1,31 @@
+<a
+  class="question"
+  (click)="deleteAskConfirmation()"
+  *ngIf="!mustConfirm && !deleting"
+>
+  <img
+    *ngIf="image !== ''"
+    [src]="image"
+    [height]="imageHeightWidth"
+    [width]="imageHeightWidth"
+    alt="delete icon"
+  />
+  <img
+    *ngIf="useIcon && image === ''"
+    src="img/rubbish-bin-blue-small.png"
+    alt="delete"
+    title="{{ deleteLabel | transloco }}"
+  />
+  <span *ngIf="useText">{{ deleteLabel | transloco }}</span>
+</a>
+<span *ngIf="mustConfirm && !deleting" class="confirmation">
+  <span>{{ deleteLabel | transloco }}</span>:&nbsp;
+  <a id="confirmDeletePerm" (click)="confirm()"
+    >{{ 'label.yes' | transloco }}</a
+  >
+  &nbsp;|&nbsp;
+  <a id="cancelDeletePerm" (click)="cancel()">{{ 'label.no' | transloco }}</a>
+</span>
+<span *ngIf="deleteInline && mustConfirm && deleting">
+  <img src="img/ajax-loader.gif" alt="deleting" />
+</span>

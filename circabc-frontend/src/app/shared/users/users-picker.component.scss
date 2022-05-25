@@ -1,0 +1,40 @@
+.width-type-select {
+  width: 90px;
+}
+
+.width-multiple-select {
+  width: 485px;
+
+  @media screen and (max-width: 595px) {
+    width: 100%;
+  }
+}
+
+option::first-letter {
+  text-transform: uppercase;
+}
+
+.maxed-height {
+  max-height: 250px;
+  overflow: auto;
+}
+
+ul.list-of-selection {
+  li {
+    line-height: 16px;
+
+    &::first-letter {
+      text-transform: uppercase;
+    }
+
+    a {
+      img {
+        vertical-align: middle;
+      }
+    }
+  }
+}
+
+.button {
+  color: #035 !important;
+}

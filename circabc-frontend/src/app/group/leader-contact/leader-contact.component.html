@@ -1,0 +1,27 @@
+<cbc-modal
+  [title]="'label.contact.leaders'"
+  [okLabel]="'label.send'"
+  [visible]="showModal"
+  (cancel)="cancel()"
+  (ok)="send()"
+  [executing]="processing"
+  [executingLabel]="'label.sending'"
+  [showOkButton]="contactLeaderForm.valid"
+>
+  <form [formGroup]="contactLeaderForm">
+    <div class="field">
+      <label for="groupContact">{{ 'label.message' | transloco }}</label>
+      <br /><br />
+      <p-editor formControlName="message" [style]="{ height: '320px' }">
+        <p-header>
+          <span class="ql-formats">
+            <button class="ql-bold" aria-label="Bold"></button>
+            <button class="ql-italic" aria-label="Italic"></button>
+            <button class="ql-underline" aria-label="Underline"></button>
+            <button class="ql-strike" aria-label="Strike"></button>
+          </span>
+        </p-header>
+      </p-editor>
+    </div>
+  </form>
+</cbc-modal>

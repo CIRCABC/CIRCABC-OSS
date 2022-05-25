@@ -1,0 +1,35 @@
+@keyframes box--messages--prepared {
+  0% {
+    margin-top: 0;
+  }
+
+  100% {
+    margin-top: 50px;
+  }
+}
+
+.box--messages--prepare {
+  animation-name: box--messages--prepared;
+  animation-duration: 0.2s;
+  animation-timing-function: ease-in;
+  animation-fill-mode: forwards;
+  margin-top: 50px;
+}
+
+.box--messages {
+  position: fixed;
+  z-index: 25;
+  top: 20px;
+  left: 0;
+  right: 0;
+  width: 800px;
+  padding: 0 15px;
+  margin-left: auto;
+  margin-right: auto;
+  max-height: 800px;
+  overflow-y: auto;
+
+  @media screen and (max-width: 800px) {
+    width: 100%;
+  }
+}

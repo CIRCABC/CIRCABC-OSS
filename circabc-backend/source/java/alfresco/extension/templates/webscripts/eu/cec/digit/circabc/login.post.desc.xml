@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Log in (POST)</shortname>
+  <description>get alfresco ticket </description>
+  <url>/circabc/login</url>
+  <format default="json"/>
+  <authentication>guest</authentication>
+  <transaction>required</transaction>
+</webscript>

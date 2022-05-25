@@ -1,0 +1,12 @@
+@use '~css/global/variables-mixins-keyframes';
+
+.main {
+  overflow: auto;
+  max-height: 350px;
+}
+
+@media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+  .hidable {
+    display: none;
+  }
+}

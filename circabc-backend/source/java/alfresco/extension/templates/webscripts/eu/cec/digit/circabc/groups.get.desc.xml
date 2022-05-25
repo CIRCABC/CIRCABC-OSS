@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>CIRCABC groups</shortname>
+  <description>Get all CIRCABC group details</description>
+  <url>/circabc/groups/{id}</url>
+  <format default="json"/>
+  <authentication>guest</authentication>
+  <transaction>required</transaction>
+</webscript>

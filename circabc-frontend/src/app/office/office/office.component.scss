@@ -1,0 +1,6 @@
+@use '~css/global/variables-mixins-keyframes';
+
+::ng-deep .mat-progress-spinner circle,
+.mat-spinner circle {
+  stroke: variables-mixins-keyframes.$light-green;
+}

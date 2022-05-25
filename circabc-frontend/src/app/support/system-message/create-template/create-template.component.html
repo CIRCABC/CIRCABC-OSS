@@ -1,0 +1,142 @@
+<div class="fluid admin page-container">
+  <div class="page-header">
+    <span class="page-header__title"
+      >{{ (updateMode ? 'admin.system.message.update.title' :
+      'admin.system.message.create.title' ) | transloco }}</span
+    >
+    <div class="page-header__actions"></div>
+  </div>
+
+  <section class="box">
+    <form [formGroup]="templateForm">
+      <div class="field field--textarea">
+        <label class="label--top-align"
+          >{{ 'label.text' | transloco }}
+          <span style="color: red">&nbsp;*</span>
+        </label>
+
+        <div class="editor-container">
+          <p-editor
+            formControlName="content"
+            [style]="{ height: '126px' }"
+            [required]="true"
+          >
+            <p-header>
+              <span class="ql-formats">
+                <select class="ql-header">
+                  <option value="1"></option>
+                  <option value="2"></option>
+                  <option value="3"></option>
+                  <option selected></option>
+                  <option value="4"></option>
+                  <option value="5"></option>
+                  <option value="6"></option>
+                </select>
+              </span>
+              <span class="ql-formats">
+                <button class="ql-bold" aria-label="Bold"></button>
+                <button class="ql-italic" aria-label="Italic"></button>
+                <button class="ql-underline" aria-label="Underline"></button>
+                <button class="ql-strike" aria-label="Strike"></button>
+              </span>
+              <span class="ql-formats">
+                <button
+                  class="ql-list"
+                  aria-label="list"
+                  value="ordered"
+                ></button>
+                <button
+                  class="ql-list"
+                  aria-label="list"
+                  value="bullet"
+                ></button>
+              </span>
+              <span class="ql-formats">
+                <button class="ql-link" aria-label="link"></button>
+              </span>
+            </p-header>
+          </p-editor>
+          <cbc-control-message [control]="contentControl"></cbc-control-message>
+        </div>
+      </div>
+      <div class="field field--with-icon field--date">
+        <label>{{ 'label.auto.close.date' | transloco }}</label>
+        <p-calendar
+          formControlName="dateClosure"
+          [dateFormat]="'dd/mm/yy'"
+          [placeholder]="'dd/mm/yyyy HH:MM'"
+          [showTime]="true"
+          [hourFormat]="'24'"
+          [showIcon]="true"
+        ></p-calendar>
+
+        <a (click)="cleanClosure()">{{ 'label.remove' | transloco }}</a>
+      </div>
+      <div class="field">
+        <label for="displayTime">{{ 'label.display.time' | transloco }}</label>
+        <div class="custom-select select--form">
+          <select
+            name="displayTime"
+            id="displayTime"
+            formControlName="displayTime"
+          >
+            <option value="15">15s</option>
+            <option value="30">30s</option>
+            <option value="45">45s</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label for="level">{{ 'label.level' | transloco }}</label>
+        <div class="custom-select select--form">
+          <select name="level" id="level" formControlName="level">
+            <option value="info">{{ 'label.information' | transloco }}</option>
+            <option value="error">{{ 'label.error' | transloco }}</option>
+            <option value="warning">{{ 'label.warning' | transloco }}</option>
+            <option value="success">{{ 'label.success' | transloco }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="field switch">
+        <div class="label">{{ 'label.enabled' | transloco }}</div>
+        <input
+          id="enabled"
+          class="cmn-toggle cmn-toggle-round"
+          type="checkbox"
+          formControlName="enabled"
+          (click)="checkNotification()"
+        />
+        <label for="enabled" class="nonBlockLabel"></label>
+        <span>{{ (isEnabled() ? 'label.yes' : 'label.no') | transloco }}</span>
+      </div>
+      <div class="field switch" *ngIf="isEnabled()">
+        <div class="label">
+          {{ 'label.notify.distribution.list' | transloco }}
+        </div>
+        <input
+          id="notification"
+          class="cmn-toggle cmn-toggle-round"
+          type="checkbox"
+          formControlName="notification"
+        />
+        <label for="notification" class="nonBlockLabel"></label>
+        <span>{{ (isNotified() ? 'label.yes' : 'label.no') | transloco }}</span>
+      </div>
+      <div class="field" *ngIf="processing">
+        <label
+          >{{ 'label.processing' | transloco }}...
+          <cbc-spinner></cbc-spinner>
+        </label>
+      </div>
+    </form>
+    <section class="buttons-group" *ngIf="!processing">
+      <a
+        class="cta"
+        (click)="isFormValid() ? saveOrUpdateTemplate() : ''"
+        [class.disabled]="!isFormValid()"
+        >{{ 'label.save' | transloco }}</a
+      >
+      <a class="button" (click)="cancel()">{{ 'label.cancel' | transloco }}</a>
+    </section>
+  </section>
+</div>

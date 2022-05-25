@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>CIRCABC categories upload a new logo</shortname>
+  <description>Uploads logo in the category</description>
+  <url>/circabc/categories/{id}/logos</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

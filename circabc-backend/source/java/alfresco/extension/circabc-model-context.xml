@@ -1,0 +1,281 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+  Copyright 2006 European Community
+  
+   Licensed under the EUPL, Version 1.1 or \?as soon they
+   will be approved by the European Commission - subsequent
+   versions of the EUPL (the "Licence");
+   You may not use this work except in compliance with the
+   Licence.
+   You may obtain a copy of the Licence at:
+  
+   https://joinup.ec.europa.eu/software/page/eupl
+  
+   Unless required by applicable law or agreed to in
+   writing, software distributed under the Licence is
+   distributed on an "AS IS" basis,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+   express or implied.
+   See the Licence for the specific language governing
+   permissions and limitations under the Licence.
+-->
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+
+<!--
+   Core and helper beans for the module-loading components.
+-->
+<beans>
+  <!-- Models used in Circabc -->
+  <bean id="circa.dictionaryBootstrap" parent="dictionaryModelBootstrap"
+    depends-on="dictionaryBootstrap">
+    <property name="models">
+      <list>
+      	<value>alfresco/extension/model/ShareSpaceModel.xml</value>
+        <value>alfresco/extension/model/EventModel.xml</value>
+        <value>alfresco/extension/model/DynamicPropertiesModel.xml</value>
+        <value>alfresco/extension/model/KeywordModel.xml</value>
+        <value>alfresco/extension/model/CircabcModel.xml</value>
+        <value>alfresco/extension/model/UserModel.xml</value>
+        <value>alfresco/extension/model/SurveyModel.xml</value>
+        <value>alfresco/extension/model/DocumentModel.xml</value>
+        <value>alfresco/extension/model/DossierModel.xml</value>
+        <value>alfresco/extension/model/ModerationModel.xml</value>
+        <value>alfresco/extension/model/SystemMessageModel.xml</value>
+      </list>
+    </property>
+    <property name="labels">
+      <list>
+        <value>alfresco/extension/messages/circabc-model</value>
+      </list>
+    </property>
+  </bean>
+
+	<!--                 -->
+    <!-- Dossier		 -->
+    <!--                 -->
+
+    <bean id="dossierModelType" class="eu.cec.digit.circabc.repo.model.DossierModelType" init-method="init">
+        <property name="nodeService">
+            <ref bean="nodeService"/>
+        </property>
+        <property name="policyComponent">
+            <ref bean="policyComponent"/>
+        </property>
+    </bean>
+
+    <bean id="urlModelAspect" class="eu.cec.digit.circabc.repo.model.UrlModelAspect" init-method="init">
+        <property name="policyComponent">
+            <ref bean="policyComponent"/>
+        </property>
+        <property name="contentService">
+            <ref bean="contentService"/>
+        </property>
+        <property name="policyBehaviourFilter">
+           <ref bean="policyBehaviourFilter" />
+        </property>
+    </bean>
+
+  <!-- load the behavior -->
+  <bean id="abstractAspect" abstract="true"
+    class="eu.cec.digit.circabc.aspect.AbstractAspect"
+    init-method="initialise">
+    <property name="nodeService">
+      <ref bean="nodeService" />
+    </property>
+    <property name="authorityService">
+      <ref bean="authorityService" />
+    </property>
+    <property name="policyComponent">
+      <ref bean="policyComponent" />
+    </property>
+    <property name="permissionService">
+       <ref bean="permissionService" />
+    </property>
+    <property name="profileManagerServiceFactory">
+       <ref bean="profileManagerServiceFactory" />
+    </property>
+  </bean>
+
+  <!-- circaBC Aspect is use as a tag to identify CircaBC Level -->
+  <bean id="circabcRootAspect"
+    class="eu.cec.digit.circabc.aspect.CircabcRootAspect"
+    init-method="initialise"
+    parent="abstractAspect" />
+
+  <!-- MLDocument Aspect  -->
+  <bean id="mLDocumentAspect"
+    class="eu.cec.digit.circabc.aspect.MLDocumentAspect"
+    init-method="initialise"
+    parent="abstractAspect" />
+
+
+  <!-- circaCategory Aspect is use as a tag to identify the CircaCategory Level -->
+  <bean id="categoryAspect"
+    class="eu.cec.digit.circabc.aspect.CategoryAspect"
+    init-method="initialise"
+    parent="abstractAspect" />
+
+  <!-- CircaIGRoot Aspect Behaviour Bean -->
+  <bean id="igRootAspect"
+    class="eu.cec.digit.circabc.aspect.IGRootAspect"
+    init-method="initialise"
+    parent="abstractAspect" />
+
+  <!-- circaLibrary Aspect is use as a tag to identify CircaLibrary Level -->
+  <bean id="libraryAspect"
+    class="eu.cec.digit.circabc.aspect.LibraryAspect"
+    init-method="initialise"
+    parent="abstractAspect">
+  </bean>
+
+  <!-- circaLibrary Aspect is use as a tag to identify CircaLibrary Level -->
+  <bean id="libraryRootAspect"
+    class="eu.cec.digit.circabc.aspect.LibraryRootAspect"
+    init-method="initialise"
+    parent="abstractAspect">
+  </bean>
+
+  <!-- Define the thread pool for content hits aspect -->
+  <bean id="circabcContentHitsThreadPoolExecutor" class="org.alfresco.util.ThreadPoolExecutorFactoryBean">
+	<property name="poolName">
+   		<value>circabcContentHitsThread</value>
+	</property>
+	<property name="corePoolSize">
+		<value>5</value>
+	</property>
+	<property name="maximumPoolSize">
+		<value>20</value>
+	</property>
+	<property name="threadPriority">
+		<value>1</value>
+	</property>
+   </bean>
+
+  <!-- TODO To check if used and to check if required to record theses properties -->
+  <!-- ContentHits Aspect Behaviour Bean -->
+  <bean id="circabcContentHitsAspect"
+    class="eu.cec.digit.circabc.aspect.ContentHitsAspect"
+    init-method="initialise">
+    <property name="nodeService">
+   		<ref bean="nodeService"/>
+   	</property>
+   	<property name="policyComponent">
+   		<ref bean="policyComponent"/>
+   	</property>
+       <property name="policyFilter">
+           <ref bean="policyBehaviourFilter"/>
+       </property>
+   	<property name="transactionService">
+   		<ref bean="transactionService"/>
+   	</property>
+   	<property name="threadExecuter">
+   		<ref bean="circabcContentHitsThreadPoolExecutor"/>
+   	</property>
+  </bean>
+
+  <!-- Define the thread pool for notification aspect -->
+  <bean id="notificationAspectThreadPoolExecutor" class="org.alfresco.util.ThreadPoolExecutorFactoryBean">
+	<property name="poolName">
+   		<value>notificationAspectThread</value>
+	</property>
+	<property name="corePoolSize">
+		<value>10</value>
+	</property>
+	<property name="maximumPoolSize">
+		<value>40</value>
+	</property>
+	<property name="threadPriority">
+		<value>5</value>
+	</property>
+   </bean>
+
+  <!-- ContentNotify Aspect Behaviour Bean -->
+  <bean id="notificationAspect"
+    class="eu.cec.digit.circabc.aspect.ContentNotifyAspect"
+    init-method="initialise">
+    <property name="notificationService">
+      <ref bean="CircabcNotificationService" />
+    </property>
+    <property name="policyComponent">
+   		<ref bean="policyComponent"/>
+   	</property>
+       <property name="policyFilter">
+           <ref bean="policyBehaviourFilter"/>
+       </property>
+   	<property name="transactionService">
+   		<ref bean="transactionService"/>
+   	</property>
+   	<property name="threadExecutor">
+   		<ref bean="notificationAspectThreadPoolExecutor"/>
+   	</property>
+   	<property name="notificationSubscriptionService">
+   		<ref bean="NotificationSubscriptionService"/>
+   	</property>
+  </bean>
+
+  <!-- BPropertiesAspect Aspect Behaviour Bean -->
+  <bean id="bPropertiesAspect"
+    class="eu.cec.digit.circabc.aspect.BPropertiesAspect"
+    init-method="initialise">
+    <property name="nodeService">
+      <ref bean="nodeService" />
+    </property>
+    <property name="policyComponent">
+      <ref bean="policyComponent" />
+    </property>
+  </bean>
+
+  <!-- Define the thread pool for notification aspect -->
+  <bean id="managementAspectThreadPoolExecutor" class="org.alfresco.util.ThreadPoolExecutorFactoryBean">
+	<property name="poolName">
+   		<value>managementAspectThread</value>
+	</property>
+	<property name="corePoolSize">
+		<value>10</value>
+	</property>
+	<property name="maximumPoolSize">
+		<value>40</value>
+	</property>
+	<property name="threadPriority">
+		<value>5</value>
+	</property>
+   </bean>
+
+  <!-- CircabcManagementAspect Aspect Behaviour Bean -->
+  <bean id="circabcManagementAspect"
+    class="eu.cec.digit.circabc.aspect.CircabcManagementAspect"
+    init-method="initialise"
+    parent="abstractAspect">
+  </bean>
+
+ 	<!-- Moderation Aspect Trigger -->
+    <bean id="moderationAspect" class="eu.cec.digit.circabc.repo.model.ModerationAspect" init-method="init">
+        <property name="policyComponent">
+            <ref bean="policyComponent" />
+        </property>
+        <property name="nodeService">
+            <ref bean="NodeService" />
+        </property>
+        <property name="dictionaryService">
+            <ref bean="DictionaryService" />
+        </property>
+        <property name="moderationService">
+            <ref bean="ModerationService" />
+        </property>
+    </bean>
+
+    <!-- Post Type Trigger -->
+    <bean id="postType" class="eu.cec.digit.circabc.repo.model.PostType" init-method="init">
+        <property name="policyComponent">
+            <ref bean="policyComponent" />
+        </property>
+        <property name="nodeService">
+            <ref bean="NodeService" />
+        </property>
+    </bean>
+  <!-- Added for merge facilities - don't remove -->
+  <!-- The ModuleService implementation -->
+  <!-- Parent bean for beans derived from AbstractModuleComponent -->
+  <!-- Import of installed modules -->
+
+</beans>

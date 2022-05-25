@@ -1,0 +1,10 @@
+<webscript>
+  <shortname>audit.id.get</shortname>
+  <description>Get audit for interest group or category or circabc</description>
+  <url>/circabc/audit/{id}</url>
+  <url>/circabc/audit/{id}?format=xml</url>
+  <url>/circabc/audit/{id}?format=csv</url>
+  <format default="json">argument</format>
+  <authentication>guest</authentication>
+  <transaction>required</transaction>
+</webscript>

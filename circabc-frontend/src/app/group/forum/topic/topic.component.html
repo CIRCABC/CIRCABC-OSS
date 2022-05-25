@@ -1,0 +1,393 @@
+<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+<div class="wrap page-container">
+  <div class="page-header">
+    <span class="page-header__title">
+      <a
+        *ngIf="topicNode"
+        [routerLink]="['../../', topicNode.parentId]"
+        class="page-header__backlink"
+        >{{ 'label.back' | transloco }}</a
+      >
+    </span>
+    <div class="page-header__actions">
+      <cbc-reponsive-sub-menu *ngIf="topicNode">
+        <a
+          [routerLink]="['../..', topicNode.id, 'topic-details']"
+          *ngIf="isNewsgroupAdmin()"
+          >{{ 'label.details' | transloco }}</a
+        >
+        <a
+          [routerLink]="['../../../permissions', topicNode.id]"
+          [queryParams]="{ from: 'topic' }"
+          *ngIf="isNewsgroupAdmin()"
+          >{{ 'label.permissions' | transloco }}</a
+        >
+        <a
+          [routerLink]="['../../../notification-status', topicNode.id]"
+          [queryParams]="{ from: 'topic' }"
+          *ngIf="isNewsgroupAdmin()"
+          >{{ 'label.notifications' | transloco }}</a
+        >
+      </cbc-reponsive-sub-menu>
+    </div>
+    <br /><br /><br />
+    <div>
+      <cbc-group-breadcrumb
+        [displayName]="false"
+        [clickable]="true"
+        [node]="topicNode.id"
+        [textColor]="'757575'"
+        *ngIf="topicNode"
+        [noMarginBottom]="false"
+      ></cbc-group-breadcrumb>
+    </div>
+  </div>
+  <br />
+  <article class="article-content">
+    <div class="box">
+      <header class="header">
+        <span
+          class="title"
+          *ngIf="topicNode"
+          title="{{ topicNode.description | cbcI18n | cbcTaggedToPlainText }}"
+          >{{ 'label.topic' | transloco }}:&nbsp;
+          <span
+            *ngIf="
+              topicNode.title !== undefined &&
+              (topicNode.title | cbcI18n) !== ''
+            "
+            >{{ topicNode.title | cbcI18n }}</span
+          >
+          <span *ngIf="(topicNode.title | cbcI18n) === ''"
+            >{{ topicNode.name }}BUENASSS</span
+          >
+          <span
+            *ngIf="(topicNode.title | cbcI18n) === '' && !nameExists(topicNode)"
+            >{{ 'label.no.name' | transloco }}</span
+          >
+        </span>
+        <div class="float-right">
+          <span class="icons">
+            <div
+              class="dropdown-trigger dropdown-trigger--with-icons force-inline"
+              *ngIf="!isGuest()"
+            >
+              <img
+                src="img/visibility.png"
+                *ngIf="isSubscribedToNotifications()"
+                alt="Notifications"
+              />
+              <img
+                src="img/no-visibility.png"
+                *ngIf="!isSubscribedToNotifications()"
+                alt="Notifications"
+              />
+              <div class="dropdown dropdown--library-settings">
+                <div class="number-of-items">
+                  {{ 'label.notifications' | transloco }}: <br /><br />
+                  <a
+                    (click)="changeNotificationSubscription('on')"
+                    *ngIf="!isSubscribedToNotifications()"
+                    >{{ 'label.subscribe' | transloco }}
+                    <img src="img/visibility.png" alt="Notifications"
+                  /></a>
+                  <a
+                    (click)="changeNotificationSubscription('off')"
+                    *ngIf="isSubscribedToNotifications()"
+                    >{{ 'label.unsubscribe' | transloco }}
+                    <img src="img/no-visibility.png" alt="Notifications"
+                  /></a>
+                </div>
+              </div>
+            </div>
+          </span>
+        </div>
+      </header>
+
+      <div class="main">
+        <section class="topic-content">
+          <div class="table-container" style="margin-top: 0">
+            <div class="header">
+              <cbc-pager
+                [length]="totalItems"
+                [pageSize]="listingOptions.limit"
+                [pageIndex]="listingOptions.page"
+                (pageChanged)="changePage($event)"
+              ></cbc-pager>
+            </div>
+
+            <div class="comments" *ngIf="posts">
+              <div
+                class="row"
+                *ngFor="let post of posts.data; trackBy: trackById"
+              >
+                <cbc-post
+                  [post]="post"
+                  [igId]="group.id"
+                  [topic]="topicNode"
+                  (replyClicked)="prepareQuote($event)"
+                  (deleted)="refreshComments($event)"
+                  (editClicked)="prepareEdit($event)"
+                  (verified)="refreshComments($event)"
+                ></cbc-post>
+              </div>
+              <div class="container--empty" *ngIf="posts.data.length === 0">
+                {{ 'label.not.any.discussion' | transloco }}
+                <img src="img/chat.png" />
+              </div>
+            </div>
+
+            <div class="footer">
+              <cbc-pager
+                [length]="totalItems"
+                [pageSize]="listingOptions.limit"
+                [pageIndex]="listingOptions.page"
+                (pageChanged)="changePage($event)"
+              ></cbc-pager>
+            </div>
+          </div>
+        </section>
+
+        <ng-container *ngIf="topicNode !== undefined">
+          <div
+            style="background-color: #eef5f4"
+            *cbcIfRoleGE="[topicNode, 'NwsPost', []]"
+          >
+            <div style="padding: 30px; font-size: 16px">
+              <a (click)="openNewPost()"
+                >{{ 'forum.add.comment' | transloco }}</a
+              >
+            </div>
+            <span *ngIf="postOpen" class="right-left-margin">
+              <form [formGroup]="addPostForm">
+                <div class="field field--textarea right-left-margin">
+                  <div style="margin-bottom: 25px">
+                    <cbc-notification-message
+                      [message]="'forum.post.comment.public' | transloco"
+                      [severity]="1"
+                      [guestAllowed]="topicNode?.hasGuestAccess"
+                    ></cbc-notification-message>
+                  </div>
+                  <label for="editor">{{ 'label.comment' | transloco }}</label>
+                  <div class="editor-container">
+                    <p-editor
+                      id="editor"
+                      formControlName="text"
+                      [style]="{ height: '320px' }"
+                      (onTextChange)="checkValidity($event)"
+                    >
+                      <p-header>
+                        <span class="ql-formats">
+                          <select class="ql-header">
+                            <option value="1"></option>
+                            <option value="2"></option>
+                            <option value="3"></option>
+                            <option selected></option>
+                            <option value="4"></option>
+                            <option value="5"></option>
+                            <option value="6"></option>
+                          </select>
+                        </span>
+                        <span class="ql-formats">
+                          <button class="ql-bold" aria-label="Bold"></button>
+                          <button
+                            class="ql-italic"
+                            aria-label="Italic"
+                          ></button>
+                          <button
+                            class="ql-underline"
+                            aria-label="Underline"
+                          ></button>
+                          <button
+                            class="ql-strike"
+                            aria-label="Strike"
+                          ></button>
+                        </span>
+                        <span class="ql-formats">
+                          <button
+                            class="ql-list"
+                            aria-label="list"
+                            value="ordered"
+                          ></button>
+                          <button
+                            class="ql-list"
+                            aria-label="list"
+                            value="bullet"
+                          ></button>
+                        </span>
+                        <span class="ql-formats">
+                          <button
+                            class="ql-blockquote"
+                            aria-label="Strike"
+                          ></button>
+                          <button class="ql-link" aria-label="link"></button>
+                          <button
+                            class="ql-image"
+                            aria-label="image"
+                            value=""
+                          ></button>
+                          <button
+                            class="ql-code-block"
+                            aria-label="code-block"
+                          ></button>
+                        </span>
+                      </p-header>
+                    </p-editor>
+                  </div>
+                </div>
+
+                <div class="field right-left-margin" *ngIf="posting">
+                  <label
+                    >{{ 'label.posting' | transloco }}...
+                    <cbc-spinner></cbc-spinner>
+                  </label>
+                </div>
+
+                <div
+                  *ngIf="editPost !== undefined"
+                  class="left-big-margin"
+                  style="margin-bottom: 15px"
+                >
+                  <span
+                    *ngFor="let attachment of attachmentsAndLinksToEdit"
+                    class="attachment"
+                    title="{{ attachment.name }}"
+                  >
+                    <div>
+                      <img
+                        *ngIf="!attachment.isLink"
+                        src="img/paper-clip-155D79.png"
+                        width="30"
+                        height="30"
+                      />
+                      <img
+                        *ngIf="attachment.isLink"
+                        src="img/bigicon-link.png"
+                        width="40"
+                        height="40"
+                      />
+                    </div>
+                    {{ displayName(attachment.name) }}
+                    <cbc-inline-delete
+                      (deletionConfirmed)="removeAttachment(attachment)"
+                      [useIcon]="true"
+                    ></cbc-inline-delete>
+                  </span>
+                </div>
+
+                <div
+                  *ngIf="!posting"
+                  class="field field--file-t right-left-margin"
+                >
+                  <label
+                    style="vertical-align: top; margin-top: 11px"
+                    for="attach"
+                    >{{ 'label.attach.a.file' | transloco }}</label
+                  >
+                  <input
+                    type="file"
+                    id="file"
+                    class="inputfile inputfile-6"
+                    (change)="fileChangeEvent($event)"
+                    multiple
+                  />
+                  <label style="width: 400px" for="file"
+                    ><span class="result"></span
+                    ><span class="button"
+                      >{{ 'label.browse' | transloco }}</span
+                    ></label
+                  >
+                  <span
+                    *ngIf="attachmentRemainingSize.remainingSize > 0"
+                    style="color: green"
+                    >{{ 'post.attachment.size' | transloco: { size:
+                    getRemainingSizeInMB() } }}</span
+                  >
+                  <span
+                    *ngIf="attachmentRemainingSize.remainingSize <= 0"
+                    style="color: red"
+                    >{{ 'post.attachment.size' | transloco: { size:
+                    getRemainingSizeInMB() } }}</span
+                  >
+                </div>
+
+                <div class="listToBeUploaded left-big-margin">
+                  <ul>
+                    <li *ngFor="let file of filesToUpload">
+                      {{ file.file.name }}&nbsp;<a
+                        (click)="deleteSelectedFile(file)"
+                        ><img
+                          src="img/icon-delete-818181.png"
+                          height="15"
+                          width="15"
+                      /></a>
+                    </li>
+                  </ul>
+                </div>
+
+                <br />
+
+                <div
+                  *ngIf="!posting"
+                  class="field field--file-t right-left-margin"
+                >
+                  <label style="vertical-align: top" for="attach"
+                    >{{ 'label.attach.a.link' | transloco }}</label
+                  >
+                  <a *ngIf="!linkPickerOpen" (click)="openLinkPicker()"
+                    >{{ 'label.attach.a.link.open' | transloco }}</a
+                  >
+                  <div *ngIf="loadingPicker" style="display: inline-block">
+                    <label style="min-width: 200px"
+                      >{{ 'label.loading.picker' | transloco }}...
+                      <cbc-spinner></cbc-spinner>
+                    </label>
+                  </div>
+                  <cbc-file-picker
+                    *ngIf="linkPickerOpen"
+                    [nodeId]="group.libraryId"
+                    [(selection)]="pickedNodes"
+                    [canSelectFolders]="true"
+                    (pickerLoaded)="linkPickerOpened()"
+                    style="display: inline-block; width: calc(100% - 170px)"
+                  ></cbc-file-picker>
+                  <br *ngIf="linkPickerOpen && !loadingPicker" /><br
+                    *ngIf="linkPickerOpen && !loadingPicker"
+                  />
+                  <a
+                    *ngIf="linkPickerOpen && !loadingPicker"
+                    class="left-big-margin"
+                    (click)="closeLinkPicker()"
+                    >{{ 'label.attach.a.link.close' | transloco }}</a
+                  >
+                </div>
+              </form>
+
+              <section class="modal-footer left-big-margin">
+                <div class="buttons-group field" *ngIf="!posting">
+                  <a
+                    class="cta"
+                    (click)="addPost()"
+                    *ngIf="editPost === undefined"
+                    [class.disabled]="!isAllValid()"
+                    >{{ 'label.post' | transloco }}</a
+                  >
+                  <a
+                    class="cta"
+                    (click)="updatePost()"
+                    *ngIf="editPost !== undefined"
+                    [class.disabled]="!isAllValid()"
+                    >{{ 'label.edit' | transloco }}</a
+                  >
+                  <a class="button" (click)="resetPost()"
+                    >{{ 'label.reset' | transloco }}</a
+                  >
+                </div>
+              </section>
+            </span>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </article>
+</div>

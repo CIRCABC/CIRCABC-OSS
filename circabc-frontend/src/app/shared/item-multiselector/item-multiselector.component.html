@@ -1,0 +1,37 @@
+<div class="align-component">
+  <form [formGroup]="multiSelectForm">
+    <div class="custom-select select--multiple select-style">
+      <select
+        multiple
+        id="originMultiple"
+        class="select-style"
+        formControlName="availableSelectedItems"
+      >
+        <option *ngFor="let item of availableItems" value="{{ item.value }}"
+          >{{ item.name }}</option
+        >
+      </select>
+    </div>
+    <div style="display: inline-block">
+      <a (click)="selectItems()">
+        <span style="font-size: 20px">&#9658;</span>
+      </a>
+      <br />
+      <a (click)="unselectItems()">
+        <span style="font-size: 20px">&#9668;</span>
+      </a>
+    </div>
+    <div class="custom-select select--multiple select-style">
+      <select
+        multiple
+        id="destinationMultiple"
+        class="select-style"
+        formControlName="selectedSelectedItems"
+      >
+        <option *ngFor="let item of selectedItems" value="{{ item.value }}"
+          >{{ item.name }}</option
+        >
+      </select>
+    </div>
+  </form>
+</div>

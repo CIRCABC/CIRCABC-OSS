@@ -1,0 +1,26 @@
+<section
+  *ngIf="isGuestAllowed()"
+  class="box--message ui-message-show"
+  style="width: 100%"
+  [class.box--message--information]="severity === 0"
+  [class.box--message--warning]="severity === 1"
+  [class.box--message--error]="severity === 2"
+  [class.box--message--success]="severity === 3"
+>
+  <div class="box--message--icon" [ngSwitch]="severity">
+    <ng-template [ngSwitchCase]="0">
+      <img src="img/info-signs.png" class="img--info--size" />
+    </ng-template>
+    <ng-template [ngSwitchCase]="1">
+      <img src="img/exclamation.png" class="img--exclamation--size" />
+    </ng-template>
+    <ng-template [ngSwitchCase]="2">
+      <img src="img/error-sign.png" class="img--error--size" />
+    </ng-template>
+    <ng-template [ngSwitchCase]="3">
+      <img src="img/check-mark.png" class="img--check--size" />
+    </ng-template>
+  </div>
+
+  <div class="box--message--content"> {{ message }} </div>
+</section>

@@ -1,0 +1,259 @@
+diff --git a/node_modules/@microsoft/mgt-element/dist/es6/Graph.js b/node_modules/@microsoft/mgt-element/dist/es6/Graph.js
+index ff3a702..a30bd51 100644
+--- a/node_modules/@microsoft/mgt-element/dist/es6/Graph.js
++++ b/node_modules/@microsoft/mgt-element/dist/es6/Graph.js
+@@ -4,130 +4,126 @@
+  * See License in the project root for license information.
+  * -------------------------------------------------------------------------------------------
+  */
+-import { AuthenticationHandler, Client, HTTPMessageHandler, RetryHandler, RetryHandlerOptions, TelemetryHandler } from '@microsoft/microsoft-graph-client';
+-import { Batch } from './utils/Batch';
+-import { ComponentMiddlewareOptions } from './utils/ComponentMiddlewareOptions';
+-import { chainMiddleware } from './utils/GraphHelpers';
+-import { SdkVersionMiddleware } from './utils/SdkVersionMiddleware';
+-import { PACKAGE_VERSION } from './utils/version';
+-/**
+- * The version of the Graph to use for making requests.
+- */
+-const GRAPH_VERSION = 'v1.0';
+-/**
+- * The base Graph implementation.
+- *
+- * @export
+- * @abstract
+- * @class Graph
+- */
+-export class Graph {
+-    constructor(client, version = GRAPH_VERSION) {
+-        this._client = client;
+-        this._version = version;
+-    }
+-    /**
+-     * the internal client used to make graph calls
+-     *
+-     * @readonly
+-     * @type {Client}
+-     * @memberof Graph
+-     */
+-    get client() {
+-        return this._client;
+-    }
+-    /**
+-     * the component name appended to Graph request headers
+-     *
+-     * @readonly
+-     * @type {string}
+-     * @memberof Graph
+-     */
+-    get componentName() {
+-        return this._componentName;
+-    }
+-    /**
+-     * the version of the graph to query
+-     *
+-     * @readonly
+-     * @type {string}
+-     * @memberof Graph
+-     */
+-    get version() {
+-        return this._version;
+-    }
+-    /**
+-     * Returns a new instance of the Graph using the same
+-     * client within the context of the provider.
+-     *
+-     * @param {Element} component
+-     * @returns {IGraph}
+-     * @memberof Graph
+-     */
+-    forComponent(component) {
+-        const graph = new Graph(this._client, this._version);
+-        graph.setComponent(component);
+-        return graph;
+-    }
+-    /**
+-     * Returns a new graph request for a specific component
+-     * Used internally for analytics purposes
+-     *
+-     * @param {string} path
+-     * @memberof Graph
+-     */
+-    api(path) {
+-        let request = this._client.api(path).version(this._version);
+-        if (this._componentName) {
+-            request.middlewareOptions = (options) => {
+-                const requestObj = request;
+-                requestObj._middlewareOptions = requestObj._middlewareOptions.concat(options);
+-                return request;
+-            };
+-            request = request.middlewareOptions([new ComponentMiddlewareOptions(this._componentName)]);
+-        }
+-        return request;
+-    }
+-    /**
+-     * creates a new batch request
+-     *
+-     * @returns {Batch}
+-     * @memberof Graph
+-     */
+-    createBatch() {
+-        return new Batch(this);
+-    }
+-    /**
+-     * sets the component name used in request headers.
+-     *
+-     * @protected
+-     * @param {Element} component
+-     * @memberof Graph
+-     */
+-    setComponent(component) {
+-        this._componentName = component instanceof Element ? component.tagName : component;
+-    }
+-}
+-/**
+- * create a new Graph instance using the specified provider.
+- *
+- * @static
+- * @param {IProvider} provider
+- * @returns {Graph}
+- * @memberof Graph
+- */
+-export function createFromProvider(provider, version, component) {
+-    const middleware = [
+-        new AuthenticationHandler(provider),
+-        new RetryHandler(new RetryHandlerOptions()),
+-        new TelemetryHandler(),
+-        new SdkVersionMiddleware(PACKAGE_VERSION, provider.name),
+-        new HTTPMessageHandler()
+-    ];
+-    const client = Client.initWithMiddleware({
+-        middleware: chainMiddleware(...middleware)
+-    });
+-    const graph = new Graph(client, version);
+-    return component ? graph.forComponent(component) : graph;
+-}
+-//# sourceMappingURL=Graph.js.map
+\ No newline at end of file
++ import { AuthenticationHandler, Client, HTTPMessageHandler, RetryHandler, RetryHandlerOptions } from '@microsoft/microsoft-graph-client';
++ import { Batch } from './utils/Batch';
++ import { ComponentMiddlewareOptions } from './utils/ComponentMiddlewareOptions';
++ import { chainMiddleware } from './utils/GraphHelpers';
++ /**
++  * The version of the Graph to use for making requests.
++  */
++ const GRAPH_VERSION = 'v1.0';
++ /**
++  * The base Graph implementation.
++  *
++  * @export
++  * @abstract
++  * @class Graph
++  */
++ export class Graph {
++     constructor(client, version = GRAPH_VERSION) {
++         this._client = client;
++         this._version = version;
++     }
++     /**
++      * the internal client used to make graph calls
++      *
++      * @readonly
++      * @type {Client}
++      * @memberof Graph
++      */
++     get client() {
++         return this._client;
++     }
++     /**
++      * the component name appended to Graph request headers
++      *
++      * @readonly
++      * @type {string}
++      * @memberof Graph
++      */
++     get componentName() {
++         return this._componentName;
++     }
++     /**
++      * the version of the graph to query
++      *
++      * @readonly
++      * @type {string}
++      * @memberof Graph
++      */
++     get version() {
++         return this._version;
++     }
++     /**
++      * Returns a new instance of the Graph using the same
++      * client within the context of the provider.
++      *
++      * @param {Element} component
++      * @returns {IGraph}
++      * @memberof Graph
++      */
++     forComponent(component) {
++         const graph = new Graph(this._client, this._version);
++         graph.setComponent(component);
++         return graph;
++     }
++     /**
++      * Returns a new graph request for a specific component
++      * Used internally for analytics purposes
++      *
++      * @param {string} path
++      * @memberof Graph
++      */
++     api(path) {
++         let request = this._client.api(path).version(this._version);
++         if (this._componentName) {
++             request.middlewareOptions = (options) => {
++                 const requestObj = request;
++                 requestObj._middlewareOptions = requestObj._middlewareOptions.concat(options);
++                 return request;
++             };
++             request = request.middlewareOptions([new ComponentMiddlewareOptions(this._componentName)]);
++         }
++         return request;
++     }
++     /**
++      * creates a new batch request
++      *
++      * @returns {Batch}
++      * @memberof Graph
++      */
++     createBatch() {
++         return new Batch(this);
++     }
++     /**
++      * sets the component name used in request headers.
++      *
++      * @protected
++      * @param {Element} component
++      * @memberof Graph
++      */
++     setComponent(component) {
++         this._componentName = component instanceof Element ? component.tagName : component;
++     }
++ }
++ /**
++  * create a new Graph instance using the specified provider.
++  *
++  * @static
++  * @param {IProvider} provider
++  * @returns {Graph}
++  * @memberof Graph
++  */
++ export function createFromProvider(provider, version, component) {
++     const middleware = [
++         new AuthenticationHandler(provider),
++         new RetryHandler(new RetryHandlerOptions()),
++         new HTTPMessageHandler()
++     ];
++     const client = Client.initWithMiddleware({
++         middleware: chainMiddleware(...middleware)
++     });
++     const graph = new Graph(client, version);
++     return component ? graph.forComponent(component) : graph;
++ }
++ //# sourceMappingURL=Graph.js.map

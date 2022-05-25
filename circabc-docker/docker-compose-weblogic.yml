@@ -1,0 +1,22 @@
+version: "3"
+services:
+  db:
+    image: oracle/database:11.2.0.2-xe
+    container_name: oracle-xe
+    ports:
+      - 1521:1521
+      - 8080:8080
+    shm_size: 1g
+    volumes:
+      - /u01/app/oracle/oradata
+      - ./oracle/init:/u01/app/oracle/scripts/setup
+    environment:
+      - ORACLE_PWD=oracle
+    restart: unless-stopped
+  weblogic:
+    image: weblogic-1213-domain
+    container_name: weblogic-1213-domain
+    ports:
+    - 80:7001
+    depends_on:
+      - db

@@ -1,0 +1,29 @@
+<section class="group-card">
+  <a [routerLink]="['..', 'group', group.id]">
+    <div class="group-title">{{ getGroupNameOrTitle() }}</div>
+    <div class="logo-container">
+      <img
+        *ngIf="hasLogo()"
+        [attr.src]="getLogoUrl() | cbcDownload | cbcSecure"
+        alt="logo"
+      />
+      <img *ngIf="!hasLogo()" src="img/placeholder_162x138.png" alt="logo" />
+    </div>
+    <div class="group-description">{{ group.name }}</div>
+  </a>
+  <div class="actions">
+    <a [routerLink]="['..', 'group', group.id]">
+      <img
+        src="img/music-player-play-grey.png"
+        alt="arrow-right-blue.png"
+        title="{{ 'label.enter' | transloco }}"
+      />
+    </a>
+    <cbc-share
+      [showLabel]="false"
+      [link]="getLink()"
+      [orientationRight]="true"
+      [color]="'grey'"
+    ></cbc-share>
+  </div>
+</section>

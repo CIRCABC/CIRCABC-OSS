@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>import a new profile to the IG</shortname>
+  <description>import a new profile to the IG</description>
+    <url>/circabc/groups/{igId}/imported/profiles</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

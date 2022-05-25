@@ -1,0 +1,77 @@
+<!-- MODAL BOX -->
+<div
+  class="black-overlayer"
+  *ngIf="showModal"
+  [class.overlayer-shown]="showModal"
+  [class.overlayer-hidden]="!showModal"
+></div>
+<section
+  class="modal"
+  *ngIf="showModal"
+  [class.modal-shown]="showModal"
+  [class.modal-hidden]="!showModal"
+  style="margin-top: 0"
+>
+  <a class="close-icon" (click)="cancel('close')"></a>
+  <header>
+    <h2 class="title">{{ 'label.toggle.moderation' | transloco }}</h2>
+  </header>
+  <section class="modal-content">
+    <div class="wrapping">
+      <div class="field switch">
+        <div class="label">{{ 'label.moderation' | transloco }}</div>
+        <input
+          id="moderation"
+          class="cmn-toggle cmn-toggle-round"
+          type="checkbox"
+          [checked]="moderationEnabled"
+          (change)="toggleModeration()"
+        />
+        <label for="moderation" class="nonBlockLabel"></label>
+        <span
+          >{{ (moderationEnabled === true ? 'label.enabled' : 'label.disabled')
+          | transloco }}</span
+        >
+      </div>
+      <div *ngIf="forumModerated() && !moderationEnabled">
+        <br />
+        {{ 'forum.moderate.validation.title' | transloco }}:
+        <br />
+        <br />
+        <div class="field switch">
+          <div class="label">{{ 'label.post.validation' | transloco }}</div>
+          <input
+            id="postValidation"
+            class="cmn-toggle cmn-toggle-round"
+            type="checkbox"
+            [checked]="acceptPostValidation"
+            (change)="togglePostValidation()"
+          />
+          <label for="postValidation" class="nonBlockLabel"></label>
+          <span
+            >{{ (acceptPostValidation === true ? 'label.accept.all' :
+            'label.refuse.all' ) | transloco }}</span
+          >
+        </div>
+        {{ 'forum.moderate.validation.explanation' | transloco }}
+        <br />
+        <br />
+      </div>
+      <div class="field" *ngIf="executing">
+        <label
+          >{{ 'label.moderating' | transloco }}...
+          <cbc-spinner></cbc-spinner>
+        </label>
+      </div>
+    </div>
+  </section>
+  <section class="modal-footer">
+    <!-- Buttons -->
+    <div class="buttons-group" *ngIf="!executing">
+      <a class="cta" (click)="accept()">{{ 'label.accept' | transloco }}</a>
+      <a class="button" (click)="cancel('close')"
+        >{{ 'label.cancel' | transloco }}</a
+      >
+    </div>
+  </section>
+</section>

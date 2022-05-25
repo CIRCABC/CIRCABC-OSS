@@ -1,0 +1,201 @@
+<!--+
+    |     Copyright European Community 2006 - Licensed under the EUPL V.1.0
+    |
+    |  		   http://ec.europa.eu/idabc/en/document/6523
+    |
+    +-->
+
+<!-- Here Only the new Circabc specific WAI (and not Alfresco native) actions and action groups -->
+
+<alfresco-config>
+
+	<config>
+		<actions>
+
+			<action id="modify_meeting_general_info">
+				<permissions>
+					<permission allow="true">EveFullEdit</permission>
+				</permissions>
+				<label-id>event_modif_information_action_title</label-id>
+				<tooltip-id>event_modif_information_action_tooltip</tooltip-id>
+				<image>/images/icons/edit_form.gif</image>
+				<action>wai:dialog:modifyMeetingInfoWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">modify_meeting_general_info_#{actionContext.title}</param>
+					<param name="service">Events</param>
+				  	<param name="activity">EditMeetingGeneralInfo</param>
+				</params>
+			</action>
+
+			<action id="modify_event_general_info">
+				<permissions>
+					<permission allow="true">EveFullEdit</permission>
+				</permissions>
+				<label-id>event_modif_information_action_title</label-id>
+				<tooltip-id>event_modif_information_action_tooltip</tooltip-id>
+				<image>/images/icons/edit_form.gif</image>
+				<action>wai:dialog:modifyEventInfoWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">modify_event_general_info_#{actionContext.title}</param>
+					<param name="service">Events</param>
+				  	<param name="activity">EditEventGeneralInfo</param>
+				</params>
+			</action>
+
+
+			<action id="modify_meeting_relevant_space">
+				<permissions>
+					<permission allow="true">EveFullEdit</permission>
+				</permissions>
+				<label-id>event_modif_space_action_title</label-id>
+				<tooltip-id>event_modif_space_action_tooltip</tooltip-id>
+				<image>/images/icons/add_attachment.gif</image>
+				<action>wai:dialog:modifyMeetingRelevantSpaceWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">modify_meeting_space_#{actionContext.title}</param>
+					<param name="service">Events</param>
+				  	<param name="activity">EditMeetingRelevantSpace</param>
+				</params>
+			</action>
+
+			<action id="modify_appointment_contact_info">
+				<permissions>
+					<permission allow="true">EveFullEdit</permission>
+				</permissions>
+				<label-id>event_modif_contact_action_title</label-id>
+				<tooltip-id>event_modif_contact_action_tooltip</tooltip-id>
+				<image>/images/icons/project-icon-blog-16.gif</image>
+				<action>wai:dialog:modifyAppointmentContactInfoWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">modify_appointment_contact_info_#{actionContext.title}</param>
+					<param name="service">Events</param>
+				  	<param name="activity">EditAppointmentContactInfo</param>
+				</params>
+			</action>
+
+			<action id="modify_appointment_audience">
+				<permissions>
+					<permission allow="true">EveFullEdit</permission>
+				</permissions>
+				<label-id>event_modif_audience_action_title</label-id>
+				<tooltip-id>event_modif_audience_action_tooltip</tooltip-id>
+				<image>/images/icons/users.gif</image>
+				<action>wai:dialog:modifyAppointmentAudienceWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">modify_appointment_audience_#{actionContext.title}</param>
+					<param name="service">Events</param>
+				  	<param name="activity">EditAppointmentAudience</param>
+				</params>
+			</action>
+
+			<action id="delete_appointment">
+				<permissions>
+					<permission allow="true">EveFullEdit</permission>
+				</permissions>
+				<label-id>event_delete_meeting_action_title</label-id>
+				<tooltip-id>event_delete_meeting_action_tooltip</tooltip-id>
+				<image>/images/icons/delete.gif</image>
+				<action>wai:dialog:deleteAppointmentWai</action>
+				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">delete_appointment_#{actionContext.title}</param>
+					<param name="service">Events</param>
+				  	<param name="activity">DeleteAppointment</param>
+				</params>
+			</action>
+
+			<action id="accept_meeting_request">
+				<permissions>
+					<permission allow="true">EveAccess</permission>
+				</permissions>
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.AcceptMeetingEvaluator
+				</evaluator>
+				<label-id>event_accept_meeting_action_title</label-id>
+				<tooltip-id>event_accept_meeting_action_tooltip</tooltip-id>
+				<image>/images/icons/blog_post.png</image>
+				<action>#{AcceptMeetingRequestDialog.getOutcome}</action>
+				<action-listener>#{AcceptMeetingRequestDialog.acceptMeetingPreTreatment}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">accpect_meeting_request_#{actionContext.title}</param>
+					<param name="service">Events</param>
+				  	<param name="activity">AcceptMeetingRequest</param>
+				</params>
+			</action>
+
+			<action id="decline_meeting_request">
+				<permissions>
+					<permission allow="true">EveAccess</permission>
+				</permissions>
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.DeclineMeetingEvaluator
+				</evaluator>
+				<label-id>event_decline_meeting_action_title</label-id>
+				<tooltip-id>event_decline_meeting_action_tooltip</tooltip-id>
+				<image>/images/icons/blog_remove.png</image>
+				<action>#{DeclineMeetingRequestDialog.getOutcome}</action>
+				<action-listener>#{DeclineMeetingRequestDialog.declineMeetingPreTreatment}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">decline_meeting_request_#{actionContext.title}</param>
+					<param name="service">Events</param>
+				  	<param name="activity">DeclineMeetingRequest</param>
+				</params>
+			</action>
+
+
+			<!-- Actions for browse meetings -->
+			<action-group id="search-appointments-result-action-meeting">
+				<show-link>false</show-link>
+				<style-class>inlineAction</style-class>
+				<action idref="details_doc_wai" />
+				<action idref="delete_appointment" />
+			</action-group>
+
+			<!-- Actions for browse events -->
+			<action-group id="search-appointments-result-action-event">
+				<show-link>false</show-link>
+				<style-class>inlineAction</style-class>
+				<action idref="details_doc_wai" />
+				<action idref="delete_appointment" />
+				<action idref="accept_meeting_request" />
+				<action idref="decline_meeting_request" />
+			</action-group>
+
+			<!-- Actions for content in Meetings detail view WAI -->
+			<action-group id="meeting_details_actions_wai">
+				<action idref="modify_meeting_general_info" />
+				<action idref="modify_meeting_relevant_space" />
+				<action idref="modify_appointment_contact_info" />
+				<action idref="modify_appointment_audience" />
+				<action idref="accept_meeting_request" />
+				<action idref="decline_meeting_request" />
+				<action idref="delete_appointment" />
+				<action idref="history"/>
+			</action-group>
+
+			<!-- Actions for content in Event detail view WAI -->
+			<action-group id="event_details_actions_wai">
+				<action idref="modify_event_general_info" />
+				<action idref="modify_appointment_contact_info" />
+				<action idref="modify_appointment_audience" />
+				<action idref="delete_appointment" />
+				<action idref="history"/>
+			</action-group>
+
+		</actions>
+	</config>
+
+</alfresco-config>

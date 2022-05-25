@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>groups.bulk.keywords.post</shortname>
+  <description>import the list of keywords of an IG in format: XLS</description>
+    <url>/circabc/groups/{igId}/keywords/bulk</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

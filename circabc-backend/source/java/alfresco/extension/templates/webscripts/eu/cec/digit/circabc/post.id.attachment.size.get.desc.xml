@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>post.id.attachment.size.get</shortname>
+  <description>Gets the remaining size in bytes of attachments of a post given its id</description>
+    <url>/circabc/posts/{id}/attachment/size</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

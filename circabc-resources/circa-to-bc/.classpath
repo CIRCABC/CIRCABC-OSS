@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="source/java"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/SDK Circa"/>
+	<classpathentry exported="true" kind="lib" path="source/web/WEB-INF/lib/jaxb-commons-lang-plugin-2.1.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="source/web/WEB-INF/lib/jaxb-fluent-api-2.1.8.jar"/>
+	<classpathentry exported="true" kind="lib" path="source/web/WEB-INF/lib/jaxb-2.0-xjc-value-constructor-plugin-20071126-1834.jar"/>
+	<classpathentry exported="true" kind="lib" path="source/web/WEB-INF/lib/je-3.3.75.jar"/>
+	<classpathentry exported="true" kind="lib" path="source/web/WEB-INF/lib/gnumail.jar"/>
+	<classpathentry exported="true" kind="lib" path="source/web/WEB-INF/lib/inetlib.jar"/>
+	<classpathentry exported="true" kind="lib" path="source/web/WEB-INF/lib/gnumail-providers.jar" sourcepath="lib_sources/gnu-mail-1.1.2-src.zip"/>
+	<classpathentry exported="true" kind="lib" path="source/web/WEB-INF/lib/ftp4j-1.5.jar" sourcepath="source/web/WEB-INF/lib/ftp4j-1.5-src.zip"/>
+	<classpathentry kind="output" path="build/classes"/>
+</classpath>

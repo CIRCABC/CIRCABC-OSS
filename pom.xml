@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--+
+    |     Copyright European Community 2006-2019 - Licensed under the EUPL V.1.0
+    |
+    |  		   http://ec.europa.eu/idabc/en/document/6523
+    |
+    +-->
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>circabc</groupId>
+	<artifactId>circabc-parent</artifactId>
+	<packaging>pom</packaging>
+	<version>0.0.3</version>
+	<description>Global pom for Circabc projects.</description>
+
+	<licenses>
+		<license>
+			<name>EUPL</name>
+			<url>./license.txt</url>
+		</license>
+	</licenses>
+
+	<organization>
+		<name>EC-DIGIT</name>
+		<url>http://ec.europa.eu/dgs/informatics/index_en.htm</url>
+	</organization>
+
+	<issueManagement>
+		<system>Jira</system>
+		<url>https://webgate.ec.europa.eu/CITnet/jira/browse/DIGIT-CIRCABC</url>
+	</issueManagement>
+
+	<developers>
+		<developer>
+			<id>circabc</id>
+			<name>CIRCABC Team</name>
+			<email>digit-circabc-support@ec.europa.eu</email>
+			<organization>(DIGIT)</organization>
+			<roles>
+				<role>circabc</role>
+			</roles>
+			<timezone>+2</timezone>
+		</developer>
+	</developers>
+	
+	
+	<modules>
+		<module>circabc-backend</module>
+		<module>circabc-frontend</module>
+		<module>circabc-frontend-wrapper</module>
+	</modules>
+
+	<properties>
+		<sonar.projectName>circabc</sonar.projectName>
+		<sonar.projectVersion>4.1.0</sonar.projectVersion>
+		<sonar.scm.provider>git</sonar.scm.provider>
+		<sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
+		<sonar.inclusions>/source/java/io/swagger/**/*.java,
+			source/java/eu/cec/digit/circabc/repo/web/scripts/bean/**/*.java,
+			<!-- source/java/eu/cec/digit/circabc/service/**/*.java, -->
+			<!-- source/java/eu/cec/digit/circabc/repo/**/*Impl.java, -->
+		</sonar.inclusions>
+		<sonar.exclusions>**/*.pdf,**/*.css,**/*.svg,**/*.png,**/*.gif,**/dist/*,**/.vscode/*</sonar.exclusions>
+	</properties>
+
+	<profiles>
+		<profile>
+			<id>sonar</id>
+			<dependencies>
+				<dependency>
+					<groupId>org.codehaus.mojo</groupId>
+    				<artifactId>sonar-maven-plugin</artifactId>
+    				<version>3.9.1.2184</version>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
+
+
+</project>

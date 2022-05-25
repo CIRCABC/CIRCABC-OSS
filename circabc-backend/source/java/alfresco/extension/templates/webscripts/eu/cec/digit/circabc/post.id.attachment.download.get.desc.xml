@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>post.id.attachment.download.get</shortname>
+  <description>Downloads the forum attachment given by its id (hidden content)</description>
+    <url>/circabc/posts/{id}/attachment/download</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

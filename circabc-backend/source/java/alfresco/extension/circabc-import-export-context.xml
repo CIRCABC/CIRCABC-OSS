@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+    <bean id="circabcViewParser" class="eu.cec.digit.circabc.util.importer.ViewParser">
+        <property name="namespaceService">
+            <ref bean="namespaceService" />
+        </property>
+        <property name="dictionaryService">
+            <ref bean="dictionaryService" />
+        </property>
+        <property name="nodeService">
+            <ref bean="nodeService" />
+        </property>
+    </bean>
+    
+	<!-- CIRCABC Importer -->
+	
+    <bean id="circabcImporter" class="eu.cec.digit.circabc.util.importer.CircabcImporter">
+        <property name="nodeService">
+            <ref bean="NodeService" />
+        </property>
+		<property name="circabcImporterService">
+			<ref bean="circabcImporterComponent" />
+		</property>
+        <property name="searchService">
+            <ref bean="searchService" />
+        </property>
+        <property name="authorityService">
+           <ref bean="AuthorityService" />
+        </property>
+    </bean>
+	
+	<!-- Importer Component -->
+	
+    <bean id="circabcImporterComponent" class="eu.cec.digit.circabc.util.importer.ImporterComponent">
+        <!-- For now, hard-wire the view parser -->
+        <property name="namespaceService">
+            <ref bean="NamespaceService" />
+        </property>
+        <property name="dictionaryService">
+            <ref bean="DictionaryService" />
+        </property>
+        <property name="nodeService">
+            <ref bean="NodeService" />
+        </property>
+        <property name="contentService">
+            <ref bean="ContentService" />
+        </property>
+        <property name="ruleService">
+            <ref bean="RuleService" />
+        </property>
+        <property name="permissionService">
+           <ref bean="PermissionService" />
+        </property>
+        <property name="authenticationContext">
+           <ref bean="authenticationContext" />
+        </property>
+        <property name="viewParser">
+            <ref bean="circabcViewParser" />
+        </property>
+        <property name="behaviourFilter">
+            <ref bean="policyBehaviourFilter" />
+        </property>
+        <property name="searchService">
+            <ref bean="searchService" />
+        </property>
+        <property name="multilingualContentService">
+           <ref bean="multilingualContentService" />
+        </property>
+    </bean>
+    
+    <!-- Importer Service -->
+
+    <bean id="CircabcImporterService" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="proxyInterfaces">
+            <value>eu.cec.digit.circabc.util.importer.CircabcImporterService</value>
+        </property>
+        <property name="target">
+            <ref bean="circabcImporterComponent"/>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <idref bean="ImporterService_transaction"/>
+                <idref bean="AuditMethodInterceptor"/>
+            </list>
+        </property>
+    </bean>
+	
+	<bean id="circabc-cat-ig-importer" class="eu.cec.digit.circabc.util.importer.ImportActionExecuter" parent="action-executer">
+		<property name="circabcImporter">
+			<ref bean="circabcImporter" />
+		</property>
+	</bean>
+	
+	<!-- CIRCABC Exporter -->
+	
+    <bean id="circabcExporter" class="eu.cec.digit.circabc.util.exporter.CircabcExporter">
+        <property name="nodeService">
+            <ref bean="NodeService" />
+        </property>
+		<property name="circabcExporterService">
+			<ref bean="CircabcExporterService" />
+		</property>
+		<property name="mimetypeService">
+			<ref bean="mimetypeService" />
+		</property>
+		<property name="searchService">
+			<ref bean="searchService" />
+		</property>
+		<property name="transactionService">
+			<ref bean="transactionService" />
+		</property>
+    </bean>
+	
+	<!-- Exporter Component -->
+	
+    <bean id="circabcExporterComponent" class="eu.cec.digit.circabc.util.exporter.ExporterComponent">
+        <property name="namespaceService">
+            <ref bean="NamespaceService" />
+        </property>
+        <property name="dictionaryService">
+            <ref bean="DictionaryService" />
+        </property>
+        <property name="nodeService">
+            <ref bean="NodeService" />
+        </property>
+        <property name="searchService">
+            <ref bean="SearchService" />
+        </property>
+        <property name="contentService">
+            <ref bean="ContentService" />
+        </property>
+        <property name="descriptorService">
+            <ref bean="DescriptorService" />
+        </property>
+        <property name="authenticationService">
+            <ref bean="AuthenticationService" />
+        </property>
+        <property name="permissionService">
+            <ref bean="PermissionService" />
+        </property>
+    </bean>
+
+    <!-- Exporter Service -->
+
+    <bean id="CircabcExporterService" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="proxyInterfaces">
+            <value>eu.cec.digit.circabc.util.exporter.CircabcExporterService</value>
+        </property>
+        <property name="target">
+            <ref bean="circabcExporterComponent"/>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <idref bean="ExporterService_transaction"/>
+                <idref bean="AuditMethodInterceptor"/>
+            </list>
+        </property>
+    </bean>
+	
+	<bean id="circabc-cat-ig-exporter" class="eu.cec.digit.circabc.util.exporter.ExportActionExecuter" parent="action-executer">
+		<property name="circabcExporter">
+			<ref bean="circabcExporter" />
+		</property>
+	</bean>
+
+</beans>

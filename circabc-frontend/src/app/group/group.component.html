@@ -1,0 +1,13 @@
+<div class="dashboards">
+  <cbc-header></cbc-header>
+  <cbc-navigator [currentIg]="group" *ngIf="group"></cbc-navigator>
+
+  <div class="wrap" *ngIf="isAccessingAsVisitor()">
+    <cbc-flat-message
+      [message]="'text.group-guest-access' | transloco"
+      *ngIf="isAccessingAsVisitor()"
+    ></cbc-flat-message>
+  </div>
+
+  <router-outlet></router-outlet>
+</div>

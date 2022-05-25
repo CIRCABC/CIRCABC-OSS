@@ -1,0 +1,35 @@
+.half-width-fluid {
+  width: calc(50% - 13px);
+  margin-right: 25px;
+  float: left;
+}
+
+.half-width-fluid:last-child {
+  margin-right: 0;
+  width: calc(50% - 12px);
+}
+
+.permission-container {
+  margin-top: 0;
+  max-height: 600px;
+  overflow: auto;
+}
+
+.switch-container {
+  font-size: 13px;
+
+  h3 {
+    float: left;
+    margin-top: 4px;
+    color: #757575;
+  }
+}
+
+.inheritance-box {
+  float: right;
+}
+
+.fixH3 {
+  font-size: 13px;
+  color: #757575;
+}

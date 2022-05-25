@@ -1,0 +1,50 @@
+<!-- MODAL BOX -->
+<div
+  class="black-overlayer"
+  *ngIf="showModal"
+  [class.overlayer-shown]="showModal"
+  [class.overlayer-hidden]="!showModal"
+></div>
+<section
+  class="modal"
+  *ngIf="showModal"
+  [class.modal-shown]="showModal"
+  [class.modal-hidden]="!showModal"
+  style="margin-top: 0"
+>
+  <a class="close-icon" (click)="cancel('close')"></a>
+  <header>
+    <h2 class="title">{{ 'label.signal.abuse' | transloco }}</h2>
+  </header>
+
+  <section class="modal-content">
+    <div class="wrapping">
+      <form [formGroup]="signalPostForm">
+        <div class="field">
+          <label for="abuseText"
+            >{{ 'label.message.optional' | transloco }}</label
+          >
+          <textarea id="abuseText" formControlName="abuseText"></textarea>
+        </div>
+      </form>
+      {{ 'label.original.post.text' | transloco }}:<br /><br />
+      <p *ngIf="message" class="comment-message" [innerHtml]="message"></p>
+      <br /><br />
+      <div class="field" *ngIf="executing">
+        <label
+          >{{ 'label.running' | transloco }}... <cbc-spinner></cbc-spinner
+        ></label>
+      </div>
+    </div>
+  </section>
+
+  <section class="modal-footer">
+    <!-- Buttons -->
+    <div class="buttons-group" *ngIf="!executing">
+      <a class="cta" (click)="accept()">{{ 'label.submit' | transloco }}</a>
+      <a class="button" (click)="cancel('close')"
+        >{{ 'label.cancel' | transloco }}</a
+      >
+    </div>
+  </section>
+</section>

@@ -1,0 +1,45 @@
+{{ group?.name | cbcSetTitle }}
+<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+<div class="fluid page-container dashboard-container">
+  <section class="dahsboard-section-left" id="description" *ngIf="group">
+    <cbc-group-location [group]="group"></cbc-group-location>
+
+    <cbc-group-desciptor [group]="group"></cbc-group-desciptor>
+
+    <cbc-contact-description
+      [group]="group"
+      *ngIf="!(displayMembersBox || displayForumsBox || displayEventsBox)"
+    ></cbc-contact-description>
+
+    <cbc-timeline
+      [entries]="timeline.entries"
+      [group]="group"
+      *ngIf="group && displayWhatsnewBox && timeline"
+    ></cbc-timeline>
+  </section>
+
+  <section
+    class="dahsboard-section-right add-top-margin"
+    *ngIf="group && (displayMembersBox || displayForumsBox || displayEventsBox)"
+  >
+    <cbc-contact-description
+      [group]="group"
+      *ngIf="displayMembersBox || displayForumsBox || displayEventsBox"
+    ></cbc-contact-description>
+
+    <cbc-members-dashlet
+      [group]="group"
+      *ngIf="displayMembersBox"
+    ></cbc-members-dashlet>
+
+    <cbc-events-dashlet
+      [igId]="igId"
+      *ngIf="displayForumsBox"
+    ></cbc-events-dashlet>
+
+    <cbc-recent-discussions
+      [igId]="igId"
+      *ngIf="displayEventsBox"
+    ></cbc-recent-discussions>
+  </section>
+</div>

@@ -1,0 +1,70 @@
+<h2 *ngIf="topic && !editPost"
+  ><a (click)="showForm = true">{{ 'forum.add.comment' | transloco }}</a></h2
+>
+<h2 *ngIf="topic && editPost"
+  ><a (click)="showForm = true">{{ 'forum.edit.comment' | transloco }}</a></h2
+>
+<form [formGroup]="addPostForm" [class.hidden]="!showForm">
+  <div class="field">
+    <p-editor
+      formControlName="text"
+      [style]="{ height: '320px' }"
+      spellcheck="true"
+    >
+      <p-header>
+        <span class="ql-formats">
+          <select class="ql-header">
+            <option value="1"></option>
+            <option value="2"></option>
+            <option value="3"></option>
+            <option selected></option>
+            <option value="4"></option>
+            <option value="5"></option>
+            <option value="6"></option>
+          </select>
+        </span>
+        <span class="ql-formats">
+          <button class="ql-bold" aria-label="Bold"></button>
+          <button class="ql-italic" aria-label="Italic"></button>
+          <button class="ql-underline" aria-label="Underline"></button>
+          <button class="ql-strike" aria-label="Strike"></button>
+        </span>
+        <span class="ql-formats">
+          <button class="ql-list" aria-label="list" value="ordered"></button>
+          <button class="ql-list" aria-label="list" value="bullet"></button>
+        </span>
+        <span class="ql-formats">
+          <button class="ql-blockquote" aria-label="Strike"></button>
+          <button class="ql-link" aria-label="link"></button>
+          <button class="ql-image" aria-label="image" value=""></button>
+          <button class="ql-code-block" aria-label="code-block"></button>
+        </span>
+      </p-header>
+    </p-editor>
+  </div>
+
+  <div class="field" *ngIf="posting">
+    <label
+      >{{ 'label.posting' | transloco }}... <cbc-spinner></cbc-spinner
+    ></label>
+  </div>
+  <!-- Buttons -->
+  <div class="field buttons-group" *ngIf="!posting">
+    <label></label>
+    <a
+      class="cta"
+      (click)="addPost()"
+      *ngIf="!editPost"
+      [class.disabled]="!addPostForm.valid"
+      >{{ 'label.post' | transloco }}</a
+    >
+    <a
+      class="cta"
+      (click)="updatePost()"
+      *ngIf="editPost"
+      [class.disabled]="!addPostForm.valid"
+      >{{ 'label.edit' | transloco }}</a
+    >
+    <a class="button" (click)="resetForm()">{{ 'label.reset' | transloco }}</a>
+  </div>
+</form>

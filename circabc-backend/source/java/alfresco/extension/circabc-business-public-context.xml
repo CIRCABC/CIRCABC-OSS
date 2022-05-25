@@ -1,0 +1,473 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+  Copyright 2006 European Community
+  
+   Licensed under the EUPL, Version 1.1 or \?as soon they
+   will be approved by the European Commission - subsequent
+   versions of the EUPL (the "Licence");
+   You may not use this work except in compliance with the
+   Licence.
+   You may obtain a copy of the Licence at:
+  
+   https://joinup.ec.europa.eu/software/page/eupl
+  
+   Unless required by applicable law or agreed to in
+   writing, software distributed under the Licence is
+   distributed on an "AS IS" basis,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+   express or implied.
+   See the Licence for the specific language governing
+   permissions and limitations under the Licence.
+-->
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans-2.0.dtd'>
+<beans>
+
+	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+	<!-- You specify here Spring beans related to CIRCABC Business Layer  -->
+	<!-- You ONLY add PUBLIC business services                            -->
+	<!-- You DO NOT MODIFY here beans related to Alfresco                 -->
+	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+
+
+	<bean id="businessRegistry" class="eu.cec.digit.circabc.business.impl.BusinessRegistryImpl">
+		<property name="circabcServiceRegistry">
+			<ref bean="circabcServiceRegistry" />
+		</property>
+	</bean>
+
+	<!-- Load the Business Messages -->
+	<bean id="business-messages"
+		class="org.alfresco.i18n.ResourceBundleBootstrapComponent">
+		<property name="resourceBundles">
+			<list>
+				<value>alfresco.extension.messages.business-validation</value>
+				<value>alfresco.extension.messages.business-errors</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- TODO add AOP for audit  -->
+
+	<!-- Proxied MailMeContent Business Service -->
+	<bean id="MailMeContentBusinessSrv"  class="org.springframework.aop.framework.ProxyFactoryBean">
+      <property name="proxyInterfaces">
+         <value>
+		      eu.cec.digit.circabc.business.api.mail.MailMeContentBusinessSrv
+   		 </value>
+      </property>
+      <property name="target">
+            <ref bean="_mailMeContentBusinessSrv"/>
+      </property>
+      <property name="interceptorNames">
+         <list>
+		    <idref local="MailMeContentBusinessSrv_transaction"/>
+			<idref local="business.exceptionTranslator"/>
+            <idref bean="MailMeContentBusinessSrv_security"/>
+         </list>
+      </property>
+    </bean>
+
+    <!-- Transaction interceptor for MailMeContent Business Service  -->
+	<bean id="MailMeContentBusinessSrv_transaction" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+         <property name="transactionManager">
+            <ref bean="transactionManager"/>
+         </property>
+         <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.readOnly}</prop>
+            </props>
+        </property>
+	</bean>
+
+	<!-- Proxied Content Business Service -->
+	<bean id="ContentBusinessSrv"  class="org.springframework.aop.framework.ProxyFactoryBean">
+      <property name="proxyInterfaces">
+         <value>
+		      eu.cec.digit.circabc.business.api.content.ContentBusinessSrv
+   		 </value>
+      </property>
+      <property name="target">
+            <ref bean="_contentBusinessSrv"/>
+      </property>
+      <property name="interceptorNames">
+         <list>
+		    <idref local="ContentBusinessSrv_transaction"/>
+			<idref local="business.exceptionTranslator"/>
+                <idref bean="ContentBusinessSrv_security"/>
+         </list>
+      </property>
+    </bean>
+
+    <!-- Transaction interceptor for Content Business Service  -->
+	<bean id="ContentBusinessSrv_transaction" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+         <property name="transactionManager">
+            <ref bean="transactionManager"/>
+         </property>
+         <property name="transactionAttributes">
+            <props>
+                <prop key="add*">${server.transaction.mode.default}</prop>
+                <prop key="*">${server.transaction.mode.readOnly}</prop>
+            </props>
+        </property>
+	</bean>
+
+	<!-- Proxied COCI content Business Service -->
+	<bean id="CociContentBusinessSrv"  class="org.springframework.aop.framework.ProxyFactoryBean">
+      <property name="proxyInterfaces">
+         <value>
+		      eu.cec.digit.circabc.business.api.content.CociContentBusinessSrv
+   		 </value>
+      </property>
+      <property name="target">
+            <ref bean="_cociContentBusinessSrv"/>
+      </property>
+      <property name="interceptorNames">
+         <list>
+		    <idref local="CociContentBusinessSrv_transaction"/>
+			<idref local="business.exceptionTranslator"/>
+            <idref bean="CociContentBusinessSrv_security"/>
+         </list>
+      </property>
+    </bean>
+
+    <!-- Transaction interceptor for Coci Content Business Service  -->
+	<bean id="CociContentBusinessSrv_transaction" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+         <property name="transactionManager">
+            <ref bean="transactionManager"/>
+         </property>
+         <property name="transactionAttributes">
+            <props>
+                <prop key="get*">${server.transaction.mode.readOnly}</prop>
+                <prop key="is*">${server.transaction.mode.readOnly}</prop>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+	</bean>
+
+	<!-- Proxied Navigation Business Service -->
+	<bean id="NavigationBusinessSrv"  class="org.springframework.aop.framework.ProxyFactoryBean">
+      <property name="proxyInterfaces">
+         <value>
+		      eu.cec.digit.circabc.business.api.nav.NavigationBusinessSrv
+   		 </value>
+      </property>
+      <property name="target">
+            <ref bean="_navigationBusinessSrv"/>
+      </property>
+      <property name="interceptorNames">
+         <list>
+		    <idref local="NavigationBusinessSrv_transaction"/>
+			<idref local="business.exceptionTranslator"/>
+            <idref bean="NavigationBusinessSrv_security"/>
+         </list>
+      </property>
+    </bean>
+
+    <!-- Transaction interceptor for Navigation Business Service  -->
+	<bean id="NavigationBusinessSrv_transaction" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+         <property name="transactionManager">
+            <ref bean="transactionManager"/>
+         </property>
+         <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.readOnly}</prop>
+            </props>
+        </property>
+	</bean>
+
+	<!-- Proxied Properties Business Service -->
+	<bean id="PropertiesBusinessSrv"  class="org.springframework.aop.framework.ProxyFactoryBean">
+      <property name="proxyInterfaces">
+         <value>
+		      eu.cec.digit.circabc.business.api.props.PropertiesBusinessSrv
+   		 </value>
+      </property>
+      <property name="target">
+            <ref bean="_propertiesBusinessSrv"/>
+      </property>
+      <property name="interceptorNames">
+         <list>
+		    <idref local="PropertiesBusinessSrv_transaction"/>
+			<idref local="business.exceptionTranslator"/>
+            <idref bean="PropertiesBusinessSrv_security"/>
+         </list>
+      </property>
+    </bean>
+
+    <!-- Transaction interceptor for Properties Business Service  -->
+	<bean id="PropertiesBusinessSrv_transaction" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+         <property name="transactionManager">
+            <ref bean="transactionManager"/>
+         </property>
+         <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.readOnly}</prop>
+            </props>
+        </property>
+	</bean>
+
+	<!-- Proxied Space Business Service -->
+	<bean id="SpaceBusinessSrv"  class="org.springframework.aop.framework.ProxyFactoryBean">
+      <property name="proxyInterfaces">
+         <value>
+		      eu.cec.digit.circabc.business.api.space.SpaceBusinessSrv
+   		 </value>
+      </property>
+      <property name="target">
+            <ref bean="_spaceBusinessSrv"/>
+      </property>
+      <property name="interceptorNames">
+         <list>
+		    <idref local="SpaceBusinessSrv_transaction"/>
+			<idref local="business.exceptionTranslator"/>
+            <idref bean="SpaceBusinessSrv_security"/>
+         </list>
+      </property>
+    </bean>
+
+    <!-- Transaction interceptor for Space Business Service  -->
+	<bean id="SpaceBusinessSrv_transaction" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+         <property name="transactionManager">
+            <ref bean="transactionManager"/>
+         </property>
+         <property name="transactionAttributes">
+            <props>
+                <prop key="create*">${server.transaction.mode.default}</prop>
+                <prop key="*">${server.transaction.mode.readOnly}</prop>
+            </props>
+        </property>
+	</bean>
+
+	<!-- Proxied Dossier Business Service -->
+	<bean id="DossierBusinessSrv"  class="org.springframework.aop.framework.ProxyFactoryBean">
+      <property name="proxyInterfaces">
+         <value>
+		      eu.cec.digit.circabc.business.api.space.DossierBusinessSrv
+   		 </value>
+      </property>
+      <property name="target">
+            <ref bean="_dossierBusinessSrv"/>
+      </property>
+      <property name="interceptorNames">
+         <list>
+		    <idref local="DossierBusinessSrv_transaction"/>
+			<idref local="business.exceptionTranslator"/>
+            <idref bean="DossierBusinessSrv_security"/>
+         </list>
+      </property>
+    </bean>
+
+    <!-- Transaction interceptor for Dossier Business Service  -->
+	<bean id="DossierBusinessSrv_transaction" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+         <property name="transactionManager">
+            <ref bean="transactionManager"/>
+         </property>
+         <property name="transactionAttributes">
+            <props>
+                <prop key="create*">${server.transaction.mode.default}</prop>
+                <prop key="*">${server.transaction.mode.readOnly}</prop>
+            </props>
+        </property>
+	</bean>
+
+	<!-- Proxied Links Business Service -->
+	<bean id="LinksBusinessSrv"  class="org.springframework.aop.framework.ProxyFactoryBean">
+      <property name="proxyInterfaces">
+         <value>
+		      eu.cec.digit.circabc.business.api.link.LinksBusinessSrv
+   		 </value>
+      </property>
+      <property name="target">
+            <ref bean="_linksBusinessSrv"/>
+      </property>
+      <property name="interceptorNames">
+         <list>
+		    <idref local="LinksBusinessSrv_transaction"/>
+			<idref local="business.exceptionTranslator"/>
+            <idref bean="LinksBusinessSrv_security"/>
+         </list>
+      </property>
+    </bean>
+
+    <!-- Transaction interceptor for Links Business Service  -->
+	<bean id="LinksBusinessSrv_transaction" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+         <property name="transactionManager">
+            <ref bean="transactionManager"/>
+         </property>
+         <property name="transactionAttributes">
+            <props>
+                <prop key="create*">${server.transaction.mode.default}</prop>
+                <prop key="apply*">${server.transaction.mode.default}</prop>
+                <prop key="remove*">${server.transaction.mode.default}</prop>
+                <prop key="*">${server.transaction.mode.readOnly}</prop>
+            </props>
+        </property>
+	</bean>
+
+	<!-- Proxied Profile Business Service -->
+	<bean id="ProfileBusinessSrv"  class="org.springframework.aop.framework.ProxyFactoryBean">
+      <property name="proxyInterfaces">
+         <value>
+		      eu.cec.digit.circabc.business.api.security.ProfileBusinessSrv
+   		 </value>
+      </property>
+      <property name="target">
+            <ref bean="_profileBusinessSrv"/>
+      </property>
+      <property name="interceptorNames">
+         <list>
+		    <idref local="ProfileBusinessSrv_transaction"/>
+			<idref local="business.exceptionTranslator"/>
+            <idref bean="ProfileBusinessSrv_security"/>
+         </list>
+      </property>
+    </bean>
+
+    <!-- Transaction interceptor for Profile Business Service  -->
+	<bean id="ProfileBusinessSrv_transaction" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+         <property name="transactionManager">
+            <ref bean="transactionManager"/>
+         </property>
+         <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.readOnly}</prop>
+            </props>
+        </property>
+	</bean>
+
+	<!-- Proxied Permission Business Service -->
+	<bean id="PermissionsBusinessSrv"  class="org.springframework.aop.framework.ProxyFactoryBean">
+      <property name="proxyInterfaces">
+         <value>
+		      eu.cec.digit.circabc.business.api.security.PermissionsBusinessSrv
+   		 </value>
+      </property>
+      <property name="target">
+            <ref bean="_permissionsBusinessSrv"/>
+      </property>
+      <property name="interceptorNames">
+         <list>
+		    <idref local="PermissionsBusinessSrv_transaction"/>
+			<idref local="business.exceptionTranslator"/>
+            <idref bean="PermissionsBusinessSrv_security"/>
+         </list>
+      </property>
+    </bean>
+
+    <!-- Transaction interceptor for Permissions Business Service  -->
+	<bean id="PermissionsBusinessSrv_transaction" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+         <property name="transactionManager">
+            <ref bean="transactionManager"/>
+         </property>
+         <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.readOnly}</prop>
+            </props>
+        </property>
+	</bean>
+
+	<!-- Proxied User details Business Service -->
+	<bean id="UserDetailsBusinessSrv"  class="org.springframework.aop.framework.ProxyFactoryBean">
+      <property name="proxyInterfaces">
+         <value>
+		      eu.cec.digit.circabc.business.api.user.UserDetailsBusinessSrv
+   		 </value>
+      </property>
+      <property name="target">
+            <ref bean="_userDetailsBusinessSrv"/>
+      </property>
+      <property name="interceptorNames">
+         <list>
+		    <idref local="UserDetailsBusinessSrv_transaction"/>
+			<idref local="business.exceptionTranslator"/>
+            <idref bean="UserDetailsBusinessSrv_security"/>
+         </list>
+      </property>
+    </bean>
+
+    <!-- Transaction interceptor for User Details Business Service  -->
+	<bean id="UserDetailsBusinessSrv_transaction" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+         <property name="transactionManager">
+            <ref bean="transactionManager"/>
+         </property>
+         <property name="transactionAttributes">
+            <props>
+                <prop key="update*">${server.transaction.mode.default}</prop>
+                <prop key="remove*">${server.transaction.mode.default}</prop>
+                <prop key="*">${server.transaction.mode.readOnly}</prop>
+            </props>
+        </property>
+	</bean>
+
+	<!-- Proxied RemoteUser Business Service -->
+	<bean id="RemoteUserBusinessSrv"  class="org.springframework.aop.framework.ProxyFactoryBean">
+      <property name="proxyInterfaces">
+         <value>
+		      eu.cec.digit.circabc.business.api.user.RemoteUserBusinessSrv
+   		 </value>
+      </property>
+      <property name="target">
+            <ref bean="_remoteUserBusinessSrv"/>
+      </property>
+      <property name="interceptorNames">
+         <list>
+		    <idref local="RemoteUserBusinessSrv_transaction"/>
+			<idref local="business.exceptionTranslator"/>
+            <idref bean="RemoteUserBusinessSrv_security"/>
+         </list>
+      </property>
+    </bean>
+
+    <!-- Transaction interceptor for Remote User Business Service -->
+	<bean id="RemoteUserBusinessSrv_transaction" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+         <property name="transactionManager">
+            <ref bean="transactionManager"/>
+         </property>
+         <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.readOnly}</prop>
+            </props>
+        </property>
+	</bean>
+
+
+	<!-- Proxied Attachement Business Service -->
+	<bean id="AttachementBusinessSrv"  class="org.springframework.aop.framework.ProxyFactoryBean">
+      <property name="proxyInterfaces">
+         <value>
+		      eu.cec.digit.circabc.business.api.content.AttachementBusinessSrv
+   		 </value>
+      </property>
+      <property name="target">
+            <ref bean="_attachementBusinessSrv"/>
+      </property>
+      <property name="interceptorNames">
+         <list>
+		    <idref local="AttachementBusinessSrv_transaction"/>
+			<idref local="business.exceptionTranslator"/>
+            <idref bean="AttachementBusinessSrv_security"/>
+         </list>
+      </property>
+    </bean>
+
+    <!-- Transaction interceptor for Attachement Business Service -->
+	<bean id="AttachementBusinessSrv_transaction" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+         <property name="transactionManager">
+            <ref bean="transactionManager"/>
+         </property>
+         <property name="transactionAttributes">
+            <props>
+                <prop key="add*">${server.transaction.mode.default}</prop>
+                <prop key="remove*">${server.transaction.mode.default}</prop>
+                <prop key="*">${server.transaction.mode.readOnly}</prop>
+            </props>
+        </property>
+	</bean>
+
+	<!--
+		Exception translation and its handlers
+	-->
+
+	<bean id="business.exceptionTranslator" class="eu.cec.digit.circabc.business.aop.ExceptionTranslator" />
+
+</beans>

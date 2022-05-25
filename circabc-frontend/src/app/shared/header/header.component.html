@@ -1,0 +1,32 @@
+<!-- MENU -->
+<div class="main-header">
+  <cbc-environment-ribbon></cbc-environment-ribbon>
+  <div class="wrap-header">
+    <a class="home-link" [routerLink]="isGuest() ? ['/welcome'] : ['/me']">
+      <cbc-ec-logo-app></cbc-ec-logo-app>
+    </a>
+    <span class="app-message-container">
+      <cbc-system-message-indicator></cbc-system-message-indicator>
+    </span>
+
+    <div *ngIf="isSearchVisible()">
+      <cbc-search-bar
+        [groupId]="getGroupId()"
+        [forExplorer]="isExplorerContext() || isHelpContext()"
+        (searchHit)="propagateSearch($event)"
+        (renewSearchHit)="propagateSearch($event)"
+      ></cbc-search-bar>
+    </div>
+
+    <div class="right-side">
+      <cbc-personal-menu></cbc-personal-menu>
+
+      <cbc-lang-selector
+        [currentLang]="currentLang"
+        (changedLang)="refreshUILang($event)"
+        [compactMode]="true"
+        class="responsive-hidden"
+      ></cbc-lang-selector>
+    </div>
+  </div>
+</div>

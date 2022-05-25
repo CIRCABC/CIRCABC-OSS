@@ -1,0 +1,124 @@
+<div class="search-container">
+  <form
+    [formGroup]="searchForm"
+    style="display: inline"
+    (submit)="requestRefresh()"
+  >
+    <input
+      class="search-bar"
+      type="text"
+      placeholder="{{ ((forExplorer)? 'label.search.igs': 'label.search.foldersfilesforums') | transloco }}"
+      title="{{ ((forExplorer)? 'label.search.igs.help': 'label.search.foldersfilesforums.help') | transloco }}"
+      formControlName="searchString"
+    />
+  </form>
+  <div
+    [class.resultsBoxShown]="noResult"
+    [class.resultsBoxHidden]="!noResult"
+    class="resultsBox"
+  >
+    <a class="reset" (click)="resetForm()">X</a>
+    <div>
+      <label>{{ 'search.empty.result' | transloco }}</label>
+    </div>
+  </div>
+  <div
+    [class.resultsBoxShown]="hasResults() || searching"
+    [class.resultsBoxHidden]="!hasResults()"
+    class="resultsBox"
+  >
+    <a class="reset" (click)="resetForm()">X</a>
+
+    <div *ngIf="searching">
+      <label
+        >{{ 'label.searching' | transloco }}... <cbc-spinner></cbc-spinner
+      ></label>
+    </div>
+
+    <h2 *ngIf="hasFileResults()">{{ 'label.files' | transloco }}:</h2>
+    <ul *ngIf="hasFileResults()">
+      <li *ngFor="let result of fileResults">
+        <a [routerLink]="['./library', result.id, 'details']"
+          >{{ result.name }}</a
+        ><span class="item--modified"
+          >{{ getModified(result) | date: 'y MMM d, H:mm' }}</span
+        >
+      </li>
+    </ul>
+    <h2 *ngIf="hasFolderResults()">{{ 'label.folders' | transloco }}:</h2>
+
+    <ul *ngIf="hasFolderResults()">
+      <li *ngFor="let result of folderResults">
+        <a [routerLink]="['./library', result.id]">{{ result.name }}</a
+        ><span class="item--modified"
+          >{{ getModified(result) | date: 'y MMM d, H:mm' }}</span
+        >
+        <span>{{ result }}</span>
+      </li>
+    </ul>
+
+    <h2 *ngIf="hasForumResults()">{{ 'label.forums' | transloco }}:</h2>
+    <ul *ngIf="hasForumResults()">
+      <li *ngFor="let result of forumResults">
+        <a [routerLink]="['./forum', result.id]">{{ result.name }}</a
+        ><span class="item--modified"
+          >{{ getModified(result) | date: 'y MMM d, H:mm' }}</span
+        >
+      </li>
+    </ul>
+    <h2 *ngIf="hasTopicResults()">{{ 'label.topics' | transloco }}:</h2>
+    <ul *ngIf="hasTopicResults()">
+      <li *ngFor="let result of topicResults">
+        <a
+          [routerLink]="['./library', result.targetNode, 'details']"
+          *ngIf="result.service === 'library'"
+          >{{ result.name }}</a
+        >
+        <a
+          [routerLink]="['./forum/topic', result.targetNode]"
+          *ngIf="result.service === 'newsgroups'"
+          >{{ result.name }}</a
+        >
+        <span class="item--modified"
+          >{{ getModified(result) | date: 'y MMM d, H:mm' }}</span
+        >
+      </li>
+    </ul>
+    <h2 *ngIf="hasPostResults()">{{ 'label.posts' | transloco }}:</h2>
+    <ul *ngIf="hasPostResults()">
+      <li *ngFor="let result of postResults">
+        <a
+          [routerLink]="['./library', result.targetNode, 'details']"
+          *ngIf="result.service === 'library'"
+          >{{ result.name }}</a
+        >
+        <a
+          [routerLink]="['./forum/topic', result.targetNode]"
+          *ngIf="result.service === 'newsgroups'"
+          >{{ result.name }}</a
+        >
+        <span class="item--modified"
+          >{{ getModified(result) | date: 'y MMM d, H:mm' }}</span
+        >
+      </li>
+    </ul>
+    <h2 *ngIf="hasEventResults()">{{ 'label.events' | transloco }}:</h2>
+    <ul *ngIf="hasEventResults()">
+      <li *ngFor="let result of eventResults">
+        <a [routerLink]="['.']">{{ result.name }}</a
+        ><span class="item--modified"
+          >{{ getModified(result) | date: 'y MMM d, H:mm' }}</span
+        >
+      </li>
+    </ul>
+    <h2 *ngIf="hasOtherResults()">{{ 'label.others' | transloco }}:</h2>
+    <ul *ngIf="hasOtherResults()">
+      <li *ngFor="let result of otherResults">
+        <a [routerLink]="['.']">{{ result.name }}</a
+        ><span class="item--modified"
+          >{{ getModified(result) | date: 'y MMM d, H:mm' }}</span
+        >
+      </li>
+    </ul>
+  </div>
+</div>

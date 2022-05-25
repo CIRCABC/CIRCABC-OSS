@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>groups.members.count.get</shortname>
+  <description>Count the members of a IG</description>
+    <url>/circabc/groups/{id}/members/count</url>
+  <format default="json"/>
+  <authentication>guest</authentication>
+  <transaction>required</transaction>
+</webscript>

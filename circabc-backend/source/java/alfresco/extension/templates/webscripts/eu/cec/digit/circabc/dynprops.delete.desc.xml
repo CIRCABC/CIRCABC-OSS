@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>remove one dynamic property from the Interest group</shortname>
+  <description>remove one dynamic property from the Interest group</description>
+    <url>/circabc/dynprops/{id}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

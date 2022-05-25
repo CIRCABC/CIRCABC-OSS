@@ -1,0 +1,9 @@
+<div class="cookie-disclaimer" *ngIf="display">
+  <a data-cy="accept-cookie" class="button" (click)="agree()">{{
+    'label.ok' | translate
+  }}</a>
+
+  <h1>{{ 'cookie.title' | translate }}</h1>
+
+  <p>{{ 'cookie.text.content' | translate }}</p>
+</div>

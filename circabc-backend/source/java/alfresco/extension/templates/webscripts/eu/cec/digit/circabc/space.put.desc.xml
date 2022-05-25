@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Get one version of one content</shortname>
+  <description>Get one version of one content</description>
+    <url>/circabc/spaces/{id}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

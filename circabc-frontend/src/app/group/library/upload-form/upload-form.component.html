@@ -1,0 +1,93 @@
+<section class="upload-page">
+  <div class="file-input">
+    <div class="step">
+      <div class="stepNumber">1</div>
+      <div class="stepTitle">
+        <h1>{{ 'label.file' | transloco }}</h1>
+      </div>
+      <div class="stepLine"></div>
+    </div>
+
+    <div class="flexContainer">
+      <div class="stepLineVertical"></div>
+      <div class="flexWrap">
+        <cbc-file-input
+          (fileSelected)="addNewFiles($event)"
+          [disable]="uploading && !uploadFinished"
+          [hasGuestAccess]="targetNode?.hasGuestAccess"
+        ></cbc-file-input>
+      </div>
+    </div>
+  </div>
+
+  <div class="file-list">
+    <div [ngClass]="filesToUpload.length === 0 ? 'opacity step' : 'step'">
+      <div class="stepNumber">2</div>
+      <div class="stepTitleList">
+        <div>
+          <h1>{{ 'label.file.list' | transloco }}</h1>
+        </div>
+        <div class="stepCountFile">{{ filesToUpload.length }}</div>
+      </div>
+      <div class="stepLine"></div>
+    </div>
+    <div class="flexContainer">
+      <div class="stepLineVertical"></div>
+      <div class="flexWrap">
+        <cbc-file-list
+          [class.step-hidden]="filesToUpload.length === 0"
+          [fileList]="filesToUpload"
+          (fileListChange)="fileListChanged($event)"
+        ></cbc-file-list>
+      </div>
+    </div>
+  </div>
+
+  <div class="file-metadata">
+    <div [ngClass]="fileSelected === undefined ? 'opacity step' : 'step'">
+      <div class="stepNumber">3</div>
+      <div class="stepTitle">
+        <h1>{{ 'label.properties' | transloco }}</h1>
+      </div>
+    </div>
+
+    <cbc-file-metadata
+      [class.step-hidden]="fileSelected === undefined"
+      [file]="fileSelected"
+      (fileChange)="propagateFileChange($event)"
+      [pivots]="pivotDocuments"
+      [translations]="translations"
+    ></cbc-file-metadata>
+  </div>
+</section>
+<div class="upload-actions">
+  <div class="buttons-group">
+    <a
+      data-cy="upload"
+      class="cta"
+      *ngIf="!uploading && !uploadFinished && filesToUpload.length > 0"
+      (click)="uploadFiles()"
+    >
+      {{ 'label.upload' | transloco }}</a
+    >
+    <a
+      class="button"
+      (click)="cancelOrClose()"
+      *ngIf="!uploading && !uploadFinished"
+      >{{ 'label.cancel' | transloco }}</a
+    >
+    <span *ngIf="uploading"
+      >{{ 'label.uploading' | transloco }}<cbc-spinner></cbc-spinner
+    ></span>
+    <a
+      data-cy="finish"
+      class="cta"
+      (click)="cancelOrClose()"
+      *ngIf="uploadFinished"
+      >{{ 'label.finish' | transloco }}</a
+    >
+    <a (click)="startNewUpload()" *ngIf="uploadFinished" class="button"
+      >{{ 'label.upload.finished.start.new' | transloco }}</a
+    >
+  </div>
+</div>

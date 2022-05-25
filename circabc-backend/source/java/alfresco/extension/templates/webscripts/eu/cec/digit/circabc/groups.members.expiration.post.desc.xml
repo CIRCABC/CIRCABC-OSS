@@ -1,0 +1,22 @@
+<webscript>
+  <shortname>create expiration of the members of a IG</shortname>
+  <description>UPDATE  expiration of the members of a IG</description>
+    <url>/circabc/groups/{igId}/members/{userId}/expiration</url>
+    <args>
+      <arg>
+        <shortname>expirationDate</shortname>
+        <description>expiration date</description>
+      </arg>
+      <arg>
+        <shortname>profileId</shortname>
+        <description>profile id</description>
+      </arg>
+      <arg>
+        <shortname>alfrescoGroup</shortname>
+        <description>Alfresco group name</description>
+      </arg>
+    </args>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

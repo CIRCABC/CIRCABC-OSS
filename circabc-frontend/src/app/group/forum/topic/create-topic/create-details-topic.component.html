@@ -1,0 +1,24 @@
+<cbc-modal
+  [visible]="showModal"
+  [title]="'label.create.topic'"
+  [okLabel]="'label.save'"
+  (cancel)="cancel()"
+  (ok)="save()"
+  [executing]="creating"
+  [executingLabel]="'label.creating'"
+  [showOkButton]="createTopicForm.valid && !creating"
+>
+  <form [formGroup]="createTopicForm">
+    <div class="field">
+      <label for="name">{{ 'label.name' | transloco }}</label>
+      <input
+        type="text"
+        id="name"
+        value=""
+        placeholder="{{ 'label.name' | transloco }}"
+        formControlName="name"
+      />
+      <cbc-control-message [control]="nameControl"></cbc-control-message>
+    </div>
+  </form>
+</cbc-modal>

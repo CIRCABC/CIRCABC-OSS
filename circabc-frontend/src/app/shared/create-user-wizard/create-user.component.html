@@ -1,0 +1,322 @@
+<!-- MODAL BOX -->
+<div
+  class="black-overlayer"
+  *ngIf="showWizard"
+  [class.overlayer-shown]="showWizard"
+  [class.overlayer-hidden]="!showWizard"
+></div>
+<section
+  class="modal modal--select-files"
+  *ngIf="showCreateWizard"
+  [class.modal-shown]="showCreateWizard"
+  [class.modal-hidden]="!showCreateWizard"
+  style="margin-top: 0"
+>
+  <a class="close-icon" (click)="cancelWizard()"></a>
+  <header>
+    <h2 class="title">{{ 'user.create' | transloco }}</h2>
+  </header>
+
+  <section class="modal-content">
+    <form [formGroup]="addUserForm">
+      <div class="field">
+        <label for="username"
+          >{{ 'label.username' | transloco }}
+          <span style="color: red">&nbsp;*</span>
+        </label>
+        <input
+          type="text"
+          id="username"
+          data-cy="username"
+          value=""
+          formControlName="username"
+        />
+        <cbc-control-message [control]="usernameControl"></cbc-control-message>
+      </div>
+      <div class="field">
+        <label for="firstname"
+          >{{ 'label.firstname' | transloco }}
+          <span style="color: red">&nbsp;*</span>
+        </label>
+        <input
+          type="text"
+          id="firstname"
+          data-cy="firstname"
+          value=""
+          formControlName="firstname"
+        />
+        <cbc-control-message [control]="firstnameControl"></cbc-control-message>
+      </div>
+      <div class="field">
+        <label for="lastname"
+          >{{ 'label.lastname' | transloco }}
+          <span style="color: red">&nbsp;*</span>
+        </label>
+        <input
+          type="text"
+          id="lastname"
+          data-cy="lastname"
+          value=""
+          formControlName="lastname"
+        />
+        <cbc-control-message [control]="lastnameControl"></cbc-control-message>
+      </div>
+      <div class="field">
+        <label for="email"
+          >{{ 'label.email' | transloco }}
+          <span style="color: red">&nbsp;*</span>
+        </label>
+        <input
+          type="text"
+          id="email"
+          data-cy="email"
+          value=""
+          formControlName="email"
+        />
+        <cbc-control-message [control]="emailControl"></cbc-control-message>
+      </div>
+      <div class="field">
+        <label for="phone"
+          >{{ 'label.phone' | transloco }}
+          <span style="color: red">&nbsp;*</span>
+        </label>
+        <input
+          type="text"
+          id="phone"
+          data-cy="phone"
+          value=""
+          formControlName="phone"
+        />
+        <cbc-control-message [control]="phoneControl"></cbc-control-message>
+      </div>
+      <div class="field">
+        <label for="title">{{ 'label.title' | transloco }}</label>
+        <input type="text" id="title" value="" formControlName="title" />
+      </div>
+      <div class="field">
+        <label for="companyId">{{ 'label.companyId' | transloco }}</label>
+        <input
+          type="text"
+          id="companyId"
+          value=""
+          formControlName="companyId"
+        />
+      </div>
+      <div class="field">
+        <label for="fax">{{ 'label.fax' | transloco }}</label>
+        <input type="text" id="fax" value="" formControlName="fax" />
+        <cbc-control-message [control]="faxControl"></cbc-control-message>
+      </div>
+      <div class="field">
+        <label for="urlAddress">{{ 'label.url' | transloco }}</label>
+        <input
+          type="text"
+          id="urlAddress"
+          value=""
+          formControlName="urlAddress"
+        />
+        <cbc-control-message
+          [control]="urlAddressControl"
+        ></cbc-control-message>
+      </div>
+      <div class="field">
+        <label for="postalAddress"
+          >{{ 'label.postal.address' | transloco }}
+          <span style="color: red">&nbsp;*</span>
+        </label>
+        <textarea
+          id="postalAddress"
+          data-cy="postalAddress"
+          value=""
+          formControlName="postalAddress"
+        ></textarea>
+        <cbc-control-message
+          [control]="postalAddressControl"
+        ></cbc-control-message>
+      </div>
+      <div class="field">
+        <label for="description">{{ 'label.description' | transloco }}</label>
+        <textarea
+          id="description"
+          value=""
+          formControlName="description"
+        ></textarea>
+      </div>
+      <div class="field">
+        <label for="password"
+          >{{ 'label.password' | transloco }}
+          <span style="color: red">&nbsp;*</span>
+        </label>
+        <input
+          type="password"
+          id="password"
+          data-cy="password"
+          value=""
+          formControlName="password"
+        />
+        <cbc-control-message [control]="passwordControl"></cbc-control-message>
+      </div>
+      <div class="field">
+        <label for="passwordVerify"
+          >{{ 'label.password.confirm' | transloco }}
+          <span style="color: red">&nbsp;*</span>
+        </label>
+        <input
+          type="password"
+          id="passwordVerify"
+          data-cy="passwordVerify"
+          value=""
+          formControlName="passwordVerify"
+        />
+        <cbc-control-message
+          [control]="passwordVerifyControl"
+        ></cbc-control-message>
+      </div>
+      <div *ngIf="creating">
+        <label
+          >{{ 'label.creating' | transloco }}...
+          <cbc-spinner></cbc-spinner>
+        </label>
+      </div>
+    </form>
+  </section>
+  <section class="modal-footer">
+    <!-- Buttons -->
+    <div class="buttons-group">
+      <a
+        data-cy="create"
+        class="cta"
+        (click)="submitNewUser()"
+        [class.disabled]="!addUserForm.valid"
+        >{{ 'label.create' | transloco }}</a
+      >
+      <a class="button" data-cy="cancel" (click)="cancelWizard()"
+        >{{ 'label.cancel' | transloco }}</a
+      >
+    </div>
+  </section>
+</section>
+
+<section
+  class="modal modal--select-files"
+  *ngIf="showInviteWizard"
+  [class.modal-shown]="showInviteWizard"
+  [class.modal-hidden]="!showInviteWizard"
+  style="margin-top: 0"
+>
+  <a class="close-icon" (click)="cancelWizard()"></a>
+  <header>
+    <h2 class="title">{{ 'user.invite' | transloco }}</h2>
+  </header>
+
+  <section class="modal-content">
+    <form [formGroup]="notificationForm">
+      <div class="field">
+        <label for="groupContact">{{ 'label.profile' | transloco }}</label>
+        <div class="custom-select select--form">
+          <select
+            name="profileName"
+            id="profileName"
+            formControlName="selectedProfile"
+          >
+            <option
+              *ngFor="let profile of availableProfiles"
+              value="{{ profile.id }}"
+              >{{ profile.title | cbcI18n }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field switch">
+        <div class="label longer">
+          {{ 'label.memberships.expiry.date' | transloco }}
+        </div>
+        <input
+          id="expiration"
+          class="cmn-toggle cmn-toggle-round"
+          type="checkbox"
+          formControlName="expiration"
+        />
+        <label for="expiration" class="nonBlockLabel"></label>
+        <span
+          >{{ (notificationForm.value.expiration === true ? 'label.yes' :
+          'label.no' ) | transloco }}</span
+        >
+      </div>
+      <div
+        class="field field--with-icon field--date"
+        *ngIf="notificationForm.value.expiration"
+      >
+        <label for="date">{{ 'label.when' | transloco }}</label>
+        <p-calendar
+          formControlName="expirationDateTime"
+          [showTime]="true"
+          [dateFormat]="'dd/mm/yy'"
+          [placeholder]="'dd/mm/yyyy'"
+          [showIcon]="true"
+        ></p-calendar>
+
+        <cbc-control-message
+          [control]="expirationDateTimeControl"
+        ></cbc-control-message>
+      </div>
+      <div class="field--separator"></div>
+      <div class="field switch">
+        <div class="label" style="width: 340px">
+          {{ 'label.user.notifications.invite' | transloco }}
+        </div>
+        <input
+          id="cmn-toggle-1"
+          class="cmn-toggle cmn-toggle-round"
+          type="checkbox"
+          formControlName="userNotifications"
+        />
+        <label for="cmn-toggle-1" class="nonBlockLabel"></label>
+        <span
+          >{{ notificationForm.controls['userNotifications'].value === true ?
+          'Yes' : 'No' }}</span
+        >
+      </div>
+
+      <div class="field switch">
+        <div class="label" style="width: 340px">
+          {{ 'label.admin.notifications.invite' | transloco }}
+        </div>
+        <input
+          id="cmn-toggle-2"
+          class="cmn-toggle cmn-toggle-round"
+          type="checkbox"
+          formControlName="adminNotifications"
+        />
+        <label for="cmn-toggle-2" class="nonBlockLabel"></label>
+        <span
+          >{{ notificationForm.controls['adminNotifications'].value === true ?
+          'Yes' : 'No' }}</span
+        >
+      </div>
+
+      <div *ngIf="inviting">
+        <label
+          >{{ 'label.inviting' | transloco }}...
+          <cbc-spinner></cbc-spinner>
+        </label>
+      </div>
+    </form>
+  </section>
+
+  <section class="modal-footer">
+    <!-- Buttons -->
+    <div class="buttons-group" *ngIf="!inviting">
+      <a
+        class="cta"
+        (click)="hasSelectedProfile() ? submitMembers() : ''"
+        [class.disabled]="!hasSelectedProfile()"
+        >{{ 'label.invite' | transloco }}</a
+      >
+      <a class="button" (click)="cancelWizard()"
+        >{{ 'label.cancel' | transloco }}</a
+      >
+    </div>
+  </section>
+</section>

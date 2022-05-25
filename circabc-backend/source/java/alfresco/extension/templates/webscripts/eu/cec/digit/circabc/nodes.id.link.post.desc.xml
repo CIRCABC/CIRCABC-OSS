@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>nodes.id.link.post</shortname>
+  <description>Paste the nodes given by nodeIds as links into the folder with id given in the path</description>
+    <url>/circabc/nodes/{id}/link</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

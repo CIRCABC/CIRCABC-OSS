@@ -1,0 +1,42 @@
+<!-- MODAL BOX -->
+<div
+  class="black-overlayer"
+  *ngIf="showModal"
+  [class.overlayer-shown]="showModal"
+  [class.overlayer-hidden]="!showModal"
+></div>
+<section
+  class="modal"
+  *ngIf="showModal"
+  [class.modal-shown]="showModal"
+  [class.modal-hidden]="!showModal"
+  style="margin-top: 0"
+>
+  <a class="close-icon" (click)="cancelWizard('close')"></a>
+  <header>
+    <h2 class="title">{{ 'label.delete' | transloco }}</h2>
+  </header>
+  <section class="modal-content">
+    {{ 'forum.confirm-delete' | transloco }}
+    <br />
+    <br />
+    {{ 'label.name' | transloco }}: {{ forum.name }}
+    <br />
+    <br />
+    <div class="field" *ngIf="deleting">
+      <label
+        >{{ 'label.deleting' | transloco }}...
+        <cbc-spinner></cbc-spinner>
+      </label>
+    </div>
+  </section>
+  <section class="modal-footer">
+    <!-- Buttons -->
+    <div class="buttons-group" *ngIf="!deleting">
+      <a class="cta" (click)="delete()">{{ 'label.delete' | transloco }}</a>
+      <a class="button" (click)="cancelWizard('close')"
+        >{{ 'label.cancel' | transloco }}</a
+      >
+    </div>
+  </section>
+</section>

@@ -1,0 +1,111 @@
+.box-ribbon {
+  position: relative;
+  background: #eee;
+
+  .ribbon {
+    position: absolute;
+    top: -5px;
+    z-index: 1;
+    overflow: hidden;
+    width: 70px;
+    height: 70px;
+    text-align: right;
+  }
+
+  .ribbon span {
+    font-size: 10px;
+    font-weight: bold;
+    color: #fff;
+    text-transform: uppercase;
+    text-align: center;
+    line-height: 20px;
+    transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg);
+    width: 100px;
+    display: block;
+    box-shadow: 0 3px 10px -5px rgb(0 0 0 / 1);
+    position: absolute;
+    top: 19px;
+    left: -21px;
+  }
+
+  .ribbon span::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 100%;
+    z-index: -1;
+    border-left: 3px solid transparent;
+    border-bottom: 3px solid transparent;
+  }
+
+  .ribbon span::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 100%;
+    z-index: -1;
+    border-right: 3px solid transparent;
+    border-bottom: 3px solid transparent;
+  }
+
+  .ribbon-green {
+    span {
+      background: #79a70a;
+      background: linear-gradient(#9bc90d 0%, #79a70a 100%);
+    }
+
+    span::before {
+      border-left: 3px solid #79a70a;
+      border-top: 3px solid #79a70a;
+    }
+  }
+
+  .ribbon-red {
+    span {
+      background: #f70505;
+      background: linear-gradient(#8f0808 0%, #f70505 100%);
+    }
+
+    span::before {
+      border-left: 3px solid #f70505;
+      border-top: 3px solid #f70505;
+    }
+  }
+
+  .ribbon-blue {
+    span {
+      background: #28b2f7;
+      background: linear-gradient(#3a6cc2 0%, #28b2f7 100%);
+    }
+
+    span::before {
+      border-left: 3px solid #28b2f7;
+      border-top: 3px solid #28b2f7;
+    }
+  }
+
+  .ribbon-orange {
+    span {
+      background: #f79e05;
+      background: linear-gradient(#c25d10 0%, #f79e05 100%);
+    }
+
+    span::before {
+      border-left: 3px solid #f79e05;
+      border-top: 3px solid #f79e05;
+    }
+  }
+
+  .ribbon-violet {
+    span {
+      background: #ba6af7;
+      background: linear-gradient(#8a36c2 0%, #ba6af7 100%);
+    }
+
+    span::before {
+      border-left: 3px solid #ba6af7;
+      border-top: 3px solid #ba6af7;
+    }
+  }
+}

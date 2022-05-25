@@ -1,0 +1,33 @@
+<div class="cta cta--plus dropdown-trigger" (click)="toggleAddDropdown($event)">
+  {{ 'label.add' | transloco }}
+  <div
+    class="dropdown dropdown--add-file"
+    *ngIf="showAddDropdown"
+    [class.dropdown-one--column]="isOnlyOneAction()"
+  >
+    <ul>
+      <li *ngIf="enableAddForum">
+        <a class="forum" (click)="launchCreateForumWizard()">
+          {{ 'label.forum' | transloco }}
+        </a>
+      </li>
+      <li *ngIf="enableAddTopic">
+        <a class="topic" (click)="launchCreateTopicWizard()"
+          >{{ 'label.topic' | transloco }}</a
+        >
+      </li>
+    </ul>
+  </div>
+</div>
+
+<cbc-create-forum
+  [parentNode]="currentNode"
+  [showWizard]="launchCreateForum"
+  (modalHide)="propagateCreateForumClosure($event)"
+></cbc-create-forum>
+<cbc-create-topic
+  [showWizard]="launchAddTopic"
+  [forum]="currentNode"
+  *ngIf="currentNode"
+  (modalHide)="propagateCreateTopic($event)"
+></cbc-create-topic>

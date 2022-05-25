@@ -1,0 +1,71 @@
+/* hint container */
+
+.no-float {
+  float: none !important;
+}
+
+.hint {
+  float: right;
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  vertical-align: middle;
+
+  .hinttext {
+    visibility: hidden;
+    width: 200px;
+    background-color: rgb(85 85 85 / 1);
+    color: #fff;
+    border-radius: 6px;
+    padding: 15px;
+    position: absolute;
+    z-index: 1;
+    bottom: 135%;
+    left: 50%;
+    margin-left: -190px;
+    font-size: 12px;
+
+    h4 {
+      margin-top: 0;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 95%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: rgb(85 85 85 / 1) transparent transparent;
+    }
+  }
+
+  .show {
+    visibility: visible;
+    -webkit-animation: fadeIn 1s;
+    animation: fadeIn 1s;
+  }
+}
+
+/* Add animation (fade in the hint) */
+
+@-webkit-keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}

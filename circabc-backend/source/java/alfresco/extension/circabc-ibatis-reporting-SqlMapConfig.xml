@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+	
+	<!-- NOTE: although we use iBatis here rather than Hibernate, for consistency we make use of single SQL dialect property (hibernate.dialect) -->
+	<properties resource="alfresco-global.properties" />
+	
+	<typeAliases>
+		<typeAlias alias="ContentNumberParametersDAO" type="eu.cec.digit.circabc.repo.report.ContentNumberParametersDAO"/>
+		<typeAlias alias="ContentNumberParametersDAO" type="eu.cec.digit.circabc.repo.report.ContentNumberParametersDAO"/>
+		<typeAlias alias="ShareSpaceQueryParameter" type="eu.cec.digit.circabc.repo.report.ShareSpaceQueryParameter"/>
+		<typeAlias alias="Header" type="eu.cec.digit.circabc.repo.app.model.Header"/>
+		<typeAlias alias="Category" type="eu.cec.digit.circabc.repo.app.model.Category"/>
+		<typeAlias alias="User" type="eu.cec.digit.circabc.repo.app.model.User"/>
+		<typeAlias alias="CatAdmin" type="eu.cec.digit.circabc.repo.app.model.CategoryAdmin"/>
+		<typeAlias alias="CircabcAdmin" type="eu.cec.digit.circabc.repo.app.model.CircabcAdmin"/>
+		<typeAlias alias="InterestGroup" type="eu.cec.digit.circabc.repo.app.model.InterestGroup"/>
+		<typeAlias alias="Profile" type="eu.cec.digit.circabc.repo.app.model.Profile"/>
+		<typeAlias alias="ProfileUser" type="eu.cec.digit.circabc.repo.app.model.ProfileUser"/>
+		<typeAlias alias="InterestGroupResult" type="eu.cec.digit.circabc.repo.app.model.InterestGroupResult"/>
+		<typeAlias alias="ExportedProfileItem" type="eu.cec.digit.circabc.repo.app.model.ExportedProfileItem"/>
+		<typeAlias alias="UserIGMembership" type="eu.cec.digit.circabc.repo.app.model.UserIGMembership"/>
+		<typeAlias alias="KeyValue" type="eu.cec.digit.circabc.repo.app.model.KeyValue"/>
+		<typeAlias alias="KeyValueString" type="eu.cec.digit.circabc.repo.app.model.KeyValueString"/>
+		<typeAlias alias="HeaderCategory" type="eu.cec.digit.circabc.repo.app.model.HeaderCategory"/>
+		<typeAlias alias="ProfileWithUsersCount" type="eu.cec.digit.circabc.repo.app.model.ProfileWithUsersCount"/>
+		<typeAlias alias="UserWithProfile" type="eu.cec.digit.circabc.repo.app.model.UserWithProfile"/>
+		<typeAlias alias="TranslationEntry" type="eu.cec.digit.circabc.repo.app.model.TranslationEntry"/>
+	</typeAliases>
+	
+	<mappers>
+		<!-- note: dialect property is set in properties resource above -->
+		<mapper resource="alfresco/extension/report/${hibernate.dialect}/CircabcReporting.xml" />
+		<mapper resource="alfresco/extension/app/${hibernate.dialect}/Circabc.xml" />
+	</mappers>
+	
+</configuration>

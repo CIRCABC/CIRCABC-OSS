@@ -1,0 +1,287 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>CIRCABC FAQ</title>
+        <link href="../css/style2.css" type="text/css" rel="stylesheet"/>
+        <script src="../js/jquery-1.10.2.min.js" type="application/javascript"></script>
+        <script type="application/javascript">
+        	$(document).ready(function(){
+        		
+        		if($("#links h2 img").attr("alt") == "open")
+        			{
+        				$("#links h2 img").attr("src","../imgs/arrow_carrot-up_alt2.png");
+        				$("#links ul#linkList").css("display","block");
+        				$("#links h2 img").attr("alt","closed");
+        			}
+        			else
+        			{
+        				$("#links h2 img").attr("src","../imgs/arrow_carrot-down_alt2.png");
+        				$("#links ul#linkList").css("display","none");
+        				$("#links h2 img").attr("alt","open");
+        			}
+        		
+        		$("#links h2").click(function(){
+        			
+        			
+        			if($("#links h2 img").attr("alt") == "open")
+        			{
+        				$("#links h2 img").attr("src","../imgs/arrow_carrot-up_alt2.png");
+        				$("#links ul#linkList").css("display","block");
+        				$("#links h2 img").attr("alt","closed");
+        			}
+        			else
+        			{
+        				$("#links h2 img").attr("src","../imgs/arrow_carrot-down_alt2.png");
+        				$("#links ul#linkList").css("display","none");
+        				$("#links h2 img").attr("alt","open");
+        			}
+        		});
+        		
+        	});
+        </script>
+    </head>
+    <body>
+<!--     	<div class="no-hover lang">
+		    <a href="../en/authentication.html" style="margin-right:10px;">[EN]</a>
+		    <a href="../fr/authentication.html" style="margin-right:10px;">[FR]</a>
+		    <a href="../de/authentication.html" style="margin-right:10px;">[DE]</a>
+	    </div>  -->
+    	
+        <div id="header" >
+        	<!--<img src="imgs/banner.jpg" alt="logo" class="logo"/>-->
+        	<img src="../imgs/Help-File-icon.png" width="76" style="float:right;"/>
+        	<h1><a href="index.html">CIRCABC<br/>Help</a></h1>
+        	<ul>
+        		<li class="selected"><a href="authentication.html"><img src="../imgs/icon_profile.png"/>Authentication</a>
+        			<br/><p>How to manage your account</p>
+        		</li>
+        		<li ><a href="administration.html"><img src="../imgs/icon_adjust-vert.png"/>Administration</a></li>
+        		<li ><a href="library.html"><img src="../imgs/icon_document_alt.png"/>Library</a></li>
+        		<li ><a href="newsgroups.html"><img src="../imgs/icon_comment_alt.png"/>Newsgroups</a></li>
+        		<li ><a href="events.html"><img src="../imgs/icon_calendar.png"/>Events</a></li>
+        		<li ><a href="information.html"><img src="../imgs/icon_info_alt.png"/>Information</a></li>
+        		<li ><a href="notification.html"><img src="../imgs/icon_mail_alt.png"/>Notification</a></li>
+        		<li ><a href="search.html"><img src="../imgs/icon_search.png"/>Search</a></li>
+        		<li ><a href="known_bugs.html"><img src="../imgs/icon_error-triangle_alt.png"/>Known bugs</a></li>
+        	</ul>
+        	
+        	
+        </div>
+        
+        <div id="links">
+        		<h2>Table of content <img src="../imgs/arrow_carrot-down_alt2.png" alt="closed"/></h2>
+        		<ul id="linkList">
+        			<li><a href="#what_is_ecas">What is ECAS?</a></li>
+        			<li><a href="#howto_create">How to create your ECAS account</a></li>
+        			<li><a href="#howto_reset">How to reset/get your ECAS password</a></li>
+        			<li><a href="#howto_cant_reset">I cannot reset my password, what can I do?</a></li>
+        			<li><a href="#howto_delete">How to delete your ECAS account (External users only)</a></li>
+        			<li><a href="#howto_change_email">How to change your email address (External users only)</a></li>
+        			<li><a href="#howto_reset_without_email">I have lost my password and don't have access to my old mailbox, what should I do? </a></li>
+        			<li><a href="#howto_w_account">Can I use my W account to access CIRCABC?</a></li>
+        			<li><a href="#howto_pin_code">Why is ECAS asking me to provide a PIN code? </a></li>
+        			<li><a href="#howto_phone_number">ECAS is asking me to provide a phone number </a></li>
+        			<li><a href="#howto_functional">We have created an account linked to a shared (functional) mailbox, the password has not been sent</a></li>
+        		</ul>
+        </div>
+        
+        <div id="content">
+        	
+        	
+        	
+        	<ul class="faqList">
+        		
+        		<li class="faqListItem">
+        			<h2><a name="what_is_ecas">What is ECAS?</a></h2>
+        			<p class="text">
+        			ECAS is the Commission's Authentication Service. 
+        			It is the system for logging on to a whole range of websites and online services run by the European Commission. 
+        			Once you've used ECAS to log on to a website or service, you won't have to identify yourself again as long as you leave your browser open. 
+        			CIRCABC is using ECAS as authentication service.
+        			
+					</p>
+					<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		
+        		
+        		<li class="faqListItem">
+        			<h2><a name="howto_create">How to create your ECAS account (External users only)</a></h2>
+
+        			<p class="hint">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" /></span>
+        				Users from the European Commission and other EU institutions and bodies already have an ECAS account and can login to CIRCABC. 
+        			</p>
+        			<p class="text">
+        			External users (Partners, Researchers and Citizens) will need to sign up to ECAS as explained here:<br/>
+					<ul>
+						<li>Click on <a href="https://circabc.europa.eu" target="_blank">https://circabc.europa.eu</a> (Link to CIRCABC)</li>
+						<li>Login</li>
+						<li>Choose: The EXTERNAL domain of ECAS</li>
+					</ul>
+					</p>
+        			<p class="hint_red">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" /></span>
+        				If the domain is not the right one, "Change it" will redirect to the previous page.
+        			</p>
+        			<p class="text">
+        			<ul>
+						<li>Sign Up</li>
+						<li>Then complete the form:</li>
+					</ul>
+					<img class="faqImg faq65" src="../imgs/content/authentication_signup_form.png" />
+					<br/>
+					For more detail refer to the Guide "Access and get password" which is available <a href="https://circabc.europa.eu/w/browse/3d50490e-d2bf-4b6e-b139-eac5b001fbd2" target="_blank">here</a>.
+    				</p>
+    				<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		<li class="faqListItem">
+        			<h2><a name="howto_reset">How to reset/get your ECAS password</a></h2>
+					<p class="text">
+        			If you have forgotten your password you can get a new one following the steps below:<br/>
+					<ul>
+						<li>Click on <a href="https://circabc.europa.eu" target="_blank">https://circabc.europa.eu</a> (Link to CIRCABC)</li>
+						<li>Login</li>
+						<li>Choose your domain (External users must choose the <b>EXTERNAL</b> domain)</li>
+					</ul>
+					</p>
+					<p class="hint_red">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" /></span>
+        				If the domain is not the right one, "Change it" will redirect to the previous page.
+        			</p>
+        			<p class="text">
+        				<img class="faqImg faq65"  src="../imgs/content/authentication_reset.png"/>
+        				<br/>
+        				You will then be asked to enter your <b>username</b> or your <b>email address</b> 
+    				</p>
+    				<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		<li class="faqListItem">
+        			<h2><a name="howto_cant_reset">I cannot reset my password, what can I do?</a></h2>
+					<p class="text">
+        			If you cannot reset your password, please check the following points: <br/><br/>
+					<h3>If the domain is correct:</h3>
+					It is very important to click on New password from the right domain,  
+					E.g. External users should choose the External domain <br/>
+					<img class="faqImg faq65"  src="../imgs/content/authentication_reset_domain.png"/><br/>
+					If the domain is not the right one, "Change it" will redirect to the previous page.
+					<br/><br/>
+					<h3>If your username is correct:</h3>
+					If you have forgotten your username you can try with your email address.<br/><br/>
+					<h3>Your email address has been changed and you cannot reset your password:</h3>
+					In this case, you have to contact DIGIT-USER-ACCESS at <b>+352 4301 35035</b> (Monday-Friday between 8:00-18:00 Central European Time) in order to obtain a temporary password to be able to update your email address. 
+					Once the temporary password is received, you will be able to update the e-mail address, (See the point: How to change your email address?)
+					Your email address will be updated according to ECAS  
+
+					</p>
+					<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		<li class="faqListItem">
+        			<h2><a name="howto_delete">How to delete your ECAS account (External users only)</a></h2>
+					<p class="text">
+        			If you remember your password, you can delete your ECAS account by proceeding as follows:<br/><br/>
+					<ul>
+						<li>At <a href="https://circabc.europa.eu" target="_blank">https://circabc.europa.eu</a> you click on <b>"Login":</b> this takes you to the ECAS authentication system</li>
+						<li>You follow link <b>"More options"</b> and tick <b>"View my ECAS account details after logging me in"</b></li>
+						<li>You enter your username &amp; password and click <b>"login"</b></li>
+					</ul>
+					<br/>
+					<img class="faqImg faq65"  src="../imgs/content/authentication_delete.png"/><br/>
+					The ECAS page titled "ECAS account" is displayed: Click "Account information" (in black-background bar at top of page).
+					<br/>
+					Press on "Delete your account>": you are requested to confirm the action > Click "Delete"
+					</p>
+					<p class="hint_red">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" /></span>
+        				THE ACCOUNT DELETION IS IRREVOCABLE, THIS MEANS THAT YOU WILL LOSE YOUR ACCESS AND ALL YOUR MEMBERSHIPS.
+        			</p>
+        			<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		<li class="faqListItem">
+        			<h2><a name="howto_change_email">How to change your email address (External users only)</a></h2>
+					<p class="text">
+        			You have to change your email address in ECAS, then it will be automatically updated in CIRCABC when you login.<br/><br/>
+        			How to change your email address in ECAS:<br/>
+					<ul>
+						<li>Login to ECAS: <a href="https://webgate.ec.europa.eu/cas/userdata/ShowDetails.cgi" target="_blank">https://webgate.ec.europa.eu/cas/userdata/ShowDetails.cgi</a></li>
+						<li>Modify my personal data</li>
+						<li>Change your email</li>
+						<li>And Click on Submit</li>
+					</ul>
+					<br/><br/>
+					When you login to CIRCABC your email address will be updated to the one in ECAS.
+        			</p>
+        			<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		<li class="faqListItem">
+        			<h2><a name="howto_reset_without_email">I have lost my password and don't have access to my old mailbox, what should I do? </a></h2>
+					<p class="text">
+        			Please contact DIGIT-USER-ACCESS at <b>+352 4301 35035</b> (Monday-Friday between 8:00-18:00 Central European Time) in order to obtain a temporary password to be able to update your email address.<br/> 
+					Once the temporary password is received, you will be able to update the e-mail address (See the previous point : How to change your email address?). 
+
+        			</p>
+        			<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		<li class="faqListItem">
+        			<h2><a name="howto_w_account">Can I use my W account to access CIRCABC?</a></h2>
+					<p class="text">
+        			We strongly advise users who have a Wxxxxx ECAS account to create and use a 'normal' ECAS account to connect to CIRCABC. The Wxxxxx accounts are special technical ones that do not have associated e-mail accounts.<br/>
+					Please refer to <a href="#howto_create">How to create your ECAS account?</a>
+        			</p>
+        			<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		<li class="faqListItem">
+        			<h2><a name="howto_pin_code">Why is ECAS asking me to provide a PIN code? </a></h2>
+					<p class="text">
+        			Your account belongs to the eFP7 application, that's why there is a PIN code required in order to increase the security level of the user.<br/><br/>
+					According to the information provided to us (the eFP7 application is independent of CIRCABC), you should have received an automatic e-mail from the system when your LEAR account was created.<br/><br/> 
+					For security reasons, to retrieve your PIN code, you can either contact <a href="mailto:ec-research-it-helpdesk@ec.europa.eu">ec-research-it-helpdesk@ec.europa.eu</a> or call our colleagues of <b>EC-RESEARCH-IT-HELPDESK</b> directly – phone number <b>+352 4301 31570</b> (Monday to Friday between 9:00-17:00 Central European Time).
+
+        			</p>
+        			<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		<li class="faqListItem">
+        			<h2><a name="howto_phone_number">ECAS is asking me to provide a phone number </a></h2>
+					<p class="text">
+        			The phone number is not required to create the ECAS account for CIRCABC if the login is done via the CIRCABC link <a href="https://circabc.europa.eu" target="_blank">https://circabc.europa.eu</a> rather than directly in ECAS. We therefore propose that you try again to login or to reset your password.
+        			</p>
+        			<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		<li class="faqListItem">
+        			<h2><a name="howto_functional">We have created an account linked to a shared (functional) mailbox, the password has not been sent</a></h2>
+					<p class="text">
+        			When sharing a mailbox, some users accessing this mailbox do not see all messages while others do. This often happens when messages are marked as Private, as in ECAS. We therefore propose that you check the delegation given to this shared mailbox. 
+					Otherwise you can contact DIGIT-USER-ACCESS at <b>+352 4301 35035</b> (Monday-Friday between 8:00-18:00 Central European Time) in order to obtain your password. 
+
+        			</p>
+        			<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		<!--
+        			<li class="faqListItem">
+        			<h2><a name="howto_create">How to create your ECAS account (External users only)</a></h2>
+
+        			<p class="hint">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" /></span>
+        				Users from the European Commission and other EU institutions and bodies already have an ECAS account and can login to CIRCABC. 
+        			</p>
+        			
+        			<p class="text">
+        			<img class="faqImg faq65"  src="resources/gle.jpg" />
+        			<br/><br/>
+        			Il a souvent été estimé, évalué, mais jamais calculé. Le chiffre d'affaires de Google en France aurait, pour la première fois, été mesuré par VRDCI, une petite entreprise spécialisée dans le référencement naturel (une manière de remonter dans les recherches du moteur sans payer de publicité). L'étude (PDF) devait être publiée mercredi 18 décembre.<br/><br/>
+					Et le résultat est à la hauteur des prédictions. En un an, entre novembre 2012 et novembre 2013, le géant américain aurait réalisé 1,43 milliard d'euros en France. Soit très loin des 193 millions d'euros déclarés par l'entreprise en France au titre de son exercice fiscal 2012. Certes, celui de cette année n'a pas encore été rendu public. Il n'empêche : difficile d'imaginer que Google déclare plus de 1 milliard de revenus en France pour 2013.
+					</p>
+        			<p class="hint">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" />Hint</span>
+        				Bla bla bla bla bla
+        				<br/>
+        				Blaaaablaa Bla
+        			</p>
+        			<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        			
+        		-->
+        	</ul>
+        </div>
+    </body>
+</html>

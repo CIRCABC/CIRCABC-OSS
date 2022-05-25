@@ -1,0 +1,21 @@
+<cbc-modal
+  [title]="'label.delete'"
+  (ok)="delete()"
+  (cancel)="cancelWizard()"
+  [okLabel]="'label.delete'"
+  [(visible)]="showModal"
+  [(executing)]="deleting"
+  [executingLabel]="'label.deleting'"
+>
+  <p *ngIf="profile">
+    {{ 'profile.delete.confirmation' | transloco }}
+    <br />
+    <br />
+    {{ 'label.name' | transloco }}: {{ profile.title | cbcI18n }}
+    <br />
+    <br />
+    <span class="hint"
+      >{{ 'profile.delete.more.information' | transloco }}</span
+    >
+  </p>
+</cbc-modal>

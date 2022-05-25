@@ -1,0 +1,28 @@
+@use '~css/global/variables-mixins-keyframes';
+
+.dashboard-container {
+  display: flex;
+  flex-flow: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.dahsboard-section-left {
+  width: 55%;
+
+  @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+    width: 100%;
+  }
+}
+
+.dahsboard-section-right {
+  width: 40%;
+
+  @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+    width: 100%;
+  }
+}
+
+.add-top-margin {
+  margin-top: 45px;
+}

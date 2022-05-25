@@ -1,0 +1,589 @@
+@use 'sass:color';
+@use '../global/variables-mixins-keyframes';
+
+/*  BOXES */
+
+/* Base pattern of a box (a box is a container that contain content, generally with a white background)
+   Tables aren't boxes -> _tables.scss. */
+
+.box {
+  margin: 25px 0;
+
+  .header {
+    background: rgb(255 255 255 / 0.5);
+    border-radius: 5px 5px 0 0;
+    padding: 12px 25px;
+
+    .title {
+      font-family: variables-mixins-keyframes.$titling;
+      font-weight: 700;
+      font-size: 16px;
+      text-transform: uppercase;
+      color: variables-mixins-keyframes.$textAA;
+    }
+
+    .filter {
+      margin-right: 10px;
+      position: relative;
+      top: 2px;
+
+      &::after {
+        content: '';
+        display: inline-block;
+        width: 6px;
+        height: 4px;
+        margin-left: 4px;
+        background: url(^img/arrow-dropdown.png) no-repeat;
+        position: relative;
+        top: -1px;
+      }
+    }
+
+    .icons {
+      float: right;
+      margin-right: -15px;
+    }
+  }
+
+  .main {
+    background: #fff;
+    color: variables-mixins-keyframes.$textAA;
+    font-size: 14px;
+    box-shadow: 0 0 2px rgb(0 0 0 / 0.1);
+  }
+}
+
+// Days in personnal and groups dashboards
+.box--day {
+  .seen-content {
+    border-top: 1px solid #ebedf2;
+  }
+
+  .not-seen-content,
+  .seen-content {
+    padding: 22px 25px;
+  }
+
+  .subtitle {
+    font-family: variables-mixins-keyframes.$titling;
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    display: inline-block;
+    margin-bottom: 15px;
+  }
+
+  .main {
+    border-radius: 0 0 3px 3px;
+
+    .listing-rows {
+      position: relative;
+
+      &::before {
+        content: '';
+        position: absolute;
+        width: 1px;
+        background-color: rgb(245 246 250);
+        top: 0;
+        bottom: 0;
+        left: 15px;
+      }
+    }
+
+    .row {
+      position: relative;
+      margin: 25px 0 10px 44px;
+
+      &:first-of-type {
+        margin-top: 10px;
+      }
+
+      &::before {
+        /* icons */
+
+        position: absolute;
+        left: -44px;
+        top: -8px;
+        display: block;
+        content: '';
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: rgb(245 246 250);
+        box-shadow: 0 2px 2px rgb(0 0 0 / 0.1);
+        background-repeat: no-repeat;
+        background-position: center center;
+        z-index: 1;
+      }
+    }
+
+    .row__folder::before {
+      background-image: url(^img/icon-library-grey.png);
+    }
+
+    .row__file::before {
+      background-image: url(^img/icon-file-grey.png);
+    }
+
+    .row__agenda::before {
+      background-image: url(^img/icon-agenda-grey.png);
+    }
+
+    .row__member::before {
+      background-image: url(^img/icon-members-grey.png);
+    }
+
+    .row__forums::before {
+      background-image: url(^img/icon-forums-grey.png);
+    }
+
+    .row--notification {
+      &::after {
+        position: absolute;
+        left: -44px;
+        top: -8px;
+        display: block;
+        content: '';
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        box-shadow: 0 2px 2px rgb(0 0 0 / 0.1);
+        background: #8dcb6c;
+        background: -moz-linear-gradient(
+          top,
+          variables-mixins-keyframes.$light-green 0%,
+          variables-mixins-keyframes.$dark-green 100%
+        );
+        background: -webkit-gradient(
+          linear,
+          left top,
+          left bottom,
+          color-stop(0%, variables-mixins-keyframes.$light-green),
+          color-stop(100%, variables-mixins-keyframes.$dark-green)
+        );
+        background: -webkit-linear-gradient(
+          top,
+          variables-mixins-keyframes.$light-green 0%,
+          variables-mixins-keyframes.$dark-green 100%
+        );
+        background: -o-linear-gradient(
+          top,
+          variables-mixins-keyframes.$light-green 0%,
+          variables-mixins-keyframes.$dark-green 100%
+        );
+        background: -ms-linear-gradient(
+          top,
+          variables-mixins-keyframes.$light-green 0%,
+          variables-mixins-keyframes.$dark-green 100%
+        );
+        background: linear-gradient(
+          to bottom,
+          variables-mixins-keyframes.$light-green 0%,
+          variables-mixins-keyframes.$dark-green 100%
+        );
+        background-color: rgb(245 246 250);
+        background-repeat: no-repeat;
+        background-position: center center;
+        z-index: 0;
+        filter: progid:DXImageTransform.Microsoft.gradient(
+          startColorstr='#8dcb6c',
+          endColorstr='#58c37e',
+          GradientType=0
+        );
+      }
+
+      &::before {
+        background-color: transparent;
+      }
+
+      &.row__folder::before {
+        background-image: url(^img/icon-library-blue.png);
+      }
+
+      &.row__file::before {
+        background-image: url(^img/icon-file-blue.png);
+      }
+
+      &.row__agenda::before {
+        background-image: url(^img/icon-agenda-blue.png);
+      }
+
+      &.row__member::before {
+        background-image: url(^img/icon-members-blue.png);
+      }
+
+      &.row__forums::before {
+        background-image: url(^img/icon-forums-blue.png);
+      }
+
+      .notification-info {
+        margin-top: 6px;
+
+        .info {
+          margin: 10px 0;
+          padding: 0 10px;
+          border-left: 1px solid rgb(0 0 0 / 0.1);
+        }
+
+        .links {
+          margin-top: 6px;
+        }
+
+        .cta-link {
+          color: variables-mixins-keyframes.$dark-green;
+          font-weight: 700;
+          margin-right: 20px;
+        }
+      }
+    }
+  }
+}
+
+// All Boxes that have one or more buttons as footer
+.box--button,
+.box--two-button {
+  .footer__button {
+    display: block;
+    background: variables-mixins-keyframes.$button-filled;
+    margin: 0 15px;
+    text-align: center;
+    color: #fff;
+    font-family: variables-mixins-keyframes.$titling;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    padding: 8px;
+    transition: 150ms all ease-out;
+    border-radius: 0 0 5px 5px;
+
+    &:hover {
+      background: color.adjust(
+        variables-mixins-keyframes.$button-filled,
+        $lightness: 4%
+      );
+    }
+  }
+}
+
+// All Boxes that have two buttons as footer
+.box--two-button {
+  font-size: 0; /* Inline-block hack; */
+
+  .footer__button {
+    display: inline-block;
+    width: 150px;
+    width: calc((100% - 45px) / 2); /* Ready for responsive */
+
+    &:first-of-type {
+      margin: 0 0 0 15px;
+    }
+  }
+}
+
+/* All Boxes that have alternate lines with a background color // Except tables (Library, Members...) */
+.box--alternate-lines {
+  .main {
+    padding: 9px 0;
+
+    .row {
+      padding: 9px 25px;
+      line-height: 16px;
+      overflow: hidden;
+      font-size: 12px;
+    }
+
+    .row:nth-of-type(even) {
+      background-color: #eef5f4;
+    }
+  }
+}
+
+// All Boxes that have two tabs as header
+.box--two-tabs {
+  .header {
+    background: none;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .main {
+    margin-top: -1px;
+  }
+
+  .tab {
+    background: #e1eff3;
+    border-radius: 5px 5px 0 0;
+    padding: 14px 0;
+    text-align: center;
+    color: variables-mixins-keyframes.$textAA;
+    text-decoration: none;
+    font-family: variables-mixins-keyframes.$titling;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 13px;
+    width: calc(50% - 14px);
+    position: relative;
+    top: 1px;
+    margin-bottom: -1px;
+    z-index: -1;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: -1px;
+      width: 14px;
+      display: block;
+    }
+
+    &:hover {
+      background: rgb(255 255 255 / 0.8);
+    }
+
+    &:focus {
+      outline: 0;
+    }
+  }
+
+  .tab-1 {
+    float: left;
+    border-radius: 5px 0 0;
+    padding-left: 12px;
+
+    &::after {
+      right: -13px;
+      background: url(^img/tab-right-corner.png);
+    }
+  }
+
+  .tab-1:hover {
+    background: #f2f8fa;
+
+    &::after {
+      background: url(^img/tab-right-corner-hover.png) top left;
+    }
+  }
+
+  .tab-1.tab--current {
+    background: #fff;
+    z-index: 1;
+
+    &::after,
+    &:hover::after {
+      background: url(^img/tab-right-corner-highlight.png) top left;
+    }
+  }
+
+  .tab-2 {
+    float: right;
+    border-radius: 0 5px 0 0;
+    padding-right: 12px;
+
+    &::after {
+      left: -13px;
+      background: url(^img/tab-left-corner.png) top right;
+    }
+  }
+
+  .tab-2:hover {
+    background: #f2f8fa;
+
+    &::after {
+      background: url(^img/tab-left-corner-hover.png) top right;
+    }
+  }
+
+  .tab-2.tab--current {
+    background: #fff;
+    z-index: 1;
+
+    &::after,
+    &:hover::after {
+      background: url(^img/tab-left-corner-highlight.png) top right;
+    }
+  }
+}
+
+// All Boxes that have more than two tabs as header
+.box--tabs {
+  .header {
+    background: none;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .main {
+    margin-top: -1px;
+  }
+
+  .tab {
+    float: left;
+    background: #e1eff3;
+    border-radius: 5px 0 0;
+    padding: 10px 8px;
+    text-align: center;
+    color: variables-mixins-keyframes.$textAA;
+    text-decoration: none;
+    font-family: variables-mixins-keyframes.$titling;
+    font-size: 13px;
+    position: relative;
+    top: 3px;
+    margin-right: 14px;
+    margin-top: -1px;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: -2px;
+      width: 14px;
+      display: block;
+      background: url(^img/tab-right-corner.png) top left;
+      right: -13px;
+    }
+
+    &:hover {
+      background: #f2f8fa;
+
+      &::after {
+        background: url(^img/tab-right-corner-hover.png) top left;
+      }
+    }
+
+    &:focus {
+      outline: 0;
+    }
+
+    img {
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+
+    @media screen and (max-width: 1500px) {
+      img {
+        width: 13px;
+        height: 13px;
+      }
+
+      .tab-text {
+        font-size: 1vw;
+      }
+    }
+
+    @media screen and (max-width: 1200px) {
+      img {
+        margin-right: 0;
+      }
+
+      .tab-text {
+        display: none;
+      }
+    }
+  }
+
+  .tab--current {
+    display: block;
+    background: #fff;
+    cursor: default;
+    font-weight: 700;
+
+    &::after {
+      background: url(^img/tab-right-corner-highlight.png) top left;
+    }
+
+    &:hover {
+      background: #fff;
+
+      &::after {
+        background: url(^img/tab-right-corner-highlight.png) top left;
+      }
+    }
+  }
+}
+
+// box with the logo and description of the group, on the group dashboard
+.box--group-summary {
+  margin-top: 25px;
+
+  .group-summary__logo {
+    background: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgb(0 0 0 / 0.2);
+    width: 162px;
+    height: 138px;
+    margin-left: 16px;
+    float: left;
+    margin-right: 16px;
+    overflow: hidden;
+    position: relative;
+    z-index: 2;
+  }
+
+  .cta {
+    margin-top: 8px;
+    margin-bottom: 17px;
+    padding: 12px 21px;
+  }
+
+  .main {
+    background: #fff;
+    border-radius: 3px;
+    padding: 10px 25px 25px;
+    color: variables-mixins-keyframes.$textAA;
+    font-size: 12px;
+    line-height: 21px;
+
+    .share-link,
+    .contact-link {
+      position: relative;
+      display: block;
+
+      &::before {
+        content: '';
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        position: relative;
+        top: 6px;
+        margin-right: 1px;
+      }
+    }
+
+    .share-link::before {
+      background: url(^img/icon-share-grey.png) no-repeat;
+    }
+
+    .contact-link::before {
+      background: url(^img/icon-contact-grey.png) no-repeat;
+    }
+
+    p {
+      margin: 33px 0 0;
+    }
+  }
+}
+
+// Next events in personnal and groups dashboards
+.box--next-events {
+  .main {
+    .date {
+      float: left;
+      width: 50%;
+    }
+
+    a {
+      float: right;
+      width: 50%;
+    }
+  }
+}
+
+.box--table {
+  .main {
+    font-size: 13px;
+  }
+
+  .row:nth-of-type(odd) {
+    background-color: #eef5f4;
+  }
+}

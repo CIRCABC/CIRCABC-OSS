@@ -1,0 +1,60 @@
+<!-- MODAL BOX -->
+<div
+  class="black-overlayer"
+  *ngIf="showModal"
+  [class.overlayer-shown]="showModal"
+  [class.overlayer-hidden]="!showModal"
+></div>
+<section
+  class="modal"
+  [class.modal-shown]="showModal"
+  [class.modal-hidden]="!showModal"
+  style="margin-top: 0"
+>
+  <a class="close-icon" (click)="close()"></a>
+  <header>
+    <h2 class="title">{{ historyText }}</h2>
+  </header>
+  <section class="modal-content table-container">
+    <div class="wrapping scroll-body">
+      <table class="main no-border-spacing">
+        <thead style="color: #035">
+          <tr>
+            <th>
+              <label>{{ 'label.date' | transloco }}</label>
+            </th>
+            <th>
+              <label>{{ 'label.user.id' | transloco }}</label>
+            </th>
+            <th>
+              <label>{{ 'label.service' | transloco }}</label>
+            </th>
+            <th>
+              <label>{{ 'label.activity' | transloco }}</label>
+            </th>
+            <th>
+              <label>{{ 'label.status' | transloco }}</label>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="row empty-row" *ngIf="historyEntries !== undefined">
+            <td colspan="5" *ngIf="historyEntries.length === 0"
+              >{{ 'label.no.history' | transloco }}</td
+            >
+          </tr>
+          <tr class="row left-text" *ngFor="let historyEntry of historyEntries">
+            <td>{{ historyEntry.logDate }}</td>
+            <td>{{ historyEntry.userId }}</td>
+            <td>{{ historyEntry.serviceDescription }}</td>
+            <td>{{ historyEntry.activityDescription }}</td>
+            <td
+              >{{ (historyEntry.success === true ? 'label.success' :
+              'label.failure') | transloco }}</td
+            >
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</section>

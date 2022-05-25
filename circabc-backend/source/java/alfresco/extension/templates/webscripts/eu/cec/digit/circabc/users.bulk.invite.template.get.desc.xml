@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>users.bulk.invite.template.get</shortname>
+  <description>Download the bulk invite template</description>
+    <url>/circabc/users/bulkinvite/template</url>
+  <format default="json"/>
+  <authentication>guest</authentication>
+  <transaction>required</transaction>
+</webscript>

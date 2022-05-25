@@ -1,0 +1,42 @@
+.reset-width {
+  width: initial;
+}
+
+.short-label {
+  width: 30px;
+}
+
+.times-width {
+  width: 100px;
+}
+
+.when-width {
+  width: 100px;
+}
+
+.select-align {
+  margin-top: -3px;
+}
+
+.when2-width {
+  width: 205px;
+}
+
+.text-new-height {
+  height: 70px;
+}
+
+input::-webkit-calendar-picker-indicator {
+  display: none;
+  color: rgb(0 0 0 / 0);
+  opacity: 1;
+}
+
+::ng-deep .p-calendar .p-inputtext {
+  font-size: 100% !important;
+}
+
+::ng-deep .mat-radio-container {
+  width: 18px !important;
+  height: 15px !important;
+}

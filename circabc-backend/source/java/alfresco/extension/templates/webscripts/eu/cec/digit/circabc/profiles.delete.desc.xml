@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Delete one profile and its members</shortname>
+  <description>Delete one profile, its memebers, remove the permissions and notifications in the Interest group</description>
+    <url>/circabc/profiles/{id}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

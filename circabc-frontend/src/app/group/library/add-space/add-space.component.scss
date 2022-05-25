@@ -1,0 +1,20 @@
+.permission {
+  display: flex;
+  color: gray;
+}
+
+.permission_control {
+  flex: 1;
+  text-align: center;
+}
+
+.permission_info_msg {
+  flex: 1;
+  font-size: 0.9em;
+  padding-left: 10px;
+}
+
+::ng-deep .hint {
+  float: none !important;
+  padding-left: 20px;
+}

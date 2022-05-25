@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>spaces.id.shares.delete</shortname>
+  <description>Remove the given share from the space</description>
+    <url>/circabc/spaces/{id}/shares</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

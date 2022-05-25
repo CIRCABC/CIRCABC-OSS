@@ -1,0 +1,184 @@
+@use '~css/global/variables-mixins-keyframes';
+
+.black-overlayer {
+  display: block;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgb(0 17 25 / 0.75);
+  z-index: 15;
+}
+
+.black-overlayer--light {
+  @extend .black-overlayer;
+
+  background: rgb(0 17 25 / 0.2);
+}
+
+.modal {
+  position: fixed;
+  margin: 0 auto;
+  width: 80%;
+  max-width: 100%;
+  background: #fff;
+  border-radius: 4px;
+  max-height: 100vh;
+  overflow: auto;
+  z-index: 20;
+  font-size: 1.4rem;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+    & {
+      width: 95%;
+    }
+  }
+
+  .modal-content {
+    padding: 25px;
+    color: #035;
+
+    ::ng-deep img {
+      margin: 20px;
+
+      @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+        & {
+          margin: 10px;
+          max-width: calc(100% - 20px) !important;
+        }
+
+        &.img-float-left,
+        &.img-float-right {
+          float: none;
+        }
+      }
+
+      &.img-full-width {
+        max-width: calc(100% - 40px);
+      }
+
+      &.img-float-left {
+        float: left;
+        max-width: calc(50% - 40px);
+        margin-right: 40px;
+      }
+
+      &.img-float-right {
+        float: right;
+        max-width: calc(50% - 40px);
+        margin-left: 40px;
+      }
+    }
+
+    ::ng-deep ol {
+      list-style-type: decimal;
+      margin-left: 25px;
+
+      li {
+        margin-bottom: 10px;
+      }
+    }
+
+    ::ng-deep ul {
+      list-style-type: disc;
+      margin-left: 25px;
+
+      li {
+        margin-bottom: 10px;
+      }
+    }
+  }
+
+  footer {
+    text-align: center;
+    padding: 15px;
+  }
+}
+
+@keyframes showmodal {
+  0% {
+    display: none;
+    opacity: 0;
+  }
+
+  100% {
+    display: block;
+    opacity: 1;
+  }
+}
+
+@keyframes hidemodal {
+  0% {
+    display: block;
+    opacity: 1;
+  }
+
+  100% {
+    display: none;
+    opacity: 0;
+  }
+}
+
+@keyframes showmodaloverlayer {
+  0% {
+    display: none;
+    opacity: 0;
+  }
+
+  100% {
+    display: block;
+    opacity: 1;
+  }
+}
+
+@keyframes hidemodaloverlayer {
+  0% {
+    display: block;
+    opacity: 1;
+  }
+
+  100% {
+    display: none;
+    opacity: 0;
+  }
+}
+
+.modal-shown {
+  display: block;
+  animation-name: showmodal;
+  animation-duration: 0.4s;
+  animation-timing-function: ease-in;
+  opacity: 1;
+}
+
+.modal-hidden {
+  display: none;
+  animation-name: hidemodal;
+  animation-duration: 0.3s;
+  animation-timing-function: ease-out;
+  opacity: 0;
+}
+
+.overlayer-shown {
+  display: block;
+  animation-name: showmodaloverlayer;
+  animation-duration: 0.3s;
+  animation-timing-function: ease-in;
+  opacity: 1;
+}
+
+.overlayer-hidden {
+  display: none;
+  animation-name: hidemodaloverlayer;
+  animation-duration: 0.2s;
+  animation-timing-function: ease-out;
+  opacity: 0;
+}
+
+input[type='checkbox'] {
+  margin-right: 10px;
+}

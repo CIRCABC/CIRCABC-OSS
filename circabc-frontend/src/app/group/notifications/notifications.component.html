@@ -1,0 +1,165 @@
+<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+
+<div class="wrap page-container my-account">
+  <div class="page-header">
+    <span
+      class="page-header__title"
+      [innerHtml]="'notifications.manage.page.title' | transloco"
+    ></span>
+    <div class="page-header__actions">
+      <cbc-reponsive-sub-menu>
+        <a
+          (click)="goBackToFolder()"
+          *ngIf="from === 'library'"
+          class="page-header__backlink"
+          >{{ 'label.back' | transloco }}</a
+        >
+        <a (click)="goBack()" *ngIf="from === 'library'"
+          >{{ 'label.details' | transloco }}</a
+        >
+        <a
+          (click)="goBack()"
+          *ngIf="from === 'forum' || from === 'topic'"
+          class="page-header__backlink"
+          >{{ 'label.back' | transloco }}</a
+        >
+        <a
+          [routerLink]="['../../permissions', getNodeId()]"
+          [queryParams]="{ from: from }"
+          >{{ 'label.permissions' | transloco }}</a
+        >
+        <a class="selected" [routerLink]="['.']" [queryParams]="{ from: from }"
+          >{{ 'label.notifications' | transloco }}</a
+        >
+      </cbc-reponsive-sub-menu>
+      <a class="cta cta--plus" (click)="showAddModal = true"
+        >{{ 'notifications.add.configuration' | transloco }}</a
+      >
+    </div>
+  </div>
+
+  <section>
+    <div class="main fixH3" *ngIf="notifs">
+      <h3
+        >{{ 'label.notifications.on' | transloco }}: {{ currentNode.name }}</h3
+      >
+    </div>
+
+    <div class="box half-width-fluid" *ngIf="notifs">
+      <header class="header">
+        <span class="title">{{ 'label.profiles' | transloco }}</span>
+      </header>
+      <div class="table-container permission-container">
+        <table class="main">
+          <thead>
+            <tr>
+              <th></th>
+              <th></th>
+              <th class="header-profile">{{ 'label.name' | transloco }}</th>
+              <th class="header-profile"
+                >{{ 'label.subscription' | transloco }}</th
+              >
+              <th class="header-profile"></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr
+              *ngIf="notifs.profiles"
+              class="row"
+              [class.empty-row]="notifs.profiles.length === 0"
+            >
+              <td
+                class="cell-left-border"
+                *ngIf="notifs.profiles.length === 0"
+              ></td>
+              <td
+                class="cell-checkbox"
+                *ngIf="notifs.profiles.length === 0"
+              ></td>
+              <td colspan="3" *ngIf="notifs.profiles.length === 0">
+                {{ 'notifications.empty.configuration' | transloco }}</td
+              >
+            </tr>
+
+            <tr class="row" *ngFor="let pNotif of notifs.profiles">
+              <td class="cell-left-border"></td>
+              <td class="cell-checkbox"></td>
+              <td>{{ pNotif.profile?.title | cbcI18n }}</td>
+              <td>{{ 'notifications.' + pNotif.notifications | transloco }}</td>
+              <td>
+                <cbc-inline-delete
+                  *ngIf="pNotif.inherited === false"
+                  (deletionConfirmed)="
+                    deleteNotification(pNotif.profile?.groupName)
+                  "
+                ></cbc-inline-delete>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="box half-width-fluid" *ngIf="notifs">
+      <header class="header">
+        <span class="title">{{ 'label.users' | transloco }}</span>
+      </header>
+      <div class="table-container permission-container">
+        <table class="main">
+          <thead>
+            <tr>
+              <th></th>
+              <th></th>
+              <th class="header-profile">{{ 'label.name' | transloco }}</th>
+              <th class="header-profile"
+                >{{ 'label.subscription' | transloco }}</th
+              >
+              <th class="header-profile"></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr
+              *ngIf="notifs.users"
+              class="row"
+              [class.empty-row]="notifs.users.length === 0"
+            >
+              <td
+                class="cell-left-border"
+                *ngIf="notifs.users.length === 0"
+              ></td>
+              <td class="cell-checkbox" *ngIf="notifs.users.length === 0"></td>
+              <td colspan="3" *ngIf="notifs.users.length === 0">
+                {{ 'notifications.empty.configuration' | transloco }}</td
+              >
+            </tr>
+
+            <tr class="row" *ngFor="let uNotif of notifs.users">
+              <td class="cell-left-border"></td>
+              <td class="cell-checkbox"></td>
+              <td
+                >{{ uNotif.user?.firstname + ' ' + uNotif.user?.lastname }}</td
+              >
+              <td>{{ 'notifications.' + uNotif.notifications | transloco }}</td>
+              <td>
+                <cbc-inline-delete
+                  *ngIf="uNotif.inherited === false"
+                  (deletionConfirmed)="deleteNotification(uNotif.user?.userId)"
+                ></cbc-inline-delete>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>
+
+<cbc-add-notifications
+  *ngIf="currentNode"
+  [showModal]="showAddModal"
+  [node]="currentNode"
+  [ig]="currentIg"
+  (finished)="refresh($event)"
+></cbc-add-notifications>

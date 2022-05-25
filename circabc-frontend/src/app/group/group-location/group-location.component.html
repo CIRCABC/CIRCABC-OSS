@@ -1,0 +1,51 @@
+<ul *ngIf="groupPath">
+  <li>
+    <a [routerLink]="['/explore']" [queryParams]="{ start: 'ok' }">
+      <img src="img/icon-dashboard-grey.png" />
+    </a>
+  </li>
+  <li *ngIf="groupPath.header">
+    <a
+      [routerLink]="['/explore']"
+      [queryParams]="{ headerId: groupPath.header.id }"
+    >
+      <span *ngIf="groupPath.header.description">
+        {{ ('en' | i18nSelect: groupPath.header.description) === '' ?
+        groupPath.header.name : ('en' | i18nSelect:
+        groupPath.header.description) }}
+      </span>
+      <span *ngIf="!groupPath.header.description">
+        {{ groupPath.header.name }}
+      </span>
+    </a>
+  </li>
+  <li>&gt;</li>
+  <li *ngIf="groupPath.header && groupPath.category">
+    <a
+      [routerLink]="['/explore']"
+      [queryParams]="{
+        headerId: groupPath.header.id,
+        categoryId: groupPath.category.id
+      }"
+    >
+      <span *ngIf="groupPath.category.title">
+        {{ (groupPath.category.title | cbcI18n) !== '' ?
+        (groupPath.category.title | cbcI18n) : ('en' | i18nSelect:
+        groupPath.category.title) !== '' ? ('en' | i18nSelect:
+        groupPath.category.title) : groupPath.category.name }}
+      </span>
+      <span *ngIf="!groupPath.category.title">
+        {{ groupPath.category.name }}
+      </span>
+    </a>
+  </li>
+  <li>&gt;</li>
+  <li *ngIf="groupPath.group">
+    <span *ngIf="groupPath.group.title">
+      {{ (groupPath.group.title | cbcI18n) !== '' ? (groupPath.group.title |
+      cbcI18n) : ('en' | i18nSelect: groupPath.group.title) !== '' ? ('en' |
+      i18nSelect: groupPath.group.title) : groupPath.group.name }}
+    </span>
+    <span *ngIf="!groupPath.group.title"> {{ groupPath.group.name }} </span>
+  </li>
+</ul>

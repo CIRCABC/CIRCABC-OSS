@@ -1,0 +1,38 @@
+<div class="groups-browser">
+  <cbc-header></cbc-header>
+  <cbc-navigator></cbc-navigator>
+  <div class="wrap page-container">
+    <section class="access-denied-container" *ngIf="!isGuest">
+      <aside class="right-decoration">
+        <img src="img/prohibition.png" />
+      </aside>
+
+      <h1>{{ 'error.access.denied.title' | transloco }}</h1>
+      <p [innerHTML]="'error.access.denied.text' | transloco"> </p>
+      <p class="actions">
+        <a class="button" (click)="goBack()"
+          >{{ 'label.go.back' | transloco }}</a
+        >
+      </p>
+    </section>
+    <section class="access-denied-container must-login" *ngIf="isGuest">
+      <aside class="right-decoration">
+        <img src="img/user-white.png" />
+      </aside>
+
+      <h1>{{ 'error.access.denied.must.login.title' | transloco }}</h1>
+      <p [innerHTML]="'error.access.denied.must.login.text' | transloco"> </p>
+      <p class="actions">
+        <a class="button" (click)="goBack()"
+          >{{ 'label.go.back' | transloco }}</a
+        >
+        <a class="cta" (click)="goToLogin()" *ngIf="isGuest && !useEULogin"
+          >{{ 'label.login' | transloco }}</a
+        >
+        <a class="cta" (click)="euLogin()" *ngIf="isGuest && useEULogin"
+          >{{ 'label.login' | transloco }}</a
+        >
+      </p>
+    </section>
+  </div>
+</div>

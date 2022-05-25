@@ -1,0 +1,1327 @@
+<alfresco-config area="circa-logfiles-configuration">
+	<config evaluator="string-compare" condition="Parse definition">
+		<pathParsers>
+			<parser name="InterestGroupPathParser">eu.cec.digit.circabc.migration.reader.impl.circa.logs.CircaPathParser$InterestGroupPathParser</parser>
+			<parser name="InformationPathParser">eu.cec.digit.circabc.migration.reader.impl.circa.logs.CircaPathParser$InformationPathParser</parser>
+			<parser name="InformationRootPathParser">eu.cec.digit.circabc.migration.reader.impl.circa.logs.CircaPathParser$InformationRootPathParser</parser>
+			<parser name="LibraryPathParser">eu.cec.digit.circabc.migration.reader.impl.circa.logs.CircaPathParser$LibraryPathParser</parser>
+			<parser name="LibraryRootPathParser">eu.cec.digit.circabc.migration.reader.impl.circa.logs.CircaPathParser$LibraryRootPathParser</parser>
+			<parser name="MeetingPathParser">eu.cec.digit.circabc.migration.reader.impl.circa.logs.CircaPathParser$MeetingPathParser</parser>
+			<parser name="MeetingRootPathParser">eu.cec.digit.circabc.migration.reader.impl.circa.logs.CircaPathParser$MeetingRootPathParser</parser>
+			<parser name="NewsgroupPathParser">eu.cec.digit.circabc.migration.reader.impl.circa.logs.CircaPathParser$NewsgroupPathParser</parser>
+			<parser name="NewsgroupRootPathParser">eu.cec.digit.circabc.migration.reader.impl.circa.logs.CircaPathParser$NewsgroupRootPathParser</parser>
+		</pathParsers>
+		<infoParsers>
+			<parser name="AfterColonInfoParser">eu.cec.digit.circabc.migration.reader.impl.circa.logs.CircaInfoParser$AfterColonInfoParser</parser>
+			<parser name="NewsgroupInfoParser">eu.cec.digit.circabc.migration.reader.impl.circa.logs.CircaInfoParser$NewsgroupInfoParser</parser>
+			<parser name="NoInfoParser">eu.cec.digit.circabc.migration.reader.impl.circa.logs.CircaInfoParser$NoInfoParser</parser>
+			<parser name="SimpleInfoParser">eu.cec.digit.circabc.migration.reader.impl.circa.logs.CircaInfoParser$SimpleInfoParser</parser>
+		</infoParsers>
+		<logEntriesConfiguration>
+			<entry>
+				<key>INF_ACL_UPDATE</key>
+				<pathParser>InformationPathParser</pathParser>
+				<infoParser>AfterColonInfoParser</infoParser>
+				<service>Information</service>
+				<activity>Edit permission</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>INF_DELETE</key>
+				<pathParser>InformationPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Information</service>
+				<activity>Delete document</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>INF_DELETE_ENTRY_POINT</key>
+				<pathParser>InformationPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Information</service>
+				<activity>Delete entry point</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>INF_DOWNLOAD</key>
+				<pathParser>InformationPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Information</service>
+				<activity>Download content</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>INF_UPLOAD</key>
+				<pathParser>InformationPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Information</service>
+				<activity>Upload document</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>INF_ACCESS</key>
+				<pathParser>InformationRootPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Information</service>
+				<activity>Access</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>INF_CREATE_ENTRY_POINT</key>
+				<pathParser>InformationRootPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Information</service>
+				<activity>Create entry point</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>INF_CREATE_ENTRY_POINT_ERROR</key>
+				<pathParser>InformationRootPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Information</service>
+				<activity>Create entry point</activity>
+				<success>FALSE</success>
+			</entry>
+			<entry>
+				<key>INF_LISTUNREF</key>
+				<pathParser>InformationRootPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Information</service>
+				<activity>List unreferenced entries</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>ADD_USER_TO_APPLICANTS</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Apply for membership</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>ADM_ACCESS</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Administration access </activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>ADM_APPLICANT_APPLY</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Apply for membership</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>ADM_APPLICANT_ERASE</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Refuse user</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>ADM_APPLICANT_REFUSE</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Refuse user</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>ADM_CLASS_CREATE</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Add a new profile</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>ADM_CLASS_DELETE</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Delete a profile</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>ADM_CLASS_EXPORT_DIS</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Cancel export a profile</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>ADM_CLASS_EXPORT_EN</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Export a profile</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>ADM_CLASS_IMPORT</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Import a profile</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>ADM_CLASS_UPDATE_PERMS</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Change permission on profile</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>ADM_CLASS_UPDATE_TITLE</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Update profile title</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>ADM_CONTROL_SERVICES</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Update service visibility</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>ADM_CONTROL_SERVICES:ERROR</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Update service visibility</activity>
+				<success>FALSE</success>
+			</entry>
+			<entry>
+				<key>ADM_CUSTOMIZE</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Edit interest group</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>ADM_DELETE_ICON</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Delete logo</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>ADM_NOTIFY_APPLICATION</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Application notification</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>ADM_PUBLIC_AVAILABILITY</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Modify guest visibility</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>ADM_REG_CLASS_AVAIL</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Modify registred visibility</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>ADM_REG_NOTIFICATIONS</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Define notifiable leaders</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>ADM_REG_NOTIFY</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Define leader notification time</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>ADM_REGISTERED_AVAILABILITY</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Modify registred visibility</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>ADM_SET_ICON</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Select logo</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>ADM_TEMPLATE_BULK_UPLOAD</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Bulk upload web template</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>ADM_TEMPLATE_DELETE</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Delete web template</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>ADM_TEMPLATE_DONWLOAD</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Download web template</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>ADM_TEMPLATE_RESTORE</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Restore web template</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>ADM_TEMPLATE_UPLOAD</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Upload web template</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>ADM_UPLOAD_ICON</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Upload interest group logo</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>BULK_MODIFY_CLASS</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Bulk update user profile</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>DIR_ACCESS</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Directory</service>
+				<activity>Access</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>DIR_ACL_UPDATE</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Directory</service>
+				<activity>Edit permission</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>DIR_ADD_CONTACT</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Directory</service>
+				<activity>Add contact</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>DIR_ADD_MEMBER</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Directory</service>
+				<activity>Add user and allocate profile</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>DIR_DEL_CONTACT</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Directory</service>
+				<activity>Remove contact</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>DIR_DEL_MEMBER</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Directory</service>
+				<activity>Remove membership</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>DIR_MODIFY_MEMBER</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Directory</service>
+				<activity>Change profile</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>DIR_NEW_MEMBER</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Add user and allocate profile</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>DIR_NOTIFICATIONS_AUTOUPDATE</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Directory</service>
+				<activity>Notification status auto update</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>DIR_NOTIFY_AUTOUPDATE</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Directory</service>
+				<activity>Notification status auto update</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>DIR_NOTIFY_PW_RESET</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Directory</service>
+				<activity>Reset user password notification</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>DIR_NOTIFY_PW_RESET_FAILED</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Directory</service>
+				<activity>Reset user password notification</activity>
+				<success>FALSE</success>
+			</entry>
+			<entry>
+				<key>DIR_PW_RESET</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Directory</service>
+				<activity>Reset user password</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>DIR_PW_RESET_FAILED</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Directory</service>
+				<activity>Reset user password</activity>
+				<success>FALSE</success>
+			</entry>
+			<entry>
+				<key>DISABLE_REPLICATION</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Newsgroup</service>
+				<activity>Replication disabled</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>ENABLE_REPLICATION</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Newsgroup</service>
+				<activity>Replication enabled</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>ENTER_USER_IN_LOGDIR_FAILED</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Apply for membership</activity>
+				<success>FALSE</success>
+			</entry>
+			<entry>
+				<key>HLP_ACCESS</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Help</service>
+				<activity>Access</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>HOME_ACCESS</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Home access</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>IG_ACCESS</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Interest Group</service>
+				<activity>Access</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>IGHOME_ACCESS</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Home access</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>IRCADM_ACCESS</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Administration access</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>IRCADM_POSTING</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Mail to members</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>LIB_KEYWORD_ADD</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Add keyword</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>MAI_ACCESS</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Mail to members</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>MAI_ACCESS_DENIED</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Mail to members</activity>
+				<success>FALSE</success>
+			</entry>
+			<entry>
+				<key>MAI_NO_SUCH_USER</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Mail to members</activity>
+				<success>FALSE</success>
+			</entry>
+			<entry>
+				<key>MAI_POSTING</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Add post via email</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>MAI_SEND_FILE</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Mail file to members</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>MIR_ERROR</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Mirroring send data</activity>
+				<success>FALSE</success>
+			</entry>
+			<entry>
+				<key>MIR_SERVER</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Mirroring send data</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>MIR_TARGET</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Mirroring target message</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>POP_ACCESS</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Directory</service>
+				<activity>Access</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>SDIR_ACCESS</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Directory</service>
+				<activity>Access</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>SDIR_NEW_USR_CREATED</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Directory </service>
+				<activity>Create user</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>SDIR_SELF_REG_NOTIFY</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Directory </service>
+				<activity>Self resgistration notification</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>SDIR_SELF_REG_NOTIFY_FAILED</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Directory </service>
+				<activity>Self resgistration notification</activity>
+				<success>FALSE</success>
+			</entry>
+			<entry>
+				<key>SDIR_SELF_REG_USR_CREATED</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Directory </service>
+				<activity>Self resgistration</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>SDIR_USR_CHNG_PASS</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Directory </service>
+				<activity>Send own password</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>SDIR_USR_NAME_REPLACED</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Directory</service>
+				<activity>Replace username</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>SDIR_USR_REQ_NEW_PASS</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Directory </service>
+				<activity>Change own expired password</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>SDIR_USR_UPDATED</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Directory </service>
+				<activity>Edit user account</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>SDPOP_ACCESS</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Directory</service>
+				<activity>My membership</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>SEA_ACCESS</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Search</service>
+				<activity>Perform search</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>SEA_REINDEX</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Search</service>
+				<activity>Indexation</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>SEA_REINDEX_ERROR</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Search</service>
+				<activity>Indexation</activity>
+				<success>FALSE</success>
+			</entry>
+			<entry>
+				<key>SELF_DIR_DEL_MEMBER</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Directory</service>
+				<activity>Remove membership</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>USER_CREATED</key>
+				<pathParser>InterestGroupPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Directory</service>
+				<activity>Add user and allocate profile</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>LIB_ACL_UPDATE</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>AfterColonInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Edit permission</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>LIB_AUTO_UPLOAD</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Auto upload</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>LIB_AUTO_UPLOAD_DISABLED</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Auto upload disabled</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>LIB_AUTO_UPLOAD_ENABLED</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Auto upload enabled</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>LIB_AUTO_UPLOAD_FAILED</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>AfterColonInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Auto upload</activity>
+				<success>FALSE</success>
+			</entry>
+			<entry>
+				<key>LIB_BULK_DOWNLOAD</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Download all</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>LIB_BULK_DOWNLOAD_FAILED</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>AfterColonInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Download all</activity>
+				<success>FALSE</success>
+			</entry>
+			<entry>
+				<key>LIB_BULK_EMAIL</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Bulk email contents</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>LIB_BULK_EMAIL_FAILED</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>AfterColonInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Bulk email contents</activity>
+				<success>FALSE</success>
+			</entry>
+			<entry>
+				<key>LIB_BULK_UPLOAD</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Bulk upload</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>LIB_BULK_UPLOAD_FAILED</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>AfterColonInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Bulk upload</activity>
+				<success>FALSE</success>
+			</entry>
+			<entry>
+				<key>LIB_CHECKOUT</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Checkout</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>LIB_CHECKOUT_FAILED</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>AfterColonInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Checkout</activity>
+				<success>FALSE</success>
+			</entry>
+			<entry>
+				<key>LIB_COPY</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Copy</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>LIB_DELETE</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Delete</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>LIB_DELETE_FAILED</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>AfterColonInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Delete</activity>
+				<success>FALSE</success>
+			</entry>
+			<entry>
+				<key>LIB_DISABLE_SHARING</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Delete Shared Space</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>LIB_DISABLE_SHARING_FAILED</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>AfterColonInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Delete Shared Space</activity>
+				<success>FALSE</success>
+			</entry>
+			<entry>
+				<key>LIB_DOWNLOAD</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Download content</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>LIB_EMAIL</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Email document</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>LIB_EMAIL_COMPRESSED</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Email compressed document</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>LIB_EMAIL_FAILED</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>AfterColonInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Email document</activity>
+				<success>FALSE</success>
+			</entry>
+			<entry>
+				<key>LIB_ENABLE_SHARING</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Add shared space</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>LIB_ENABLE_SHARING_FAILED</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>AfterColonInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Add shared space</activity>
+				<success>FALSE</success>
+			</entry>
+			<entry>
+				<key>LIB_MODIFY</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Edit document</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>LIB_MOVE</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Move</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>LIB_NEW_SECTION</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Create space</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>LIB_NEW_SECTION_FAILED</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>AfterColonInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Create space</activity>
+				<success>FALSE</success>
+			</entry>
+			<entry>
+				<key>LIB_NEW_VM_SECTION</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Create virtual meeting section</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>LIB_NOTIFICATIONS</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>AfterColonInfoParser</infoParser>
+				<service>Administration</service>
+				<activity>Define notification status</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>LIB_NOTIFY_AUTOUP_FAILURE_FAILED</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>AfterColonInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Auto upload failure notification</activity>
+				<success>FALSE</success>
+			</entry>
+			<entry>
+				<key>LIB_NOTIFY_AUTOUP_FAILURE_SUCCEDED</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Auto upload failure notification</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>LIB_NOTIFY_DOWNLOAD</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>AfterColonInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Content notification</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>LIB_NOTIFY_DOWNLOAD_FAILED</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>AfterColonInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Content notification</activity>
+				<success>FALSE</success>
+			</entry>
+			<entry>
+				<key>LIB_NOTIFY_DOWNLOAD_NOATTACH</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>AfterColonInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Content notification without attachment</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>LIB_NOTIFY_DOWNLOAD_NOATTACH_FAILED</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>AfterColonInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Content notification without attachment</activity>
+				<success>FALSE</success>
+			</entry>
+			<entry>
+				<key>LIB_NOTIFY_INFO</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>AfterColonInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Content notification </activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>LIB_NOTIFY_INFO_FAILED</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>AfterColonInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Content notification </activity>
+				<success>FALSE</success>
+			</entry>
+			<entry>
+				<key>LIB_SHARE_SECTION</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>AfterColonInfoParser</infoParser>
+				<service>Library</service>
+				<activity>LinkSharedSpace</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>LIB_UNLOCK</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Library</service>
+				<activity>CancelCheckout</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>LIB_UNLOCK_FAILED</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>AfterColonInfoParser</infoParser>
+				<service>Library</service>
+				<activity>CancelCheckout</activity>
+				<success>FALSE</success>
+			</entry>
+			<entry>
+				<key>LIB_UPLOAD</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Upload document</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>LIB_UPLOAD_FAILED</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>AfterColonInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Upload document</activity>
+				<success>FALSE</success>
+			</entry>
+			<entry>
+				<key>LIB_VIEW_HISTORY</key>
+				<pathParser>LibraryPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Library</service>
+				<activity>View history</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>LIB_ACCESS</key>
+				<pathParser>LibraryRootPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Access</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>LIB_NOTIFICATIONS_AUTOUPDATE</key>
+				<pathParser>LibraryRootPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Notification status auto update</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>LIB_NOTIFY_AUTOUPDATE</key>
+				<pathParser>LibraryRootPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Notification status auto update</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>MEE_DOWNLOAD</key>
+				<pathParser>MeetingPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Event</service>
+				<activity>Download event details</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>MEE_NOTIFICATIONS</key>
+				<pathParser>MeetingPathParser</pathParser>
+				<infoParser>AfterColonInfoParser</infoParser>
+				<service>Event</service>
+				<activity>Define notification status</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>MEE_ACCESS</key>
+				<pathParser>MeetingRootPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Event</service>
+				<activity>Access</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>MEE_NOTIFICATIONS_AUTOUPDATE</key>
+				<pathParser>MeetingRootPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Event</service>
+				<activity>Notification status auto update</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>MEE_NOTIFY_AUTOUPDATE</key>
+				<pathParser>MeetingRootPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Event</service>
+				<activity>Notification status auto update</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>LIB_POSTING</key>
+				<pathParser>NewsgroupPathParser</pathParser>
+				<infoParser>NewsgroupInfoParser</infoParser>
+				<service>Library</service>
+				<activity>Create Post</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>NEW_ACL_UPDATE</key>
+				<pathParser>NewsgroupPathParser</pathParser>
+				<infoParser>NewsgroupInfoParser</infoParser>
+				<service>Newsgroup</service>
+				<activity>Edit permission</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>NEW_ARTICLE_APPROVED</key>
+				<pathParser>NewsgroupPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Newsgroup</service>
+				<activity>AcceptPost</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>NEW_ARTICLE_MODERATED</key>
+				<pathParser>NewsgroupPathParser</pathParser>
+				<infoParser>NewsgroupInfoParser</infoParser>
+				<service>Newsgroup</service>
+				<activity>RejectPost</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>NEW_ATTACHMENT_DOWNLOAD</key>
+				<pathParser>NewsgroupPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Newsgroup</service>
+				<activity>Download content</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>NEW_CREATE</key>
+				<pathParser>NewsgroupPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Newsgroup</service>
+				<activity>Create forum</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>NEW_DELETE</key>
+				<pathParser>NewsgroupPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Newsgroup</service>
+				<activity>Delete forum</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>NEW_DELETE_ARTICLE</key>
+				<pathParser>NewsgroupPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Newsgroup</service>
+				<activity>Delete post</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>NEW_DOWNLOAD</key>
+				<pathParser>NewsgroupPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Newsgroup</service>
+				<activity>Read post</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>NEW_EMAIL</key>
+				<pathParser>NewsgroupPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Newsgroup</service>
+				<activity>Email post</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>NEW_EMAIL_COMPRESSED</key>
+				<pathParser>NewsgroupPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Newsgroup</service>
+				<activity>Email compressed post</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>NEW_EMAIL_FAILED</key>
+				<pathParser>NewsgroupPathParser</pathParser>
+				<infoParser>NoInfoParser</infoParser>
+				<service>Newsgroup</service>
+				<activity>Email post</activity>
+				<success>FALSE</success>
+			</entry>
+			<entry>
+				<key>NEW_NOTIFICATIONS</key>
+				<pathParser>NewsgroupPathParser</pathParser>
+				<infoParser>NewsgroupInfoParser</infoParser>
+				<service>Newsgroup</service>
+				<activity>Define notification status</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>NEW_NOTIFY_DONWLOAD</key>
+				<pathParser>NewsgroupPathParser</pathParser>
+				<infoParser>NewsgroupInfoParser</infoParser>
+				<service>Newsgroup</service>
+				<activity>Post notification with attachment</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>NEW_NOTIFY_DOWNLOAD</key>
+				<pathParser>NewsgroupPathParser</pathParser>
+				<infoParser>NewsgroupInfoParser</infoParser>
+				<service>Newsgroup</service>
+				<activity>Post notification with attachment</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>NEW_NOTIFY_DOWNLOAD_NO_ATTACH</key>
+				<pathParser>NewsgroupPathParser</pathParser>
+				<infoParser>NewsgroupInfoParser</infoParser>
+				<service>Newsgroup</service>
+				<activity>Post notification without attachment</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>NEW_NOTIFY_DOWNLOAD_NOATTACH</key>
+				<pathParser>NewsgroupPathParser</pathParser>
+				<infoParser>NewsgroupInfoParser</infoParser>
+				<service>Newsgroup</service>
+				<activity>Post notification without attachment</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>NEW_NOTIFY_INFO</key>
+				<pathParser>NewsgroupPathParser</pathParser>
+				<infoParser>NewsgroupInfoParser</infoParser>
+				<service>Newsgroup</service>
+				<activity>Post notification </activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>NEW_POSTING</key>
+				<pathParser>NewsgroupPathParser</pathParser>
+				<infoParser>NewsgroupInfoParser</infoParser>
+				<service>Newsgroup</service>
+				<activity>Create Post</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>NEW_ACCESS</key>
+				<pathParser>NewsgroupRootPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Newsgroup</service>
+				<activity>Access</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>NEW_MODIFY</key>
+				<pathParser>NewsgroupRootPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Newsgroup</service>
+				<activity>Edit forum</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>NEW_NOTIFICATIONS_AUTOUPDATE</key>
+				<pathParser>NewsgroupRootPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Newsgroup</service>
+				<activity>Notification status auto update</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>NEW_NOTIFY_AUTOUPDATE</key>
+				<pathParser>NewsgroupRootPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Newsgroup</service>
+				<activity>Notification status auto update</activity>
+				<success>TRUE</success>
+			</entry>
+			<entry>
+				<key>NGPOP_ACCESS</key>
+				<pathParser>NewsgroupRootPathParser</pathParser>
+				<infoParser>SimpleInfoParser</infoParser>
+				<service>Newsgroup</service>
+				<activity>Access</activity>
+				<success>TRUE</success>
+			</entry>
+		</logEntriesConfiguration>
+	</config>
+</alfresco-config>

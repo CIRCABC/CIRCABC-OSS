@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Send an email to the users of a group</shortname>
+  <description>Send an email to the users of a group, with or without attachments</description>
+    <url>/circabc/groups/{igId}/email</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

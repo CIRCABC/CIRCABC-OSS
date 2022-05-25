@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>update the user notification subscription related to one node</shortname>
+  <description>update the user notification subscription related to one node</description>
+    <url>/circabc/nodes/{id}/notifications/{authority}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

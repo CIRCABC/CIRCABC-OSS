@@ -1,0 +1,88 @@
+{{ 'help.legal.notice.link.text' | transloco | cbcSetTitle }}
+<header class="wrap">
+  <a
+    class="step-link"
+    (click)="step = 'privacy'"
+    [class.step-link-selected]="step === 'privacy'"
+    >Privacy Statement</a
+  >
+  <a
+    class="step-link"
+    (click)="step = 'terms'"
+    [class.step-link-selected]="step === 'terms'"
+    >Terms of Service
+  </a>
+  <a
+    class="step-link"
+    (click)="step = 'thirdparty'"
+    [class.step-link-selected]="step === 'thirdparty'"
+    >Third parties</a
+  >
+</header>
+
+<div class="wrap" *ngIf="step === 'privacy'">
+  <div *ngIf="urlPSExists">
+    <ngx-extended-pdf-viewer
+      [src]="urlPS()"
+      [useBrowserLocale]="true"
+      height="100vh"
+      [showToolbar]="false"
+      [zoom]="100"
+      [showBorders]="false"
+      [rotation]="0"
+      [useBrowserLocale]="true"
+      [textLayer]="true"
+      [showHandToolButton]="true"
+      [showBookmarkButton]="false"
+      [delayFirstView]="250"
+    ></ngx-extended-pdf-viewer>
+  </div>
+  <div *ngIf="!urlPSExists">
+    <h2>{{"error.not.found.title" | transloco}}</h2>
+  </div>
+</div>
+
+<div class="wrap" *ngIf="step === 'terms'">
+  <div *ngIf="urlTOSExists">
+    <ngx-extended-pdf-viewer
+      [src]="urlTOS()"
+      [useBrowserLocale]="true"
+      height="100vh"
+      [showToolbar]="false"
+      [zoom]="100"
+      [showBorders]="false"
+      [rotation]="0"
+      [useBrowserLocale]="true"
+      [textLayer]="true"
+      [showHandToolButton]="true"
+      [showBookmarkButton]="false"
+      [delayFirstView]="250"
+    ></ngx-extended-pdf-viewer>
+  </div>
+  <div *ngIf="!urlTOSExists">
+    <h2>{{"error.not.found.title" | transloco}}</h2>
+  </div>
+</div>
+
+<div class="wrap" *ngIf="step === 'thirdparty'">
+  <h1>Third party technologies</h1>
+  <p>
+    CIRCABC is based on several open source libraries and free resources. <br />
+    The credits and the list of used resources are accessible right after.
+  </p>
+  <ul>
+    <li>
+      icons made by
+      <a href="http://www.freepik.com" title="Freepik">Freepik</a> from
+      <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is
+      licensed by
+      <a
+        href="http://creativecommons.org/licenses/by/3.0/"
+        title="Creative Commons BY 3.0"
+        target="_blank"
+        rel="noopener noreferrer"
+        >CC 3.0 BY</a
+      >
+    </li>
+  </ul>
+</div>

@@ -1,0 +1,276 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+  Copyright 2006 European Community
+  
+   Licensed under the EUPL, Version 1.1 or – as soon they
+   will be approved by the European Commission - subsequent
+   versions of the EUPL (the "Licence");
+   You may not use this work except in compliance with the
+   Licence.
+   You may obtain a copy of the Licence at:
+  
+   https://joinup.ec.europa.eu/software/page/eupl
+  
+   Unless required by applicable law or agreed to in
+   writing, software distributed under the Licence is
+   distributed on an "AS IS" basis,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+   express or implied.
+   See the Licence for the specific language governing
+   permissions and limitations under the Licence.
+-->
+<alfresco-config>
+
+   <config>
+      <actions>
+      	  <!-- View user to do WAI PAGE -->
+			<action id="view_user_to_do_wai">
+				<label-id>view_user_to_do_wai</label-id>
+				<tooltip-id>
+					view_user_to_do_action_tooltip_wai
+				</tooltip-id>
+				<image>/images/icons/workflow.gif</image>
+				<action>wai:dialog:viewUserToDoWai</action>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+			</action>
+			
+			<!-- View user completed WAI PAGE -->
+			<action id="view_user_completed_wai">
+				<label-id>view_user_completed_wai</label-id>
+				<tooltip-id>
+					view_user_completed_action_tooltip_wai
+				</tooltip-id>
+				<image>/images/icons/workflow.gif</image>
+				<action>wai:dialog:viewUserCompletedWai</action>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+			</action>
+			
+			<!-- View user pooled to do WAI PAGE -->
+			<action id="view_user_pooled_to_do_wai">
+				<label-id>view_user_pooled_to_do_wai</label-id>
+				<tooltip-id>
+					view_user_pooled_to_do_action_tooltip_wai
+				</tooltip-id>
+				<image>/images/icons/workflow.gif</image>
+				<action>wai:dialog:viewUserPooledToDoWai</action>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+			</action>
+			
+			<!-- View user todo WAI PAGE -->
+			<action id="view_all_active_wai">
+				<label-id>view_active_wai</label-id>
+				<tooltip-id>
+					view_active_action_tooltip_wai
+				</tooltip-id>
+				<image>/images/icons/workflow.gif</image>
+				<action>wai:dialog:viewAllActiveWai</action>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+			</action>
+			
+			<!-- View  category active task WAI PAGE -->
+			<action id="view_cat_active_wai">
+				<label-id>view_active_wai</label-id>
+				<tooltip-id>
+					view_active_action_tooltip_wai
+				</tooltip-id>
+				<image>/images/icons/workflow.gif</image>
+				<action>wai:dialog:viewCatActiveWai</action>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+			</action>
+			
+			<!-- View  ig active task WAI PAGE -->
+			<action id="view_ig_active_wai">
+				<label-id>view_active_wai</label-id>
+				<tooltip-id>
+					view_active_action_tooltip_wai
+				</tooltip-id>
+				<image>/images/icons/workflow.gif</image>
+				<action>wai:dialog:viewIgActiveWai</action>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+			</action>	
+      
+         <action id="start_workflow_wai">
+	            <label-id>start_workflow</label-id>
+	            <image>/images/icons/new_workflow.gif</image>
+	            <!-- evaluator>eu.cec.digit.circabc.action.evaluator.CircabcStartWorkflowEvaluator</evaluator -->
+	            <evaluator>eu.cec.digit.circabc.action.evaluator.HideEvaluator</evaluator>
+	            <action>wai:wizard:startWorkflow</action>
+	            <action-listener>#{WizardManager.setupParameters}</action-listener>
+	            <params>
+	               <param name="item-to-workflow">#{actionContext.id}</param>
+	            </params>
+	      </action>
+         
+         <action id="manage_task_wai">
+	            <label-id>manage_task</label-id>
+	            <image>/images/icons/manage_workflow_task.gif</image>
+	            <action>wai:dialog:circabcManageTask</action>
+	            <action-listener>#{CircabcWorkflowBean.setupTaskDialog}</action-listener>
+	            <params>
+	               <param name="id">#{actionContext.id}</param>
+	               <param name="type">#{actionContext.type}</param>
+	            </params>
+	     </action>
+         
+         <action id="view_completed_task_wai">
+            <label-id>view_completed_task_title</label-id>
+            <image>/images/icons/view_workflow_task.gif</image>
+            <action>wai:dialog:circabcViewCompletedTask</action>
+            <action-listener>#{CircabcWorkflowBean.setupTaskDialog}</action-listener>
+            <params>
+               <param name="id">#{actionContext.id}</param>
+               <param name="type">#{actionContext.type}</param>
+            </params>
+         </action>
+         
+         <action id="reassign_task_wai">
+            <label-id>reassign</label-id>
+            <image>/images/icons/reassign_task.gif</image>
+            <action>wai:dialog:circabcReassignTask</action>
+            <action-listener>#{CircabcWorkflowBean.setupTaskDialog}</action-listener>
+            <params>
+               <param name="id">#{actionContext.id}</param>
+               <param name="type">#{actionContext.type}</param>
+            </params>
+         </action>
+         
+         <action id="cancel_workflow_wai">
+            <label-id>cancel_workflow</label-id>
+            <image>/images/icons/cancel_workflow.gif</image>
+            <evaluator>eu.cec.digit.circabc.action.evaluator.HideEvaluator</evaluator>
+            <!--  evaluator>eu.cec.digit.circabc.action.evaluator.CircabcCancelWorkflowEvaluator</evaluator-->
+            <action>wai:dialog:circabcCancelWorkflow</action>
+            <action-listener> #{WaiDialogManager.setupParameters}</action-listener>
+            <params>
+               <param name="workflow-instance-id">#{actionContext.workflowInstanceId}</param>
+               <param name="workflow-instance-name">#{actionContext.workflowInstanceName}</param>
+            </params>
+         </action>
+         
+         <action id="add_package_item_wai">
+            <label-id>add_resource</label-id>
+            <image>/images/icons/add_item.gif</image>
+            <action-listener>#{Container.bean.prepareForAdd}</action-listener>
+         </action>
+
+         <action-group id="pooled_actions_wai">
+            <action idref="manage_task_wai" />
+         </action-group>
+
+        
+		<action-group id="doc_details_actions_wai">
+				<action idref="start_workflow_wai"/>
+		</action-group>
+         
+         <!--  maybe not needed to check -->
+         <action-group id="document_browse_menu">
+            <action idref="start_workflow" />
+         </action-group>
+         
+         <action-group id="doc_details_actions">
+            <action idref="start_workflow" />
+         </action-group>
+         
+         
+          <action-group id="todo_actions_wai">
+            	<action idref="manage_task_wai" />
+            	<action idref="reassign_task_wai" />
+         	</action-group>
+         	
+         	<action-group id="completed_actions_wai">
+            	<action idref="view_completed_task_wai" />
+            	<action idref="cancel_workflow_wai" />
+         	</action-group>
+
+
+         <!--  -->
+         <!--  Task Dialog Action Groups for managing Workflow Packages -->
+         <!--  -->
+         
+
+         <!-- ADM -->
+         
+         <action-group id="read_package_item_actions">
+			<action idref="details_doc_wai" />
+            
+            <action idref="view_content_properties" hide="true" />
+         </action-group>
+
+         <action-group id="edit_package_item_actions">
+            
+            <action idref="details_doc_wai" />
+
+            <action idref="view_content_properties" hide="true" />
+            <action idref="edit_content_properties" hide="true" />
+            <action idref="edit_doc_http" hide="true" />
+            <action idref="edit_doc_webdav" hide="true" />
+            <action idref="edit_doc_cifs" hide="true" />
+            <action idref="update_doc" hide="true" />
+            <action idref="workflow_checkout_doc" hide="true" />
+            <action idref="workflow_checkin_doc" hide="true" />
+            <action idref="workflow_cancelcheckout_doc" hide="true" />
+            
+         </action-group>
+
+         <action-group id="remove_package_item_actions">
+            <action idref="details_doc_wai" />
+            
+            <action idref="view_content_properties" hide="true"   />
+         </action-group>
+         
+         <action-group id="start_package_item_actions">
+            <action idref="details_doc_wai" />
+            <action idref="remove_package_item" />
+
+            <action idref="view_content_properties" hide="true" />
+            <action idref="edit_content_properties" hide="true" />
+            <action idref="edit_doc_http" hide="true" />
+            <action idref="edit_doc_webdav" hide="true" />
+            <action idref="edit_doc_cifs" hide="true" />
+            <action idref="update_doc" hide="true" />
+         </action-group>
+         
+         <action-group id="edit_and_remove_package_item_actions">
+            
+            <action idref="edit_details_doc_wai" />
+            <action idref="update_doc_wai" />
+            <action idref="checkout_doc_wai" />
+            <action idref="checkin_doc_wai" />
+            <action idref="cancelcheckout_doc_wai" />
+            
+            
+            <action idref="view_content_properties" hide="true"  />
+            <action idref="edit_content_properties" hide="true"  />
+            <action idref="edit_doc_http" hide="true"  />
+            <action idref="edit_doc_webdav" hide="true"  />
+            <action idref="edit_doc_cifs" hide="true"  />
+            <action idref="update_doc" hide="true"  />
+            <action idref="workflow_checkout_doc" hide="true"  />
+            <action idref="workflow_checkin_doc" hide="true"  />
+            <action idref="workflow_cancelcheckout_doc" hide="true"  />
+            
+         </action-group>
+
+         <action-group id="add_package_item_actions">
+            <action idref="add_package_item_wai" />
+            
+            <action idref="add_package_item" hide="true" />
+         </action-group>
+      </actions>
+   </config>
+   
+
+   
+</alfresco-config>

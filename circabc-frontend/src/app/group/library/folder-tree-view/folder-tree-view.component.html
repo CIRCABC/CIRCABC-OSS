@@ -1,0 +1,22 @@
+<div
+  class="sidenav"
+  [class.open-sidenav]="shown"
+  [class.close-sidenav]="!shown"
+>
+  <a class="close-button" (click)="close()">{{ 'label.close' | transloco }}</a>
+  <h1
+    ><img src="img/icon-folder-white.png" alt="icon" /> {{
+    'label.folder.structure' | transloco }}</h1
+  >
+
+  <cbc-tree-view
+    *ngIf="root && path"
+    [disabled]="false"
+    [folderId]="getSearchedNodeId()"
+    [root]="root"
+    [showSelector]="false"
+    [displayedPath]="path"
+    (clickedNodeEmitter)="propagateNavigation($event)"
+  >
+  </cbc-tree-view>
+</div>

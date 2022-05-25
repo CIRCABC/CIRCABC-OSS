@@ -1,0 +1,16 @@
+.cookie-disclaimer {
+  background-color: #035;
+  color: #fff;
+  padding: 10px 25px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  font-size: 13px;
+
+  .button {
+    background-color: #fff;
+    color: #035;
+    float: right;
+    margin-top: 15px;
+  }
+}

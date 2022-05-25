@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Get all the app messages enabled</shortname>
+  <description>Get all the app messages enabled</description>
+  <url>/circabc/app/messages</url>
+  <format default="json"/>
+  <authentication>guest</authentication>
+  <transaction>required</transaction>
+</webscript>

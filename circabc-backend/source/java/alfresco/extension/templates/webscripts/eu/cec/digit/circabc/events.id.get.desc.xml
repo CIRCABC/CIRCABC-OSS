@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>events.id.get</shortname>
+  <description>Get an event or meeting given its id</description>
+    <url>/circabc/events/{id}</url>
+  <format default="json"/>
+  <authentication>guest</authentication>
+  <transaction>required</transaction>
+</webscript>

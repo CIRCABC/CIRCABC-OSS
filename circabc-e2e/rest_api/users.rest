@@ -1,0 +1,70 @@
+
+POST http://localhost:8080/service/api/person/changepassword/circabc_admin
+content-type: application/json
+Authorization: Basic admin:admin
+
+{
+    "newpw": "password"
+}
+
+###
+POST http://localhost:8080/service/api/people
+content-type: application/json
+Authorization: Basic admin:admin
+
+{
+    "userName": "cat_admin",
+    "firstName": "cat",
+    "lastName": "admin",
+    "email": "cat.admin@circabc.eu"
+}
+
+###
+POST http://localhost:8080/service/api/people
+content-type: application/json
+Authorization: Basic admin:admin
+
+{
+    "userName": "ig_admin",
+    "firstName": "ig",
+    "lastName": "admin",
+    "email": "ig.admin@circabc.eu"
+}
+
+###
+POST http://localhost:8080/service/api/people
+content-type: application/json
+Authorization: Basic admin:admin
+
+{
+    "userName": "ig_author",
+    "firstName": "ig",
+    "lastName": "author",
+    "email": "ig.author@circabc.eu"
+}
+###
+POST http://localhost:8080/service/api/people
+content-type: application/json
+Authorization: Basic admin:admin
+
+{
+    "userName": "ig_access",
+    "firstName": "ig",
+    "lastName": "access",
+    "email": "ig.access@circabc.eu"
+}
+
+###
+http://localhost:8080/service/circabc/spaces/1ef87259-009e-42ba-81ce-e617e77d2f7f/children?language=en&guest=false&limit=-1&page=1&order=modified_DESC&folderOnly=false&fileOnly=false
+content-type: application/json
+Authorization: Basic admin:admin
+###
+
+http://localhost:8080/service/circabc/spaces/1ef87259-009e-42ba-81ce-e617e77d2f7f/children?language=en&guest=false&limit=10&page=2&order=name_ASC&folderOnly=false&fileOnly=false
+content-type: application/json
+Authorization: Basic admin:admin
+###
+
+DELETE http://localhost:8080/service/api/people/{userid}
+content-type: application/json
+Authorization: Basic admin:admin

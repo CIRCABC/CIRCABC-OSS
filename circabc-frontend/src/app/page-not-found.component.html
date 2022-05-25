@@ -1,0 +1,13 @@
+<div class="groups-browser">
+  <cbc-header></cbc-header>
+  <cbc-navigator></cbc-navigator>
+  <div class="wrap page-container">
+    <section class="not-found-container">
+      <aside class="right-decoration">
+        <img src="img/running.png" />
+      </aside>
+      <h1>{{ 'error.not.found.title' | transloco }}</h1>
+      <p [innerHTML]="'error.not.found.text' | transloco"> </p>
+    </section>
+  </div>
+</div>

@@ -1,0 +1,29 @@
+.sub-text {
+  color: #757575;
+  font-size: 11px;
+
+  .topic-title-name {
+    display: inline-block;
+    vertical-align: bottom;
+    max-width: 400px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: bold;
+  }
+}
+
+.post-preview {
+  overflow: unset !important;
+}
+
+.preview-link {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  .message-icon {
+    vertical-align: bottom;
+    margin-right: 10px;
+  }
+}

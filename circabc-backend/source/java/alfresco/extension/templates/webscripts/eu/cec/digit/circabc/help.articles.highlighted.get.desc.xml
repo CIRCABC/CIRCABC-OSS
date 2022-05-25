@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>get the highlighted of the help articles</shortname>
+  <description>get the highlighted of the articles</description>
+  <url>/circabc/help/articles/highlighted</url>
+  <format default="json"/>
+  <authentication>guest</authentication>
+  <transaction>required</transaction>
+</webscript>

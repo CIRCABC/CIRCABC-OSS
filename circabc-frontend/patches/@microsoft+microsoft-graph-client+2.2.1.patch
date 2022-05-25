@@ -1,0 +1,25 @@
+diff --git a/node_modules/@microsoft/microsoft-graph-client/lib/es/HTTPClientFactory.js b/node_modules/@microsoft/microsoft-graph-client/lib/es/HTTPClientFactory.js
+index 1ac6333..19ebfd3 100644
+--- a/node_modules/@microsoft/microsoft-graph-client/lib/es/HTTPClientFactory.js
++++ b/node_modules/@microsoft/microsoft-graph-client/lib/es/HTTPClientFactory.js
+@@ -44,18 +44,16 @@ export class HTTPClientFactory {
+     static createWithAuthenticationProvider(authProvider) {
+         const authenticationHandler = new AuthenticationHandler(authProvider);
+         const retryHandler = new RetryHandler(new RetryHandlerOptions());
+-        const telemetryHandler = new TelemetryHandler();
+         const httpMessageHandler = new HTTPMessageHandler();
+         authenticationHandler.setNext(retryHandler);
+         if (isNodeEnvironment()) {
+             const redirectHandler = new RedirectHandler(new RedirectHandlerOptions());
+             retryHandler.setNext(redirectHandler);
+-            redirectHandler.setNext(telemetryHandler);
++            redirectHandler.setNext(httpMessageHandler);
+         }
+         else {
+-            retryHandler.setNext(telemetryHandler);
++            retryHandler.setNext(httpMessageHandler);
+         }
+-        telemetryHandler.setNext(httpMessageHandler);
+         return HTTPClientFactory.createWithMiddleware(authenticationHandler);
+     }
+     /**

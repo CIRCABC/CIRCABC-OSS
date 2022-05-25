@@ -1,0 +1,84 @@
+<header>
+  <a [routerLink]="['/group', groupFeed.id]"> {{ getGroupNameOrTitle() }} </a>
+</header>
+<section class="feed">
+  <ul>
+    <li *ngFor="let itemFeed of getDisplayableFeed()">
+      <span class="date" *ngIf="type === 'today'">
+        {{ itemFeed.actionDate | date: 'HH:mm' }}
+      </span>
+      <span class="date" *ngIf="type !== 'today'">
+        {{ itemFeed.actionDate | date: 'dd-MM' }}
+      </span>
+      <span class="file">
+        <a
+          class="file-link"
+          [routerLink]="[
+            '/group',
+            groupFeed.id,
+            'library',
+            itemFeed.node?.id,
+            'details'
+          ]"
+          *ngIf="
+            itemFeed.action === 'upload' ||
+            itemFeed.action === 'update' ||
+            itemFeed.action === 'translate'
+          "
+          title="{{ itemFeed.node?.name }}"
+          >{{ getDisplayProperty(itemFeed.node) }}</a
+        >
+        <a
+          class="file-link"
+          [routerLink]="[
+            '/group',
+            groupFeed.id,
+            'forum',
+            'topic',
+            itemFeed.node?.id
+          ]"
+          *ngIf="
+            itemFeed.action === 'comment' &&
+            itemFeed.node?.service === 'newsgroups'
+          "
+          title="{{ itemFeed.node?.name }}"
+          >{{ getDisplayProperty(itemFeed.node) }}</a
+        >
+        <a
+          class="file-link"
+          [routerLink]="[
+            '/group',
+            groupFeed.id,
+            'library',
+            itemFeed.node?.id,
+            'details'
+          ]"
+          *ngIf="
+            itemFeed.action === 'comment' &&
+            itemFeed.node?.service === 'library'
+          "
+          title="{{ itemFeed.node?.name }}"
+          >{{ getDisplayProperty(itemFeed.node) }}</a
+        >
+        <span *ngIf="itemFeed.action === 'upload'"
+          >{{ 'label.uploaded.by' | transloco }}</span
+        >
+        <span *ngIf="itemFeed.action === 'update'"
+          >{{ 'label.updated.by' | transloco }}</span
+        >
+        <span *ngIf="itemFeed.action === 'comment'"
+          >{{ 'label.commented.by' | transloco }}</span
+        >
+        <span *ngIf="itemFeed.action === 'translate'"
+          >{{ 'label.add.translation.by' | transloco }}</span
+        >
+        <cbc-user-card [userId]="itemFeed.username"></cbc-user-card>
+      </span>
+    </li>
+  </ul>
+</section>
+<p *ngIf="hasMoreThan15 && !showAll" class="show-all">
+  <a (click)="showAllFeed()" class="button"
+    >{{ 'label.show.all' | transloco }}</a
+  >
+</p>

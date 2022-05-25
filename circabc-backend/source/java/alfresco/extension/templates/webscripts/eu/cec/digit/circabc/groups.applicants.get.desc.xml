@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Post the members of a IG</shortname>
+  <description>Post the members of a IG</description>
+    <url>/circabc/groups/{igId}/members/applicants</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

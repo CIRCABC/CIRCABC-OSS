@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>nodes.id.notifications.status.post</shortname>
+  <description>Change the notification status of a node</description>
+    <url>/circabc/nodes/{id}/notifications/status</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

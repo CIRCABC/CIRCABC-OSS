@@ -1,0 +1,18 @@
+.span-label {
+  display: inline-block;
+  margin-right: 15px;
+}
+
+.step-link {
+  margin-right: 25px;
+  padding-bottom: 5px;
+
+  &:hover {
+    border-bottom: 2px solid #8dcb6c;
+  }
+}
+
+.selected {
+  border-bottom: 2px solid #8dcb6c;
+  font-weight: bold;
+}

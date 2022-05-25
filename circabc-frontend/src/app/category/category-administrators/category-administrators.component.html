@@ -1,0 +1,60 @@
+<section class="tab-actions">
+  <a class="cta cta--plus" (click)="showModal = true" *ngIf="categoryId"
+    >{{ 'admin.category.invite.title' | transloco }}</a
+  >
+</section>
+<section class="table-container">
+  <table class="main">
+    <thead>
+      <tr>
+        <th></th>
+        <th>
+          <!-- Profile picture -->
+        </th>
+        <th> {{ 'label.firstname' | transloco }} </th>
+        <th> {{ 'label.lastname' | transloco }} </th>
+        <th class="col-hidable"> {{ 'label.email' | transloco }} </th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr class="row empty-row" *ngIf="administrators !== undefined">
+        <td colspan="5" *ngIf="administrators.length === 0"
+          >{{ 'members.display.none' | transloco }}</td
+        >
+      </tr>
+
+      <tr class="row" *ngFor="let admin of administrators">
+        <td class="cell-left-border"></td>
+        <td class="cell-photo">
+          <div class="photo">
+            <img
+              [attr.src]="admin.avatar | cbcDownload | cbcSecure"
+              alt=""
+              width="50"
+              height="50"
+            />
+          </div>
+        </td>
+        <td class="cell-file-name">
+          <div class="file-name">{{ admin.firstname }}</div>
+          <ul class="actions" style="font-size: 11px">
+            <cbc-inline-delete
+              (deletionConfirmed)="uninviteUser(admin)"
+              *ngIf="canDeleteAdmin(admin)"
+            ></cbc-inline-delete>
+          </ul>
+        </td>
+        <td class="cell-lastname">{{ admin.lastname }}</td>
+        <td class="cell-email" class="col-hidable">{{ admin.email }}</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<cbc-add-category-administrator
+  [showModal]="showModal"
+  [categoryId]="categoryId"
+  *ngIf="categoryId"
+  (modalHide)="refresh($event)"
+></cbc-add-category-administrator>

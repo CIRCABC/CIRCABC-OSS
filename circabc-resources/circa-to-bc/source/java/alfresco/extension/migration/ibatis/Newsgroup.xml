@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+	<mapper namespace="News">
+		<select id="getSingleNews" resultType="eu.cec.digit.circabc.migration.reader.impl.circa.domain.News">
+			SELECT
+				DC_TITLE               as title,
+				DC_SUBJECT             as subject,
+				CREATED                as created,
+				DCTERMS_MODIFIED       as modified,
+				DC_CREATOR             as creator,
+				IS_REMOTE              as remote,
+				DCTERMS_VALID          as valid,
+				CIRCA_MODERATED        as moderated,
+				CIRCA_AVAILABILITY     as availability,
+				DCTERMS_SERVICE        as service
+			FROM $virtualCirca$_$interestGroup$_New
+			WHERE dc_title = #title#
+		</select>
+
+		<select id="getAllNews" resultType="eu.cec.digit.circabc.migration.reader.impl.circa.domain.News">
+			SELECT
+				DC_TITLE               as title,
+				DC_SUBJECT             as subject,
+				CREATED                as created,
+				DCTERMS_MODIFIED       as modified,
+				DC_CREATOR             as creator,
+				IS_REMOTE              as remote,
+				DCTERMS_VALID          as valid,
+				CIRCA_MODERATED        as moderated,
+				CIRCA_AVAILABILITY     as availability,
+				DCTERMS_SERVICE        as service
+			FROM $virtualCirca$_$interestGroup$_New
+		</select>
+
+		<select id="getNewsLinguistic" resultType="eu.cec.digit.circabc.migration.reader.impl.circa.domain.NewsLinguistic">
+			SELECT
+				DC_TITLE               as title,
+				DC_language            as language,
+				DCTERMS_ABSTRACT       as abstractDesc
+			FROM $virtualCirca$_$interestGroup$_NewL
+			WHERE dc_title = #title#
+		</select>
+
+		<select id="getAllNewsLinguistics" resultType="eu.cec.digit.circabc.migration.reader.impl.circa.domain.NewsLinguistic">
+			SELECT
+				DC_TITLE               as title,
+				DC_LANGUAGE            as language,
+				DCTERMS_ABSTRACT       as abstractDesc
+			FROM $virtualCirca$_$interestGroup$_NewL
+		</select>
+	</mapper>

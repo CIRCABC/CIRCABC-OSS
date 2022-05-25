@@ -1,0 +1,38 @@
+.step-link {
+  margin-right: 25px;
+  padding-bottom: 5px;
+
+  &:hover {
+    border-bottom: 2px solid #8dcb6c;
+  }
+}
+
+.selected {
+  border-bottom: 1px solid #8dcb6c;
+}
+
+.authorityTable {
+  width: 100%;
+  margin-top: 15px;
+
+  tr th {
+    text-align: left;
+    color: #035;
+  }
+
+  .authorityName {
+    font-weight: bold;
+    text-overflow: ellipsis;
+    display: inline-block;
+    color: #757575;
+  }
+
+  .authorityPerm {
+    color: #757575;
+
+    a img {
+      vertical-align: middle;
+      margin-left: 15px;
+    }
+  }
+}

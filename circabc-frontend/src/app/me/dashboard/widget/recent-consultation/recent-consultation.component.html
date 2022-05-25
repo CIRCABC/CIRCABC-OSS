@@ -1,0 +1,85 @@
+<section class="box box--alternate-lines box--button limit-height">
+  <header class="header">
+    <span class="title">{{ 'label.recent.consultation' | transloco }}</span>
+    <span class="icons">
+      <img
+        class="header-icon"
+        src="img/history-clock-button.png"
+        alt="history-clock-button.png"
+      />
+    </span>
+  </header>
+  <cbc-horizontal-loader
+    *ngIf="loadingUploads || loadingDownloads"
+  ></cbc-horizontal-loader>
+  <div class="main main--listing">
+    <p class="actions">
+      <a (click)="showDownloads = true" [class.highlighted]="showDownloads"
+        >{{ 'label.downloads' | transloco }}
+        <img src="img/download-to-storage-drive.png" alt="downloads.png"
+      /></a>
+      <a (click)="showDownloads = false" [class.highlighted]="!showDownloads"
+        >{{ 'label.uploads' | transloco }}
+        <img src="img/upload-blue.png" alt="uplaods.png"
+      /></a>
+    </p>
+    <ul *ngIf="showDownloads" id="listOfDownloads">
+      <li class="row file--row" *ngFor="let download of lastDownloads">
+        <cbc-file-extension-icon
+          [filename]="download.node?.name"
+          class="file--icon"
+        ></cbc-file-extension-icon>
+        <a
+          class="link"
+          [routerLink]="[
+            '/group',
+            download.igNode,
+            'library',
+            download.node?.id,
+            'details'
+          ]"
+          >{{ download.node?.name }}</a
+        >
+        <br />
+        <span class="subText"
+          >{{ 'label.last.modified.on' | transloco }} {{ download.actionDate |
+          date }}</span
+        >
+      </li>
+      <li *ngIf="lastDownloads.length === 0" class="row">
+        {{ 'label.nothing.to.display' | transloco }}
+      </li>
+    </ul>
+    <ul *ngIf="!showDownloads" id="listOfUploads">
+      <li class="row file--row" *ngFor="let upload of lastUploads">
+        <cbc-file-extension-icon
+          [filename]="upload.node?.name"
+          class="file--icon"
+        ></cbc-file-extension-icon>
+        <a
+          class="link"
+          [routerLink]="[
+            '/group',
+            upload.igNode,
+            'library',
+            upload.node?.id,
+            'details'
+          ]"
+          >{{ upload.node?.name }}</a
+        >
+        <br />
+        <span class="subText"
+          >{{ 'label.by' | transloco }}
+          <cbc-user-card
+            [userId]="upload.node?.properties?.modifier"
+            [rightSide]="true"
+          ></cbc-user-card>
+          {{ 'label.on' | transloco }} {{ upload.actionDate | date }}</span
+        >
+      </li>
+      <li *ngIf="lastUploads.length === 0" class="row">
+        {{ 'label.nothing.to.display' | transloco }}
+      </li>
+    </ul>
+  </div>
+</section>

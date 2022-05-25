@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>post.verify.put</shortname>
+  <description>verify a post by a moderator and accept or reject it (with an optional reason)</description>
+    <url>/circabc/posts/{id}/verify</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>check if one user is registered in the distribution emails ution emails </shortname>
+  <description></description>
+  <url>/circabc/app/distribution/emails/subscription/{userId}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

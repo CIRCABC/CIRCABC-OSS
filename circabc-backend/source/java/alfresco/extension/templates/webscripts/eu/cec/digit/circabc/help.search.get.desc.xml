@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>search in all the help</shortname>
+  <description>search in all the help</description>
+  <url>/circabc/help/search</url>
+  <format default="json"/>
+  <authentication>guest</authentication>
+  <transaction>required</transaction>
+</webscript>

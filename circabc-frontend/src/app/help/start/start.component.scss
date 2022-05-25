@@ -1,0 +1,213 @@
+@use '~css/global/variables-mixins-keyframes';
+
+.start-container {
+  margin: 0 100px 25px;
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 65% 35%;
+  grid-template-columns: 65% 35%;
+  -ms-grid-rows: auto;
+  grid-template-rows: auto;
+  grid-template-areas:
+    'highlights aside'
+    'mainCol aside';
+  grid-column-gap: 25px;
+  grid-row-gap: 25px;
+
+  /* IE 10+ olny */
+  @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+    & {
+      .help-highlights,
+      .help-categories,
+      .help-links {
+        margin: 10px;
+      }
+    }
+  }
+
+  .help-highlights {
+    -ms-grid-row: 1;
+    -ms-grid-column: 1;
+    grid-area: highlights;
+    align-self: stretch;
+  }
+
+  .help-categories {
+    -ms-grid-row: 2;
+    -ms-grid-column: 1;
+    grid-area: mainCol;
+  }
+
+  .help-links {
+    -ms-grid-row: 1;
+    -ms-grid-row-span: 2;
+    -ms-grid-column: 2;
+    grid-area: aside;
+  }
+
+  @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+    & {
+      -ms-grid-columns: 100%;
+      grid-template-columns: 100%;
+      grid-template-areas:
+        'contact'
+        'highlights'
+        'mainCol'
+        'aside';
+      margin: 0 25px 25px;
+
+      .help-highlights {
+        -ms-grid-column: 1;
+        -ms-grid-row: 2;
+      }
+
+      .help-categories {
+        -ms-grid-column: 1;
+        -ms-grid-row: 3;
+      }
+
+      .help-links {
+        -ms-grid-column: 1;
+        -ms-grid-row-span: 0;
+        -ms-grid-row: 4;
+      }
+    }
+  }
+
+  .contact-section {
+    text-align: center;
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 4px;
+    display: none;
+
+    a {
+      font-size: 14px;
+      padding: 15px 30px;
+      background-color: rgb(0 73 122);
+      color: #fff;
+      border-radius: 5px;
+
+      img {
+        vertical-align: middle;
+        margin-left: 15px;
+      }
+
+      &:hover {
+        background-color: #035;
+      }
+    }
+
+    @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+      & {
+        display: block;
+        -ms-grid-column: 1;
+        -ms-grid-row: 1;
+      }
+    }
+  }
+}
+
+h2 {
+  font-size: 2.4em;
+}
+
+.help-header {
+  background-image: url(^img/compass-help.jpg);
+  background-position-y: 50%;
+  background-repeat: no-repeat;
+  background-size: 100%;
+  height: 250px;
+  margin-bottom: -80px;
+  position: relative;
+  z-index: -10;
+
+  @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+    & {
+      background-position-y: 0%;
+    }
+  }
+
+  .help-header-container {
+    color: #035;
+    text-align: center;
+    background-color: #fff;
+    margin: 50px 100px;
+    padding: 10px 50px;
+    display: inline-block;
+    border-radius: 4px;
+
+    img {
+      vertical-align: middle;
+      margin-right: 35px;
+      float: left;
+    }
+
+    @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+      & {
+        margin: 50px 25px;
+      }
+
+      h1 {
+        display: none;
+      }
+    }
+  }
+}
+
+.help-categories {
+  box-shadow: 0 0 2px rgb(0 0 0 / 0.1);
+  background-color: #fff;
+  padding: 25px;
+  color: #035;
+
+  ul li {
+    a {
+      .number-article {
+        float: right;
+        color: #757575;
+
+        img {
+          vertical-align: middle;
+          margin-right: 10px;
+        }
+      }
+
+      box-shadow: 0 3px 5px 0 rgb(224 224 224 / 0.77);
+      background-color: #fbfbfb;
+      padding: 20px;
+      font-size: 150%;
+      margin: 10px 0;
+      display: inline-block;
+      width: 100%;
+
+      &:hover {
+        background-color: #f5f5f5;
+      }
+    }
+  }
+}
+
+.actions {
+  float: right;
+  margin-top: 55px;
+  clear: right;
+  margin-right: 150px;
+
+  a {
+    color: #fff;
+    font-size: 13px;
+    margin: 0 15px;
+  }
+}
+
+.help-highlights {
+  box-shadow: 0 0 2px rgb(0 0 0 / 0.1);
+}
+
+.help-links {
+  box-shadow: 0 0 2px rgb(0 0 0 / 0.1);
+  background-color: #fff;
+  padding: 25px;
+  color: #035;
+}

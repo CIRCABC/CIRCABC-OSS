@@ -1,0 +1,163 @@
+<div class="fluid page-container">
+  <div class="file-details">
+    <div class="wrap">
+      <div class="page-header">
+        <div class="page-header__actions">
+          <ul class="links">
+            <li
+              ><a
+                [routerLink]="['../../../permissions', topic.id]"
+                [queryParams]="{ from: 'topic' }"
+                *ngIf="isTopicAdmin()"
+                >{{ 'label.permissions' | transloco }}</a
+              ></li
+            >&nbsp;&nbsp;&nbsp;
+            <li
+              ><a
+                [routerLink]="['../../../notification-status', topic.id]"
+                [queryParams]="{ from: 'topic' }"
+                *ngIf="isTopicAdmin()"
+                >{{ 'label.notifications' | transloco }}</a
+              ></li
+            >
+          </ul>
+        </div>
+      </div>
+
+      <section class="box">
+        <header class="header">
+          <span *ngIf="viewing" class="title"
+            >{{ 'topic.view.details' | transloco }}</span
+          >
+          <span *ngIf="!viewing" class="title"
+            >{{ 'topic.edit.details' | transloco }}</span
+          >
+        </header>
+        <div class="main">
+          <section class="file-informations">
+            <form [formGroup]="updateTopicForm">
+              <div class="field switch">
+                <!-- Topic details -->
+                <cbc-multilingual-input
+                  formControlName="title"
+                  [enabled]="!viewing"
+                  [label]="'label.title' | transloco"
+                  [lang]="'EN'"
+                ></cbc-multilingual-input>
+                <cbc-control-message
+                  [control]="updateTopicForm.controls['title']"
+                ></cbc-control-message>
+                <cbc-multilingual-input
+                  formControlName="description"
+                  [enabled]="!viewing"
+                  [textarea]="true"
+                  [label]="'label.description' | transloco"
+                  [lang]="'EN'"
+                ></cbc-multilingual-input>
+                <div class="field">
+                  <label>{{ 'label.version' | transloco }}</label>
+                  <label *ngIf="topic">{{ versionLabel }}</label>
+                </div>
+                <div class="field">
+                  <label>{{ 'label.creator' | transloco }}</label>
+                  <label *ngIf="topic && creator !== undefined"
+                    >{{ creator.firstname }} {{ creator.lastname }}</label
+                  >
+                </div>
+                <div class="field">
+                  <label>{{ 'label.created' | transloco }}</label>
+                  <label *ngIf="topic">{{ created }}</label>
+                </div>
+                <div class="field">
+                  <label>{{ 'label.modifier' | transloco }}</label>
+                  <label *ngIf="topic && modifier !== undefined"
+                    >{{ modifier.firstname }} {{ modifier.lastname }}</label
+                  >
+                </div>
+                <div class="field">
+                  <label>{{ 'label.modified' | transloco }}</label>
+                  <label *ngIf="topic">{{ modified }}</label>
+                </div>
+                <div class="field">
+                  <label for="securityRanking"
+                    >{{ 'label.security.marking' | transloco }}</label
+                  >
+                  <div
+                    class="custom-select select--form reset-width select-align"
+                  >
+                    <select
+                      name=""
+                      id="securityRanking"
+                      formControlName="securityRanking"
+                    >
+                      <option value="NORMAL">
+                        {{ 'label.normal' | transloco }}
+                      </option>
+                      <option value="SENSITIVE">
+                        {{ 'label.sensitive' | transloco }}
+                      </option>
+                      <option value="SPECIAL_HANDLING">
+                        {{ 'label.special.handling' | transloco }}
+                      </option>
+                      <option value="PUBLIC"
+                        >{{ 'label.public' | transloco }}</option
+                      >
+                      <option value="INTERNAL"
+                        >{{ 'label.internal' | transloco }}</option
+                      >
+                      <option value="LIMITED"
+                        >{{ 'label.limited' | transloco }}</option
+                      >
+                    </select>
+                  </div>
+                </div>
+                <div class="field">
+                  <label>{{ 'label.moderated' | transloco }}</label>
+                  <label *ngIf="topic"
+                    >{{ (ismoderated === 'true' ? 'label.yes' : 'label.no') |
+                    transloco }}</label
+                  >
+                </div>
+              </div>
+            </form>
+
+            <div class="field" *ngIf="processing">
+              <label
+                >{{ 'label.updating' | transloco }}...<cbc-spinner></cbc-spinner
+              ></label>
+            </div>
+
+            <br *ngIf="!processing && viewing" />
+            <section
+              class="actions"
+              style="height: 127px"
+              *ngIf="!processing && viewing"
+            >
+              <ul class="actions__secondary-actions--left">
+                <li
+                  ><a class="edit" (click)="enableEdit()"
+                    >{{ 'label.edit' | transloco }}</a
+                  ></li
+                >
+              </ul>
+            </section>
+
+            <!-- Buttons -->
+            <div class="buttons-group center" *ngIf="!processing && !viewing">
+              <a
+                class="cta"
+                [routerLink]="['.']"
+                *ngIf="updateTopicForm.status === 'VALID'"
+                (click)="update()"
+                >{{ 'label.update' | transloco }}</a
+              >
+              <a class="button" [routerLink]="['.']" (click)="cancel()"
+                >{{ 'label.cancel' | transloco }}</a
+              >
+            </div>
+          </section>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

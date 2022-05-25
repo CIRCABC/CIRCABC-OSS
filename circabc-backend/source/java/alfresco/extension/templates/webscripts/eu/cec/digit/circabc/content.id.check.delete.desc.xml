@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>content.id.check.delete</shortname>
+  <description>Cancel checkout - Cancels the checkout of the given item (given the id of the original document)</description>
+    <url>/circabc/content/{id}/check</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

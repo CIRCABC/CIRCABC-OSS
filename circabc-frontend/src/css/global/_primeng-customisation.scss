@@ -1,0 +1,17 @@
+@use 'variables-mixins-keyframes';
+
+.ui-state-active {
+  background-color: variables-mixins-keyframes.$button-filled !important;
+}
+
+body .ui-inputswitch.ui-inputswitch-checked .ui-inputswitch-slider {
+  background-color: #58c37e;
+}
+
+body .ui-inputswitch.ui-inputswitch-checked:not(.ui-state-disabled):hover .ui-inputswitch-slider {
+  background-color: #58c37e;
+}
+
+body .ui-inputswitch.ui-inputswitch-checked.ui-inputswitch-focus .ui-inputswitch-slider {
+  background: #58c37e;
+}

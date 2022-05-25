@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!-- Copyright 2006 European Community Licensed under the EUPL, Version 1.1 
+	or – as soon they will be approved by the European Commission - subsequent 
+	versions of the EUPL (the "Licence"); You may not use this work except in 
+	compliance with the Licence. You may obtain a copy of the Licence at: https://joinup.ec.europa.eu/software/page/eupl 
+	Unless required by applicable law or agreed to in writing, software distributed 
+	under the Licence is distributed on an "AS IS" basis, WITHOUT WARRANTIES 
+	OR CONDITIONS OF ANY KIND, either express or implied. See the Licence for 
+	the specific language governing permissions and limitations under the Licence. -->
+	
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Rendition">
+	
+	<select id="select_request_exists" parameterType="String" resultType="RenditionRequest">
+		SELECT request_id as requestId
+		FROM cbc_rendition_requests
+		WHERE noderef_uuid = #{value, jdbcType=VARCHAR} AND (success = 1 OR (success = 0 AND remaining_render_retries > 0))
+	</select>
+	
+	<insert id="insert_request" parameterType="RenditionRequest">
+		INSERT INTO	cbc_rendition_requests
+			(request_id, machine_id, noderef_uuid, request_date, remaining_render_retries, success)
+		VALUES (#{requestId}, #{machineId, jdbcType=VARCHAR}, #{nodeRefUUID}, #{requestDate}, #{remainingRenderRetries}, #{success, jdbcType=BOOLEAN})
+	</insert>
+	
+	<select id="get_requests" parameterType="String" resultType="RenditionRequest">
+		SELECT request_id as requestId, machine_id as machineId, noderef_uuid as nodeRefUUID, 
+				request_date as requestDate, fetch_date as fetchDate, start_processing_date as startProcessingDate, 
+				end_processing_date as endProcessingDate, error_message as errorMessage, 
+				remaining_render_retries as remainingRenderRetries 
+		FROM cbc_rendition_requests
+		WHERE (success IS NULL OR success = 0) AND machine_id = #{value, jdbcType=VARCHAR} AND remaining_render_retries > 0
+		ORDER BY request_date
+	</select>
+	
+	<select id="get_ten_requests" resultType="RenditionRequest">
+		SELECT * FROM 
+		(
+			SELECT request_id as requestId, machine_id as machineId, noderef_uuid as nodeRefUUID, 
+					request_date as requestDate, fetch_date as fetchDate, start_processing_date as startProcessingDate, 
+					end_processing_date as endProcessingDate, error_message as errorMessage, 
+					remaining_render_retries as remainingRenderRetries 
+			FROM cbc_rendition_requests
+			WHERE (success IS NULL OR success = 0) AND remaining_render_retries > 0
+			ORDER BY request_date
+		)
+		WHERE ROWNUM <![CDATA[<]]>= 10
+	</select>
+	
+	<select id="get_requests_for_document" parameterType="String" resultType="RenditionRequest">
+		SELECT request_id as requestId, machine_id as machineId, noderef_uuid as nodeRefUUID, 
+				request_date as requestDate, fetch_date as fetchDate, start_processing_date as startProcessingDate, 
+				end_processing_date as endProcessingDate, error_message as errorMessage, 
+				remaining_render_retries as remainingRenderRetries, success
+		FROM cbc_rendition_requests
+		WHERE noderef_uuid = #{value, jdbcType=VARCHAR}
+		ORDER BY request_date
+	</select>
+	
+	<update id="update_request" parameterType="RenditionRequest">
+		UPDATE cbc_rendition_requests 
+		SET fetch_date = #{fetchDate, jdbcType=DATE},
+			start_processing_date = #{startProcessingDate, jdbcType=DATE},
+			end_processing_date = #{endProcessingDate, jdbcType=DATE},
+			success = #{success, jdbcType=BOOLEAN},
+			error_message = #{errorMessage, jdbcType=VARCHAR},
+			remaining_render_retries = #{remainingRenderRetries}
+		WHERE request_id = #{requestId}
+	</update>
+	
+	<!-- fetch_date updated only the first time it is fetched for statistics -->
+	<update id="update_fetched_requests" parameterType="list">
+		UPDATE cbc_rendition_requests 
+		SET fetch_date = CURRENT_TIMESTAMP
+		WHERE fetch_date IS NULL AND request_id IN 
+		<foreach item="item" collection="list" open="(" separator="," close=")">
+   			#{item, jdbcType=DATE}
+  		</foreach>
+	</update>
+	
+</mapper>

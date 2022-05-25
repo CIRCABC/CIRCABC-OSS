@@ -1,0 +1,146 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<!--+
+    |     Copyright European Community 2006 - Licensed under the EUPL V.1.0
+    |
+    |          http://ec.europa.eu/idabc/en/document/6523
+    |
+    +-->
+
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+
+<beans>
+	
+	<!-- MyBatis config for Alfresco (using common datasource) -->
+	<bean id="circabcReportingSqlSessionFactory" class="org.alfresco.ibatis.HierarchicalSqlSessionFactoryBean">
+		<property name="useLocalCaches" value="${mybatis.useLocalCaches}" />
+		<property name="resourceLoader" ref="dialectResourceLoader" />
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation">
+			<value>classpath:alfresco/extension/circabc-ibatis-reporting-SqlMapConfig.xml</value>
+		</property>
+	</bean>
+	
+	<bean id="circabcSqlSessionFactory" class="org.alfresco.ibatis.HierarchicalSqlSessionFactoryBean">
+		<property name="useLocalCaches" value="${mybatis.useLocalCaches}" />
+		<property name="resourceLoader" ref="dialectResourceLoader" />
+		<property name="dataSource" ref="auditDataSource" />
+		<property name="configLocation">
+			<value>classpath:alfresco/extension/circabc-ibatis-SqlMapConfig.xml</value>
+		</property>
+	</bean>
+	
+	<!-- MyBatis session template declarations -->
+	<bean id="autoUploadConfigurationSqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="circabcSqlSessionFactory" />
+	</bean>
+	
+	<bean id="lockDaoSqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="circabcSqlSessionFactory" />
+	</bean>
+	
+	<bean id="logDaoSqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="circabcSqlSessionFactory" />
+	</bean>
+	
+	<bean id="reportDaoSqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="circabcReportingSqlSessionFactory" />
+	</bean>
+	
+	<bean id="circabcDaoSqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="circabcReportingSqlSessionFactory" />
+	</bean>
+	
+	<bean id="ecordaDaoSqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="circabcSqlSessionFactory" />
+	</bean>
+	
+	<bean id="translationDaoSqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="circabcSqlSessionFactory" />
+	</bean>
+	
+	<bean id="renditionDaoSqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="circabcSqlSessionFactory" />
+	</bean>
+	
+	<bean id="appMessageDaoSqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="circabcSqlSessionFactory" />
+	</bean>
+	
+	<bean id="groupRequestsDaoSqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="circabcSqlSessionFactory" />
+	</bean>
+	
+	<bean id="historyDaoSqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="circabcSqlSessionFactory" />
+	</bean>
+	
+	<!-- MyBatis usage bean declarations -->
+	<bean id="autoUploadConfigurationDaoService" class="eu.cec.digit.circabc.repo.config.auto.upload.AutoUploadConfigurationServiceImpl">
+		<property name="sqlSessionTemplate" ref="autoUploadConfigurationSqlSessionTemplate" />
+	</bean>
+	
+	<bean id="lockDaoService" class="eu.cec.digit.circabc.repo.lock.ibatis.IBatisLockDaoServiceImpl">
+		<property name="sqlSessionTemplate" ref="lockDaoSqlSessionTemplate" />
+	</bean>
+	
+	<bean id="logDaoService" class="eu.cec.digit.circabc.repo.log.ibatis.IBatisLogDaoServiceImpl">
+		<property name="sqlSessionTemplate" ref="logDaoSqlSessionTemplate" />
+	</bean>
+
+	<bean id="LogDaoService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager">
+			<ref bean="transactionManager" />
+		</property>
+		<property name="target" ref="logDaoService"/>
+		<property name="transactionAttributes">
+			<props>
+				<prop key="insertActivity">PROPAGATION_REQUIRED</prop>
+				<prop key="log">PROPAGATION_REQUIRED</prop>
+				<prop key="*">PROPAGATION_REQUIRED,readOnly</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<bean id="reportDaoService" class="eu.cec.digit.circabc.repo.report.ReportDaoServiceImpl">
+		<property name="sqlSessionTemplate" ref="reportDaoSqlSessionTemplate" />
+	</bean>
+	
+	<bean id="circabcDaoService" class="eu.cec.digit.circabc.repo.app.CircabcDaoServiceImpl" init-method="init">
+      <property name="sqlSessionTemplate" ref="circabcDaoSqlSessionTemplate" />
+   </bean>
+	
+	<bean id="ecordaDaoServiceImpl" class="eu.cec.digit.circabc.repo.iam.EcordaDaoServiceImpl">
+		<property name="sqlSessionTemplate" ref="ecordaDaoSqlSessionTemplate"/>
+	</bean>
+	
+	<bean id="translationDaoService" class="eu.cec.digit.circabc.repo.translation.TranslationDaoServiceImpl">
+		<property name="sqlSessionTemplate" ref="translationDaoSqlSessionTemplate"/>
+	</bean>
+
+	<bean id="aresBridgeDaoService" class="eu.cec.digit.circabc.repo.ares.AresBridgeDaoServiceImpl">
+		<property name="sqlSessionTemplate" ref="translationDaoSqlSessionTemplate"/>
+	</bean>
+	
+	<bean id="renditionDaoService" class="eu.cec.digit.circabc.service.rendition.RenditionDaoServiceImpl">
+		<property name="sqlSessionTemplate" ref="renditionDaoSqlSessionTemplate"/>
+	</bean>
+	
+	<bean id="appMessageDaoService" class="eu.cec.digit.circabc.service.app.message.AppMessageDaoServiceImpl">
+		<property name="sqlSessionTemplate" ref="appMessageDaoSqlSessionTemplate"/>
+	</bean>
+	
+	<bean id="groupRequestsDaoService" class="eu.cec.digit.circabc.service.category.group.requests.GroupRequestsDaoServiceImpl">
+		<property name="sqlSessionTemplate" ref="groupRequestsDaoSqlSessionTemplate"/>
+		<property name="usersApi" ref="UsersApi"/>
+		<property name="userService" ref="userService"/>
+		<property name="personService" ref="personService"/>
+		<property name="ldapUserService" ref="#{circabcConfig.ENT == true ? 'ldapUserService' : 'luceneUserService'}"/>
+		<property name="managementService" ref="managementService"/>
+	</bean>
+	
+	<bean id="historyDaoService" class="eu.cec.digit.circabc.service.history.HistoryDaoServiceImpl">
+		<property name="sqlSessionTemplate" ref="historyDaoSqlSessionTemplate"/>
+	</bean>
+	
+</beans>

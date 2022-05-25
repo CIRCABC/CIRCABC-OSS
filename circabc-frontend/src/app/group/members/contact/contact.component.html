@@ -1,0 +1,285 @@
+<div *ngIf="loaded" class="wrap admin page-container">
+  <div class="page-header">
+    <span
+      class="page-header__title"
+      [innerHtml]="'members.contact.page.title' | transloco"
+    ></span>
+    <div class="page-header__actions">
+      <ul class="links">
+        <cbc-reponsive-sub-menu>
+          <a
+            *ngIf="currentIg && (isDirAdmin() || isDirManageMembers())"
+            [routerLink]="['../bulk-invite', currentIg.id]"
+            >{{ 'label.bulk.invite' | transloco }}</a
+          >
+          <a [routerLink]="['.']" class="selected"
+            >{{ 'label.send.email' | transloco }}</a
+          >
+          <a
+            *ngIf="currentIg && (isDirAdmin() || isDirManageMembers())"
+            [routerLink]="['../../applicants']"
+            >{{ 'label.member.requests' | transloco }}</a
+          >
+          <a [routerLink]="['../../members']"
+            >{{ 'label.members' | transloco }}</a
+          >
+          <a *ngIf="currentIg && isDirAdmin()" [routerLink]="['../../profiles']"
+            >{{ 'label.profiles' | transloco }}</a
+          >
+        </cbc-reponsive-sub-menu>
+      </ul>
+    </div>
+  </div>
+
+  <section class="box box--tabs" *ngIf="currentIg">
+    <ul class="header">
+      <li>
+        <a
+          class="tab"
+          [class.tab--current]="isEmailTab()"
+          (click)="setTab('email')"
+        >
+          <img src="img/icon-contact-grey.png" title="General" alt="general" />
+          <span class="tab-text">{{ 'label.email' | transloco }}</span>
+        </a>
+      </li>
+      <li>
+        <a
+          class="tab"
+          [class.tab--current]="isFileTab()"
+          (click)="setTab('file')"
+        >
+          <img
+            src="img/icon-file-grey.png"
+            title="AutoUpload"
+            alt="autoupload"
+          />
+          <span class="tab-text">{{ 'label.attachments' | transloco }}</span>
+        </a>
+      </li>
+      <li>
+        <a
+          class="tab"
+          [class.tab--current]="isUserTab()"
+          (click)="setTab('user')"
+        >
+          <img
+            src="img/icon-group-browser-grey.png"
+            title="security"
+            alt="security"
+          />
+          <span class="tab-text">{{ 'label.recipient' | transloco }}</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="main" [class.hide]="!isEmailTab()">
+      <form [formGroup]="emailForm">
+        <div *ngIf="templates.length > 1" class="field field-select view-down">
+          <label class="view-label" for="view"
+            >{{ 'label.use.template' | transloco }}</label
+          >
+          <div class="custom-select select--form view-select">
+            <select
+              #viewSelect
+              (change)="selectTemplate(viewSelect.value)"
+              [value]="selectedTemplateId"
+            >
+              <option
+                *ngFor="let template of templates"
+                value="{{ template.id }}"
+                >{{ template.name }}</option
+              >
+            </select>
+          </div>
+          <a
+            *ngIf="isRemovableTemplate()"
+            (click)="isRemovableTemplate() ? removeTemplate() : ''"
+            title="{{ 'label.template.remove' | transloco }}"
+          >
+            <img
+              src="img/icon-delete-818181.png"
+              style="vertical-align: middle"
+            />
+          </a>
+        </div>
+        <div class="field">
+          <label for="subject"
+            >{{ 'label.subject' | transloco }}
+            <span style="color: red">&nbsp;*</span>
+          </label>
+          <input
+            formControlName="subject"
+            type="text"
+            id="subject"
+            placeholder="{{ 'label.subject' | transloco }}"
+          />
+          <cbc-control-message [control]="subjectControl"></cbc-control-message>
+        </div>
+
+        <div class="field">
+          <label for="subject"
+            >{{ 'label.email' | transloco }}
+            <span style="color: red">&nbsp;*</span>
+          </label>
+          <br />
+          <br />
+          <p-editor formControlName="content" [style]="{ height: '320px' }">
+            <p-header>
+              <span class="ql-formats">
+                <button class="ql-bold" aria-label="Bold"></button>
+                <button class="ql-italic" aria-label="Italic"></button>
+                <button class="ql-underline" aria-label="Underline"></button>
+                <button class="ql-strike" aria-label="Strike"></button>
+              </span>
+              <span class="ql-formats">
+                <button
+                  class="ql-list"
+                  aria-label="list"
+                  value="ordered"
+                ></button>
+                <button
+                  class="ql-list"
+                  aria-label="list"
+                  value="bullet"
+                ></button>
+              </span>
+              <span class="ql-formats">
+                <button class="ql-link" aria-label="link"></button>
+              </span>
+            </p-header>
+          </p-editor>
+          <cbc-control-message [control]="contentControl"></cbc-control-message>
+        </div>
+
+        <div class="field">
+          <input
+            type="checkbox"
+            name="checkTemplate"
+            formControlName="checkSaveTemplate"
+          />
+          <label style="width: auto !important" for="checkTemplate"
+            >{{ 'label.save.template' | transloco }}</label
+          >
+          <span *ngIf="saveTemplateChecked()">
+            <br /><br />
+            <label for="templateName"
+              >{{ 'label.template.name' | transloco }}
+              <span style="color: red">&nbsp;*</span>
+            </label>
+            <input
+              formControlName="templateName"
+              type="text"
+              id="templateName"
+            />
+            <span class="buttons-group">
+              <a
+                class="button"
+                [class.disabled]="!isSaveTemplate()"
+                (click)="isSaveTemplate() ? saveTemplate() : ''"
+                >{{ 'label.save' | transloco }}</a
+              >
+            </span>
+            <cbc-control-message
+              [control]="templateNameControl"
+            ></cbc-control-message>
+          </span>
+        </div>
+      </form>
+      <div class="buttons-group" style="text-align: center">
+        <p class="email-summary">
+          {{ 'members.mail.summary' | transloco : { nbRecipients:
+          getNumberRecipients(), nbAttachments: getNumberAttachments() } }}
+        </p>
+        <a class="button" (click)="setTab('file')">
+          {{ 'label.next' | transloco }}
+        </a>
+        <a
+          class="cta"
+          [class.disabled]="!isSendable()"
+          (click)="isSendable() ? sendEmail() : ''"
+          >{{ 'label.send' | transloco }}</a
+        >
+        <a class="button" (click)="cancel()"
+          >{{ 'label.cancel' | transloco }}</a
+        >
+      </div>
+      <div *ngIf="sending">
+        <label
+          >{{ 'label.sending' | transloco }}...
+          <cbc-spinner></cbc-spinner>
+        </label>
+      </div>
+    </div>
+    <div class="main" [class.hide]="!isUserTab()">
+      <form [formGroup]="membersForm">
+        <label for="invitedUsersOrProfiles"
+          >{{ 'label.search' | transloco }}</label
+        >
+        <cbc-users-picker
+          [igId]="currentIg.id"
+          [profilesTip]="'label.non.empty.profiles' | transloco"
+          formControlName="invitedUsersOrProfiles"
+        ></cbc-users-picker>
+      </form>
+      <div class="buttons-group" style="text-align: center">
+        <p class="email-summary">
+          {{ 'members.mail.summary' | transloco : { nbRecipients:
+          getNumberRecipients(), nbAttachments: getNumberAttachments() } }}
+        </p>
+        <a class="button" (click)="setTab('file')"
+          >{{ 'label.previous' | transloco }}</a
+        >
+        <a
+          class="cta"
+          [class.disabled]="!isSendable()"
+          (click)="isSendable() ? sendEmail() : ''"
+          >{{ 'label.send' | transloco }}</a
+        >
+        <a class="button" (click)="cancel()"
+          >{{ 'label.cancel' | transloco }}</a
+        >
+      </div>
+      <div *ngIf="sending">
+        <label
+          >{{ 'label.sending' | transloco }}...
+          <cbc-spinner></cbc-spinner>
+        </label>
+      </div>
+    </div>
+    <div class="main" [class.hide]="!isFileTab()">
+      <cbc-file-picker
+        [nodeId]="currentIg.libraryId"
+        *ngIf="currentIg"
+        [(selection)]="selectedNodes"
+      ></cbc-file-picker>
+      <div class="buttons-group" style="text-align: center">
+        <p class="email-summary">
+          {{ 'members.mail.summary' | transloco : { nbRecipients:
+          getNumberRecipients(), nbAttachments: getNumberAttachments() } }}
+        </p>
+        <a class="button" (click)="setTab('email')"
+          >{{ 'label.previous' | transloco }}</a
+        >
+        <a class="button" (click)="setTab('user')"
+          >{{ 'label.next' | transloco }}</a
+        >
+        <a
+          class="cta"
+          [class.disabled]="!isSendable()"
+          (click)="isSendable() ? sendEmail() : ''"
+          >{{ 'label.send' | transloco }}</a
+        >
+        <a class="button" (click)="cancel()"
+          >{{ 'label.cancel' | transloco }}</a
+        >
+      </div>
+      <div *ngIf="sending">
+        <label
+          >{{ 'label.sending' | transloco }}...
+          <cbc-spinner></cbc-spinner>
+        </label>
+      </div>
+    </div>
+  </section>
+</div>

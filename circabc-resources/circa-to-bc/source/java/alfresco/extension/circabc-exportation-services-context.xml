@@ -1,0 +1,115 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+	<bean id="exportation-properties"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="ignoreUnresolvablePlaceholders">
+            <value>true</value>
+        </property>
+        <property name="locations">
+            <list>
+                <value>classpath:alfresco/extension/migration/circabc-exportation.properties</value>
+            </list>
+        </property>
+    </bean>
+
+   	<!-- Bean in charge of the migration  -->
+    <bean id="exportService" class="eu.cec.digit.circabc.repo.migration.ExportServiceImpl">
+	    <property name="transactionService">
+			<ref bean="transactionService" />
+    	</property>
+    	<property name="taskExecutor">
+			<ref bean="exportationTaskExecutor" />
+    	</property>
+    	<property name="serviceRegistry">
+			<ref bean="circabcServiceRegistry" />
+    	</property>
+		<property name="libFileReader">
+			<ref bean="migration.circaLibFileReader" />
+    	</property>
+		<property name="infFileReader">
+			<ref bean="migration.circaInfFileReader" />
+    	</property>
+		<property name="securityReader">
+			<ref bean="migration.circaSecurityReader" />
+    	</property>
+		<property name="metadataReader">
+			<ref bean="migration.circaMetadataReader" />
+    	</property>
+		<property name="userReader">
+			<ref bean="migration.circaUserReader" />
+		</property>
+		<property name="calendarReader">
+			<ref bean="migration.calendarReader" />
+		</property>
+		<property name="newsgroupReader">
+			<ref bean="migration.circaNewsgroupReader" />
+		</property>
+		<property name="logFileReader">
+			<ref bean="migration.circa.logFilesReader" />
+		</property>
+		<property name="fileArchiver">
+			<ref bean="migration.fileArchiver" />
+		</property>
+		<property name="implementationName">
+			<value>${export.implementation.name}</value>
+		</property>
+	</bean>
+
+	<!-- Proxied Migration Service -->
+	<bean id="ExportService"  class="org.springframework.aop.framework.ProxyFactoryBean">
+      <property name="proxyInterfaces">
+         <value>
+		      eu.cec.digit.circabc.service.migration.ExportService
+   		</value>
+      </property>
+      <property name="target">
+            <ref bean="exportService"/>
+      </property>
+      <property name="interceptorNames">
+         <list>
+		    <idref local="ExportService_transaction"/>
+		    <idref bean="AuditMethodInterceptor"/>
+		    <idref local="ExportService_security"/>
+         </list>
+      </property>
+    </bean>
+
+    <!-- Transaction interceptor for Node Preferences Service  -->
+	<bean id="ExportService_transaction" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+         <property name="transactionManager">
+            <ref bean="transactionManager"/>
+         </property>
+         <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+	</bean>
+
+	 <bean id="ExportService_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
+        <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+        <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+        <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+        <property name="objectDefinitionSource">
+            <value>
+               	eu.cec.digit.circabc.service.migration.ExportService.getCategoryNames=ACL_METHOD.ROLE_ADMINISTRATOR
+               	eu.cec.digit.circabc.service.migration.ExportService.getInterestGroups=ACL_METHOD.ROLE_ADMINISTRATOR
+				eu.cec.digit.circabc.service.migration.ExportService.runExport=ACL_METHOD.ROLE_ADMINISTRATOR
+				eu.cec.digit.circabc.service.migration.ExportService.getInterestGroupDepedencies=ACL_METHOD.ROLE_ADMINISTRATOR
+				eu.cec.digit.circabc.service.migration.ExportService.asynchRunExport=ACL_METHOD.ROLE_ADMINISTRATOR
+				eu.cec.digit.circabc.service.migration.ExportService.getRunningIterations=ACL_METHOD.ROLE_ADMINISTRATOR
+				eu.cec.digit.circabc.service.migration.ExportService.getRunningIterationsJournal=ACL_METHOD.ROLE_ADMINISTRATOR
+				eu.cec.digit.circabc.service.migration.ExportService.getImplementationName=ACL_METHOD.ROLE_ADMINISTRATOR
+				eu.cec.digit.circabc.service.migration.ExportService.getCalendarReader=ACL_METHOD.ROLE_ADMINISTRATOR
+				eu.cec.digit.circabc.service.migration.ExportService.getInfFileReader=ACL_METHOD.ROLE_ADMINISTRATOR
+				eu.cec.digit.circabc.service.migration.ExportService.getLibFileReader=ACL_METHOD.ROLE_ADMINISTRATOR
+				eu.cec.digit.circabc.service.migration.ExportService.getMetadataReader=ACL_METHOD.ROLE_ADMINISTRATOR
+				eu.cec.digit.circabc.service.migration.ExportService.getNewsgroupReader=ACL_METHOD.ROLE_ADMINISTRATOR
+				eu.cec.digit.circabc.service.migration.ExportService.getSecurityReader=ACL_METHOD.ROLE_ADMINISTRATOR
+				eu.cec.digit.circabc.service.migration.ExportService.getUserReader=ACL_METHOD.ROLE_ADMINISTRATOR
+            </value>
+        </property>
+    </bean>
+</beans>

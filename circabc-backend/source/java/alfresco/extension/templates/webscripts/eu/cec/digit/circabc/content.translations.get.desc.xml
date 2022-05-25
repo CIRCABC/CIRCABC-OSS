@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Get the translations of one content</shortname>
+  <description>Get the translations of one content</description>
+    <url>/circabc/content/{id}/translations</url>
+  <format default="json"/>
+  <authentication>guest</authentication>
+  <transaction>required</transaction>
+</webscript>

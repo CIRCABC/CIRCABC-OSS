@@ -1,0 +1,17 @@
+<section class="user">
+  <div class="avatar">
+    <img
+      *ngIf="user.avatar"
+      [attr.src]="user.avatar | cbcDownload | cbcSecure"
+      alt="avatar"
+    />
+    <img *ngIf="!user.avatar" src="img/contact-info.png" />
+  </div>
+  {{ user.firstname }}<br />
+  {{ user.lastname }}<br />
+  {{ user.email }}
+  <br *ngIf="showDelete" />
+  <a class="remove" *ngIf="showDelete" (click)="onRemoveClick()"
+    >{{ 'label.remove' | transloco }}</a
+  ><br />
+</section>

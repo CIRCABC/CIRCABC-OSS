@@ -1,0 +1,370 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "cli": {
+    "analytics": false,
+    "cache": {
+      "enabled": true,
+      "path": ".cache",
+      "environment": "all"
+    }
+  },
+  "newProjectRoot": "projects",
+  "projects": {
+    "circabc": {
+      "root": "",
+      "sourceRoot": "src",
+      "projectType": "application",
+      "prefix": "cbc",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        },
+        "@schematics/angular:application": {
+          "strict": true
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "allowedCommonJsDependencies": ["file-saver"],
+            "outputPath": "dist/circabc",
+            "index": "src/index.html",
+            "main": "src/main.ts",
+            "polyfills": "src/polyfills.ts",
+            "tsConfig": "src/tsconfig.app.json",
+            "assets": [
+              "src/favicon.ico",
+              "src/assets",
+              "src/img",
+              "src/manifest.webmanifest",
+              {
+                "glob": "**/*",
+                "input": "node_modules/ngx-extended-pdf-viewer/assets/",
+                "output": "/assets/"
+              }
+            ],
+            "styles": [
+              "src/css/main.scss",
+              "./node_modules/ubuntu-fontface/ubuntu.min.css",
+              "./node_modules/font-awesome/css/font-awesome.min.css",
+              "./node_modules/primeng/resources/themes/saga-green/theme.css",
+              "./node_modules/primeng/resources/primeng.min.css",
+              "./node_modules/primeicons/primeicons.css",
+              "./node_modules/quill/dist/quill.core.css",
+              "./node_modules/quill/dist/quill.snow.css"
+            ],
+            "scripts": ["./node_modules/quill/dist/quill.js"],
+            "baseHref": "/ui/",
+            "deployUrl": "/ui/",
+            "ngswConfigPath": "ngsw-config.json"
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "3mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "6kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "outputHashing": "all",
+              "serviceWorker": true
+            },
+            "development": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.development.ts"
+                }
+              ],
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            },
+            "tomcat": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.tomcat.ts"
+                }
+              ],
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            },
+            "ec2": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.ec2.ts"
+                }
+              ],
+              "serviceWorker": false
+            },
+            "training": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.training.ts"
+                }
+              ],
+              "serviceWorker": false
+            },
+            "localhost": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.localhost.ts"
+                }
+              ],
+              "serviceWorker": true
+            },
+            "test": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "3mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "6kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.test.ts"
+                }
+              ],
+              "serviceWorker": true
+            },
+            "stress": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.stress.ts"
+                }
+              ],
+              "serviceWorker": true
+            },
+            "acceptance": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "3mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "6kb"
+                }
+              ],
+
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.acceptance.ts"
+                }
+              ],
+              "serviceWorker": true
+            },
+
+            "docker": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.docker.ts"
+                }
+              ],
+              "serviceWorker": true
+            },
+            "docker-it-nrw": {
+              "assets": [
+                "src/favicon.ico",
+                "src/assets",
+                "src/img",
+                "src/manifest.webmanifest",
+                {
+                  "glob": "**/*",
+                  "input": "node_modules/ngx-extended-pdf-viewer/assets/",
+                  "output": "/assets/"
+                },
+                {
+                  "glob": "flag_yellow_low.jpg",
+                  "input": "buildconfig/docker-it-nrw/img/all-ec-logo-neg/",
+                  "output": "/img/all-ec-logo-neg/"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.docker-it-nrw.ts"
+                }
+              ],
+              "serviceWorker": true
+            },
+            "scircabc-acc": {
+              "index": "src/s-circabc/index.html",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.scircabc-acc.ts"
+                }
+              ],
+              "serviceWorker": true,
+              "baseHref": "/s-circabc/ui/",
+              "deployUrl": "/s-circabc/ui/"
+            },
+            "scircabc-prod": {
+              "index": "src/s-circabc/index.html",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.scircabc-prod.ts"
+                }
+              ],
+              "serviceWorker": true,
+              "baseHref": "/s-circabc/ui/",
+              "deployUrl": "/s-circabc/ui/"
+            },
+            "shs-acceptance": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.shs.acceptance.ts"
+                }
+              ],
+              "serviceWorker": true
+            },
+            "shs-prod": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.shs.prod.ts"
+                }
+              ],
+              "serviceWorker": true
+            },
+            "enisa-acceptance": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.enisa.acceptance.ts"
+                }
+              ],
+              "serviceWorker": true
+            },
+            "enisa-prod": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.enisa.prod.ts"
+                }
+              ],
+              "serviceWorker": true
+            },
+            "tomcat-prod-it-nrw": {
+              "assets": [
+                "src/favicon.ico",
+                "src/assets",
+                "src/img",
+                "src/manifest.webmanifest",
+                {
+                  "glob": "**/*",
+                  "input": "node_modules/ngx-extended-pdf-viewer/assets/",
+                  "output": "/assets/"
+                },
+                {
+                  "glob": "flag_yellow_low.jpg",
+                  "input": "buildconfig/docker-it-nrw/img/all-ec-logo-neg/",
+                  "output": "/img/all-ec-logo-neg/"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.tomcat-prod-it-nrw.ts"
+                }
+              ],
+              "serviceWorker": true,
+              "baseHref": "/",
+              "deployUrl": "/"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "circabc:build"
+          },
+          "configurations": {
+            "tomcat": {
+              "browserTarget": "circabc:build:tomcat",
+              "proxyConfig": "src/proxy.conf.js"
+            },
+            "ec2": {
+              "browserTarget": "circabc:build:ec2"
+            },
+            "localhost": {
+              "browserTarget": "circabc:build:localhost"
+            },
+            "development": {
+              "browserTarget": "circabc:build:development"
+            },
+            "test": {
+              "browserTarget": "circabc:build:test"
+            },
+            "acceptance": {
+              "browserTarget": "circabc:build:acceptance"
+            },
+            "secure-acceptance": {
+              "browserTarget": "circabc:build:secure-acceptance"
+            },
+            "stress": {
+              "browserTarget": "circabc:build:stress"
+            },
+            "production": {
+              "browserTarget": "circabc:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "circabc:build"
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
+          }
+        }
+      }
+    }
+  },
+  "defaultProject": "circabc"
+}

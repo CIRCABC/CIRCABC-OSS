@@ -1,0 +1,9 @@
+<webscript>
+  <shortname>CIRCABC categories</shortname>
+  <description>Get all CIRCABC categories , get interest groups for given categories</description>
+  <url>/circabc/categories</url>
+  <url>/circabc/categories/{id}/groups</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

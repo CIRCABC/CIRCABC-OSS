@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Get the details of the information service of a IG</shortname>
+  <description>To have the webdav link of the information page</description>
+    <url>/circabc/groups/{igId}/information/news</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

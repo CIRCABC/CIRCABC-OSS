@@ -1,0 +1,43 @@
+<span [formGroup]="form">
+  <select
+    #languages
+    (change)="onLanguageChange(languages.value)"
+    *ngIf="!compactMode"
+    [value]="currentLang"
+    formControlName="lang"
+  >
+    <option *ngFor="let lang of availableLang" value="{{ lang.code }}">
+      {{ lang.name }} ({{ lang.code }})
+    </option>
+  </select>
+  <div *ngIf="compactMode" class="selector-compact">
+    <div class="selector-icon" [class.expanded]="expanded">
+      <a
+        *ngIf="!expanded"
+        title="{{ 'label.language' | transloco }}-{{ currentLang }}"
+        ><img class="iconWorldToggle" src="img/earth-white.png"
+      /></a>
+      <a
+        *ngIf="expanded"
+        title="{{ 'label.language' | transloco }}-{{ currentLang }}"
+        ><img class="iconWorldToggle" src="img/earth-blue.png"
+      /></a>
+      <span class="lang-indicator" [class.bluecolor]="expanded"
+        >{{ currentLang }}</span
+      >
+    </div>
+    <div *ngIf="expanded" class="hinttextlang"
+      >{{ 'lang.disclaimer' | transloco }}</div
+    >
+    <div *ngIf="expanded" class="selector-list">
+      <ul>
+        <li *ngFor="let lang of availableLang">
+          <a (click)="onLanguageChange(lang.code)"
+            ><span class="languageName">{{ lang.name }}</span>
+            <span class="languageCode">({{ lang.code }})</span></a
+          >
+        </li>
+      </ul>
+    </div>
+  </div>
+</span>

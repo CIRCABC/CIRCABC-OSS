@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>users.bulk.invite.members.get</shortname>
+  <description>Get the members of the IGs to bulk invite</description>
+    <url>/circabc/users/bulkinvite/members</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

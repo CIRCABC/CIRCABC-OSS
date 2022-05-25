@@ -1,0 +1,61 @@
+<cbc-modal
+  [title]="'label.configuration'"
+  (ok)="saveConfiguration()"
+  (cancel)="cancel()"
+  [okLabel]="'label.save'"
+  [(visible)]="showModal"
+  [executing]="processing"
+  [executingLabel]="'label.saving'"
+>
+  <form [formGroup]="configurationForm">
+    <div class="field switch">
+      <div class="label"
+        >{{ 'group.configuration.new.forum.switch' | transloco }}</div
+      >
+      <input
+        id="cmn-toggle-1"
+        class="cmn-toggle cmn-toggle-round"
+        type="checkbox"
+        formControlName="enableFlagNewForum"
+      />
+      <label for="cmn-toggle-1" class="nonBlockLabel"></label>
+      <span class="yesno"
+        >{{ configurationForm.controls['enableFlagNewForum'].value === true ?
+        'Yes' : 'No' }}</span
+      >
+      <span class="complement">{{ 'label.withing.the' | transloco }}</span>
+      <div class="custom-select select--form">
+        <select formControlName="ageFlagNewForum">
+          <option *ngFor="let value of defaultValues" [value]="value">
+            {{ value }} {{ 'label.days' | transloco }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field switch">
+      <div class="label"
+        >{{ 'group.configuration.new.topic.switch' | transloco }}</div
+      >
+      <input
+        id="cmn-toggle-2"
+        class="cmn-toggle cmn-toggle-round"
+        type="checkbox"
+        formControlName="enableFlagNewTopic"
+      />
+      <label for="cmn-toggle-2" class="nonBlockLabel"></label>
+      <span class="yesno"
+        >{{ configurationForm.controls['enableFlagNewTopic'].value === true ?
+        'Yes' : 'No' }}</span
+      >
+      <span class="complement">{{ 'label.withing.the' | transloco }}</span>
+      <div class="custom-select select--form">
+        <select formControlName="ageFlagNewTopic">
+          <option *ngFor="let value of defaultValues" [value]="value">
+            {{ value }} {{ 'label.days' | transloco }}
+          </option>
+        </select>
+      </div>
+    </div>
+  </form>
+</cbc-modal>

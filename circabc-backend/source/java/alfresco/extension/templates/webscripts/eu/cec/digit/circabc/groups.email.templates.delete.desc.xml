@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>groups.email.templates.delete</shortname>
+  <description>Delete the given email template(s) from the current user's email template space</description>
+    <url>/circabc/groups/email/templates</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

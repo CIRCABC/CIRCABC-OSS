@@ -1,0 +1,220 @@
+@use '../global/variables-mixins-keyframes';
+
+.black-overlayer {
+  display: block;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgb(0 17 25 / 0.75);
+  z-index: 15;
+}
+
+.black-overlayer--light {
+  @extend .black-overlayer;
+
+  background: rgb(0 17 25 / 0.2);
+}
+
+.modal {
+  position: fixed;
+  margin: 0 auto;
+  width: 830px;
+  max-width: 100%;
+  background: #fff;
+  border-radius: 4px;
+  max-height: 100vh;
+  margin-top: 150px;
+  z-index: 20;
+  font-size: 1.4rem;
+  margin-bottom: 25px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  .close-icon {
+    position: absolute;
+    top: -23px;
+    right: -23px;
+    width: 16px;
+    height: 16px;
+    background: url(^img/icon-close-white.png);
+    background-repeat: no-repeat;
+
+    &:hover {
+      opacity: 0.5;
+    }
+  }
+
+  .back-link {
+    color: #035;
+    position: absolute;
+    left: 30px;
+  }
+
+  .back-link::before {
+    content: '';
+    display: inline-block;
+    width: 15px;
+    height: 13px;
+    background: url(^img/arrow-previous.png);
+    margin-right: 5px;
+  }
+
+  header {
+    background: #eef5f4;
+    height: 88px;
+    border-radius: 4px 4px 0 0;
+    padding: 35px 0;
+    border-bottom: 1px solid #dedede;
+
+    h2 {
+      font-weight: 500;
+      font-size: 16px;
+      margin-top: 50px;
+      color: #757575;
+      text-align: center;
+      font-family: Ubuntu, Verdana, Helvetica, sans-serif;
+      text-transform: uppercase;
+
+      &:first-of-type {
+        margin-top: 0;
+      }
+    }
+  }
+
+  .modal-content {
+    padding: 25px;
+    max-height: calc(100vh - 200px);
+    overflow: auto;
+  }
+
+  .modal-footer {
+    border-top: 1px solid #dedede;
+    text-align: center;
+
+    .buttons-group {
+      margin: 25px auto;
+    }
+  }
+}
+
+.close-icon-dark {
+  float: right;
+  width: 20px;
+  height: 20px;
+  background: url(^img/icon-close-20x20.png);
+  background-repeat: no-repeat;
+}
+
+.modal--select-files {
+  .wrapping {
+    margin: 0 auto;
+    width: 400px;
+  }
+
+  .drop-zone {
+    display: block;
+    border: 2px dashed #999;
+    height: 100px;
+    margin: 10px auto;
+    text-align: center;
+    padding-top: 40px;
+    color: #035;
+
+    @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+      display: none;
+    }
+  }
+
+  .already-selected {
+    color: #757575;
+    font-size: 1.3rem;
+  }
+
+  .field--checkbox {
+    margin-top: 20px;
+    color: #757575;
+  }
+}
+
+@keyframes showmodal {
+  0% {
+    display: none;
+    opacity: 0;
+  }
+
+  100% {
+    display: block;
+    opacity: 1;
+  }
+}
+
+@keyframes hidemodal {
+  0% {
+    display: block;
+    opacity: 1;
+  }
+
+  100% {
+    display: none;
+    opacity: 0;
+  }
+}
+
+@keyframes showmodaloverlayer {
+  0% {
+    display: none;
+    opacity: 0;
+  }
+
+  100% {
+    display: block;
+    opacity: 1;
+  }
+}
+
+@keyframes hidemodaloverlayer {
+  0% {
+    display: block;
+    opacity: 1;
+  }
+
+  100% {
+    display: none;
+    opacity: 0;
+  }
+}
+
+.modal-shown {
+  display: block;
+  animation-name: showmodal;
+  animation-duration: 0.4s;
+  animation-timing-function: ease-in;
+  opacity: 1;
+}
+
+.modal-hidden {
+  display: none;
+  animation-name: hidemodal;
+  animation-duration: 0.3s;
+  animation-timing-function: ease-out;
+  opacity: 0;
+}
+
+.overlayer-shown {
+  display: block;
+  animation-name: showmodaloverlayer;
+  animation-duration: 0.3s;
+  animation-timing-function: ease-in;
+  opacity: 1;
+}
+
+.overlayer-hidden {
+  display: none;
+  animation-name: hidemodaloverlayer;
+  animation-duration: 0.2s;
+  animation-timing-function: ease-out;
+  opacity: 0;
+}

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Calendar">
+		
+		<select id="getCalendar" resultType="eu.cec.digit.circabc.migration.reader.impl.circa.domain.Calendar">
+			SELECT
+				ID                     as id,
+				CIRCA_CALENDAR_TYPE    as calendarType,
+				DCTERMS_MEDIUM         as termsMedium,
+				CIRCA_PRIORITY         as priority,
+				MEETING_DATE           as date,
+				LIB_SECTION            as librarySection,
+				REPEATCODE             as repeatCode,
+				MULTICODE              as multicode,
+				MULTICOUNTER           as multicounter,
+				CUSTOMRATE             as customRate,
+				CUSTOMPERIOD           as customPeriod,
+				CUSTOMDURATION         as customDuration,
+				STIMEH                 as stimeh,
+				STIMEM                 as stimem,
+				ETIMEH                 as etimeh,
+				ETIMEM                 as etimem,
+				TZONE                  as tzone,
+				CIRCA_STATUS           as status,
+				AUDIENCE               as audience,
+				CIRCA_OWNER            as owner,
+				PHONE                  as phone,
+				FAX                    as fax,
+				EMAIL                  as email,
+				OWNER_URL              as ownerURL,
+				INVITED_USERS          as internalUsers,
+				INVITED_EXT_USERS      as externalUsers,
+				ACCEPTED_USERS         as acceptedUsers,
+				DENIED_USERS           as deniedUsers,
+				DC_SUBJECT             as subject
+			FROM $virtualCirca$_$interestGroup$_Cal
+			WHERE id = #id#
+		</select>
+
+		<select id="getAllCalendars" resultType="eu.cec.digit.circabc.migration.reader.impl.circa.domain.Calendar">
+				SELECT
+					ID                     as id,
+					CIRCA_CALENDAR_TYPE    as calendarType,
+					DCTERMS_MEDIUM         as termsMedium,
+					CIRCA_PRIORITY         as priority,
+					MEETING_DATE           as date,
+					LIB_SECTION            as librarySection,
+					REPEATCODE             as repeatCode,
+					MULTICODE              as multicode,
+					MULTICOUNTER           as multicounter,
+					CUSTOMRATE             as customRate,
+					CUSTOMPERIOD           as customPeriod,
+					CUSTOMDURATION         as customDuration,
+					STIMEH                 as stimeh,
+					STIMEM                 as stimem,
+					ETIMEH                 as etimeh,
+					ETIMEM                 as etimem,
+					TZONE                  as tzone,
+					CIRCA_STATUS           as status,
+					AUDIENCE               as audience,
+					CIRCA_OWNER            as owner,
+					PHONE                  as phone,
+					FAX                    as fax,
+					EMAIL                  as email,
+					OWNER_URL              as ownerURL,
+					INVITED_USERS          as internalUsers,
+					INVITED_EXT_USERS      as externalUsers,
+					ACCEPTED_USERS         as acceptedUsers,
+					DENIED_USERS           as deniedUsers,
+					DC_SUBJECT             as subject
+				FROM $virtualCirca$_$interestGroup$_Cal
+		</select>
+
+		<select id="getCalendarLinguistic" resultType="eu.cec.digit.circabc.migration.reader.impl.circa.domain.CalendarLinguistic">
+				SELECT
+					ID                     as id,
+					DC_LANGUAGE            as language,
+					DC_TITLE               as title,
+					DCTERMS_ABSTRACT       as abstractDesc,
+					LOCATION               as location,
+					ORGANIZER              as organizer,
+					AGENDA                 as agenda,
+					EVENTS                 as events,
+					CONTACT                as contact
+				FROM $virtualCirca$_$interestGroup$_CalL
+				WHERE id = #id#
+		</select>
+
+		<select id="getAllCalendarLinguistics" resultType="eu.cec.digit.circabc.migration.reader.impl.circa.domain.CalendarLinguistic">
+				SELECT
+					ID                     as id,
+					DC_LANGUAGE            as language,
+					DC_TITLE               as title,
+					DCTERMS_ABSTRACT       as abstractDesc,
+					LOCATION               as location,
+					ORGANIZER              as organizer,
+					AGENDA                 as agenda,
+					EVENTS                 as events,
+					CONTACT                as contact
+				FROM $virtualCirca$_$interestGroup$_CalL
+		</select>
+		
+</mapper>

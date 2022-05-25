@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Delete one topic</shortname>
+  <description>Delete one topic</description>
+    <url>/circabc/topics/{id}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

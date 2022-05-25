@@ -1,0 +1,31 @@
+{
+	"folders": [
+		{
+			"path": "build"
+		},
+		{
+			"path": "circabc-frontend",
+			"files.exclude": "pom.xml"
+		},
+		{
+			"path": "circabc-backend"
+		},
+		{
+			"path": "circabc-frontend-wrapper"
+		},
+		{
+			"path": "circabc-resources"
+		},
+		{
+			"path": "circabc-docker"
+		},
+		{
+			"path": "start"
+		},
+		{
+			"path": "circabc-e2e"
+		}
+	],
+	"settings": { }
+
+}

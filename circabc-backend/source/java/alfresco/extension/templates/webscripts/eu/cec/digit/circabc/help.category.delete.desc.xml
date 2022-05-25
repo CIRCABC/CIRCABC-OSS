@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>delete one of the help categories</shortname>
+  <description>delete one of the help categories</description>
+  <url>/circabc/help/categories/{id}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>groups.id.events.export</shortname>
+  <description>Exports the events of an IG in different formats: CSV, XLS, or XML</description>
+    <url>/circabc/groups/{igId}/events/export</url>
+  <format default="json"/>
+  <authentication>guest</authentication>
+  <transaction>required</transaction>
+</webscript>

@@ -1,0 +1,31 @@
+<cbc-modal
+  [title]="'admin.upload.logo.action'"
+  (ok)="uploadLogo()"
+  (cancel)="cancel()"
+  [okLabel]="'label.upload'"
+  [(visible)]="showModal"
+  [showOkButton]="hasFile() && isValidImage()"
+  [executing]="processing"
+  [executingLabel]="'label.uploading'"
+>
+  <form [formGroup]="logoForm">
+    <div class="field field--file">
+      <span class="fakeLabel">{{ 'label.file' | transloco }}</span>
+      <input
+        type="file"
+        id="file"
+        class="inputfile inputfile-6"
+        formControlName="file"
+        (change)="fileChangeEvent($event)"
+      />
+      <label for="file"
+        ><span class="result">{{ getFileName() }}</span
+        ><span class="button">{{ 'label.browse.file' | transloco }}</span>
+      </label>
+    </div>
+    <div style="color: green">{{ 'image.upload.1mb' | transloco }}</div>
+    <span *ngIf="hasFile() && !isValidImage()" style="color: red"
+      >{{ 'error.image.upload' | transloco }}</span
+    >
+  </form>
+</cbc-modal>

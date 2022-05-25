@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Get user preference</shortname>
+  <description>Column configuration / listing options</description>
+    <url>/circabc/users/{userId}/preferences</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

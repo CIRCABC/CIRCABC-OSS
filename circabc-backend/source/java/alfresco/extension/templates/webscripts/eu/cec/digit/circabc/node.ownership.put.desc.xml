@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>take the ownership of a node</shortname>
+  <description>take the ownership of a node given to the currently authenticated user</description>
+    <url>/circabc/nodes/{id}/ownership</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

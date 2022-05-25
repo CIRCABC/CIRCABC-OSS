@@ -1,0 +1,56 @@
+header {
+  font-size: 16px;
+  font-weight: bold;
+  color: #035;
+  margin-bottom: 15px;
+  margin-top: 15px;
+}
+
+.feed {
+  ul {
+    margin-left: 20px;
+
+    li {
+      font-size: 14px;
+      border-left: 2px solid #757575;
+      padding: 5px 15px;
+      color: #757575;
+
+      &::before {
+        content: '';
+        width: 6px;
+        position: absolute;
+        margin-top: 5px;
+        margin-left: -19px;
+        height: 6px;
+        background-image: url(^img/dot.png);
+        background-size: 6px;
+      }
+
+      .date {
+        display: inline-block;
+        width: 20%;
+        vertical-align: top;
+      }
+
+      .file {
+        display: inline-block;
+        width: 75%;
+
+        .file-link {
+          display: inline-block;
+          overflow: hidden;
+          white-space: nowrap;
+          max-width: 250px;
+          text-overflow: ellipsis;
+          word-break: break-all;
+          margin-bottom: -3px;
+        }
+      }
+    }
+  }
+}
+
+.show-all {
+  text-align: center;
+}

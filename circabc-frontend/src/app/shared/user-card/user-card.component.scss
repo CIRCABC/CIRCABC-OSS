@@ -1,0 +1,69 @@
+:host {
+  position: relative;
+}
+
+.user-link {
+  display: inline-block;
+  max-width: 170px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  vertical-align: bottom;
+}
+
+a.disabled {
+  color: initial;
+  cursor: default;
+}
+
+.user-card {
+  position: absolute;
+  z-index: 3;
+  background-color: #fff;
+  border-radius: 5px;
+  -webkit-box-shadow: 0 0 10px rgb(0 0 0 / 0.2);
+  box-shadow: 0 0 10px rgb(0 0 0 / 0.4);
+  padding: 10px;
+  top: 0;
+  left: -250px;
+  min-width: 350px;
+  font-weight: normal;
+
+  .close {
+    float: right;
+  }
+
+  .avatar {
+    float: left;
+    width: 48px;
+    height: 48px;
+    border-radius: 25px;
+    border-radius: 50%;
+    overflow: hidden;
+    -webkit-box-shadow: 0 1px 4px rgb(0 0 0 / 0.3);
+    box-shadow: 0 1px 4px rgb(0 0 0 / 0.3);
+    margin-right: 10px;
+
+    img {
+      width: 48px;
+      height: 48px;
+    }
+  }
+
+  .details {
+    padding-left: 10px;
+    font-size: 11px;
+    text-align: left;
+    float: left;
+    width: 250px;
+  }
+
+  .email {
+    padding-top: 10px;
+  }
+}
+
+.right-side {
+  top: -60px !important;
+  left: -10px !important;
+}

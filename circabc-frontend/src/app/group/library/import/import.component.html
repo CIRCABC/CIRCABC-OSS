@@ -1,0 +1,150 @@
+<!-- MODAL BOX -->
+<div
+  class="black-overlayer"
+  *ngIf="showModal"
+  [class.overlayer-shown]="showModal"
+  [class.overlayer-hidden]="!showModal"
+></div>
+<section
+  class="modal modal--select-files"
+  *ngIf="showModal"
+  [class.modal-shown]="showModal"
+  [class.modal-hidden]="!showModal"
+  style="margin-top: 0"
+>
+  <a class="close-icon" (click)="cancel('close')"></a>
+  <header>
+    <h2 class="title">{{ 'import.select.zip.file' | transloco }}</h2>
+  </header>
+
+  <section class="modal-content">
+    <!--  file -->
+    <div class="field field--file">
+      <!-- Note: You need javascript here to know when the files are selected, see in the footer -->
+      <span style="margin-right: 35px">{{ 'label.file' | transloco }}</span>
+      <input
+        type="file"
+        id="file"
+        class="inputfile inputfile-6"
+        (change)="fileChangeEvent($event)"
+        data-multiple-caption="{count} files selected"
+        multiple
+      />
+      <label for="file"
+        ><span class="result"></span
+        ><span class="button">{{ 'label.browse' | transloco }}</span></label
+      >
+    </div>
+
+    <div
+      class="drop-zone"
+      (dragenter)="dragenter($event)"
+      (dragover)="dragover($event)"
+      (drop)="drop($event)"
+    >
+      {{ 'label.drag.drop.file' | transloco }}
+    </div>
+
+    <div *ngIf="fileToUpload !== undefined" class="field">
+      <label>{{ 'label.file.uploaded' | transloco }}</label> ( {{
+      'label.upload.total.size' | transloco }}: {{ fileToUpload.size | cbcSize:
+      true }}<span *ngIf="importExceeds(fileToUpload.size)" style="color: red"
+        >, {{ 'import.maximum.size' | transloco: { size: importMaxSize }
+        }}</span
+      >
+      )
+      <br />
+      <div class="listToBeUploaded">
+        <ul>
+          <li>{{ fileToUpload.name }}</li>
+        </ul>
+      </div>
+      <br />
+      <br />
+      <form [formGroup]="importForm">
+        <div class="field switch">
+          <div class="label">{{ 'import.notify.user' | transloco }}</div>
+          <input
+            id="notifyUser"
+            class="cmn-toggle cmn-toggle-round"
+            type="checkbox"
+            formControlName="notifyUser"
+          />
+          <label for="notifyUser" class="nonBlockLabel"></label>
+          <span
+            >{{ (importForm.controls['notifyUser'].value === true ? 'label.yes'
+            : 'label.no' ) | transloco }}</span
+          >
+        </div>
+        <div class="field switch">
+          <div class="label">{{ 'import.delete.file' | transloco }}</div>
+          <input
+            id="deleteFile"
+            class="cmn-toggle cmn-toggle-round"
+            type="checkbox"
+            formControlName="deleteFile"
+          />
+          <label for="deleteFile" class="nonBlockLabel"></label>
+          <span
+            >{{ (importForm.controls['deleteFile'].value === true ? 'label.yes'
+            : 'label.no' ) | transloco }}</span
+          >
+        </div>
+        <div class="field switch">
+          <div class="label"
+            >{{ 'import.disable.notification' | transloco }}</div
+          >
+          <input
+            id="disableNotification"
+            class="cmn-toggle cmn-toggle-round"
+            type="checkbox"
+            formControlName="disableNotification"
+          />
+          <label for="disableNotification" class="nonBlockLabel"></label>
+          <span
+            >{{ (importForm.controls['disableNotification'].value === true ?
+            'label.yes' : 'label.no' ) | transloco }}</span
+          >
+        </div>
+        <br />
+        <div class="field">
+          <label for="encoding">{{ 'label.encoding' | transloco }}</label>
+          <div class="custom-select select--form reset-width select-align">
+            <select name="" id="encoding" formControlName="encoding">
+              <option value="CP437">CP437</option>
+              <option value="UTF-8">UTF-8</option>
+            </select>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="field" *ngIf="uploading">
+      <label
+        >{{ 'label.importing' | transloco }}<cbc-spinner></cbc-spinner
+      ></label>
+    </div>
+
+    <span style="font-size: 13px"
+      >{{ 'import.need.empty.template' | transloco }}&nbsp;<a
+        (click)="getImportIndexFileTemplate()"
+        ><img src="img/download-2.png" width="15" height="15" /></a
+    ></span>
+  </section>
+  <section class="modal-footer">
+    <!-- Buttons -->
+    <div class="buttons-group">
+      <a
+        [class.disabled]="
+          fileToUpload === undefined || importExceeds(fileToUpload.size)
+        "
+        class="cta"
+        (click)="import()"
+        >{{ 'label.import' | transloco }}</a
+      >
+      <a class="button" (click)="cancel('close')"
+        >{{ 'label.cancel' | transloco }}</a
+      >
+    </div>
+  </section>
+</section>

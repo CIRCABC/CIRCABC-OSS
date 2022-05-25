@@ -1,0 +1,9 @@
+<h2>{{ 'help.articles.in.category' | transloco }}</h2>
+<ul>
+  <li
+    *ngFor="let article of articles"
+    [class.selected]="article.id === currentId"
+  >
+    <a [routerLink]="['..', article.id]">{{ article.title | cbcI18n }}</a>
+  </li>
+</ul>

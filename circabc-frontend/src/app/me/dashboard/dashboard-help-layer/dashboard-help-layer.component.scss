@@ -1,0 +1,20 @@
+@use '~css/global/variables-mixins-keyframes';
+
+.section-end {
+  text-align: center;
+
+  .back {
+    margin: 0 25px;
+  }
+}
+
+.welcome {
+  text-align: center;
+  padding: 50px;
+
+  @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+    & {
+      padding: 15px;
+    }
+  }
+}

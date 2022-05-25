@@ -1,0 +1,66 @@
+<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+<div class="fluid">
+  <a class="button" style="float: right" (click)="generateStatistics()"
+    >{{ 'label.generate.statistics' | transloco }}</a
+  >
+  <div class="fluid page-container">
+    <span>{{ 'admin.ig.statistics.description' | transloco }}</span>
+    <section class="table-container">
+      <h3>{{ 'label.content' | transloco }}</h3>
+      <header class="header">
+        <cbc-pager
+          [length]="totalItems"
+          [pageSize]="listingOptions.limit"
+          [pageIndex]="listingOptions.page"
+          (pageChanged)="goToPage($event)"
+        ></cbc-pager>
+      </header>
+
+      <table class="main">
+        <thead>
+          <tr>
+            <th></th>
+            <th style="width: 22px"></th>
+            <th> {{ 'label.title' | transloco }} </th>
+            <th> {{ 'label.Size' | transloco }} </th>
+            <th> {{ 'label.modification.date' | transloco }} </th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr class="row empty-row" *ngIf="contents !== undefined">
+            <td
+              style="padding-left: 22px"
+              colspan="5"
+              *ngIf="contents.length === 0"
+            >
+              {{ 'admin.ig.statistics.display.none' | transloco }}
+            </td>
+          </tr>
+
+          <tr
+            class="row"
+            *ngFor="let content of contents; trackBy: trackByName"
+          >
+            <td class="cell-left-border"></td>
+            <td class="cell-checkbox"></td>
+            <td class="cell-file-name" style="width: 30px">
+              <a (click)="download(content)">{{ content.name }}</a>
+            </td>
+            <td>{{ content.size }}</td>
+            <td>{{ content.modifiedDate | date }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="footer">
+        <cbc-pager
+          [length]="totalItems"
+          [pageSize]="listingOptions.limit"
+          [pageIndex]="listingOptions.page"
+          (pageChanged)="goToPage($event)"
+        ></cbc-pager>
+      </div>
+    </section>
+  </div>
+</div>

@@ -1,0 +1,101 @@
+<div
+  data-cy="add"
+  class="cta cta--plus dropdown-trigger"
+  (click)="toggleAddDropdown($event)"
+  *ngIf="currentNode"
+>
+  {{ 'label.add' | transloco }}
+  <div class="dropdown dropdown--add-file" *ngIf="showAddDropdown">
+    <ul>
+      <li
+        *ngIf="
+          enableAddFile
+            | cbcIfOrRoles
+              : [currentNode, ['LibManageOwn', 'LibFullEdit', 'LibAdmin'], []]
+        "
+      >
+        <a
+          data-cy="files"
+          id="createDocInLib"
+          class="files"
+          [routerLink]="['./upload']"
+        >
+          {{ 'label.files' | transloco }}
+          <span>PDF, DOC, ZIP...</span>
+        </a>
+      </li>
+      <li
+        *ngIf="
+          enableAddFolder
+            | cbcIfOrRoles
+              : [currentNode, ['LibManageOwn', 'LibFullEdit', 'LibAdmin'], []]
+        "
+      >
+        <a
+          id="createFolderInLib"
+          class="folder"
+          (click)="launchCreateSpaceWizard()"
+          >{{ 'label.folder' | transloco }}</a
+        >
+      </li>
+      <li
+        *ngIf="
+          enableAddUrl
+            | cbcIfOrRoles
+              : [currentNode, ['LibManageOwn', 'LibFullEdit', 'LibAdmin'], []]
+        "
+      >
+        <a class="url" (click)="launchAddUrlModal()"
+          >{{ 'label.url' | transloco }}</a
+        >
+      </li>
+      <li
+        *ngIf="
+          enableAddSharedSpaceLink && hasSharedSpaceItems()
+            | cbcIfOrRoles
+              : [currentNode, ['LibManageOwn', 'LibFullEdit', 'LibAdmin'], []]
+        "
+      >
+        <a class="link" (click)="launchSharedSpaceLinkModal()"
+          >{{ 'label.shared.space' | transloco }}</a
+        >
+      </li>
+      <li *ngIf="enableAddUrl | cbcIfOrRoles: [currentNode, ['LibAdmin'], []]">
+        <a class="import" (click)="showImport()"
+          >{{ 'label.import' | transloco }}</a
+        >
+      </li>
+    </ul>
+  </div>
+</div>
+
+<cbc-add-space
+  [parentNode]="currentNode"
+  [showWizard]="launchCreateSpace"
+  (modalHide)="propagateCreateSpaceClosure($event)"
+></cbc-add-space>
+
+<cbc-add-content
+  [parentNode]="currentNode"
+  [showWizard]="launchAddContent"
+  (modalHide)="propagateUploadFilesClosure($event)"
+></cbc-add-content>
+
+<cbc-add-url
+  [parentNode]="currentNode"
+  [showModal]="launchAddUrl"
+  (modalHide)="propagateAddUrlClosure($event)"
+></cbc-add-url>
+
+<cbc-add-shared-space-link
+  [parentNode]="currentNode"
+  [sharedSpaceItems]="sharedSpaceItems"
+  [showModal]="launchAddSharedSpaceLink"
+  (modalHide)="propagateAddLinkClosure($event)"
+></cbc-add-shared-space-link>
+
+<cbc-import
+  [showModal]="showModalImport"
+  [targetNode]="currentNode"
+  (modalHide)="propagateAfterImportClosure($event)"
+></cbc-import>

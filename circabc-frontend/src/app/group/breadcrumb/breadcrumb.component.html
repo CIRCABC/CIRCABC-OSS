@@ -1,0 +1,79 @@
+<div class="breadcrumb" [class.no-margin-bottom]="noMarginBottom">
+  <ul>
+    <li *ngFor="let part of clickablePath">
+      <a
+        *ngIf="clickable"
+        [routerLink]="prepareArrayParts(part)"
+        [ngStyle]="getStyle()"
+      >
+        <img
+          src="img/icon-dashboard-grey.png"
+          alt="Home"
+          *ngIf="isRoot(part) && showHomeIcon"
+        />
+        <span
+          title="{{ part.description | cbcI18n | cbcTaggedToPlainText }}"
+          *ngIf="!displayName"
+        >
+          {{(isForumNewsgroupsName(part.name!,part.type!))? ('label.forums' |
+          transloco) : part.title === undefined ? part.name : (part.title |
+          cbcI18n) !== '' ? (part.title | cbcI18n) : (part.title | cbcI18n) ===
+          '' ? part.name : ('label.no.name' | transloco)}}
+        </span>
+        <span
+          title="{{ part.description | cbcI18n | cbcTaggedToPlainText }}"
+          *ngIf="displayName"
+        >
+          {{(part.name === "Newsgroups" && part.service === "newsgroups")?
+          ('label.forums' | transloco) : part.name }}
+        </span>
+      </a>
+      <span *ngIf="!clickable" [ngStyle]="getStyle()">
+        <img
+          src="img/icon-dashboard-grey.png"
+          alt="Home"
+          *ngIf="isRoot(part) && showHomeIcon"
+        />
+        <span
+          title="{{ part.description | cbcI18n | cbcTaggedToPlainText }}"
+          *ngIf="!displayName"
+        >
+          {{ (part.name === "Newsgroups" && part.service === "newsgroups")?
+          ('label.forums' | transloco) : part.title === undefined ? part.name :
+          (part.title | cbcI18n) !== '' ? (part.title | cbcI18n) : (part.title |
+          cbcI18n) === '' ? part.name : ('label.no.name' | transloco) }}
+        </span>
+        <span
+          title="{{ part.description | cbcI18n | cbcTaggedToPlainText }}"
+          *ngIf="displayName"
+        >
+          {{ part.name }}
+        </span>
+      </span>
+    </li>
+
+    <li *ngFor="let part of lastElement">
+      <img
+        src="img/icon-dashboard-grey.png"
+        alt="Home"
+        *ngIf="isRoot(part) && showHomeIcon"
+      />
+      <span
+        title="{{ part.description | cbcI18n | cbcTaggedToPlainText }}"
+        *ngIf="!displayName"
+      >
+        {{ part.title === undefined ? part.name : (part.title | cbcI18n) === ''
+        ? part.name : (isForumNewsgroupsName(part.name!,part.type!))?
+        ('label.forums' | transloco) : (part.title | cbcI18n) !== '' ?
+        (part.title | cbcI18n) : ('label.no.name' | transloco) }}
+      </span>
+      <span
+        title="{{ part.description | cbcI18n | cbcTaggedToPlainText }}"
+        *ngIf="displayName"
+      >
+        {{(isForumNewsgroupsName(part.name!,part.type!))? ('label.forums' |
+        transloco) : part.name }}
+      </span>
+    </li>
+  </ul>
+</div>

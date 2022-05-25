@@ -1,0 +1,229 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>CIRCABC FAQ</title>
+        <link href="../css/style2.css" type="text/css" rel="stylesheet"/>
+         <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico">
+        <script src="../js/jquery-1.10.2.min.js" type="application/javascript"></script>
+        <script type="application/javascript">
+        	$(document).ready(function(){
+        		
+        		if($("#links h2 img").attr("alt") == "open")
+        			{
+        				$("#links h2 img").attr("src","../imgs/arrow_carrot-up_alt2.png");
+        				$("#links ul#linkList").css("display","block");
+        				$("#links h2 img").attr("alt","closed");
+        			}
+        			else
+        			{
+        				$("#links h2 img").attr("src","../imgs/arrow_carrot-down_alt2.png");
+        				$("#links ul#linkList").css("display","none");
+        				$("#links h2 img").attr("alt","open");
+        			}
+        		
+        		$("#links h2").click(function(){
+        			
+        			
+        			if($("#links h2 img").attr("alt") == "open")
+        			{
+        				$("#links h2 img").attr("src","../imgs/arrow_carrot-up_alt2.png");
+        				$("#links ul#linkList").css("display","block");
+        				$("#links h2 img").attr("alt","closed");
+        			}
+        			else
+        			{
+        				$("#links h2 img").attr("src","../imgs/arrow_carrot-down_alt2.png");
+        				$("#links ul#linkList").css("display","none");
+        				$("#links h2 img").attr("alt","open");
+        			}
+        		});
+        		
+        	});
+        </script>
+    </head>
+    <body>
+<!--     	<div class="no-hover lang">
+		    <a href="../en/newsgroups.html" style="margin-right:10px;">[EN]</a>
+		    <a href="../fr/newsgroups.html" style="margin-right:10px;">[FR]</a>
+		    <a href="../de/newsgroups.html" style="margin-right:10px;">[DE]</a>
+	    </div>  -->
+    	
+        <div id="header" >
+        	<!--<img src="imgs/banner.jpg" alt="logo" class="logo"/>-->
+        	<img src="../imgs/Help-File-icon.png" width="76" style="float:right;"/>
+        	<h1><a href="index.html">CIRCABC<br/>Help</a></h1>
+        	<ul>
+<!--         		<li ><a href="authentication.html"><img src="../imgs/icon_profile.png"/>Authentication</a>
+        		</li> -->
+        		<li ><a href="administration.html"><img src="../imgs/icon_adjust-vert.png"/>Administration</a></li>
+        		<li ><a href="library.html"><img src="../imgs/icon_document_alt.png"/>Library</a></li>
+        		<li class="selected"><a href="newsgroups.html"><img src="../imgs/icon_comment_alt.png"/>Newsgroups</a>
+        			<br/><p>Questions about the Newsgroups</p></li>
+        		<li ><a href="events.html"><img src="../imgs/icon_calendar.png"/>Events</a></li>
+        		<li ><a href="information.html"><img src="../imgs/icon_info_alt.png"/>Information</a></li>
+        		<li ><a href="notification.html"><img src="../imgs/icon_mail_alt.png"/>Notification</a></li>
+        		<li ><a href="search.html"><img src="../imgs/icon_search.png"/>Search</a></li>
+        		<li ><a href="known_bugs.html"><img src="../imgs/icon_error-triangle_alt.png"/>Known bugs</a></li>
+        	</ul>
+        	
+        	
+        </div>
+        
+        <div id="links">
+        		<h2>Table of content <img src="../imgs/arrow_carrot-down_alt2.png" alt="closed"/></h2>
+        		<ul id="linkList">
+        			<li><a href="#what_is_newsgroup">What is "Newsgroups"?</a></li>
+					<li><a href="#howto_create">How to create a new forum and start a new discussion</a></li>
+					<li><a href="#whatis_moderation">What is a moderated forum?</a></li>
+					<li><a href="#howto_create_topic">How to create a new topic</a></li>
+					<li><a href="#howto_reply">How to reply to a topic </a></li>
+					<li><a href="#howto_delete">How to delete a forum or a post</a></li>
+					<li><a href="#howto_discuss">How to create a discussion attached to a document</a></li>
+        		</ul>
+        </div>
+        
+        <div id="content">
+
+        	<ul class="faqList">
+        		
+        		<li class="faqListItem">
+        			<h2><a name="what_is_newsgroup">What is "Newsgroups"?</a></h2>
+        			<p class="text">
+        			<b>'Newsgroups'</b> is the online discussion of your IG where members can hold conversations in the form of posted messages. 
+        			
+					</p>
+					<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		
+        		<li class="faqListItem">
+        			<h2><a name="howto_create">How to create a new forum and start a new discussion</a></h2>
+        			<p class="text">
+	        			To start new discussion leaders must first create a new forum
+	        			<br/>
+	        			<img class="faqImg" src="../imgs/content/newsgroups_create_menu.png"/>
+	        			<br/>
+	        			Name the Forum and specify whether it is moderated or not (the description is optional),<br/>
+	        			Then Create Forum<br/>
+	        			<img class="faqImg faq65" src="../imgs/content/newsgroups_create_form.png"/>
+	        			<br/>
+	        			<img class="faqImg faq65" src="../imgs/content/newsgroups_forum.png"/>
+					</p>
+					<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		
+        		<li class="faqListItem">
+        			<h2><a name="whatis_moderation">What is a moderated forum?</a></h2>
+        			<p class="text">
+        				The discussion can be moderated: a posted message might need to be approved by a moderator before it becomes visible.
+        			<br/>
+        			<img class="faqImg faq85" src="../imgs/content/newsgroups_moderation.png"/>
+
+					</p>
+					<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		
+        		<li class="faqListItem">
+        			<h2><a name="howto_create_topic">How to create a new topic</a></h2>
+        			<p class="text">
+        				Navigate to the forum where you want to create a new topic
+					</p>
+					<p class="hint">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" /></span>
+        				Leaders must first create a forum, then Authors, Contributors or anyone have 'Access and Post' permission can create a Topic in a Forum
+        			</p>
+        			<p class="text">
+        				Create Topic
+        				<br/>
+        				<img class="faqImg" src="../imgs/content/newsgroups_create_topic.png"/>
+        				<br/>
+        				Specify the subject and write your post<br/>
+        				Click on Post<br/>
+        				<img class="faqImg faq85" src="../imgs/content/newsgroups_create_topic_form.png" />
+        				
+					</p>
+					<p class="hint">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" /></span>
+        				You can also upload an attachment or select a link from the library 
+        			</p>
+					<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		
+        		<li class="faqListItem">
+        			<h2><a name="howto_reply">How to reply to a topic </a></h2>
+        			<p class="text">
+	        			Navigate to the topic 
+	        			<br/>
+	        			<img class="faqImg faq85" src="../imgs/content/newsgroups_browse_topic.png"/>
+	        			<br/>
+	        			Click on the icon <b>reply to this post</b> or Create Post inside this topic
+						<br/>
+						Then answer and click on <b>Post</b>
+					</p>
+					<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		
+        		<li class="faqListItem">
+        			<h2><a name="howto_delete">How to delete a forum or a post</a></h2>
+        			<p class="text">
+	        			Click on View detail icon next to the forum or Topic
+	        			<br/>
+	        			<img class="faqImg faq85" src="../imgs/content/newsgroups_details_forum.png"/>
+	        			<br/>
+	        			<img class="faqImg faq85" src="../imgs/content/newsgroups_details_topic.png"/>
+	        			<br/>
+	        			Click on Delete Forum or Delete Topic,
+						<br/>
+						Or navigate to the topic and click on delete icon 
+						<br/>
+						<img class="faqImg faq85" src="../imgs/content/newsgroups_delete_topic.png"/>
+					</p>
+					<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		
+        		<li class="faqListItem">
+        			<h2><a name="howto_discuss">How to create a discussion attached to a document</a></h2>
+        			<p class="text">
+	        			Click on <b>View detail</b> icon next to the document available in the library,
+	        			<br/>
+	        			The action <b>Start Discussion</b> is available in the right box,
+	        			<br/>
+	        			Specify the subject, write your post and click on Post,
+	        			<br/>
+	        			Click on Delete Forum or Delete Topic,
+						<br/>
+						The discussion will be available from actions: 
+						<br/>
+						<img class="faqImg faq85" src="../imgs/content/newsgroups_discuss.png"/>
+					</p>
+					<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		<!--
+        			<li class="faqListItem">
+        			<h2><a name="howto_create">How to create your ECAS account (External users only)</a></h2>
+
+        			<p class="hint">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" /></span>
+        				Users from the European Commission and other EU institutions and bodies already have an ECAS account and can login to CIRCABC. 
+        			</p>
+        			
+        			<p class="text">
+        			<img class="faqImg faq65"  src="resources/gle.jpg" />
+        			<br/><br/>
+        			Il a souvent été estimé, évalué, mais jamais calculé. Le chiffre d'affaires de Google en France aurait, pour la première fois, été mesuré par VRDCI, une petite entreprise spécialisée dans le référencement naturel (une manière de remonter dans les recherches du moteur sans payer de publicité). L'étude (PDF) devait être publiée mercredi 18 décembre.<br/><br/>
+					Et le résultat est à la hauteur des prédictions. En un an, entre novembre 2012 et novembre 2013, le géant américain aurait réalisé 1,43 milliard d'euros en France. Soit très loin des 193 millions d'euros déclarés par l'entreprise en France au titre de son exercice fiscal 2012. Certes, celui de cette année n'a pas encore été rendu public. Il n'empêche : difficile d'imaginer que Google déclare plus de 1 milliard de revenus en France pour 2013.
+					</p>
+        			<p class="hint">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" />Hint</span>
+        				Bla bla bla bla bla
+        				<br/>
+        				Blaaaablaa Bla
+        			</p>
+        			<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        			
+        		-->
+        	</ul>
+        </div>
+    </body>
+</html>

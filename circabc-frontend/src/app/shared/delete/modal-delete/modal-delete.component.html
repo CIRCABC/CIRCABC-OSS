@@ -1,0 +1,11 @@
+<cbc-modal
+  [title]="title"
+  (ok)="delete()"
+  (cancel)="closePopupWindow()"
+  [okLabel]="'label.delete'"
+  [executingLabel]="'label.deleting'"
+  [(visible)]="showModal"
+  [contentClass]="'modal-content section-scroll'"
+>
+  {{ text | transloco }}
+</cbc-modal>

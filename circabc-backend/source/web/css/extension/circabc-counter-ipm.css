@@ -1,0 +1,21 @@
+/*--+
+    |     Copyright European Community 2006 - Licensed under the EUPL V.1.0
+    |
+    |  		   http://ec.europa.eu/idabc/en/document/6523
+    |
+    +--*/
+
+a {
+	font-weight: inherit;
+}
+
+body {
+	font-family:Tahoma,Arial,Helvetica,sans-serif;
+	font-size:100%;
+}
+
+table {
+	font-family:Tahoma,Arial,Helvetica,sans-serif;
+	font-size:100%;
+	margin:0px;
+}

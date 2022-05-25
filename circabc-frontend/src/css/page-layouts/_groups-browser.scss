@@ -1,0 +1,122 @@
+@use '../global/variables-mixins-keyframes';
+
+/* GROUPS BROWSER */
+
+.groups-browser {
+  .box {
+    width: calc((100% - 54px) / 3);
+    float: left;
+    margin-right: 27px;
+    margin-top: 15px;
+
+    &:last-of-type {
+      margin: 0;
+      margin-top: 15px;
+    }
+
+    .header {
+      padding: 15px;
+    }
+
+    .main {
+      padding: 10px 0;
+    }
+
+    a {
+      display: block;
+      padding: 7px 15px;
+
+      &:hover {
+        background: #f5fafa;
+      }
+    }
+
+    .number {
+      color: variables-mixins-keyframes.$textAA;
+    }
+
+    .current {
+      background: #f5fafa;
+      position: relative;
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 5px;
+        background: #8dcb6c;
+        background: -moz-linear-gradient(
+          top,
+          variables-mixins-keyframes.$light-green 0%,
+          variables-mixins-keyframes.$dark-green 100%
+        );
+        background: -webkit-gradient(
+          linear,
+          left top,
+          left bottom,
+          color-stop(0%, variables-mixins-keyframes.$light-green),
+          color-stop(100%, variables-mixins-keyframes.$dark-green)
+        );
+        background: -webkit-linear-gradient(
+          top,
+          variables-mixins-keyframes.$light-green 0%,
+          variables-mixins-keyframes.$dark-green 100%
+        );
+        background: -o-linear-gradient(
+          top,
+          variables-mixins-keyframes.$light-green 0%,
+          variables-mixins-keyframes.$dark-green 100%
+        );
+        background: -ms-linear-gradient(
+          top,
+          variables-mixins-keyframes.$light-green 0%,
+          variables-mixins-keyframes.$dark-green 100%
+        );
+        background: linear-gradient(
+          to bottom,
+          variables-mixins-keyframes.$light-green 0%,
+          variables-mixins-keyframes.$dark-green 100%
+        );
+        filter: progid:DXImageTransform.Microsoft.gradient(
+          startColorstr='#8dcb6c',
+          endColorstr='#58c37e',
+          GradientType=0
+        );
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        right: -7px;
+        background: url(^img/popup-arrow-right-grey.png);
+        background-position: left center;
+        background-repeat: no-repeat;
+        display: block;
+        width: 7px;
+        top: 0;
+        bottom: 0;
+      }
+
+      a {
+        color: variables-mixins-keyframes.$textAAA;
+      }
+    }
+  }
+
+  .box--header,
+  .box--category {
+    @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+      width: calc((100% / 2 - 27px));
+      max-height: 250px;
+      overflow: auto;
+    }
+  }
+
+  .box--group {
+    @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+      width: 100%;
+    }
+  }
+}

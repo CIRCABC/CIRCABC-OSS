@@ -1,0 +1,231 @@
+<section class="user-mgmt--container">
+  <section class="user-mgmt-search">
+    <h1>1</h1>
+    <a
+      class="step-link"
+      [class.step-link-selected]="searchStep === 'search'"
+      (click)="searchStep = 'search'"
+      >{{ 'label.search.user' | transloco }}</a
+    >
+    <a
+      class="step-link"
+      [class.step-link-selected]="searchStep === 'import'"
+      (click)="searchStep = 'import'"
+      >{{ 'label.import.list' | transloco }}</a
+    >
+    <a
+      class="step-link"
+      [class.step-link-selected]="searchStep === 'selection'"
+      (click)="searchStep = 'selection'"
+      >{{ 'label.selection' | transloco }} ({{ selectedUsers.length }})</a
+    >
+    <br /><br />
+    <div *ngIf="searchStep === 'search'">
+      <form [formGroup]="searchForm">
+        <input
+          formControlName="searchField"
+          type="text"
+          placeholder="search value"
+        />
+        &nbsp;&nbsp;
+        <button class="button" (click)="searchUsers()">
+          {{ 'label.search' | transloco }}
+        </button>
+        &nbsp;&nbsp;
+        <a (click)="resetSearch()">{{ 'label.reset' | transloco }}</a>
+      </form>
+      <h3 *ngIf="searching">
+        {{ 'label.searching' | transloco }} <cbc-spinner></cbc-spinner>
+      </h3>
+      <h3 *ngIf="searchedUsers.length > 0">
+        {{ ('label.results' | transloco) + '(' + searchedUsers.length + ')' }}
+        <a (click)="selectAllSearch()" class="select-all"
+          >{{ 'label.select.all' | transloco }}</a
+        >
+      </h3>
+
+      <div class="result-container">
+        <ol>
+          <li *ngFor="let user of searchedUsers">
+            <cbc-user-result-box
+              [user]="user"
+              [focusedUserId]="focusedUserId"
+              (focusedUserIdChange)="focusUser($event)"
+              (selectionTriggered)="selection($event)"
+              (removeTriggered)="remove($event)"
+              [showSelect]="true"
+              [showRemove]="true"
+            ></cbc-user-result-box>
+          </li>
+        </ol>
+      </div>
+    </div>
+    <div *ngIf="searchStep === 'import'">
+      <form [formGroup]="fileForm">
+        <input
+          formControlName="listFile"
+          type="file"
+          placeholder="search value"
+          (change)="fileChangeEvent($event)"
+        />
+        &nbsp;&nbsp;
+        <button class="button" (click)="retrieveUsers()">
+          {{ 'label.upload' | transloco }}
+        </button>
+        &nbsp;&nbsp;
+        <a (click)="resetUpload()">{{ 'label.reset' | transloco }}</a>
+      </form>
+      <h3 *ngIf="searching">
+        {{ 'label.searching' | transloco }} <cbc-spinner></cbc-spinner>
+      </h3>
+      <h3 *ngIf="retrievedUsers.length > 0">
+        {{ ('label.results' | transloco) + '(' + retrievedUsers.length + ')'
+        }}<a (click)="selectAllList()" class="select-all"
+          >{{ 'label.select.all' | transloco }}</a
+        >
+      </h3>
+
+      <div class="result-container">
+        <ol>
+          <li *ngFor="let user of retrievedUsers">
+            <cbc-user-result-box
+              [user]="user"
+              [focusedUserId]="focusedUserId"
+              (focusedUserIdChange)="focusUser($event)"
+              (selectionTriggered)="selection($event)"
+              (removeTriggered)="remove($event)"
+              [showSelect]="true"
+              [showRemove]="true"
+            ></cbc-user-result-box>
+          </li>
+        </ol>
+      </div>
+    </div>
+    <div *ngIf="searchStep === 'selection'">
+      <h4 *ngIf="selectedUsers.length === 0">
+        {{ 'label.nothing.to.display' | transloco }}
+      </h4>
+      <div class="result-container">
+        <ol>
+          <li *ngFor="let item of selectedUsers">
+            <cbc-user-result-box
+              [user]="item.user"
+              [focusedUserId]="focusedUserId"
+              (focusedUserIdChange)="focusUser($event)"
+              (removeTriggered)="remove(item.user)"
+              [showSelect]="false"
+              [showRemove]="true"
+            ></cbc-user-result-box>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </section>
+  <section
+    class="user-mgmt-details"
+    *ngIf="oneUserFocus && !expectionNoAlfrescoUser"
+  >
+    <h1>2</h1>
+    <cbc-focused-user-box [user]="focusedUser"></cbc-focused-user-box>
+    <p *ngIf="oneUserFocus && expectionNoAlfrescoUser">
+      {{ 'label.no.alfresco.user.found' | transloco }}
+    </p>
+  </section>
+  <section
+    class="user-mgmt-more"
+    *ngIf="oneUserFocus && !expectionNoAlfrescoUser"
+  >
+    <h1>3</h1>
+    <cbc-focused-user-membership-box
+      [userId]="focusedUserId"
+    ></cbc-focused-user-membership-box>
+  </section>
+
+  <section
+    class="users-mgmt-details"
+    *ngIf="!oneUserFocus && selectedUsers.length > 0"
+  >
+    <h1>2</h1>
+    <div class="bulk-actions">
+      <h2>{{ 'label.bulk.actions' | transloco }}</h2>
+      <a class="button button--red" (click)="prepareRevocation()"
+        >{{ 'label.schedule.removal' | transloco }}</a
+      >
+      <span class="hint"
+        >{{ 'text.schedule.removal.explanation' | transloco }}</span
+      >
+      <br /><br />
+      <a class="button button--red" (click)="prepareExpiration()"
+        >{{ 'label.set.expiration' | transloco }}</a
+      >
+      <span class="hint"
+        >{{ 'text.set.expiration.explanation' | transloco }}</span
+      >
+      <cbc-revocation-scheduler
+        [showModal]="showRevocationModal"
+        [userIds]="selectedUserIds"
+        (scheduled)="refreshAfterSchedule()"
+        (canceled)="cancelSchedule()"
+      ></cbc-revocation-scheduler>
+      <cbc-expiration-scheduler
+        [showModal]="showExpirationModal"
+        [requests]="selectedUsers"
+        (scheduled)="refreshAfterSchedule()"
+        (canceled)="cancelExpirationSchedule()"
+      ></cbc-expiration-scheduler>
+    </div>
+    <br />
+    <div>
+      <ul class="selection-summary">
+        <li *ngFor="let item of selectedUsers">
+          <div class="selection-user-summary">
+            <a
+              class="toggle-selection"
+              (click)="toggleProfiles(item.userid, 'reset')"
+              >{{ 'label.reset' | transloco }}</a
+            >
+            <a
+              class="toggle-selection"
+              (click)="toggleProfiles(item.userid, 'select')"
+              >{{ 'label.select.all' | transloco }}</a
+            >
+
+            {{ item.user.firstname }} {{ item.user.lastname }} [ {{
+            item.user.userId }} - {{ item.user.email }} ]
+          </div>
+          <ul
+            *ngIf="!item.loadingMemberships"
+            class="selection-membership-summary"
+          >
+            <li *ngFor="let membership of item.memberships">
+              <div class="selector">
+                <input
+                  type="checkbox"
+                  [checked]="membership.selected"
+                  (click)="
+                    toggleProfile(
+                      item.userid,
+                      membership.profile?.name,
+                      membership.interestGroup?.name
+                    )
+                  "
+                />
+              </div>
+              <div class="profile" *ngIf="membership && membership.profile">
+                <strong>{{ membership.profile.title | cbcI18n }}</strong>
+                <br />
+                {{ membership.profile.name }}
+              </div>
+              <div class="group" *ngIf="membership && membership.interestGroup">
+                <strong>{{ membership.interestGroup.title | cbcI18n }}</strong>
+                <br />
+                {{ membership.interestGroup.name }}
+              </div>
+            </li>
+          </ul>
+          <cbc-spinner *ngIf="item.loadingMemberships"></cbc-spinner>
+        </li>
+      </ul>
+    </div>
+  </section>
+</section>

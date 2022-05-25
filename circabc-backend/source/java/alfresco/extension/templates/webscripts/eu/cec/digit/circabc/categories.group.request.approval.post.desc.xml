@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>approve or decline a category request group</shortname>
+  <description>Post a request group approval</description>
+  <url>/circabc/categories/{id}/requests/group/{idRequest}/approval</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

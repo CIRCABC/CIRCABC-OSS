@@ -1,0 +1,488 @@
+<!--+
+    |     Copyright European Community 2006 - Licensed under the EUPL V.1.0
+    |
+    |  		   http://ec.europa.eu/idabc/en/document/6523
+    |
+    +-->
+
+<!-- Here Only the new Circabc specific WAI (and not Alfresco native) actions and action groups -->
+
+<alfresco-config>
+
+	<config>
+		<actions>
+			<!-- Discuss document or space e.g. jump to Forums view for this node WAI PAGE-->
+			<action id="create_forum_node_wai">
+				<permissions>
+					<permission allow="true">LibEditOnly</permission>
+				</permissions>
+				<evaluator>org.alfresco.web.action.evaluator.CreateForumNodeEvaluator</evaluator>
+				<label-id>start_discussion_action_wai</label-id>
+				<tooltip-id>start_discussion_action_tooltip_wai</tooltip-id>
+				<image>/images/icons/create_forum.gif</image>
+				<action>wai:dialog:createDiscussionWai</action>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">create_forum_node_wai_#{actionContext.name}</param>
+					<param name="service">Newsgroup</param>
+				  	<param name="activity">CreateForum</param>
+				</params>
+			</action>
+
+			<!-- Discuss document or space e.g. jump to Forums view for this node WAI PAGE-->
+			<action id="discuss_node_wai">
+				<evaluator>org.alfresco.web.action.evaluator.DiscussNodeEvaluator</evaluator>
+				<label-id>discuss_action_wai</label-id>
+				<tooltip-id>discuss_action_tooltip_wai</tooltip-id>
+				<image>/images/icons/forum-16.gif</image>
+				<action-listener>
+					#{BrowseBean.clickNodeDiscussion}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">discuss_node_wai_#{actionContext.name}</param>
+					<param name="service">Newsgroup</param>
+				  	<param name="activity">DiscussSpaceOrDocument</param>
+				</params>
+			</action>
+
+			<action id="newsgroup_view_forum_details_wai" >
+				<label-id>view_forum_details_wai</label-id>
+				<tooltip-id>view_forum_details_tooltip_wai</tooltip-id>
+				<image>/images/icons/View_details.gif</image>
+				<action>wai:dialog:manageNodeDetailsWai</action>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">newsgroup_view_forum_details_wai_#{actionContext.name}</param>
+				</params>
+			</action>
+
+			<action id="newsgroup_edit_forum_details_wai" >
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.DeleteAndEditForumEvaluator
+				</evaluator>
+				<label-id>edit_forum_details_wai</label-id>
+				<tooltip-id>edit_forum_details_tooltip_wai</tooltip-id>
+				<image>/images/icons/edit_properties.gif</image>
+				<action>wai:dialog:editNodePropertiesWai</action>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">newsgroup_edit_forum_details_wai_#{actionContext.name}</param>
+					<param name="service">Newsgroup</param>
+				  	<param name="activity">EditForumProperties</param>
+				</params>
+			</action>
+
+			<action id="newsgroup_delete_forum_wai">
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.DeleteAndEditForumEvaluator
+				</evaluator>
+				<label-id>delete_forum_wai</label-id>
+				<tooltip-id>delete_forum_tooltip_wai</tooltip-id>
+				<image>/images/icons/delete_forum.gif</image>
+				<action>wai:dialog:deleteNodeWai</action>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">newsgroup_delete_forum_wai_#{actionContext.name}</param>
+					<param name="service">Newsgroup</param>
+					<param name="activity">DeleteForum</param>
+				</params>
+			</action>
+
+			<action id="newsgroup_view_topic_details_wai">
+				<label-id>view_topic_details_wai</label-id>
+				<tooltip-id>view_topic_details_tooltip_wai</tooltip-id>
+				<image>/images/icons/View_details.gif</image>
+				<action>wai:dialog:manageNodeDetailsWai</action>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">newsgroup_view_topic_details_wai_#{actionContext.name}</param>
+				</params>
+			</action>
+
+			<action id="newsgroup_edit_topic_details_wai" >
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.DeleteAndEditTopicEvaluator
+				</evaluator>
+				<label-id>edit_topic_details_wai</label-id>
+				<tooltip-id>edit_topic_details_tooltip_wai</tooltip-id>
+				<image>/images/icons/edit_properties.gif</image>
+				<action>wai:dialog:editNodePropertiesWai</action>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">newsgroup_edit_topic_details_wai_#{actionContext.name}</param>
+					<param name="service">Newsgroup</param>
+				  	<param name="activity">EditTopicDetails</param>
+				</params>
+			</action>
+
+			<action id="newsgroup_delete_topic_wai" >
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.DeleteAndEditTopicEvaluator
+				</evaluator>
+				<label-id>delete_topic_wai</label-id>
+				<tooltip-id>delete_topic_tooltip_wai</tooltip-id>
+				<image>/images/icons/delete_topic.gif</image>
+				<action>wai:dialog:deleteNodeWai</action>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">newsgroup_delete_topic_wai_#{actionContext.name}</param>
+					<param name="service">Newsgroup</param>
+					<param name="activity">DeleteTopic</param>
+				</params>
+			</action>
+
+			<!-- Post a reply to a Topic WAI PAGE-->
+			<action id="newsgroup_post_reply_wai">
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.PostReplyEvaluator
+				</evaluator>
+				<label-id>post_reply_action_wai</label-id>
+				<tooltip-id>post_reply_action_tooltip_wai</tooltip-id>
+				<image>/images/icons/post_reply.gif</image>
+				<action>wai:dialog:createReplyWai</action>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">newsgroup_post_reply_wai_#{actionContext.creator}</param>
+					<param name="service">Newsgroup</param>
+				  	<param name="activity">PostReply</param>
+				</params>
+			</action>
+
+			<action id="newsgroup_edit_post_wai" >
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.DeleteAndEditPostEvaluator
+				</evaluator>
+				<label-id>edit_post_wai</label-id>
+				<tooltip-id>edit_post_tooltip_wai</tooltip-id>
+				<image>/images/icons/edit_post.gif</image>
+				<action>wai:dialog:editPostWai</action>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">newsgroup_edit_post_wai_#{actionContext.creator}</param>
+					<param name="service">Newsgroup</param>
+				  	<param name="activity">EditPost</param>
+				</params>
+			</action>
+
+			<action id="newsgroup_delete_post_wai" >
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.DeleteAndEditPostEvaluator
+				</evaluator>
+				<label-id>delete_post_wai</label-id>
+				<tooltip-id>delete_post_tooltip_wai</tooltip-id>
+				<image>/images/icons/delete.gif</image>
+				<action>wai:dialog:deleteNodeWai</action>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">newsgroup_delete_post_wai_#{actionContext.creator}</param>
+					<param name="service">Newsgroup</param>
+					<param name="activity">DeletePost</param>
+				</params>
+			</action>
+
+			<action id="newsgroup_accept_post_wai" >
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.ModerateNodeEvaluator
+				</evaluator>
+				<label-id>post_moderation_approve_action_title</label-id>
+				<tooltip-id>post_moderation_approve_action_tooltip</tooltip-id>
+				<image>/images/icons/deploy_successful.gif</image>
+				<action-listener>
+				    #{ModerationDialog.acceptDirect}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">newsgroup_accept_post_wai_#{actionContext.creator}</param>
+					<param name="service">Newsgroup</param>
+					<param name="activity">AcceptPost</param>
+				</params>
+			</action>
+
+			<action id="newsgroup_reject_post_wai" >
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.ModerateNodeEvaluator
+				</evaluator>
+				<label-id>post_moderation_reject_action_title</label-id>
+				<tooltip-id>post_moderation_reject_action_tooltip</tooltip-id>
+				<image>/images/icons/deploy_failed.gif</image>
+				<action>wai:dialog:rejectPostDialog</action>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">newsgroup_reject_post_wai_#{actionContext.creator}</param>
+					<param name="service">Newsgroup</param>
+					<param name="activity">RejectPost</param>
+				</params>
+			</action>
+
+			<action id="newsgroup_signal_abuse_wai" >
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.NotGuestEvaluator
+				</evaluator>
+				<label-id>post_moderation_signal_an_abuse_action_name</label-id>
+				<tooltip-id>post_moderation_signal_an_abuse_action_tooltip</tooltip-id>
+				<image>/images/icons/warning.gif</image>
+				<action>wai:dialog:signalAnAbuseDialog</action>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">newsgroup_signal_post_wai_#{actionContext.creator}</param>
+					<param name="service">Newsgroup</param>
+					<param name="activity">SignalAbusePost</param>
+				</params>
+			</action>
+
+			<action id="newsgroup_not_abuse_wai" >
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.RemoveAbuseEvaluator
+				</evaluator>
+				<label-id>post_moderation_not_an_abuse_action_name</label-id>
+				<tooltip-id>post_moderation_not_an_abuse_action_tooltip</tooltip-id>
+				<image>/images/icons/done_editing.gif</image>1
+				<action-listener>
+				    #{ModerationDialog.notAbuseDirect}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">newsgroup_nott_abuse_post_wai_#{actionContext.creator}</param>
+					<param name="service">Newsgroup</param>
+					<param name="activity">SignalNotAbusePost</param>
+				</params>
+			</action>
+			
+			<action id="newsgroup_not_abuse_wai" >
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.RemoveAbuseEvaluator
+				</evaluator>
+				<label-id>post_moderation_not_an_abuse_action_name</label-id>
+				<tooltip-id>post_moderation_not_an_abuse_action_tooltip</tooltip-id>
+				<image>/images/icons/done_editing.gif</image>1
+				<action-listener>
+				    #{ModerationDialog.notAbuseDirect}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">newsgroup_nott_abuse_post_wai_#{actionContext.creator}</param>
+					<param name="service">Newsgroup</param>
+					<param name="activity">SignalNotAbusePost</param>
+				</params>
+			</action>
+			
+			<action id="switch_forum_moderation">
+               	<permissions>
+	        		<permission allow="true">NwsAdmin</permission>
+	        	</permissions>
+	            <label-id>switch_forum_moderation_dialog_title</label-id>
+	            <image>/images/icons/edit_properties.gif</image>
+	            <action>wai:dialog:switchForumModerationWai</action>
+	            <action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+	            <params>
+				   <param name="id">#{actionContext.id}</param>
+					<param name="imageName">newsgroup_switch_forum_moderation_wai_#{actionContext.creator}</param>
+					<param name="service">Newsgroup</param>
+					<param name="activity">SwitchModeration</param>
+	            </params>
+         	</action>
+
+			<!-- the 'action-group' elements define unique blocks of actions that reference the actions
+			  as defined above and can override or supply display elements for the group of actions -->
+			<!-- the component is responsible for making the context Node object available with name
+			  of 'actionContext' so the actions can access it directly to get properties -->
+
+			<!-- Override browse actions and doc/space details screen actions for the Forums module -->
+
+
+			<!-- ??? to delete ??? -->
+			<!-- Actions for forums in Forum view (for the newsgroup service)-->
+			<action-group id="newsgroup_browse_forum_actions_wai">
+				<show-link>false</show-link>
+				<style-class>inlineAction</style-class>
+				<action idref="newsgroup_view_forum_details_wai" />
+				<action idref="history"/>
+			</action-group>
+
+			<!-- Actions for forums in Forum details (for the newsgroup service)-->
+			<action-group id="forum_details_actions_wai">
+				<show-link>false</show-link>
+				<style-class>inlineAction</style-class>
+				<action idref="newsgroup_edit_forum_details_wai" />
+				<action idref="newsgroup_delete_forum_wai" />
+				<action idref="edit_own_notification_status" />
+				<action idref="switch_forum_moderation" />
+				<action idref="history"/>
+			</action-group>
+
+			<!-- ??? to delete ??? -->
+			<!-- Actions for topics in Topic view (for the newsgroup service)-->
+			<action-group id="newsgroup_browse_topic_actions_wai">
+				<show-link>false</show-link>
+				<style-class>inlineAction</style-class>
+				<action idref="newsgroup_view_topic_details_wai" />
+				<action idref="history"/>
+			</action-group>
+
+			<!-- Actions for topics in Topic details (for the newsgroup service)-->
+			<action-group id="topic_details_actions_wai">
+				<show-link>false</show-link>
+				<style-class>inlineAction</style-class>
+				<action idref="newsgroup_edit_topic_details_wai" />
+				<action idref="newsgroup_delete_topic_wai" />
+				<action idref="edit_own_notification_status" />
+				<action idref="history"/>
+			</action-group>
+
+			<!-- Traditional Actions for posts and replies in Post view (for the newsgroup service)-->
+			<action-group id="newsgroup_browse_post_actions_wai">
+				<show-link>false</show-link>
+				<style-class>inlineAction</style-class>
+				<action idref="newsgroup_accept_post_wai" />
+				<action idref="newsgroup_reject_post_wai" />
+				<action idref="newsgroup_not_abuse_wai" />
+				<action idref="newsgroup_post_reply_wai" />
+				<action idref="newsgroup_edit_post_wai" />
+				<action idref="newsgroup_delete_post_wai" />
+				<action idref="history"/>
+			</action-group>
+
+			<!-- Moderation Actions for posts and replies in Post view (for the newsgroup service)-->
+			<action-group id="newsgroup_browse_post_moderation_actions_wai">
+				<show-link>false</show-link>
+				<style-class>inlineAction</style-class>
+				<action idref="newsgroup_signal_abuse_wai" />
+			</action-group>
+
+
+			<!-- Actions for post in Post details (for the newsgroup service)-->
+			<action-group id="post_details_actions_wai">
+				<show-link>false</show-link>
+				<style-class>inlineAction</style-class>
+				<action idref="newsgroup_signal_abuse_wai" />
+				<action idref="newsgroup_accept_post_wai" />
+				<action idref="newsgroup_reject_post_wai" />
+				<action idref="newsgroup_not_abuse_wai" />
+				<action idref="newsgroup_post_reply_wai" />
+				<action idref="newsgroup_edit_post_wai" />
+				<action idref="newsgroup_delete_post_wai" />
+				<action idref="history"/>
+			</action-group>
+
+
+			<!-- Actions for content in doc detail view WAI -->
+			<action-group id="doc_details_actions_wai">
+				<action idref="create_forum_node_wai" />
+				<action idref="discuss_node_wai" />
+			</action-group>
+
+			<!-- ??? to delete ??? -->
+			<!-- Actions for a content in the Library Browse WAI Page -->
+			<action-group id="document_browse_library_wai">
+				<action idref="discuss_node_wai" />
+			</action-group>
+
+			<action-group id="dossier_details_actions_wai">
+				<action idref="discuss_node_wai" />
+				<action idref="create_forum_node_wai" />
+			</action-group>
+
+			<action-group id="manage_multilingual_container_wai">
+				<action idref="discuss_node_wai" />
+				<action idref="create_forum_node_wai" />
+			</action-group>
+
+			<action-group id="custom_action_list_library_content">
+				<action idref="discuss_node_wai" />
+				<action idref="create_forum_node_wai" />
+			</action-group>
+
+			<action-group id="custom-action-list-library-container">
+				<action idref="discuss_node_wai" />
+				<action idref="create_forum_node_wai" />
+			</action-group>
+
+			<action-group id="custom-action-list-newsgroup-forum">
+				<show-link>false</show-link>
+				<action idref="newsgroup_view_forum_details_wai" />
+				<action idref="newsgroup_edit_forum_details_wai" />
+				<action idref="newsgroup_delete_forum_wai" />
+				<action idref="edit_own_notification_status" />
+				
+				<action idref="history"/>
+			</action-group>
+
+			<action-group id="custom-action-list-newsgroup-topic">
+				<show-link>false</show-link>
+				<action idref="newsgroup_view_topic_details_wai" />
+				<action idref="newsgroup_edit_topic_details_wai" />
+				<action idref="newsgroup_delete_topic_wai" />
+				<action idref="edit_own_notification_status" />
+				<action idref="history"/>
+			</action-group>
+
+		</actions>
+	</config>
+
+	<config evaluator="aspect-name" condition="ci:circabcInformation">
+		<!-- Don't display the forum actions in the mibrary Service -->
+		<actions>
+			<action-group id="space_browse_library_wai">
+				<action idref="discuss_node_wai" hide="true" />
+			</action-group>
+			<action-group id="space_details_actions_wai">
+				<action idref="discuss_node_wai" hide="true" />
+				<action idref="create_forum_node_wai" hide="true" />
+				<action idref="manage_share_space_wai" hide="true" />
+			</action-group>
+		</actions>
+	</config>
+
+	<config evaluator="aspect-name" condition="ci:circaLibrary">
+		<!-- Don't display the forum actions in the mibrary Service -->
+		<actions>
+			<action-group id="space_browse_library_wai">
+				<action idref="discuss_node_wai" hide="false" />
+			</action-group>
+			<action-group id="space_details_actions_wai">
+				<action idref="discuss_node_wai" hide="false" />
+				<action idref="create_forum_node_wai" hide="false" />
+			</action-group>
+		</actions>
+	</config>
+
+</alfresco-config>

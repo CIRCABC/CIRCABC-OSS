@@ -1,0 +1,125 @@
+{{ 'label.library.title' | transloco: { groupName: group?.name } | cbcSetTitle
+}}
+<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+
+<span [class.hide-badge]="amountOfItemsInClipboard <= 0" class="info-badge"
+  >{{ amountOfItemsInClipboard > 9 ? '9+' : amountOfItemsInClipboard }}</span
+>
+<div class="half-oval">
+  <a (click)="clipboardOpen = true" title="Clipboard"></a>
+</div>
+
+<div class="fluid page-container" *ngIf="ready">
+  <div class="page-header">
+    <span class="page-header__title" *ngIf="!restrictedMode"
+      >{{ 'label.library.stock.share' | transloco }}</span
+    >
+    <cbc-flat-message
+      [message]="'label.library.restricted.access' | transloco"
+      *ngIf="restrictedMode"
+    ></cbc-flat-message>
+    <br /><br />
+    <div>
+      <cbc-group-breadcrumb
+        style="margin-left: 0"
+        [node]="node.id"
+        [textColor]="'757575'"
+        *ngIf="node && !restrictedMode"
+        [noMarginBottom]="true"
+        [displayName]="false"
+      ></cbc-group-breadcrumb>
+    </div>
+
+    <div style="display: flex">
+      <div style="flex-grow: 1; margin-top: 25px">
+        <cbc-notification-message
+          *ngIf="isFolder(node)"
+          [message]="'library.folder.public' | transloco"
+          [severity]="1"
+          [guestAllowed]="node.hasGuestAccess ? node.hasGuestAccess : false"
+        ></cbc-notification-message>
+      </div>
+
+      <div class="page-header__actions" style="margin-top: 25px">
+        <br />
+        <cbc-reponsive-sub-menu *ngIf="!restrictedMode">
+          <a *ngIf="!isLibraryRoot()" [routerLink]="['../', nodeId, 'details']"
+            >{{ 'label.details' | transloco }}</a
+          >
+          <a *ngIf="isGroupAdmin()" [routerLink]="['../../keywords']"
+            >{{ 'label.keywords' | transloco }}</a
+          >
+          <a *ngIf="isGroupAdmin()" [routerLink]="['../../dynamic-properties']"
+            >{{ 'label.dynamic.properties' | transloco }}</a
+          >
+          <a
+            *ngIf="isGroupAdmin()"
+            [routerLink]="['../../admin/documents']"
+            [queryParams]="{ expired: 1 }"
+            >{{ 'label.expired.items' | transloco }}</a
+          >
+          <a
+            *ngIf="isLibAdmin()"
+            [routerLink]="['../../notification-status', nodeId]"
+            [queryParams]="{ from: 'library' }"
+            >{{ 'label.notifications' | transloco }}</a
+          >
+        </cbc-reponsive-sub-menu>
+
+        <cbc-add-dropdown
+          [currentNode]="node"
+          [enableAddImport]="isLibAdmin()"
+          [enableAddFile]="isLibAdmin()"
+          [enableAddFolder]="isLibAdmin()"
+          [enableAddUrl]="isLibAdmin()"
+          (actionFinished)="refresh($event)"
+          *ngIf="
+            isLibAdmin()
+              | cbcIfOrRoles
+                : [node, ['LibManageOwn', 'LibFullEdit', 'LibAdmin'], []]
+          "
+        ></cbc-add-dropdown>
+      </div>
+      <br />
+    </div>
+  </div>
+  <br /><br /><br /><br />
+  <br /><br /><br /><br />
+  <div>
+    <cbc-folder-tree-view
+      *ngIf="!restrictedMode"
+      [(shown)]="treeView"
+      [group]="group"
+      [currentNode]="node"
+    ></cbc-folder-tree-view>
+  </div>
+
+  <cbc-library-browser
+    *ngIf="nodeIsFolder && currentContents"
+    [contents]="currentContents.data"
+    [parent]="node"
+    (needRefresh)="refresh($event)"
+    [preferences]="preferences"
+    [totalItems]="currentContents.total"
+    (changedPage)="changePage($event)"
+    (changedListing)="changeListing($event)"
+    [(treeView)]="treeView"
+    class="explorer"
+    [class.explorer--small]="treeView && !restrictedMode"
+    [restrictedMode]="restrictedMode"
+    [igId]="group.id"
+    [resetPage]="resetPage"
+  >
+  </cbc-library-browser>
+
+  <cbc-clipboard
+    *ngIf="currentContents"
+    [opened]="clipboardOpen"
+    [contents]="currentContents.data"
+    [currentStandingNode]="node"
+    [currentStandingNodeIsFolder]="nodeIsFolder"
+    (closeEmitter)="clipboardSidebarClosed()"
+    (actionFinished)="refresh($event)"
+    (itemsAmount)="itemsInClipboard($event)"
+  ></cbc-clipboard>
+</div>

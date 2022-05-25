@@ -1,0 +1,64 @@
+.user-mgmt--container {
+  display: grid;
+  grid-column-gap: 25px;
+  grid-row-gap: 25px;
+  grid-template-columns: 33% 33% 33%;
+
+  .select-all {
+    float: right;
+    font-size: 12px;
+  }
+
+  .result-container {
+    max-height: 600px;
+    overflow: auto;
+
+    ol li {
+      list-style-type: decimal;
+    }
+  }
+
+  .users-mgmt-details {
+    grid-column-start: 2;
+    grid-column-end: span 3;
+    margin-right: 50px;
+  }
+}
+
+.hint {
+  font-style: italic;
+  margin-left: 25px;
+}
+
+.toggle-selection {
+  float: right;
+  margin-left: 15px;
+}
+
+.selection-summary {
+  .selection-user-summary {
+    border-left: 4px solid #ccc;
+    color: #035;
+    margin-bottom: 25px;
+    padding: 5px;
+  }
+
+  .selection-membership-summary {
+    li {
+      display: flex;
+      margin: 5px 20px;
+
+      .selector {
+        width: 10%;
+      }
+
+      .profile {
+        width: 40%;
+      }
+
+      .group {
+        width: 50%;
+      }
+    }
+  }
+}

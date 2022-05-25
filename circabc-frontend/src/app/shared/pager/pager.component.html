@@ -1,0 +1,30 @@
+<div *ngIf="pageSize > 0" class="float-left">
+  <div class="nav-pages">
+    <div class="buttons">
+      <a
+        class="previous-page"
+        (click)="previousPage()"
+        [class.disabled]="!canPreviousPage()"
+        >{{ 'label.previous.page' | transloco }}</a
+      >
+      <a
+        class="next-page"
+        (click)="nextPage()"
+        [class.disabled]="!canNextPage()"
+        >{{ 'label.next.page' | transloco }}</a
+      >
+    </div>
+    <div *ngIf="length > 0" class="custom-select select--page-selector">
+      <select #pages (change)="goToPage(pages.value)">
+        <option
+          value="{{ n }}"
+          *ngFor="let n of getPages()"
+          selected="{{ n === pageIndex ? 'selected' : '' }}"
+        >
+          {{ 'label.page' | transloco }} {{ n }}
+        </option>
+      </select>
+    </div>
+    <span *ngIf="length > 0" class="total-pages">/{{ getPages().length }}</span>
+  </div>
+</div>

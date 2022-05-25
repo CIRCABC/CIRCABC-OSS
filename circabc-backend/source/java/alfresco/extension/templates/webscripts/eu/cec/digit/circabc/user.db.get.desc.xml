@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Get the user details from the user DB</shortname>
+  <description>Get the user details from the user DB</description>
+    <url>/circabc/users/{userId}/db</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

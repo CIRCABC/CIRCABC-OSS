@@ -1,0 +1,221 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>CIRCABC FAQ</title>
+        <link href="../css/style2.css" type="text/css" rel="stylesheet"/>
+         <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico">
+        <script src="../js/jquery-1.10.2.min.js" type="application/javascript"></script>
+        <script type="application/javascript">
+        	$(document).ready(function(){
+        		
+        		if($("#links h2 img").attr("alt") == "open")
+        			{
+        				$("#links h2 img").attr("src","../imgs/arrow_carrot-up_alt2.png");
+        				$("#links ul#linkList").css("display","block");
+        				$("#links h2 img").attr("alt","closed");
+        			}
+        			else
+        			{
+        				$("#links h2 img").attr("src","../imgs/arrow_carrot-down_alt2.png");
+        				$("#links ul#linkList").css("display","none");
+        				$("#links h2 img").attr("alt","open");
+        			}
+        		
+        		$("#links h2").click(function(){
+        			
+        			
+        			if($("#links h2 img").attr("alt") == "open")
+        			{
+        				$("#links h2 img").attr("src","../imgs/arrow_carrot-up_alt2.png");
+        				$("#links ul#linkList").css("display","block");
+        				$("#links h2 img").attr("alt","closed");
+        			}
+        			else
+        			{
+        				$("#links h2 img").attr("src","../imgs/arrow_carrot-down_alt2.png");
+        				$("#links ul#linkList").css("display","none");
+        				$("#links h2 img").attr("alt","open");
+        			}
+        		});
+        		
+        	});
+        </script>
+    </head>
+    <body>
+    	
+<!--     	<div class="no-hover lang">
+		    <a href="../en/notification.html" style="margin-right:10px;">[EN]</a>
+		    <a href="../fr/notification.html" style="margin-right:10px;">[FR]</a>
+		    <a href="../de/notification.html" style="margin-right:10px;">[DE]</a>
+	    </div>  -->
+	    
+        <div id="header" >
+        	<!--<img src="imgs/banner.jpg" alt="logo" class="logo"/>-->
+        	<img src="../imgs/Help-File-icon.png" width="76" style="float:right;"/>
+        	<h1><a href="index.html">CIRCABC<br/>Help</a></h1>
+        	<ul>
+<!--         		<li ><a href="authentication.html"><img src="../imgs/icon_profile.png"/>Authentication</a>
+        		</li> -->
+        		<li ><a href="administration.html"><img src="../imgs/icon_adjust-vert.png"/>Administration</a></li>
+        		<li ><a href="library.html"><img src="../imgs/icon_document_alt.png"/>Library</a></li>
+        		<li ><a href="newsgroups.html"><img src="../imgs/icon_comment_alt.png"/>Newsgroups</a>
+        			</li>
+        		<li ><a href="events.html"><img src="../imgs/icon_calendar.png"/>Events</a>
+        			
+        		</li>
+        		<li ><a href="information.html"><img src="../imgs/icon_info_alt.png"/>Information</a>
+        			
+        		</li>
+        		<li class="selected"><a href="notification.html"><img src="../imgs/icon_mail_alt.png"/>Notification</a>
+        			<br/><p>Informs you about new uploads and posts</p>
+        		</li>
+        		<li ><a href="search.html"><img src="../imgs/icon_search.png"/>Search</a></li>
+        		<li ><a href="known_bugs.html"><img src="../imgs/icon_error-triangle_alt.png"/>Known bugs</a></li>
+        	</ul>
+        	
+        	
+        </div>
+        
+        <div id="links">
+        		<h2>Table of content <img src="../imgs/arrow_carrot-down_alt2.png" alt="closed"/></h2>
+        		<ul id="linkList">
+        			<li><a href="#what_is_notification">What are notifications?</a></li>
+					<li><a href="#howto_subscribe">How to subscribe to notifications</a></li>
+					<li><a href="#howto_add_members">How can Leaders enable notifications for their members?</a></li>
+					<li><a href="#howto_check_notification">I am not receiving notifications, what can I do? </a></li>
+					<li><a href="#howto_stop">How to stop receiving notifications</a></li>
+        		</ul>
+        </div>
+        
+        <div id="content">
+
+        	<ul class="faqList">
+        		
+        		<li class="faqListItem">
+        			<h2><a name="what_is_notification">What are notifications?</a></h2>
+        			<p class="text">
+        			<b>Notifications</b> are messages sent automatically by CIRCABC to let you know that a <b>new document</b> has been uploaded to the library or a <b>new topic</b> has been posted to the newsgroup.
+					</p>
+					<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		
+        		<li class="faqListItem">
+        			<h2><a name="howto_subscribe">How to subscribe to notifications</a></h2>
+        			<p class="hint_red">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" /></span>
+        				By default notifications are disabled, CIRCABC does not send any notifications to the new invited users.
+        			</p>
+        			<p class="text">
+	        			To receive notifications click on Administration (from the Interest Group homepage; from any other page of the group, follow this path: <b>Administration &gt; Go to the interest group administration page</b>)
+	        			<br/><br/>
+	        			Click on My <b>Notifications Status</b>
+	        			<br/>
+	        			Then Enable the <b>Global Notification Status</b> and Subscribe to the Notification Status
+	        			<br/>
+	        			<img class="faqImg faq85" src="../imgs/content/notification_enable_global.png"/>
+	        			
+					</p>
+					<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		
+        		<li class="faqListItem">
+        			<h2><a name="howto_add_members">How can Leaders enable notifications for their members?</a></h2>
+        			<p class="text">
+	        			On Administration (from the Interest Group homepage; from any other page of the group, follow this path: <b>Administration &gt; Go to the interest group administration page</b>)
+	        			<br/><br/>
+	        			Click on <b>Notification Status</b> and <b>Define Notification Status</b>
+	        			<br/>
+
+	        			<img class="faqImg faq85" src="../imgs/content/notification_enable_members.png"/>
+	        			
+					</p>
+					
+					<p class="hint">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" /></span>
+        				Leaders can enable notification per user or per profile (group of users) 
+        			</p>
+        			
+        			<p class="text">
+	        			Select the <b>user or profile</b> (to subscribe all members: select "Profile", keep the box empty and click on Search)
+	        			<br/>
+	        			Select the user or profile from the list (to subscribe all members: select all profiles)
+	        			<br/>
+						Assign a Notification Status: <b>Subscribed</b>
+						<br/>
+						Click on <b>Add to List</b>
+						<br/>
+						Then <b>OK</b>
+	        			<img class="faqImg faq85" src="../imgs/content/notification_add_members.png"/>
+	        			
+					</p>
+					<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		
+        		<li class="faqListItem">
+        			<h2><a name="howto_check_notification">I am not receiving notifications, what can I do? </a></h2>
+        			<p class="text">
+	        			If you are not receiving notifications, please check the following points:
+					</p>
+					
+					<p class="hint">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" /></span>
+        				By default notifications are disabled, CIRCABC does not send any notification to the new invited users.
+        			</p>
+        			
+        			<p class="text">
+        				<h3>- Check the Global Notification: </h3>
+	        			Log into CIRCABC, Click on <b>Administration, My account,</b>
+	        			<br/>
+	        			In User Options check if the <b>Global Notification is enabled </b>
+	        			<h3>- From the home page of your Interest Group: check if your notifications are enabled</h3>
+	        			<a href="#howto_subscribe">How to subscribe to notifications</a>
+						<h3>- From the library service: check the notifications status:</h3>
+						From the library click on <b>Administration, My Notification status</b>
+						<br/>
+						Global notification should be <b>enabled</b>
+						<br/>
+						Notification Status should be <b>Subscribed or Inherited</b> if you have subscribed from the Interest group level. 
+
+					</p>
+					<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		
+        		<li class="faqListItem">
+        			<h2><a name="howto_stop">How to stop receiving notifications</a></h2>
+        			<p class="text">
+        			Log into CIRCABC, Click on Administration, My account,<br/>
+					In User Options, disable the Global Notification.
+
+					</p>
+					<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		<!--
+        			<li class="faqListItem">
+        			<h2><a name="howto_create">How to create your ECAS account (External users only)</a></h2>
+
+        			<p class="hint">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" /></span>
+        				Users from the European Commission and other EU institutions and bodies already have an ECAS account and can login to CIRCABC. 
+        			</p>
+        			
+        			<p class="text">
+        			<img class="faqImg faq65"  src="resources/gle.jpg" />
+        			<br/><br/>
+        			Il a souvent été estimé, évalué, mais jamais calculé. Le chiffre d'affaires de Google en France aurait, pour la première fois, été mesuré par VRDCI, une petite entreprise spécialisée dans le référencement naturel (une manière de remonter dans les recherches du moteur sans payer de publicité). L'étude (PDF) devait être publiée mercredi 18 décembre.<br/><br/>
+					Et le résultat est à la hauteur des prédictions. En un an, entre novembre 2012 et novembre 2013, le géant américain aurait réalisé 1,43 milliard d'euros en France. Soit très loin des 193 millions d'euros déclarés par l'entreprise en France au titre de son exercice fiscal 2012. Certes, celui de cette année n'a pas encore été rendu public. Il n'empêche : difficile d'imaginer que Google déclare plus de 1 milliard de revenus en France pour 2013.
+					</p>
+        			<p class="hint">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" />Hint</span>
+        				Bla bla bla bla bla
+        				<br/>
+        				Blaaaablaa Bla
+        			</p>
+        			<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        			
+        		-->
+        	</ul>
+        </div>
+    </body>
+</html>

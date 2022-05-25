@@ -1,0 +1,393 @@
+/* --- Central stylesheet - Commission templates v. 2007 --- */
+
+body { margin: 0; padding: 0; font-size: 100%; }
+		
+form {
+	margin: 0; 
+	/*padding-right: 20px;
+	text-align: right;*/
+}
+		
+p { font-size: 85%; } 
+
+
+/* Accessibility */
+
+.outOfScreen { position: absolute; top: -500px; left: 0; width: 1px; height: 1px; margin: 0; padding: 0; overflow: hidden; }
+	
+#imageBanner h1 { position: absolute; top: -500px; left: 0; margin: 0;padding:0; width: 1px; height: 1px; overflow: hidden; }
+
+
+/* Banner */
+
+#top {
+	margin: 0 auto;
+	padding: 0 0 10px; 
+	border: 1px solid #072c6f; 
+}
+
+#banner {
+	height: 88px;
+}
+
+#bannerBackground {
+	height: 118px;
+
+}
+
+#bannerTop
+{
+	height:84px;
+}
+
+#bannerTop #logo
+{
+	height:74px;
+	margin-top:10px;
+	margin-left:40px;
+	float:left;
+}
+
+#bannerBottom
+{
+	height:34px;
+	background-color:#0065a2;
+}
+
+
+
+.bannerTitle { 
+	position: absolute;
+	top: 10px;
+	left: 80px;
+	width: 600px;
+	height: 65px;
+	z-index: 4;
+	background: transparent no-repeat;
+	
+}
+
+
+.bannerRight {
+	float:right
+}
+
+#imageBanner {
+	position: absolute;
+	z-index: 1;
+	top: 0;
+	height: 124px;
+	right: 0;
+	width: 330px;
+}
+
+
+/* Links */
+
+#linkBox {
+
+}
+
+#linkBoxTools {
+	font-family: Verdana;
+	font-size: 11pt;
+	padding: 2px;
+	margin: 0 0 0 0;
+	padding-right:10px;
+}
+
+#linkBoxTools ul {
+	margin: 0 1px 0 0;
+}
+	
+#linkBoxTools li {
+	display: inline;
+	margin: 0;
+	list-style-type: none;
+}
+
+#linkBoxTools ul li a {
+	padding: 0 2px 0 5px;
+	text-decoration: none;	
+}
+	
+#linkBoxTools ul li:first-child a, #linkBoxTools ul li.first a { background: none;	}
+
+#linkBoxTools a:focus, #linkBoxTools li:first-child a:focus { color: #10559A; background-color: #fff; }		
+
+
+/* Language Selector */
+
+/*Override by beaurpi to make selectbox in right top*/
+#langsSelector	{
+
+	float:right;
+
+}
+	
+	#langSelector select{
+		font-size:50%;
+	}
+
+#linkBoxLanguage {
+	position: absolute;
+	top: 0;
+	right: 5px;
+	height: 14px;
+	padding: 1px 3px 0px 1px;
+	width: 111px;
+	background-color: #0F508F;
+	border: 1px solid #fff;
+	color: #fff;
+	font-size: 75%;
+	text-decoration: none;
+	z-index: 5;
+	display: none;
+}
+
+#linkBoxLanguage a, #linkBoxLanguage a:visited {
+	text-decoration: none;
+	color: #fff;
+	display: block;
+	width: 100%;
+	text-align: left;
+}
+
+#linkBoxLanguage img {
+	position: absolute;
+	top: 4px;
+	right: 5px;
+	z-index: 8;
+}
+
+#languageArrow	{
+	position: absolute;
+	top: 3px;
+	right: 8px;
+	z-index: 8;
+	cursor: pointer;
+}
+
+#langsFormContainer	{
+	position: absolute;
+	right: 0;
+	z-index: 6;
+}
+	
+#langsContainer	{
+	right: 0;
+	text-align: left;
+	visibility: hidden;
+}
+
+#langsContainer a	{
+	color: #fff;
+	text-decoration: none;
+}
+	
+#langsContainer img {
+ 	margin: -2px 0px 0px
+}
+
+
+#langsSelector ul { 
+	float: left;
+	margin: 0 0 0 20px;
+	padding: 0;
+	list-style-type: none;
+}
+
+
+#langsSelector ul li { 
+	display: inline;
+	margin: 2px 1px 0 0;
+	padding-right: 1px; 
+	font-size: 120%;
+	line-height: 185%;
+}
+
+#langsSelector ul li a.lang { 
+	padding: 0 2px;
+	font-family: Arial Narrow, Arial, Verdana, Helvetica, Geneva, sans-serif;
+	text-decoration: none;
+	color: #074a8b;
+}
+
+#unofficial li a.lang { 
+	background-color: #cdd; color: #fff;
+}
+
+#langsSelector a.lang:link, #langsSelector a.lang:visited {
+	color: #074a8b;	
+}
+
+#langsSelector ul li a.lang:hover { 
+	background-color: #dbe1e6;
+}
+
+#langsSelector ul li a.lang:focus { background-color: #cdd; color: #036; }
+
+#langsSelector ul li a.curlang { 
+	padding: 0 1px;  
+	border: 0 solid #fff; 
+	font-family: "Arial Narrow", Arial, Verdana, Helvetica, Geneva, sans-serif;
+	text-decoration: none; 
+	background-color: #074a8b; color: #fff; 
+}
+
+#langsContent {
+	z-index: 7;
+	right: 4px;
+	width: 116px;
+	border: 1px solid #fff;
+}
+
+.langs, .unofficialLangs {
+	padding: 3px 6px 6px 6px;
+	background: #0F508F none repeat scroll 0%;
+	color: #ff0066;
+	font-size: 11px;
+	font-weight: normal;
+	line-height: 135%;
+	min-height: 1%;
+}
+
+#langsContent .unofficialLangs a:hover, #langsContent .langs a:hover {
+	background-color: #fff;
+	color: #003;
+	}
+
+#langsContent .unofficialLangs a:focus, #langsContent .langs a:focus	{
+	background-color: #acf;
+	color: #003;
+	}
+	
+.unofficialLangs {
+	border-top: 1px dotted #fff;
+}
+
+.langSelected {
+ color: #FFD530;
+}
+
+	
+/* Path */
+
+#path	{
+	position: relative;
+	padding: 0;
+	z-index: 0;
+	background-color: #0f57a2;
+	min-height: 15px;
+	width: 100%;
+}
+
+#path div	{
+	margin: 0;
+	padding: 0 0 0 10px;
+}
+	
+#path div ul {
+	margin: 0; padding: 1px 0;
+	font-family: Verdana;
+	font-size: 11pt;
+	color: #FFF;
+}
+	
+#path div ul li {
+
+	display: inline;
+}
+
+#path div ul li.first-child {
+
+	display: inline;
+	list-style-type: none;
+	background: none;
+	
+}
+
+#path div li a:link, #path div li a:visited {
+	text-decoration: none;
+	color: #FFF;
+}
+	
+#path div li a:hover {
+	text-decoration: underline;
+}
+
+#path div ul li:first-child {
+	padding-left: 0;
+	background-image: none;
+}
+
+
+#path a:focus, #path li:first-child a:focus { color: #FFF; background-color: #fff; }		
+
+
+/* Content */
+
+#container {
+	background: #fff;
+	margin: 25px 0;
+	padding: 0 0 5px 0;
+	position: relative;
+	font-size: 80%;
+}
+
+.tableMain { width: 100%; }
+
+#content a:link { color: #03c; }
+
+#content a:visited { color: #999; }
+
+#content h1, #content h2, #content h3, #content h4, 
+#content li, #content select, #content input, #content p { font-family: Arial, Helvetica, Verdana, Geneva, sans-serif; color: #039; }
+
+
+/* Font sizer */
+
+#fontSize {
+	float: right; 
+	font-size: 11px; font-weight: bold;
+	color: #074a8b;
+}
+
+#fontSize img {
+	float: left;
+	display: inline;
+	margin: 0 0 0 4px;
+	border: none;
+}
+
+#fontSize a[href="javascript:ts(-1)"], #fontSize a[href="javascript:ts(1)"] {
+display: none;
+}
+
+
+/* Date */
+	
+.date {
+	width: 100%;
+	font-family: Verdana, Arial, Geneva, Helvetica, sans-serif;
+	font-size: 0.8em;
+	text-align: center;
+	color: #003399;
+}
+	
+.date a:link {
+	color: #003399;
+	text-decoration: underline;
+}
+	
+.date a:visited {
+	color: #003399;
+}
+	
+.date a:hover {
+	color: #003399;
+}
+
+.abstract {
+   background-color: white;
+}

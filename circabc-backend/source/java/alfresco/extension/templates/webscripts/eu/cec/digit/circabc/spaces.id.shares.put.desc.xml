@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>spaces.id.shares.put</shortname>
+  <description>Updates the permission of a share for the given space</description>
+    <url>/circabc/spaces/{id}/shares</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

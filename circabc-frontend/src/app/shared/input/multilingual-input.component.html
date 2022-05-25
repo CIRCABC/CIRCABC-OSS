@@ -1,0 +1,74 @@
+<div
+  class="flexContainer"
+  [formGroup]="formSelector"
+  [class.field--textarea]="textarea"
+  [class.field--with-icon]="!textarea"
+>
+  <div class="flexFullRow">
+    <label for="title" [class.label--top-align]="textarea"
+      >{{ label }}<span *ngIf="required" style="color: red">*</span>
+    </label>
+  </div>
+
+  <div class="flexWrap">
+    <input
+      data-cy="text"
+      type="text"
+      placeholder="{{ placeholder }}"
+      formControlName="text"
+      *ngIf="!textarea"
+      class="multilang-input"
+    />
+    <div *ngIf="textarea">
+      <p-editor
+        [spellcheck]="
+          formSelector.controls.language.value === 'en' ? true : false
+        "
+        data-cy="textarea"
+        formControlName="text"
+        [style]="{ height: '126px' }"
+      >
+        <p-header>
+          <span class="ql-formats">
+            <select class="ql-header">
+              <option value="1"></option>
+              <option value="2"></option>
+              <option value="3"></option>
+              <option selected></option>
+              <option value="4"></option>
+              <option value="5"></option>
+              <option value="6"></option>
+            </select>
+          </span>
+          <span class="ql-formats">
+            <button class="ql-bold" aria-label="Bold"></button>
+            <button class="ql-italic" aria-label="Italic"></button>
+            <button class="ql-underline" aria-label="Underline"></button>
+          </span>
+          <span class="ql-formats">
+            <button class="ql-list" aria-label="list" value="ordered"></button>
+            <button class="ql-list" aria-label="list" value="bullet"></button>
+          </span>
+          <span class="ql-formats">
+            <button class="ql-blockquote" aria-label="Strike"></button>
+            <button class="ql-link" aria-label="link"></button>
+            <button class="ql-code-block" aria-label="code-block"></button>
+          </span>
+        </p-header>
+      </p-editor>
+    </div>
+  </div>
+
+  <div class="flex0">
+    <div class="lang-selector" [class.lang-selector--textarea]="textarea">
+      <select formControlName="language">
+        <option
+          *ngFor="let availableLang of availableLangs"
+          value="{{ availableLang.code }}"
+        >
+          {{ availableLang.code }}
+        </option>
+      </select>
+    </div>
+  </div>
+</div>

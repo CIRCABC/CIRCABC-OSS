@@ -1,0 +1,619 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--+
+    |     Copyright European Community 2006 - Licensed under the EUPL V.1.0
+    |
+    |  		   http://ec.europa.eu/idabc/en/document/6523
+    |
+    +-->
+<project>
+
+	<parent>
+		<groupId>circabc</groupId>
+		<artifactId>circabc-parent</artifactId>
+		<version>0.0.3</version>
+	</parent>
+
+
+	<name>circabc-backend</name>
+	<groupId>circabc</groupId>
+	<artifactId>circabc-backend</artifactId>
+	<packaging>war</packaging>
+	<version>2.0</version>
+	<modelVersion>4.0.0</modelVersion>
+
+	<description>
+		 CIRCABC is an extranet tool, developed under the European Commission IDA programme, and tuned towards Public Administrations needs.
+       	 It enables a given community (e.g. committee, working group, project group etc.) geographically spread across Europe (and beyond)
+       	 to maintain a private space on the Internet where they can share information, documents, participate in discussion fora and various
+         other functionalities.
+	</description>
+
+	<url>https://circabc.europa.eu/</url>
+
+
+
+	<build>
+		<finalName>${artifactId}-${version}-${backend-target.env}</finalName>
+		<directory>target</directory>
+		<outputDirectory>target/classes</outputDirectory>
+
+		<testOutputDirectory>target/test-classes</testOutputDirectory>
+		<sourceDirectory>source/java</sourceDirectory>
+		<testSourceDirectory>source/test</testSourceDirectory>
+		<resources>
+			<resource>
+				<directory>source/java</directory>
+				<excludes>
+					<exclude>**/*.java</exclude>
+				</excludes>
+			</resource>
+			<resource>
+				<directory>source/generated</directory>
+				<excludes>
+					<exclude>**/*.java</exclude>
+				</excludes>
+			</resource>
+			<resource>
+				<directory>source/module</directory>
+				<includes>
+					<include>**/*.xml</include>
+					<include>**/*.acp</include>
+				</includes>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>${compileSource}</source>
+					<target>${compileSource}</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>add-source</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>source/generated</source>
+								<source>source/module</source>
+								<!-- Add classes of the migration -->
+								<source>../circabc-resources/circa-to-bc/source</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<configuration>
+					<warSourceDirectory>target/WebRoot</warSourceDirectory>
+					<maven.war.resources.overwrite>false</maven.war.resources.overwrite>
+					<webResources>
+						<resource>
+							<directory>source/web</directory>
+							<includes>
+								<include>**/*</include>
+							</includes>
+							<excludes>
+								<exclude>**/svn</exclude>
+							</excludes>
+						</resource>
+						<!-- Add resources of the migration -->
+						<resource>
+							<directory>../circabc-resources/circa-to-bc/source/web</directory>
+							<includes>
+								<include>**/*</include>
+							</includes>
+							<excludes>
+								<exclude>**/svn</exclude>
+							</excludes>
+						</resource>
+						<!-- Add resources of the migration -->
+						<resource>
+							<directory>../circabc-resources/circa-to-bc/source/java/alfresco</directory>
+							<targetPath>WEB-INF/classes/alfresco</targetPath>
+							<includes>
+								<include>**/*</include>
+							</includes>
+							<excludes>
+								<exclude>**/svn</exclude>
+							</excludes>
+						</resource>
+
+					</webResources>
+					<archive>
+						<manifest/>
+						<manifestEntries>
+							<build-version>${backend-target.env}</build-version>
+							<alfrescoVersion>${alfrescoVersion}</alfrescoVersion>
+							<mode>development</mode>
+							<url>${pom.url}</url>
+						</manifestEntries>
+					</archive>
+					<archiver>
+						<build-version>${backend-target.env}</build-version>
+					</archiver>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jxr-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-install-plugin</artifactId>
+				<version>2.5.2</version>
+				<executions>
+					<execution>
+						<id>install-artifacts.calendartag-1.0.1</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<file>lib/calendartag-1.0.1.jar</file>
+							<groupId>eu.europa.ec.circabc</groupId>
+							<artifactId>calendartag</artifactId>
+							<version>1.0.1</version>
+							<packaging>jar</packaging>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>install-artifacts.ecas-weblogic-12.2.1-authprovider-4.26.3</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<file>lib/ecas-weblogic-12.2.1-authprovider-4.26.3.jar</file>
+							<groupId>eu.europa.ec.circabc</groupId>
+							<artifactId>ecas-weblogic-12.2.1-authprovider</artifactId>
+							<version>4.26.3</version>
+							<packaging>jar</packaging>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>install-artifacts.ftp4j-1.5.1</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<file>lib/ftp4j-1.5.1.jar</file>
+							<groupId>eu.europa.ec.circabc</groupId>
+							<artifactId>ftp4j</artifactId>
+							<version>1.5.1</version>
+							<packaging>jar</packaging>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>install-artifacts.opencsv-1.8</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<file>lib/opencsv-1.8.jar</file>
+							<groupId>eu.europa.ec.circabc</groupId>
+							<artifactId>opencsv</artifactId>
+							<version>1.8</version>
+							<packaging>jar</packaging>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>install-artifacts.AutonomyACIAPI-4.9.2</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<file>lib/AutonomyACIAPI-4.9.2.jar</file>
+							<groupId>eu.europa.ec.circabc</groupId>
+							<artifactId>AutonomyACIAPI</artifactId>
+							<version>4.9.2</version>
+							<packaging>jar</packaging>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>install-artifacts.truezip-6.6</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<file>lib/truezip-6.6.jar</file>
+							<groupId>eu.europa.ec.circabc</groupId>
+							<artifactId>truezip</artifactId>
+							<version>6.6</version>
+							<packaging>jar</packaging>
+						</configuration>
+					</execution>
+
+
+					<execution>
+						<id>install-artifacts.ipm-ws-client-1.0.0</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<file>lib/ipm-ws-client-1.0.0.jar</file>
+							<groupId>eu.europa.ec.circabc</groupId>
+							<artifactId>ipm-ws-client</artifactId>
+							<version>1.0.0</version>
+							<packaging>jar</packaging>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>install-artifacts.ical4j-1.0-rc1</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<file>lib/ical4j-1.0-rc1.jar</file>
+							<groupId>eu.europa.ec.circabc</groupId>
+							<artifactId>ical4j</artifactId>
+							<version>1.0-rc1</version>
+							<packaging>jar</packaging>
+						</configuration>
+					</execution>
+
+				</executions>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<!-- run the amp process -->
+					<execution>
+						<id>amp</id>
+						<!-- we use the package phase. This task is done after the package phase. -->
+						<phase>package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<ant antfile="${basedir}/build_maven.xml">
+									<!-- use value, not reference -->
+									<property name="war_file" value="${project.build.finalName}"/>
+									<property name="includeExport" value="${migration.export.enable}"/>
+									<property name="server" value="${server.node}"/>
+									<property name="build.profile" value="${backend-target.env}"/>
+									<property name="swagger.host" value="${swagger.host}"/>
+									<target name="-update-war"/>
+								</ant>
+							</tasks>
+						</configuration>
+					</execution>
+				</executions>
+				<!-- dependences only needed for ant execution -->
+				<dependencies>
+					<dependency>
+						<artifactId>circabc-frontend-wrapper</artifactId>
+						<groupId>circabc</groupId>
+						<version>0.0.1</version>
+						<type>pom</type>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.ant</groupId>
+						<artifactId>ant-nodeps</artifactId>
+						<version>1.7.1</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.ant</groupId>
+						<artifactId>ant-antlr</artifactId>
+						<version>1.7.0</version>
+					</dependency>
+					<dependency>
+						<groupId>antlr</groupId>
+						<artifactId>antlrall</artifactId>
+						<version>2.7.4</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.axis</groupId>
+						<artifactId>axis-ant</artifactId>
+						<version>1.4</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.axis</groupId>
+						<artifactId>axis</artifactId>
+						<version>1.4</version>
+						<scope>compile</scope>
+					</dependency>
+					<dependency>
+						<groupId>javax.xml</groupId>
+						<artifactId>jaxrpc-api</artifactId>
+						<version>1.1</version>
+					</dependency>
+					<dependency>
+						<groupId>commons-discovery</groupId>
+						<artifactId>commons-discovery</artifactId>
+						<version>20040218.194635</version>
+					</dependency>
+					<dependency>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+						<version>1.0.3</version>
+					</dependency>
+					<dependency>
+						<groupId>jboss</groupId>
+						<artifactId>jbossall-client</artifactId>
+						<version>3.2.3</version>
+					</dependency>
+
+				</dependencies>
+			</plugin>
+
+
+
+
+			<!-- Replacement for circabc-maven-plugin ! -->
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>process-classes</phase>
+						<configuration>
+							<tasks>
+								<copy todir="target/WebRoot" overwrite="false">
+									<fileset dir="buildconfig/config1"/>
+								</copy>
+								<copy todir="target/WebRoot" overwrite="true">
+									<fileset dir="buildconfig/${backend-target.env}"/>
+								</copy>
+								<copy todir="target/WebRoot/WEB-INF/classes/alfresco/messages" overwrite="true">
+									<fileset dir="language-packs"/>
+								</copy>
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+		<extensions>
+			<extension>
+				<groupId>co.leantechniques</groupId>
+				<artifactId>maven-buildtime-extension</artifactId>
+				<version>2.0.2</version>
+			</extension>
+		</extensions>
+	</build>
+
+	<repositories>
+		<repository>
+			<id>alfresco-public</id>
+			<url>https://artifacts.alfresco.com/nexus/content/groups/public</url>
+		</repository>
+
+
+
+	</repositories>
+
+	<pluginRepositories>
+
+		<pluginRepository>
+			<id>alfresco-public</id>
+			<url>https://artifacts.alfresco.com/nexus/content/groups/public</url>
+		</pluginRepository>
+
+	</pluginRepositories>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>org.alfresco</groupId>
+			<artifactId>alfresco-core</artifactId>
+			<version>4.2.f</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.thebuzzmedia</groupId>
+					<artifactId>imgscalr-lib</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.vaadin.addons</groupId>
+					<artifactId>dcharts-widget</artifactId>
+				</exclusion>
+								<exclusion>
+					<groupId>org.springframework.social</groupId>
+					<artifactId>spring-social-facebook</artifactId>
+				</exclusion>
+
+
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.alfresco</groupId>
+			<artifactId>alfresco-repository</artifactId>
+			<version>4.2.f</version>
+
+			<exclusions>
+				<exclusion>
+					<groupId>com.thebuzzmedia</groupId>
+					<artifactId>imgscalr-lib</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.vaadin.addons</groupId>
+					<artifactId>dcharts-widget</artifactId>
+				</exclusion>
+								<exclusion>
+					<groupId>org.springframework.social</groupId>
+					<artifactId>spring-social-facebook</artifactId>
+				</exclusion>
+
+
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.alfresco</groupId>
+			<artifactId>alfresco-web-client</artifactId>
+			<version>4.2.f</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.alfresco</groupId>
+					<artifactId>alfresco-web-framework-commons</artifactId>
+				</exclusion>
+								<exclusion>
+					<groupId>org.springframework.social</groupId>
+					<artifactId>spring-social-facebook</artifactId>
+				</exclusion>
+
+			</exclusions>
+		</dependency>
+
+		
+
+		<dependency>
+			<groupId>org.apache.myfaces.tomahawk</groupId>
+			<artifactId>tomahawk</artifactId>
+			<version>1.1.8</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.14.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.liferay</groupId>
+			<artifactId>com.google.ical</artifactId>
+			<version>20110304</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.owasp.esapi</groupId>
+			<artifactId>esapi</artifactId>
+			<version>2.2.3.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>eu.europa.ec.circabc</groupId>
+			<artifactId>calendartag</artifactId>
+			<version>1.0.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>eu.europa.ec.circabc</groupId>
+			<artifactId>ecas-weblogic-12.2.1-authprovider</artifactId>
+			<version>4.26.3</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>eu.europa.ec.circabc</groupId>
+			<artifactId>ftp4j</artifactId>
+			<version>1.5.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>eu.europa.ec.circabc</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>1.8</version>
+		</dependency>
+
+		<dependency>
+			<groupId>eu.europa.ec.circabc</groupId>
+			<artifactId>AutonomyACIAPI</artifactId>
+			<version>4.9.2</version>
+		</dependency>
+		<dependency>
+			<groupId>eu.europa.ec.circabc</groupId>
+			<artifactId>truezip</artifactId>
+			<version>6.6</version>
+		</dependency>
+
+		<dependency>
+			<groupId>eu.europa.ec.circabc</groupId>
+			<artifactId>ipm-ws-client</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>eu.europa.ec.circabc</groupId>
+			<artifactId>ical4j</artifactId>
+			<version>1.0-rc1</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>com.thetransactioncompany</groupId>
+			<artifactId>cors-filter</artifactId>
+			<version>2.5</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.extensions.surf</groupId>
+			<artifactId>spring-webscripts</artifactId>
+			<version>1.2.0-M35</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.extensions.surf</groupId>
+			<artifactId>spring-webscripts-api</artifactId>
+			<version>1.2.0-M35</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.extensions.surf</groupId>
+			<artifactId>spring-surf-core-configservice</artifactId>
+			<version>1.2.0-M35</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.extensions.surf</groupId>
+			<artifactId>spring-cmis-framework</artifactId>
+			<version>1.2.0-M35</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.extensions.surf</groupId>
+			<artifactId>spring-surf-core-configservice</artifactId>
+			<version>1.2.0-M35</version>
+		</dependency>
+		<!-- AMO needed dependencies for WebLogic 12.2 -->
+		<dependency>
+			<groupId>org.mortbay.jetty</groupId>
+			<artifactId>jetty</artifactId>
+			<version>6.0.0beta15</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mortbay.jetty</groupId>
+			<artifactId>jetty-util</artifactId>
+			<version>6.0.0beta17</version>
+		</dependency>
+		<!-- AMO needed dependencies for WebLogic 12.2 -->
+
+	</dependencies>
+
+	<properties>
+		<compileSource>1.7</compileSource>
+		<compileTarget>1.7</compileTarget>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<alfrescoVersion>4.2.4.15.r112167-b152.6069</alfrescoVersion>
+		<backend-target.env>tomcat-docker</backend-target.env>
+	</properties>
+
+</project>

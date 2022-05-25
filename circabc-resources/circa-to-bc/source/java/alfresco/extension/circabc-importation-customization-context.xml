@@ -1,0 +1,116 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+	<!--  Global configuration -->
+
+	<bean id="importation-properties"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="ignoreUnresolvablePlaceholders">
+            <value>true</value>
+        </property>
+        <property name="locations">
+            <list>
+                <value>classpath:alfresco/extension/migration/circabc-importation.properties</value>
+            </list>
+        </property>
+    </bean>
+
+	<!--  Listerner -->
+
+    <bean id="migration.unmarshaller.listener" class="eu.cec.digit.circabc.migration.listener.StructureListener" />
+
+	<!-- Pre Processing -->
+
+	<!-- Bean in charge of the validation before migration  -->
+    <bean id="migrationValidationHandler" class="eu.cec.digit.circabc.migration.validation.impl.ValidationHandlerImpl">
+    	<property name="circabcServiceRegistry">
+			<ref bean="circabcServiceRegistry" />
+    	</property>
+    	<property name="schemaLocation">
+			<value>classpath:alfresco/extension/migration/ImportSchema.xsd</value>
+    	</property>
+    	<property name="listener">
+			<ref bean="migration.unmarshaller.listener" />
+    	</property>
+    	<property name="validators">
+    	    <list>
+                <value>eu.cec.digit.circabc.migration.validation.impl.DynamicPropertiesValidator</value>
+				<value>eu.cec.digit.circabc.migration.validation.impl.ImportedProfilesValidator</value>
+				<value>eu.cec.digit.circabc.migration.validation.impl.InvitedUserProfileValidator</value>
+				<value>eu.cec.digit.circabc.migration.validation.impl.KeywordsValidator</value>
+				<value>eu.cec.digit.circabc.migration.validation.impl.NodeReferencesValidator</value>
+				<value>eu.cec.digit.circabc.migration.validation.impl.PivotTranslationValidator</value>
+				<value>eu.cec.digit.circabc.migration.validation.impl.ResourcesValidator</value>
+				<!--  
+				<value>eu.cec.digit.circabc.migration.validation.impl.CircabcUserValidator</value>
+				<value>eu.cec.digit.circabc.migration.validation.impl.LdapUserValidator</value>
+				-->
+				<value>eu.cec.digit.circabc.migration.validation.impl.DisjunctionUserValidator</value>
+            </list>
+    	</property>
+	</bean>
+	
+	
+
+  	<!-- Bean in charge of the lock/unlock migration process -->
+    <bean id="migration.spaceLockHandler" class="eu.cec.digit.circabc.migration.archive.impl.SpaceLockHandler" >
+    	<property name="lockService">
+			<ref bean="lockService" />
+		</property>
+    	<property name="transactionService">
+			<ref bean="TransactionService" />
+		</property>
+    	<property name="lockExpiration">
+			<value>${import.xml.archive.lock.time.sec}</value>
+    	</property>
+	</bean>
+
+	<bean id="importationTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<property name="corePoolSize" value="${import.mt.maxthread}" />
+	</bean>
+
+	<!-- Bean in charge of the lock/unlock migration process -->
+    <bean id="migration.mtlockHandler" class="eu.cec.digit.circabc.migration.archive.impl.MTLockHandler" />
+
+	<alias alias="migration.lockHandler" name="migration.mtlockHandler"/>
+
+	<!-- Bean in charge of the archive uploaded migration files and results -->
+    <bean id="migration.fileArchiver" class="eu.cec.digit.circabc.migration.archive.impl.RepositoryArchiver">
+    	<property name="nodeService">
+			<ref bean="NodeService" />
+		</property>
+		<property name="managementService">
+			<ref bean="ManagementService" />
+		</property>
+    	<property name="searchService">
+			<ref bean="SearchService" />
+    	</property>
+		<property name="namespaceService">
+			<ref bean="NamespaceService" />
+		</property>
+		<property name="fileFolderService">
+			<ref bean="FileFolderService" />
+		</property>
+		<property name="contentService">
+			<ref bean="ContentService" />
+		</property>
+		<property name="transactionService">
+			<ref bean="transactionService" />
+		</property>
+		<property name="dictionaryPath">
+			<value>/app:company_home/app:dictionary</value>
+    	</property>
+		<property name="xmlArchivesSpace">
+			<value>${import.xml.archive.space}</value>
+    	</property>
+	</bean>
+
+	<!-- Bean in charge of the resource management (resolution of urls) -->
+    <bean id="migration.resourceManager" class="eu.cec.digit.circabc.migration.processor.ResourceManager" >
+ 	    <property name="maxTries" value="${import.resource.validator.maxtries}" />
+       	<property name="timeToWaitMs" value="${import.resource.validator.timetowait}" />
+    </bean>
+
+
+</beans>

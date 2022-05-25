@@ -1,0 +1,38 @@
+@use '~css/global/variables-mixins-keyframes';
+
+.listing-news {
+  display: flex;
+
+  & > * {
+    width: 30%;
+    margin-right: 20px;
+  }
+
+  @media screen and (max-width: variables-mixins-keyframes.$break-small) {
+    flex-wrap: wrap;
+
+    & > * {
+      width: 100% !important;
+      margin-right: 0;
+      margin-bottom: 20px;
+    }
+  }
+}
+
+.right-margin {
+  margin-right: 30px;
+}
+
+.link-max-width {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  word-break: break-all;
+  margin-bottom: -3px;
+}
+
+.show-all {
+  text-align: center;
+}

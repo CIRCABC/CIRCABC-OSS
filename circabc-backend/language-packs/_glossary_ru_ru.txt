@@ -1,0 +1,260 @@
+# Alfresco Russian language pack glossary
+# Created by Alexey Chumakov, Moscow, Russia
+# alex at chumakov.ru
+# note: (**) represents 'to review', ??? stands for 'uncertain'
+# This file is in UTF8
+
+# Пространство мое/компании/гостя???
+# Имена/названия выверить
+
+action			действие
+add/remove		добавить (элемент/пользователя)
+adhoc task		задача по ходу (**)
+administration console	пульт управления
+administrator		администратор
+apply action, to	совершить действие (над) (**)
+apply aspect, to	относить(ся) к аспекту (**)
+apply category, to	присвоить категорию (**)
+apply rule, to		применить правило (к документу) (**)
+apply template		назначить шаблон (**)?
+approve			одобрение (**) утверждение? принятие?
+article			статья (сообщение форума), тж. post
+aspect			аспект
+assignee		ответственный (**)
+association		ассоциация (**) связь?
+attachable		присоединяемый
+auditable		контролируемый
+authenticate, to	входить (**) регистрировать(ся)? удостоверяться?
+author			автор
+authorities		полномочия (**)?
+automatic text		шаблонный текст (письма)
+back			назад (навигация)
+basable			основываемый
+base content object	базовый объект-материал
+base			база (в системной модели)
+basis			основа
+body			текст (письма)
+bootstrap (location)	загрузка (место загрузки) (**)
+branch			ветвь
+bubble view		реплики
+category		категория
+category root		корень категории (папка) (**) ?
+character		знак
+check in		фиксация (**) возврат / вписка?
+check in, to		зафиксировать (**) вернуть (как книгу)? про/в-писать ?
+check out		извлечение (**) взятие / выписка?
+check out, to		извлечь (**) взять (как книгу)? выписать ?
+child(ren)		потомок, дочерний/ая (элемент/область)
+classifiable            классифицируемый
+collaborator		(**)???коллаборант
+common fields		распространенные поля (**)
+сompany			компания (**) организация?
+complianceable		одобряемый
+components		детали (**) панели
+condition		условие
+configurable		настраиваемый
+configurations		настройки
+consumer		потребитель
+contain, to		содержать(ся)
+container		контейнер
+contains		содержит
+content item		элемент-материал (**)
+content node		узел-материал (**)
+content			материал (**)
+contributor		участник
+coordinator		координатор
+copied from		скопирован из
+copy, to		копировать
+countable		подсчитываемый
+coverage		охват
+created date		дата создания
+creator			создатель
+custom action		заказное действие  (**)настраиваемое?
+dashboard view		панель (представления) (**) ?контекст
+dashlet			панелька (**)
+data dictionary 	словарь данных
+deep lock		усиленная блокировка (**)
+definition		определение
+description		описание
+destination (, link) 	объект ссылки (**)
+details			сведения (**) реквизиты?
+dialog			страница (**)?
+disable rule		отключить правило
+discussable		обсуждаемый
+discussion		обсуждение
+draft           	черновик (**) 
+dublin core		дублинское ядро
+edit			изменить/редактировать (**)
+editor			редактор (лицо)
+effective from|to	действует с до (**) действителен?
+effectivity		действие (**) действительность?
+email			сообщение (электронной почты)
+end 			конец (процесса) (**)
+enter			поместить (о материале)
+entry			элемент (в БД)
+expiry date		срок действия до (о блокировке)
+export (package) 	пакет экспорта (**)
+extract, to 		извлечь
+feature			вариант (**) проверить, возможно, двойное значение 
+field			поле
+file link		связь с файлом
+folder space		область папки (**)
+folder			папка
+forum space		область форумов (**)
+guest home		гостевая начальная область
+help			помощь
+hits			обращения
+home			территория (пользователя, компании...) ??? (**)
+home space		начальная область (**) территория? Начальная ли??? Домашняя? или просто "Моя область/Гостевая область/область компании"?
+
+icon			значок
+ID/identifier		идентификатор (**) код? обозначение?
+image			изображение
+import			импорт
+inbound			входящий
+initiate (,task)	инициировать (**)?
+inline editable		редактируемый по месту (встроенными средствами) (**)
+instance (, process)	экземпляр (процесса)
+issue			вопрос (тж. bug)
+item			элемент
+last accessed date	дата последнего доступа
+link file path		путь к связанному файлу (**)
+link			ссылка (**) ?связь
+link, to (to category)	присвоить категорию (**)
+link object		связанный объект (**) объект ссылки?
+locale			регион
+localizable		локализуемый
+location		расположение (документа)? (**)
+lock owner		владелец блокировки
+lock type		тип блокировки
+lockable		блокируемый
+login			вход в систему
+logout			выход из системы
+major change		значительное изменение
+match			отбирать/отобранный (элемент) тж. соответствующий
+match, to        	отбирать (**)
+metadata		метаданные
+minor change		незначительное изменение
+modified date		дата изменения
+modifier		изменивший
+move, to		перемещать
+name			имя (**) название? (элемента)
+new			создать/новый (**)
+next			далее (в навигации)
+next/previous		следующий (элемент)
+node			узел
+notify me		известить меня (**)
+object                  объект
+operation		действие
+ordered children	упорядочение дочерних
+outbound		исходящий
+ownable			владеемый
+owner			владелец
+package			пакет
+partable		составной
+parts			состав
+pattern			шаблон (имени файла, поиска)
+pending approval	ожидающий одобрения (**) утверждения? на ...?
+permission refence name	ссылочное имя разрешения
+person			(физическое) лицо (**)
+pooled users		пул пользователей (**)? группа пользователей, которым можно брать на исполнение задачу
+post			реплика (форума), тж. статья
+presentations		представления
+preview in template	примерка шаблона
+previous		предыдущий (элемент)
+privileges		права
+priority		очередность (рассмотрения) (**)
+property		свойство
+process definitions list	список определений процесса
+published		изданное
+publisher               издатель
+quality assurance	обеспечение качества
+raise (an issue)	поднять (вопрос)
+reader			считыватель (в сообщении об ошибках) (**)
+reassign		передать (задачу)
+references		ссылки
+referencing		ссылающийся
+reject, to		отклонять
+release (lock)		снять блокировку
+relevant (to schema)	подходит к схеме
+remove after		изъять после [документ]
+remove			убрать [элемент/пользователя]
+replaceable		заменяющий
+replaces		заменяет
+repository		хранилище
+reset config service	служба сброса настройки (**)
+result			результат
+revert			вернуться (к версии)
+review			рассмотрение (процесс) (**) рецензия?
+reviewer		рассматривающий (**) рецензент?
+rights			права
+root space		корневая область
+rule			правило
+sample			образец (**) пример? 
+saved query		сохраненный запрос
+saved search		сохраненный поиск
+scratch			с нуля
+select			выбрать
+serializable		упорядочиваемый
+service			служба
+set, to			задать / установить
+shelf			полка
+shortcut		закладка
+source			источник
+space           	область (**) пространство???
+specialize, to		конкретизировать
+specific		указанное/определенное? (значение) (**) 
+specified		указанный
+start			начало (процесса)
+start location		начальное расположение (**) надо перевести получше ???
+step			шаг
+sub-type		подтип
+subject			тема (письма)
+subject			предмет (материала)
+subscribable            подписной
+subscribed by		подписчики
+summarizable		резюмируемый
+summary			резюме (**) итог?
+system overview		обзор системы
+task start date         дата начала задачи
+task completion date    дата завершения задачи
+task due date           крайний срок задачи (**)
+task outcome		итог задачи (**) результат?
+templatable		шаблонируемый
+template		шаблон
+title			название (материала)
+titled			названный (документ) (**)
+topic			тема (форума)
+transform, to		преобразовать
+translatable		переводимый
+translations		переводы
+tutorial		введение (в Alfresco)
+type			тип
+type: any		любой
+type: boolean		булев
+type: category		категория
+type: content		материал
+type: date and time	дата и время
+type: date		дата
+type: double		двойной точности
+type: float		вещественный
+type: integer		целый
+type: long		длинный
+type: numeric		числовой
+type: path		путь
+type: qualified name	уточненное имя
+type: reference		ссылка
+type: text		текстовый
+type: unique identifier	уникальный идентификатор
+ui design		дизайн интерфейса пользователя
+ui Facets		грани интерфейса пользователя (**)
+upload/download		закачать/скачать (**)
+user managed		пользовательский (**) поддерживаемый пользователем?
+user			учетная запись/пользователь (**)
+value 			значение
+version label		отметка версии
+versionable		версионный
+view			вид (**) представление? 
+wildcard		знак подстановки
+workflow        	процесс (**) процедура? обработка?
+working copy		рабочая копия

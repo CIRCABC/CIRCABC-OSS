@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>users.bulk.invite.users.file.put</shortname>
+  <description>Processes a given XLS, CSV or XML file with the bulk invite template format and returns the validated user information to bulk-invite the users</description>
+    <url>/circabc/users/bulkinvite/members</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

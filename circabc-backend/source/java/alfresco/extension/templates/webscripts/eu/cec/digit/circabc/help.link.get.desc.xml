@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>get the help link</shortname>
+  <description>get the help link</description>
+  <url>/circabc/help/links/{id}</url>
+  <format default="json"/>
+  <authentication>guest</authentication>
+  <transaction>required</transaction>
+</webscript>

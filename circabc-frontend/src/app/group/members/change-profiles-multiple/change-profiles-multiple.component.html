@@ -1,0 +1,67 @@
+<cbc-modal
+  [title]="'label.change.profile'"
+  [okLabel]="'label.update'"
+  [visible]="showModal"
+  (cancel)="cancel()"
+  (ok)="changeProfiles()"
+  [executing]="processing"
+  [executingLabel]="'label.updating'"
+>
+  <form [formGroup]="changeProfileForm">
+    <div class="field">
+      <label for="groupContact">{{ 'label.new.profile' | transloco }}</label>
+      <div class="custom-select select--form">
+        <select
+          name="profileName"
+          id="profileName"
+          formControlName="selectedProfile"
+        >
+          <option *ngFor="let profile of profiles" value="{{ profile.id }}"
+            >{{ profile.title | cbcI18n }}</option
+          >
+        </select>
+      </div>
+    </div>
+    <div class="field switch">
+      <div class="label" style="width: 405px"
+        >{{ 'label.user.notifications.profile' | transloco }}</div
+      >
+      <input
+        id="cmn-toggle-1"
+        class="cmn-toggle cmn-toggle-round"
+        type="checkbox"
+        formControlName="userNotifications"
+      />
+      <label for="cmn-toggle-1" class="nonBlockLabel"></label>
+      <span
+        >{{ changeProfileForm.controls['userNotifications'].value === true ?
+        ('label.yes' | transloco) : ('label.no' | transloco) }}</span
+      >
+    </div>
+
+    <div class="field switch">
+      <div class="label" style="width: 405px"
+        >{{ 'label.admin.notifications.profile' | transloco }}</div
+      >
+      <input
+        id="cmn-toggle-2"
+        class="cmn-toggle cmn-toggle-round"
+        type="checkbox"
+        formControlName="adminNotifications"
+      />
+      <label for="cmn-toggle-2" class="nonBlockLabel"></label>
+      <span
+        >{{ changeProfileForm.controls['adminNotifications'].value === true ?
+        ('label.yes' | transloco) : ('label.no' | transloco) }}</span
+      >
+    </div>
+  </form>
+  <br /><br />
+  <p *ngFor="let member of users">
+    {{ member.user?.firstname + ' ' + member.user?.lastname }}
+    <span style="font-weight: bold"
+      >{{ 'members.current.user.is' | transloco }}
+    </span>
+    {{ getProfileTitle(member) }}
+  </p>
+</cbc-modal>

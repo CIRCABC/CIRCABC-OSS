@@ -1,0 +1,12 @@
+<div class="article-card">
+  <h3>
+    <a
+      [routerLink]="['/help/category', article.parentId, 'article', article.id]"
+      >{{ article.title | cbcI18n }}</a
+    >
+  </h3>
+  <span class="updated"> {{ article.lastUpdate | date: 'dd MM yyyy' }} </span>
+
+  <section class="content-limited" [innerHTML]="article.content | cbcI18n">
+  </section>
+</div>

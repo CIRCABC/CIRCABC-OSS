@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>subspaces.id.get</shortname>
+  <description>Get the level immediate below of subspaces of the given space id</description>
+    <url>/circabc/spaces/{id}/subspaces</url>
+  <format default="json"/>
+  <authentication>guest</authentication>
+  <transaction>required</transaction>
+</webscript>

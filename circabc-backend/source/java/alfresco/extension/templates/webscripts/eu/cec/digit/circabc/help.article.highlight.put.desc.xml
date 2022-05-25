@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>toggle the highlight of the help articles</shortname>
+  <description>toggle the highlight of the articles</description>
+  <url>/circabc/help/articles/{id}/highlight</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

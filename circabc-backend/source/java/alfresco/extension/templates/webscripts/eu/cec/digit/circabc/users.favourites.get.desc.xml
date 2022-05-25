@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Favouritres of a user</shortname>
+  <description>Get all the favourite nodes of a user</description>
+  <url>/circabc/users/{userId}/favourites</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

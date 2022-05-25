@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>nodes.id.notification.status.users.get</shortname>
+  <description>Get the subscribed users of a node</description>
+    <url>/circabc/nodes/{id}/notifications/status/users</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

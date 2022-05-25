@@ -1,0 +1,60 @@
+<!-- MODAL BOX -->
+<div
+  class="black-overlayer"
+  *ngIf="showModal"
+  [class.overlayer-shown]="showModal"
+  [class.overlayer-hidden]="!showModal"
+></div>
+<section
+  class="modal"
+  *ngIf="showModal"
+  [class.modal-shown]="showModal"
+  [class.modal-hidden]="!showModal"
+  style="margin-top: 0"
+>
+  <a class="close-icon" (click)="cancelWizard('close')"></a>
+  <header>
+    <h2 class="title">{{ 'label.delete' | transloco }}</h2>
+  </header>
+
+  <section class="modal-content">
+    {{ 'keyword.delete-all.confirmation' | transloco }}
+    <br />
+    <div class="keywordList">
+      <ul>
+        <li *ngFor="let keyword of keywords">
+          <cbc-keyword-tag
+            [keyword]="keyword"
+            *ngIf="keyword"
+          ></cbc-keyword-tag>
+        </li>
+      </ul>
+    </div>
+    <div class="field deletingBox" *ngIf="deleting">
+      <label
+        >{{ 'label.deleting' | transloco }}...
+        <cbc-spinner *ngIf="progressValue !== progressMax"></cbc-spinner
+      ></label>
+      <progress
+        class="progressUploadBar"
+        [value]="progressValue"
+        [max]="progressMax"
+      ></progress>
+    </div>
+  </section>
+
+  <section class="modal-footer">
+    <!-- Buttons -->
+    <div class="buttons-group">
+      <a
+        class="cta"
+        (click)="deleteAll()"
+        *ngIf="!deleting && keywords && keywords.length > 0"
+        >{{ 'label.delete.all' | transloco }}</a
+      >
+      <a class="button" (click)="cancelWizard('close')" *ngIf="!deleting"
+        >{{ 'label.cancel' | transloco }}</a
+      >
+    </div>
+  </section>
+</section>

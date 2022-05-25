@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!-- Copyright 2006 European Community Licensed under the EUPL, Version 1.1 
+	or – as soon they will be approved by the European Commission - subsequent 
+	versions of the EUPL (the "Licence"); You may not use this work except in 
+	compliance with the Licence. You may obtain a copy of the Licence at: https://joinup.ec.europa.eu/software/page/eupl 
+	Unless required by applicable law or agreed to in writing, software distributed 
+	under the Licence is distributed on an "AS IS" basis, WITHOUT WARRANTIES 
+	OR CONDITIONS OF ANY KIND, either express or implied. See the Licence for 
+	the specific language governing permissions and limitations under the Licence. -->
+	
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="History">
+	
+	<insert id="insert_membership_history" parameterType="map">
+		INSERT INTO cbc_member_history values (#{userId, jdbcType=VARCHAR}, #{groupId, jdbcType=VARCHAR}, #{profileId, jdbcType=VARCHAR}, #{alfGroupName, jdbcType=VARCHAR}, #{state}, NOW())
+	</insert>
+	
+	<select id="get_membership_history_in_group" parameterType="map" resultType="string">
+		SELECT profile_id
+		FROM cbc_member_history
+		WHERE user_id = #{userId, jdbcType=VARCHAR}
+		AND group_id = #{groupId, jdbcType=VARCHAR}
+		AND state = 0
+	</select>
+	
+	<update id="update_membership_history_in_group" parameterType="map">
+		UPDATE cbc_member_history SET state = #{state}, state_date = SYSDATE() ,
+		profile_id= #{profileId, jdbcType=VARCHAR}, alf_group_name = #{alfGroupName, jdbcType=VARCHAR}
+		WHERE user_id = #{userId, jdbcType=VARCHAR}
+		AND group_id = #{groupId, jdbcType=VARCHAR}
+	</update>
+	
+	<select id="count_membership_history" parameterType="map" resultType="int">
+		SELECT count(*)
+		FROM cbc_member_history
+		WHERE user_id = #{userId, jdbcType=VARCHAR}
+		AND group_id = #{groupId, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="select_permission_type_id" resultType="int">
+		SELECT type_id
+		FROM cbc_property_type
+		WHERE TYPE_NAME = 'permission'
+	</select>
+	
+	<select id="select_notification_type_id" resultType="int">
+		SELECT type_id
+		FROM cbc_property_type
+		WHERE TYPE_NAME = 'notification'
+	</select>
+	
+	<select id="count_property_history" parameterType="map"
+		resultType="int">
+		SELECT count(*)
+		FROM cbc_property_history
+		WHERE user_id =
+		#{userId, jdbcType=VARCHAR}
+		AND node_id = #{nodeId, jdbcType=VARCHAR}
+		AND type_id = #{typeId}
+	</select>
+
+	<insert id="insert_property_history" parameterType="map">
+		INSERT INTO
+		cbc_property_history values (#{userId, jdbcType=VARCHAR}, #{nodeId, jdbcType=VARCHAR}, #{groupId,
+		jdbcType=VARCHAR}, #{oldValue,
+		jdbcType=VARCHAR}, #{newValue, jdbcType=VARCHAR}, #{typeId},
+		#{state}, NOW(), #{allowed, jdbcType=BOOLEAN})
+	</insert>
+	
+	<update id="update_property_history" parameterType="map">
+		UPDATE cbc_property_history 
+		SET old_value = #{oldValue, jdbcType=VARCHAR}, 
+		new_value = #{newValue, jdbcType=VARCHAR},
+		state = #{state}, state_date = NOW(), allowed = #{allowed, jdbcType=BOOLEAN}
+		WHERE user_id = #{userId, jdbcType=VARCHAR} AND group_id = #{groupId,
+		jdbcType=VARCHAR} AND node_id = #{nodeId, jdbcType=VARCHAR} AND type_id = #{typeId}
+	</update>
+	
+	<select id="select_group_property_history" parameterType="map" resultType="UserPropertyHistoryDAO">
+		SELECT
+			user_id as userId,
+			group_id as groupId,
+			node_id as nodeId,
+			cbc_property_history.type_id as typeId,
+			type_name as typeName,
+			old_value as oldValue,
+			new_value as newValue,
+			allowed,
+			state,
+			state_date as stateDate
+		FROM cbc_property_history, cbc_property_type
+		WHERE user_id = #{userId, jdbcType=VARCHAR}
+		AND group_id = #{groupId, jdbcType=VARCHAR}
+		AND cbc_property_history.type_id = cbc_property_type.type_id
+	</select>
+	
+	<update id="mark_restore_property_history" parameterType="map">
+		UPDATE cbc_property_history 
+		SET state = 1, state_date = SYSDATE()
+		WHERE user_id = #{userId, jdbcType=VARCHAR}
+		AND node_id = #{nodeId, jdbcType=VARCHAR} 
+		AND type_id = #{typeId}
+	</update>
+	
+	<insert id="insert_user_revocation_request" parameterType="map">
+		INSERT INTO cbc_revocation_request (requester, users, revocation_date, request_state, job_started, job_ended, action, group_id) 
+		VALUES (#{requesterUserId, jdbcType=VARCHAR}, #{users, jdbcType=VARCHAR}, #{revocationDate, jdbcType=DATE}, 0, null, null, 'revoke', null)
+	</insert>
+	
+	<insert id="insert_clean_permission_request" parameterType="map">
+		INSERT INTO cbc_revocation_request (requester, users, revocation_date, request_state, job_started, job_ended, action, group_id) 
+		VALUES (#{requesterUserId, jdbcType=VARCHAR}, #{users, jdbcType=VARCHAR}, #{revocationDate, jdbcType=DATE}, 0, null, null, 'clean-permission', #{groupId, jdbcType=VARCHAR})
+	</insert>
+	
+	<select id="count_user_revocation_request" resultType="int">
+		SELECT count(*) FROM cbc_revocation_request
+	</select>
+	
+	<select id="select_user_revocation_request" parameterType="map" resultType="UserRevocationRequestDAO">
+		SELECT
+			id,
+			requester,
+			users as userIds,
+			revocation_date as revocationDate,
+			request_state as requestState,
+			job_started as jobStarted,
+			job_ended as jobEnded,
+			action as action,
+			group_id as groupId
+		FROM cbc_revocation_request
+		<if test="limit > 0 ">
+		LIMIT #{limitMin} , #{limit}
+		</if>
+	</select>
+	
+	<select id="select_waiting_revocation_request" parameterType="map" resultType="UserRevocationRequestDAO">
+		SELECT
+			id,
+			requester,
+			users as userIds,
+			revocation_date as revocationDate,
+			request_state as requestState,
+			job_started as jobStarted,
+			job_ended as jobEnded,
+			action as action,
+			group_id as groupId
+		FROM cbc_revocation_request
+		WHERE request_state = 0
+		AND action = 'revoke'
+	</select>
+	
+	<select id="select_waiting_clean_permission_request" parameterType="map" resultType="UserRevocationRequestDAO">
+		SELECT
+			id,
+			requester,
+			users as userIds,
+			revocation_date as revocationDate,
+			request_state as requestState,
+			job_started as jobStarted,
+			job_ended as jobEnded,
+			action as action,
+			group_id as groupId
+		FROM cbc_revocation_request
+		WHERE request_state = 0
+		AND action = 'clean-permission'
+	</select>
+	
+	<update id="update_user_revocation_request" parameterType="map">
+		UPDATE cbc_revocation_request
+		SET request_state = #{state, jdbcType=INTEGER},
+		job_started = #{jobStarted, jdbcType=DATE},
+		job_ended = #{jobEnded, jdbcType=DATE}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="clean_user_memberhistory" parameterType="map">
+		UPDATE cbc_member_history
+		SET state = -2
+		WHERE user_id =
+		#{userId, jdbcType=VARCHAR}
+		AND group_id = #{groupId, jdbcType=VARCHAR}
+	</update>
+	
+	<update id="clean_user_propertyhistory" parameterType="map">
+		UPDATE cbc_property_history
+		SET state = -2
+		WHERE user_id =
+		#{userId, jdbcType=VARCHAR}
+		AND group_id = #{groupId, jdbcType=VARCHAR}
+	</update>
+
+	<delete id="delete_waiting_clean_permission_request" parameterType="map">
+		DELETE FROM cbc_revocation_request 
+		WHERE users = #{userId, jdbcType=VARCHAR}
+		AND group_id = #{groupId, jdbcType=VARCHAR}
+		AND request_state = 0
+		AND action ='clean-permission'
+	</delete>
+
+	<insert id="insert_membership_expiration" parameterType="map">
+		INSERT INTO cbc_member_expiration (user_id,group_id,profile_id,alf_group_name,expiration_date)
+		values (#{userId, jdbcType=VARCHAR}, #{groupId, jdbcType=VARCHAR}, #{profileId, jdbcType=VARCHAR}, #{alfGroupName, jdbcType=VARCHAR}, #{expirationDate})
+	</insert>
+
+	<update id="update_membership_expiration" parameterType="map">
+		UPDATE cbc_member_expiration
+		SET expiration_date = #{expirationDate}
+		WHERE user_id = #{userId, jdbcType=VARCHAR}
+		AND group_id = #{groupId, jdbcType=VARCHAR}
+	</update>
+	
+	<delete id="delete_membership_expiration" parameterType="map">
+		DELETE FROM cbc_member_expiration 
+		WHERE user_id = #{userId, jdbcType=VARCHAR} AND group_id = #{groupId, jdbcType=VARCHAR}
+		<if test="profileId != null">
+    		AND profile_id = #{profileId, jdbcType=VARCHAR}
+  		</if>
+	</delete>	
+
+	<select id="select_member_expiration_by_group_id" parameterType="map" resultType="MemberExpirationDAO">
+		SELECT
+			group_id as groupId,	
+			profile_id as profileId,	
+			user_id as userId,
+			alf_group_name as  alfrescoGroup,
+			expiration_date AS expirationDate
+		FROM cbc_member_expiration
+		WHERE group_id = #{groupId, jdbcType=VARCHAR}
+	</select>
+
+	<select id="select_expired_members" resultType="MemberExpirationDAO">
+		SELECT
+			group_id as groupId,	
+			profile_id as profileId,	
+			user_id as userId,
+			alf_group_name as  alfrescoGroup,
+			expiration_date AS expirationDate
+		FROM cbc_member_expiration
+		WHERE  SYSDATE() >= expiration_date 
+		ORDER BY expiration_date ASC
+	</select>
+
+	<select id="count_expiration_for_user_group" resultType="Integer" parameterType="map">
+		SELECT
+			count(*)
+		FROM cbc_member_expiration
+		WHERE  user_id =  #{userId, jdbcType=VARCHAR}
+		AND group_id = #{groupId, jdbcType=VARCHAR}
+	</select>
+
+</mapper>

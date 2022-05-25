@@ -1,0 +1,48 @@
+.request--card {
+  border-radius: 5px;
+  background-color: #fff;
+  padding: 15px;
+  -webkit-box-shadow: 0 10px 10px rgb(0 0 0 / 0.3);
+  -moz-box-shadow: 0 10px 10px rgb(0 0 0 / 0.3);
+  box-shadow: 0 10px 10px rgb(0 0 0 / 0.3);
+
+  .request--user {
+    font-size: 16px;
+    color: #5b5b5b;
+    text-transform: capitalize;
+
+    .email--field {
+      text-transform: lowercase;
+    }
+  }
+
+  .request--date {
+    float: right;
+    font-style: italic;
+    color: #5b5b5b;
+    font-size: 16px;
+  }
+
+  .request--content {
+    color: #035;
+    margin-top: 25px;
+    margin-bottom: 25px;
+    font-size: 13px;
+  }
+
+  .request--footer {
+    border-top: 1px solid #5b5b5b;
+    font-size: 13px;
+    color: #5b5b5b;
+
+    .request--accept-form,
+    .request--decline-form {
+      margin-top: 25px;
+      margin-bottom: 25px;
+    }
+
+    .buttons-group {
+      text-align: center;
+    }
+  }
+}

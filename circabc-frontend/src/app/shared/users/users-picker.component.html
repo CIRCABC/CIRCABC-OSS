@@ -1,0 +1,83 @@
+<div [formGroup]="form">
+  <div class="field">
+    <label></label>
+    <div class="custom-select select--form width-type-select select-align">
+      <select #types (change)="onTypeChange(types.value)">
+        <option *ngFor="let type of availableTypes" value="{{ type.value }}"
+          >{{ type.text | transloco }}</option
+        >
+      </select>
+    </div>
+    <input type="text" id="searchText" formControlName="searchText" />
+    <input
+      type="button"
+      id="search"
+      (click)="doSearch()"
+      value="{{ 'label.search' | transloco }}"
+    />
+  </div>
+  <div class="field">
+    <label></label>
+    <div
+      class="custom-select select--multiple width-multiple-select"
+      style="height: auto"
+    >
+      <select
+        multiple
+        id="selectMultiple"
+        class="width-multiple-select"
+        (change)="setSelected($event.target)"
+        style="min-height: 150px; resize: vertical"
+      >
+        <option
+          *ngFor="let au of availableUsersOrProfiles"
+          value="{{ getCode(au.item) }}"
+          >{{ getNameEmail(au.item) }}</option
+        >
+      </select>
+    </div>
+  </div>
+  <div
+    class="field"
+    *ngIf="profilesTip !== undefined && selectedTypeValue === '1'"
+  >
+    <label></label>
+    <span style="font-size: 80%; font-style: italic; text-align: center"
+      >{{ profilesTip }}</span
+    >
+  </div>
+  <div
+    class="field"
+    *ngIf="usersTip !== undefined && selectedTypeValue === '0'"
+  >
+    <label></label>
+    <span style="font-size: 80%; font-style: italic; text-align: center"
+      >{{ usersTip }}</span
+    >
+  </div>
+  <div class="field">
+    <label></label>
+    <input
+      type="button"
+      id="addToList"
+      (click)="addToSelectedUsersOrProfiles()"
+      value="{{ 'label.add.to.list' | transloco }}"
+    />
+    <a
+      id="clearUserProfile"
+      *ngIf="availableUsersOrProfiles.length > 0"
+      (click)="clearAvailableUsersOrProfiles()"
+      >{{ 'label.clear.results' | transloco }}</a
+    >
+  </div>
+  <div class="field maxed-height" *ngIf="showSelectedList">
+    <ul class="list-of-selection">
+      <li *ngFor="let su of selectedUsersOrProfiles">
+        {{ getNameEmail(su) }}
+        <a (click)="removeFromSelectedUsersOrProfiles(su)">
+          <img src="img/icon-close-20x20.png" width="16" />
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>

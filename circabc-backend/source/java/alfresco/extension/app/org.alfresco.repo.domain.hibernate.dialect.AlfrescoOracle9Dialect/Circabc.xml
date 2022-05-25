@@ -1,0 +1,1204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2006 European Community Licensed under the EUPL, Version 1.1 
+	or \?as soon they will be approved by the European Commission - subsequent 
+	versions of the EUPL (the "Licence"); You may not use this work except in 
+	compliance with the Licence. You may obtain a copy of the Licence at: https://joinup.ec.europa.eu/software/page/eupl 
+	Unless required by applicable law or agreed to in writing, software distributed 
+	under the Licence is distributed on an "AS IS" basis, WITHOUT WARRANTIES 
+	OR CONDITIONS OF ANY KIND, either express or implied. See the Licence for 
+	the specific language governing permissions and limitations under the Licence. -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Circabc">
+
+	<insert id="insert_header" parameterType="Header">
+		insert into cbc_headers
+		(id,node_ref, name, description)
+		values
+		(#{id},#{nodeRef},#{name},#{description,jdbcType=VARCHAR})
+	</insert>
+
+	<delete id="delete_header_by_ref" parameterType="String">
+		delete from
+		cbc_headers where node_ref=#{nodeRef}
+	</delete>
+
+	<update id="update_header_by_ref" parameterType="Header">
+		update
+		cbc_headers
+		set name = #{name} , description =
+		#{description,jdbcType=VARCHAR}
+		where node_ref = #{nodeRef}
+	</update>
+
+	<insert id="insert_category" parameterType="Category">
+		insert into
+		cbc_categories (header_id,id,node_ref, name, title)
+		values
+		(#{headerID},#{id},#{nodeRef},#{name},#{title,jdbcType=VARCHAR})
+	</insert>
+
+	<insert id="insert_user" parameterType="User">
+		insert into cbc_users
+		(id,node_ref,user_name,first_name,last_name,email,alf_locale_id,domain,ecas_user_name,visibility,global_notification)
+		values
+		(#{id},#{nodeRef},#{userName},#{firstName,jdbcType=VARCHAR},#{lastName,jdbcType=VARCHAR},#{email,jdbcType=VARCHAR},#{localeID,jdbcType=NUMERIC},#{domain,jdbcType=VARCHAR},#{ecasUserName,jdbcType=VARCHAR},#{visibility,jdbcType=NUMERIC},#{globalNotification,jdbcType=NUMERIC})
+	</insert>
+
+	<update id="update_user" parameterType="User">
+		update cbc_users
+		set
+		first_name=#{firstName,jdbcType=VARCHAR}
+		,last_name=#{lastName,jdbcType=VARCHAR}
+		,email=#{email,jdbcType=VARCHAR},alf_locale_id=#{localeID,jdbcType=NUMERIC},visibility=#{visibility,jdbcType=NUMERIC},global_notification=#{globalNotification,jdbcType=NUMERIC}
+		where id = #{id}
+	</update>
+
+	<update id="update_user_ui_lang" parameterType="map">
+		update cbc_users
+		set alf_locale_id = (select id from alf_locale where locale_str =
+		#{language})
+		where user_name = #{userName}
+	</update>
+
+
+	<select id="select_user_id_by_user_name" parameterType="String"
+		resultType="long">
+		select id from cbc_users where user_name = #{value}
+	</select>
+
+	<insert id="insert_circabc_admin" parameterType="CircabcAdmin">
+		insert into
+		cbc_circabc_admins (user_id,profile_name)
+		values (#{userID},#{name})
+	</insert>
+
+	<delete id="delete_circabc_admin" parameterType="CircabcAdmin">
+		delete from
+		cbc_circabc_admins
+		where user_id =#{userID}
+	</delete>
+
+	<delete id="delete_all_circabc_admins">
+		delete from cbc_circabc_admins
+	</delete>
+
+	<insert id="insert_categegory_admin" parameterType="CatAdmin">
+		insert into
+		cbc_category_admins (category_id,user_id,profile_name)
+		values
+		(#{categoryID},#{userID},#{name})
+	</insert>
+
+	<delete id="delete_categegory_admin" parameterType="CatAdmin">
+		delete from
+		cbc_category_admins
+		where category_id = #{categoryID} and user_id
+		=#{userID}
+	</delete>
+
+	<insert id="insert_interest_group" parameterType="InterestGroup">
+		insert into
+		cbc_interest_groups
+		(category_id,id,node_ref,name,title,is_public,is_registered,is_apply_for_membership)
+		values
+		(#{categoryID},#{id},#{nodeRef},#{name},#{title,jdbcType=VARCHAR},#{isPublic},#{isRegistered},#{isApplyForMembership})
+	</insert>
+
+	<update id="update_ig_public" parameterType="map">
+		update
+		cbc_interest_groups set is_public = #{isPublic} where id = #{id}
+	</update>
+
+	<update id="update_ig_registered" parameterType="map">
+		update
+		cbc_interest_groups set is_registered = #{isRegistered} where id =
+		#{id}
+	</update>
+
+	<update id="update_ig_apply_for_membership" parameterType="map">
+		update cbc_interest_groups set is_apply_for_membership =
+		#{isApplyForMembership} where id = #{id}
+	</update>
+
+
+	<insert id="insert_profile" parameterType="Profile">
+		insert into
+		cbc_profiles
+		(ig_id,id,alfresco_group,node_ref,name,title,dir_perm,inf_perm,lib_perm,nws_perm,eve_perm,is_visible,is_imported,is_exported,ig_from_node_ref)
+		values (#{interestGroupID},#{id}, #{alfrescoGroup},#{nodeRef},#{name},
+		#{title,jdbcType=VARCHAR},
+		#{directoryPermission},
+		#{informationPermission}, #{libraryPermission},
+		#{newsgroupPermission},
+		#{eventPermission} , #{isVisible}
+		,#{isImported},#{isExported},#{igFromNodeRef,jdbcType=VARCHAR})
+	</insert>
+
+	<update id="update_profile" parameterType="Profile">
+		update cbc_profiles
+		set ig_id = #{interestGroupID} ,alfresco_group =
+		#{alfrescoGroup},node_ref = #{nodeRef},name
+		= #{name},title =
+		#{title,jdbcType=VARCHAR},
+		dir_perm = #{directoryPermission},inf_perm =
+		#{informationPermission},
+		lib_perm = #{libraryPermission} ,
+		nws_perm =
+		#{newsgroupPermission} ,eve_perm = #{eventPermission} ,is_visible =
+		#{isVisible},is_imported =
+		#{isImported},is_exported=#{isExported}
+		where id = #{id}
+	</update>
+
+	<update id="update_profile_export" parameterType="map">
+		update
+		cbc_profiles set is_exported= #{isExported} where id= #{id}
+	</update>
+
+	<delete id="delete_profile_by_id" parameterType="long">
+		delete from
+		cbc_profiles where id= #{id}
+	</delete>
+
+	<delete id="delete_profile_title_translations_by_id"
+		parameterType="long">
+		delete from cbc_profile_title_trans where profile_id=
+		#{id}
+	</delete>
+
+	<delete id="delete_ig_title_translations_by_id"
+		parameterType="long">
+		delete from cbc_ig_trans where ig_id= #{id}
+	</delete>
+
+	<delete id="delete_cat_title_translations_by_id"
+		parameterType="long">
+		delete from cbc_cat_title_trans where cat_id= #{id}
+	</delete>
+
+
+	<select id="select_profile_by_ig_id_profile_name"
+		parameterType="Profile" resultType="Profile">
+		select ig_id interestGroupID
+		,id,alfresco_group
+		alfrescoGroup,node_ref
+		nodeRef,name,title,dir_perm
+		directoryPermission,inf_perm informationPermission,lib_perm
+		libraryPermission,nws_perm
+		newsgroupPermission,eve_perm
+		eventPermission,
+		is_visible isVisible,is_imported
+		isImported,is_exported isExported from
+		cbc_profiles where
+		ig_id =
+		#{interestGroupID} and name= #{name}
+	</select>
+
+	<select id="select_profil_count_by_profile_id"
+		parameterType="long" resultType="int">
+		SELECT count(*) FROM CBC_PROFILES
+		where id = #{id}
+	</select>
+
+
+	<insert id="insert_profile_user" parameterType="ProfileUser">
+		insert into
+		cbc_profile_users (user_id, alfresco_group)
+		values
+		(#{userID},#{alfrescoGroup})
+	</insert>
+
+	<delete id="delete_profile_user_by_ig_id_user_name"
+		parameterType="map">
+		delete
+		from cbc_profile_users
+		where user_id =
+		(select id
+		from cbc_users where cbc_users.user_name = #{userName}
+		)
+		and
+		alfresco_group in
+		(select alfresco_group from cbc_profiles where ig_id
+		= #{interestGroupID} and
+		cbc_profiles.is_imported = 0
+		)
+	</delete>
+
+	<select id="select_alf_locale" resultType="KeyValue">
+		select locale_str as
+		"key", id as value from alf_locale
+	</select>
+
+	<insert id="insert_cat_titles">
+        <![CDATA[
+    		INSERT INTO CBC_CAT_TITLE_TRANS 
+    		SELECT CBC_CATEGORIES.ID,
+  				ALF_NODE_PROPERTIES.LOCALE_ID,
+  				ALF_NODE_PROPERTIES.STRING_VALUE
+			FROM ALF_NODE_PROPERTIES
+				INNER JOIN CBC_CATEGORIES
+				ON CBC_CATEGORIES.ID = ALF_NODE_PROPERTIES.NODE_ID
+				INNER JOIN ALF_QNAME
+				ON ALF_QNAME.ID = ALF_NODE_PROPERTIES.QNAME_ID
+				INNER JOIN ALF_NAMESPACE
+				ON ALF_NAMESPACE.ID        = ALF_QNAME.NS_ID
+				WHERE ALF_QNAME.LOCAL_NAME = 'title'
+				AND ALF_NAMESPACE.URI      = 'http://www.alfresco.org/model/content/1.0'
+   		]]>
+	</insert>
+
+	<insert id="insert_cat_titles_by_id" parameterType="long">
+        <![CDATA[
+    		INSERT INTO CBC_CAT_TITLE_TRANS 
+    		SELECT ALF_NODE_PROPERTIES.NODE_ID,
+  			ALF_NODE_PROPERTIES.LOCALE_ID,
+  			ALF_NODE_PROPERTIES.STRING_VALUE
+			FROM ALF_NODE_PROPERTIES
+			INNER JOIN ALF_QNAME
+			ON ALF_QNAME.ID = ALF_NODE_PROPERTIES.QNAME_ID
+			INNER JOIN ALF_NAMESPACE
+			ON ALF_NAMESPACE.ID             = ALF_QNAME.NS_ID
+			WHERE ALF_QNAME.LOCAL_NAME      = 'title'
+			AND ALF_NAMESPACE.URI           = 'http://www.alfresco.org/model/content/1.0'
+			AND ALF_NODE_PROPERTIES.NODE_ID = #{id}
+   		]]>
+	</insert>
+
+	<insert id="insert_ig_titles">
+        <![CDATA[
+    	    INSERT INTO CBC_IG_TRANS
+    		SELECT CBC_INTEREST_GROUPS.id,
+  			ALF_NODE_PROPERTIES.LOCALE_ID,
+  			MAX(
+  			CASE ALF_QNAME.LOCAL_NAME
+    		WHEN 'title'
+    		THEN ALF_NODE_PROPERTIES.STRING_VALUE
+    		ELSE NULL
+  			END) AS TITLE ,
+  			MAX(
+  			CASE ALF_QNAME.LOCAL_NAME
+    			WHEN 'lightDescription'
+    			THEN ALF_NODE_PROPERTIES.STRING_VALUE
+    			ELSE NULL
+  			END ) lightDescription
+			FROM ALF_NODE_PROPERTIES
+			INNER JOIN ALF_QNAME
+			ON ALF_QNAME.ID = ALF_NODE_PROPERTIES.QNAME_ID
+			INNER JOIN ALF_NAMESPACE
+			ON ALF_NAMESPACE.ID = ALF_QNAME.NS_ID
+			INNER JOIN CBC_INTEREST_GROUPS
+			ON CBC_INTEREST_GROUPS.id   = ALF_NODE_PROPERTIES.NODE_ID
+			WHERE (ALF_QNAME.LOCAL_NAME = 'title'
+			AND ALF_NAMESPACE.URI       = 'http://www.alfresco.org/model/content/1.0')
+			OR (ALF_QNAME.LOCAL_NAME    = 'lightDescription'
+			AND ALF_NAMESPACE.URI       = 'http://www.cc.cec/circabc/model/content/1.0')
+			GROUP BY CBC_INTEREST_GROUPS.id,
+  			ALF_NODE_PROPERTIES.LOCALE_ID
+   		]]>
+	</insert>
+
+	<insert id="insert_ig_titles_by_id" parameterType="long">
+        <![CDATA[
+    	    INSERT INTO CBC_IG_TRANS
+    	    SELECT CBC_INTEREST_GROUPS.id,
+  			ALF_NODE_PROPERTIES.LOCALE_ID,
+  			MAX(
+  			CASE ALF_QNAME.LOCAL_NAME
+    		WHEN 'title'
+    		THEN ALF_NODE_PROPERTIES.STRING_VALUE
+    		ELSE NULL
+  			END) AS TITLE ,
+  			MAX(
+  			CASE ALF_QNAME.LOCAL_NAME
+    			WHEN 'lightDescription'
+    			THEN ALF_NODE_PROPERTIES.STRING_VALUE
+    			ELSE NULL
+  			END ) lightDescription
+			FROM ALF_NODE_PROPERTIES
+			INNER JOIN ALF_QNAME
+			ON ALF_QNAME.ID = ALF_NODE_PROPERTIES.QNAME_ID
+			INNER JOIN ALF_NAMESPACE
+			ON ALF_NAMESPACE.ID = ALF_QNAME.NS_ID
+			INNER JOIN CBC_INTEREST_GROUPS
+			ON CBC_INTEREST_GROUPS.id   = ALF_NODE_PROPERTIES.NODE_ID
+			WHERE ((ALF_QNAME.LOCAL_NAME = 'title'
+			AND ALF_NAMESPACE.URI       = 'http://www.alfresco.org/model/content/1.0')
+			OR (ALF_QNAME.LOCAL_NAME    = 'lightDescription'
+			AND ALF_NAMESPACE.URI       = 'http://www.cc.cec/circabc/model/content/1.0'))
+			AND ALF_NODE_PROPERTIES.NODE_ID = #{id}
+			GROUP BY CBC_INTEREST_GROUPS.id,
+  			ALF_NODE_PROPERTIES.LOCALE_ID
+			]]>
+	</insert>
+
+	<insert id="insert_profile_titles">
+        <![CDATA[
+    		INSERT INTO CBC_PROFILE_TITLE_TRANS
+    		SELECT CBC_PROFILES.ID,
+    		 ALF_NODE_PROPERTIES.LOCALE_ID,
+    		 ALF_NODE_PROPERTIES.STRING_VALUE
+			FROM ALF_NODE_PROPERTIES
+			INNER JOIN ALF_QNAME
+			ON ALF_QNAME.ID = ALF_NODE_PROPERTIES.QNAME_ID
+			INNER JOIN ALF_NAMESPACE
+			ON ALF_NAMESPACE.ID = ALF_QNAME.NS_ID
+			INNER JOIN CBC_PROFILES
+			ON CBC_PROFILES.ID         = ALF_NODE_PROPERTIES.NODE_ID
+			WHERE ALF_QNAME.LOCAL_NAME = 'title'
+			AND ALF_NAMESPACE.URI      = 'http://www.alfresco.org/model/content/1.0'
+   		]]>
+	</insert>
+
+	<insert id="insert_profile_titles_by_id" parameterType="long">
+        <![CDATA[
+    		INSERT INTO CBC_PROFILE_TITLE_TRANS
+    		SELECT ALF_NODE_PROPERTIES.NODE_ID,
+  				ALF_NODE_PROPERTIES.LOCALE_ID,
+  				ALF_NODE_PROPERTIES.STRING_VALUE
+			FROM ALF_NODE_PROPERTIES
+			INNER JOIN ALF_QNAME
+			ON ALF_QNAME.ID = ALF_NODE_PROPERTIES.QNAME_ID
+			INNER JOIN ALF_NAMESPACE
+			ON ALF_NAMESPACE.ID        = ALF_QNAME.NS_ID
+			WHERE ALF_QNAME.LOCAL_NAME = 'title'
+			AND ALF_NAMESPACE.URI      = 'http://www.alfresco.org/model/content/1.0'
+			AND ALF_NODE_PROPERTIES.NODE_ID= #{id}
+   		]]>
+	</insert>
+
+	<insert id="insert_profile_titles_by_ig_id" parameterType="long">
+        <![CDATA[
+    		INSERT INTO CBC_PROFILE_TITLE_TRANS
+    		SELECT CBC_PROFILES.ID,
+    		 ALF_NODE_PROPERTIES.LOCALE_ID,
+    		 ALF_NODE_PROPERTIES.STRING_VALUE
+			FROM ALF_NODE_PROPERTIES
+			INNER JOIN ALF_QNAME
+			ON ALF_QNAME.ID = ALF_NODE_PROPERTIES.QNAME_ID
+			INNER JOIN ALF_NAMESPACE
+			ON ALF_NAMESPACE.ID = ALF_QNAME.NS_ID
+			INNER JOIN CBC_PROFILES
+			ON CBC_PROFILES.ID         = ALF_NODE_PROPERTIES.NODE_ID
+			WHERE ALF_QNAME.LOCAL_NAME = 'title'
+			AND ALF_NAMESPACE.URI      = 'http://www.alfresco.org/model/content/1.0'
+			AND CBC_PROFILES.IG_ID = #{id}
+   		]]>
+	</insert>
+
+	<delete id="delete_profile_titles_by_ig_id" parameterType="long">
+		delete from cbc_profile_title_trans where profile_id in ( select id
+		from cbc_profiles where ig_id = #{id})
+	</delete>
+	<delete id="delete_profile_users_by_ig_id" parameterType="long">
+		delete
+		from cbc_profile_users where alfresco_group in( select alfresco_group
+		from cbc_profiles where ig_id =
+		#{id})
+	</delete>
+	<delete id="delete_profiles_by_ig_id" parameterType="long">
+		delete from
+		cbc_profiles where ig_id = #{id}
+	</delete>
+	<delete id="delete_ig_title_trans_by_ig_id" parameterType="long">
+		delete from cbc_ig_trans where ig_id = #{id}
+	</delete>
+	<delete id="delete_ig_by_id" parameterType="long">
+		delete from
+		cbc_interest_groups where id = #{id}
+	</delete>
+
+	<select id="select_ig_ids_by_cat_id" parameterType="long"
+		resultType="long">
+		select id from cbc_interest_groups where category_id =
+		#{id}
+	</select>
+
+	<delete id="delete_cat_title_trans_by_cat_id"
+		parameterType="long">
+		delete from cbc_cat_title_trans where cat_id = #{id}
+	</delete>
+
+	<delete id="delete_cat_admins_by_cat_id" parameterType="long">
+		delete
+		from cbc_category_admins where category_id = #{id}
+	</delete>
+
+	<delete id="delete_cat_by_id" parameterType="long">
+		delete from
+		cbc_categories where id = #{id}
+	</delete>
+
+	<update id="update_cat_id" parameterType="map">
+		update
+		cbc_interest_groups set category_id = #{newCatID} where id = #{igID}
+		and category_id = #{oldCatID}
+	</update>
+
+	<update id="update_ig_name_title_by_id"
+		parameterType="InterestGroup">
+		update
+		cbc_interest_groups set name = #{name} ,title =
+		#{title}
+		where id =
+		#{id}
+	</update>
+
+	<update id="update_cat_name_title_by_id"
+		parameterType="Category">
+		update
+		cbc_categories set name = #{name} ,title =
+		#{title}
+		where id = #{id}
+	</update>
+
+	<update id="update_cat_logo_ref_by_id" parameterType="Category">
+		update
+		cbc_categories set logo_ref = #{logoRef}
+		where id = #{id}
+	</update>
+
+	<select id="select_ig_by_cat_user" parameterType="map"
+		resultType="InterestGroupResult">
+        <![CDATA[
+    		SELECT CBC_INTEREST_GROUPS.ID id,
+			  MEMBERS.IG_ID memberId,
+			  CBC_INTEREST_GROUPS.NAME name,
+			  CBC_INTEREST_GROUPS.TITLE title,
+			  CBC_INTEREST_GROUPS.IS_PUBLIC isPublic,
+			  CBC_INTEREST_GROUPS.IS_REGISTERED isRegistered,
+			  CBC_INTEREST_GROUPS.IS_APPLY_FOR_MEMBERSHIP isApplyForMembership,
+			  CBC_INTEREST_GROUPS.NODE_REF nodeRef,
+			  CBC_INTEREST_GROUPS.LOGO_REF logoRef,
+			  NVL(CBC_IG_TRANS.TITLE_TRANSLATION, V_CBC_IG_TRANS.TITLE_TRANSLATION) titleTranslation,
+			  NVL(cbc_ig_trans.light_desc_translation, v_cbc_ig_trans.light_desc_translation) lightdesctranslation
+			FROM CBC_INTEREST_GROUPS
+			LEFT JOIN
+			  (SELECT DISTINCT CBC_PROFILES.IG_ID
+			  FROM CBC_PROFILES
+			  INNER JOIN CBC_PROFILE_USERS
+			  ON CBC_PROFILES.ALFRESCO_GROUP = CBC_PROFILE_USERS.ALFRESCO_GROUP
+			  INNER JOIN CBC_USERS
+			  ON CBC_USERS.ID                     = CBC_PROFILE_USERS.USER_ID
+			  WHERE CBC_USERS.USER_NAME           = #{userName}
+			  ) MEMBERS ON CBC_INTEREST_GROUPS.ID = MEMBERS.IG_ID
+			LEFT JOIN V_CBC_IG_TRANS
+			ON cbc_interest_groups.id = v_cbc_ig_trans.ig_id
+			LEFT JOIN
+			  (SELECT cbc_ig_trans.*
+			  FROM cbc_ig_trans
+			  WHERE alf_locale_id IN
+			    (SELECT CBC_USERS.ALF_LOCALE_ID
+			    FROM cbc_users
+			    WHERE CBC_USERS.USER_NAME = #{userName}
+			    )
+			  ) CBC_IG_TRANS
+			ON CBC_INTEREST_GROUPS.ID             = CBC_IG_TRANS.IG_ID
+			WHERE CBC_INTEREST_GROUPS.CATEGORY_ID = #{catID}
+			and (
+			 (CBC_INTEREST_GROUPS.IS_REGISTERED =1)
+			 OR
+			 MEMBERS.IG_ID is not null)
+   		]]>
+	</select>
+	<select id="select_public_ig_by_cat_user" parameterType="map"
+		resultType="InterestGroupResult">
+        <![CDATA[
+		 SELECT CBC_INTEREST_GROUPS.ID id,
+		  NULL memberId, 	
+		  CBC_INTEREST_GROUPS.NAME name,
+		  CBC_INTEREST_GROUPS.TITLE title,
+		  CBC_INTEREST_GROUPS.IS_PUBLIC isPublic,
+		  CBC_INTEREST_GROUPS.IS_REGISTERED isRegistered,
+		  CBC_INTEREST_GROUPS.IS_APPLY_FOR_MEMBERSHIP isApplyForMembership,
+		  CBC_INTEREST_GROUPS.NODE_REF nodeRef,
+		  CBC_INTEREST_GROUPS.LOGO_REF logoRef,
+		  V_CBC_IG_TRANS.TITLE_TRANSLATION titleTranslation,
+		  V_CBC_IG_TRANS.LIGHT_DESC_TRANSLATION lightDescTranslation
+		FROM CBC_INTEREST_GROUPS
+		LEFT JOIN V_CBC_IG_TRANS
+		ON CBC_INTEREST_GROUPS.ID           = V_CBC_IG_TRANS.IG_ID
+		WHERE CBC_INTEREST_GROUPS.IS_PUBLIC = 1
+		AND CBC_INTEREST_GROUPS.CATEGORY_ID = #{catID}
+   ]]>
+	</select>
+	<select id="select_ig_by_id" parameterType="map"
+		resultType="InterestGroupResult">
+        <![CDATA[
+		 SELECT CBC_INTEREST_GROUPS.ID id,
+		  NULL memberId,
+		  CBC_INTEREST_GROUPS.NAME name,
+		  CBC_INTEREST_GROUPS.TITLE title,
+		  CBC_INTEREST_GROUPS.IS_PUBLIC isPublic,
+		  CBC_INTEREST_GROUPS.IS_REGISTERED isRegistered,
+		  CBC_INTEREST_GROUPS.IS_APPLY_FOR_MEMBERSHIP isApplyForMembership,
+		  CBC_INTEREST_GROUPS.NODE_REF nodeRef,
+		  CBC_INTEREST_GROUPS.LOGO_REF logoRef,
+		  V_CBC_IG_TRANS.TITLE_TRANSLATION titleTranslation,
+		  V_CBC_IG_TRANS.LIGHT_DESC_TRANSLATION lightDescTranslation
+		FROM CBC_INTEREST_GROUPS
+		LEFT JOIN V_CBC_IG_TRANS
+		ON CBC_INTEREST_GROUPS.ID           = V_CBC_IG_TRANS.IG_ID
+		WHERE CBC_INTEREST_GROUPS.ID= #{ID}
+   ]]>
+	</select>
+
+	<select id="select_ig_by_cat_admin" parameterType="map"
+		resultType="InterestGroupResult">
+        <![CDATA[
+	   SELECT CBC_INTEREST_GROUPS.id id,
+	  		CASE CBC_INTEREST_GROUPS.IS_PUBLIC+ CBC_INTEREST_GROUPS.IS_REGISTERED
+	    	WHEN 0
+	    	THEN 1
+	    ELSE NULL
+	  	END memberId,
+	  	CBC_INTEREST_GROUPS.NAME name,
+	  	CBC_INTEREST_GROUPS.TITLE title,
+	  	CBC_INTEREST_GROUPS.IS_PUBLIC ISPUBLIC,
+	  	CBC_INTEREST_GROUPS.IS_REGISTERED isRegistered,
+	  	CBC_INTEREST_GROUPS.IS_APPLY_FOR_MEMBERSHIP isApplyForMembership,
+	  	CBC_INTEREST_GROUPS.NODE_REF nodeRef,
+	  	CBC_INTEREST_GROUPS.LOGO_REF logoRef,
+	  	V_CBC_IG_TRANS.TITLE_TRANSLATION titleTranslation,
+	  	V_CBC_IG_TRANS.LIGHT_DESC_TRANSLATION lightDescTranslation
+		FROM CBC_INTEREST_GROUPS
+		LEFT JOIN V_CBC_IG_TRANS
+		ON CBC_INTEREST_GROUPS.ID             = V_CBC_IG_TRANS.IG_ID
+		WHERE CBC_INTEREST_GROUPS.CATEGORY_ID = #{catID}
+   ]]>
+	</select>
+
+	<select id="select_all_groups" resultType="InterestGroupResult">
+		<![CDATA[
+		   SELECT CBC_INTEREST_GROUPS.id id,
+		  		CASE CBC_INTEREST_GROUPS.IS_PUBLIC+ CBC_INTEREST_GROUPS.IS_REGISTERED
+		    	WHEN 0
+		    	THEN 1
+		    ELSE NULL
+		  	END memberId,
+		  	CBC_INTEREST_GROUPS.NAME name,
+		  	CBC_INTEREST_GROUPS.TITLE title,
+		  	CBC_INTEREST_GROUPS.IS_PUBLIC ISPUBLIC,
+		  	CBC_INTEREST_GROUPS.IS_REGISTERED isRegistered,
+		  	CBC_INTEREST_GROUPS.IS_APPLY_FOR_MEMBERSHIP isApplyForMembership,
+		  	CBC_INTEREST_GROUPS.NODE_REF nodeRef,
+		  	CBC_INTEREST_GROUPS.LOGO_REF logoRef,
+		  	V_CBC_IG_TRANS.TITLE_TRANSLATION titleTranslation,
+		  	V_CBC_IG_TRANS.LIGHT_DESC_TRANSLATION lightDescTranslation
+			FROM CBC_INTEREST_GROUPS
+			LEFT JOIN V_CBC_IG_TRANS
+			ON CBC_INTEREST_GROUPS.ID             = V_CBC_IG_TRANS.IG_ID
+	   ]]>
+	</select>
+
+	<select id="select_is_user_cat_admin" parameterType="map"
+		resultType="int">
+        <![CDATA[
+   	SELECT count(*)
+	FROM CBC_CATEGORY_ADMINS
+	INNER JOIN CBC_USERS
+	ON CBC_USERS.ID                       = CBC_CATEGORY_ADMINS.USER_ID
+	WHERE CBC_CATEGORY_ADMINS.CATEGORY_ID = #{catID}
+	AND CBC_USERS.USER_NAME               = #{userName}
+   ]]>
+	</select>
+
+	<select id="select_exp_profiles_by_cat_id_ig_id"
+		parameterType="map" resultType="ExportedProfileItem">
+        <![CDATA[
+		 select 
+  			'GROUP_' || CBC_PROFILES.ALFRESCO_GROUP AS prefixedAlfrescoGroup,
+  			 CBC_INTEREST_GROUPS.name || ':' || 
+  			 CBC_PROFILES.TITLE AS profileName ,
+  			 CBC_PROFILES.NAME name ,
+  			 CBC_PROFILES.NODE_REF profileRef ,
+  			 CBC_INTEREST_GROUPS.NODE_REF nodeRef
+			 FROM CBC_PROFILES
+			INNER JOIN CBC_INTEREST_GROUPS
+			ON CBC_PROFILES.IG_ID = CBC_INTEREST_GROUPS.ID
+			INNER JOIN CBC_CATEGORIES
+			ON CBC_CATEGORIES.ID         = CBC_INTEREST_GROUPS.CATEGORY_ID
+			WHERE CBC_PROFILES.IG_ID    <> #{igID}
+			AND CBC_PROFILES.IS_EXPORTED = 1
+			AND CBC_CATEGORIES.ID        = #{catID}
+   ]]>
+	</select>
+	<select id="select_exp_profiles_by_cat_id" parameterType="map"
+		resultType="ExportedProfileItem">
+        <![CDATA[
+		 select 
+  			'GROUP_' || CBC_PROFILES.ALFRESCO_GROUP AS prefixedAlfrescoGroup,
+  			 CBC_INTEREST_GROUPS.name || ':' || 
+  			 CBC_PROFILES.TITLE AS profileName ,
+  			 CBC_PROFILES.NAME name ,
+  			 CBC_PROFILES.NODE_REF profileRef ,
+  			 CBC_INTEREST_GROUPS.NODE_REF nodeRef
+			 FROM CBC_PROFILES
+			INNER JOIN CBC_INTEREST_GROUPS
+			ON CBC_PROFILES.IG_ID = CBC_INTEREST_GROUPS.ID
+			INNER JOIN CBC_CATEGORIES
+			ON CBC_CATEGORIES.ID         = CBC_INTEREST_GROUPS.CATEGORY_ID
+			WHERE CBC_PROFILES.IS_EXPORTED = 1
+			AND CBC_CATEGORIES.ID        = #{catID}
+   ]]>
+	</select>
+	<select id="select_imp_alf_group_by_ig_id" parameterType="map"
+		resultType="String">
+        <![CDATA[
+		 SELECT 'GROUP_' || CBC_PROFILES.ALFRESCO_GROUP AS prefixedAlfrescoGroup
+			FROM CBC_PROFILES
+			INNER JOIN CBC_INTEREST_GROUPS
+			ON CBC_PROFILES.IG_ID = CBC_INTEREST_GROUPS.ID
+			INNER JOIN CBC_CATEGORIES
+			on CBC_CATEGORIES.id         = CBC_INTEREST_GROUPS.CATEGORY_ID
+			where CBC_PROFILES.IG_ID     = #{igID}
+			AND CBC_PROFILES.IS_IMPORTED = 1
+   ]]>
+	</select>
+
+
+	<select id="select_alf_group_not_in_ig" parameterType="map"
+		resultType="String">
+        <![CDATA[
+		 SELECT distinct 'GROUP_' || CBC_PROFILES.ALFRESCO_GROUP
+			FROM CBC_PROFILES
+			INNER JOIN CBC_INTEREST_GROUPS
+			ON CBC_PROFILES.IG_ID                 = CBC_INTEREST_GROUPS.ID
+			WHERE CBC_INTEREST_GROUPS.CATEGORY_ID = #{catID}
+			AND CBC_PROFILES.IG_ID               <> #{igID}
+   ]]>
+	</select>
+
+	<select id="select_cat_node_ref_by_user_name"
+		parameterType="map" resultType="String">
+        <![CDATA[
+		 select CBC_CATEGORIES.NODE_REF
+			FROM CBC_CATEGORIES
+			INNER JOIN CBC_CATEGORY_ADMINS
+			ON CBC_CATEGORIES.ID = CBC_CATEGORY_ADMINS.CATEGORY_ID
+			INNER JOIN CBC_USERS
+			ON CBC_USERS.ID           = CBC_CATEGORY_ADMINS.USER_ID
+			WHERE CBC_USERS.USER_NAME = #{userName}
+   ]]>
+	</select>
+	<select id="select_ig_node_ref_by_user_name" parameterType="map"
+		resultType="UserIGMembership">
+        <![CDATA[
+		 select CBC_CATEGORIES.NODE_REF as catNodeRef,
+  			CBC_INTEREST_GROUPS.NODE_REF as igNodeRef,
+  			CBC_PROFILES.NAME as profileName,
+        	CBC_PROFILES.ID as profileId,
+        	CBC_PROFILES.NODE_REF as profileNodeRefId,
+        	CBC_PROFILES.ALFRESCO_GROUP alfrescoGroup
+			FROM CBC_CATEGORIES
+			INNER JOIN CBC_INTEREST_GROUPS
+			ON CBC_CATEGORIES.ID = CBC_INTEREST_GROUPS.CATEGORY_ID
+			INNER JOIN CBC_PROFILES
+			ON CBC_INTEREST_GROUPS.ID = CBC_PROFILES.IG_ID
+			INNER JOIN CBC_PROFILE_USERS
+			ON CBC_PROFILES.ALFRESCO_GROUP = CBC_PROFILE_USERS.ALFRESCO_GROUP
+			INNER JOIN CBC_USERS
+			ON CBC_PROFILE_USERS.USER_ID = CBC_USERS.ID
+			WHERE CBC_USERS.USER_NAME    = #{userName}
+   ]]>
+	</select>
+	<select id="select_cat_id_by_node_ref" parameterType="String"
+		resultType="long">
+		select id from cbc_categories where node_ref = #{value}
+	</select>
+	<select id="select_all_user_node_ref" resultType="String">
+		SELECT NODE_REF
+		FROM CBC_USERS
+	</select>
+	<select id="select_headers_categories"
+		resultType="HeaderCategory">
+		SELECT
+		CBC_HEADERS.NODE_REF as headerNodeRef,
+		CBC_HEADERS.NAME as headerName,
+		COALESCE(CBC_HEADERS.DESCRIPTION,
+		CBC_HEADERS.NAME) as headerTitle,
+		CBC_CATEGORIES.NODE_REF AS
+		categoryNodeRef,
+		CBC_CATEGORIES.NAME AS
+		categoryName,
+		COALESCE(CBC_CATEGORIES.TITLE, CBC_CATEGORIES.NAME) AS
+		categoryTitle
+		FROM CBC_HEADERS
+		INNER JOIN CBC_CATEGORIES
+		on
+		CBC_HEADERS.id =
+		CBC_CATEGORIES.HEADER_ID
+		order by
+		headerNodeRef,categoryNodeRef
+	</select>
+
+	<select id="select_profiles_by_ig_id_and_locale_id"
+		parameterType="map" resultType="ProfileWithUsersCount">
+        <![CDATA[
+    	SELECT CBC_PROFILES.ID id,
+		  CBC_PROFILES.ALFRESCO_GROUP alfrescoGroup,
+		  CBC_PROFILES.NODE_REF nodeRef,
+		  CBC_PROFILES.NAME name,
+		  COALESCE(PROFILE_TITLE.TRANSLATION, CBC_PROFILES.TITLE) title,
+		  CBC_PROFILES.DIR_PERM directoryPermission,
+		  CBC_PROFILES.INF_PERM informationPermission,
+		  CBC_PROFILES.LIB_PERM libraryPermission,
+		  CBC_PROFILES.NWS_PERM newsgroupPermission,
+		  CBC_PROFILES.EVE_PERM eventPermission,
+		  CBC_PROFILES.IS_VISIBLE isVisible,
+		  CBC_PROFILES.IS_IMPORTED isImported,
+		  CBC_PROFILES.IS_EXPORTED isExported,
+		  CBC_PROFILES.IG_FROM_NODE_REF igFromNodeRef,
+		  count(distinct CBC_PROFILE_USERS.USER_ID) numberOfUsers
+		FROM CBC_PROFILES
+		LEFT JOIN CBC_PROFILE_USERS
+		ON CBC_PROFILES.ALFRESCO_GROUP = CBC_PROFILE_USERS.ALFRESCO_GROUP
+		LEFT JOIN
+		  (SELECT CBC_PROFILE_TITLE_TRANS.PROFILE_ID,
+		    CBC_PROFILE_TITLE_TRANS.ALF_LOCALE_ID,
+		    CBC_PROFILE_TITLE_TRANS.TRANSLATION
+		  FROM CBC_PROFILE_TITLE_TRANS
+		  WHERE CBC_PROFILE_TITLE_TRANS.ALF_LOCALE_ID = #{localeID}
+		  ) PROFILE_TITLE
+		ON CBC_PROFILES.ID       = PROFILE_TITLE.PROFILE_ID
+		WHERE CBC_PROFILES.IG_ID = #{igID}
+		GROUP BY CBC_PROFILES.ID,
+		  CBC_PROFILES.ALFRESCO_GROUP,
+		  CBC_PROFILES.NODE_REF,
+		  CBC_PROFILES.NAME,
+		  CBC_PROFILES.DIR_PERM,
+		  CBC_PROFILES.INF_PERM,
+		  CBC_PROFILES.LIB_PERM,
+		  CBC_PROFILES.NWS_PERM,
+		  CBC_PROFILES.EVE_PERM,
+		  CBC_PROFILES.IS_VISIBLE,
+		  CBC_PROFILES.IS_IMPORTED,
+		  CBC_PROFILES.IS_EXPORTED,
+		  CBC_PROFILES.IG_FROM_NODE_REF,
+		  CBC_PROFILES.TITLE,
+		  PROFILE_TITLE.TRANSLATION
+   ]]>
+	</select>
+	<select id="select_locale_id_by_user_name"
+		parameterType="String" resultType="long">
+		SELECT ALF_LOCALE_ID FROM CBC_USERS
+		WHERE USER_NAME=
+		#{value}
+	</select>
+
+	<select
+		id="select_users_by_ig_id_and_locale_id_alf_group_like_text"
+		parameterType="map" resultType="UserWithProfile">
+		SELECT CBC_PROFILES.NAME profileName,
+		CASE WHEN
+		CBC_PROFILES.IS_IMPORTED = 1 THEN
+		SUBSTR(CBC_PROFILES.NAME,1,INSTR(CBC_PROFILES.NAME, '_', -1)-1) ||
+		':'
+		|| CBC_PROFILES.TITLE
+		ELSE COALESCE(PROFILE_TITLE.TRANSLATION,
+		CBC_PROFILES.TITLE)
+		END profileTitle,
+		CBC_USERS.NODE_REF nodeRef ,
+		CBC_USERS.USER_NAME userName,
+		CBC_USERS.FIRST_NAME firstName,
+		CBC_USERS.LAST_NAME lastName,
+		CBC_USERS.EMAIL email,
+		CBC_PROFILES.IS_IMPORTED isImported,
+		CBC_PROFILES.DIR_PERM
+		directoryPermission,
+		CBC_PROFILES.INF_PERM informationPermission,
+		CBC_PROFILES.LIB_PERM libraryPermission,
+		CBC_PROFILES.NWS_PERM
+		newsgroupPermission,
+		CBC_PROFILES.EVE_PERM eventPermission,
+		CBC_PROFILES.ALFRESCO_GROUP alfrescoGroup,
+		CBC_PROFILES.ID profileId,
+		CBC_PROFILES.NODE_REF profileNodeRef
+		FROM CBC_PROFILES
+		INNER JOIN
+		CBC_PROFILE_USERS
+		ON
+		CBC_PROFILES.ALFRESCO_GROUP =
+		CBC_PROFILE_USERS.ALFRESCO_GROUP
+		LEFT JOIN
+		(SELECT
+		CBC_PROFILE_TITLE_TRANS.PROFILE_ID,
+		CBC_PROFILE_TITLE_TRANS.ALF_LOCALE_ID,
+		CBC_PROFILE_TITLE_TRANS.TRANSLATION
+		FROM CBC_PROFILE_TITLE_TRANS
+		WHERE
+		CBC_PROFILE_TITLE_TRANS.ALF_LOCALE_ID = #{localeID}
+		) PROFILE_TITLE
+		ON
+		CBC_PROFILES.ID = PROFILE_TITLE.PROFILE_ID
+		INNER JOIN CBC_USERS
+		ON
+		CBC_USERS.ID = CBC_PROFILE_USERS.USER_ID
+		WHERE CBC_PROFILES.IG_ID =
+		#{igID}
+		<if test="alfrescoGroup != null">
+			AND CBC_PROFILES.ALFRESCO_GROUP =
+			#{alfrescoGroup,jdbcType=VARCHAR}
+		</if>
+		<if test="text != null">
+			AND ( LOWER(CBC_USERS.FIRST_NAME) LIKE
+			#{text,jdbcType=VARCHAR}
+			OR LOWER(CBC_USERS.LAST_NAME) LIKE
+			#{text,jdbcType=VARCHAR}
+			OR LOWER(CBC_USERS.EMAIL) LIKE
+			#{text,jdbcType=VARCHAR}
+			OR LOWER(CBC_USERS.USER_NAME) LIKE
+			#{text,jdbcType=VARCHAR} )
+		</if>
+		<if test="email != null">
+			AND LOWER(CBC_USERS.EMAIL) LIKE #{email,jdbcType=VARCHAR}
+		</if>
+		<if test="firstName != null">
+			AND LOWER(CBC_USERS.FIRST_NAME) LIKE
+			#{firstName,jdbcType=VARCHAR}
+		</if>
+		<if test="lastName != null">
+			AND LOWER(CBC_USERS.LAST_NAME) LIKE
+			#{lastName,jdbcType=VARCHAR}
+		</if>
+		<if test="orderByColumn != null">
+			ORDER BY LOWER(${orderByColumn}) ${orderByType}
+		</if>
+	</select>
+
+	<select id="count_users_in_ig" parameterType="long"
+		resultType="int">
+		SELECT count(distinct cbc_profile_users.user_id)
+		FROM
+		cbc_profiles
+		INNER JOIN cbc_profile_users
+		ON
+		cbc_profiles.alfresco_group
+		= cbc_profile_users.alfresco_group
+		WHERE cbc_profiles.IG_ID = #{value}
+	</select>
+
+	<select id="users_in_ig" parameterType="long"
+			resultType="String">
+		SELECT DISTINCT
+ 			cbc_users.user_name
+		FROM
+ 			cbc_profiles
+			INNER JOIN cbc_profile_users ON cbc_profiles.alfresco_group = cbc_profile_users.alfresco_group
+			INNER JOIN cbc_users ON cbc_profile_users.user_id = cbc_users.id
+		WHERE cbc_profiles.IG_ID = #{value}
+	</select>
+
+	<select id="select_profile_alf_group_title_by_ig_id"
+		parameterType="map" resultType="Profile">
+		SELECT
+		CBC_PROFILES.ALFRESCO_GROUP alfrescoGroup,
+		CBC_PROFILES.NAME
+		name,
+		CASE
+		WHEN CBC_PROFILES.IS_IMPORTED = 1
+		THEN CBC_PROFILES.NAME
+		ELSE
+		COALESCE(PROFILE_TITLE.TRANSLATION, CBC_PROFILES.TITLE)
+		END title,
+		CBC_PROFILES.IS_IMPORTED isImported,
+		CBC_PROFILES.DIR_PERM
+		directoryPermission,
+		CBC_PROFILES.INF_PERM informationPermission,
+		CBC_PROFILES.LIB_PERM libraryPermission,
+		CBC_PROFILES.NWS_PERM
+		newsgroupPermission,
+		CBC_PROFILES.EVE_PERM eventPermission
+		FROM
+		CBC_PROFILES
+		LEFT JOIN
+		(SELECT CBC_PROFILE_TITLE_TRANS.PROFILE_ID,
+		CBC_PROFILE_TITLE_TRANS.ALF_LOCALE_ID,
+		CBC_PROFILE_TITLE_TRANS.TRANSLATION
+		FROM CBC_PROFILE_TITLE_TRANS
+		WHERE
+		CBC_PROFILE_TITLE_TRANS.ALF_LOCALE_ID = #{localeID}
+		) PROFILE_TITLE
+		ON
+		CBC_PROFILES.ID = PROFILE_TITLE.PROFILE_ID
+		WHERE CBC_PROFILES.IG_ID =
+		#{igID}
+		<if test="text != null">
+			AND LOWER(CBC_PROFILES.NAME) LIKE #{text,jdbcType=VARCHAR}
+		</if>
+	</select>
+	<select id="select_admin_count_by_ig_id" parameterType="long"
+		resultType="int">
+		SELECT COUNT(DISTINCT CBC_PROFILE_USERS.USER_ID)
+		ADMIN_COUNT
+		FROM CBC_PROFILE_USERS
+		INNER JOIN CBC_PROFILES
+		ON
+		CBC_PROFILES.ALFRESCO_GROUP = CBC_PROFILE_USERS.ALFRESCO_GROUP
+		WHERE
+		CBC_PROFILES.IG_ID = #{value}
+		AND CBC_PROFILES.DIR_PERM = 'DirAdmin'
+		AND CBC_PROFILES.INF_PERM = 'InfAdmin'
+		AND CBC_PROFILES.LIB_PERM =
+		'LibAdmin'
+		AND CBC_PROFILES.NWS_PERM = 'NwsAdmin'
+		AND
+		CBC_PROFILES.EVE_PERM = 'EveAdmin'
+	</select>
+
+	<select id="select_count_cat_admin_by_username_ig"
+		parameterType="map" resultType="int">
+		SELECT
+		COUNT(*)
+		FROM
+		cbc_interest_groups
+		INNER JOIN cbc_category_admins ON cbc_interest_groups.category_id =
+		cbc_category_admins.category_id
+		INNER JOIN cbc_users ON cbc_users.id =
+		cbc_category_admins.user_id
+		WHERE
+		cbc_interest_groups.id =
+		#{interestGroupID}
+		AND
+		cbc_users.user_name =
+		#{username,jdbcType=VARCHAR}
+	</select>
+
+	<select id="select_counter_username_in_ig" parameterType="map"
+		resultType="int">
+		select count(*)
+		from CBC_PROFILES, CBC_PROFILE_USERS,
+		CBC_USERS
+		where CBC_PROFILES.IG_ID = #{igID}
+		and CBC_USERS.USER_NAME =
+		#{username,jdbcType=VARCHAR}
+		and cbc_profiles.ALFRESCO_GROUP =
+		CBC_PROFILE_USERS.ALFRESCO_GROUP
+		and CBC_USERS.ID =
+		CBC_PROFILE_USERS.USER_ID
+	</select>
+	<select id="select_counter_username_in_category"
+		parameterType="map" resultType="int">
+		SELECT
+		count(*)
+		FROM
+		cbc_category_admins
+		INNER JOIN cbc_users
+		ON cbc_category_admins.user_id = cbc_users.id
+		WHERE
+		cbc_category_admins.category_id = #{categoryID}
+		AND
+		cbc_users.user_name
+		= #{username,jdbcType=VARCHAR}
+	</select>
+	<select id="select_counter_username_in_circabc"
+		parameterType="map" resultType="int">
+		SELECT
+		count(*)
+		FROM
+		cbc_circabc_admins
+		INNER JOIN cbc_users ON
+		cbc_circabc_admins.user_id = cbc_users.id
+		WHERE
+		cbc_users.user_name =
+		#{username,jdbcType=VARCHAR}
+	</select>
+
+	<select id="select_headers" resultType="Header">
+		SELECT
+		id,
+		node_ref AS
+		noderef,
+		name,
+		description AS description
+		FROM
+		cbc_headers
+	</select>
+	<select id="select_categories_by_header_locale"
+		parameterType="map" resultType="Category">
+		SELECT
+		cbc_categories.header_id as
+		headerID,
+		cbc_categories.id as id ,
+		cbc_categories.node_ref as nodeRef,
+		cbc_categories.logo_ref as logoRef,
+		cbc_categories.name ,
+		nvl(cctt.translation,cbc_categories.title) title
+		FROM
+		cbc_categories
+		LEFT JOIN
+		(
+		SELECT
+		*
+		FROM
+		cbc_cat_title_trans
+		WHERE
+		cbc_cat_title_trans.alf_locale_id = #{localeID}
+		) cctt
+		ON
+		cbc_categories.id = cctt.cat_id WHERE
+		cbc_categories.header_id =
+		#{headerID}
+	</select>
+	<select id="select_titles_by_profile_id" parameterType="map"
+		resultType="TranslationEntry">
+        <![CDATA[
+		select CBC_PROFILE_TITLE_TRANS.profile_id as id, 
+			CBC_PROFILE_TITLE_TRANS.ALF_LOCALE_ID as alfLocaleId,
+        	CBC_PROFILE_TITLE_TRANS.TRANSLATION as translation
+		from CBC_PROFILE_TITLE_TRANS
+		where profile_id = #{profileID}
+   ]]>
+	</select>
+
+	<select id="select_category_admins" parameterType="map"
+		resultType="String">
+		select user_name from cbc_users, cbc_category_admins
+		where
+		cbc_users.id = cbc_category_admins.user_id
+		and
+		cbc_category_admins.category_id = #{categID}
+	</select>
+
+	<select id="select_user_profile_in_group" parameterType="map"
+		resultType="ProfileUser">
+		select CBC_PROFILES.ALFRESCO_GROUP as alfrescoGroup,
+		CBC_USERS.ID as userId
+		from CBC_PROFILES, CBC_PROFILE_USERS, CBC_USERS
+		where
+		CBC_USERS.USER_NAME = #{username,jdbcType=VARCHAR}
+		and
+		CBC_PROFILES.IG_ID = #{groupId}
+		and cbc_profiles.ALFRESCO_GROUP =
+		CBC_PROFILE_USERS.ALFRESCO_GROUP
+		and CBC_USERS.ID =
+		CBC_PROFILE_USERS.USER_ID
+	</select>
+
+	<delete id="delete_user_profile_in_group" parameterType="map">
+		delete
+		from CBC_PROFILE_USERS
+		where ALFRESCO_GROUP = #{alfGroup,
+		jdbcType=VARCHAR}
+		and USER_ID = #{userId, jdbcType=VARCHAR}
+	</delete>
+
+	<update id="update_logo_id_for_category" parameterType="map">
+		update
+		cbc_categories set logo_ref = #{logoId} where id = #{categId}
+	</update>
+
+	<update id="update_logo_id_for_group" parameterType="map">
+		update
+		cbc_interest_groups set logo_ref = #{logoId, jdbcType=VARCHAR} where id = #{igId}
+	</update>
+
+	<select id="select_group_titles" parameterType="map"
+		resultType="keyValueString">
+		SELECT
+		LOCALE_STR as key,
+		TITLE_TRANSLATION as value
+		FROM
+		cbc_ig_trans, alf_locale
+		WHERE ig_id = #{igId}
+		AND
+		alf_locale.id =
+		cbc_ig_trans.alf_locale_id
+	</select>
+
+	<select id="select_profile_titles" parameterType="map"
+		resultType="keyValueString">
+		SELECT
+		LOCALE_STR as key,
+		TRANSLATION as value
+		FROM
+		cbc_profile_title_trans, alf_locale
+		WHERE profile_id =
+		#{profileID}
+		AND
+		alf_locale.id = cbc_profile_title_trans.alf_locale_id
+	</select>
+
+	<delete id="delete_profile_titles" parameterType="map">
+		DELETE FROM
+		CBC_PROFILE_TITLE_TRANS WHERE profile_id = #{profileID}
+	</delete>
+
+	<insert id="insert_profile_title" parameterType="map">
+		INSERT INTO
+		CBC_PROFILE_TITLE_TRANS VALUES (#{profileID}, #{localeId},
+		#{titleTrans, jdbcType=VARCHAR})
+	</insert>
+
+	<select id="select_category_titles" parameterType="map"
+		resultType="keyValueString">
+		SELECT
+		LOCALE_STR as key,
+		TRANSLATION as value
+		FROM
+		cbc_cat_title_trans, alf_locale
+		WHERE cat_id = #{categId}
+		AND
+		alf_locale.id = cbc_cat_title_trans.alf_locale_id
+	</select>
+
+	<insert id="insert_category_title" parameterType="map">
+		INSERT INTO
+		CBC_CAT_TITLE_TRANS VALUES (#{categoryId}, #{localeId}, #{titleTrans,
+		jdbcType=VARCHAR})
+	</insert>
+	<delete id="delete_all">
+		{call
+		declare
+		begin
+		DELETE FROM CBC_CIRCABC_ADMINS;
+		DELETE FROM CBC_CAT_TITLE_TRANS;
+		DELETE FROM CBC_CATEGORY_ADMINS;
+		DELETE FROM CBC_PROFILE_TITLE_TRANS;
+		DELETE FROM CBC_PROFILE_USERS;
+		DELETE FROM CBC_PROFILES;
+		DELETE FROM CBC_IG_TRANS;
+		DELETE FROM
+		CBC_INTEREST_GROUPS;
+		DELETE FROM CBC_CATEGORIES;
+		DELETE FROM
+		CBC_HEADERS;
+		DELETE FROM CBC_USERS;
+		end
+		}
+	</delete>
+	<select id="select_count_admin_by_user_name" parameterType="String"
+		resultType="long">
+		SELECT
+     		COUNT(*)
+ 		FROM
+			(
+				SELECT
+					cbc_users.user_name
+				FROM
+					cbc_circabc_admins
+					INNER JOIN cbc_users ON cbc_circabc_admins.user_id = cbc_users.id
+				WHERE
+					user_name = #{value}
+				UNION ALL
+				SELECT
+					cbc_users.user_name
+				FROM
+					cbc_category_admins
+					INNER JOIN cbc_users ON cbc_category_admins.user_id = cbc_users.id
+				WHERE
+					cbc_users.user_name = #{value}
+				UNION ALL
+				SELECT
+					cbc_users.user_name
+				FROM
+					cbc_profiles
+					INNER JOIN cbc_profile_users ON cbc_profiles.alfresco_group = cbc_profile_users
+					.alfresco_group
+					INNER JOIN cbc_users ON cbc_profile_users.user_id = cbc_users.id
+				WHERE
+					(cbc_profiles.dir_perm = 'DirAdmin' OR cbc_profiles.dir_perm = 'DirManageMembers')
+					AND cbc_users.user_name = #{value}
+			)  A
+	</select>
+</mapper>

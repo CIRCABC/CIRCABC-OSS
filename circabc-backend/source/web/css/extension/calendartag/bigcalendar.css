@@ -1,0 +1,52 @@
+table.bigcalendarTableStyle {
+	border:             black 1px solid;
+}
+
+table.bigcalendarTableStyle .bigcalendarPreviousLinkStyle  {
+	font-size: 			15px;
+	text-align: 		left;
+}
+
+table.bigcalendarTableStyle .bigcalendarNextLinkStyle  {
+	font-size: 			15px;
+	text-align: 		right;
+}
+
+table.bigcalendarTableStyle .bigcalendarTitleStyle  {
+	text-align:         center;
+	font-size: 			20px;
+	letter-spacing: 	5px;
+}
+
+table.bigcalendarTableStyle .bigcalendarWeekdayStyle  {
+	text-align:         center;
+	font-size:          16px;
+}
+
+table.bigcalendarTableStyle .bigcalendarOddMonthStyle, .bigcalendarEvenMonthStyle, .bigcalendarActiveDayStyle, .bigcalendarEvenMonthStyle, .bigcalendarEmptyDayStyle {
+	font-size:          14px;
+	vertical-align:     top;
+	text-align:         left;
+}
+
+table.bigcalendarTableStyle .bigcalendarEmptyDayStyle {
+	background-color:   #FFFFFF;
+}
+
+table.bigcalendarTableStyle .bigcalendarEvenMonthStyle  {
+	background-color:   #FF0000;
+}
+
+table.bigcalendarTableStyle .bigcalendarOddMonthStyle  {
+	background-color:   #00FF00;
+}
+
+table.bigcalendarTableStyle .bigcalendarActiveDayStyle {
+	background-color:   #0000FF;
+	color:              black;
+}
+
+table.bigcalendarTableStyle a, a:visited .a:active {
+    text-decoration:    none;
+    color:              black;
+}

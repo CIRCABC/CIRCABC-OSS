@@ -1,0 +1,32 @@
+<cbc-modal
+  [title]="editMode ? 'help.update.link' : 'help.add.link'"
+  (ok)="editMode ? updateLink() : createLink()"
+  (cancel)="cancel()"
+  [okLabel]="editMode ? 'label.update' : 'label.create'"
+  [(visible)]="showModal"
+  [executing]="creating"
+  [executingLabel]="editMode ? 'label.updating' : 'label.creating'"
+  [showOkButton]="isValid && !creating"
+>
+  <form [formGroup]="newLinkForm">
+    <cbc-multilingual-input
+      formControlName="title"
+      [label]="'label.title' | transloco"
+      [placeholder]="'label.title' | transloco"
+      [lang]="'en'"
+      [required]="true"
+    ></cbc-multilingual-input>
+
+    <div class="field">
+      <label for="href"
+        >{{ 'label.url' | transloco }}
+        <span style="color: red">&nbsp;*</span></label
+      >
+      <input type="url" id="href" formControlName="href" />
+      <cbc-control-message
+        *ngIf="newLinkForm"
+        [control]="hrefControl"
+      ></cbc-control-message>
+    </div>
+  </form>
+</cbc-modal>

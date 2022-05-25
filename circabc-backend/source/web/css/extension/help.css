@@ -1,0 +1,50 @@
+/*--+
+    |     Copyright European Community 2006 - Licensed under the EUPL V.1.0
+    |
+    |  		   http://ec.europa.eu/idabc/en/document/6523
+    |
+    +--*/
+
+
+.lightDescription{
+	font-family:Tahoma,Arial,Helvetica,sans-serif;
+	color: rgb(51, 102, 255);
+}
+
+.printScreen{
+	text-align: center;
+	font-family: Tahoma;
+	font-size: 7.5pt;
+	font-weight: bolder;
+}
+
+.borderText{
+	border: 1px solid #004488;
+	padding: 1pt 4pt;
+	font-family: Tahoma;
+	text-align: center;
+}
+
+.borderNotCenter{
+	border: 1px solid #004488;
+	padding: 1pt 4pt;
+	font-family: Tahoma;
+}
+
+
+h3{
+	background:#f7f9fb;
+	font-weight:700;
+	padding-top:2px;
+	vertical-align:middle;
+}
+
+
+.topOfPage{
+	font-family:Tahoma;
+	float: right;
+}
+
+
+
+

@@ -1,0 +1,7 @@
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0" xmlns:sys="http://www.alfresco.org/model/system/1.0" xmlns:cm="http://www.alfresco.org/model/content/1.0">
+
+    <cm:category>
+        <cm:name>CircaBCHeader</cm:name>
+    </cm:category>
+
+</view:view>

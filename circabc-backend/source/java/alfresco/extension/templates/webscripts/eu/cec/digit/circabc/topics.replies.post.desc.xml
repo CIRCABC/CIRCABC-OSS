@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>post a new comment / post to a related topic node</shortname>
+  <description>post a new comment / post to a related topic node</description>
+    <url>/circabc/topics/{id}/replies</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

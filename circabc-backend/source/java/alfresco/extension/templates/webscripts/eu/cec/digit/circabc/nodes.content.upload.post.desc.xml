@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>upload a file in the folder content</shortname>
+  <description>upload a file in the folder content</description>
+  <url>/circabc/nodes/{id}/upload</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

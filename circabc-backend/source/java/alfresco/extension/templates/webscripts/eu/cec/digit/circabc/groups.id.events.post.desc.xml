@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>groups.id.events.post</shortname>
+  <description>Post (create) a new event or meeting</description>
+    <url>/circabc/groups/{igId}/events</url>
+  <format default="json"/>
+  <authentication>guest</authentication>
+  <transaction>required</transaction>
+</webscript>

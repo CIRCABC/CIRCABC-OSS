@@ -1,0 +1,55 @@
+<section *ngIf="content" class="explorer">
+  <header>
+    <a
+      class="backButton"
+      *ngIf="!isLibrary()"
+      (click)="getContent(currentNode.parentId)"
+      ><img src="img/arrow-previous.png" /> </a
+    >&nbsp;
+    <input
+      type="checkbox"
+      *ngIf="targetFolderMode"
+      (click)="toggleSelect(currentNode.id)"
+      [checked]="isSelected(currentNode.id)"
+    />
+    <img src="img/icon-library-blue.png" /> &nbsp; {{ currentNode.name }}
+    <cbc-spinner *ngIf="loading"></cbc-spinner>
+  </header>
+  <section>
+    <table>
+      <thead>
+        <tr>
+          <th class="selector"></th>
+          <th class="name width-2-3">{{ 'label.name' | transloco }}</th>
+          <th class="date width-1-3">{{ 'label.modified' | transloco }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let node of content.data">
+          <td
+            ><input
+              type="checkbox"
+              *ngIf="!isFolder(node) || targetFolderMode || canSelectFolders"
+              (click)="toggleSelect(node.id)"
+              [checked]="isSelected(node.id)"
+          /></td>
+          <td class="width-2-3" *ngIf="!isFolder(node)"
+            ><img src="img/icon-file-blue.png" /> {{ node.name }}</td
+          >
+          <td class="width-2-3" *ngIf="isFolder(node)"
+            ><img src="img/icon-library-blue.png" />
+            <a (click)="getContent(node.id)">{{ node.name }}</a></td
+          >
+          <td class="width-1-3"
+            >{{ getModified(node) | date: 'y MMM d, H:mm' }}</td
+          >
+        </tr>
+        <tr *ngIf="isEmpty()">
+          <td class="empty" colspan="3"
+            >{{ 'label.empty.library' | transloco }}</td
+          >
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</section>

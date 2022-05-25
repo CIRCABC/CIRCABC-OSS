@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>restore the archived / deleted node of an IG</shortname>
+  <description>restore the archived / deleted nodes of an IG</description>
+    <url>/circabc/groups/{igId}/documents/deleted</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

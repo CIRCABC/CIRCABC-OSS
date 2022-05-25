@@ -1,0 +1,15 @@
+<section class="category--header">
+  <div class="logo-container">
+    <img
+      src="img/LOGO_circabc_category-128.png"
+      alt="header"
+      *ngIf="!hasModelNodeLogo()"
+    />
+    <img
+      [attr.src]="getLogoRef() | cbcDownload | cbcSecure"
+      alt="header"
+      *ngIf="hasModelNodeLogo()"
+    />
+  </div>
+  <div class="title" [innerHTML]="getCategoryGroupDescription()"> </div>
+</section>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING/DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+
+<bean id="CircabcFtpAuthenticator"  class="org.springframework.aop.framework.ProxyFactoryBean">
+      <property name="target">
+            <ref bean="FtpAuthenticator"/>
+      </property>
+      <property name="interceptorNames">
+         <list>
+         	<idref bean="disableNotificationMethodInterceptor"/>
+         </list>
+      </property>
+    </bean>
+<bean id="ftpServerConfig" class="org.alfresco.filesys.config.FTPConfigBean">
+      <property name="serverEnabled">
+         <value>${ftp.enabled}</value>
+      </property>
+
+      <property name="port">
+         <value>${ftp.port}</value>
+      </property>
+
+      <property name="bindTo">
+         <value>${ftp.bindto}</value>
+      </property>
+
+      <!-- FTP authentication -->
+      <property name="authenticator">
+         <ref bean="CircabcFtpAuthenticator" />
+      </property>
+
+      <!-- FTP server debug settings -->
+      <!-- Enable 'log4j.logger.org.alfresco.fileserver=debug' in log4j.properties file -->
+      <property name="debugFlags">
+		  <value>${ftp.sessionDebug}</value>
+	  </property>
+
+	  <!-- Data ports range -->
+	  <property name="dataPortFrom">
+		  <value>${ftp.dataPortFrom}</value>
+	  </property>
+	  <property name="dataPortTo">
+		  <value>${ftp.dataPortTo}</value>
+	  </property>
+	   
+	 <!-- FTPS support -->
+	 <property name="keyStorePath">
+		 <value>${ftp.keyStore}</value>
+	 </property>
+	 <property name="keyStoreType">
+		 <value>${ftp.keyStoreType}</value>
+	 </property>
+	 <property name="keyStorePassphrase">
+		 <value>${ftp.keyStorePassphrase}</value>
+	 </property>
+	   
+	 <property name="trustStorePath">
+		 <value>${ftp.trustStore}</value>
+	 </property>
+	   
+	 <property name="trustStoreType">
+		 <value>${ftp.trustStoreType}</value>
+	 </property>
+	 <property name="trustStorePassphrase">
+		 <value>${ftp.trustStorePassphrase}</value>
+	 </property>
+	   
+	 <property name="requireSecureSession">
+		 <value>${ftp.requireSecureSession}</value>
+	 </property>
+	   
+	 <property name="sslEngineDebug">
+		 <value>${ftp.sslEngineDebug}</value>
+	 </property>
+	 <property name="rootDirectory">
+		 <value>/Alfresco/CircaBC/</value>
+	 </property>
+   </bean>
+  </beans>

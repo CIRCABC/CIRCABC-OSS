@@ -1,0 +1,21 @@
+<div
+  class="cta cta--plus dropdown-trigger"
+  [class.disabled]="disabled"
+  (click)="toggleAddDropdown($event)"
+>
+  {{ 'permissions.add.configuration' | transloco }}
+  <div class="dropdown dropdown--add-file adjust" *ngIf="showCreateDropdown">
+    <ul>
+      <li>
+        <a class="user" (click)="launchAddPermissionWizard()"
+          >{{ 'permissions.selection.label' | transloco }}</a
+        >
+      </li>
+      <li>
+        <a class="users" (click)="launchAddShareWizard()"
+          >{{ 'label.interest.groups' | transloco }}</a
+        >
+      </li>
+    </ul>
+  </div>
+</div>

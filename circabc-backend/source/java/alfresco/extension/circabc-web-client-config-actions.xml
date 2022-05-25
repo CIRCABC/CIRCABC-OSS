@@ -1,0 +1,1088 @@
+<!--+
+    |     Copyright European Community 2006 - Licensed under the EUPL V.1.0
+    |
+    |  		   http://ec.europa.eu/idabc/en/document/6523
+    |
+    +-->
+
+<!-- Here Only the new Circabc specific NON WAI actions and action groups -->
+<!-- AND -->
+<!-- Modification of original Alfresco actions behaviour -->
+
+<alfresco-config>
+
+   <config>
+      <actions>
+         <!-- each action is defined individually and then referenced in an 'action-group' block
+              via an 'idref' attribute specifing the action definition to use -->
+
+         <!-- full example -->
+               <!-- each permission can be an Allow or Deny check -->
+            <!-- the evaluator is a class implementing the org.alfresco.web.action.ActionEvaluator contract,
+                 it will be executed passing in the context for the outer action component -->
+            <!-- various presentation attributes - generally it is better to provide these as part of the
+                 parent 'actions' definition to give a consistent look-and-feel to a group of actions -->
+            <!-- action, action-listener, onclick, href and target action attributes are supported -->
+            <!-- script attribute for specifying a javascript file to execute - by Path or NodeRef -->
+            <!-- params specify the <f:param> tags to be generated as children of the action component -->
+            <!-- accessable by an ActionEvent handler or passed directly as href/script URL arguments -->
+
+         <!-- Edit document offline action -->
+         <!-- Download document -->
+         <!-- Edit document online action via webdav -->
+         <!-- Edit document online action via cifs -->
+          <!-- Edit document online action via http -->
+
+         <!-- Edit document action to open using normal HTTP access or inline Edit if set -->
+
+            <!-- can also specify style, class etc. but this is better done in 'actions' element -->
+
+         <!-- Edit document using WebDav access -->
+            <!-- NOTE: uses the special 'actionContext' object supplied by the parent actions component -->
+
+         <!-- Edit document using CIFS access -->
+            <!-- NOTE: uses the special 'actionContext' object supplied by the parent actions component -->
+
+         <!-- Checkin document -->
+
+         <!-- Checkout document -->
+
+         <!-- Cancel checkout document -->
+         <!-- Cancel editing document -->
+         <!-- Done-editing document -->
+
+         <!-- View document details -->
+
+         <!-- View space details -->
+
+         <!-- Preview document in template -->
+
+         <!-- Preview space in template -->
+
+         <!-- Delete document -->
+
+         <!-- Delete space -->
+
+         <!-- Update document -->
+         <!-- Upload new version of document-->
+
+         <!-- 'Approve' workflow step for document -->
+
+         <!-- 'Reject' workflow step for document -->
+
+         <!-- 'Approve' workflow step for document details page -->
+
+         <!-- 'Reject' workflow step for document details page-->
+
+
+         <!-- 'Approve' workflow step for space -->
+
+         <!-- 'Reject' workflow step for space -->
+
+         <!-- 'Approve' workflow step for space details page -->
+
+         <!-- 'Reject' workflow step for space details page-->
+
+         <!-- Cut a document or space to the clipboard, from browse or doc details screens -->
+
+         <!-- Copy a document or space to the clipboard, from browse or doc details screens -->
+
+         <!-- Paste All clipboard items into a space -->
+
+         <!-- Add content -->
+
+         <!-- Create content -->
+
+         <!-- Edit XML content type -->
+
+         <!-- Create XML content type (WCM) -->
+         <!-- Edit XML content type (WCM) -->
+         <!-- Regenerate Renditions (WCM) -->
+
+         <!-- Create space -->
+
+         <!-- Create Advanced Space Wizard -->
+
+         <!-- Create Website Wizard -->
+
+         <!-- Manage Space Users -->
+
+         <!-- Manage Space Rules -->
+
+         <!-- Email Space Users -->
+
+         <!-- Manage Deleted Items -->
+         <!-- Recover All Items  -->
+         <!-- Delete All Items  -->
+          <!-- Create user action-->
+
+         <!-- Take Ownership of document -->
+
+         <!-- Take Ownership of space -->
+
+         <!-- Unlock document -->
+
+         <!-- Manage Content Users -->
+
+         <!-- Create Shortcut -->
+
+         <!-- Run Other Action (e.g. repo action) -->
+         <!-- Invite Space user action-->
+         <!-- Invite Content user action-->
+
+         <!-- Import into Space -->
+
+         <!-- Export from Space -->
+         <!-- ReApply Rules -->
+         <!-- Ignore Inherited Rules -->
+         <!-- Reset Tree -->
+         <!-- Make a document multilingual -->
+         <!-- Add a translation -->
+         <!-- Add a translation whithout content -->
+         <!-- Manage ml container details  -->
+         <!-- Manage ml container details  -->
+         <!-- Create rule action-->
+         <!-- Create a category -->
+         <!-- Delete category -->
+         <!-- Edit category -->
+         <!-- Create a group -->
+         <!-- Create a sub group -->
+         <!-- Delete group -->
+         <!-- Add a user to a group -->
+         <!-- recover item action -->
+         <!-- delete item action -->
+         <!-- the 'action-group' elements define unique blocks of actions that reference the actions
+              as defined above and can override or supply display elements for the group of actions -->
+         <!-- the component is responsible for making the context Node object available with name
+              of 'actionContext' so the actions can access it directly to get properties -->
+
+         <!-- Action for adding content - quick upload -->
+         <!-- Actions for a document in the Browse screen -->
+            <!-- New style edit online/offline actions -->
+            <!-- Remove these if you don't want old style Checkin/Checkout to appear at all -->
+            <!-- Old actions previously used for online/offline editing  -->
+            <!-- If old behaviour is required uncomment the actions below and comment out the new ones above -->
+         <!-- Actions Menu for a document in the Browse screen -->
+            <!-- Remove this action if you don't want old style Checkin/Checkout to appear at all -->
+         <!-- Action menu for Invite Space user in Manage invite users screen-->
+         <!-- Action menu for Invite Content user in Manage invite users screen-->
+         <!-- Actions for a space in the Browse screen -->
+         <!-- Actions Menu for a space in the Browse screen -->
+         <!-- Actions Menu for Create in Browse screen -->
+         <!-- Actions Menu for More Actions in Browse screen -->
+            <!-- NOTE: now found on the User Console -->
+         <!-- Actions Menu for Document Details screen -->
+            <!-- New style edit online/offline actions -->
+            <!-- Remove these if you don't want old style Checkin/Checkout to appear at all -->
+            <!-- Old actions previously used for online/offline editing  -->
+            <!-- If old behaviour is required uncomment the actions below and comment out the new ones above -->
+            <!--
+            -->
+         <!-- Actions Menu for Space Details screen -->
+         <!-- Actions Menu for File Link Details screen -->
+         <!-- Actions Menu for Folder Link Details screen -->
+         <!-- Actions Menu for Manage Rules screen -->
+         <!-- Actions for the navigator plugin -->
+         <!-- Actions for the manage group dialog -->
+         <!-- Actions for the manage categories dialog -->
+         <!-- Action menu for Create rule in Space details screen-->
+         <!-- Actions Menu for Manage Deleted Items screen -->
+         <!-- Action menu for Create user-->
+         <!--                                                -->
+         <!-- CIRCABC                                        -->
+         <!--                                                -->
+
+         <!-- return to WAI interface <NEW>-->
+			<action id="back_to_WAI">
+				<label-id>back_to_WAI</label-id>
+				<image>/images/extension/icons/warning.gif</image>
+				<action-listener>
+					#{BrowseBean.clickWai}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+				</params>
+			</action>
+
+			<!-- Take Ownership of document -->
+			<action id="take_ownership_ml_doc">
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.TakeOwnershipMLContainerEvaluator
+				</evaluator>
+				<label-id>take_ownership</label-id>
+				<image>/images/icons/take_ownership.gif</image>
+				<action-listener>
+					#{LibMLContentDetailsBean.takeOwnershipMLContainer}
+				</action-listener>
+				<params>
+					<param name="imageName">take_ownership_ml_doc_#{actionContext.name}</param>
+				</params>
+			</action>
+
+			<!-- download content via email, from browse or doc details screens -->
+			<action id="mailMe_node">
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.MailMeNodeEvaluator
+				</evaluator>
+				<label-id>mail_me_node_action_name</label-id>
+				<tooltip-id>mail_me_node_action_tooltip</tooltip-id>
+				<image>/images/icons/email_users.gif</image>
+				<action-listener>#{EmailMeContentBean.mailMe}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">mailMe_node_#{actionContext.name}</param>
+				</params>
+			</action>
+
+			<!-- download dossier via email  -->
+				<action id="mail_me_dossier">
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.NotGuestEvaluator
+				</evaluator>
+				<label-id>mail_me_dossier</label-id>
+				<tooltip-id>mail_me_dossier_tooltip</tooltip-id>
+				<image>/images/icons/email_users.gif</image>
+				<action-listener>#{EmailMeContentBean.mailMe}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">mail_me_dossier_#{actionContext.name}</param>
+				</params>
+			</action>
+
+			<!--   OVERRDIDEN ACTIONS -->
+
+	        <!--  The right management is different for the forums related actions into circabc -->
+	        <action id="create_forum_extended">
+	        	<permissions>
+	        		<permission allow="true">NwsAdmin</permission>
+	        	</permissions>
+	            <label-id>create_forum</label-id>
+            	<image>/images/icons/create_forum.gif</image>
+            	<action>dialog:createForum</action>
+	            <params>
+					<param name="imageName">create_forum_extended_#{actionContext.name}</param>
+	            </params>
+         	</action>
+	        <action id="delete_forums_extended">
+               	<permissions>
+               		<permission allow="true">Delete</permission>
+               	</permissions>
+	            <label-id>delete_forums</label-id>
+	            <image>/images/icons/delete_forums.gif</image>
+	            <action>dialog:deleteSpace</action>
+	            <action-listener>#{BrowseBean.setupDeleteAction}</action-listener>
+	            <params>
+	               <param name="id">#{actionContext.id}</param>
+				   <param name="imageName">delete_forums_extended_#{actionContext.name}</param>
+	            </params>
+         	</action>
+	        <action id="delete_forum_extended">
+               	<permissions>
+               		<permission allow="true">DeleteForum</permission>
+               	</permissions>
+	            <label-id>delete_forum</label-id>
+    	        <image>/images/icons/delete_forum.gif</image>
+        	    <action>dialog:deleteSpace</action>
+            	<action-listener>#{BrowseBean.setupDeleteAction}</action-listener>
+	            <params>
+    	           <param name="id">#{actionContext.id}</param>
+				   <param name="imageName">delete_forum_extended_#{actionContext.name}</param>
+        	    </params>
+         	</action>
+	        <action id="create_topic_extended">
+               	<permissions>
+               		<permission allow="true">NwsPost</permission>
+               	</permissions>
+            	<label-id>create_topic</label-id>
+            	<image>/images/icons/create_topic.gif</image>
+            	<action>dialog:createTopic</action>
+	            <params>
+				   <param name="imageName">create_topic_extended_#{actionContext.name}</param>
+        	    </params>
+         	</action>
+	        <action id="delete_topic_extended">
+               	<permissions>
+               		<permission allow="true">DeleteTopic</permission>
+               	</permissions>
+	            <label-id>delete_topic</label-id>
+	            <image>/images/icons/delete_topic.gif</image>
+	            <action>dialog:deleteSpace</action>
+	            <action-listener>#{BrowseBean.setupDeleteAction}</action-listener>
+	            <params>
+	               <param name="id">#{actionContext.id}</param>
+				   <param name="imageName">delete_topic_extended_#{actionContext.name}</param>
+	            </params>
+         	</action>
+
+         	<action id="create_post_extended">
+               	<permissions>
+               		<permission allow="true">NwsPost</permission>
+               	</permissions>
+	            <label-id>post_to_topic</label-id>
+	            <image>/images/icons/create_post.gif</image>
+	            <action>dialog:createPost</action>
+	            <params>
+				   <param name="imageName">create_post_extended_#{actionContext.name}</param>
+	            </params>
+         	</action>
+	        <action id="post_reply_extended">
+               	<permissions>
+               		<permission allow="true">NwsPost</permission>
+               	</permissions>
+	            <label-id>post_reply</label-id>
+	            <image>/images/icons/post_reply.gif</image>
+	            <action>dialog:createReply</action>
+	            <action-listener>#{BrowseBean.setupContentAction}</action-listener>
+	            <params>
+	               <param name="id">#{actionContext.id}</param>
+				   <param name="imageName">post_reply_extended_#{actionContext.name}</param>
+	            </params>
+         	</action>
+	        <action id="edit_post_extended">
+               	<permissions>
+               		<permission allow="true">NwsModerate</permission>
+               	</permissions>
+	            <label-id>edit_post</label-id>
+	            <image>/images/icons/edit_post.gif</image>
+	            <action>dialog:editPost</action>
+	            <action-listener>#{BrowseBean.setupContentAction}</action-listener>
+	            <params>
+	               <param name="id">#{actionContext.id}</param>
+				   <param name="imageName">edit_post_extended_#{actionContext.name}</param>
+	            </params>
+         	</action>
+	        <action id="delete_post_extended">
+               	<permissions>
+               		<permission allow="true">DeletePost</permission>
+               	</permissions>
+	            <label-id>delete_post</label-id>
+	            <image>/images/icons/delete.gif</image>
+	            <action>dialog:deleteFile</action>
+	            <action-listener>#{BrowseBean.setupContentAction}</action-listener>
+	            <params>
+	               <param name="id">#{actionContext.id}</param>
+				   <param name="imageName">delete_post_extended_#{actionContext.name}</param>
+	            </params>
+         	</action>
+
+			<!--  Create advanced space wizard must be only available for Alfresco admin -->
+	        <action id="create_space_wizard_extended">
+               	<permissions>
+					<!--  @codereview2validate should return true only if the user is the Admin/Admin  -->
+               		<permission allow="true">FullControl</permission>
+               	</permissions>
+	            <label-id>advanced_space_wizard</label-id>
+	            <image>/images/icons/create_space.gif</image>
+	            <action>wizard:createSpace</action>
+	            <params>
+				   <param name="imageName">create_space_wizard_extended_#{actionContext.name}</param>
+	            </params>
+         	</action>
+         	
+         	
+	        <action id="go_to_contact">
+               	<evaluator>
+					eu.cec.digit.circabc.action.evaluator.NotGuestEvaluator
+				</evaluator>
+	            <label-id>contact_message_go_to_title</label-id>
+	            <image>/images/icons/admin_console_large.gif</image>
+	            <action>wai:dialog:contactFormWai</action>
+	            <params>
+				   <param name="imageName">create_space_wizard_extended_#{actionContext.name}</param>
+	            </params>
+         	</action>
+         	
+         	
+
+			<!-- Actions Menu for More Actions in Browse screen <Extended> -->
+			<action-group id="browse_actions_menu">
+				<action idref="back_to_WAI" />
+			</action-group>
+
+			<!-- Create Actions Menu for Surveys view <New> -->
+			<action-group id="surveys_create_menu">
+				<action idref="create_space" />
+			</action-group>
+
+			<!-- Actions Menu for a ml document in the ml details screen <Extended> -->
+			<action-group id="multilingual_details_actions">
+				<action idref="take_ownership_doc" hide="true" />
+				<action idref="take_ownership_ml_doc" />
+			</action-group>
+
+			<!-- Actions Menu for a document in the Browse screen <Extended> -->
+			<action-group id="document_browse_menu">
+				<action idref="mailMe_node" />
+			</action-group>
+
+			<!-- Actions Menu for Document Details screen <Extended> -->
+			<action-group id="doc_details_actions">
+				<action idref="mailMe_node" />
+			</action-group>
+			
+		</actions>
+	</config>
+
+	<config evaluator="multiple-aspect-name" condition="ci:circabcManagement;!ci:circaIGRoot;!ci:circaCategory;!ci:circaBC" >
+   		<actions>
+   		   <action id="manage_space_permission">
+				<permissions>
+					<permission allow="true">LibManageMembers</permission>
+				</permissions>
+				<label-id>manage_space_permissions_page_action_title</label-id>
+				<tooltip-id>manage_space_permissions_page_action_tooltip</tooltip-id>
+				<image>/images/icons/users.gif</image>
+				<action-listener>#{BrowseBean.setupSpaceAction}</action-listener>
+				<action>wai:dialog:manageSpacePermissionsWai</action>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+				</params>
+			</action>
+
+			<action-group id="space_browse_menu">
+	            <action idref="preview_space" hide="true" />
+	            <action idref="approve_space" hide="true" />
+	            <action idref="reject_space" hide="true" />
+	         </action-group>
+
+	         <action-group id="browse_create_menu">
+	            <action idref="create_content"  hide="true" />
+	            <action idref="create_form"  hide="true" />
+	            <action idref="create_website_wizard"  hide="true" />
+  	            <action idref="create_space_wizard" hide="true" />
+  	            <action idref="create_space_wizard_extended" />
+	         </action-group>
+
+	         <action-group id="browse_actions_menu">
+	            <action idref="paste_all" hide="true" />
+	            <action idref="manage_space_users" hide="true" />
+	            <action idref="manage_space_rules" hide="true" />
+	            <action idref="regenerate_renditions" hide="true" />
+	            <action idref="import_space" hide="true" />
+	            <action idref="export_space" hide="true" />
+				<!--  New Actions -->
+	            <action idref="manage_space_permission" />
+	         </action-group>
+
+	         <action-group id="space_details_actions" >
+	            <action idref="approve_space_details" hide="true" />
+	            <action idref="reject_space_details" hide="true" />
+	            <action idref="manage_space_users" hide="true" />
+	            <action idref="manage_space_rules" hide="true" />
+	            <action idref="email_space_users" hide="true" />
+	            <action idref="preview_space" hide="true" />
+	            <action idref="run_action" hide="true" />
+	            <action idref="import_space" hide="true" />
+	            <action idref="export_space" hide="true" />
+	         </action-group>
+
+	         <action-group id="add_content_menu">
+	             <action idref="add_adm_content" hide="false" />
+	         </action-group>
+
+	         <action-group id="document_browse">
+	            <action idref="edit_doc_http" hide="true" />
+	            <action idref="edit_doc_webdav" hide="true" />
+	            <action idref="edit_doc_cifs" hide="true" />
+	         </action-group>
+
+	         <action-group id="document_browse_menu">
+	            <action idref="preview_doc" hide="true" />
+	            <action idref="approve_doc" hide="true" />
+	            <action idref="reject_doc" hide="true" />
+	            <action idref="start_workflow" hide="true" />
+	         </action-group>
+
+	         <action-group id="doc_details_actions">
+	            <action idref="start_workflow" hide="true" />
+	            <action idref="approve_doc_details" hide="true" />
+	            <action idref="reject_doc_details" hide="true" />
+	            <action idref="edit_doc_http" hide="true" />
+	            <action idref="edit_doc_webdav" hide="true" />
+	            <action idref="edit_doc_cifs" hide="true" />
+	            <action idref="unlock_doc" hide="true" />
+	            <action idref="manage_content_users" hide="true" />
+	            <action idref="preview_doc" hide="true" />
+	            <action idref="run_action" hide="true" />
+	         </action-group>
+
+	         <action-group id="filelink_details_actions">
+	            <action idref="run_action" hide="true" />
+	         </action-group>
+
+	         <action-group id="spacelink_details_actions">
+	            <action idref="run_action" hide="true" />
+	         </action-group>
+
+	         <action-group id="forums_create_menu">
+	            <action idref="create_forums" hide="true" />
+	            <action idref="create_forum" hide="true" />
+	            <action idref="create_forum_extended" />
+	         </action-group>
+
+	         <action-group id="forums_actions_menu">
+	            <action idref="delete_forums" hide="true" />
+	            <action idref="paste_all" hide="true"/>
+				<action idref="manage_space_users" hide="true"/>
+	            <action idref="import_space" hide="true" />
+	            <action idref="export_space" hide="true" />
+	         </action-group>
+
+			<action-group id="forums_actions">
+                <action idref="delete_space" hide="true" />
+    	     </action-group>
+
+	         <action-group id="forum_create_menu">
+	            <action idref="create_topic" hide="true"  />
+	            <action idref="create_topic_extended" />
+	         </action-group>
+
+	         <action-group id="forum_actions_menu">
+	            <action idref="delete_forum" hide="true"  />
+	            <action idref="delete_forum_extended" />
+	            <action idref="manage_space_users" hide="true" />
+	         </action-group>
+
+	         <action-group id="forum_actions_menu">
+	            <action idref="delete_topic" hide="true"  />
+	            <action idref="delete_topic_extended" />
+	         </action-group>
+
+	         <action-group id="topic_create_menu">
+	            <action idref="create_post" hide="true"  />
+	            <action idref="create_post_extended" />
+	         </action-group>
+
+	         <action-group id="topic_actions_menu">
+				<action idref="manage_space_users" hide="true" />
+	            <action idref="delete_topic" hide="true"  />
+	            <action idref="delete_topic_extended" />
+	         </action-group>
+
+	         <action-group id="topic_actions">
+	            <action idref="post_reply" hide="true" />
+	            <action idref="edit_post" hide="true" />
+	            <action idref="delete_post" hide="true" />
+	            <action idref="post_reply_extended" />
+	            <action idref="edit_post_extended" />
+	            <action idref="delete_post_extended" />
+	         </action-group>
+         </actions>
+	</config>
+
+	<config evaluator="aspect-name" condition="ci:circabcInformationRoot">
+   		<actions>
+			<action-group id="space_browse">
+	            <action idref="cut_node" hide="true" />
+	            <action idref="copy_node" hide="true" />
+	            <action idref="delete_space" hide="true" />
+	            <action idref="discuss_node" hide="true" />
+	         </action-group>
+
+			<action-group id="space_browse_menu">
+	            <action idref="preview_space" hide="true" />
+	            <action idref="approve_space" hide="true" />
+	            <action idref="reject_space" hide="true" />
+	            <action idref="create_forum_node" hide="true" />
+	         </action-group>
+
+	         <action-group id="browse_create_menu">
+	            <action idref="create_content"  hide="true" />
+	            <action idref="create_form"  hide="true" />
+	            <action idref="create_website_wizard"  hide="true" />
+  	            <action idref="create_space_wizard" hide="true" />
+		        <action idref="create_space"  hide="false" />
+  	            <action idref="create_space_wizard_extended" />
+	         </action-group>
+
+	         <action-group id="browse_actions_menu">
+	            <action idref="delete_space" hide="true" />
+	            <action idref="cut_node" hide="true" />
+	            <action idref="copy_node" hide="true" />
+	            <action idref="paste_all" hide="true" />
+	            <action idref="manage_space_users" hide="true" />
+	            <action idref="manage_space_rules" hide="true" />
+	            <action idref="regenerate_renditions" hide="true" />
+	            <action idref="import_space" hide="true" />
+	         </action-group>
+
+	         <action-group id="space_details_actions">
+	            <action idref="discuss_node" hide="true" />
+	            <action idref="create_forum_node" hide="true" />
+	            <action idref="approve_space_details" hide="true" />
+	            <action idref="reject_space_details" hide="true" />
+	            <action idref="cut_node" hide="true" />
+	            <action idref="copy_node" hide="true" />
+	            <action idref="delete_space" hide="true" />
+	            <action idref="take_ownership_space" hide="true" />
+	            <action idref="manage_space_users" hide="true" />
+	            <action idref="manage_space_rules" hide="true" />
+	            <action idref="email_space_users" hide="true" />
+	            <action idref="preview_space" hide="true" />
+	            <action idref="run_action" hide="true" />
+	            <action idref="import_space" hide="true" />
+	            <action idref="export_space" hide="true" />
+	         </action-group>
+   		</actions>
+	</config>
+
+   	<config evaluator="aspect-name" condition="ci:circaLibraryRoot">
+   		<actions>
+			<action-group id="space_browse">
+	            <action idref="cut_node" hide="true" />
+	            <action idref="copy_node" hide="true" />
+	            <action idref="delete_space" hide="true" />
+	            <action idref="discuss_node" hide="true" />
+	         </action-group>
+
+			<action-group id="space_browse_menu">
+	            <action idref="preview_space" hide="true" />
+	            <action idref="approve_space" hide="true" />
+	            <action idref="reject_space" hide="true" />
+	            <action idref="create_forum_node" hide="true" />
+	         </action-group>
+
+	         <action-group id="browse_create_menu">
+	            <action idref="create_content"  hide="true" />
+	            <action idref="create_form"  hide="true" />
+	            <action idref="create_website_wizard"  hide="true" />
+  	            <action idref="create_space_wizard" hide="true" />
+		        <action idref="create_space"  hide="false" />
+  	            <action idref="create_space_wizard_extended" />
+	         </action-group>
+
+	         <action-group id="browse_actions_menu">
+	            <action idref="delete_space" hide="true" />
+	            <action idref="cut_node" hide="true" />
+	            <action idref="copy_node" hide="true" />
+	            <action idref="paste_all" hide="true" />
+	            <action idref="manage_space_users" hide="true" />
+	            <action idref="manage_space_rules" hide="true" />
+	            <action idref="regenerate_renditions" hide="true" />
+	            <action idref="import_space" hide="true" />
+	         </action-group>
+
+	         <action-group id="space_details_actions">
+	            <action idref="discuss_node" hide="true" />
+	            <action idref="create_forum_node" hide="true" />
+	            <action idref="approve_space_details" hide="true" />
+	            <action idref="reject_space_details" hide="true" />
+	            <action idref="cut_node" hide="true" />
+	            <action idref="copy_node" hide="true" />
+	            <action idref="delete_space" hide="true" />
+	            <action idref="take_ownership_space" hide="true" />
+	            <action idref="manage_space_users" hide="true" />
+	            <action idref="manage_space_rules" hide="true" />
+	            <action idref="email_space_users" hide="true" />
+	            <action idref="preview_space" hide="true" />
+	            <action idref="run_action" hide="true" />
+	            <action idref="import_space" hide="true" />
+	            <action idref="export_space" hide="true" />
+	         </action-group>
+   		</actions>
+	</config>
+
+	<config evaluator="aspect-name" condition="ci:circaNewsGroupRoot">
+   		<actions>
+			<action-group id="space_browse">
+	            <action idref="cut_node" hide="true" />
+	            <action idref="copy_node" hide="true" />
+	            <action idref="delete_space" hide="true" />
+	            <action idref="discuss_node" hide="true" />
+	         </action-group>
+
+			<action-group id="space_browse_menu">
+	            <action idref="preview_space" hide="true" />
+	            <action idref="approve_space" hide="true" />
+	            <action idref="reject_space" hide="true" />
+	            <action idref="create_forum_node" hide="true" />
+	         </action-group>
+
+	         <action-group id="browse_create_menu">
+	            <action idref="create_content"  hide="true" />
+	            <action idref="create_form"  hide="true" />
+	            <action idref="create_website_wizard"  hide="true" />
+	            <action idref="create_space"  hide="true" />
+	            <action idref="create_space_wizard" hide="true" />
+	         </action-group>
+
+	         <action-group id="browse_actions_menu">
+	            <action idref="delete_space" hide="true" />
+	            <action idref="cut_node" hide="true" />
+	            <action idref="copy_node" hide="true" />
+	            <action idref="paste_all" hide="true" />
+	            <action idref="manage_space_users" hide="true" />
+	            <action idref="manage_space_rules" hide="true" />
+	            <action idref="regenerate_renditions" hide="true" />
+	            <action idref="import_space" hide="true" />
+	            <action idref="export_space" hide="true" />
+	         </action-group>
+
+	         <action-group id="space_details_actions">
+	            <action idref="discuss_node" hide="true" />
+	            <action idref="create_forum_node" hide="true" />
+	            <action idref="approve_space_details" hide="true" />
+	            <action idref="reject_space_details" hide="true" />
+	            <action idref="cut_node" hide="true" />
+	            <action idref="copy_node" hide="true" />
+	            <action idref="delete_space" hide="true" />
+	            <action idref="take_ownership_space" hide="true" />
+	            <action idref="manage_space_users" hide="true" />
+	            <action idref="manage_space_rules" hide="true" />
+	            <action idref="email_space_users" hide="true" />
+	            <action idref="preview_space" hide="true" />
+	            <action idref="run_action" hide="true" />
+	            <action idref="import_space" hide="true" />
+	            <action idref="export_space" hide="true" />
+	         </action-group>
+
+	         <action-group id="forums_details_actions">
+	            <action idref="cut_node" hide="true" />
+	            <action idref="copy_node" hide="true" />
+	            <action idref="delete_space" hide="true" />
+	            <action idref="manage_space_users" hide="true" />
+	            <action idref="import_space" hide="true" />
+	            <action idref="export_space" hide="true" />
+	         </action-group>
+
+	         <action-group id="forums_actions_menu">
+		        <action idref="delete_forums" hide="true" />
+	            <action idref="import_space" hide="true" />
+	            <action idref="export_space" hide="true" />
+			 </action-group>
+
+	         <action-group id="forums_create_menu">
+	            <action idref="create_forums" hide="true" />
+				<action idref="create_forum" hide="true" />
+				<action idref="create_forum_extended" />
+	         </action-group>
+
+   			<action-group id="forums_actions">
+	            <action idref="cut_node" hide="true" />
+    	        <action idref="copy_node" hide="true" />
+        	    <action idref="delete_space" hide="true" />
+	         </action-group>
+
+	         <action-group id="add_content_menu">
+	             <action idref="add_adm_content" hide="true" />
+	         </action-group>
+   		</actions>
+	</config>
+
+	<config evaluator="aspect-name" condition="ci:circaSurveyRoot">
+   		<actions>
+			<action-group id="space_browse">
+	            <action idref="cut_node" hide="true" />
+	            <action idref="copy_node" hide="true" />
+	            <action idref="delete_space" hide="true" />
+	            <action idref="discuss_node" hide="true" />
+	         </action-group>
+
+			<action-group id="space_browse_menu">
+	            <action idref="preview_space" hide="true" />
+	            <action idref="approve_space" hide="true" />
+	            <action idref="reject_space" hide="true" />
+	            <action idref="create_forum_node" hide="true" />
+	         </action-group>
+
+	         <action-group id="browse_create_menu">
+	            <action idref="create_content"  hide="true" />
+	            <action idref="create_form"  hide="true" />
+	            <action idref="create_website_wizard"  hide="true" />
+	            <action idref="create_space_wizard" hide="true" />
+	            <action idref="create_space"  hide="false" />
+	            <action idref="create_space_wizard_extended" />
+	         </action-group>
+
+	         <action-group id="browse_actions_menu">
+	            <action idref="delete_space" hide="true" />
+	            <action idref="cut_node" hide="true" />
+	            <action idref="copy_node" hide="true" />
+	            <action idref="paste_all" hide="true" />
+	            <action idref="manage_space_users" hide="true" />
+	            <action idref="manage_space_rules" hide="true" />
+	            <action idref="regenerate_renditions" hide="true" />
+	            <action idref="import_space" hide="true" />
+	         </action-group>
+
+	         <action-group id="space_details_actions">
+	            <action idref="discuss_node" hide="true" />
+	            <action idref="create_forum_node" hide="true" />
+	            <action idref="approve_space_details" hide="true" />
+	            <action idref="reject_space_details" hide="true" />
+	            <action idref="cut_node" hide="true" />
+	            <action idref="copy_node" hide="true" />
+	            <action idref="delete_space" hide="true" />
+	            <action idref="take_ownership_space" hide="true" />
+	            <action idref="manage_space_users" hide="true" />
+	            <action idref="manage_space_rules" hide="true" />
+	            <action idref="email_space_users" hide="true" />
+	            <action idref="preview_space" hide="true" />
+	            <action idref="run_action" hide="true" />
+	            <action idref="import_space" hide="true" />
+	            <action idref="export_space" hide="true" />
+	         </action-group>
+
+	         <action-group id="add_content_menu">
+	             <action idref="add_adm_content" hide="true" />
+	         </action-group>
+   		</actions>
+	</config>
+
+	<config evaluator="aspect-name" condition="ci:circabcEventRoot">
+   		<actions>
+			<action-group id="space_browse">
+	            <action idref="cut_node" hide="true" />
+	            <action idref="copy_node" hide="true" />
+	            <action idref="delete_space" hide="true" />
+	            <action idref="discuss_node" hide="true" />
+	         </action-group>
+
+			<action-group id="space_browse_menu">
+	            <action idref="preview_space" hide="true" />
+	            <action idref="approve_space" hide="true" />
+	            <action idref="reject_space" hide="true" />
+	            <action idref="create_forum_node" hide="true" />
+	         </action-group>
+
+	         <action-group id="browse_create_menu">
+	            <action idref="create_content"  hide="true" />
+	            <action idref="create_form"  hide="true" />
+	            <action idref="create_website_wizard"  hide="true" />
+  	            <action idref="create_space_wizard" hide="true" />
+		        <action idref="create_space"  hide="false" />
+  	            <action idref="create_space_wizard_extended" />
+	         </action-group>
+
+	         <action-group id="browse_actions_menu">
+	            <action idref="delete_space" hide="true" />
+	            <action idref="cut_node" hide="true" />
+	            <action idref="copy_node" hide="true" />
+	            <action idref="paste_all" hide="true" />
+	            <action idref="manage_space_users" hide="true" />
+	            <action idref="manage_space_rules" hide="true" />
+	            <action idref="regenerate_renditions" hide="true" />
+	            <action idref="import_space" hide="true" />
+	         </action-group>
+
+	         <action-group id="space_details_actions">
+	            <action idref="discuss_node" hide="true" />
+	            <action idref="create_forum_node" hide="true" />
+	            <action idref="approve_space_details" hide="true" />
+	            <action idref="reject_space_details" hide="true" />
+	            <action idref="cut_node" hide="true" />
+	            <action idref="copy_node" hide="true" />
+	            <action idref="delete_space" hide="true" />
+	            <action idref="take_ownership_space" hide="true" />
+	            <action idref="manage_space_users" hide="true" />
+	            <action idref="manage_space_rules" hide="true" />
+	            <action idref="email_space_users" hide="true" />
+	            <action idref="preview_space" hide="true" />
+	            <action idref="run_action" hide="true" />
+	            <action idref="import_space" hide="true" />
+	            <action idref="export_space" hide="true" />
+	         </action-group>
+   		</actions>
+	</config>
+
+	<config evaluator="aspect-name" condition="ci:circaIGRoot">
+   		<actions>
+			<action-group id="space_browse">
+	            <action idref="cut_node" hide="true" />
+	            <action idref="copy_node" hide="true" />
+	            <action idref="delete_space" hide="true" />
+	            <action idref="discuss_node" hide="true" />
+	         </action-group>
+
+			<action-group id="space_browse_menu">
+	            <action idref="preview_space" hide="true" />
+	            <action idref="approve_space" hide="true" />
+	            <action idref="reject_space" hide="true" />
+	            <action idref="create_forum_node" hide="true" />
+	         </action-group>
+
+	         <action-group id="browse_create_menu">
+	            <action idref="create_content"  hide="true" />
+	            <action idref="create_form"  hide="true" />
+	            <action idref="create_website_wizard"  hide="true" />
+	            <action idref="create_space"  hide="true" />
+	            <action idref="create_space_wizard" hide="true" />
+	            <!--  New Actions -->
+		   <action idref="circabc_create_survey" />
+	         </action-group>
+
+	         <action-group id="browse_actions_menu">
+	            <action idref="delete_space" hide="true" />
+	            <action idref="cut_node" hide="true" />
+	            <action idref="copy_node" hide="true" />
+	            <action idref="paste_all" hide="true" />
+	            <action idref="manage_space_users" hide="true" />
+	            <action idref="manage_space_rules" hide="true" />
+	            <action idref="regenerate_renditions" hide="true" />
+	            <action idref="import_space" hide="true" />
+	            <!--  New Actions -->
+				<action idref="view_member_applicants" />
+				<action idref="invite_user_on_ig" />
+				<action idref="bulk_invite_user_on_ig" />
+				<action idref="manage_user_profile_on_ig" />
+				<action idref="search_audit_dialog_on_ig" />
+				<action idref="edit_igroot_profiles" />
+	         </action-group>
+
+	         <action-group id="space_details_actions">
+	            <action idref="discuss_node" hide="true" />
+	            <action idref="create_forum_node" hide="true" />
+	            <action idref="approve_space_details" hide="true" />
+	            <action idref="reject_space_details" hide="true" />
+	            <action idref="cut_node" hide="true" />
+	            <action idref="copy_node" hide="true" />
+	            <action idref="delete_space" hide="true" />
+	            <action idref="take_ownership_space" hide="true" />
+	            <action idref="manage_space_users" hide="true" />
+	            <action idref="manage_space_rules" hide="true" />
+	            <action idref="email_space_users" hide="true" />
+	            <action idref="preview_space" hide="true" />
+<!-- 	            <action idref="run_action" hide="true" /> -->
+	            <action idref="import_space" hide="true" />
+	            <action idref="export_space" hide="true" />
+	         </action-group>
+
+	         <action-group id="add_content_menu">
+	             <action idref="add_adm_content" hide="true" />
+	         </action-group>
+   		</actions>
+	</config>
+
+	<config evaluator="aspect-name" condition="ci:circaCategory">
+   		<actions>
+			<action-group id="space_browse">
+	            <action idref="cut_node" hide="true" />
+	            <action idref="copy_node" hide="true" />
+	            <action idref="delete_space" hide="true" />
+	            <action idref="discuss_node" hide="true" />
+	         </action-group>
+
+			<action-group id="space_browse_menu">
+	            <action idref="preview_space" hide="true" />
+	            <action idref="approve_space" hide="true" />
+	            <action idref="reject_space" hide="true" />
+	            <action idref="create_forum_node" hide="true" />
+	         </action-group>
+
+	         <action-group id="browse_create_menu">
+	            <action idref="create_content"  hide="true" />
+	            <action idref="create_form"  hide="true" />
+	            <action idref="create_website_wizard"  hide="true" />
+	            <action idref="create_space"  hide="true" />
+	            <action idref="create_space_wizard" hide="true" />
+	            <!--  New Actions -->
+				<action idref="create_interest_group_wizard" />
+	         </action-group>
+
+	         <action-group id="browse_actions_menu">
+	            <action idref="delete_space" hide="true" />
+	            <action idref="cut_node" hide="true" />
+	            <action idref="copy_node" hide="true" />
+	            <action idref="paste_all" hide="true" />
+	            <action idref="manage_space_users" hide="true" />
+	            <action idref="manage_space_rules" hide="true" />
+	            <action idref="regenerate_renditions" hide="true" />
+	            <action idref="import_space" hide="true" />
+	            <!--  New Actions -->
+				<action idref="invite_user_on_cat" />
+				<action idref="manage_user_profile_on_cat" />
+	         </action-group>
+
+	         <action-group id="space_details_actions">
+	            <action idref="discuss_node" hide="true" />
+	            <action idref="create_forum_node" hide="true" />
+	            <action idref="approve_space_details" hide="true" />
+	            <action idref="reject_space_details" hide="true" />
+	            <action idref="cut_node" hide="true" />
+	            <action idref="copy_node" hide="true" />
+	            <action idref="delete_space" hide="true" />
+	            <action idref="take_ownership_space" hide="true" />
+	            <action idref="manage_space_users" hide="true" />
+	            <action idref="manage_space_rules" hide="true" />
+	            <action idref="email_space_users" hide="true" />
+	            <action idref="preview_space" hide="true" />
+<!-- 	            <action idref="run_action" hide="true" /> -->
+	            <action idref="import_space" hide="true" />
+	            <action idref="export_space" hide="true" />
+	         </action-group>
+
+	         <action-group id="add_content_menu">
+	             <action idref="add_adm_content" hide="true" />
+	         </action-group>
+   		</actions>
+	</config>
+
+	<config evaluator="aspect-name" condition="ci:circaBC">
+   		<actions>
+			<action-group id="space_browse">
+	            <action idref="cut_node" hide="true" />
+	            <action idref="copy_node" hide="true" />
+	            <action idref="delete_space" hide="true" />
+	            <action idref="discuss_node" hide="true" />
+	         </action-group>
+
+			<action-group id="space_browse_menu">
+	            <action idref="preview_space" hide="true" />
+	            <action idref="approve_space" hide="true" />
+	            <action idref="reject_space" hide="true" />
+	            <action idref="create_forum_node" hide="true" />
+	         </action-group>
+
+	         <action-group id="browse_create_menu">
+	            <action idref="create_content"  hide="true" />
+	            <action idref="create_form"  hide="true" />
+	            <action idref="create_website_wizard"  hide="true" />
+	            <action idref="create_space"  hide="true" />
+	            <action idref="create_space_wizard" hide="true" />
+	            <!--  New Actions -->
+				<action idref="create_category_wizard" />
+	         </action-group>
+
+	         <action-group id="browse_actions_menu">
+	            <action idref="delete_space" hide="true" />
+	            <action idref="cut_node" hide="true" />
+	            <action idref="copy_node" hide="true" />
+	            <action idref="paste_all" hide="true" />
+	            <action idref="manage_space_users" hide="true" />
+	            <action idref="manage_space_rules" hide="true" />
+	            <action idref="regenerate_renditions" hide="true" />
+	            <action idref="import_space" hide="true" />
+	            <!--  New Actions -->
+				<action idref="invite_user_on_circabc" />
+				<action idref="manage_user_profile_on_circabc" />
+	         </action-group>
+
+	         <action-group id="space_details_actions">
+	            <action idref="discuss_node" hide="true" />
+	            <action idref="create_forum_node" hide="true" />
+	            <action idref="approve_space_details" hide="true" />
+	            <action idref="reject_space_details" hide="true" />
+	            <action idref="cut_node" hide="true" />
+	            <action idref="copy_node" hide="true" />
+	            <action idref="delete_space" hide="true" />
+	            <action idref="take_ownership_space" hide="true" />
+	            <action idref="manage_space_users" hide="true" />
+	            <action idref="manage_space_rules" hide="true" />
+	            <action idref="email_space_users" hide="true" />
+	            <action idref="preview_space" hide="true" />
+<!--	            <action idref="run_action" hide="true" /> -->
+	            <action idref="import_space" hide="true" />
+	            <action idref="export_space" hide="true" />
+	         </action-group>
+
+	         <action-group id="add_content_menu">
+	             <action idref="add_adm_content" hide="true" />
+	         </action-group>
+	         
+	         
+	         
+	         
+      </actions>
+   </config>
+
+</alfresco-config>

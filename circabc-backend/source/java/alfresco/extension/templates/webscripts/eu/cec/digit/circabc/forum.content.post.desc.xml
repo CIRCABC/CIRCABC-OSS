@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Post a new empty topic in a forum</shortname>
+  <description>Post a new empty topic in a forum</description>
+    <url>/circabc/forums/{id}/content</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

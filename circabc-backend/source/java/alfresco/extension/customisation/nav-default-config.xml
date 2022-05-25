@@ -1,0 +1,490 @@
+<!--
+  Copyright 2006 European Community
+  
+   Licensed under the EUPL, Version 1.1 or \?as soon they
+   will be approved by the European Commission - subsequent
+   versions of the EUPL (the "Licence");
+   You may not use this work except in compliance with the
+   Licence.
+   You may obtain a copy of the Licence at:
+  
+   https://joinup.ec.europa.eu/software/page/eupl
+  
+   Unless required by applicable law or agreed to in
+   writing, software distributed under the Licence is
+   distributed on an "AS IS" basis,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+   express or implied.
+   See the Licence for the specific language governing
+   permissions and limitations under the Licence.
+-->
+<alfresco-config area="navigation-custom">
+
+    <!--
+        Define all available navgation options.
+    -->
+    <config evaluator="string-compare" condition="Global Navigation Preference">
+    	<columns>
+	   		<column name="author">
+	   			<label>author</label>
+	   			<converter>eu.cec.digit.circabc.faces.EncodeHtmlTextFieldConverter</converter>
+	   			<resolver>properties['cm:author']</resolver>
+	   		</column>
+			<column name="auto_version">
+	   			<label>autoversion</label>
+	   			<converter>javax.faces.Boolean</converter>
+	   			<resolver>properties['cm:autoVersion']</resolver>
+	   		</column>
+			<column name="created">
+	   			<label>created</label>
+	   			<converter>org.alfresco.faces.XMLDateConverter</converter>
+	   			<resolver>properties['cm:created']</resolver>
+	   		</column>
+			<column name="creator">
+	   			<label>creator</label>
+	   			<converter>eu.cec.digit.circabc.faces.HTMLUseridConverter</converter>
+	   			<resolver>properties['cm:creator']</resolver>
+	   		</column>
+			<column name="description">
+	   			<label>description</label>
+	   			<converter>eu.cec.digit.circabc.faces.EncodeHtmlTextFieldConverter</converter>
+	   			<resolver>properties['cm:description']</resolver>
+	   		</column>
+			<column name="edit_inline">
+	   			<label>editinline</label>
+	   			<converter>javax.faces.Boolean</converter>
+	   			<resolver>properties['app:editInline']</resolver>
+	   		</column>
+			<column name="expiration_date">
+	   			<label>expiration_date</label>
+	   			<converter>org.alfresco.faces.XMLDateConverter</converter>
+	   			<resolver>properties['cd:expiration_date']</resolver>
+	   		</column>
+			<column name="issue_date">
+	   			<label>issue_date</label>
+	   			<converter>org.alfresco.faces.XMLDateConverter</converter>
+	   			<resolver>properties['cd:issue_date']</resolver>
+	   		</column>
+			<column name="keyword">
+	   			<label>keyword</label>
+	   			<converter>eu.cec.digit.circabc.faces.KeywordConverter</converter>
+	   			<resolver>properties['cd:keyword'] </resolver>
+	   		</column>
+			<column name="language">
+	   			<label>language</label>
+	   			<converter>org.alfresco.faces.LanguageConverter</converter>
+	   			<resolver>properties['sys:locale']</resolver>
+	   		</column>
+			<column name="modified">
+	   			<label>modified</label>
+	   			<converter>org.alfresco.faces.XMLDateConverter</converter>
+	   			<resolver>properties['cm:modified']</resolver>
+	   		</column>
+			<column name="modifier">
+	   			<label>modifier</label>
+	   			<converter>eu.cec.digit.circabc.faces.HTMLUseridConverter</converter>
+	   			<resolver>properties['cm:modifier']</resolver>
+	   		</column>
+			<column name="name">
+	   			<label>name</label>
+	   			<converter />
+	   			<resolver>name</resolver>
+	   		</column>
+			<column name="path">
+	   			<label>path</label>
+	   			<converter>eu.cec.digit.circabc.faces.ServiceDisplayPathConverter</converter>
+	   			<resolver>nodeRef</resolver>
+	   		</column>
+			<column name="reference">
+	   			<label>reference</label>
+	   			<converter>eu.cec.digit.circabc.faces.EncodeHtmlTextFieldConverter</converter>
+	   			<resolver>properties['cd:reference']</resolver>
+	   		</column>
+			<column name="replies_number">
+	   			<label>replies_number</label>
+	   			<converter>javax.faces.Integer</converter>
+	   			<resolver>replies_number</resolver>
+	   		</column>
+			<column name="security_ranking">
+	   			<label>security_ranking</label>
+	   			<converter>eu.cec.digit.circabc.faces.I18NTextFieldConverter</converter>
+	   			<resolver>properties['cd:security_ranking']</resolver>
+	   		</column>
+			<column name="size">
+	   			<label>size</label>
+	   			<converter>org.alfresco.faces.ByteSizeConverter</converter>
+	   			<resolver>size</resolver>
+	   		</column>
+			<column name="status">
+	   			<label>status</label>
+	   			<converter>eu.cec.digit.circabc.faces.I18NTextFieldConverter</converter>
+	   			<resolver>properties['cd:status']</resolver>
+	   		</column>
+			<column name="title">
+	   			<label>title</label>
+	   			<converter>eu.cec.digit.circabc.faces.EncodeHtmlTextFieldConverter</converter>
+	   			<resolver>bestTitle</resolver>
+	   		</column>
+			<column name="titleOrName">
+	   			<label>title</label>
+	   			<converter>eu.cec.digit.circabc.faces.EncodeHtmlTextFieldConverter</converter>
+	   			<resolver>bestTitle</resolver>
+	   		</column>
+			<column name="url">
+	   			<label>url</label>
+	   			<converter />
+	   			<resolver>properties['cd:url']</resolver>
+	   		</column>
+			<column name="version_label">
+	   			<label>versionlabel</label>
+	   			<converter />
+	   			<resolver>properties['cm:versionLabel']</resolver>
+	   		</column>
+			<column name="moderated">
+	   			<label>moderated</label>
+	   			<converter>javax.faces.Boolean</converter>
+	   			<resolver>isModerated</resolver>
+	   		</column>
+			<column name="waitingPost">
+	   			<label>newsgroups_topic_waiting_for_approval</label>
+	   			<converter>javax.faces.Integer</converter>
+	   			<resolver>numberWaitingApproval</resolver>
+	   		</column>
+	   		<column name="approvedPost">
+	   			<label>newsgroups_topic_approved</label>
+	   			<converter>javax.faces.Integer</converter>
+	   			<resolver>numberApproved</resolver>
+	   		</column>
+	   		<column name="rejectedPost">
+	   			<label>newsgroups_topic_rejected</label>
+	   			<converter>javax.faces.Integer</converter>
+	   			<resolver>numberRejected</resolver>
+	   		</column>
+	   		<column name="lastPost">
+	   			<label>newsgroups_topic_last_post</label>
+	   			<converter />
+	   			<resolver>lastPost</resolver>
+	   		</column>
+	   		<column name="docNumber">
+	   			<label>doc_number</label>
+	   			<converter>javax.faces.Integer</converter>
+	   			<resolver>docNumber</resolver>
+	   		</column>
+	   		<column name="spaceSize">
+	   			<label>space_size</label>
+	   			<converter>javax.faces.Integer</converter>
+	   			<resolver>spaceSize</resolver>
+	   		</column>
+
+	   		<column name="dynAttr1">
+	   			<label>1</label>
+	   			<converter>eu.cec.digit.circabc.faces.DynamicPropertyConverter</converter>
+	   			<resolver>properties['cd:dynAttr1']</resolver>
+	   		</column>
+	   		<column name="dynAttr2">
+	   			<label>2</label>
+	   			<converter>eu.cec.digit.circabc.faces.DynamicPropertyConverter</converter>
+	   			<resolver>properties['cd:dynAttr2']</resolver>
+	   		</column>
+	   		<column name="dynAttr3">
+	   			<label>3</label>
+	   			<converter>eu.cec.digit.circabc.faces.DynamicPropertyConverter</converter>
+	   			<resolver>properties['cd:dynAttr3']</resolver>
+	   		</column>
+	   		<column name="dynAttr4">
+	   			<label>4</label>
+	   			<converter>eu.cec.digit.circabc.faces.DynamicPropertyConverter</converter>
+	   			<resolver>properties['cd:dynAttr4']</resolver>
+	   		</column>
+	   		<column name="dynAttr5">
+	   			<label>5</label>
+	   			<converter>eu.cec.digit.circabc.faces.DynamicPropertyConverter</converter>
+	   			<resolver>properties['cd:dynAttr5']</resolver>
+	   		</column>
+	   		
+	   		<column name="dynAttr6">
+	   			<label>6</label>
+	   			<converter>eu.cec.digit.circabc.faces.DynamicPropertyConverter</converter>
+	   			<resolver>properties['cd:dynAttr6']</resolver>
+	   		</column>
+	   		<column name="dynAttr7">
+	   			<label>7</label>
+	   			<converter>eu.cec.digit.circabc.faces.DynamicPropertyConverter</converter>
+	   			<resolver>properties['cd:dynAttr7']</resolver>
+	   		</column>
+	   		<column name="dynAttr8">
+	   			<label>8</label>
+	   			<converter>eu.cec.digit.circabc.faces.DynamicPropertyConverter</converter>
+	   			<resolver>properties['cd:dynAttr8']</resolver>
+	   		</column>
+	   		<column name="dynAttr9">
+	   			<label>9</label>
+	   			<converter>eu.cec.digit.circabc.faces.DynamicPropertyConverter</converter>
+	   			<resolver>properties['cd:dynAttr9']</resolver>
+	   		</column>
+	   		<column name="dynAttr10">
+	   			<label>10</label>
+	   			<converter>eu.cec.digit.circabc.faces.DynamicPropertyConverter</converter>
+	   			<resolver>properties['cd:dynAttr10']</resolver>
+	   		</column>
+	   		
+	   		
+	   		<column name="dynAttr11">
+	   			<label>11</label>
+	   			<converter>eu.cec.digit.circabc.faces.DynamicPropertyConverter</converter>
+	   			<resolver>properties['cd:dynAttr11']</resolver>
+	   		</column>
+	   		<column name="dynAttr12">
+	   			<label>12</label>
+	   			<converter>eu.cec.digit.circabc.faces.DynamicPropertyConverter</converter>
+	   			<resolver>properties['cd:dynAttr12']</resolver>
+	   		</column>
+	   		<column name="dynAttr13">
+	   			<label>13</label>
+	   			<converter>eu.cec.digit.circabc.faces.DynamicPropertyConverter</converter>
+	   			<resolver>properties['cd:dynAttr13']</resolver>
+	   		</column>
+	   		<column name="dynAttr14">
+	   			<label>14</label>
+	   			<converter>eu.cec.digit.circabc.faces.DynamicPropertyConverter</converter>
+	   			<resolver>properties['cd:dynAttr14']</resolver>
+	   		</column>
+	   		<column name="dynAttr15">
+	   			<label>15</label>
+	   			<converter>eu.cec.digit.circabc.faces.DynamicPropertyConverter</converter>
+	   			<resolver>properties['cd:dynAttr15']</resolver>
+	   		</column>
+	   		
+	   		<column name="dynAttr16">
+	   			<label>16</label>
+	   			<converter>eu.cec.digit.circabc.faces.DynamicPropertyConverter</converter>
+	   			<resolver>properties['cd:dynAttr16']</resolver>
+	   		</column>
+	   		<column name="dynAttr17">
+	   			<label>17</label>
+	   			<converter>eu.cec.digit.circabc.faces.DynamicPropertyConverter</converter>
+	   			<resolver>properties['cd:dynAttr17']</resolver>
+	   		</column>
+	   		<column name="dynAttr18">
+	   			<label>18</label>
+	   			<converter>eu.cec.digit.circabc.faces.DynamicPropertyConverter</converter>
+	   			<resolver>properties['cd:dynAttr18']</resolver>
+	   		</column>
+	   		<column name="dynAttr19">
+	   			<label>19</label>
+	   			<converter>eu.cec.digit.circabc.faces.DynamicPropertyConverter</converter>
+	   			<resolver>properties['cd:dynAttr19']</resolver>
+	   		</column>
+	   		<column name="dynAttr20">
+	   			<label>20</label>
+	   			<converter>eu.cec.digit.circabc.faces.DynamicPropertyConverter</converter>
+	   			<resolver>properties['cd:dynAttr20']</resolver>
+	   		</column>
+	   		
+	   		
+	   		<!--
+	   			for forums/topics:
+	   					nb of reading,
+	   		 -->
+
+    	</columns>
+
+    	<services>
+			<service name="library" type="container">
+		    	<allowBulkOperation>false</allowBulkOperation>
+		    	<displayRow min="3" max="100" />
+	    		<displayCol min="1" max="-1" />
+		    	<displayAction min="0" max="-1" />
+		    	<columns>
+					<column name="name" id="true" />
+					<column name="title" id="true" />
+					<column name="description" />
+					<column name="creator" />
+					<column name="created" />
+					<column name="modifier"/>
+					<column name="modified" />
+					<column name="expiration_date" />
+					<column name="path" />
+					<column name="docNumber" />
+					<column name="spaceSize" />
+				</columns>
+				<actionConfig>custom-action-list-library-container</actionConfig>
+				<mandatoryAction>details_space_wai</mandatoryAction>
+			</service>
+
+			<service name="library" type="content">
+		    	<allowBulkOperation>false</allowBulkOperation>
+		    	<displayRow min="3" max="100" />
+	    		<displayCol min="1" max="-1" />
+	    		<displayAction min="0" max="-1" />
+	    		<columns>
+					<column name="name" id="true" />
+					<column name="title" id="true" />
+					<column name="size" />
+					<column name="description" />
+					<column name="author" />
+					<column name="version_label" />
+					<column name="auto_version" />
+					<column name="creator" />
+					<column name="created" />
+					<column name="modifier" />
+					<column name="modified" />
+					<column name="language" />
+					<column name="status" />
+					<column name="issue_date" />
+					<column name="url" />
+					<column name="security_ranking" />
+					<column name="expiration_date" />
+					<column name="edit_inline" />
+					<column name="reference" />
+					<column name="keyword" />
+					<column name="path" />
+					<column name="dynAttr1" />
+					<column name="dynAttr2" />
+					<column name="dynAttr3" />
+					<column name="dynAttr4" />
+					<column name="dynAttr5" />
+					<column name="dynAttr6" />
+					<column name="dynAttr7" />
+					<column name="dynAttr8" />
+					<column name="dynAttr9" />
+					<column name="dynAttr10" />
+					<column name="dynAttr11" />
+					<column name="dynAttr12" />
+					<column name="dynAttr13" />
+					<column name="dynAttr14" />
+					<column name="dynAttr15" />
+					<column name="dynAttr16" />
+					<column name="dynAttr17" />
+					<column name="dynAttr18" />
+					<column name="dynAttr19" />
+					<column name="dynAttr20" />
+				</columns>
+				<actionConfig>custom_action_list_library_content</actionConfig>
+				<mandatoryAction>details_doc_wai</mandatoryAction>
+			</service>
+
+			<service name="library" type="discussion">
+		    	<allowBulkOperation>false</allowBulkOperation>
+		    	<displayRow min="3" max="100" />
+	    		<displayCol min="1" max="-1" />
+	    		<displayAction min="0" max="-1" />
+	    		<columns>
+					<column name="titleOrName" id="true" />
+					<column name="name" />
+					<column name="description" />
+					<column name="creator" />
+					<column name="created" />
+					<column name="modifier" />
+					<column name="modified" />
+					<column name="replies_number" />
+					<column name="lastPost" />
+					<column name="moderated" />
+					<column name="waitingPost" />
+					<column name="approvedPost" />
+					<column name="rejectedPost" />
+					<column name="path" />
+				</columns>
+				<actionConfig>custom-action-list-newsgroup-topic</actionConfig>
+				<mandatoryAction>newsgroup_view_topic_details_wai</mandatoryAction>
+			</service>
+
+			<service name="information" type="container">
+		    	<allowBulkOperation>false</allowBulkOperation>
+		    	<displayRow min="3" max="100" />
+	    		<displayCol min="1" max="-1" />
+	    		<displayAction min="0" max="-1" />
+	    		<columns>
+					<column name="name" id="true" />
+					<column name="title" id="true" />
+					<column name="description" />
+					<column name="creator" />
+					<column name="created" />
+					<column name="modifier"/>
+					<column name="modified" />
+					<column name="path" />
+					<column name="docNumber" />
+					<column name="spaceSize" />
+				</columns>
+				<actionConfig>custom-action-list-information-container</actionConfig>
+				<mandatoryAction>details_space_wai</mandatoryAction>
+			</service>
+
+			<service name="information" type="content">
+		    	<allowBulkOperation>false</allowBulkOperation>
+		    	<displayRow min="3" max="100" />
+	    		<displayCol min="1" max="-1" />
+	    		<displayAction min="0" max="-1" />
+				<columns>
+					<column name="name" id="true" />
+					<column name="title" id="true" />
+					<column name="size" />
+					<column name="description" />
+					<column name="author" />
+					<column name="version_label" />
+					<column name="auto_version" />
+					<column name="creator" />
+					<column name="created" />
+					<column name="modifier" />
+					<column name="modified" />
+					<column name="language" />
+					<column name="edit_inline" />
+					<column name="path" />
+				</columns>
+				<actionConfig>custom-action-list-information-content</actionConfig>
+				<mandatoryAction>details_doc_wai</mandatoryAction>
+			</service>
+
+			<service name="newsgroup" type="forum">
+		    	<allowBulkOperation>false</allowBulkOperation>
+		    	<displayRow min="3" max="100" />
+	    		<displayCol min="1" max="-1" />
+	    		<displayAction min="0" max="-1" />
+	    		<columns>
+					<column name="titleOrName" id="true" />
+					<column name="name" />
+					<column name="description" />
+					<column name="creator" />
+					<column name="created" />
+					<column name="modifier" />
+					<column name="modified" />
+					<column name="lastPost" />
+					<column name="moderated" />
+					<column name="waitingPost" />
+					<column name="approvedPost" />
+					<column name="rejectedPost" />
+					<column name="path" />
+				</columns>
+				<actionConfig>custom-action-list-newsgroup-forum</actionConfig>
+				<mandatoryAction>newsgroup_view_forum_details_wai</mandatoryAction>
+			</service>
+
+			<service name="newsgroup" type="topic">
+		    	<allowBulkOperation>false</allowBulkOperation>
+		    	<displayRow min="3" max="100" />
+	    		<displayCol min="1" max="-1" />
+	    		<displayAction min="0" max="-1" />
+	    		<columns>
+					<column name="titleOrName" id="true" />
+					<column name="name" />
+					<column name="description" />
+					<column name="creator" />
+					<column name="created" />
+					<column name="modifier" />
+					<column name="modified" />
+					<column name="replies_number" />
+					<column name="lastPost" />
+					<column name="moderated" />
+					<column name="waitingPost" />
+					<column name="approvedPost" />
+					<column name="rejectedPost" />
+					<column name="path" />
+				</columns>
+				<actionConfig>custom-action-list-newsgroup-topic</actionConfig>
+				<mandatoryAction>newsgroup_view_topic_details_wai</mandatoryAction>
+			</service>
+    	</services>
+    </config>
+</alfresco-config>
+
+

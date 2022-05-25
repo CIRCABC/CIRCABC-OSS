@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>remove the keyword / tag  to one node</shortname>
+  <description>remove the keyword / tag  to one node</description>
+    <url>/circabc/nodes/{id}/keywords/{keywordId}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

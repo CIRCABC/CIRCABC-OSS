@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>nodes.id.notifications.paste.post</shortname>
+  <description>Change the paste notifications status of a node</description>
+    <url>/circabc/nodes/{id}/notifications/paste</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

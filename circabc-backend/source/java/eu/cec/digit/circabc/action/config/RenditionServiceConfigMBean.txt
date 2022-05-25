@@ -1,0 +1,96 @@
+package eu.cec.digit.circabc.action.config;
+
+import org.alfresco.enterprise.repo.management.MBeanSupport;
+import org.springframework.jmx.export.annotation.ManagedAttribute;
+import org.springframework.jmx.export.annotation.ManagedResource;
+
+/**
+ * MBean to control the configuration parameters of the rendition service (document preview
+ * renditions, for example)
+ *
+ * @author schwerr
+ */
+@ManagedResource
+public class RenditionServiceConfigMBean extends MBeanSupport {
+
+  private RenditionServiceConfig renditionServiceConfig = null;
+
+  /**
+   * Gets the value of the renditionServiceConfig
+   *
+   * @return the renditionServiceConfig
+   */
+  public RenditionServiceConfig getRenditionServiceConfig() {
+    return renditionServiceConfig;
+  }
+
+  /**
+   * Sets the value of the renditionServiceConfig
+   *
+   * @param renditionServiceConfig the renditionServiceConfig to set.
+   */
+  public void setRenditionServiceConfig(
+      RenditionServiceConfig renditionServiceConfig) {
+    this.renditionServiceConfig = renditionServiceConfig;
+  }
+
+  /**
+   * Gets the value of enabled
+   *
+   * @return the enabled
+   */
+  @ManagedAttribute(description = "Is the preview processing job enabled?")
+  public Boolean isPreviewJobEnabled() {
+    return renditionServiceConfig.isPreviewJobEnabled();
+  }
+
+  /**
+   * Sets the value of enabled
+   *
+   * @param enabled the enabled to set.
+   */
+  @ManagedAttribute(description = "Enable/disable the preview processing job")
+  public void setPreviewJobEnabled(Boolean enabled) {
+    renditionServiceConfig.setPreviewJobEnabled(enabled);
+  }
+
+  /**
+   * Gets the value of enabled
+   *
+   * @return the enabled
+   */
+  @ManagedAttribute(description = "Is the render job enabled?")
+  public Boolean isRenderJobEnabled() {
+    return renditionServiceConfig.isRenderJobEnabled();
+  }
+
+  /**
+   * Sets the value of enabled
+   *
+   * @param enabled the enabled to set.
+   */
+  @ManagedAttribute(description = "Enable/disable the render job")
+  public void setRenderJobEnabled(Boolean enabled) {
+    renditionServiceConfig.setRenderJobEnabled(enabled);
+  }
+
+  /**
+   * Gets the value of renderSleepSeconds
+   *
+   * @return the renderSleepSeconds
+   */
+  @ManagedAttribute(description = "Get the sleep time in seconds for the job's main loop")
+  public Integer getRenderSleepSeconds() {
+    return renditionServiceConfig.getRenderSleepSeconds();
+  }
+
+  /**
+   * Sets the value of renderSleepSeconds
+   *
+   * @param renderSleepSeconds the renderSleepSeconds to set.
+   */
+  @ManagedAttribute(description = "Set the sleep time in seconds for the job's main loop")
+  public void setRenderSleepSeconds(Integer seconds) {
+    renditionServiceConfig.setRenderSleepSeconds(seconds);
+  }
+}

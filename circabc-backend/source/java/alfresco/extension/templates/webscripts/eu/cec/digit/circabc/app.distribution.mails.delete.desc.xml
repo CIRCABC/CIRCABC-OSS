@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Remove the distribution emails</shortname>
+  <description>Remove the distribution emails</description>
+  <url>/circabc/app/distribution/emails/{id}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Get all the app messages templates</shortname>
+  <description>Get all the app messages templates</description>
+  <url>/circabc/app/messages/templates</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

@@ -1,0 +1,107 @@
+<cbc-header></cbc-header>
+<cbc-navigator></cbc-navigator>
+<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+<div class="fluid admin page-container">
+  <div class="page-header">
+    <span class="page-header__title"
+      >{{ 'admin.category.title' | transloco }}</span
+    >
+    <div class="page-header__actions" *ngIf="isCategoryAdmin()">
+      <a
+        data-cy="add-interest-group"
+        class="cta cta--plus"
+        (click)="showModalCreate = true"
+        >{{ 'admin.group.add' | transloco }}</a
+      >
+    </div>
+  </div>
+  <cbc-category-descriptor [categoryId]="categoryId"></cbc-category-descriptor>
+  <section class="box box--tabs" style="clear: left; margin-top: 50px">
+    <ul class="header">
+      <li>
+        <a
+          class="tab"
+          [class.tab--current]="isDetailsRoute()"
+          [routerLink]="['details']"
+        >
+          <img src="img/category-headers.png" height="20" width="20" />
+          <span class="tab-text">{{ 'admin.tab.details' | transloco }}</span>
+        </a>
+      </li>
+      <li>
+        <a
+          class="tab"
+          [class.tab--current]="isAdministratorsRoute()"
+          [routerLink]="['administrators']"
+        >
+          <img src="img/icon-members-grey.png" height="20" width="20" />
+          <span class="tab-text"
+            >{{ 'admin.tab.administrators' | transloco }}</span
+          >
+        </a>
+      </li>
+      <li>
+        <a
+          class="tab"
+          [class.tab--current]="isCustomisationRoute()"
+          [routerLink]="['customisation']"
+        >
+          <img src="img/frame-landscape.png " height="20" width="20" />
+          <span class="tab-text">{{ 'label.appearance' | transloco }}</span>
+        </a>
+      </li>
+      <li>
+        <a
+          class="tab"
+          [class.tab--current]="isSupportRoute()"
+          [routerLink]="['support']"
+        >
+          <img src="img/information-button.png" height="20" width="20" />
+          <span class="tab-text">{{ 'label.support' | transloco }}</span>
+        </a>
+      </li>
+      <li>
+        <a
+          class="tab"
+          [class.tab--current]="isStatisticsRoute()"
+          [routerLink]="['ig-statistics']"
+        >
+          <img src="img/pie-chart-stats-818181.png" height="20" width="20" />
+          <span class="tab-text"
+            >{{ 'admin.tab.ig.statistics' | transloco }}</span
+          >
+        </a>
+      </li>
+      <li>
+        <a
+          class="tab"
+          [class.tab--current]="isGroupRequestsRoute()"
+          [routerLink]="['group-requests']"
+        >
+          <img src="img/icon-tasks-grey.png" height="20" width="20" />
+          <span class="tab-text">{{ 'label.group.requests' | transloco }}</span>
+        </a>
+      </li>
+      <li>
+        <a
+          class="tab"
+          [class.tab--current]="isInterestGroupsRoute()"
+          [routerLink]="['interest-groups']"
+          data-cy="group-list"
+        >
+          <img src="img/icon-group-browser-grey.png" height="20" width="20" />
+          <span class="tab-text"
+            >{{ 'label.interest.groups' | transloco }}</span
+          >
+        </a>
+      </li>
+    </ul>
+    <div class="main">
+      <router-outlet></router-outlet>
+    </div>
+  </section>
+  <cbc-create-group
+    [showModal]="showModalCreate"
+    (modalClosed)="onCreateGroupClosed($event)"
+  ></cbc-create-group>
+</div>

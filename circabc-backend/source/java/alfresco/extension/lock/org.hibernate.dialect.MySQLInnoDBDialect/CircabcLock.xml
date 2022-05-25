@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="CircabcLock">
+	
+	<select id="select_lock_count" parameterType="String" resultType="int">
+		select count(*) as value from cbc_lock where lock_name = #{value}
+	</select>
+	
+	<insert id="insert_lock" parameterType="String">
+		insert into cbc_lock(lock_name,lock_date,lock_host) values (#{value},sysdate(),SUBSTRING_INDEX(USER(),&apos;@&apos;,-1))
+	</insert>
+
+	<insert id="insert_lock_nulls" parameterType="String">
+		insert into cbc_lock(lock_name,lock_date,lock_host) values (#{value}, NULL , NULL)
+	</insert>
+
+	<delete id="delete_lock" parameterType="String">
+		delete from cbc_lock where lock_name = #{value}
+	</delete>
+
+	<delete id="delete_locks" parameterType="Date">
+		delete from cbc_lock where lock_date &lt; #{value, jdbcType=TIMESTAMP}  
+	</delete>
+</mapper>

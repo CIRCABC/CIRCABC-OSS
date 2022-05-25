@@ -1,0 +1,59 @@
+<ul>
+  <li *ngIf="loading">
+    <cbc-spinner [white]="true"></cbc-spinner> {{ 'label.loading' | transloco }}
+  </li>
+  <li>
+    <span class="expander" *ngIf="!canBeExpanded()"></span>
+    <a
+      class="flaticon-chevron-arrow-down"
+      *ngIf="node.expanded && canBeExpanded() && showExpander"
+      (click)="toggleExpand()"
+    ></a>
+    <a
+      class="flaticon-right-chevron"
+      *ngIf="!node.expanded && canBeExpanded() && showExpander"
+      (click)="toggleExpand()"
+    ></a>
+    <span *ngIf="showSelector">
+      <input
+        type="radio"
+        name="tree"
+        (click)="selectNode(node)"
+        [checked]="markSelected()"
+        [disabled]="disabled"
+      />
+    </span>
+    <a
+      (click)="clickNode(node)"
+      [class.underlined]="markSelected() && !showSelector"
+      pTooltip="{{ node.description }}"
+      tooltipPosition="top"
+      [escape]="false"
+      >{{(node.name !== "Newsgroups")? node.name :'label.forums' |transloco}}</a
+    >
+
+    <span
+      *ngIf="isNew()"
+      class="pennant--new"
+      pTooltip="{{ 'label.within.last' | transloco: { nbDays: flagNewDays } }}"
+      tooltipPosition="top"
+      >{{ 'label.new' | transloco }}</span
+    >
+    <div *ngIf="node.expanded">
+      <div *ngFor="let child of node.children">
+        <cbc-tree-node
+          [disabled]="disabled"
+          [searchedNodeId]="searchedNodeId"
+          [node]="child"
+          (selectedNodeEmitter)="selectNode($event)"
+          [showSelector]="showSelector"
+          (clickedNodeEmitter)="clickNode($event)"
+          [displayedPath]="displayedPath"
+          [rootId]="rootId"
+          [service]="service"
+          [flagNewDays]="flagNewDays"
+        ></cbc-tree-node>
+      </div>
+    </div>
+  </li>
+</ul>

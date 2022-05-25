@@ -1,0 +1,34 @@
+<form [formGroup]="form">
+  <section formArrayName="repos" class="grid-container">
+    <div class="grid-item">{{ 'label.name' | transloco }}</div>
+    <div class="grid-item">{{ 'label.request.on' | transloco }}</div>
+    <div class="grid-item">{{ 'label.status' | transloco }}</div>
+    <ng-template
+      ngFor
+      let-repo
+      [ngForOf]="form.controls.repos?.value"
+      let-i="index"
+    >
+      <div class="grid-item">{{ repo.name }}</div>
+      <div class="grid-item">
+        {{ repo.requestedOn | date: 'yyyy-MM-dd HH:mm' }}
+      </div>
+      <div class="grid-item" [formGroupName]="i">
+        <p-inputSwitch
+          formControlName="enabled"
+          [disabled]="isExternalUser"
+        ></p-inputSwitch>
+      </div>
+    </ng-template>
+  </section>
+  <div class="field" *ngIf="saving">
+    <label
+      >{{ 'label.saving' | transloco }}...
+      <cbc-spinner></cbc-spinner>
+    </label>
+  </div>
+</form>
+<div class="buttons-group" *ngIf="!saving">
+  <a class="cta" (click)="save()">{{ 'label.save' | transloco }}</a>
+  <a class="button" (click)="cancel()">{{ 'label.cancel' | transloco }}</a>
+</div>

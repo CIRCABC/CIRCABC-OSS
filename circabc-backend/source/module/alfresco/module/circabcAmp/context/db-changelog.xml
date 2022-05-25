@@ -1,0 +1,3160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+	<!-- <preConditions><dbms type="oracle"/></preConditions> -->
+	<changeSet id="1" author="Slobodan Filipovic" dbms="oracle">
+		<createTable tableName="cbc_log">
+			<column name="id" type="bigint">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="ig_id" type="bigint">
+				<constraints nullable="true" />
+			</column>
+			<column name="document_id" type="bigint">
+				<constraints nullable="true" />
+			</column>
+			<column name="user_name" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+			<column name="log_date" type="date">
+				<constraints nullable="false" />
+			</column>
+			<column name="activity_id" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="path" type="varchar(4000)">
+				<constraints nullable="true" />
+			</column>
+			<column name="info" type="varchar(4000)">
+				<constraints nullable="true" />
+			</column>
+			<column name="isOK" type="boolean">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		<createTable tableName="cbc_log_activity">
+			<column name="id" type="int">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="service_desc" type="varchar(50)">
+				<constraints nullable="false" />
+			</column>
+			<column name="activity_desc" type="varchar(50)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		<addForeignKeyConstraint
+			baseColumnNames="activity_id" baseTableName="cbc_log"
+			constraintName="cbc_log_act_fk" referencedColumnNames="id"
+			referencedTableName="cbc_log_activity" />
+		<addUniqueConstraint tableName="cbc_log_activity"
+			columnNames="service_desc,activity_desc" constraintName="uk_srv_act" />
+		<createSequence sequenceName="cbc_log_seq" />
+		<createSequence sequenceName="cbc_log_activity_seq" />
+		<createIndex tableName="cbc_log"
+			indexName="idx_cbc_log_ig_date">
+			<column name="ig_id" />
+			<column name="log_date" />
+		</createIndex>
+		<createIndex tableName="cbc_log"
+			indexName="idx_cbc_log_doc_id">
+			<column name="document_id" />
+		</createIndex>
+	</changeSet>
+	<changeSet id="2" author="Slobodan Filipovic" dbms="oracle">
+		<createTable tableName="cbc_lock">
+			<column name="lock_name" type="varchar(50)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+		</createTable>
+	</changeSet>
+	<changeSet id="3" author="Slobodan Filipovic" dbms="oracle">
+		<addColumn tableName="cbc_log">
+			<column name="ig_name" type="varchar(256)">
+				<constraints nullable="true" />
+			</column>
+		</addColumn>
+	</changeSet>
+	<changeSet id="4" author="Slobodan Filipovic" dbms="oracle">
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="0">select count(*) from user_indexes
+				where index_name =
+				'IDX_CBC_LOG_ACTIVITY_ID'
+			</sqlCheck>
+		</preConditions>
+		<comment>create index IDX_CBC_LOG_ACTIVITY_ID if does not exist</comment>
+		<createIndex tableName="cbc_log"
+			indexName="idx_cbc_log_activity_id">
+			<column name="activity_id" />
+		</createIndex>
+	</changeSet>
+	<changeSet id="5" author="Slobodan Filipovic" dbms="oracle">
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="0">select count(*) from user_indexes
+				where index_name = 'IDX_CBC_LOG_USER_NAME'
+			</sqlCheck>
+		</preConditions>
+		<comment>create index IDX_CBC_LOG_USER_NAME if does not exist</comment>
+		<createIndex tableName="cbc_log"
+			indexName="idx_cbc_log_user_name">
+			<column name="user_name" />
+		</createIndex>
+	</changeSet>
+	<changeSet id="7" author="Pierre Beauregard" dbms="oracle">
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="0">select count(*) from user_tables
+				where table_name = 'AUTO_UPLOAD_CONFIG'
+			</sqlCheck>
+		</preConditions>
+		<createTable tableName="auto_upload_config">
+			<column name="id_config" type="int">
+				<constraints nullable="false" primaryKey="true" />
+			</column>
+			<column name="ig_source" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="file_ref" type="varchar(255)">
+				<constraints nullable="true" />
+			</column>
+			<column name="destination_ref" type="varchar(255)">
+				<constraints nullable="true" />
+			</column>
+			<column name="ftp_host" type="varchar(255)">
+				<constraints nullable="true" />
+			</column>
+			<column name="ftp_port" type="int">
+				<constraints nullable="true" />
+			</column>
+			<column name="ftp_username" type="varchar(255)">
+				<constraints nullable="true" />
+			</column>
+			<column name="ftp_password" type="varchar(255)">
+				<constraints nullable="true" />
+			</column>
+			<column name="ftp_path" type="varchar(2000)">
+				<constraints nullable="true" />
+			</column>
+			<column name="notify" type="int">
+				<constraints nullable="true" />
+			</column>
+			<column name="auto_extract" type="int">
+				<constraints nullable="true" />
+			</column>
+			<column name="emails" type="varchar(2000)">
+				<constraints nullable="true" />
+			</column>
+			<column name="date_restriction" type="varchar(20)">
+				<constraints nullable="true" />
+			</column>
+			<column name="status" type="int">
+				<constraints nullable="true" />
+			</column>
+		</createTable>
+		<createSequence sequenceName="auto_upload_config_seq"
+			incrementBy="1" startValue="1" minValue="1" />
+	</changeSet>
+	<changeSet id="8" author="Slobodan Filipovic" dbms="oracle">
+		<createTable tableName="cbc_ecorda_theme">
+			<column name="ig_node_ref" type="varchar(255)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="ecorda_theme_id" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+	</changeSet>
+	<changeSet id="9" author="Slobodan Filipovic" dbms="oracle">
+		<createTable tableName="cbc_mt_request">
+			<column name="request_id" type="varchar(255)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="source_lang" type="varchar(2)">
+				<constraints nullable="false" />
+			</column>
+			<column name="target_langs" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="doc_url" type="varchar(255)">
+				<constraints nullable="true" />
+			</column>
+			<column name="target_path" type="varchar(255)">
+				<constraints nullable="true" />
+			</column>
+			<column name="text" type="varchar(4000)">
+				<constraints nullable="true" />
+			</column>
+			<column name="username" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="req_date" type="date">
+				<constraints nullable="false" />
+			</column>
+			<column name="document_id" type="varchar(255)">
+				<constraints nullable="true" />
+			</column>
+			<column name="property_q_name" type="varchar(255)">
+				<constraints nullable="true" />
+			</column>
+		</createTable>
+		<createTable tableName="cbc_mt_response">
+			<column name="request_id" type="varchar(255)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="target_lang" type="varchar(255)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="delivery_url" type="varchar(255)">
+				<constraints nullable="true" />
+			</column>
+			<column name="translated_text" type="varchar(4000)">
+				<constraints nullable="true" />
+			</column>
+			<column name="err_code" type="varchar(255)">
+				<constraints nullable="true" />
+			</column>
+			<column name="err_msg" type="varchar(255)">
+				<constraints nullable="true" />
+			</column>
+			<column name="resp_date" type="date">
+				<constraints nullable="false" />
+			</column>
+			<column name="translated" type="boolean">
+				<constraints nullable="false" />
+			</column>
+			<column name="document_updated" type="boolean">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		<createIndex tableName="cbc_mt_response"
+			indexName="idx_cbc_mt_res_job">
+			<column name="resp_date" />
+			<column name="translated" />
+			<column name="document_updated" />
+		</createIndex>
+		<addForeignKeyConstraint
+			baseColumnNames="request_id" baseTableName="cbc_mt_response"
+			constraintName="cbc_mt_req_resp_fk"
+			referencedColumnNames="request_id"
+			referencedTableName="cbc_mt_request" />
+	</changeSet>
+	<changeSet id="10" author="Slobodan Filipovic" dbms="oracle">
+		<addColumn tableName="cbc_mt_request">
+			<column name="notify" type="boolean"
+				defaultValueBoolean="false" />
+		</addColumn>
+		<addColumn tableName="cbc_mt_request">
+			<column name="email" type="varchar(255)" defaultValue="" />
+		</addColumn>
+	</changeSet>
+	<changeSet id="11" author="Slobodan Filipovic" dbms="oracle">
+		<dropPrimaryKey tableName="cbc_ecorda_theme" />
+		<addPrimaryKey tableName="cbc_ecorda_theme"
+			columnNames="ig_node_ref,ecorda_theme_id" />
+	</changeSet>
+	<!-- Table that stores all requests to render. A render job picks one by 
+		one and calculates the rendition. request_id, machine_id, noderef_uuid and 
+		request_date are filled when the request is added to the table (document 
+		posted to be rendered) fetch_date is updated when the document is fetched 
+		from the table to be processed in the 'near' future start_processing_date 
+		is updated when the document is passed to the rendition system end_processing_date, 
+		success and error_message are updated when the render callback is called 
+		by the rendition system and the document has (or not) been rendered -->
+	<changeSet id="12" author="Robert Schweers" dbms="oracle">
+		<createTable tableName="cbc_rendition_requests">
+			<column name="request_id" type="varchar(255)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="machine_id" type="varchar(255)">
+				<constraints nullable="true" />
+			</column>
+			<column name="noderef_uuid" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="request_date" type="date">
+				<constraints nullable="false" />
+			</column>
+			<column name="fetch_date" type="date">
+				<constraints nullable="true" />
+			</column>
+			<column name="start_processing_date" type="date">
+				<constraints nullable="true" />
+			</column>
+			<column name="end_processing_date" type="date">
+				<constraints nullable="true" />
+			</column>
+			<column name="success" type="boolean">
+				<constraints nullable="true" />
+			</column>
+			<column name="error_message" type="varchar(4000)">
+				<constraints nullable="true" />
+			</column>
+			<column name="remaining_render_retries" type="int">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+	</changeSet>
+	<changeSet id="13" author="Robert Schweers" dbms="oracle">
+		<createIndex tableName="cbc_rendition_requests"
+			indexName="idx_cbc_rendition_request">
+			<column name="noderef_uuid" />
+		</createIndex>
+	</changeSet>
+	<changeSet id="14" author="Slobodan Filipovic" dbms="oracle">
+		<createTable tableName="cbc_rest_log">
+			<column name="id" type="bigint">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="template_id" type="int">
+				<constraints nullable="true" />
+			</column>
+			<column name="path_one_name" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+			<column name="path_one_value" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+			<column name="path_two_name" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+			<column name="path_two_value" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+			<column name="path_three_name" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+			<column name="path_three_value" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+			<column name="user_name" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+			<column name="log_date" type="date">
+				<constraints nullable="false" />
+			</column>
+			<column name="status_code" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="url" type="varchar(255)">
+				<constraints nullable="true" />
+			</column>
+			<column name="info" type="varchar(4000)">
+				<constraints nullable="true" />
+			</column>
+		</createTable>
+		<createSequence sequenceName="cbc_rest_log_seq" />
+	</changeSet>
+	<changeSet id="15" author="Slobodan Filipovic" dbms="oracle">
+		<createTable tableName="cbc_rest_template">
+			<column name="id" type="int">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="method" type="varchar(10)">
+				<constraints nullable="false" />
+			</column>
+			<column name="template" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		<createSequence sequenceName="cbc_rest_template_seq" />
+		<addForeignKeyConstraint
+			baseColumnNames="template_id" baseTableName="cbc_rest_log"
+			constraintName="cbc_rest_template_fk" referencedColumnNames="id"
+			referencedTableName="cbc_rest_template" />
+		<addUniqueConstraint tableName="cbc_rest_template"
+			columnNames="method,template" constraintName="uk_method_template" />
+	</changeSet>
+	<changeSet id="16" author="Slobodan Filipovic" dbms="oracle">
+		<addColumn tableName="cbc_rest_template">
+			<column name="service_desc" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+			<column name="activity_desc" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+		</addColumn>
+		<addColumn tableName="cbc_rest_log">
+			<column name="cbc_log_id" type="bigint">
+				<constraints nullable="true" />
+			</column>
+		</addColumn>
+		<createIndex tableName="cbc_rest_template"
+			indexName="idx_cbc_rest_template_ser_acc">
+			<column name="service_desc" />
+			<column name="activity_desc" />
+		</createIndex>
+		<createIndex tableName="cbc_rest_log"
+			indexName="idx_cbc_rest_log_id">
+			<column name="cbc_log_id" />
+		</createIndex>
+	</changeSet>
+
+	<changeSet id="17" author="Pierre Beauregard" dbms="oracle">
+		<createTable tableName="cbc_app_messages">
+			<column name="id" type="int">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="message_content" type="varchar(4000)">
+				<constraints nullable="false" />
+			</column>
+			<column name="date_closure" type="date">
+				<constraints nullable="true" />
+			</column>
+			<column name="message_level" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+			<column name="display_time" type="int">
+				<constraints nullable="true" />
+			</column>
+			<column name="show_message" type="boolean">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		<createSequence sequenceName="cbc_app_messages_seq" />
+	</changeSet>
+
+	<changeSet id="18" author="Slobodan Filipovic" dbms="oracle">
+		<modifyColumn tableName="cbc_rest_log">
+			<column name="url" type="varchar(510)">
+			</column>
+		</modifyColumn>
+	</changeSet>
+
+	<changeSet id="19" author="Pierre Beauregard" dbms="oracle">
+		<modifyColumn tableName="cbc_rest_log">
+			<column name="path_one_value" type="varchar(255)">
+			</column>
+			<column name="path_two_value" type="varchar(255)">
+			</column>
+			<column name="path_three_value" type="varchar(255)">
+			</column>
+		</modifyColumn>
+	</changeSet>
+
+	<changeSet id="20" author="Slobodan Filipovic" dbms="oracle">
+		<addColumn tableName="cbc_rest_log">
+			<column name="node_parent" type="varchar(255)">
+			</column>
+			<column name="node_path" type="varchar(4000)">
+			</column>
+			<column name="node_id" type="bigint">
+			</column>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="21" author="Pierre Beauregard" dbms="oracle">
+		<createTable tableName="cbc_group_requests">
+			<column name="id" type="int">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="from_username" type="varchar(50)">
+				<constraints nullable="false" />
+			</column>
+			<column name="proposed_name" type="varchar(4000)">
+				<constraints nullable="false" />
+			</column>
+			<column name="request_date" type="date">
+				<constraints nullable="true" />
+			</column>
+			<column name="justification" type="varchar(4000)">
+				<constraints nullable="true" />
+			</column>
+			<column name="agreement" type="number">
+				<constraints nullable="true" />
+			</column>
+			<column name="agreement_date" type="date">
+				<constraints nullable="true" />
+			</column>
+			<column name="argument" type="varchar(4000)">
+				<constraints nullable="true" />
+			</column>
+			<column name="reviewer" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+			<column name="category_ref" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+			<column name="leaders" type="varchar(4000)">
+				<constraints nullable="true" />
+			</column>
+		</createTable>
+		<createSequence sequenceName="cbc_group_requests_seq" />
+		<createTable tableName="cbc_group_requests_values">
+			<column name="id_request" type="int">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="parameter" type="varchar(50)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="value" type="varchar(4000)">
+				<constraints nullable="true" />
+			</column>
+			<column name="locale" type="varchar(10)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+		</createTable>
+		<addForeignKeyConstraint
+			constraintName="fk_group_request_i18n_values"
+			referencedTableName="cbc_group_requests" baseColumnNames="id_request"
+			baseTableName="cbc_group_requests_values"
+			referencedColumnNames="id" />
+	</changeSet>
+	<changeSet id="22" author="Pierre Beauregard" dbms="oracle">
+		<createTable tableName="cbc_member_history">
+			<column name="user_id" type="varchar(50)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="group_id" type="varchar(50)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="profile_id" type="varchar(50)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="alf_group_name" type="varchar(350)">
+				<constraints nullable="false" />
+			</column>
+			<column name="state" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="state_date" type="date">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		<createTable tableName="cbc_property_history">
+			<column name="user_id" type="varchar(50)">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="node_id" type="varchar(50)">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="group_id" type="varchar(50)">
+				<constraints nullable="false" />
+			</column>
+			<column name="old_value" type="varchar(500)">
+				<constraints nullable="true" />
+			</column>
+			<column name="new_value" type="varchar(500)">
+				<constraints nullable="true" />
+			</column>
+			<column name="type_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="state" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="state_date" type="date">
+				<constraints nullable="false" />
+			</column>
+			<column name="allowed" type="boolean">
+				<constraints nullable="true" />
+			</column>
+		</createTable>
+		<createTable tableName="cbc_property_type">
+			<column name="type_id" type="int">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="type_name" type="varchar(50)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		<addForeignKeyConstraint
+			constraintName="fk_cbc_old_property"
+			referencedTableName="cbc_property_type" baseColumnNames="type_id"
+			baseTableName="cbc_property_history"
+			referencedColumnNames="type_id" />
+	</changeSet>
+	<changeSet id="23" author="Pierre Beauregard" dbms="oracle">
+		<insert tableName="cbc_property_type">
+			<column name="type_id" value="1"/>
+			<column name="type_name" value="permission"/>
+		</insert>
+		<insert tableName="cbc_property_type">
+			<column name="type_id" value="2"/>
+			<column name="type_name" value="notification"/>
+		</insert>
+		<insert tableName="cbc_property_type">
+			<column name="type_id" value="3"/>
+			<column name="type_name" value="ownership"/>
+		</insert>
+		<insert tableName="cbc_property_type">
+			<column name="type_id" value="4"/>
+			<column name="type_name" value="visibility"/>
+		</insert>
+		<insert tableName="cbc_property_type">
+			<column name="type_id" value="5"/>
+			<column name="type_name" value="applicant-for-membership"/>
+		</insert>
+	</changeSet>
+	<changeSet id="24" author="Pierre Beauregard" dbms="oracle">
+		<createSequence sequenceName="cbc_revocation_request_seq" />
+		<createTable tableName="cbc_revocation_request">
+			<column name="id" type="number">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="requester" type="varchar(50)">
+				<constraints nullable="false" />
+			</column>
+			<column name="users" type="varchar(4000)">
+				<constraints nullable="true" />
+			</column>
+			<column name="revocation_date" type="date">
+				<constraints nullable="true" />
+			</column>
+			<column name="request_state" type="int">
+				<constraints nullable="true" />
+			</column>
+			<column name="job_started" type="date">
+				<constraints nullable="true" />
+			</column>
+			<column name="job_ended" type="date">
+				<constraints nullable="true" />
+			</column>
+		</createTable>
+	</changeSet>
+	<changeSet id="25" author="Pierre Beauregard" dbms="oracle">
+		<addColumn tableName="cbc_revocation_request">
+			<column name="group_id" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+			<column name="action" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="26" author="Slobodan Filipovic"  dbms="oracle" runOnChange="true">
+	<comment> fix typo in cbc_log_actions table  </comment>
+	<sql splitStatements="false">
+		UPDATE
+		cbc_log_activity
+		SET activity_desc = 'Remote FTP Connection'
+		WHERE
+		service_desc = 'Auto-upload'
+		AND
+		activity_desc = 'Remode Ftp Connection'
+	</sql>
+	</changeSet>
+
+	<changeSet id="27" author="Slobodan Filipovic" dbms="oracle">
+		<createTable tableName="cbc_member_expiration">
+			<column name="group_id" type="varchar(50)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="profile_id" type="varchar(50)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="user_id" type="varchar(50)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="alf_group_name" type="varchar(350)">
+				<constraints nullable="false" />
+			</column>
+			<column name="expiration_date" type="date">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+	</changeSet>
+
+	<changeSet id="28" author="Pierre Beauregard" dbms="oracle">
+		<createSequence sequenceName="cbc_distribution_list_seq" />		
+		<createTable tableName="cbc_distribution_list">
+			<column name="id" type="int">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="email" type="varchar(254)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+		</createTable>
+		<createIndex tableName="cbc_distribution_list"
+			indexName="idx_cbc_distribution_email">
+			<column name="email" />
+		</createIndex>
+	</changeSet>
+
+	<changeSet id="29" author="Slobodan Filipovic" dbms="oracle">
+		<createTable tableName="cbc_ab_request">
+			<column name="ab_transaction_id" type="varchar(50)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="node_uuid" type="varchar(36)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="version_label" type="varchar(100)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+		</createTable>
+	</changeSet>
+
+	<changeSet id="30" author="Slobodan Filipovic" dbms="oracle">
+		<createTable tableName="cbc_ab_response">
+			<column name="ab_transaction_id" type="varchar(50)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="request_type" type="varchar(10)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="document_id" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+			<column name="save_number" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+			<column name="registration_number" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+		</createTable>
+	</changeSet>
+
+	<changeSet id="31" author="Slobodan Filipovic" dbms="oracle">
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="0">select count(*) from user_indexes
+				where index_name =
+				'IDX_CBC_REST_LOG_USR_TMP_ID'
+			</sqlCheck>
+		</preConditions>
+		<comment>create index IDX_CBC_REST_LOG_USR_TMP_ID if does not exist</comment>
+		<createIndex tableName="cbc_rest_log"
+			indexName="idx_cbc_rest_log_usr_tmp_id">
+			<column name="user_name" />
+			<column name="template_id" />
+		</createIndex>
+	</changeSet>
+
+	<changeSet id="32" author="Slobodan Filipovic" dbms="oracle">
+		<addColumn tableName="cbc_lock">
+			<column name="lock_date" type="date">
+				<constraints nullable="true" />
+			</column>
+			<column name="lock_host" type="varchar(256)">
+				<constraints nullable="true" />
+			</column>
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="33" author="Slobodan Filipovic" dbms="oracle">
+		<addColumn tableName="cbc_ab_request">
+			<column name="name" type="varchar(256)">
+				<constraints nullable="true" />
+			</column>
+			<column name="group_uuid" type="varchar(36)">
+				<constraints nullable="true" />
+			</column>
+			<column name="request_date" type="date">
+				<constraints nullable="true" />
+			</column>
+		</addColumn>
+		<addColumn tableName="cbc_ab_response">
+			<column name="response_date" type="date">
+				<constraints nullable="true" />
+			</column>
+			<column name="processed_date" type="date">
+				<constraints nullable="true" />
+			</column>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="34" author="Slobodan Filipovic" dbms="oracle">
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="0">select count(*) from user_indexes
+				where index_name =
+				'IDX_CBC_RENDITION_REQUEST_DATE'
+			</sqlCheck>
+		</preConditions>
+		<createIndex tableName="cbc_rendition_requests"
+			indexName="idx_cbc_rendition_request_date">
+			<column name="request_date" />
+		</createIndex>
+	</changeSet>
+	
+	<changeSet id="35" author="Slobodan Filipovic" dbms="oracle">
+		<addColumn tableName="cbc_log">
+			<column name="uuid" type="varchar(36)">
+			</column>
+		</addColumn>
+		<createIndex tableName="cbc_log"
+			indexName="idx_cbc_log_uuid">
+			<column name="uuid" />
+		</createIndex>
+	</changeSet>
+
+	<changeSet id="10001" author="Slobodan Filipovic"
+		dbms="mysql">
+		<createTable tableName="cbc_log">
+			<column name="id" type="bigint" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="ig_id" type="bigint">
+				<constraints nullable="true" />
+			</column>
+			<column name="document_id" type="bigint">
+				<constraints nullable="true" />
+			</column>
+			<column name="user_name" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+			<column name="log_date" type="datetime">
+				<constraints nullable="false" />
+			</column>
+			<column name="activity_id" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="path" type="varchar(4000)">
+				<constraints nullable="true" />
+			</column>
+			<column name="info" type="varchar(4000)">
+				<constraints nullable="true" />
+			</column>
+			<column name="isOK" type="boolean">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		<createTable tableName="cbc_log_activity">
+			<column name="id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="service_desc" type="varchar(50)">
+				<constraints nullable="false" />
+			</column>
+			<column name="activity_desc" type="varchar(50)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		<addForeignKeyConstraint
+			baseColumnNames="activity_id" baseTableName="cbc_log"
+			constraintName="cbc_log_act_fk" referencedColumnNames="id"
+			referencedTableName="cbc_log_activity" />
+		<addUniqueConstraint tableName="cbc_log_activity"
+			columnNames="service_desc,activity_desc" constraintName="uk_srv_act" />
+		<createIndex tableName="cbc_log"
+			indexName="idx_cbc_log_ig_date">
+			<column name="ig_id" />
+			<column name="log_date" />
+		</createIndex>
+		<createIndex tableName="cbc_log"
+			indexName="idx_cbc_log_doc_id">
+			<column name="document_id" />
+		</createIndex>
+	</changeSet>
+	<changeSet id="10002" author="Slobodan Filipovic"
+		dbms="mysql">
+		<createTable tableName="cbc_lock">
+			<column name="lock_name" type="varchar(50)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+		</createTable>
+	</changeSet>
+	<changeSet id="10003" author="Slobodan Filipovic"
+		dbms="mysql">
+		<addColumn tableName="cbc_log">
+			<column name="ig_name" type="varchar(256)">
+				<constraints nullable="true" />
+			</column>
+		</addColumn>
+	</changeSet>
+	<changeSet id="10004" author="Slobodan Filipovic"
+		dbms="mysql">
+		<createIndex tableName="cbc_log"
+			indexName="idx_cbc_log_activity_id">
+			<column name="activity_id" />
+		</createIndex>
+	</changeSet>
+	<changeSet id="10005" author="Slobodan Filipovic"
+		dbms="mysql">
+		<createIndex tableName="cbc_log"
+			indexName="idx_cbc_log_user_name">
+			<column name="user_name" />
+		</createIndex>
+	</changeSet>
+	<changeSet id="10006" author="Pierre Beauregard" dbms="mysql">
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="0">
+				SELECT COUNT(*)
+				FROM
+				INFORMATION_SCHEMA.TABLES
+				WHERE table_name='auto_upload_config' AND
+				TABLE_SCHEMA IN (
+				SELECT DATABASE())
+			</sqlCheck>
+		</preConditions>
+		<createTable tableName="auto_upload_config">
+			<column name="id_config" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="ig_source" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="file_ref" type="varchar(255)">
+				<constraints nullable="true" />
+			</column>
+			<column name="destination_ref" type="varchar(255)">
+				<constraints nullable="true" />
+			</column>
+			<column name="ftp_host" type="varchar(255)">
+				<constraints nullable="true" />
+			</column>
+			<column name="ftp_port" type="int">
+				<constraints nullable="true" />
+			</column>
+			<column name="ftp_username" type="varchar(255)">
+				<constraints nullable="true" />
+			</column>
+			<column name="ftp_password" type="varchar(255)">
+				<constraints nullable="true" />
+			</column>
+			<column name="ftp_path" type="varchar(2000)">
+				<constraints nullable="true" />
+			</column>
+			<column name="notify" type="int">
+				<constraints nullable="true" />
+			</column>
+			<column name="auto_extract" type="int">
+				<constraints nullable="true" />
+			</column>
+			<column name="emails" type="varchar(2000)">
+				<constraints nullable="true" />
+			</column>
+			<column name="date_restriction" type="varchar(20)">
+				<constraints nullable="true" />
+			</column>
+			<column name="status" type="int">
+				<constraints nullable="true" />
+			</column>
+		</createTable>
+	</changeSet>
+	<changeSet id="10008" author="Slobodan Filipovic"
+		dbms="mysql">
+		<createTable tableName="cbc_ecorda_theme">
+			<column name="ig_node_ref" type="varchar(255)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="ecorda_theme_id" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+	</changeSet>
+	<changeSet id="10009" author="Slobodan Filipovic"
+		dbms="mysql">
+		<createTable tableName="cbc_mt_request">
+			<column name="request_id" type="varchar(255)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="source_lang" type="varchar(2)">
+				<constraints nullable="false" />
+			</column>
+			<column name="target_langs" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="doc_url" type="varchar(255)">
+				<constraints nullable="true" />
+			</column>
+			<column name="target_path" type="varchar(255)">
+				<constraints nullable="true" />
+			</column>
+			<column name="text" type="varchar(4000)">
+				<constraints nullable="true" />
+			</column>
+			<column name="username" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="req_date" type="datetime">
+				<constraints nullable="false" />
+			</column>
+			<column name="document_id" type="varchar(255)">
+				<constraints nullable="true" />
+			</column>
+			<column name="property_q_name" type="varchar(255)">
+				<constraints nullable="true" />
+			</column>
+		</createTable>
+		<createTable tableName="cbc_mt_response">
+			<column name="request_id" type="varchar(255)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="target_lang" type="varchar(255)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="delivery_url" type="varchar(255)">
+				<constraints nullable="true" />
+			</column>
+			<column name="translated_text" type="varchar(4000)">
+				<constraints nullable="true" />
+			</column>
+			<column name="err_code" type="varchar(255)">
+				<constraints nullable="true" />
+			</column>
+			<column name="err_msg" type="varchar(255)">
+				<constraints nullable="true" />
+			</column>
+			<column name="resp_date" type="datetime">
+				<constraints nullable="false" />
+			</column>
+			<column name="translated" type="boolean">
+				<constraints nullable="false" />
+			</column>
+			<column name="document_updated" type="boolean">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		<createIndex tableName="cbc_mt_response"
+			indexName="idx_cbc_mt_res_job">
+			<column name="resp_date" />
+			<column name="translated" />
+			<column name="document_updated" />
+		</createIndex>
+	</changeSet>
+	<changeSet id="10010" author="Slobodan Filipovic"
+		dbms="mysql">
+		<addColumn tableName="cbc_mt_request">
+			<column name="notify" type="boolean"
+				defaultValueBoolean="false" />
+		</addColumn>
+		<addColumn tableName="cbc_mt_request">
+			<column name="email" type="varchar(255)" defaultValue="" />
+		</addColumn>
+	</changeSet>
+	<changeSet id="10011" author="Slobodan Filipovic"
+		dbms="mysql">
+		<dropPrimaryKey tableName="cbc_ecorda_theme" />
+		<addPrimaryKey tableName="cbc_ecorda_theme"
+			columnNames="ig_node_ref,ecorda_theme_id" />
+	</changeSet>
+	<changeSet id="10012" author="Robert Schweers" dbms="mysql">
+		<createTable tableName="cbc_rendition_requests">
+			<column name="request_id" type="varchar(255)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="machine_id" type="varchar(255)">
+				<constraints nullable="true" />
+			</column>
+			<column name="noderef_uuid" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="request_date" type="datetime">
+				<constraints nullable="false" />
+			</column>
+			<column name="fetch_date" type="datetime">
+				<constraints nullable="true" />
+			</column>
+			<column name="start_processing_date" type="datetime">
+				<constraints nullable="true" />
+			</column>
+			<column name="end_processing_date" type="datetime">
+				<constraints nullable="true" />
+			</column>
+			<column name="success" type="boolean">
+				<constraints nullable="true" />
+			</column>
+			<column name="error_message" type="varchar(4000)">
+				<constraints nullable="true" />
+			</column>
+			<column name="remaining_render_retries" type="int">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+	</changeSet>
+	<changeSet id="10013" author="Robert Schweers" dbms="mysql">
+		<createIndex tableName="cbc_rendition_requests"
+			indexName="idx_cbc_rendition_request_job">
+			<column name="noderef_uuid" />
+		</createIndex>
+	</changeSet>
+
+	<changeSet id="10014" author="Slobodan Filipovic"
+		dbms="mysql">
+		<createTable tableName="cbc_rest_log">
+			<column name="id" type="bigint" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="template_id" type="int">
+				<constraints nullable="true" />
+			</column>
+			<column name="path_one_name" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+			<column name="path_one_value" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+			<column name="path_two_name" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+			<column name="path_two_value" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+			<column name="path_three_name" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+			<column name="path_three_value" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+			<column name="user_name" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+			<column name="log_date" type="datetime">
+				<constraints nullable="false" />
+			</column>
+			<column name="status_code" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="url" type="varchar(255)">
+				<constraints nullable="true" />
+			</column>
+			<column name="info" type="varchar(4000)">
+				<constraints nullable="true" />
+			</column>
+		</createTable>
+	</changeSet>
+	<changeSet id="10015" author="Slobodan Filipovic"
+		dbms="mysql">
+		<createTable tableName="cbc_rest_template">
+			<column name="id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="method" type="varchar(10)">
+				<constraints nullable="false" />
+			</column>
+			<column name="template" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		<addForeignKeyConstraint
+			baseColumnNames="template_id" baseTableName="cbc_rest_log"
+			constraintName="cbc_rest_template_fk" referencedColumnNames="id"
+			referencedTableName="cbc_rest_template" />
+		<addUniqueConstraint tableName="cbc_rest_template"
+			columnNames="method,template" constraintName="uk_method_template" />
+	</changeSet>
+	<changeSet id="10016" author="Slobodan Filipovic"
+		dbms="mysql">
+		<addColumn tableName="cbc_rest_template">
+			<column name="service_desc" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+			<column name="activity_desc" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+		</addColumn>
+		<addColumn tableName="cbc_rest_log">
+			<column name="cbc_log_id" type="bigint">
+				<constraints nullable="true" />
+			</column>
+		</addColumn>
+		<createIndex tableName="cbc_rest_template"
+			indexName="idx_cbc_rest_template_ser_acc">
+			<column name="service_desc" />
+			<column name="activity_desc" />
+		</createIndex>
+		<createIndex tableName="cbc_rest_log"
+			indexName="idx_cbc_rest_log_id">
+			<column name="cbc_log_id" />
+		</createIndex>
+	</changeSet>
+
+	<changeSet id="10017" author="Pierre Beauregard" dbms="mysql">
+		<createTable tableName="cbc_app_messages">
+			<column name="id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="message_content" type="varchar(4000)">
+				<constraints nullable="false" />
+			</column>
+			<column name="date_closure" type="datetime">
+				<constraints nullable="true" />
+			</column>
+			<column name="message_level" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+			<column name="display_time" type="int">
+				<constraints nullable="true" />
+			</column>
+			<column name="show_message" type="boolean">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+	</changeSet>
+
+	<changeSet id="10018" author="Slobodan Filipovic"
+		dbms="mysql">
+		<modifyColumn tableName="cbc_rest_log">
+			<column name="url" type="varchar(510)">
+			</column>
+		</modifyColumn>
+	</changeSet>
+
+	<changeSet id="10019" author="Pierre Beauregard" dbms="mysql">
+		<modifyColumn tableName="cbc_rest_log">
+			<column name="path_one_value" type="varchar(255)">
+			</column>
+			<column name="path_two_value" type="varchar(255)">
+			</column>
+			<column name="path_three_value" type="varchar(255)">
+			</column>
+		</modifyColumn>
+	</changeSet>
+
+	<changeSet id="10020" author="Slobodan Filipovic"
+		dbms="mysql">
+		<addColumn tableName="cbc_rest_log">
+			<column name="node_parent" type="varchar(255)">
+			</column>
+			<column name="node_path" type="varchar(4000)">
+			</column>
+			<column name="node_id" type="bigint">
+			</column>
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="10021" author="Pierre Beauregard" dbms="mysql">
+		<createTable tableName="cbc_group_requests">
+			<column name="id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="from_username" type="varchar(50)">
+				<constraints nullable="false" />
+			</column>
+			<column name="proposed_name" type="varchar(4000)">
+				<constraints nullable="false" />
+			</column>
+			<column name="request_date" type="datetime">
+				<constraints nullable="true" />
+			</column>
+			<column name="justification" type="varchar(4000)">
+				<constraints nullable="true" />
+			</column>
+			<column name="agreement" type="int">
+				<constraints nullable="true" />
+			</column>
+			<column name="agreement_date" type="datetime">
+				<constraints nullable="true" />
+			</column>
+			<column name="argument" type="varchar(4000)">
+				<constraints nullable="true" />
+			</column>
+			<column name="reviewer" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+			<column name="category_ref" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+			<column name="leaders" type="varchar(4000)">
+				<constraints nullable="true" />
+			</column>
+		</createTable>
+		<createTable tableName="cbc_group_requests_values">
+			<column name="id_request" type="int">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="parameter" type="varchar(50)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="value" type="varchar(4000)">
+				<constraints nullable="true" />
+			</column>
+			<column name="locale" type="varchar(10)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+		</createTable>
+		<addForeignKeyConstraint
+			constraintName="fk_group_request_i18n_values"
+			referencedTableName="cbc_group_requests" baseColumnNames="id_request"
+			baseTableName="cbc_group_requests_values"
+			referencedColumnNames="id" />
+	</changeSet>
+	<changeSet id="10022" author="Pierre Beauregard" dbms="mysql">
+		<createTable tableName="cbc_member_history">
+			<column name="user_id" type="varchar(50)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="group_id" type="varchar(50)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="profile_id" type="varchar(50)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="alf_group_name" type="varchar(350)">
+				<constraints nullable="false" />
+			</column>
+			<column name="state" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="state_date" type="datetime">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		<createTable tableName="cbc_property_history">
+			<column name="user_id" type="varchar(50)">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="node_id" type="varchar(50)">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="group_id" type="varchar(50)">
+				<constraints nullable="false" />
+			</column>
+			<column name="old_value" type="varchar(500)">
+				<constraints nullable="true" />
+			</column>
+			<column name="new_value" type="varchar(500)">
+				<constraints nullable="true" />
+			</column>
+			<column name="type_id" type="int">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="state" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="state_date" type="datetime">
+				<constraints nullable="false" />
+			</column>
+			<column name="allowed" type="boolean">
+				<constraints nullable="true" />
+			</column>
+		</createTable>
+		<createTable tableName="cbc_property_type">
+			<column name="type_id" type="int">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="type_name" type="varchar(50)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		<addForeignKeyConstraint
+			constraintName="fk_cbc_old_property"
+			referencedTableName="cbc_property_type" baseColumnNames="type_id"
+			baseTableName="cbc_property_history"
+			referencedColumnNames="type_id" />
+	</changeSet>
+	<changeSet id="10023" author="Pierre Beauregard" dbms="mysql">
+		<insert tableName="cbc_property_type">
+			<column name="type_id" value="1"/>
+			<column name="type_name" value="permission"/>
+		</insert>
+		<insert tableName="cbc_property_type">
+			<column name="type_id" value="2"/>
+			<column name="type_name" value="notification"/>
+		</insert>
+		<insert tableName="cbc_property_type">
+			<column name="type_id" value="3"/>
+			<column name="type_name" value="ownership"/>
+		</insert>
+		<insert tableName="cbc_property_type">
+			<column name="type_id" value="4"/>
+			<column name="type_name" value="visibility"/>
+		</insert>
+		<insert tableName="cbc_property_type">
+			<column name="type_id" value="5"/>
+			<column name="type_name" value="applicant-for-membership"/>
+		</insert>
+	</changeSet>
+	<changeSet id="10024" author="Pierre Beauregard" dbms="mysql">
+		<createTable tableName="cbc_revocation_request">
+			<column name="id" type="bigint" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="requester" type="varchar(50)">
+				<constraints nullable="false" />
+			</column>
+			<column name="users" type="varchar(4000)">
+				<constraints nullable="true" />
+			</column>
+			<column name="revocation_date" type="datetime">
+				<constraints nullable="true" />
+			</column>
+			<column name="request_state" type="int">
+				<constraints nullable="true" />
+			</column>
+			<column name="job_started" type="datetime">
+				<constraints nullable="true" />
+			</column>
+			<column name="job_ended" type="datetime">
+				<constraints nullable="true" />
+			</column>
+		</createTable>
+	</changeSet>
+	<changeSet id="10025" author="Pierre Beauregard" dbms="mysql">
+		<addColumn tableName="cbc_revocation_request">
+			<column name="group_id" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+			<column name="action" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="10026" author="Slobodan Filipovic"  dbms="mysql" runOnChange="true">
+		<comment> fix typo in cbc_log_actions table  </comment>
+		<sql splitStatements="false">
+			UPDATE
+			cbc_log_activity
+			SET activity_desc = 'Remote FTP Connection'
+			WHERE
+			service_desc = 'Auto-upload'
+			AND
+			activity_desc = 'Remode Ftp Connection'
+		</sql>
+	</changeSet>
+
+	<changeSet id="10027" author="Slobodan Filipovic" dbms="mysql">
+		<createTable tableName="cbc_member_expiration">
+			<column name="group_id" type="varchar(50)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="profile_id" type="varchar(50)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="user_id" type="varchar(50)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="alf_group_name" type="varchar(350)">
+				<constraints nullable="false" />
+			</column>
+			<column name="expiration_date" type="datetime">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+	</changeSet>
+	
+	<changeSet id="10028" author="Pierre Beauregard" dbms="mysql">	
+		<createTable tableName="cbc_distribution_list">
+			<column name="id" type="bigint" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="email" type="varchar(254)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+		</createTable>
+		<createIndex tableName="cbc_distribution_list"
+			indexName="idx_cbc_distribution_email">
+			<column name="email" />
+		</createIndex>
+	</changeSet>
+
+	<changeSet id="10029" author="Slobodan Filipovic" dbms="mysql">
+		<createTable tableName="cbc_ab_request">
+			<column name="ab_transaction_id" type="varchar(50)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="node_uuid" type="varchar(36)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="version_label" type="varchar(100)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+		</createTable>
+	</changeSet>
+
+	<changeSet id="10030" author="Slobodan Filipovic" dbms="mysql">
+		<createTable tableName="cbc_ab_response">
+			<column name="ab_transaction_id" type="varchar(50)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="request_type" type="varchar(10)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="document_id" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+			<column name="save_number" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+			<column name="registration_number" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+		</createTable>
+	</changeSet>
+
+	<changeSet id="10031" author="Slobodan Filipovic"
+		dbms="mysql">
+		<createIndex tableName="cbc_rest_log"
+			indexName="idx_cbc_rest_log_usr_tmp_id">
+			<column name="user_name" />
+			<column name="template_id" />
+		</createIndex>
+	</changeSet>
+	<changeSet id="10032" author="Slobodan Filipovic" dbms="mysql">
+		<addColumn tableName="cbc_lock">
+			<column name="lock_date" type="datetime">
+				<constraints nullable="true" />
+			</column>
+			<column name="lock_host" type="varchar(256)">
+				<constraints nullable="true" />
+			</column>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="10033" author="Slobodan Filipovic" dbms="mysql">
+		<addColumn tableName="cbc_ab_request">
+			<column name="name" type="varchar(256)">
+				<constraints nullable="true" />
+			</column>
+			<column name="group_uuid" type="varchar(36)">
+				<constraints nullable="true" />
+			</column>
+			<column name="request_date" type="datetime">
+				<constraints nullable="true" />
+			</column>	
+		</addColumn>
+		<addColumn tableName="cbc_ab_response">
+			<column name="response_date" type="datetime">
+				<constraints nullable="true" />
+			</column>
+			<column name="processed_date" type="datetime">
+				<constraints nullable="true" />
+			</column>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="10034" author="Slobodan Filipovic" dbms="mysql">
+		<createIndex tableName="cbc_rendition_requests"
+			indexName="idx_cbc_rendition_request_date">
+			<column name="request_date" />
+		</createIndex>
+	</changeSet>
+
+	<changeSet id="10035" author="Slobodan Filipovic" dbms="mysql">
+		<addColumn tableName="cbc_log">
+			<column name="uuid" type="varchar(37)">
+			</column>
+		</addColumn>
+		<createIndex tableName="cbc_log"
+			indexName="idx_cbc_log_uuid">
+			<column name="uuid" />
+		</createIndex>
+	</changeSet>
+
+	<!-- To recreate: delete from DATABASECHANGELOG where id = 17000; commit; 
+		To add more methods create a new changeSet (deleting this one will lose the 
+		logs) -->
+	<changeSet id="17000" author="Robert Schweers"
+		dbms="mysql, oracle">
+
+		<delete tableName="CBC_LOG">
+			<where>activity_id like '99570__' or activity_id like '99571__'
+			</where>
+		</delete>
+		<delete tableName="CBC_REST_LOG">
+		</delete>
+		<delete tableName="CBC_REST_TEMPLATE">
+		</delete>
+		<delete tableName="CBC_LOG_ACTIVITY">
+			<where>id like '99570__' or id like '99571__'</where>
+		</delete>
+
+		<!-- Library checkout, checkin & cancel checkout -->
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957001" />
+			<column name="method" value="POST" />
+			<column name="template" value="/circabc/content/{id}/check" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Perform Checkout" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957031" />
+			<column name="method" value="PUT" />
+			<column name="template" value="/circabc/content/{id}/check" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Perform Checkin" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957002" />
+			<column name="method" value="DELETE" />
+			<column name="template" value="/circabc/content/{id}/check" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Perform Cancel Checkout" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957004" />
+			<column name="method" value="PUT" />
+			<column name="template" value="/circabc/groups/{id}" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Update Details" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957005" />
+			<column name="method" value="DELETE" />
+			<column name="template"
+				value="/circabc/groups/{igId}/members/{userId}" />
+			<column name="service_desc" value="Members" />
+			<column name="activity_desc" value="Remove Member" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957006" />
+			<column name="method" value="PUT" />
+			<column name="template" value="/circabc/dynprops/{id}" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Modify Dynamic Property" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957007" />
+			<column name="method" value="POST" />
+			<column name="template" value="/circabc/content/{id}/topics" />
+			<column name="service_desc" value="Newsgroups" />
+			<column name="activity_desc" value="Add Topic" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957008" />
+			<column name="method" value="DELETE" />
+			<column name="template" value="/circabc/posts/{id}" />
+			<column name="service_desc" value="Newsgroups" />
+			<column name="activity_desc" value="Remove Post" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957009" />
+			<column name="method" value="POST" />
+			<column name="template" value="/circabc/groups/{igId}/events" />
+			<column name="service_desc" value="Events" />
+			<column name="activity_desc" value="Add Event" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957010" />
+			<column name="method" value="POST" />
+			<column name="template" value="/circabc/forums/{id}/subforums" />
+			<column name="service_desc" value="Newsgroups" />
+			<column name="activity_desc" value="Add Forum" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957011" />
+			<column name="method" value="DELETE" />
+			<column name="template" value="/circabc/forums/{id}" />
+			<column name="service_desc" value="Newsgroups" />
+			<column name="activity_desc" value="Remove Forum" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957012" />
+			<column name="method" value="POST" />
+			<column name="template"
+				value="/circabc/users/bulkinvite/members" />
+			<column name="service_desc" value="Members" />
+			<column name="activity_desc" value="Bulk Invite" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957013" />
+			<column name="method" value="PUT" />
+			<column name="template" value="/circabc/events/{id}" />
+			<column name="service_desc" value="Events" />
+			<column name="activity_desc" value="Modify Event" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957014" />
+			<column name="method" value="POST" />
+			<column name="template" value="/circabc/posts/{id}/abuse" />
+			<column name="service_desc" value="Newsgroups" />
+			<column name="activity_desc" value="Report Abuse" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957015" />
+			<column name="method" value="GET" />
+			<column name="template" value="/circabc/groups/{id}" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Get Details" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957016" />
+			<column name="method" value="GET" />
+			<column name="template" value="/circabc/app/messages" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc"
+				value="Get Enabled Application Messages" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957017" />
+			<column name="method" value="POST" />
+			<column name="template"
+				value="/circabc/groups/{igId}/dynprops" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Add Dynamic Property" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957018" />
+			<column name="method" value="POST" />
+			<column name="template"
+				value="/circabc/groups/{igId}/keywords" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Add Keyword" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957019" />
+			<column name="method" value="POST" />
+			<column name="template" value="/circabc/spaces/{id}/url" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Create Link" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957020" />
+			<column name="method" value="POST" />
+			<column name="template" value="/circabc/content/{id}/email" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc"
+				value="Send Email to Current User" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957021" />
+			<column name="method" value="POST" />
+			<column name="template" value="/circabc/topics/{id}/replies" />
+			<column name="service_desc" value="Newsgroups" />
+			<column name="activity_desc" value="Add Reply" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957022" />
+			<column name="method" value="POST" />
+			<column name="template" value="/circabc/spaces/{id}/subspaces" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Create Folder" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957023" />
+			<column name="method" value="PUT" />
+			<column name="template" value="/circabc/posts/{id}/verify" />
+			<column name="service_desc" value="Newsgroups" />
+			<column name="activity_desc" value="Verify Post by Moderator" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957024" />
+			<column name="method" value="PUT" />
+			<column name="template" value="/circabc/posts/{id}" />
+			<column name="service_desc" value="Newsgroups" />
+			<column name="activity_desc" value="Modify Post" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957025" />
+			<column name="method" value="PUT" />
+			<column name="template" value="/circabc/keywords/{keywordId}" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Modify Keyword" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957026" />
+			<column name="method" value="PUT" />
+			<column name="template" value="/circabc/content/{id}" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Update content properties" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957027" />
+			<column name="method" value="PUT" />
+			<column name="template" value="/circabc/topics/{id}" />
+			<column name="service_desc" value="Newsgroups" />
+			<column name="activity_desc" value="Modify Topic" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957028" />
+			<column name="method" value="DELETE" />
+			<column name="template" value="/circabc/topics/{id}" />
+			<column name="service_desc" value="Newsgroups" />
+			<column name="activity_desc" value="Remove Topic" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957029" />
+			<column name="method" value="DELETE" />
+			<column name="template" value="/circabc/content/{id}" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Remove Content" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957030" />
+			<column name="method" value="DELETE" />
+			<column name="template" value="/circabc/dynprops/{id}" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Remove Dynamic Property" />
+		</insert>
+
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957032" />
+			<column name="method" value="POST" />
+			<column name="template" value="/circabc/headers" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc" value="Add Header" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957034" />
+			<column name="method" value="PUT" />
+			<column name="template" value="/circabc/headers" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc" value="Modify Header" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957035" />
+			<column name="method" value="DELETE" />
+			<column name="template" value="/circabc/headers" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc" value="Remove Header" />
+		</insert>
+
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957037" />
+			<column name="method" value="POST" />
+			<column name="template" value="/circabc/categories" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc" value="Add Category" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957038" />
+			<column name="method" value="PUT" />
+			<column name="template" value="/circabc/categories/{id}" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc" value="Modify Category" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957039" />
+			<column name="method" value="POST" />
+			<column name="template"
+				value="/circabc/categories/{id}/admins" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc"
+				value="Add Category Administrator" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957040" />
+			<column name="method" value="DELETE" />
+			<column name="template"
+				value="/circabc/categories/{id}/admins/{userId}" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc"
+				value="Remove Category Administrator" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957041" />
+			<column name="method" value="POST" />
+			<column name="template" value="/circabc/categories/{id}/logos" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc" value="Add Category Logo" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957042" />
+			<column name="method" value="PUT" />
+			<column name="template"
+				value="/circabc/categories/{id}/logos/{logoId}" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc"
+				value="Udpate / select Category Logo" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957043" />
+			<column name="method" value="DELETE" />
+			<column name="template"
+				value="/circabc/categories/{id}/logos/{logoId}" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc" value="Remove Category Logo" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957045" />
+			<column name="method" value="POST" />
+			<column name="template"
+				value="/circabc/categories/{id}/groups" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc" value="Create Interest Group" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957046" />
+			<column name="method" value="POST" />
+			<column name="template"
+				value="/circabc/categories/{id}/requests/group" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc"
+				value="Request Interest Group Creation" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957047" />
+			<column name="method" value="POST" />
+			<column name="template"
+				value="/circabc/categories/{id}/statistics" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc" value="Get category statistics" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957049" />
+			<column name="method" value="DELETE" />
+			<column name="template" value="/circabc/spaces/{id}" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Remove Folder" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957050" />
+			<column name="method" value="PUT" />
+			<column name="template" value="/circabc/spaces/{id}" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Modify Folder" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957051" />
+			<column name="method" value="POST" />
+			<column name="template"
+				value="/circabc/content/{id}/translations" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Add Content Translation" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957052" />
+			<column name="method" value="POST" />
+			<column name="template"
+				value="/circabc/content/{id}/machinetranslation/{language}" />
+			<column name="service_desc" value="Machine Translation" />
+			<column name="activity_desc" value="Request Translation" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957053" />
+			<column name="method" value="POST" />
+			<column name="template"
+				value="/circabc/content/{id}/multilingual/aspect" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc"
+				value="Enable Multilingual Aspect for Node" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957054" />
+			<column name="method" value="POST" />
+			<column name="template" value="/circabc/content/{id}/update" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc"
+				value="Update Checked Out Working Copy (no Checking In)" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957055" />
+			<column name="method" value="POST" />
+			<column name="template" value="/circabc/nodes/{id}/paste" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Paste Nodes (Copy)" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957056" />
+			<column name="method" value="PUT" />
+			<column name="template" value="/circabc/nodes/{id}/paste" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Paste Nodes (Move)" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="995709957" />
+			<column name="method" value="POST" />
+			<column name="template" value="/circabc/nodes/{id}/link" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Link Nodes" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957058" />
+			<column name="method" value="POST" />
+			<column name="template" value="/circabc/contents/email" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Email Zipped Contents" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957059" />
+			<column name="method" value="PUT" />
+			<column name="template"
+				value="/circabc/groups/{id}/configuration" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Update Configuration" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957060" />
+			<column name="method" value="POST" />
+			<column name="template"
+				value="/circabc/groups/{igId}/documents/deleted" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc" value="Restore Deleted Nodes" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957061" />
+			<column name="method" value="DELETE" />
+			<column name="template"
+				value="/circabc/groups/{igId}/documents/deleted/{nodeId}" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc" value="Purge Deleted Node" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957062" />
+			<column name="method" value="POST" />
+			<column name="template" value="/circabc/groups/{igId}/members" />
+			<column name="service_desc" value="Members" />
+			<column name="activity_desc" value="Invite Users" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957063" />
+			<column name="method" value="PUT" />
+			<column name="template" value="/circabc/groups/{igId}/members" />
+			<column name="service_desc" value="Members" />
+			<column name="activity_desc" value="Update Members" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957064" />
+			<column name="method" value="PUT" />
+			<column name="template"
+				value="/circabc/groups/{igId}/members/applicants" />
+			<column name="service_desc" value="Members" />
+			<column name="activity_desc" value="Apply for Membership" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957065" />
+			<column name="method" value="POST" />
+			<column name="template"
+				value="/circabc/groups/{igId}/members/applicants" />
+			<column name="service_desc" value="Members" />
+			<column name="activity_desc"
+				value="Update Application for Membership" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957066" />
+			<column name="method" value="POST" />
+			<column name="template"
+				value="/circabc/groups/{igId}/profiles" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc" value="Add Profile" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957067" />
+			<column name="method" value="POST" />
+			<column name="template"
+				value="/circabc/groups/{igId}/imported/profiles" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Import Profile" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957068" />
+			<column name="method" value="POST" />
+			<column name="template"
+				value="/circabc/groups/{igId}/keywords/bulk" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Import Keywords (XLS)" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957069" />
+			<column name="method" value="POST" />
+			<column name="template"
+				value="/circabc/groups/import/{folderId}" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Import ZIP or ACP" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957070" />
+			<column name="method" value="POST" />
+			<column name="template" value="/circabc/groups/{id}/logos" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Add Logo" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957071" />
+			<column name="method" value="PUT" />
+			<column name="template"
+				value="/circabc/groups/{id}/logos/{logoId}" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Update /select Logo" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957072" />
+			<column name="method" value="DELETE" />
+			<column name="template"
+				value="/circabc/groups/{id}/logos/{logoId}" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Remove Logo" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957073" />
+			<column name="method" value="PUT" />
+			<column name="template" value="/circabc/forums/{id}" />
+			<column name="service_desc" value="Newsgroups" />
+			<column name="activity_desc" value="Update Forum" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957074" />
+			<column name="method" value="POST" />
+			<column name="template" value="/circabc/forums/{id}/content" />
+			<column name="service_desc" value="Newsgroups" />
+			<column name="activity_desc" value="Add New Topic" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957075" />
+			<column name="method" value="PUT" />
+			<column name="template"
+				value="/circabc/forums/{id}/moderation" />
+			<column name="service_desc" value="Newsgroups" />
+			<column name="activity_desc" value="Toggle Forum Moderation" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957077" />
+			<column name="method" value="DELETE" />
+			<column name="template" value="/circabc/posts/{id}/abuse" />
+			<column name="service_desc" value="Newsgroups" />
+			<column name="activity_desc" value="Remove Signaled Abuse" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957078" />
+			<column name="method" value="DELETE" />
+			<column name="template" value="/circabc/users/{userId}/avatar" />
+			<column name="service_desc" value="Account" />
+			<column name="activity_desc" value="Remove Avatar" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957079" />
+			<column name="method" value="POST" />
+			<column name="template" value="/circabc/users/{userId}/avatar" />
+			<column name="service_desc" value="Account" />
+			<column name="activity_desc" value="Update Avatar" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957080" />
+			<column name="method" value="PUT" />
+			<column name="template" value="/circabc/users/{userId}" />
+			<column name="service_desc" value="Account" />
+			<column name="activity_desc" value="Update User Details" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957081" />
+			<column name="method" value="DELETE" />
+			<column name="template"
+				value="/circabc/groups/{id}/autoupload" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc"
+				value="Remove Autoupload Configuration" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957082" />
+			<column name="method" value="POST" />
+			<column name="template"
+				value="/circabc/groups/{id}/autoupload" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc"
+				value="Add Autoupload Configuration" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957083" />
+			<column name="method" value="PUT" />
+			<column name="template"
+				value="/circabc/groups/{id}/autoupload" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc"
+				value="Update Autoupload Configuration" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957084" />
+			<column name="method" value="DELETE" />
+			<column name="template" value="/circabc/events/{id}" />
+			<column name="service_desc" value="Events" />
+			<column name="activity_desc" value="Remove Event or Meeting" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957085" />
+			<column name="method" value="POST" />
+			<column name="template" value="/circabc/spaces/{id}/shares" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Add Share to Space" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957086" />
+			<column name="method" value="DELETE" />
+			<column name="template" value="/circabc/spaces/{id}/shares" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Remove Share from Space" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957087" />
+			<column name="method" value="POST" />
+			<column name="template"
+				value="/circabc/spaces/{id}/exportedshares" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Create Space from Share" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957088" />
+			<column name="method" value="DELETE" />
+			<column name="template" value="/circabc/keywords/{keywordId}" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Remove Keyword Definition" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957090" />
+			<column name="method" value="DELETE" />
+			<column name="template"
+				value="/circabc/nodes/{id}/keywords/{keywordId}" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc"
+				value="Remove Keyword/Tag from Node" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957091" />
+			<column name="method" value="POST" />
+			<column name="template" value="/circabc/nodes/{id}/keywords" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Add Keyword/Tag to Node" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957092" />
+			<column name="method" value="PUT" />
+			<column name="template"
+				value="/circabc/nodes/{id}/permissions" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Update Node Permissions" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957093" />
+			<column name="method" value="DELETE" />
+			<column name="template"
+				value="/circabc/nodes/{id}/permissions/{authority}/{permission}" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Remove Node Permission" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957094" />
+			<column name="method" value="PUT" />
+			<column name="template"
+				value="/circabc/nodes/{id}/notifications/{authority}" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc"
+				value="Update User Notification for Node" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957095" />
+			<column name="method" value="DELETE" />
+			<column name="template"
+				value="/circabc/nodes/{id}/notifications/{authority}" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc"
+				value="Remove User Notification from Node" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957096" />
+			<column name="method" value="POST" />
+			<column name="template"
+				value="/circabc/nodes/{id}/notifications/paste" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc"
+				value="Update Paste Notifications" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957097" />
+			<column name="method" value="DELETE" />
+			<column name="template"
+				value="/circabc/nodes/{id}/notifications/status" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc"
+				value="Remove Notifications from Node" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957099" />
+			<column name="method" value="POST" />
+			<column name="template"
+				value="/circabc/groups/{igId}/information/news" />
+			<column name="service_desc" value="Information" />
+			<column name="activity_desc" value="Add news" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957100" />
+			<column name="method" value="PUT" />
+			<column name="template" value="/circabc/news/{id}" />
+			<column name="service_desc" value="Information" />
+			<column name="activity_desc" value="Update News" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957101" />
+			<column name="method" value="DELETE" />
+			<column name="template" value="/circabc/news/{id}" />
+			<column name="service_desc" value="Information" />
+			<column name="activity_desc" value="Remove News" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957102" />
+			<column name="method" value="PUT" />
+			<column name="template" value="/circabc/nodes/{id}/owner" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Take Ownership" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957103" />
+			<column name="method" value="POST" />
+			<column name="template"
+				value="/circabc/nodes/{id}/notifications" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Add Notifications to Node" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957104" />
+			<column name="method" value="DELETE" />
+			<column name="template" value="/circabc/profiles/{id}" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc" value="Remove Profile" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957105" />
+			<column name="method" value="PUT" />
+			<column name="template" value="/circabc/profiles/{id}" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc" value="Update Profile" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957106" />
+			<column name="method" value="POST" />
+			<column name="template" value="/circabc/groups/{igId}/email" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Send Email to Users" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957107" />
+			<column name="method" value="POST" />
+			<column name="template"
+				value="/circabc/groups/{igId}/email/leaders" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Send Email to Leaders" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957108" />
+			<column name="method" value="POST" />
+			<column name="template"
+				value="/circabc/users/{userId}/favourites" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Add Node to Favourites" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957109" />
+			<column name="method" value="DELETE" />
+			<column name="template"
+				value="/circabc/users/{userId}/favourites/{nodeId}" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc"
+				value="Remove Node from Favourites" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957112" />
+			<column name="method" value="POST" />
+			<column name="template"
+				value="/circabc/app/messages/templates" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc" value="Add Message Template" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957113" />
+			<column name="method" value="PUT" />
+			<column name="template"
+				value="/circabc/app/messages/templates/{id}" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc" value="Update Message Template" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957114" />
+			<column name="method" value="DELETE" />
+			<column name="template"
+				value="/circabc/app/messages/templates/{id}" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc" value="Remove Message Template" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957115" />
+			<column name="method" value="POST" />
+			<column name="template"
+				value="/circabc/categories/{id}/contact" />
+			<column name="service_desc" value="Category" />
+			<column name="activity_desc" value="Contact Admins" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957116" />
+			<column name="method" value="POST" />
+			<column name="template" value="/circabc/help/categories" />
+			<column name="service_desc" value="Help" />
+			<column name="activity_desc" value="Create Category" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957117" />
+			<column name="method" value="DELETE" />
+			<column name="template" value="/circabc/help/articles/{id}" />
+			<column name="service_desc" value="Help" />
+			<column name="activity_desc" value="Remove Article" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957118" />
+			<column name="method" value="PUT" />
+			<column name="template" value="/circabc/help/articles/{id}" />
+			<column name="service_desc" value="Help" />
+			<column name="activity_desc" value="Modify Article" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957119" />
+			<column name="method" value="PUT" />
+			<column name="template"
+				value="/circabc/help/articles/{id}/highlight" />
+			<column name="service_desc" value="Help" />
+			<column name="activity_desc"
+				value="Toggle highlighted article" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957120" />
+			<column name="method" value="POST" />
+			<column name="template"
+				value="/circabc/help/categories/{id}/articles" />
+			<column name="service_desc" value="Help" />
+			<column name="activity_desc" value="Create article" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957121" />
+			<column name="method" value="DELETE" />
+			<column name="template" value="/circabc/help/categories/{id}" />
+			<column name="service_desc" value="Help" />
+			<column name="activity_desc" value="Remove Category" />
+		</insert>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957122" />
+			<column name="method" value="PUT" />
+			<column name="template" value="/circabc/help/categories/{id}" />
+			<column name="service_desc" value="Help" />
+			<column name="activity_desc" value="Modify Category" />
+		</insert>
+
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957001" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Perform Checkout" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957031" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Perform Checkin" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957002" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Perform Cancel Checkout" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957004" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Update Details" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957005" />
+			<column name="service_desc" value="Members" />
+			<column name="activity_desc" value="Remove Member" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957006" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Modify Dynamic Property" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957007" />
+			<column name="service_desc" value="Newsgroups" />
+			<column name="activity_desc" value="Add Topic" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957008" />
+			<column name="service_desc" value="Newsgroups" />
+			<column name="activity_desc" value="Remove Post" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957009" />
+			<column name="service_desc" value="Events" />
+			<column name="activity_desc" value="Add Event" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957010" />
+			<column name="service_desc" value="Newsgroups" />
+			<column name="activity_desc" value="Add Forum" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957011" />
+			<column name="service_desc" value="Newsgroups" />
+			<column name="activity_desc" value="Remove Forum" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957012" />
+			<column name="service_desc" value="Members" />
+			<column name="activity_desc" value="Bulk Invite" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957013" />
+			<column name="service_desc" value="Events" />
+			<column name="activity_desc" value="Modify Event" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957014" />
+			<column name="service_desc" value="Newsgroups" />
+			<column name="activity_desc" value="Report Abuse" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957015" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Get Details" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957016" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc"
+				value="Get Enabled Application Messages" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957017" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Add Dynamic Property" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957018" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Add Keyword" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957019" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Create Link" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957020" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc"
+				value="Send Email to Current User" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957021" />
+			<column name="service_desc" value="Newsgroups" />
+			<column name="activity_desc" value="Add Reply" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957022" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Create Folder" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957023" />
+			<column name="service_desc" value="Newsgroups" />
+			<column name="activity_desc" value="Verify Post by Moderator" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957024" />
+			<column name="service_desc" value="Newsgroups" />
+			<column name="activity_desc" value="Modify Post" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957025" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Modify Keyword" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957026" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Update content properties" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957027" />
+			<column name="service_desc" value="Newsgroups" />
+			<column name="activity_desc" value="Modify Topic" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957028" />
+			<column name="service_desc" value="Newsgroups" />
+			<column name="activity_desc" value="Remove Topic" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957029" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Remove Content" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957030" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Remove Dynamic Property" />
+		</insert>
+
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957032" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc" value="Add Header" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957034" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc" value="Modify Header" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957035" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc" value="Remove Header" />
+		</insert>
+
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957037" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc" value="Add Category" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957038" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc" value="Modify Category" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957039" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc"
+				value="Add Category Administrator" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957040" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc"
+				value="Remove Category Administrator" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957041" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc" value="Add Category Logo" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957042" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc"
+				value="Udpate / select Category Logo" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957043" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc" value="Remove Category Logo" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957045" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc" value="Create Interest Group" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957046" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc"
+				value="Request Interest Group Creation" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957047" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc" value="Get category statistics" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957049" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Remove Folder" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957050" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Modify Folder" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957051" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Add Content Translation" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957052" />
+			<column name="service_desc" value="Machine Translation" />
+			<column name="activity_desc" value="Request Translation" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957053" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc"
+				value="Enable Multilingual Aspect for Node" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957054" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc"
+				value="Update Checked Out Working Copy (no Checking In)" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957055" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Paste Nodes (Copy)" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957056" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Paste Nodes (Move)" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957057" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Link Nodes" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957058" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Email Zipped Contents" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957059" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Update Configuration" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957060" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc" value="Restore Deleted Nodes" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957061" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc" value="Purge Deleted Node" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957062" />
+			<column name="service_desc" value="Members" />
+			<column name="activity_desc" value="Invite Users" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957063" />
+			<column name="service_desc" value="Members" />
+			<column name="activity_desc" value="Update Members" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957064" />
+			<column name="service_desc" value="Members" />
+			<column name="activity_desc" value="Apply for Membership" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957065" />
+			<column name="service_desc" value="Members" />
+			<column name="activity_desc"
+				value="Update Application for Membership" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957066" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc" value="Add Profile" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957067" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Import Profile" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957068" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Import Keywords (XLS)" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957069" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Import ZIP or ACP" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957070" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Add Logo" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957071" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Update /select Logo" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957072" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Remove Logo" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957073" />
+			<column name="service_desc" value="Newsgroups" />
+			<column name="activity_desc" value="Update Forum" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957074" />
+			<column name="service_desc" value="Newsgroups" />
+			<column name="activity_desc" value="Add New Topic" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957075" />
+			<column name="service_desc" value="Newsgroups" />
+			<column name="activity_desc" value="Toggle Forum Moderation" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957077" />
+			<column name="service_desc" value="Newsgroups" />
+			<column name="activity_desc" value="Remove Signaled Abuse" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957078" />
+			<column name="service_desc" value="Account" />
+			<column name="activity_desc" value="Remove Avatar" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957079" />
+			<column name="service_desc" value="Account" />
+			<column name="activity_desc" value="Update Avatar" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957080" />
+			<column name="service_desc" value="Account" />
+			<column name="activity_desc" value="Update User Details" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957081" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc"
+				value="Remove Autoupload Configuration" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957082" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc"
+				value="Add Autoupload Configuration" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957083" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc"
+				value="Update Autoupload Configuration" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957084" />
+			<column name="service_desc" value="Events" />
+			<column name="activity_desc" value="Remove Event or Meeting" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957085" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Add Share to Space" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957086" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Remove Share from Space" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957087" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Create Space from Share" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957088" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Remove Keyword Definition" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957090" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc"
+				value="Remove Keyword/Tag from Node" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957091" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Add Keyword/Tag to Node" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957092" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Update Node Permissions" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957093" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Remove Node Permission" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957094" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc"
+				value="Update User Notification for Node" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957095" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc"
+				value="Remove User Notification from Node" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957096" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc"
+				value="Update Paste Notifications" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957097" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc"
+				value="Remove Notifications from Node" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957099" />
+			<column name="service_desc" value="Information" />
+			<column name="activity_desc" value="Add news" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957100" />
+			<column name="service_desc" value="Information" />
+			<column name="activity_desc" value="Update News" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957101" />
+			<column name="service_desc" value="Information" />
+			<column name="activity_desc" value="Remove News" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957102" />
+			<column name="service_desc" value="Library" />
+			<column name="activity_desc" value="Take Ownership" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957103" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Add Notifications to Node" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957104" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc" value="Remove Profile" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957105" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc" value="Update Profile" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957106" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Send Email to Users" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957107" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Send Email to Leaders" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957108" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc" value="Add Node to Favourites" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957109" />
+			<column name="service_desc" value="Interest Group" />
+			<column name="activity_desc"
+				value="Remove Node from Favourites" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957112" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc" value="Add Message Template" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957113" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc" value="Update Message Template" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957114" />
+			<column name="service_desc" value="Administration" />
+			<column name="activity_desc" value="Remove Message Template" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957115" />
+			<column name="service_desc" value="Category" />
+			<column name="activity_desc" value="Contact Admins" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957116" />
+			<column name="service_desc" value="Help" />
+			<column name="activity_desc" value="Create Category" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957117" />
+			<column name="service_desc" value="Help" />
+			<column name="activity_desc" value="Remove Article" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957118" />
+			<column name="service_desc" value="Help" />
+			<column name="activity_desc" value="Modify Article" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957119" />
+			<column name="service_desc" value="Help" />
+			<column name="activity_desc"
+				value="Toggle highlighted article" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957120" />
+			<column name="service_desc" value="Help" />
+			<column name="activity_desc" value="Create article" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957121" />
+			<column name="service_desc" value="Help" />
+			<column name="activity_desc" value="Remove Category" />
+		</insert>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957122" />
+			<column name="service_desc" value="Help" />
+			<column name="activity_desc" value="Modify Category" />
+		</insert>
+	</changeSet>
+
+	<!-- fix wrong activity sdescription 
+	update two times cbc_log_activity in order to avoid 
+	unique constraint problem-->
+	<changeSet id="17001" author="Slobodan Filipovic"
+		dbms="mysql, oracle">
+		<update tableName="cbc_rest_template">
+			<column name="activity_desc" value="Update Application for Membership" />
+			<where>id =9957064</where>
+		</update>
+		<update tableName="cbc_rest_template">
+			<column name="activity_desc" value="Apply for Membership" />
+			<where>id =9957065</where>
+		</update>
+		<update tableName="cbc_log_activity">
+			<column name="activity_desc" value="Update Application for MembershipX" />
+			<where>id =9957064</where>
+		</update>
+		<update tableName="cbc_log_activity">
+			<column name="activity_desc" value="Apply for MembershipX" />
+			<where>id =9957065</where>
+		</update>
+		<update tableName="cbc_log_activity">
+			<column name="activity_desc" value="Update Application for Membership" />
+			<where>id =9957064</where>
+		</update>
+		<update tableName="cbc_log_activity">
+			<column name="activity_desc" value="Apply for Membership" />
+			<where>id =9957065</where>
+		</update>
+	</changeSet>
+
+	<changeSet id="17002" author="Slobodan Filipovic"
+		dbms="mysql, oracle">
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="1">SELECT COUNT(*) FROM cbc_rest_template WHERE method = 'POST' AND template = '/circabc/repositories/{id}/transaction'</sqlCheck>
+		</preConditions>
+		<update tableName="cbc_rest_template">
+			<column name="service_desc" value="External Repository" />
+			<column name="activity_desc" value="Send Documents" />
+			<where>method = 'POST' AND template = '/circabc/repositories/{id}/transaction'</where>
+		</update>	
+	</changeSet>
+
+	<changeSet id="17003" author="Slobodan Filipovic"
+		dbms="mysql, oracle">
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="0">SELECT COUNT(*) FROM cbc_rest_template WHERE method = 'POST' AND template = '/circabc/repositories/{id}/transaction'</sqlCheck>
+		</preConditions>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957123" />
+			<column name="method" value="POST" />
+			<column name="template" value="/circabc/repositories/{id}/transaction" />
+			<column name="service_desc" value="External Repository" />
+			<column name="activity_desc" value="Send Documents" />
+		</insert>	
+	</changeSet>
+
+	<changeSet id="17004" author="Slobodan Filipovic"
+		dbms="oracle">
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="0">SELECT COUNT(*) FROM cbc_log_activity WHERE service_desc = 'External Repository' AND activity_desc = 'Send Documents'</sqlCheck>
+		</preConditions>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957123" />
+			<column name="service_desc" value="External Repository" />
+			<column name="activity_desc" value="Send Documents" />
+		</insert>
+	</changeSet>
+
+	<changeSet id="17005" author="Slobodan Filipovic"
+		dbms="mysql">
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="0">SELECT COUNT(*) FROM cbc_log_activity WHERE service_desc = 'External Repository' AND activity_desc = 'Send Documents'</sqlCheck>
+		</preConditions>
+		<insert tableName="cbc_log_activity">
+			<column name="service_desc" value="External Repository" />
+			<column name="activity_desc" value="Send Documents" />
+		</insert>
+	</changeSet>
+
+	<changeSet id="17012" author="Slobodan Filipovic"
+		dbms="mysql, oracle">
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="1">SELECT COUNT(*) FROM cbc_rest_template WHERE method = 'POST' AND template = '/circabc/groups/{id}/repositories/{repoId}'</sqlCheck>
+		</preConditions>
+		<update tableName="cbc_rest_template">
+			<column name="service_desc" value="External Repository" />
+			<column name="activity_desc" value="Enable Service" />
+			<where>method = 'POST' AND template = '/circabc/groups/{id}/repositories/{repoId}'</where>
+		</update>	
+	</changeSet>
+
+	<changeSet id="17013" author="Slobodan Filipovic"
+		dbms="mysql, oracle">
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="0">SELECT COUNT(*) FROM cbc_rest_template WHERE method = 'POST' AND template = '/circabc/groups/{id}/repositories/{repoId}'</sqlCheck>
+		</preConditions>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957124" />
+			<column name="method" value="POST" />
+			<column name="template" value="/circabc/groups/{id}/repositories/{repoId}" />
+			<column name="service_desc" value="External Repository" />
+			<column name="activity_desc" value="Enable Service" />
+		</insert>	
+	</changeSet>
+
+	<changeSet id="17014" author="Slobodan Filipovic"
+		dbms="oracle">
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="0">SELECT COUNT(*) FROM cbc_log_activity WHERE service_desc = 'External Repository' AND activity_desc = 'Enable Service'</sqlCheck>
+		</preConditions>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957124" />
+			<column name="service_desc" value="External Repository" />
+			<column name="activity_desc" value="Enable Service" />
+		</insert>
+	</changeSet>
+
+	<changeSet id="17015" author="Slobodan Filipovic"
+		dbms="mysql">
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="0">SELECT COUNT(*) FROM cbc_log_activity WHERE service_desc = 'External Repository' AND activity_desc = 'Enable Service'</sqlCheck>
+		</preConditions>
+		<insert tableName="cbc_log_activity">
+			<column name="service_desc" value="External Repository" />
+			<column name="activity_desc" value="Enable Service" />
+		</insert>
+	</changeSet>
+
+	<changeSet id="17022" author="Slobodan Filipovic"
+		dbms="mysql, oracle">
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="1">SELECT COUNT(*) FROM cbc_rest_template WHERE method = 'DELETE' AND template = '/circabc/groups/{id}/repositories/{repoId}'</sqlCheck>
+		</preConditions>
+		<update tableName="cbc_rest_template">
+			<column name="service_desc" value="External Repository" />
+			<column name="activity_desc" value="Disable Service" />
+			<where>method = 'DELETE' AND template = '/circabc/groups/{id}/repositories/{repoId}'</where>
+		</update>	
+	</changeSet>
+
+	<changeSet id="17023" author="Slobodan Filipovic"
+		dbms="mysql, oracle">
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="0">SELECT COUNT(*) FROM cbc_rest_template WHERE method = 'DELETE' AND template = '/circabc/groups/{id}/repositories/{repoId}'</sqlCheck>
+		</preConditions>
+		<insert tableName="cbc_rest_template">
+			<column name="id" value="9957125" />
+			<column name="method" value="DELETE" />
+			<column name="template" value="/circabc/groups/{id}/repositories/{repoId}" />
+			<column name="service_desc" value="External Repository" />
+			<column name="activity_desc" value="Disable Service" />
+		</insert>	
+	</changeSet>
+
+	<changeSet id="17024" author="Slobodan Filipovic"
+		dbms="oracle">
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="0">SELECT COUNT(*) FROM cbc_log_activity WHERE service_desc = 'External Repository' AND activity_desc = 'Disable Service'</sqlCheck>
+		</preConditions>
+		<insert tableName="cbc_log_activity">
+			<column name="id" value="9957125" />
+			<column name="service_desc" value="External Repository" />
+			<column name="activity_desc" value="Disable Service" />
+		</insert>
+	</changeSet>
+
+	<changeSet id="17025" author="Slobodan Filipovic"
+		dbms="mysql">
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="0">SELECT COUNT(*) FROM cbc_log_activity WHERE service_desc = 'External Repository' AND activity_desc = 'Disable Service'</sqlCheck>
+		</preConditions>
+		<insert tableName="cbc_log_activity">
+			<column name="service_desc" value="External Repository" />
+			<column name="activity_desc" value="Disable Service" />
+		</insert>
+	</changeSet>
+</databaseChangeLog>

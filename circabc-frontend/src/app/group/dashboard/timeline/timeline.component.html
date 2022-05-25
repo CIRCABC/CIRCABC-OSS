@@ -1,0 +1,81 @@
+<article class="timeline">
+  <section
+    class="box box--day"
+    *ngIf="informationEntries.length === 0 && libraryEntries.length === 0"
+  >
+    <header class="header">
+      <span class="title">{{ 'label.whats.new' | transloco }}</span>
+    </header>
+
+    <div class="main">
+      <section class="seen-content">
+        {{ 'timeline.empty-group' | transloco }}
+      </section>
+    </div>
+  </section>
+
+  <section
+    class="box box--day"
+    *ngIf="informationEntries.length > 0 || libraryEntries.length > 0"
+  >
+    <header class="header">
+      <span class="title">{{ 'label.whats.new' | transloco }}</span>
+    </header>
+    <div class="main">
+      <section class="not-seen-content">
+        <a
+          class="step-link"
+          *ngIf="libraryEntries.length > 0"
+          (click)="showLibrary()"
+          [class.step-link-selected]="showLibraryPanel"
+          >{{ 'label.latest.documents' | transloco }}</a
+        >
+        <a
+          class="step-link"
+          *ngIf="informationEntries.length > 0"
+          (click)="showNews()"
+          [class.step-link-selected]="showNewsPanel"
+          >{{ 'label.latest.news' | transloco }}</a
+        >
+      </section>
+      <section class="not-seen-content">
+        <ul class="listing-rows" *ngIf="showLibraryPanel">
+          <li
+            class="row"
+            *ngFor="let item of getLibraryEntries()"
+            [class.row__folder]="isFolder(item.node?.type)"
+            [class.row__file]="!isFolder(item.node?.type)"
+          >
+            {{ item.information }}
+            <a
+              class="link-max-width"
+              *ngIf="group.id"
+              [routerLink]="getRouterLinkParts(group.id, item.node)"
+              >{{ getDisplayProperty(item.node) }}</a
+            >
+            {{ (item?.node?.properties?.modified !==
+            item?.node?.properties?.created ? 'label.updated-on' :
+            'label.created-on' ) | transloco }}&nbsp;{{
+            item?.node?.properties?.modified | date: 'y MMM d, H:mm' }}
+          </li>
+        </ul>
+        <p
+          *ngIf="hasMoreThan15 && !showAll && showLibraryPanel"
+          class="show-all"
+        >
+          <a (click)="showAllFeed()" class="button"
+            >{{ 'label.show.all' | transloco }}</a
+          >
+        </p>
+
+        <div class="listing-news" *ngIf="showNewsPanel">
+          <cbc-simple-news-card
+            *ngFor="let item of informationEntries"
+            [news]="item.node"
+          >
+          </cbc-simple-news-card>
+        </div>
+      </section>
+    </div>
+  </section>
+</article>

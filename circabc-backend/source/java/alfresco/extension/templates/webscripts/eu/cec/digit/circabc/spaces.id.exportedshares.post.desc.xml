@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>spaces.id.exportedshares.post</shortname>
+  <description>Create a new space based on a shared space link</description>
+    <url>/circabc/spaces/{id}/exportedshares</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

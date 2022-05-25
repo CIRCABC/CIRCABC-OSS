@@ -1,0 +1,10 @@
+<webscript>
+  <shortname>Creates a new header</shortname>
+  <description>
+  	Creates a new header  
+  </description>
+  <url>/circabc/headers</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

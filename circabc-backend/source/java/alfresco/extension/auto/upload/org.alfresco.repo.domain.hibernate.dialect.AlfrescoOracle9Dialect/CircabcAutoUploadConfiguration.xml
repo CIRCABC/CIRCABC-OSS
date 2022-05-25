@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  Copyright 2006 European Community
+  
+   Licensed under the EUPL, Version 1.1 or \?as soon they
+   will be approved by the European Commission - subsequent
+   versions of the EUPL (the "Licence");
+   You may not use this work except in compliance with the
+   Licence.
+   You may obtain a copy of the Licence at:
+  
+   https://joinup.ec.europa.eu/software/page/eupl
+  
+   Unless required by applicable law or agreed to in
+   writing, software distributed under the Licence is
+   distributed on an "AS IS" basis,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+   express or implied.
+   See the Licence for the specific language governing
+   permissions and limitations under the Licence.
+-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="AutoUploadConfiguration">
+
+	<!-- get all configuration for one interest Group -->
+   <select id="select_all_configurations" parameterType="String" resultType="Configuration" >
+		 select id_config as idConfiguration, ig_source as igName, file_ref as fileNodeRef, destination_ref as parentNodeRef, ftp_host as ftpHost, ftp_port as ftpPort, ftp_username as ftpUsername, ftp_password as ftpPassword, ftp_path as ftpPath, notify as jobNotifications, emails, auto_extract as autoExtract, date_restriction as dateRestriction, status as status
+		 from auto_upload_config
+		 where ig_source = #{value,jdbcType=VARCHAR}
+   </select>
+   
+   <select id="select_all_configurations_all" parameterType="String" resultType="Configuration" >
+		 select id_config as idConfiguration, ig_source as igName, file_ref as fileNodeRef, destination_ref as parentNodeRef, ftp_host as ftpHost, ftp_port as ftpPort, ftp_username as ftpUsername, ftp_password as ftpPassword, ftp_path as ftpPath, notify as jobNotifications, emails, auto_extract as autoExtract, date_restriction as dateRestriction, status as status
+		 from auto_upload_config
+   </select>
+   
+   <insert id="insert_configuration" parameterType="Configuration">
+   		<selectKey resultType="long" keyProperty="idConfiguration" order="BEFORE">
+			select auto_upload_config_seq.nextval as value from dual
+		</selectKey>
+   		insert into auto_upload_config (id_config, ig_source, file_ref, destination_ref, ftp_host, ftp_port, ftp_username, ftp_password, ftp_path, notify, emails, auto_extract, date_restriction, status)
+   		values (#{idConfiguration}, #{igName,jdbcType=VARCHAR},#{fileNodeRef,jdbcType=VARCHAR},#{parentNodeRef,jdbcType=VARCHAR},#{ftpHost,jdbcType=VARCHAR},#{ftpPort,jdbcType=NUMERIC},#{ftpUsername,jdbcType=VARCHAR}, #{ftpPassword,jdbcType=VARCHAR}, #{ftpPath,jdbcType=VARCHAR}, #{jobNotifications,,jdbcType=NUMERIC}, #{emails,jdbcType=VARCHAR}, #{autoExtract,jdbcType=NUMERIC}, #{dateRestriction,jdbcType=VARCHAR}, #{status,jdbcType=NUMERIC})
+   </insert>
+   
+   <update id="update_configuration" parameterType="Configuration">
+   		update auto_upload_config set file_ref=#{fileNodeRef,jdbcType=VARCHAR}, ftp_host=#{ftpHost,jdbcType=VARCHAR}, ftp_port=#{ftpPort,jdbcType=NUMERIC}, ftp_username=#{ftpUsername,jdbcType=VARCHAR}, ftp_password=#{ftpPassword,jdbcType=VARCHAR}, ftp_path=#{ftpPath,jdbcType=VARCHAR}, auto_extract=#{autoExtract,jdbcType=NUMERIC}, notify=#{jobNotifications,jdbcType=NUMERIC}, emails=#{emails,jdbcType=VARCHAR}, date_restriction=#{dateRestriction,jdbcType=VARCHAR}, status=#{status,jdbcType=NUMERIC}
+   		where id_config=#{idConfiguration,jdbcType=NUMERIC}
+   </update>
+   
+   <delete id="delete_configuration" parameterType="Configuration">
+   		delete from auto_upload_config where id_config=#{idConfiguration,jdbcType=NUMERIC}
+   </delete>
+   
+    <select id="select_configuration_by_id" parameterType="String" resultType="Configuration" >
+		 select id_config as idConfiguration, ig_source as igName, file_ref as fileNodeRef, destination_ref as parentNodeRef, ftp_host as ftpHost, ftp_port as ftpPort, ftp_username as ftpUsername, ftp_password as ftpPassword, ftp_path as ftpPath, notify as jobNotifications, emails, auto_extract as autoExtract, date_restriction as dateRestriction, status as status
+		 from auto_upload_config
+		 where id_config = #{value,jdbcType=NUMERIC}
+   </select>
+   
+    <select id="select_configuration_by_file_ref" parameterType="String" resultType="Configuration" >
+		 select id_config as idConfiguration, ig_source as igName, file_ref as fileNodeRef, destination_ref as parentNodeRef, ftp_host as ftpHost, ftp_port as ftpPort, ftp_username as ftpUsername, ftp_password as ftpPassword, ftp_path as ftpPath, notify as jobNotifications, emails, auto_extract as autoExtract, date_restriction as dateRestriction, status as status
+		 from auto_upload_config
+		 where file_ref = #{value,jdbcType=VARCHAR}
+   </select>
+
+
+</mapper>

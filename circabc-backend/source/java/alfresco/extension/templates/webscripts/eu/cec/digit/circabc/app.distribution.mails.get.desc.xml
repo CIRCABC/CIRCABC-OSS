@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Get all the app distribution emails </shortname>
+  <description>Get all the app distribution emails</description>
+  <url>/circabc/app/distribution/emails</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

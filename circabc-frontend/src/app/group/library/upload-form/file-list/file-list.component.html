@@ -1,0 +1,52 @@
+<ul class="file-list">
+  <li
+    *ngFor="let file of fileList"
+    (click)="selectFile(file)"
+    [class.selected]="file.selected"
+    [class.completed-border]="file.uploadStatus === 'finished'"
+    [class.error-border]="file.uploadStatus === 'error'"
+  >
+    <div
+      class="progress-bar"
+      [style.width]="file.progress + '%'"
+      [class.completed]="file.uploadStatus === 'finished'"
+      [class.error]="file.uploadStatus === 'error'"
+    ></div>
+    <div class="actions">
+      <a (click)="removeFile(file)" *ngIf="file.uploadStatus === 'start'">
+        <img
+          src="img/icon-close-20x20.png"
+          alt="{{ 'label.remove' | transloco }}"
+        />
+      </a>
+      <div
+        class="file--upload--status"
+        *ngIf="file.uploadStatus === 'uploading'"
+      >
+        <cbc-spinner></cbc-spinner> {{ file.progress }}%
+      </div>
+      <div
+        class="file--upload--status"
+        *ngIf="file.uploadStatus === 'finished'"
+      >
+        100%
+        <img src="img/check.png" alt="{{ 'label.finished' | transloco }}" />
+      </div>
+    </div>
+    <div class="info">
+      <span class="file-name">{{ file.id }}</span>
+      <img
+        src="img/icon-world-20x20.png"
+        *ngIf="file.isPivot || file.isTranslation"
+        alt="multilingual"
+      />
+      <br />
+      <span>{{ file.file.size | cbcSize: true }}</span>
+      <span *ngIf="file.file.size > maxFileSize">
+        &nbsp;
+        <img src="img/error-triangle-orange-16.png" alt="/!\" />
+        &nbsp; {{ 'label.max.file.size.exceeded' | transloco }}</span
+      >
+    </div>
+  </li>
+</ul>

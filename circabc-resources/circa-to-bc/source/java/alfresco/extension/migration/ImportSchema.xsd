@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?><xs:schema targetNamespace="https://circabc.europa.eu/Import/ImportSchema/1.0" xmlns:import="https://circabc.europa.eu/Import/ImportSchema/1.0" xmlns:user="https://circabc.europa.eu/Import/UsersSchema/1.0" xmlns:node="https://circabc.europa.eu/Import/NodesSchema/1.0" xmlns:iso="https://circabc.europa.eu/Import/LanguagesSchema/1.0" xmlns:perm="https://circabc.europa.eu/Import/PermissionsSchema/1.0" xmlns:props="https://circabc.europa.eu/Import/PropertiesSchema/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">	<xs:import namespace="https://circabc.europa.eu/Import/NodesSchema/1.0" schemaLocation="NodesSchema.xsd"/>	<xs:import namespace="https://circabc.europa.eu/Import/LanguagesSchema/1.0" schemaLocation="LanguagesSchema.xsd"/>	<xs:import namespace="https://circabc.europa.eu/Import/PermissionsSchema/1.0" schemaLocation="PermissionsSchema.xsd"/>	<xs:import namespace="https://circabc.europa.eu/Import/PropertiesSchema/1.0" schemaLocation="PropertiesSchema.xsd"/>	<xs:import namespace="https://circabc.europa.eu/Import/UsersSchema/1.0" schemaLocation="UsersSchema.xsd"/>	<xs:complexType name="importRoot">		<xs:sequence>			<xs:element ref="node:circabc" minOccurs="0"/>			<xs:element ref="user:persons" minOccurs="0"/>
+			<xs:element ref="import:logFile" minOccurs="0"/>			<xs:element ref="import:versionHistory" minOccurs="0"/>			<xs:element ref="import:statistics" minOccurs="0"/>			<!-- Add import configuration and propeties -->		</xs:sequence>	</xs:complexType>	<xs:element name="importRoot" type="import:importRoot"/>	<xs:element name="statistics">		<xs:complexType>			<xs:sequence maxOccurs="unbounded" minOccurs="0">				<xs:element ref="import:statistic"/>			</xs:sequence>		</xs:complexType>	</xs:element>	<xs:element name="statistic">		<xs:complexType>			<xs:sequence>				<xs:element name="value" type="xs:string"/>			</xs:sequence>			<xs:attribute name="title" type="xs:string" use="required"/>		</xs:complexType>	</xs:element>
+	<xs:element name="logFile">
+		<xs:complexType>
+			<xs:sequence maxOccurs="unbounded" minOccurs="0">
+				<xs:element ref="import:logEntry"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="logEntry">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="date" type="xs:date"/>
+				<xs:element name="username" type="xs:string"/>
+				<xs:element name="service" type="xs:string"/>
+				<xs:element name="activity" type="xs:string"/>
+				<xs:element name="ok" type="xs:boolean"/>
+				<xs:element name="path" type="props:pathReference"/>
+				<xs:element name="info" type="xs:string"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>	<xs:element name="versionHistory">		<xs:complexType>			<xs:sequence maxOccurs="unbounded" minOccurs="0">				<xs:element ref="import:version"/>			</xs:sequence>		</xs:complexType>	</xs:element>	<xs:element name="version">		<xs:complexType>			<xs:sequence>				<xs:element name="date" type="xs:date"/>				<xs:element name="user" type="xs:string"/>				<xs:element name="description" type="xs:string" minOccurs="0"/>			</xs:sequence>			<xs:attribute name="major" type="xs:integer" use="required"/>			<xs:attribute name="minor" type="xs:integer" use="required"/>		</xs:complexType>	</xs:element></xs:schema>

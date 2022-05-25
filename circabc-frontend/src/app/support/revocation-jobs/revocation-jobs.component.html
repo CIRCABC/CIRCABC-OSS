@@ -1,0 +1,66 @@
+<section class="page-container">
+  <section class="table-container">
+    <header class="header">
+      <cbc-pager
+        [length]="totalItems"
+        [pageSize]="listingOptions.limit"
+        [pageIndex]="listingOptions.page"
+        (pageChanged)="goToPage($event)"
+      ></cbc-pager>
+      <cbc-pager-configuration
+        (pageSizeChanged)="changeLimit($event)"
+      ></cbc-pager-configuration>
+    </header>
+
+    <table *ngIf="revocations" class="main">
+      <thead>
+        <tr class="row">
+          <th></th>
+          <th>{{ 'label.id' | transloco }}</th>
+          <th>{{ 'label.requester' | transloco }}</th>
+          <th>{{ 'label.users' | transloco }}</th>
+          <th>{{ 'label.revocation.date' | transloco }}</th>
+          <th>{{ 'label.status' | transloco }}</th>
+          <th>{{ 'label.started' | transloco }}</th>
+          <th>{{ 'label.finished' | transloco }}</th>
+          <th>{{ 'label.action' | transloco }}</th>
+          <th>{{ 'label.group' | transloco }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let req of revocations.data; trackBy: trackById"
+          class="row"
+        >
+          <td class="cell-left-border"></td>
+          <td>{{ req.id }}</td>
+          <td>{{ req.requester }}</td>
+          <td>{{ req.userIds }}</td>
+          <td>{{ req.revocationDate | date: 'dd/MM/yyy HH:mm' }}</td>
+          <td>
+            {{ 'admin.revocation.job.state' + req.requestState | transloco }}
+          </td>
+          <td>
+            {{ req.requestState !== 0 ? (req.jobStarted | date: 'dd/MM/yyy
+            HH:mm') : '' }}
+          </td>
+          <td>
+            {{ req.requestState !== 0 ? (req.jobEnded | date: 'dd/MM/yyy HH:mm')
+            : '' }}
+          </td>
+          <td>{{ req.action }}</td>
+          <td>{{ req.groupId }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="footer">
+      <cbc-pager
+        [length]="totalItems"
+        [pageSize]="listingOptions.limit"
+        [pageIndex]="listingOptions.page"
+        (pageChanged)="goToPage($event)"
+      ></cbc-pager>
+    </div>
+  </section>
+</section>

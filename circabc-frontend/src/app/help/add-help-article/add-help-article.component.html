@@ -1,0 +1,92 @@
+<cbc-modal
+  [title]="editMode ? 'help.update.article' : 'help.add.article'"
+  (ok)="editMode ? updateArticle() : createArticle()"
+  (cancel)="cancel()"
+  [okLabel]="editMode ? 'label.update' : 'label.create'"
+  [(visible)]="showModal"
+  [executing]="creating"
+  [executingLabel]="editMode ? 'label.updating' : 'label.creating'"
+  [showOkButton]="isValid && !creating"
+>
+  <form [formGroup]="newArticlForm">
+    <cbc-multilingual-input
+      formControlName="title"
+      [label]="'label.title' | transloco"
+      [placeholder]="'label.title' | transloco"
+      [lang]="'en'"
+      [required]="true"
+    ></cbc-multilingual-input>
+
+    <div class="field">
+      <label>{{ 'label.content' | transloco }}</label>
+      <div class="custom-select select--form">
+        <select formControlName="currentLang">
+          <option
+            *ngFor="let lang of availableLangs"
+            value="{{ lang.code }}"
+            [selected]="lang.code === newArticlForm.value.currentLang"
+            >{{ lang.name }}</option
+          >
+        </select>
+      </div>
+      <span class="hint">{{ 'help.add.lang.select.info' | transloco }}</span>
+
+      <div class="editor-container">
+        <p-editor
+          (onTextChange)="syncText($event)"
+          [style]="{ height: '320px' }"
+          formControlName="content"
+          [readonly]="newArticlForm.value.currentLang === ''"
+        >
+          <p-header>
+            <span class="ql-formats">
+              <select class="ql-header">
+                <option value="1"></option>
+                <option value="2"></option>
+                <option value="3"></option>
+                <option selected></option>
+                <option value="4"></option>
+                <option value="5"></option>
+                <option value="6"></option>
+              </select>
+            </span>
+            <span class="ql-formats">
+              <button class="ql-bold" aria-label="Bold"></button>
+              <button class="ql-italic" aria-label="Italic"></button>
+              <button class="ql-underline" aria-label="Underline"></button>
+              <button class="ql-strike" aria-label="Strike"></button>
+              <select class="ql-color"> </select>
+              <select class="ql-background"> </select>
+            </span>
+            <span class="ql-formats">
+              <button
+                class="ql-list"
+                aria-label="list"
+                value="ordered"
+              ></button>
+              <button class="ql-list" aria-label="list" value="bullet"></button>
+            </span>
+            <span class="ql-formats">
+              <button class="ql-indent" aria-label="Indent" value="-1"></button>
+              <button class="ql-indent" aria-label="Indent" value="+1"></button>
+            </span>
+            <span class="ql-formats">
+              <select class="ql-align">
+                <option selected>></option>
+                <option value="center"></option>
+                <option value="right"></option>
+                <option value="justify"></option>
+              </select>
+            </span>
+            <span class="ql-formats">
+              <button class="ql-blockquote" aria-label="Quote"></button>
+              <button class="ql-link" aria-label="link"></button>
+              <button class="ql-image" aria-label="image" value=""></button>
+              <button class="ql-code-block" aria-label="code-block"></button>
+            </span>
+          </p-header>
+        </p-editor>
+      </div>
+    </div>
+  </form>
+</cbc-modal>

@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>select categories logo</shortname>
+  <description>mark one uploaded logo as selected in the category</description>
+  <url>/circabc/categories/{id}/logos/{logoId}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

@@ -1,0 +1,49 @@
+version: "3"
+services:
+  db:
+    container_name: db
+    image: mysql:5.6
+    ports:
+      - "3306:3306"  
+    environment:
+        - MYSQL_ROOT_PASSWORD=password
+    volumes:
+        - ./mysql/init:/docker-entrypoint-initdb.d/:ro
+    command: --lower_case_table_names=1 --transaction-isolation=READ-COMMITTED
+  db_admin:
+    container_name: db_admin
+    image: phpmyadmin/phpmyadmin
+    depends_on:
+      - db
+    environment: 
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    ports:
+      - "83:80"
+  tomcat:
+    build: tomcat
+    image: tomcat-circabc
+    ports:
+      - "81:8080"
+    container_name: tomcat
+    depends_on:
+      - db
+  angular:
+    build: angular
+    image: angular-circabc
+    ports:
+        - "82:80"
+    container_name: angular
+    depends_on:
+      - tomcat
+  proxy: 
+    image: nginx:alpine
+    container_name: proxy-circabc
+    depends_on:
+      - angular
+    volumes:
+      - ./proxy/conf:/etc/nginx
+    ports:
+      - 80:80
+      - 443:443

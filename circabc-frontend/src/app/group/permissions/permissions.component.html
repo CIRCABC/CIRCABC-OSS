@@ -1,0 +1,395 @@
+<section class="fix-margin-responsive" *ngIf="perms !== undefined">
+  <cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+
+  <div class="wrap page-container">
+    <div class="page-header">
+      <span
+        class="page-header__title"
+        [innerHtml]="'permissions.manage.page.title' | transloco"
+      ></span>
+      <div class="page-header__actions">
+        <cbc-reponsive-sub-menu>
+          <a
+            (click)="goBackToFolder()"
+            *ngIf="from === 'library'"
+            class="page-header__backlink"
+            >{{ 'label.back' | transloco }}</a
+          >
+          <a (click)="goBack()" *ngIf="from === 'library'"
+            >{{ 'label.details' | transloco }}</a
+          >
+          <a
+            (click)="goBack()"
+            *ngIf="from === 'forum' || from === 'topic'"
+            class="page-header__backlink"
+            >{{ 'label.back' | transloco }}</a
+          >
+          <a
+            class="selected"
+            [routerLink]="['.']"
+            [queryParams]="{ from: from }"
+            >{{ 'label.permissions' | transloco }}</a
+          >
+          <a
+            [routerLink]="['../../notification-status', getNodeId()]"
+            [queryParams]="{ from: from }"
+            *cbcIfRoleGE="[currentNode, 'LibAdmin', []]"
+            >{{ 'label.notifications' | transloco }}</a
+          >
+        </cbc-reponsive-sub-menu>
+
+        <a
+          *ngIf="!isFolder()"
+          class="cta cta--plus"
+          [class.disabled]="shouldDisablePermissionSetting()"
+          (click)="showAddPermissionModal()"
+          title="{{
+            shouldDisablePermissionSetting()
+              ? ('members.no.permission' | transloco)
+              : ''
+          }}"
+          >{{ 'permissions.add.configuration' | transloco }}</a
+        >
+        <cbc-add-permission-dropdown
+          *ngIf="isFolder()"
+          [disabled]="shouldDisablePermissionSetting()"
+          (launchCreate)="addPermission($event)"
+          title="{{
+            shouldDisablePermissionSetting()
+              ? ('members.no.permission' | transloco)
+              : ''
+          }}"
+        ></cbc-add-permission-dropdown>
+      </div>
+    </div>
+
+    <section *ngIf="perms">
+      <div class="main switch-container">
+        <h3>
+          {{ 'label.permissions.on' | transloco }}:
+          <span *ngIf="!isFolder()"
+            >{{(isForumNewsgroupsName(currentNode.name!,currentNode.type!))?
+            ('label.forums' | transloco) : currentNode.name }}</span
+          >
+          <a
+            *ngIf="isFolder()"
+            [routerLink]="['../../library/', currentNode.id]"
+            [queryParams]="{
+           p: '1',
+           n: '10',
+           sort: 'modified_DESC'
+         }"
+            style="color: #003355"
+            >{{currentNode.name}}</a
+          >
+        </h3>
+        <div class="field switch inheritance-box">
+          <div class="label">
+            {{ 'label.inherit.permissions' | transloco }}
+            <cbc-hint
+              [text]="'permissions.hint.text' | transloco"
+              [floatEnable]="false"
+              style="margin-left: 5px"
+            ></cbc-hint>
+          </div>
+          <input
+            id="cmn-toggle-1"
+            class="cmn-toggle cmn-toggle-round"
+            type="checkbox"
+            [checked]="perms.inherited"
+            [disabled]="processing"
+            (click)="toggleInheritance()"
+          />
+          <label for="cmn-toggle-1" class="nonBlockLabel"></label>
+          <span id="changePerm{{ perms.inherited ? 'Yes' : 'No' }}"
+            >{{ (perms.inherited ? 'label.yes' : 'label.no') | transloco
+            }}</span
+          >
+        </div>
+        <div *ngIf="processing">
+          <label
+            >{{ 'label.updating' | transloco }}...
+            <cbc-spinner></cbc-spinner>
+          </label>
+        </div>
+      </div>
+
+      <div class="grid-container">
+        <div class="box">
+          <header class="header">
+            <span class="title">{{ 'label.profiles' | transloco }}</span>
+            <span class="div-spinner" *ngIf="deletingProfilePermissions">
+              <cbc-spinner></cbc-spinner>
+            </span>
+          </header>
+          <div class="table-container permission-container">
+            <table class="main">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th></th>
+                  <th class="header-profile">{{ 'label.name' | transloco }}</th>
+                  <th class="header-profile">
+                    {{ 'label.permission' | transloco }}
+                  </th>
+                  <th class="header-profile"></th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr
+                  *ngIf="perms.permissions && perms.permissions.profiles"
+                  class="row"
+                  [class.empty-row]="perms.permissions.profiles.length === 0"
+                >
+                  <td
+                    class="cell-left-border"
+                    *ngIf="perms.permissions.profiles.length === 0"
+                  ></td>
+                  <td
+                    class="cell-checkbox"
+                    *ngIf="perms.permissions.profiles.length === 0"
+                  ></td>
+                  <td
+                    colspan="3"
+                    *ngIf="perms.permissions.profiles.length === 0"
+                  >
+                    {{ 'permissions.empty.configuration' | transloco }}
+                  </td>
+                </tr>
+
+                <tr
+                  class="row"
+                  *ngFor="let groupName of getMapKeys(profilePermissionMap)"
+                >
+                  <td class="cell-left-border"></td>
+                  <td class="cell-checkbox"></td>
+                  <td style="text-transform: capitalize">
+                    {{ getProfileTitle(groupName) | cbcI18n }}
+                  </td>
+                  <td>
+                    <span
+                      *ngFor="let perm of splitProfilePermissions(groupName)"
+                      >{{ 'permissions.' + perm | transloco }}
+                      <br
+                        *ngIf="
+                          splitProfilePermissions(groupName).length > 1
+                        "
+                    /></span>
+                  </td>
+                  <td>
+                    <a
+                      (click)="prepareDeletePermissionEntry(groupName, 'group')"
+                      *ngIf="hasProfilePermissionDeletable(groupName)"
+                    >
+                      <img
+                        src="img/icon-delete-818181.png"
+                        width="20"
+                        alt="{{ 'label.delete' | transloco }}"
+                        title="{{ 'label.delete' | transloco }}"
+                      />
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="box" *ngIf="libAdmin.length > 0">
+            <header class="header">
+              <span class="title"
+                >{{ 'label.profiles.permanent' | transloco }}</span
+              >
+            </header>
+            <div class="table-container permission-container">
+              <table class="main">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th></th>
+                    <th class="header-profile">
+                      {{ 'label.name' | transloco }}
+                    </th>
+                    <th class="header-profile">
+                      {{ 'label.permission' | transloco }}
+                    </th>
+                    <th class="header-profile"></th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr></tr>
+                  <tr *ngFor="let lib of libAdmin" class="row">
+                    <td class="cell-left-border"></td>
+                    <td class="cell-checkbox"></td>
+                    <td>{{lib}}</td>
+                    <td>{{ 'permissions.LibAdmin' | transloco }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="box">
+          <div id="usersPermissionTableId">
+            <header class="header">
+              <span class="title">{{ 'label.users' | transloco }}</span>
+              <span class="div-spinner" *ngIf="deletingUserPermissions">
+                <cbc-spinner></cbc-spinner>
+              </span>
+            </header>
+            <div class="table-container permission-container">
+              <table class="main">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th></th>
+                    <th class="header-profile">
+                      {{ 'label.name' | transloco }}
+                    </th>
+                    <th class="header-profile">
+                      {{ 'label.permission' | transloco }}
+                    </th>
+                    <th class="header-profile"></th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr></tr>
+                  <tr
+                    class="row"
+                    *ngFor="let userid of getMapKeys(userPermissionMap)"
+                  >
+                    <td class="cell-left-border"></td>
+                    <td class="cell-checkbox"></td>
+                    <td>{{ getDisplayUser(userid) }}</td>
+                    <td>
+                      <span *ngFor="let perm of splitUserPermissions(userid)"
+                        >{{ 'permissions.' + perm | transloco }}
+                        <br
+                          *ngIf="
+                            splitUserPermissions(userid).length > 1
+                          "
+                      /></span>
+                    </td>
+                    <td>
+                      <a
+                        (click)="prepareDeletePermissionEntry(userid, 'user')"
+                        *ngIf="hasUserPermissionDeletable(userid)"
+                      >
+                        <img
+                          src="img/icon-delete-818181.png"
+                          width="20"
+                          alt="{{ 'label.delete' | transloco }}"
+                          title="{{ 'label.delete' | transloco }}"
+                        />
+                      </a>
+                    </td>
+                  </tr>
+
+                  <tr class="row">
+                    <td class="cell-left-border"></td>
+                    <td class="cell-checkbox"></td>
+                    <td>{{ownerName}} ({{ 'label.owner' | transloco }})</td>
+                    <td>{{ 'permissions.LibAdmin' | transloco }}</td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div id="igShareTableId" *ngIf="isFolder()">
+            <header class="header">
+              <span class="title"
+                >{{ 'label.interest.groups' | transloco }}</span
+              >
+            </header>
+            <div class="table-container permission-container">
+              <table class="main">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th></th>
+                    <th class="header-profile">
+                      {{ 'label.name' | transloco }}
+                    </th>
+                    <th class="header-profile">
+                      {{ 'label.permission' | transloco }}
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr
+                    *ngIf="!hasShares()"
+                    class="row"
+                    [class.empty-row]="!hasShares()"
+                  >
+                    <td class="cell-checkbox"></td>
+                    <td colspan="3">
+                      {{ 'spaces.sharing.display.none' | transloco }}
+                    </td>
+                  </tr>
+
+                  <!-- this row is added to start with blue/gray color.
+                  It's defined in the CSS and it interferes with the *ngIf above -->
+                  <tr class="row"></tr>
+
+                  <tr class="row" *ngFor="let share of shares">
+                    <td class="cell-left-border"></td>
+                    <td class="cell-checkbox"></td>
+                    <td class="cell-file-name" style="max-width: 400px">
+                      {{ share.igName }}
+                      <ul class="actions" style="width: 160px">
+                        <li>
+                          <a (click)="editSharePermission(share)"
+                            >{{ 'label.edit' | transloco }}</a
+                          >
+                        </li>
+                        <li>
+                          <cbc-inline-delete
+                            (deletionConfirmed)="removeShare(share)"
+                          ></cbc-inline-delete>
+                        </li>
+                      </ul>
+                    </td>
+                    <td>{{ 'permissions.' + share.permission | transloco }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <cbc-add-permissions
+    *ngIf="currentNode"
+    [inherited]="perms.inherited"
+    [showModal]="showAddModal"
+    [node]="currentNode"
+    [ig]="currentIgId"
+    (finished)="addPermissionFinished($event)"
+  ></cbc-add-permissions>
+  <cbc-share-space
+    *ngIf="isFolder()"
+    [showModal]="showShareSpaceModal"
+    [spaceId]="nodeId"
+    [igId]="igId"
+    [currentPermission]="currentPermission"
+    (modalHide)="refreshShares($event)"
+  ></cbc-share-space>
+  <cbc-modal-delete
+    [title]="'permissions.delete'"
+    [text]="'permissions.delete.text'"
+    [showModal]="showModalDelete"
+    (deletionConfirmed)="deletePreparedPermissionEntry()"
+    (deletionCanceled)="cancelPreparedPermissionEntry()"
+  ></cbc-modal-delete>
+</section>
+<!-- <pre>{{currentNode.properties! | json}}</pre> -->
+<!-- <pre>{{perms!.permissions!.users | json}}</pre>
+{{userPermissionMap|json}} -->

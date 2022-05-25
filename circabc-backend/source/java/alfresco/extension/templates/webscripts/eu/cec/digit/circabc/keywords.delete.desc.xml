@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Delete the keyword definition of an IG</shortname>
+  <description>Delete the keyword definition of an IG</description>
+    <url>/circabc/keywords/{keywordId}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

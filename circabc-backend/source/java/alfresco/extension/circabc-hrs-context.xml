@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<!-- For Playground -->
+<!-- 	
+	<bean id="userNameResolver" class="eu.cec.digit.circabc.repo.external.repositories.StaticUserNameResolver">
+		<property name="userName">
+			<value>${external.repositories.user}</value>
+		</property>
+	</bean>
+ -->	
+	<bean id="proxyTicketResolver" class="eu.cec.digit.circabc.repo.external.repositories.PlaygroundProxyTicketResolver" />
+	
+	<!-- For Production -->
+	
+	<bean id="userNameResolver" class="eu.cec.digit.circabc.repo.external.repositories.CircabcUserNameResolver">
+		<property name="authenticationService">
+			<ref bean="authenticationService"/>
+		</property>
+	</bean>
+<!-- 	
+	<bean id="proxyTicketResolver" class="eu.cec.digit.circabc.repo.external.repositories.ProductionProxyTicketResolver">
+		<property name="targetService">
+			<value>${external.repositories.target.service}</value>
+		</property>
+	</bean>
+ -->	
+</beans>

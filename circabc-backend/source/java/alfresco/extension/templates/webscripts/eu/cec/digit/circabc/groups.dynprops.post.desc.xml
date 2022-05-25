@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>get the list of dynamic properties definition in an Interest group</shortname>
+  <description>get the list of dynamic properties definition in an Interest group</description>
+    <url>/circabc/groups/{igId}/dynprops</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

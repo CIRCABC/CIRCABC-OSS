@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>audit.id.history.get</shortname>
+  <description>Get the history of an item (document, event. etc.) given its id</description>
+  <url>/circabc/audit/{id}/history</url>
+  <format default="json"/>
+  <authentication>guest</authentication>
+  <transaction>required</transaction>
+</webscript>

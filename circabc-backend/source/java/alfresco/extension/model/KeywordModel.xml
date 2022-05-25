@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Copyright 2006 European Community
+  
+   Licensed under the EUPL, Version 1.1 or \?as soon they
+   will be approved by the European Commission - subsequent
+   versions of the EUPL (the "Licence");
+   You may not use this work except in compliance with the
+   Licence.
+   You may obtain a copy of the Licence at:
+  
+   https://joinup.ec.europa.eu/software/page/eupl
+  
+   Unless required by applicable law or agreed to in
+   writing, software distributed under the Licence is
+   distributed on an "AS IS" basis,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+   express or implied.
+   See the Licence for the specific language governing
+   permissions and limitations under the Licence.
+-->
+
+<!-- Definition of Keyword Model.  -->
+<model name="kw:keywordmodel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+   <!-- Optional meta-data about the model -->
+   <description>Keyword model</description>
+   <author>Pignot Yanick</author>
+   <version>1.0</version>
+
+   <!-- Imports are required to allow references to definitions in other models -->
+   <imports>
+      	<!-- Import Alfresco Content Domain Model Definitions -->
+      	<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/system/1.0" prefix="sys" />
+   </imports>
+
+   <!-- Introduction of new namespaces defined by this model -->
+   <namespaces>
+      <namespace uri="http://www.cc.cec/circabc/model/keyword/1.0" prefix="kw"/>
+   </namespaces>
+
+   <types>
+	   <type name="kw:keywordContainer">
+	      <title>Keyword container</title>
+	      <parent>sys:container</parent>
+	      <associations>
+	         <child-association name="kw:keywords">
+	            <source>
+	               <mandatory>false</mandatory>
+	               <many>false</many>
+	            </source>
+	            <target>
+	               <class>kw:keyword</class>
+	               <mandatory>false</mandatory>
+	               <many>true</many>
+	            </target>
+	         </child-association>
+	      </associations>
+	   </type>
+
+	   <type name="kw:keyword">
+	       <title>Keyword</title>
+	       <parent>cm:category</parent>
+	       <properties>
+            	<property name="kw:translated">
+               		<title>Translated Keyword</title>
+		            <type>d:boolean</type>
+               		<default>false</default>
+            	</property>
+            </properties>
+	       <associations>
+	          <child-association name="kw:subkeywords">
+	             <source>
+	                 <mandatory>false</mandatory>
+	                 <many>true</many>
+	             </source>
+	             <target>
+	                <class>kw:keyword</class>
+	                <mandatory>false</mandatory>
+	                <many>true</many>
+	             </target>
+		   		 <duplicate>false</duplicate>
+	          </child-association>
+	       </associations>
+           <mandatory-aspects>
+              <aspect>cm:titled</aspect>
+           </mandatory-aspects>
+		</type>
+	</types>
+</model>

@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>add new category adminss</shortname>
+  <description>invite new category administrators of the category</description>
+  <url>/circabc/categories/{id}/admins</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+	<bean id="migration.aida.baseVoter" class="eu.cec.digit.circabc.migration.aida.circa.BaseVoter" init-method="init" abstract="true">
+		<property name="aidaMigrationService">
+			<ref bean="aidaService" />
+		</property>
+	</bean>
+
+	<bean id="migration.aida.baseConverter" class="eu.cec.digit.circabc.migration.aida.circa.BaseConverter" init-method="init" abstract="true">
+		<property name="aidaMigrationService">
+			<ref bean="aidaService" />
+		</property>
+	</bean>
+
+	<bean id="migration.aida.europaMailDomainVoter" class="eu.cec.digit.circabc.migration.aida.circa.EuropaMailVoter" parent="migration.aida.baseVoter" />
+	<bean id="migration.aida.emailSpacesRemover" class="eu.cec.digit.circabc.migration.aida.circa.EmailSpacesRemover" parent="migration.aida.baseConverter" />
+
+</beans>

@@ -1,0 +1,56 @@
+<footer class="footer-main">
+  <div style="display: flex; align-items: center; justify-content: center">
+    <div>
+      <img src="img/logo-white.png" width="50" />
+    </div>
+    <div style="padding-top: 10px; padding-left: 10px">
+      {{'footer.title' | transloco }}
+      <a
+        href="https://github.com/CIRCABC/Circabc-OSS"
+        target="_blank"
+        rel="noopener noreferrer"
+        >{{ 'footer.message' | transloco }}</a
+      >
+    </div>
+  </div>
+
+  <div
+    style="
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-top: 10px;
+      padding-bottom: 10px;
+    "
+  >
+    <div
+      ><a [routerLink]="['/help/legal-notice']"
+        >{{'label.privacy.statement' | transloco }}</a
+      ></div
+    >
+    <div
+      ><a [routerLink]="['/help/legal-notice/terms']"
+        >{{'label.terms' | transloco }}</a
+      ></div
+    >
+    <div
+      ><a
+        href="https://ec.europa.eu/info/cookies_en"
+        target="_blank"
+        rel="noopener noreferrer"
+        >{{'cookie.title' | transloco }}</a
+      ></div
+    >
+    <div
+      ><a
+        href="https://ec.europa.eu/info/privacy-policy/europa-analytics_en"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {{'label.europa-analytics' | transloco }}</a
+      ></div
+    >
+  </div>
+
+  V.{{ appVersion }} A.{{ appAlfVersion }} / {{ nodeName }} / {{ buildDate }}
+</footer>

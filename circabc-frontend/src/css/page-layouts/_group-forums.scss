@@ -1,0 +1,163 @@
+@use '../global/variables-mixins-keyframes';
+
+/*  FORUMS */
+
+.forums {
+  .main {
+    padding: 0;
+
+    .row {
+      padding: 15px 0;
+      position: relative;
+      overflow: unset !important;
+
+      &:hover::before {
+        content: '';
+        width: 5px;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        background: #8dcb6c;
+        background: -moz-linear-gradient(
+          top,
+          variables-mixins-keyframes.$light-green 0%,
+          variables-mixins-keyframes.$dark-green 100%
+        );
+        background: -webkit-gradient(
+          linear,
+          left top,
+          left bottom,
+          color-stop(0%, variables-mixins-keyframes.$light-green),
+          color-stop(100%, variables-mixins-keyframes.$dark-green)
+        );
+        background: -webkit-linear-gradient(
+          top,
+          variables-mixins-keyframes.$light-green 0%,
+          variables-mixins-keyframes.$dark-green 100%
+        );
+        background: -o-linear-gradient(
+          top,
+          variables-mixins-keyframes.$light-green 0%,
+          variables-mixins-keyframes.$dark-green 100%
+        );
+        background: -ms-linear-gradient(
+          top,
+          variables-mixins-keyframes.$light-green 0%,
+          variables-mixins-keyframes.$dark-green 100%
+        );
+        background: linear-gradient(
+          to bottom,
+          variables-mixins-keyframes.$light-green 0%,
+          variables-mixins-keyframes.$dark-green 100%
+        );
+        filter: progid:DXImageTransform.Microsoft.gradient(
+          startColorstr='#8dcb6c',
+          endColorstr='#58c37e',
+          GradientType=0
+        );
+      }
+
+      .name-and-actions {
+        padding-left: 25px;
+        width: 60%;
+        display: inline-block;
+
+        @media screen and (max-width: variables-mixins-keyframes.$break-tiny) {
+          width: 100%;
+        }
+
+        .actions {
+          display: block;
+          opacity: 0;
+          margin-top: 8px;
+
+          li {
+            display: inline-block;
+            font-size: 11px;
+
+            a {
+              margin-right: 10px;
+            }
+          }
+        }
+      }
+
+      .name-and-actions,
+      .topics-number,
+      .people-number,
+      .description {
+        display: inline-block;
+        vertical-align: middle;
+      }
+
+      .subcategory-name {
+        width: 90%;
+        display: inline-block;
+        font-size: 14px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      .topics-number,
+      .people-number {
+        position: relative;
+        float: right;
+        margin-right: 40px;
+        text-align: right;
+        min-width: 40px;
+
+        @media screen and (max-width: variables-mixins-keyframes.$break-small) {
+          margin-right: 20px;
+        }
+
+        &::after {
+          position: absolute;
+          right: -30px;
+          top: 0;
+          display: block;
+          content: '';
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          background-color: rgb(245 246 250);
+          box-shadow: 0 2px 2px rgb(0 0 0 / 0.1);
+          background-repeat: no-repeat;
+          background-position: center center;
+          background-size: 15px;
+          z-index: 1;
+
+          @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+            width: 15px;
+            height: 15px;
+            background-size: 10px;
+            top: 4px;
+            right: -25px;
+          }
+
+          @media screen and (max-width: variables-mixins-keyframes.$break-small) {
+            display: none;
+          }
+        }
+      }
+
+      .topics-number::after {
+        background-image: url(^img/icon-forums-grey.png);
+      }
+
+      .people-number::after {
+        background-image: url(^img/icon-members-grey.png);
+      }
+
+      .description {
+        width: 330px;
+        margin-left: 20px;
+      }
+    }
+
+    .row:hover .actions {
+      opacity: 1;
+      transition: 700ms 200ms opacity ease-out;
+    }
+  }
+}

@@ -1,0 +1,199 @@
+@use '../global/variables-mixins-keyframes';
+
+/*  HOME LOGOUT */
+
+.home-logout {
+  background: #fff;
+  font-size: 11px;
+
+  .footer-bottom-stucker {
+    overflow: hidden;
+  }
+
+  .header {
+    height: 125px;
+    text-align: center;
+
+    .ec-links {
+      text-align: right;
+      height: 20px;
+      padding: 15px;
+
+      ul,
+      li,
+      select {
+        display: inline-block;
+        margin-left: 10px;
+      }
+    }
+
+    .ec-logo {
+      position: relative;
+      bottom: -26px;
+    }
+
+    .eu-logo {
+      position: relative;
+      bottom: -56px;
+      height: 56px;
+      border: 2px solid #fff;
+    }
+  }
+
+  .main {
+    min-width: 1024px;
+    background: url(^img/background-home.jpg) no-repeat center center;
+
+    @include variables-mixins-keyframes.background-cover;
+
+    color: #fff;
+    font-family: variables-mixins-keyframes.$titling;
+    font-size: 15px;
+    padding: 58px 33px;
+    padding: 7vw 33px;
+
+    @include variables-mixins-keyframes.responsive-break-medium();
+
+    .logo-circabc {
+      margin-left: -33px;
+
+      @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+        margin-left: 0;
+      }
+    }
+
+    h1 {
+      font-weight: 300;
+      font-size: 24px;
+      width: 400px;
+      text-align: left;
+
+      @include variables-mixins-keyframes.responsive-cancel-width();
+    }
+
+    h2 {
+      font-weight: 300;
+      font-size: 15px;
+      width: 380px;
+      text-align: left;
+      line-height: 23px;
+
+      @include variables-mixins-keyframes.responsive-cancel-width();
+
+      a {
+        color: #fff;
+        text-decoration: underline;
+
+        &:hover {
+          text-decoration: none;
+        }
+      }
+    }
+
+    .cta {
+      margin-top: 30px;
+    }
+
+    .button {
+      border: 1px solid variables-mixins-keyframes.$fluo-green;
+      color: variables-mixins-keyframes.$fluo-green;
+      text-transform: uppercase;
+      margin-top: 10px;
+
+      &:hover {
+        border: 1px solid variables-mixins-keyframes.$dark-green;
+        background: variables-mixins-keyframes.$dark-green;
+        color: #fff;
+        text-shadow: 0 0 6px rgb(0 0 0 / 0.45);
+      }
+    }
+
+    .illustration {
+      float: right;
+      margin-right: 60px;
+      margin-top: 60px;
+
+      @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+        display: none;
+      }
+    }
+  }
+
+  .features {
+    font-size: 0;
+    padding: 40px 0;
+    margin-bottom: 45px; /* height of the footer */
+
+    li {
+      font-size: 14px;
+      display: inline-block;
+      width: 16.66%;
+      padding: 10px;
+      text-align: center;
+      color: variables-mixins-keyframes.$textAA;
+      vertical-align: top;
+
+      @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+        width: 100%;
+        float: left;
+      }
+    }
+
+    .information,
+    .groups,
+    .security,
+    .agenda,
+    .invite,
+    .forums {
+      background-repeat: no-repeat;
+      background-position: center top;
+      padding-top: 50px;
+    }
+
+    .information {
+      background-image: url(^img/bigicon-file.png);
+    }
+
+    .groups {
+      background-image: url(^img/bigicon-group.png);
+    }
+
+    .security {
+      background-image: url(^img/bigicon-security.png);
+    }
+
+    .agenda {
+      background-image: url(^img/bigicon-agenda.png);
+    }
+
+    .invite {
+      background-image: url(^img/bigicon-invite.png);
+    }
+
+    .forums {
+      background-image: url(^img/bigicon-share.png);
+    }
+  }
+
+  .footer {
+    text-align: center;
+    line-height: 45px;
+    height: 45px;
+    background: #f0f5f3;
+    color: #999;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    a {
+      margin-left: 10px;
+      color: #999;
+      text-decoration: underline;
+
+      &:hover {
+        text-decoration: none;
+      }
+    }
+  }
+}

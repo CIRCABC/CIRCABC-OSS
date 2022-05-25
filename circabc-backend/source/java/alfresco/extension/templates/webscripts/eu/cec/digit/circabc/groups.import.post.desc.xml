@@ -1,0 +1,11 @@
+<webscript>
+  <shortname>groups.import.post</shortname>
+  <description>Import a zip or acp file inside the folder with the given folderId</description>
+    <url>/circabc/groups/import/{folderId}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+
+  <formdata multipart-processing="true" />
+  
+</webscript>

@@ -1,0 +1,272 @@
+<!--
+  Copyright 2006 European Community
+  
+   Licensed under the EUPL, Version 1.1 or \?as soon they
+   will be approved by the European Commission - subsequent
+   versions of the EUPL (the "Licence");
+   You may not use this work except in compliance with the
+   Licence.
+   You may obtain a copy of the Licence at:
+  
+   https://joinup.ec.europa.eu/software/page/eupl
+  
+   Unless required by applicable law or agreed to in
+   writing, software distributed under the Licence is
+   distributed on an "AS IS" basis,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+   express or implied.
+   See the Licence for the specific language governing
+   permissions and limitations under the Licence.
+-->
+<alfresco-config area="space-contents">
+	<!--
+        Define all available navgation options.
+    -->
+	<config evaluator="string-compare" condition="Circabc Root Customization">
+		<!-- Representation of the root node -->
+		<root>
+			<!-- Here the navigation preference customization -->
+			<space name="navigation">
+				<space name="information">
+					<space name="container">
+						<file name="default.xml" versionable="true" editOnline="true" forceUpdate="false" revison="2">classpath:alfresco/extension/customisation/navigation/information/container/default.xml</file>
+					</space>
+					<space name="content">
+						<file name="default.xml" versionable="true" editOnline="true" forceUpdate="false" revison="2">classpath:alfresco/extension/customisation/navigation/information/content/default.xml</file>
+					</space>
+				</space>
+				<space name="library">
+					<space name="container">
+						<file name="default.xml" versionable="true" editOnline="true" forceUpdate="false" revison="2">classpath:alfresco/extension/customisation/navigation/library/container/default.xml</file>
+					</space>
+					<space name="content">
+						<file name="default.xml" versionable="true" editOnline="true" forceUpdate="false" revison="2">classpath:alfresco/extension/customisation/navigation/library/content/default.xml</file>
+					</space>
+					<space name="discussion">
+						<file name="default.xml" versionable="true" editOnline="true" forceUpdate="false" revison="2">classpath:alfresco/extension/customisation/navigation/library/discussion/default.xml</file>
+					</space>
+				</space>
+				<space name="newsgroup">
+					<space name="forum">
+						<file name="default.xml" versionable="true" editOnline="true" forceUpdate="false" revison="2">classpath:alfresco/extension/customisation/navigation/newsgroup/forum/default.xml</file>
+					</space>
+					<space name="topic">
+						<file name="default.xml" versionable="true" editOnline="true" forceUpdate="false" revison="3">classpath:alfresco/extension/customisation/navigation/newsgroup/topic/default.xml</file>
+					</space>
+				</space>
+			</space>
+			<!-- Here the templates preference customization -->
+			<space name="templates">
+				<space name="mails">
+					<space name="applyForMembership">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="5">classpath:alfresco/extension/customisation/templates/mails/applyForMembership/default.ftl</file>
+					</space>
+					<space name="eventCreateNotification">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="10">classpath:alfresco/extension/customisation/templates/mails/eventCreateNotification/default.ftl</file>
+					</space>
+					<space name="eventDeleteNotification">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="6">classpath:alfresco/extension/customisation/templates/mails/eventDeleteNotification/default.ftl</file>
+					</space>
+					<space name="eventReminder">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="5">classpath:alfresco/extension/customisation/templates/mails/eventReminder/default.ftl</file>
+					</space>
+					<space name="eventDeleteReminder">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="1">classpath:alfresco/extension/customisation/templates/mails/eventDeleteReminder/default.ftl</file>
+					</space>
+					<space name="eventUpdateNotification">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="6">classpath:alfresco/extension/customisation/templates/mails/eventUpdateNotification/default.ftl</file>
+					</space>
+					<space name="includes">
+						<file name="propertyList.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="8">classpath:alfresco/extension/customisation/templates/mails/includes/propertyList.ftl</file>
+					</space>
+					<space name="inviteUser">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="8">classpath:alfresco/extension/customisation/templates/mails/inviteUser/default.ftl</file>
+					</space>
+					<space name="updateUserProfile">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="1">classpath:alfresco/extension/customisation/templates/mails/updateUserProfile/default.ftl</file>
+					</space>
+					<space name="mailMeContent">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="3">classpath:alfresco/extension/customisation/templates/mails/mailMeContent/default.ftl</file>
+					</space>
+					<space name="mailMeContentUrl">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="3">classpath:alfresco/extension/customisation/templates/mails/mailMeContentUrl/default.ftl</file>
+					</space>
+					<space name="mailMeDossier">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="2">classpath:alfresco/extension/customisation/templates/mails/mailMeDossier/default.ftl</file>
+					</space>
+					<space name="meetingReminder">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="3">classpath:alfresco/extension/customisation/templates/mails/meetingReminder/default.ftl</file>
+					</space>
+					<space name="meetingDeleteReminder">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="1">classpath:alfresco/extension/customisation/templates/mails/meetingDeleteReminder/default.ftl</file>
+					</space>
+					<space name="notifyDoc">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="7">classpath:alfresco/extension/customisation/templates/mails/notifyDoc/default.ftl</file>
+					</space>
+					<space name="notifyPost">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="5">classpath:alfresco/extension/customisation/templates/mails/notifyPost/default.ftl</file>
+					</space>
+					<space name="refuseApplication">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="3">classpath:alfresco/extension/customisation/templates/mails/refuseApplication/default.ftl</file>
+					</space>
+					<space name="requestInterestGroup">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="7">classpath:alfresco/extension/customisation/templates/mails/requestInterestGroup/default.ftl</file>
+					</space>
+					<space name="resendOtherPwd">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="2">classpath:alfresco/extension/customisation/templates/mails/resendOtherPwd/default.ftl</file>
+					</space>
+					<space name="resendOwnPwd">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="3">classpath:alfresco/extension/customisation/templates/mails/resendOwnPwd/default.ftl</file>
+					</space>
+					<space name="selfRegistration">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="2">classpath:alfresco/extension/customisation/templates/mails/selfRegistration/default.ftl</file>
+					</space>
+					<space name="sendToMembers">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="2">classpath:alfresco/extension/customisation/templates/mails/sendToMembers/default.ftl</file>
+					</space>
+					<space name="shareSpace">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="5">classpath:alfresco/extension/customisation/templates/mails/shareSpace/default.ftl</file>
+					</space>
+					<space name="shareSpacePermissionUpdate">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="3">classpath:alfresco/extension/customisation/templates/mails/shareSpacePermissionUpdate/default.ftl</file>
+					</space>
+					<space name="rejectPost">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="3">classpath:alfresco/extension/customisation/templates/mails/rejectPost/default.ftl</file>
+					</space>
+					<space name="signalAbuse">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="4">classpath:alfresco/extension/customisation/templates/mails/signalAbuse/default.ftl</file>
+					</space>
+					<space name="autoUploadSuccess">
+						<file name="success.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="3">classpath:alfresco/extension/customisation/templates/mails/autoUpload/success.ftl</file>
+					</space>
+					<space name="autoUploadError">
+						<file name="error.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="3">classpath:alfresco/extension/customisation/templates/mails/autoUpload/error.ftl</file>
+					</space>
+					<space name="autoUploadFtpProblem">
+						<file name="ftp-problem.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="3">classpath:alfresco/extension/customisation/templates/mails/autoUpload/ftp-problem.ftl</file>
+					</space>
+					<space name="supportRequest">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="2">classpath:alfresco/extension/customisation/templates/mails/supportRequest/default.ftl</file>
+					</space>
+					<space name="addMembershipNotification">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="8">classpath:alfresco/extension/customisation/templates/mails/addMembershipNotification/default.ftl</file>
+					</space>
+					<space name="updateMembershipNotification">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="2">classpath:alfresco/extension/customisation/templates/mails/updateMembershipNotification/default.ftl</file>
+					</space>
+					<space name="removeMembershipNotification">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="6">classpath:alfresco/extension/customisation/templates/mails/removeMembershipNotification/default.ftl</file>
+					</space>
+					<space name="refuseAplicantNotification">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="7">classpath:alfresco/extension/customisation/templates/mails/refuseAplicantNotification/default.ftl</file>
+					</space>
+					<space name="successfulDocumentTranslation">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="7">classpath:alfresco/extension/customisation/templates/mails/successfulDocumentTranslation/default.ftl</file>
+					</space>
+					<space name="successfulPropertyTranslation">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="7">classpath:alfresco/extension/customisation/templates/mails/successfulPropertyTranslation/default.ftl</file>
+					</space>
+					<space name="unsuccessfulDocumentTranslation">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="7">classpath:alfresco/extension/customisation/templates/mails/unsuccessfulDocumentTranslation/default.ftl</file>
+					</space>
+					<space name="unsuccessfulPropertyTranslation">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="7">classpath:alfresco/extension/customisation/templates/mails/unsuccessfulPropertyTranslation/default.ftl</file>
+					</space>
+					<space name="addNewTranslationEdition">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="2">classpath:alfresco/extension/customisation/templates/mails/addNewTranslationEdition/default.ftl</file>
+					</space>
+					<space name="changeUserOrGroupPermission">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="2">classpath:alfresco/extension/customisation/templates/mails/changeUserOrGroupPermission/default.ftl</file>
+					</space>
+					<space name="categoryAdminContact">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="4">classpath:alfresco/extension/customisation/templates/mails/categoryAdminContact/default.ftl</file>
+					</space>
+					<space name="categoryAdminContactConfirmation">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="3">classpath:alfresco/extension/customisation/templates/mails/categoryAdminContactConfirmation/default.ftl</file>
+					</space>
+					<space name="notifyNews">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="4">classpath:alfresco/extension/customisation/templates/mails/notifyNews/default.ftl</file>
+					</space>
+					<space name="groupMembersContact">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="2">classpath:alfresco/extension/customisation/templates/mails/groupMembersContact/default.ftl</file>
+					</space>
+					<space name="groupLeadersContact">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="1">classpath:alfresco/extension/customisation/templates/mails/groupLeadersContact/default.ftl</file>
+					</space>
+					<space name="helpdeskContact">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="5">classpath:alfresco/extension/customisation/templates/mails/helpdeskContact/default.ftl</file>
+					</space>
+					<space name="helpdeskConfirmation">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="3">classpath:alfresco/extension/customisation/templates/mails/helpdeskConfirmation/default.ftl</file>
+					</space>
+					<space name="categoryGroupRequest">
+						<file name="refusal.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="1">classpath:alfresco/extension/customisation/templates/mails/categoryGroupRequest/refusal.ftl</file>
+						<file name="acceptation.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="1">classpath:alfresco/extension/customisation/templates/mails/categoryGroupRequest/acceptation.ftl</file>
+					</space>
+					<space name="notifyDocumentsBulk">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="5">classpath:alfresco/extension/customisation/templates/mails/notifyDocumentsBulk/default.ftl</file>
+						<file name="documentpart.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="5">classpath:alfresco/extension/customisation/templates/mails/notifyDocumentsBulk/documentpart.ftl</file>
+					</space>
+					<space name="notifyMoveDocumentsBulk">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="2">classpath:alfresco/extension/customisation/templates/mails/notifyMoveDocumentsBulk/default.ftl</file>
+					</space>
+					<space name="adminDistributionList">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="2">classpath:alfresco/extension/customisation/templates/mails/adminDistributionList/default.ftl</file>
+					</space>
+					<space name="notifySystemMessage">
+						<file name="default.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="1">classpath:alfresco/extension/customisation/templates/mails/notifySystemMessage/default.ftl</file>
+					</space>
+					
+					<space name="parts">
+						<file name="mailheader.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="4">classpath:alfresco/extension/customisation/templates/mails/parts/mailheader.ftl</file>
+						<file name="mailfooter.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="6">classpath:alfresco/extension/customisation/templates/mails/parts/mailfooter.ftl</file>
+						<file name="mailintroduction.ftl" versionable="true" editOnline="true" forceUpdate="false" revison="1">classpath:alfresco/extension/customisation/templates/mails/parts/mailintroduction.ftl</file>
+					</space>
+				</space>
+			</space>
+			<!-- Here the icons preference customization -->
+			<space name="iglookAndFeel">
+				<space name="icon">
+					<space name="definition">
+						<file name="config.properties" versionable="true" editOnline="true" forceUpdate="false" revison="1">classpath:alfresco/extension/customisation/iglookAndFeel/icon/definition/config.properties</file>
+					</space>
+					<space name="images">
+						<file name="circabc_logo.gif" versionable="true" editOnline="false" forceUpdate="false" revison="2">classpath:alfresco/extension/customisation/iglookAndFeel/icon/images/circabc_logo.gif</file>
+					</space>
+				</space>
+			</space>
+			<!-- Here the mail disclamer preference customization -->
+			<space name="templates">
+				<space name="disclamer">
+					<space name="logo">
+						<file name="circabc_logo.gif" versionable="true" editOnline="false" forceUpdate="false" revison="2">classpath:alfresco/extension/customisation/templates/disclamer/logo/circabc_logo.gif</file>
+					</space>
+				</space>
+			</space>
+			<!-- Here the person preference customization -->
+			<space name="users">
+				<space name="preferences">
+					<space name="avatar">
+						<file name="default_avatar.png" versionable="true" editOnline="false" forceUpdate="false" revison="2" guestPerm="Read" registredPerm="Read">classpath:alfresco/extension/customisation/users/preferences/avatar/default_avatar.png</file>
+					</space>
+				</space>
+			</space>
+			<!-- Here the helpdesk emails list -->
+			<space name="helpdesk">
+				<space name="contact">
+					<file name="contact-helpdesk.properties" versionable="true" editOnline="true" forceUpdate="false" revison="1" guestPerm="Read" registredPerm="Read">classpath:alfresco/extension/customisation/contact-helpdesk.properties</file>
+				</space>
+			</space>
+			
+			<space name="templates">
+				<space name="header">
+					<space name="logo">
+						<file name="header-mail.jpg" versionable="true" editOnline="false" forceUpdate="false" revison="4">classpath:alfresco/extension/customisation/templates/header/logo/header-mail.jpg</file>
+						<file name="header-background.jpg" versionable="true" editOnline="false" forceUpdate="false" revison="1">classpath:alfresco/extension/customisation/templates/header/logo/header-background.jpg</file>
+						<file name="header-eu-circabc-logo.png" versionable="true" editOnline="false" forceUpdate="false" revison="1">classpath:alfresco/extension/customisation/templates/header/logo/header-eu-circabc-logo.png</file>
+					</space>
+				</space>
+			</space>
+		</root>
+	</config>
+</alfresco-config>

@@ -1,0 +1,62 @@
+<a class="add--button" (click)="openModal()" *ngIf="!showModal && hasKeywords()"
+  >{{ 'label.add' | transloco }} +</a
+>
+<!-- MODAL BOX -->
+<div
+  class="black-overlayer"
+  *ngIf="showModal"
+  [class.overlayer-shown]="showModal"
+  [class.overlayer-hidden]="!showModal"
+></div>
+<section
+  class="modal"
+  *ngIf="showModal"
+  [class.modal-shown]="showModal"
+  [class.modal-hidden]="!showModal"
+  style="margin-top: 0"
+>
+  <a class="close-icon" (click)="cancelWizard('close')"></a>
+  <header>
+    <h2 style="color: #757575">{{ 'label.add.keyword' | transloco }}</h2>
+  </header>
+
+  <section class="modal-content">
+    <div class="field">
+      <label for="searchText"
+        >{{ 'label.available.keywords' | transloco }}</label
+      >
+      <br /><br />
+      <ul class="availableKeywords">
+        <li *ngFor="let keyword of availableKeywords">
+          <input
+            type="checkbox"
+            [checked]="keyword.selected"
+            (click)="toggleSelected(keyword)"
+          />
+          <cbc-keyword-tag [keyword]="keyword"></cbc-keyword-tag>
+        </li>
+        <li *ngIf="availableKeywords.length === 0">
+          <span class="nothing"
+            >{{ 'label.nothing.to.select' | transloco }}</span
+          >
+        </li>
+      </ul>
+    </div>
+
+    <div class="field" *ngIf="adding">
+      <label
+        >{{ 'label.adding' | transloco }}... <cbc-spinner></cbc-spinner
+      ></label>
+    </div>
+  </section>
+
+  <section class="modal-footer">
+    <!-- Buttons -->
+    <div class="buttons-group" *ngIf="!adding">
+      <a class="cta" (click)="add()">{{ 'label.add' | transloco }}</a>
+      <a class="button" (click)="cancelWizard('close')"
+        >{{ 'label.cancel' | transloco }}</a
+      >
+    </div>
+  </section>
+</section>

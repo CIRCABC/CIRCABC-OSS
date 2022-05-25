@@ -1,0 +1,89 @@
+<section class="box box--group-summary" *ngIf="group">
+  <div class="group-summary__logo">
+    <img
+      *ngIf="!group.logoUrl"
+      src="img/placeholder_162x138.png"
+      alt=""
+      width="162"
+      height="138"
+    />
+    <img
+      *ngIf="group.logoUrl"
+      [attr.src]="getLogoRef() | cbcDownload | cbcSecure"
+      alt=""
+      width="162"
+      height="138"
+    />
+  </div>
+  <a
+    *ngIf="isJoinEnabled()"
+    (click)="showApplicationModal = true"
+    class="cta"
+    [class.disable_a_href]="!isJoinEnabled()"
+    >{{ 'descriptor.join-group' | transloco }}</a
+  >
+  <a *ngIf="isJoinEnabledGuest()" [matMenuTriggerFor]="menu" class="cta"
+    >{{ 'descriptor.join-group' | transloco }}</a
+  >
+
+  <mat-menu #menu>
+    <span class="title">{{ 'descriptor.join-group.title' | transloco }}</span>
+
+    <button
+      *ngIf="isGuest() && !useEULogin"
+      [routerLink]="['/login']"
+      class="cta menu-button-first"
+    >
+      {{ 'descriptor.join-group.connect' | transloco }}
+    </button>
+
+    <button
+      *ngIf="isGuest() && useEULogin"
+      (click)="euLogin()"
+      class="cta menu-button-first"
+    >
+      {{ 'descriptor.join-group.connect' | transloco }}
+    </button>
+
+    <button class="cta menu-button" (click)="euLoginCreate()">
+      {{ 'descriptor.join-group.create-account' | transloco }}
+    </button>
+  </mat-menu>
+
+  <div
+    *ngIf="!isJoinEnabledGuest() && !isJoinEnabled()"
+    style="padding-bottom: 50px"
+  ></div>
+
+  <div class="main">
+    <cbc-share [showLabel]="true"></cbc-share>
+    <a
+      class="contact-link"
+      (click)="showContactLeadersModal = true"
+      *ngIf="isContactLeaderAvailable()"
+      >{{ 'descriptor.contact-leaders' | transloco }}</a
+    >
+    <br />
+    <div
+      class="description-container"
+      *ngIf="group.description && hasDescription()"
+      [innerHtml]="getLang() | i18nSelect: group.description"
+    ></div>
+    <p *ngIf="!hasDescription()">
+      {{ 'descriptor.no-group-description' | transloco }}
+    </p>
+    <div style="clear: both"></div>
+  </div>
+</section>
+<cbc-membership-application
+  [groupId]="group.id"
+  [showModal]="showApplicationModal"
+  (canceled)="onRequestCanceled($event)"
+  (finished)="onRequestFinished($event)"
+></cbc-membership-application>
+<cbc-leader-contact
+  [showModal]="showContactLeadersModal"
+  [group]="group"
+  *ngIf="isContactLeaderAvailable()"
+  (modalHide)="leaderContactRefresh($event)"
+></cbc-leader-contact>

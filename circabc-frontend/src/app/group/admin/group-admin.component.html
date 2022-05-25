@@ -1,0 +1,200 @@
+{{ 'label.admin.title' | transloco: { groupName: group?.name } | cbcSetTitle }}
+<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+<div class="fluid admin page-container">
+  <div class="page-header">
+    <span class="page-header__title" *ngIf="isDeleteRoute() === false"
+      >{{ 'admin.header.text' | transloco }}</span
+    >
+    <span class="page-header__title" *ngIf="isDeleteRoute() === true"
+      >{{ 'admin.delete.group' | transloco }}</span
+    >
+    <div class="page-header__actions">
+      <a
+        data-cy="delete-group"
+        class="button button--red"
+        [routerLink]="['./delete']"
+        *ngIf="isDeleteRoute() === false && canDeleteGroup()"
+        >{{ 'label.delete' | transloco }}</a
+      >
+    </div>
+  </div>
+
+  <section class="box box--tabs">
+    <ul class="header" *ngIf="isDeleteRoute() === false">
+      <li>
+        <a
+          class="tab"
+          [class.tab--current]="isGeneralRoute()"
+          [routerLink]="['general']"
+        >
+          <img
+            src="img/settings.png"
+            title="General"
+            alt="general"
+            width="16"
+            height="16"
+          />
+          <span class="tab-text">{{ 'admin.tab.general' | transloco }}</span>
+        </a>
+      </li>
+      <li>
+        <a
+          class="tab"
+          [class.tab--current]="isLogosRoute()"
+          [routerLink]="['logos']"
+        >
+          <img
+            src="img/frame-landscape.png"
+            title="logos"
+            alt="logos"
+            width="16"
+            height="16"
+          />
+          <span class="tab-text">{{ 'label.appearance' | transloco }}</span>
+        </a>
+      </li>
+      <li>
+        <a
+          class="tab"
+          [class.tab--current]="isSecurityRoute()"
+          [routerLink]="['security']"
+        >
+          <img
+            src="img/padlock-818181.png"
+            width="16"
+            height="16"
+            title="Security"
+            alt="security"
+          />
+          <span class="tab-text">{{ 'admin.tab.security' | transloco }}</span>
+        </a>
+      </li>
+      <li>
+        <a
+          class="tab"
+          [class.tab--current]="isDocumentLifecycleRoute()"
+          [routerLink]="['documents']"
+        >
+          <img
+            src="img/recycle-symbol.png"
+            title="Lifecycle"
+            alt="lifecycle"
+            width="16"
+            height="16"
+          />
+          <span class="tab-text"
+            >{{ 'admin.tab.document.lifecycle' | transloco }}</span
+          >
+        </a>
+      </li>
+      <li>
+        <a
+          class="tab"
+          [class.tab--current]="isAutoUploadRoute()"
+          [routerLink]="['auto-upload']"
+        >
+          <img
+            src="img/upload.png"
+            title="AutoUpload"
+            alt="autoupload"
+            width="16"
+            height="16"
+          />
+          <span class="tab-text"
+            >{{ 'admin.tab.auto.upload' | transloco }}</span
+          >
+        </a>
+      </li>
+      <li>
+        <a
+          class="tab"
+          [class.tab--current]="isSummaryRoute()"
+          [routerLink]="['summary']"
+        >
+          <img
+            src="img/graph-line-screen.png"
+            title="Graph"
+            alt="graph"
+            width="16"
+            height="16"
+          />
+          <span class="tab-text">{{ 'admin.tab.summary' | transloco }}</span>
+        </a>
+      </li>
+      <li *ngIf="featureDisabled">
+        <a
+          class="tab"
+          [class.tab--current]="isNotificationStatusRoute()"
+          [routerLink]="['notification-status']"
+        >
+          <img
+            src="img/bell-ringing-818181.png"
+            title="Notification Status"
+            alt="notification status"
+            width="16"
+            height="16"
+          />
+          <span class="tab-text"
+            >{{ 'admin.tab.notification.status' | transloco }}</span
+          >
+        </a>
+      </li>
+      <li *ngIf="featureDisabled">
+        <a
+          class="tab"
+          [class.tab--current]="isPasteNotificationsRoute()"
+          [routerLink]="['paste-notifications']"
+        >
+          <img
+            src="img/ring-the-bell-818181.png"
+            title="Paste Notifications"
+            alt="paste notifications"
+            width="16"
+            height="16"
+          />
+          <span class="tab-text"
+            >{{ 'admin.tab.paste.notifications' | transloco }}</span
+          >
+        </a>
+      </li>
+      <li>
+        <a
+          class="tab"
+          [class.tab--current]="isLogRoute()"
+          [routerLink]="['log']"
+        >
+          <img
+            src="img/padnote.png"
+            title="padnote"
+            alt="padnote"
+            width="16"
+            height="16"
+          />
+          <span class="tab-text">{{ 'admin.tab.log.files' | transloco }}</span>
+        </a>
+      </li>
+      <li *ngIf="isExternalRepositoryEnabled">
+        <a
+          class="tab"
+          [class.tab--current]="isExternalRepositoryRoute()"
+          [routerLink]="['external-repository']"
+        >
+          <img
+            src="img/padnote.png"
+            title="padnote"
+            alt="padnote"
+            width="16"
+            height="16"
+          />
+          <span class="tab-text"
+            >{{ 'admin.tab.external.repositories' | transloco }}</span
+          >
+        </a>
+      </li>
+    </ul>
+
+    <div class="main">
+      <router-outlet></router-outlet>
+    </div>
+  </section>
+</div>

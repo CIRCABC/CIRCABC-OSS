@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>set the value of the old message</shortname>
+  <description>set the  value of the old message</description>
+  <url>/circabc/app/messages/old</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

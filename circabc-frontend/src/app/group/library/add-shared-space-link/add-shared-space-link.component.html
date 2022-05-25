@@ -1,0 +1,41 @@
+<cbc-modal
+  [title]="'label.add.shared.space.link'"
+  (ok)="createSharedSpaceLink()"
+  (cancel)="cancel()"
+  [okLabel]="'label.add'"
+  [(visible)]="showModal"
+  [executing]="processing"
+  [executingLabel]="'label.creating'"
+>
+  <form [formGroup]="createSharedSpaceLinkForm">
+    <div class="field">
+      <label for="title">{{ 'label.title' | transloco }}</label>
+      <input formControlName="title" type="text" id="title" />
+      <cbc-control-message [control]="titleControl"></cbc-control-message>
+    </div>
+    <div class="field">
+      <label for="description">{{ 'label.description' | transloco }}</label>
+      <textarea id="description" formControlName="description"></textarea>
+      <cbc-control-message [control]="descriptionControl"></cbc-control-message>
+    </div>
+    <div class="field">
+      <label for="sharedSpaceId">{{ 'label.shared.space' | transloco }}</label>
+      <div class="custom-select select--form" style="width: 500px">
+        <select
+          id="sharedSpaceId"
+          style="width: 500px"
+          formControlName="sharedSpaceId"
+        >
+          <option
+            *ngFor="let sharedSpace of sharedSpaceItems"
+            value="{{ sharedSpace.id }}"
+            >{{ sharedSpace.path }}</option
+          >
+        </select>
+        <cbc-control-message
+          [control]="sharedSpaceIdControl"
+        ></cbc-control-message>
+      </div>
+    </div>
+  </form>
+</cbc-modal>

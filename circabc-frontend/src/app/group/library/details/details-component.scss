@@ -1,0 +1,154 @@
+@use '~css/global/variables-mixins-keyframes';
+
+.header-details {
+  display: flex;
+  background: rgb(255 255 255 / 0.5);
+  border-radius: 5px 5px 0 0;
+  padding: 12px 25px;
+
+  .title {
+    width: calc(100% - 100px);
+    font-family: Ubuntu, Verdana, Helvetica, sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    text-transform: uppercase;
+    color: #757575;
+    word-break: break-all;
+
+    .visibility {
+      margin-left: 0 !important;
+    }
+  }
+
+  .icons {
+    width: 100px;
+    vertical-align: bottom;
+
+    & > * {
+      float: right;
+      margin: 0 2px;
+    }
+  }
+}
+
+ul li strong {
+  display: inline-block;
+  word-break: break-all;
+}
+
+.postFooter {
+  padding: 25px;
+  background: #eef5f4;
+  border-top: 1px solid #dedede;
+}
+
+.sub-actions {
+  margin: 0;
+
+  img {
+    margin: 0;
+  }
+}
+
+.fixed-height--scrollable {
+  max-height: 255px;
+  overflow: auto;
+}
+
+.metadata-title {
+  font-weight: bold;
+  padding: 10px 0;
+}
+
+.pdf-viewer {
+  float: left;
+  width: 120px;
+  height: 170px;
+  display: block;
+}
+
+.library-link {
+  text-align: center;
+  padding-top: 25px;
+}
+
+.file-informations {
+  .thumbnail {
+    @media screen and (max-width: variables-mixins-keyframes.$break-small) {
+      float: none;
+      position: relative;
+      max-width: 100%;
+    }
+  }
+
+  .thumbnail-default {
+    float: left;
+
+    @media screen and (max-width: variables-mixins-keyframes.$break-small) {
+      display: none;
+    }
+  }
+
+  .items {
+    @media screen and (max-width: variables-mixins-keyframes.$break-small) {
+      margin: 15px 0 0;
+    }
+  }
+}
+
+.clean--bottom {
+  clear: left;
+  margin-bottom: 15px;
+}
+
+.file-details {
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+  .file-details {
+    width: 100%;
+  }
+}
+
+.details-container {
+  display: flex;
+  flex-flow: row;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.details-metadata-container,
+.details-actions-container {
+  flex: 1 1 500px;
+  min-width: 400px;
+}
+
+.details-comments-container {
+  flex: 2 1 500px;
+  min-width: 400px;
+}
+
+.box .main {
+  font-size: 12px;
+  min-width: 400px;
+}
+
+.no-margin {
+  padding: 0;
+}
+
+::ng-deep .p-component {
+  font-size: 12px;
+  font-family: variables-mixins-keyframes.$standardText;
+}
+
+.ares-info {
+  padding-left: 15px;
+}
+
+h4 {
+  margin: 0 0 5px;
+}

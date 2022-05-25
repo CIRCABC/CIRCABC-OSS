@@ -1,0 +1,32 @@
+.centered {
+  text-align: center;
+}
+
+.empty-row td {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.cell-profile-name {
+  padding-left: 12px !important;
+  width: 250px !important;
+}
+
+.header-profile {
+  padding: 10px;
+  color: #035;
+}
+
+.th--fixed-width {
+  width: 14%;
+}
+
+.cell-profile-icon {
+  position: relative;
+  width: 50px;
+  text-align: center;
+}
+
+.text-capitalize {
+  text-transform: capitalize;
+}

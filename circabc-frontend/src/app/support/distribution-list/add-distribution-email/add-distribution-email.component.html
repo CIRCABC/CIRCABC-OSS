@@ -1,0 +1,43 @@
+<cbc-modal
+  [title]="'label.add.distribution.email'"
+  (ok)="cancel()"
+  [okLabel]="'label.close'"
+  (cancel)="cancel()"
+  [(visible)]="showModal"
+  [displayCloseButton]="false"
+>
+  <form [formGroup]="emailForm" (keyup.enter)="addDistributionEmail()">
+    <div class="field">
+      <label for="email">{{ 'label.email' | transloco }}</label>
+      <input type="text" id="email" formControlName="emailAddress" />
+      <button
+        class="button"
+        type="submit"
+        (click)="addDistributionEmail()"
+        style="margin-left: 15px"
+        >{{ 'label.add' | transloco }}</button
+      >
+      <cbc-control-message
+        *ngIf="emailForm"
+        [showInvalid]="true"
+        [control]="emailAddressControl"
+      ></cbc-control-message>
+    </div>
+
+    <div class="field" *ngIf="processing">
+      <label
+        >{{ 'label.creating' | transloco }}...
+        <cbc-spinner></cbc-spinner>
+      </label>
+    </div>
+
+    <div class="field">
+      <label class="label-align-top"
+        >{{ 'label.created.newly.email.address' | transloco }}</label
+      >
+      <ul class="mails-created">
+        <li *ngFor="let email of emailCreated"> {{ email.emailAddress }} </li>
+      </ul>
+    </div>
+  </form>
+</cbc-modal>

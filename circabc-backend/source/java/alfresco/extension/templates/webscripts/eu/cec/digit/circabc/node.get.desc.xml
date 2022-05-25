@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Get the path of one node</shortname>
+  <description>Get the path of one node</description>
+    <url>/circabc/nodes/{id}</url>
+  <format default="json"/>
+  <authentication>guest</authentication>
+  <transaction>required</transaction>
+</webscript>

@@ -1,0 +1,150 @@
+{{ 'admin.tab.log.files' | transloco | cbcSetTitle }}
+<div>
+  <form [formGroup]="form">
+    <div class="field export-select">
+      <label for="users">{{ 'label.user' | transloco }}</label>
+      <div class="custom-select select--form">
+        <select *ngIf="users" formControlName="users">
+          <option *ngFor="let user of users" [ngValue]="user.id">
+            {{ user.name }}
+          </option>
+        </select>
+      </div>
+    </div>
+    <div class="field export-select">
+      <label for="services">{{ 'label.service' | transloco }}</label>
+      <div class="custom-select select--form">
+        <select
+          *ngIf="services"
+          #service
+          (change)="serviceClick(service.value)"
+          formControlName="services"
+        >
+          <option *ngFor="let service of services" [ngValue]="service.id">
+            {{ (service.name ==='Newsgroups')? "Forum": service.name }}
+          </option>
+        </select>
+      </div>
+    </div>
+    <div class="field export-select">
+      <label for="activities">{{ 'label.activity' | transloco }}</label>
+      <div class="custom-select select--form">
+        <select *ngIf="activities" formControlName="activities">
+          <option *ngFor="let activity of activities" [ngValue]="activity.id">
+            {{ activity.name }}
+          </option>
+        </select>
+      </div>
+    </div>
+    <div class="field field--with-icon field--date">
+      <label for="dateFrom">{{ 'label.from' | transloco }}</label>
+      <p-calendar
+        formControlName="dateFrom"
+        [dateFormat]="'dd/mm/yy'"
+        [placeholder]="'dd/mm/yyyy'"
+        [showIcon]="true"
+      ></p-calendar>
+      <cbc-control-message
+        *ngIf="form"
+        [control]="dateFrom"
+      ></cbc-control-message>
+    </div>
+    <div class="field field--with-icon field--date">
+      <label for="dateTo">{{ 'label.to' | transloco }}</label>
+      <p-calendar
+        formControlName="dateTo"
+        [dateFormat]="'dd/mm/yy'"
+        [placeholder]="'dd/mm/yyyy'"
+        [showIcon]="true"
+      ></p-calendar>
+      <cbc-control-message
+        *ngIf="form"
+        [control]="dateTo"
+      ></cbc-control-message>
+    </div>
+    <cbc-control-message *ngIf="form" [control]="form"></cbc-control-message>
+  </form>
+  <div class="buttons-group centered">
+    <a
+      class="cta"
+      (click)="search()"
+      *ngIf="form.valid"
+      [class.disabled]="loading || preloading"
+      >{{ 'label.search' | transloco }}</a
+    >
+    <a
+      class="cta"
+      (click)="export('csv')"
+      *ngIf="form.valid"
+      [class.disabled]="loading || preloading"
+      >{{ 'label.export.csv' | transloco }}</a
+    >
+    <a
+      class="cta"
+      (click)="export('xml')"
+      *ngIf="form.valid"
+      [class.disabled]="loading || preloading"
+      >{{ 'label.export.xml' | transloco }}</a
+    >
+    <span *ngIf="preloading"
+      >{{ 'admin.log.search.preloading' | transloco }}</span
+    >
+    <span *ngIf="loading">{{ 'label.searching' | transloco }}</span>
+    <cbc-spinner *ngIf="loading || preloading"></cbc-spinner>
+  </div>
+
+  <section class="modal-content table-container">
+    <div class="wrapping scroll-body">
+      <p *ngIf="searchResults !== undefined && searchResults.length > 0">
+        {{ 'label.records.found' | transloco: { total: searchResults.length } }}
+      </p>
+      <table class="main no-border-spacing">
+        <thead style="color: #035">
+          <tr>
+            <th>
+              <label>{{ 'label.date' | transloco }}</label>
+            </th>
+            <th>
+              <label>{{ 'label.user.id' | transloco }}</label>
+            </th>
+            <th>
+              <label>{{ 'label.service' | transloco }}</label>
+            </th>
+            <th>
+              <label>{{ 'label.activity' | transloco }}</label>
+            </th>
+            <th>
+              <label>{{ 'label.path' | transloco }}</label>
+            </th>
+            <th>
+              <label>{{ 'label.status' | transloco }}</label>
+            </th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr class="row empty-row" *ngIf="searchResults !== undefined">
+            <td colspan="6" *ngIf="searchResults.length === 0">
+              {{ 'label.nothing.to.display' | transloco }}
+            </td>
+          </tr>
+
+          <tr class="row left-text" *ngFor="let saerchResult of searchResults">
+            <td>{{ saerchResult.logDate }}</td>
+            <td>{{ saerchResult.userId }}</td>
+            <td>
+              {{ (saerchResult.serviceDescription ==='Newsgroups')? "Forum":
+              saerchResult.serviceDescription }}
+            </td>
+            <td>{{ saerchResult.activityDescription }}</td>
+            <td>{{ saerchResult.path }}</td>
+            <td>
+              {{ (saerchResult.success === true ? 'label.success' :
+              'label.failure') | transloco }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

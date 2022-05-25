@@ -1,0 +1,80 @@
+<div
+  class="black-overlayer"
+  *ngIf="showModal"
+  [class.overlayer-shown]="showModal"
+  [class.overlayer-hidden]="!showModal"
+></div>
+<section
+  class="modal modal--select-files"
+  *ngIf="showModal"
+  [class.modal-shown]="showModal"
+  [class.modal-hidden]="!showModal"
+  style="margin-top: 0"
+>
+  <a class="close-icon" (click)="cancel()"></a>
+  <header>
+    <h2 class="title"
+      >{{ 'members.application.submit.form.title' | transloco }}</h2
+    >
+  </header>
+  <section class="modal-content">
+    <p
+      style="margin-top: 0"
+      [innerHTML]="'members.application.submit.form.explanation' | transloco"
+    ></p>
+    <form [formGroup]="applicationForm">
+      <div class="field" style="height: 200px">
+        <p-editor formControlName="message" [style]="{ height: '320px' }">
+          <p-header>
+            <span class="ql-formats">
+              <select class="ql-header">
+                <option value="1"></option>
+                <option value="2"></option>
+                <option value="3"></option>
+                <option selected></option>
+                <option value="4"></option>
+                <option value="5"></option>
+                <option value="6"></option>
+              </select>
+            </span>
+            <span class="ql-formats">
+              <button class="ql-bold" aria-label="Bold"></button>
+              <button class="ql-italic" aria-label="Italic"></button>
+              <button class="ql-underline" aria-label="Underline"></button>
+              <button class="ql-strike" aria-label="Strike"></button>
+            </span>
+            <span class="ql-formats">
+              <button
+                class="ql-list"
+                aria-label="list"
+                value="ordered"
+              ></button>
+              <button class="ql-list" aria-label="list" value="bullet"></button>
+            </span>
+            <span class="ql-formats">
+              <button class="ql-blockquote" aria-label="Strike"></button>
+              <button class="ql-link" aria-label="link"></button>
+            </span>
+          </p-header>
+        </p-editor>
+      </div>
+      <br />
+      <br />
+      <div class="field" *ngIf="processing">
+        <label
+          >{{ 'label.submitting' | transloco }}...
+          <cbc-spinner></cbc-spinner>
+        </label>
+      </div>
+    </form>
+  </section>
+  <section class="modal-footer">
+    <!-- Buttons -->
+    <div class="buttons-group" *ngIf="!processing">
+      <a class="cta" (click)="submitApplication()"
+        >{{ 'label.submit' | transloco }}</a
+      >
+      <a class="button" (click)="cancel()">{{ 'label.cancel' | transloco }}</a>
+    </div>
+  </section>
+</section>

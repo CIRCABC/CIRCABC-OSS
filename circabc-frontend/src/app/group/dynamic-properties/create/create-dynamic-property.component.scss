@@ -1,0 +1,41 @@
+.hint {
+  display: inline-block;
+  margin-left: 162px;
+  color: #b7b7b7;
+}
+
+.main {
+  padding: 0;
+
+  .hidden {
+    display: none;
+  }
+}
+
+.first-cell {
+  padding: 15px 10px !important;
+
+  .tag {
+    color: #035;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid;
+    font-size: 10px;
+    margin-right: 15px;
+    text-decoration: none !important;
+  }
+
+  .striked {
+    text-decoration: line-through;
+  }
+}
+
+.row {
+  .row-actions {
+    a {
+      img {
+        vertical-align: middle;
+      }
+    }
+  }
+}

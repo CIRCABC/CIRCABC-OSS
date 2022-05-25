@@ -1,0 +1,1759 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+	<bean id="restTicketValidator"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.EcasTicketValidator">
+		<property name="ecasConfiguration" ref="EcasConfiguration" />
+		<property name="service" value="/service/circabc/ecaslogin" />
+	</bean>
+	<bean id="wso2TicketValidator"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.Wso2TicketValidator">
+		<property name="url">
+			<value>${wso2.url}</value>
+		</property>
+	</bean>
+	<bean id="soapTicketValidator"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.EcasTicketValidator">
+		<property name="ecasConfiguration" ref="EcasConfiguration" />
+		<property name="service" value="/api/CircabcAuthenticationService" />
+	</bean>
+	<bean id="circabcAuthenticationWebService"
+		class="eu.cec.digit.circabc.repo.webservice.authentication.CircabcAuthenticationWebService">
+		<property name="authenticationComponent" ref="authenticationComponent" />
+		<property name="authenticationService" ref="authenticationService" />
+		<property name="ticketValidator" ref="soapTicketValidator" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.login.post" class="eu.cec.digit.circabc.repo.web.scripts.bean.LoginPost" parent="webscript">
+		<property name="authenticationService" ref="AuthenticationService" />
+		<property name="userService" ref="UserService" />
+		<property name="transactionService" ref="transactionService" />
+	 </bean>
+	<bean id="webscript.eu.cec.digit.circabc.ecaslogin.get" class="eu.cec.digit.circabc.repo.web.scripts.bean.EULogin"
+		parent="webscript">
+		<property name="authenticationComponent" ref="authenticationComponent" />
+		<property name="authenticationService" ref="authenticationService" />
+		<property name="ticketValidator" ref="restTicketValidator" />
+		<property name="userService" ref="userService" />
+		<property name="circabcService" ref="circabcService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.eulogin.get" class="eu.cec.digit.circabc.repo.web.scripts.bean.EULogin"
+		parent="webscript">
+		<property name="authenticationComponent" ref="authenticationComponent" />
+		<property name="authenticationService" ref="authenticationService" />
+		<property name="ticketValidator" ref="wso2TicketValidator" />
+		<property name="userService" ref="userService" />
+		<property name="circabcService" ref="circabcService" />
+	</bean>
+	<bean id="circabc.webscript"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.CircabcDeclarativeWebScript"
+		parent="webscript" abstract="true">
+		<property name="logService" ref="logService" />
+		<property name="notSecuredNodeService" ref="nodeService" />
+		<property name="apiToolBox" ref="apiToolBox" />
+	</bean>
+	<!-- HEADERS -->
+	<bean id="webscript.eu.cec.digit.circabc.headers.get" class="eu.cec.digit.circabc.repo.web.scripts.bean.HeaderGet"
+		parent="webscript">
+		<property name="headerApi" ref="HeaderApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.headers.post" class="eu.cec.digit.circabc.repo.web.scripts.bean.HeaderPost"
+		parent="circabc.webscript">
+		<property name="headerApi" ref="HeaderApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.headers.put" class="eu.cec.digit.circabc.repo.web.scripts.bean.HeaderPut"
+		parent="circabc.webscript">
+		<property name="headerApi" ref="HeaderApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.headers.delete" class="eu.cec.digit.circabc.repo.web.scripts.bean.HeaderDelete"
+		parent="circabc.webscript">
+		<property name="headerApi" ref="HeaderApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<!-- NODES -->
+	<bean id="webscript.eu.cec.digit.circabc.node.get" class="eu.cec.digit.circabc.repo.web.scripts.bean.NodeGet"
+		parent="webscript">
+		<property name="nodesApi" ref="NodesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.path.get" class="eu.cec.digit.circabc.repo.web.scripts.bean.PathGet"
+		parent="webscript">
+		<property name="nodesApi" ref="NodesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.categories.exported.profiles.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.CategoryExportedProfilesGet"
+		parent="webscript">
+		<property name="categoriesApi" ref="CategoriesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.categories.get" class="eu.cec.digit.circabc.repo.web.scripts.bean.CategoryGet"
+		parent="webscript">
+		<property name="categoriesApi" ref="CategoriesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.categories.groups.get" class="eu.cec.digit.circabc.repo.web.scripts.bean.CategoryGroupsGet"
+		parent="webscript">
+		<property name="categoriesApi" ref="CategoriesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.categories.post" class="eu.cec.digit.circabc.repo.web.scripts.bean.CategoryPost"
+		parent="circabc.webscript">
+		<property name="categoriesApi" ref="CategoriesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.categories.put" class="eu.cec.digit.circabc.repo.web.scripts.bean.CategoryPut"
+		parent="circabc.webscript">
+		<property name="categoriesApi" ref="CategoriesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.categories.admins.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.CategoryAdminsGet"
+		parent="webscript">
+		<property name="categoriesApi" ref="CategoriesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.categories.admins.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.CategoryAdminsPost"
+		parent="circabc.webscript">
+		<property name="categoriesApi" ref="CategoriesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.categories.admins.delete"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.CategoryAdminsDelete"
+		parent="circabc.webscript">
+		<property name="categoriesApi" ref="CategoriesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.categories.logos.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.CategoryLogosGet"
+		parent="webscript">
+		<property name="categoriesApi" ref="CategoriesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.categories.logos.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.CategoryLogosPost"
+		parent="circabc.webscript">
+		<property name="categoriesApi" ref="CategoriesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.categories.logos.selection.put"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.CategoryLogosSelectionPut"
+		parent="circabc.webscript">
+		<property name="categoriesApi" ref="CategoriesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.categories.logos.delete"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.CategoryLogosDelete"
+		parent="circabc.webscript">
+		<property name="categoriesApi" ref="CategoriesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.categories.groups.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.CategoryGroupsPost"
+		parent="circabc.webscript">
+		<property name="categoriesApi" ref="CategoriesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.categories.group.request.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.CategoryRequestGroupPost"
+		parent="circabc.webscript">
+		<property name="categoriesApi" ref="CategoriesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.categories.group.requests.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.CategoryRequestGroupsGet"
+		parent="webscript">
+		<property name="categoriesApi" ref="CategoriesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.categories.group.request.put"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.CategoryRequestGroupPut"
+		parent="circabc.webscript">
+		<property name="categoriesApi" ref="CategoriesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.categories.group.request.approval.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.CategoryRequestGroupApprovalPost"
+		parent="circabc.webscript">
+		<property name="categoriesApi" ref="CategoriesApi" />
+		<property name="authenticationService" ref="authenticationService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.categories.admin.contact.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.CategoryAdminContactPost"
+		parent="circabc.webscript">
+		<property name="categoriesApi" ref="CategoriesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.categories.ig.statistics.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.CategoriesIGStatisticsGet"
+		parent="circabc.webscript">
+		<property name="categoriesApi" ref="CategoriesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean
+		id="webscript.eu.cec.digit.circabc.categories.ig.statistics.calculate.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.CategoriesIGStatisticsCalculatePost"
+		parent="circabc.webscript">
+		<property name="categoriesApi" ref="CategoriesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.space.get" class="eu.cec.digit.circabc.repo.web.scripts.bean.SpaceGet"
+		parent="webscript">
+		<property name="spacesApi" ref="SpacesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.restricted.spaces.id.get" class="eu.cec.digit.circabc.repo.web.scripts.bean.RestrictedSpacesIdGet"
+		parent="webscript">
+		<property name="spacesApi" ref="SpacesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.space.post" class="eu.cec.digit.circabc.repo.web.scripts.bean.SpacePost"
+		parent="circabc.webscript">
+		<property name="spacesApi" ref="SpacesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.space.delete" class="eu.cec.digit.circabc.repo.web.scripts.bean.SpaceDelete"
+		parent="circabc.webscript">
+		<property name="spacesApi" ref="SpacesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.space.put" class="eu.cec.digit.circabc.repo.web.scripts.bean.SpacePut"
+		parent="circabc.webscript">
+		<property name="spacesApi" ref="SpacesApi" />
+		<property name="nodesApi" ref="NodesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.space.url.post" class="eu.cec.digit.circabc.repo.web.scripts.bean.SpaceUrlPost"
+		parent="circabc.webscript">
+		<property name="spacesApi" ref="SpacesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.content.delete"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.ContentDelete"
+		parent="circabc.webscript">
+		<property name="contentApi" ref="ContentApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.content.put" class="eu.cec.digit.circabc.repo.web.scripts.bean.ContentPut"
+		parent="circabc.webscript">
+		<property name="contentApi" ref="ContentApi" />
+		<property name="nodesApi" ref="NodesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+		<property name="nodeService" ref="NodeService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.content.translations.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.ContentTranslationsGet"
+		parent="webscript">
+		<property name="contentApi" ref="ContentApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.content.translations.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.ContentTranslationsPost"
+		parent="circabc.webscript">
+		<property name="contentApi" ref="ContentApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.content.translations.enhanced.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.ContentTranslationsEnhancedPost"
+		parent="circabc.webscript">
+		<property name="contentApi" ref="ContentApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.content.machinetranslation.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.ContentMachineTranslationPost"
+		parent="circabc.webscript">
+		<property name="contentApi" ref="ContentApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.content.multilingual.aspect.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.ContentMultilingualAspectPost"
+		parent="circabc.webscript">
+		<property name="contentApi" ref="ContentApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<!-- Checkout, checkin and cancel checkout -->
+	<bean id="webscript.eu.cec.digit.circabc.content.id.check.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.ContentIdCheckout"
+		parent="circabc.webscript">
+		<property name="cociContentBusinessSrv" ref="CociContentBusinessSrv" />
+		<property name="nodeService" ref="NodeService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.content.id.check.put"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.ContentIdCheckin"
+		parent="circabc.webscript">
+		<property name="cociContentBusinessSrv" ref="CociContentBusinessSrv" />
+		<property name="nodeService" ref="NodeService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+		<property name="circabcRenditionService" ref="circabcRenditionService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.content.id.check.delete"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.ContentIdCancelCheckout"
+		parent="circabc.webscript">
+		<property name="cociContentBusinessSrv" ref="CociContentBusinessSrv" />
+		<property name="nodeService" ref="NodeService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.content.id.update.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.ContentIdUpdate"
+		parent="circabc.webscript">
+		<property name="cociContentBusinessSrv" ref="CociContentBusinessSrv" />
+		<property name="nodeService" ref="NodeService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.content.id.check.office.edit.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.CheckEditInOfficeGet"
+		parent="webscript">
+		<property name="contentApi" ref="ContentApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.content.id.check.preview.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.CheckPreviewGet"
+		parent="webscript">
+		<property name="contentApi" ref="ContentApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<!-- Copy, Move & Link nodes -->
+	<bean id="webscript.eu.cec.digit.circabc.nodes.id.paste.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.NodesIdPasteCopy"
+		parent="circabc.webscript">
+		<property name="nodeService" ref="NodeService" />
+		<property name="clipboardApi" ref="ClipboardApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.nodes.id.paste.put"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.NodesIdPasteMove"
+		parent="circabc.webscript">
+		<property name="nodeService" ref="NodeService" />
+		<property name="clipboardApi" ref="ClipboardApi" />
+		<property name="notificationService">
+			<ref bean="CircabcNotificationService" />
+		</property>
+		<property name="notificationSubscriptionService" ref="notificationSubscriptionService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.nodes.id.link.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.NodesIdPasteLink"
+		parent="circabc.webscript">
+		<property name="nodeService" ref="NodeService" />
+		<property name="clipboardApi" ref="ClipboardApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<!-- Bulk download -->
+	<bean id="webscript.eu.cec.digit.circabc.content.bulk.download.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.BulkDownload"
+		parent="webscript">
+		<property name="contentApi" ref="ContentApi" />
+	</bean>
+	<!-- Email content -->
+	<bean id="webscript.eu.cec.digit.circabc.content.id.email.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.ContentIdEmail"
+		parent="circabc.webscript">
+		<property name="nodeService" ref="NodeService" />
+		<property name="mailMeContentBusinessSrv" ref="MailMeContentBusinessSrv" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.contents.email.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.ContentsEmail"
+		parent="circabc.webscript">
+		<property name="nodeService" ref="NodeService" />
+		<property name="mailMeContentBusinessSrv" ref="MailMeContentBusinessSrv" />
+		<property name="contentApi" ref="ContentApi" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.get" class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupGet"
+		parent="circabc.webscript">
+		<property name="groupsApi" ref="GroupsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.visited.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsVisitedGet"
+		parent="webscript">
+		<property name="groupsApi" ref="GroupsApi" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.configuration.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupConfigurationGet"
+		parent="webscript">
+		<property name="groupsApi" ref="GroupsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.configuration.put"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupConfigurationPut"
+		parent="circabc.webscript">
+		<property name="groupsApi" ref="GroupsApi" />
+		<property name="nodeService" ref="NodeService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	
+	<bean id="webscript.eu.cec.digit.circabc.check.deletion.groups.get" class="eu.cec.digit.circabc.repo.web.scripts.bean.CheckDeletionGroupsGet"
+		parent="webscript">
+		<property name="libraryApi" ref="libraryApi" />
+		<property name="nodeService" ref="NodeService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	
+	<bean id="webscript.eu.cec.digit.circabc.group.delete" class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupDelete"
+		parent="webscript">
+		<property name="groupsApi" ref="GroupsApi" />
+		<property name="nodeService" ref="NodeService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	
+	<bean id="webscript.eu.cec.digit.circabc.groups.path.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupPathGet"
+		parent="webscript">
+		<property name="groupsApi" ref="GroupsApi" />
+		<property name="categoriesApi" ref="CategoriesApi" />
+		<property name="headersApi" ref="HeaderApi" />
+		<property name="nodeService" ref="NodeService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.put" class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupPut"
+		parent="circabc.webscript">
+		<property name="groupsApi" ref="GroupsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.dashboard.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsDashboardGet"
+		parent="webscript">
+		<property name="groupsApi" ref="GroupsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.dashboard.discussions.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsDashboardDiscussionsGet"
+		parent="webscript">
+		<property name="groupsApi" ref="GroupsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.documents.deleted.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsDocumentsDeletedGet"
+		parent="webscript">
+		<property name="archiveApi" ref="ArchiveApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.documents.deleted.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsDocumentsDeletedPost"
+		parent="circabc.webscript">
+		<property name="archiveApi" ref="ArchiveApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.documents.deleted.delete"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsDocumentsDeletedDelete"
+		parent="circabc.webscript">
+		<property name="archiveApi" ref="ArchiveApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.documents.expired.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsDocumentsExpiredGet"
+		parent="webscript">
+		<property name="expiredApi" ref="ExpiredApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.members.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsMembersGet"
+		parent="webscript">
+		<property name="groupsApi" ref="GroupsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.members.count.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsMembersCountGet"
+		parent="webscript">
+		<property name="groupsApi" ref="GroupsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.members.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsMembersPost"
+		parent="circabc.webscript">
+		<property name="groupsApi" ref="GroupsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.members.put"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsMembersPut"
+		parent="circabc.webscript">
+		<property name="groupsApi" ref="GroupsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.members.delete"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsMembersDelete"
+		parent="circabc.webscript">
+		<property name="groupsApi" ref="GroupsApi" />
+		<property name="notificationsApi" ref="NotificationsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+
+	<bean id="webscript.eu.cec.digit.circabc.groups.members.expiration.delete"
+		  class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsMembersExpirationDelete"
+		  parent="circabc.webscript">
+		<property name="groupsApi" ref="GroupsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+
+	<bean id="webscript.eu.cec.digit.circabc.groups.members.expiration.put"
+		  class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsMembersExpirationPut"
+		  parent="circabc.webscript">
+		<property name="groupsApi" ref="GroupsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+
+	<bean id="webscript.eu.cec.digit.circabc.groups.members.expiration.post"
+		  class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsMembersExpirationPost"
+		  parent="circabc.webscript">
+		<property name="groupsApi" ref="GroupsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+
+	<bean id="webscript.eu.cec.digit.circabc.groups.id.members.export.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsIdMembersExport"
+		parent="webscript">
+		<property name="groupsApi" ref="GroupsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.applicants.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsApplicantsGet"
+		parent="webscript">
+		<property name="groupsApi" ref="GroupsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.applicants.put"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsApplicantsPut"
+		parent="circabc.webscript">
+		<property name="groupsApi" ref="GroupsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.applicants.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsApplicantsPost"
+		parent="circabc.webscript">
+		<property name="groupsApi" ref="GroupsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.profiles.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsProfilesGet"
+		parent="webscript">
+		<property name="profilesApi" ref="ProfilesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.profiles.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsProfilesPost"
+		parent="circabc.webscript">
+		<property name="profilesApi" ref="ProfilesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.imported.profiles.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsImportedProfilesPost"
+		parent="circabc.webscript">
+		<property name="profilesApi" ref="ProfilesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.keywords.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsKeywordsGet"
+		parent="webscript">
+		<property name="keywordsApi" ref="KeywordsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.bulk.keywords.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsBulkKeywordsGet"
+		parent="webscript">
+		<property name="keywordsApi" ref="KeywordsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.bulk.keywords.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsBulkKeywordsPost"
+		parent="circabc.webscript">
+		<property name="keywordsApi" ref="KeywordsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.summary.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsSummaryGet"
+		parent="webscript">
+		<property name="groupsApi" ref="GroupsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.id.summary.export.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsIdSummaryExport"
+		parent="webscript">
+		<property name="groupsApi" ref="GroupsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.import.template.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GenerateImportIndexFileTemplate"
+		parent="webscript">
+		<property name="groupsApi" ref="GroupsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.import.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.ImportZipFilePost"
+		parent="circabc.webscript">
+		<property name="groupsApi" ref="GroupsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.logos.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupLogosGet"
+		parent="webscript">
+		<property name="groupsApi" ref="GroupsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.logos.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupLogosPost"
+		parent="circabc.webscript">
+		<property name="groupsApi" ref="GroupsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.logos.put"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupLogosPut"
+		parent="circabc.webscript">
+		<property name="groupsApi" ref="GroupsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.logos.delete"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupLogosDelete"
+		parent="circabc.webscript">
+		<property name="groupsApi" ref="GroupsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.forum.subforums.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.ForumSubforumsGet"
+		parent="webscript">
+		<property name="forumsApi" ref="ForumsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.forum.content.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.ForumContentGet"
+		parent="webscript">
+		<property name="forumsApi" ref="ForumsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.forums.delete" class="eu.cec.digit.circabc.repo.web.scripts.bean.ForumsDelete"
+		parent="circabc.webscript">
+		<property name="forumsApi" ref="ForumsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.forums.update.put"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.ForumsUpdatePut"
+		parent="circabc.webscript">
+		<property name="forumsApi" ref="ForumsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.forum.content.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.ForumContentPost"
+		parent="circabc.webscript">
+		<property name="forumsApi" ref="ForumsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.forum.post" class="eu.cec.digit.circabc.repo.web.scripts.bean.ForumPost"
+		parent="circabc.webscript">
+		<property name="forumsApi" ref="ForumsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.forum.moderation.toggle.put"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.ForumModerationTogglePut"
+		parent="circabc.webscript">
+		<property name="forumsApi" ref="ForumsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.post.verify.put"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.PostVerifyPut"
+		parent="circabc.webscript">
+		<property name="forumsApi" ref="ForumsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.post.abuse.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.PostAbusesGet"
+		parent="webscript">
+		<property name="forumsApi" ref="ForumsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.post.abuse.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.PostAbuseSignalPost"
+		parent="circabc.webscript">
+		<property name="forumsApi" ref="ForumsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.post.abuse.delete"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.PostAbusesDelete"
+		parent="circabc.webscript">
+		<property name="forumsApi" ref="ForumsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<!-- Post attachments -->
+	<bean id="webscript.eu.cec.digit.circabc.post.id.attachment.download.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.DownloadPostAttachment"
+		parent="webscript">
+		<property name="topicsApi" ref="TopicsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.post.id.attachment.delete"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.PostAttachmentDelete"
+		parent="webscript">
+		<property name="topicsApi" ref="TopicsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.post.id.attachment.file.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.PostAttachmentFileAdd"
+		parent="webscript">
+		<property name="topicsApi" ref="TopicsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+ 	<bean id="webscript.eu.cec.digit.circabc.post.id.attachment.link.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.PostAttachmentLinkAdd"
+		parent="webscript">
+		<property name="topicsApi" ref="TopicsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+ 	<bean id="webscript.eu.cec.digit.circabc.post.id.attachment.size.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GetPostAttachmentRemainingSize"
+		parent="webscript">
+		<property name="topicsApi" ref="TopicsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	
+	<bean id="webscript.eu.cec.digit.circabc.topic.replies.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.TopicRepliesGet"
+		parent="webscript">
+		<property name="topicsApi" ref="TopicsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.topics.update.put"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.TopicsUpdatePut"
+		parent="circabc.webscript">
+		<property name="topicsApi" ref="TopicsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.user.get" class="eu.cec.digit.circabc.repo.web.scripts.bean.UserGet"
+		parent="webscript">
+		<property name="usersApi" ref="UsersApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.user.db.get" class="eu.cec.digit.circabc.repo.web.scripts.bean.UserDBGet"
+		parent="webscript">
+		<property name="usersApi" ref="UsersApi" />
+		<property name="authenticationService" ref="authenticationService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.user.avatar.delete"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.UserAvatarDelete"
+		parent="circabc.webscript">
+		<property name="usersApi" ref="UsersApi" />
+		<property name="authenticationService" ref="authenticationService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.user.avatar.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.UserAvatarUpdate"
+		parent="circabc.webscript">
+		<property name="usersApi" ref="UsersApi" />
+		<property name="authenticationService" ref="authenticationService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.user.put" class="eu.cec.digit.circabc.repo.web.scripts.bean.UserPut"
+		parent="circabc.webscript">
+		<property name="usersApi" ref="UsersApi" />
+		<property name="authenticationService" ref="authenticationService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.users.get" class="eu.cec.digit.circabc.repo.web.scripts.bean.UsersGet"
+		parent="webscript">
+		<property name="usersApi" ref="UsersApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.users.retrieval.post" class="eu.cec.digit.circabc.repo.web.scripts.bean.UsersRetrievalPost"
+		parent="webscript">
+		<property name="usersApi" ref="UsersApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.users.memberships.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.UserMembershipsGet"
+		parent="webscript">
+		<property name="usersApi" ref="usersApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.history.group.membership.recoverable.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.HistoryGroupMembershipRecoverableGet"
+		parent="webscript">
+		<property name="historyApi" ref="historyApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.history.group.membership.recoverable.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.HistoryGroupMembershipRecoverablePost"
+		parent="circabc.webscript">
+		<property name="historyApi" ref="HistoryApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.history.job.memberships.revocation.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.HistoryMembershipsRevocationPost"
+		parent="circabc.webscript">
+		<property name="historyApi" ref="HistoryApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.history.job.memberships.revocation.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.HistoryMembershipsRevocationGet"
+		parent="webscript">
+		<property name="historyApi" ref="HistoryApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.history.memberships.logs.delete"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.HistoryMembershipsLogsDelete"
+		parent="webscript">
+		<property name="historyApi" ref="HistoryApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.history.memberships.expiration.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.HistoryMembershipsExpirationPost"
+		parent="circabc.webscript">
+		<property name="historyApi" ref="HistoryApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.users.categories.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.UserCategoriesGet"
+		parent="webscript">
+		<property name="usersApi" ref="usersApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<!-- Bulk invite users -->
+	<bean id="webscript.eu.cec.digit.circabc.users.bulk.invite.template.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.BulkInviteDownloadTemplate"
+		parent="webscript">
+		<property name="usersApi" ref="UsersApi" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.users.bulk.invite.categories.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.BulkInviteCategoriesGet"
+		parent="webscript">
+		<property name="usersApi" ref="UsersApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.users.bulk.invite.igs.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.BulkInviteIGsGet"
+		parent="webscript">
+		<property name="usersApi" ref="UsersApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.users.bulk.invite.members.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.BulkInviteMembersGet"
+		parent="webscript">
+		<property name="usersApi" ref="UsersApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.users.bulk.invite.users.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.BulkInviteUsersPost"
+		parent="circabc.webscript">
+		<property name="usersApi" ref="UsersApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.users.bulk.invite.users.file.put"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.BulkInviteUsersDigestFilePut"
+		parent="circabc.webscript">
+		<property name="usersApi" ref="UsersApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.ftp.connection.test.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.FTPConnectionTestGet"
+		parent="webscript">
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.content.first.ten.versions.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.ContentFirstTenVersionsGet"
+		parent="webscript">
+		<property name="contentApi" ref="ContentApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.content.versions.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.ContentVersionsGet"
+		parent="webscript">
+		<property name="contentApi" ref="ContentApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.content.version.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.ContentVersionGet"
+		parent="webscript">
+		<property name="contentApi" ref="ContentApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<!-- AutoUpload related webscripts -->
+	<bean id="webscript.eu.cec.digit.circabc.autouploads.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.AutoUploadsGet"
+		parent="webscript">
+		<property name="autoUploadApi" ref="AutoUploadApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.autoupload.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.AutoUploadGet"
+		parent="webscript">
+		<property name="autoUploadApi" ref="AutoUploadApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.autoupload.delete"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.AutoUploadDelete"
+		parent="circabc.webscript">
+		<property name="autoUploadApi" ref="AutoUploadApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.autoupload.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.AutoUploadPost"
+		parent="circabc.webscript">
+		<property name="autoUploadApi" ref="AutoUploadApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.autoupload.put"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.AutoUploadPut"
+		parent="circabc.webscript">
+		<property name="autoUploadApi" ref="AutoUploadApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<!-- Events related web scripts -->
+	<bean id="webscript.eu.cec.digit.circabc.groups.id.events.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsIdEventsGet"
+		parent="webscript">
+		<!-- retrieve a list of events for the current month -->
+		<property name="eventsApi" ref="EventsApi" />
+		<property name="nodeService" ref="nodeService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.id.events.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsIdEventsPost"
+		parent="circabc.webscript">
+		<!-- create a new event -->
+		<property name="eventsApi" ref="EventsApi" />
+		<property name="nodeService" ref="NodeService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.events.id.get" class="eu.cec.digit.circabc.repo.web.scripts.bean.EventsIdGet"
+		parent="webscript">
+		<!-- get the details of an event given its id -->
+		<property name="eventsApi" ref="EventsApi" />
+		<property name="eventService" ref="eventService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.events.id.delete"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.EventsIdDelete"
+		parent="circabc.webscript">
+		<!-- remove an event given its id -->
+		<property name="eventsApi" ref="EventsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.events.id.put" class="eu.cec.digit.circabc.repo.web.scripts.bean.EventsIdPut"
+		parent="circabc.webscript">
+		<!-- update an event given its id -->
+		<property name="eventsApi" ref="EventsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.users.id.events.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.UsersIdEventsGet"
+		parent="webscript">
+		<!-- get the list of events of a give user within a date range -->
+		<property name="eventsApi" ref="EventsApi" />
+		<property name="authenticationService" ref="authenticationService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.users.id.events.period.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.UsersIdEventsPeriodGet"
+		parent="webscript">
+		<!-- get the list of events of a give user within a date range -->
+		<property name="eventsApi" ref="EventsApi" />
+		<property name="authenticationService" ref="authenticationService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.users.id.events.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.UsersIdEventsPost"
+		parent="circabc.webscript">
+		<!-- sets the meeting status as Accepted or Rejected for the given user -->
+		<property name="eventsApi" ref="EventsApi" />
+		<property name="authenticationService" ref="authenticationService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.id.events.list.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsIdEventsListGet"
+		parent="webscript">
+		<!-- retrieve a list of events for the current month -->
+		<property name="eventsApi" ref="EventsApi" />
+		<property name="nodeService" ref="NodeService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.id.events.export.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsIdEventsExportGet"
+		parent="webscript">
+		<!-- export the list of events -->
+		<property name="eventsApi" ref="EventsApi" />
+		<property name="nodeService" ref="NodeService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+		<property name="apiToolBox" ref="apiToolBox" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.subspaces.id.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.SubspacesIdGet"
+		parent="webscript">
+		<!-- get the level immediate below of subspaces of the given space id -->
+		<property name="spacesApi" ref="SpacesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<!-- Spaces sharing related services -->
+	<bean id="webscript.eu.cec.digit.circabc.spaces.id.shares.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.SpacesIdSharesGet"
+		parent="webscript">
+		<property name="spacesApi" ref="SpacesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.spaces.id.shares.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.SpacesIdSharePost"
+		parent="circabc.webscript">
+		<property name="spacesApi" ref="SpacesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.spaces.id.shares.put"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.SpacesIdShareUpdatePermissionPut"
+		parent="webscript">
+		<property name="spacesApi" ref="SpacesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.spaces.id.shares.delete"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.SpacesIdShareDelete"
+		parent="circabc.webscript">
+		<property name="spacesApi" ref="SpacesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.spaces.id.toshare.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.SpacesIdToShareGet"
+		parent="webscript">
+		<property name="spacesApi" ref="SpacesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.spaces.folder.size.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.SpacesFolderSizeGet"
+		parent="webscript">
+		<property name="spacesApi" ref="SpacesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.spaces.id.exportedshares.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.SpacesIdAvailableSharesGet"
+		parent="webscript">
+		<property name="spacesApi" ref="SpacesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.spaces.id.exportedshares.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.SpacesIdCreateSharePost"
+		parent="circabc.webscript">
+		<property name="spacesApi" ref="SpacesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.audit.id.history.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.AuditIdHistoryGet"
+		parent="webscript">
+		<!-- get the history of an item (document, event. etc.) given its id -->
+		<property name="logService" ref="logService" />
+		<property name="nodeService" ref="NodeService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.audit.id.get" class="eu.cec.digit.circabc.repo.web.scripts.bean.AuditIdGet"
+		parent="webscript">
+		<property name="logService" ref="logService" />
+		<property name="nodeService" ref="NodeService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.audit.activities.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.AuditActivitiesGet"
+		parent="webscript">
+		<property name="logService" ref="logService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+		<property name="nodeService" ref="NodeService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.keywords.delete"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.KeywordsDelete"
+		parent="circabc.webscript">
+		<property name="keywordsApi" ref="KeywordsApi" />
+		<property name="nodeService" ref="nodeService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.keywords.put" class="eu.cec.digit.circabc.repo.web.scripts.bean.KeywordsPut"
+		parent="circabc.webscript">
+		<property name="keywordsApi" ref="KeywordsApi" />
+		<property name="nodeService" ref="nodeService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.keywords.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsKeywordsPost"
+		parent="circabc.webscript">
+		<property name="keywordsApi" ref="KeywordsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.nodes.keywords.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.NodesKeywordsGet"
+		parent="webscript">
+		<property name="keywordsApi" ref="KeywordsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.nodes.keywords.delete"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.NodesKeywordsDelete"
+		parent="circabc.webscript">
+		<property name="keywordsApi" ref="KeywordsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.nodes.keywords.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.NodesKeywordsPost"
+		parent="circabc.webscript">
+		<property name="keywordsApi" ref="KeywordsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.nodes.topics.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.NodesTopicsGet"
+		parent="webscript">
+		<property name="contentApi" ref="ContentApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.nodes.permissions.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.NodesPermissionsGet"
+		parent="webscript">
+		<property name="permissionsApi" ref="PermissionsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.nodes.permissions.put"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.NodesPermissionsPut"
+		parent="circabc.webscript">
+		<property name="permissionsApi" ref="PermissionsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.nodes.permissions.delete"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.NodesPermissionsDelete"
+		parent="circabc.webscript">
+		<property name="permissionsApi" ref="PermissionsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.nodes.all.permissions.delete"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.NodesAllPermissionsDelete"
+		parent="circabc.webscript">
+		<property name="permissionsApi" ref="PermissionsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean
+		id="webscript.eu.cec.digit.circabc.nodes.authority.notifications.put"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.NodesAuthorityNotificationsPut"
+		parent="circabc.webscript">
+		<property name="notificationsApi" ref="NotificationsApi" />
+		<property name="authenticationService" ref="AuthenticationService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean
+		id="webscript.eu.cec.digit.circabc.nodes.authority.notifications.delete"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.NodesAuthorityNotificationsDelete"
+		parent="circabc.webscript">
+		<property name="notificationsApi" ref="NotificationsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.nodes.id.notifications.paste.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.NodesIdNotificationsPasteGet"
+		parent="webscript">
+		<property name="notificationsApi" ref="NotificationsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean
+		id="webscript.eu.cec.digit.circabc.nodes.id.notifications.paste.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.NodesIdNotificationsPastePost"
+		parent="circabc.webscript">
+		<property name="notificationsApi" ref="NotificationsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean
+		id="webscript.eu.cec.digit.circabc.nodes.id.notification.status.configurations.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.NodesIdNotificationStatusConfigurationsGet"
+		parent="webscript">
+		<property name="notificationsApi" ref="NotificationsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean
+		id="webscript.eu.cec.digit.circabc.nodes.id.notification.status.users.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.NodesIdNotificationStatusUsersGet"
+		parent="webscript">
+		<property name="notificationsApi" ref="NotificationsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean
+		id="webscript.eu.cec.digit.circabc.nodes.id.notification.status.users.id.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.NodesIdNotificationStatusUsersIdGet"
+		parent="webscript">
+		<property name="notificationsApi" ref="NotificationsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean
+		id="webscript.eu.cec.digit.circabc.nodes.id.notification.status.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.NodesIdNotificationUpdateStatusPost"
+		parent="circabc.webscript">
+		<property name="notificationsApi" ref="NotificationsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean
+		id="webscript.eu.cec.digit.circabc.nodes.id.notification.status.delete"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.NodesIdNotificationDelete"
+		parent="circabc.webscript">
+		<property name="notificationsApi" ref="NotificationsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.nodes.topics.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.NodesTopicsPost"
+		parent="circabc.webscript">
+		<property name="contentApi" ref="ContentApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.topics.replies.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.TopicRepliesPost"
+		parent="circabc.webscript">
+		<property name="topicsApi" ref="TopicsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.posts.delete" class="eu.cec.digit.circabc.repo.web.scripts.bean.PostsDelete"
+		parent="circabc.webscript">
+		<property name="topicsApi" ref="TopicsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.posts.put" class="eu.cec.digit.circabc.repo.web.scripts.bean.PostsPut"
+		parent="circabc.webscript">
+		<property name="topicsApi" ref="TopicsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.topics.delete" class="eu.cec.digit.circabc.repo.web.scripts.bean.TopicsDelete"
+		parent="circabc.webscript">
+		<property name="topicsApi" ref="TopicsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.dynprops.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsDynPropsGet"
+		parent="webscript">
+		<property name="dynamicPropertiesApi" ref="DynamicPropertiesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.dynprops.delete"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.DynPropsDelete"
+		parent="circabc.webscript">
+		<property name="dynamicPropertiesApi" ref="DynamicPropertiesApi" />
+		<property name="nodeService" ref="nodeService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.dynprops.get" class="eu.cec.digit.circabc.repo.web.scripts.bean.DynPropsGet"
+		parent="webscript">
+		<property name="dynamicPropertiesApi" ref="DynamicPropertiesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.dynprops.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsDynPropsPost"
+		parent="circabc.webscript">
+		<property name="dynamicPropertiesApi" ref="DynamicPropertiesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.dynprops.put" class="eu.cec.digit.circabc.repo.web.scripts.bean.DynPropsPut"
+		parent="circabc.webscript">
+		<property name="dynamicPropertiesApi" ref="DynamicPropertiesApi" />
+		<property name="nodeService" ref="nodeService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.information.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsInformationGet"
+		parent="webscript">
+		<property name="informationApi" ref="InformationApi" />
+		<property name="nodeService" ref="nodeService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.information.put"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsInformationPut"
+		parent="webscript">
+		<property name="informationApi" ref="InformationApi" />
+		<property name="nodeService" ref="nodeService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.information.news.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsInformationNewsGet"
+		parent="webscript">
+		<property name="informationApi" ref="InformationApi" />
+		<property name="nodeService" ref="nodeService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.information.news.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsInformationNewsPost"
+		parent="circabc.webscript">
+		<property name="informationApi" ref="InformationApi" />
+		<property name="nodeService" ref="nodeService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+		<property name="asyncThreadPoolExecutor">
+			<ref bean="AsyncThreadPoolExecutor" />
+		</property>
+		<property name="transactionService">
+			<ref bean="transactionService" />
+		</property>
+		<property name="notificationService">
+			<ref bean="CircabcNotificationService" />
+		</property>
+		<property name="notificationSubscriptionService">
+			<ref bean="notificationSubscriptionService" />
+		</property>
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.news.get" class="eu.cec.digit.circabc.repo.web.scripts.bean.NewsGet"
+		parent="webscript">
+		<property name="informationApi" ref="InformationApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.news.put" class="eu.cec.digit.circabc.repo.web.scripts.bean.NewsPut"
+		parent="circabc.webscript">
+		<property name="informationApi" ref="InformationApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.news.delete" class="eu.cec.digit.circabc.repo.web.scripts.bean.NewsDelete"
+		parent="circabc.webscript">
+		<property name="informationApi" ref="InformationApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.node.ownership.put"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.NodeOwnershipPut"
+		parent="circabc.webscript">
+		<property name="nodesApi" ref="NodesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.nodes.notifications.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.NodesNotificationsGet"
+		parent="webscript">
+		<property name="notificationsApi" ref="NotificationsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.nodes.notifications.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.NodesNotificationsPost"
+		parent="circabc.webscript">
+		<property name="notificationsApi" ref="NotificationsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.profiles.delete"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.ProfilesDelete"
+		parent="circabc.webscript">
+		<property name="profilesApi" ref="ProfilesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.profiles.put" class="eu.cec.digit.circabc.repo.web.scripts.bean.ProfilesPut"
+		parent="circabc.webscript">
+		<property name="profilesApi" ref="ProfilesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.search.get" class="eu.cec.digit.circabc.repo.web.scripts.bean.SearchGet"
+		parent="webscript">
+		<property name="searchApi" ref="SearchApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.email.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsEmailPost"
+		parent="circabc.webscript">
+		<property name="emailApi" ref="EmailApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.leaders.email.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsLeadersEmailPost"
+		parent="circabc.webscript">
+		<property name="emailApi" ref="EmailApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	
+	<!-- User email templates -->
+	<bean id="webscript.eu.cec.digit.circabc.groups.email.templates.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsUserEmailTemplatesGet"
+		parent="webscript">
+		<property name="emailApi" ref="EmailApi" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.email.templates.put"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsUserEmailTemplatesPut"
+		parent="webscript">
+		<property name="emailApi" ref="EmailApi" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.groups.email.templates.delete"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GroupsUserEmailTemplatesDelete"
+		parent="webscript">
+		<property name="emailApi" ref="EmailApi" />
+	</bean>
+	
+	<bean id="webscript.eu.cec.digit.circabc.guards.group.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GuardsGroupGet"
+		parent="webscript">
+		<property name="guardsApi" ref="GuardsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.guards.group.service.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GuardsGroupServiceGet"
+		parent="webscript">
+		<property name="guardsApi" ref="GuardsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.guards.group.members.admin.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GuardsGroupMembersAdminGet"
+		parent="webscript">
+		<property name="guardsApi" ref="GuardsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.guards.access.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GuardsAccessGet"
+		parent="webscript">
+		<property name="guardsApi" ref="GuardsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.guards.administration.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GuardsAdministrationGet"
+		parent="webscript">
+		<property name="guardsApi" ref="GuardsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.guards.edition.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GuardsEditionGet"
+		parent="webscript">
+		<property name="guardsApi" ref="GuardsApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.users.dashboard.downloads.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.UsersDashboardDownloadsGet"
+		parent="webscript">
+		<property name="dashboardApi" ref="DashboardApi" />
+		<property name="authenticationService" ref="authenticationService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.users.dashboard.uploads.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.UsersDashboardUploadsGet"
+		parent="webscript">
+		<property name="dashboardApi" ref="DashboardApi" />
+		<property name="authenticationService" ref="authenticationService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.users.dashboard.newsfeed.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.UsersDashboardNewsFeedGet"
+		parent="webscript">
+		<property name="dashboardApi" ref="DashboardApi" />
+		<property name="authenticationService" ref="authenticationService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.users.favourites.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.UsersFavouritesGet"
+		parent="webscript">
+		<property name="favouritesApi" ref="FavouritesApi" />
+		<property name="authenticationService" ref="authenticationService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.users.favourites.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.UsersFavouritesPost"
+		parent="circabc.webscript">
+		<property name="favouritesApi" ref="FavouritesApi" />
+		<property name="authenticationService" ref="authenticationService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.nodes.group.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.NodesGroupGet"
+		parent="webscript">
+		<property name="nodesApi" ref="NodesApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.users.favourites.delete"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.UsersFavouritesDelete"
+		parent="circabc.webscript">
+		<property name="favouritesApi" ref="FavouritesApi" />
+		<property name="authenticationService" ref="authenticationService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.app.messages.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.AppMessagesGet"
+		parent="webscript">
+		<property name="appMessageApi" ref="AppMessageApi" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.app.message.template.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.AppMessageTemplateGet"
+		parent="webscript">
+		<property name="appMessageApi" ref="AppMessageApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.app.messages.templates.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.AppMessageTemplatesGet"
+		parent="webscript">
+		<property name="appMessageApi" ref="AppMessageApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.app.messages.templates.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.AppMessageTemplatesPost"
+		parent="circabc.webscript">
+		<property name="appMessageApi" ref="AppMessageApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.app.messages.templates.put"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.AppMessageTemplatesPut"
+		parent="circabc.webscript">
+		<property name="appMessageApi" ref="AppMessageApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.app.messages.templates.delete"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.AppMessageTemplatesDelete"
+		parent="circabc.webscript">
+		<property name="appMessageApi" ref="AppMessageApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.app.messages.config.put"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.AppMessagesConfigPut"
+		parent="circabc.webscript">
+		<property name="appMessageApi" ref="AppMessageApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.app.messages.config.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.AppMessagesConfigGet"
+		parent="circabc.webscript">
+		<property name="appMessageApi" ref="AppMessageApi" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.app.messages.old.config.put"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.AppMessagesOldConfigPut"
+		parent="circabc.webscript">
+		<property name="appMessageApi" ref="AppMessageApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.app.messages.old.config.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.AppMessagesOldConfigGet"
+		parent="circabc.webscript">
+		<property name="appMessageApi" ref="AppMessageApi" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.app.messages.old.put"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.AppMessagesOldPut"
+		parent="circabc.webscript">
+		<property name="appMessageApi" ref="AppMessageApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	
+	<bean id="webscript.eu.cec.digit.circabc.help.categories.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.HelpCategoriesGet"
+		parent="webscript">
+		<property name="helpApi" ref="HelpApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	
+	<bean id="webscript.eu.cec.digit.circabc.help.category.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.HelpCategoryGet"
+		parent="webscript">
+		<property name="helpApi" ref="HelpApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	
+	<bean id="webscript.eu.cec.digit.circabc.help.categories.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.HelpCategoriesPost"
+		parent="circabc.webscript">
+		<property name="helpApi" ref="HelpApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	
+	<bean id="webscript.eu.cec.digit.circabc.help.category.articles.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.HelpCategoryArticlesGet"
+		parent="webscript">
+		<property name="helpApi" ref="HelpApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	
+	<bean id="webscript.eu.cec.digit.circabc.help.article.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.HelpArticleGet"
+		parent="webscript">
+		<property name="helpApi" ref="HelpApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	
+	<bean id="webscript.eu.cec.digit.circabc.help.article.delete"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.HelpArticleDelete"
+		parent="circabc.webscript">
+		<property name="helpApi" ref="HelpApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	
+	<bean id="webscript.eu.cec.digit.circabc.help.article.put"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.HelpArticlePut"
+		parent="circabc.webscript">
+		<property name="helpApi" ref="HelpApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	
+	<bean id="webscript.eu.cec.digit.circabc.help.article.highlight.put"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.HelpArticleHighlightPut"
+		parent="circabc.webscript">
+		<property name="helpApi" ref="HelpApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	
+	<bean id="webscript.eu.cec.digit.circabc.help.articles.highlighted.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.HelpArticlesHighlightedGet"
+		parent="webscript">
+		<property name="helpApi" ref="HelpApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	
+	<bean id="webscript.eu.cec.digit.circabc.help.category.articles.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.HelpCategoryArticlesPost"
+		parent="circabc.webscript">
+		<property name="helpApi" ref="HelpApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	
+	<bean id="webscript.eu.cec.digit.circabc.help.category.delete"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.HelpCategoryDelete"
+		parent="circabc.webscript">
+		<property name="helpApi" ref="HelpApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	
+	<bean id="webscript.eu.cec.digit.circabc.help.category.put"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.HelpCategoryPut"
+		parent="circabc.webscript">
+		<property name="helpApi" ref="HelpApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	
+	<bean id="webscript.eu.cec.digit.circabc.help.links.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.HelpLinksGet"
+		parent="webscript">
+		<property name="helpApi" ref="HelpApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	
+	<bean id="webscript.eu.cec.digit.circabc.help.links.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.HelpLinksPost"
+		parent="circabc.webscript">
+		<property name="helpApi" ref="HelpApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	
+	<bean id="webscript.eu.cec.digit.circabc.help.link.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.HelpLinkGet"
+		parent="webscript">
+		<property name="helpApi" ref="HelpApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	
+	<bean id="webscript.eu.cec.digit.circabc.help.link.delete"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.HelpLinkDelete"
+		parent="circabc.webscript">
+		<property name="helpApi" ref="HelpApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	
+	<bean id="webscript.eu.cec.digit.circabc.help.link.put"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.HelpLinkPut"
+		parent="circabc.webscript">
+		<property name="helpApi" ref="HelpApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	
+	<bean id="webscript.eu.cec.digit.circabc.help.search.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.HelpSearchGet"
+		parent="webscript">
+		<property name="helpApi" ref="HelpApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	
+	<bean id="webscript.eu.cec.digit.circabc.help.support.mail.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.HelpSupportMailPost"
+		parent="webscript">
+		<property name="helpApi" ref="HelpApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	
+	<bean id="webscript.eu.cec.digit.circabc.nodes.content.upload.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.NodesContentUploadPost"
+		parent="circabc.webscript">
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+		<property name="contentApi" ref="contentApi" />
+	</bean>
+	
+	<bean id="webscript.eu.cec.digit.circabc.new.content.notifications.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.NewContentNotificationsPost"
+		parent="circabc.webscript">
+		<property name="notificationService" ref="circabcNotificationService" />
+		<property name="notificationSubscriptionService" ref="notificationSubscriptionService" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+
+	<bean id="webscript.eu.cec.digit.circabc.external.repo.ticket.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.ExternalRepositoryTicketPost"
+		parent="circabc.webscript">
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+		<property name="aresBridgeApi" ref="AresBridgeApi" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.external.repo.transaction.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.ExternalRepositoryTransactionPost"
+		parent="circabc.webscript">
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+		<property name="aresBridgeApi" ref="AresBridgeApi" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.external.repo.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.ExternalRepositoryGet"
+		parent="circabc.webscript">
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+		<property name="aresBridgeApi" ref="AresBridgeApi" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.external.repo.id.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.ExternalRepositoryIdGet"
+		parent="circabc.webscript">
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+		<property name="aresBridgeApi" ref="AresBridgeApi" />
+	</bean>
+	<bean id="webscript.eu.cec.digit.circabc.external.repo.id.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.ExternalRepositoryIdPost"
+		parent="circabc.webscript">
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+		<property name="aresBridgeApi" ref="AresBridgeApi" />
+	</bean>
+
+	<bean id="webscript.eu.cec.digit.circabc.external.repo.id.delete"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.ExternalRepositoryIdDelete"
+		parent="circabc.webscript">
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+		<property name="aresBridgeApi" ref="AresBridgeApi" />
+	</bean>
+	
+	<bean id="webscript.eu.cec.digit.circabc.external.repo.group.id.log.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GetExternalRepositoryGroupLog"
+		parent="webscript">
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+		<property name="aresBridgeApi" ref="AresBridgeApi" />
+	</bean>
+	
+	<bean id="webscript.eu.cec.digit.circabc.external.repo.node.id.log.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.GetExternalRepositoryNodeLog"
+		parent="webscript">
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+		<property name="aresBridgeApi" ref="AresBridgeApi" />
+	</bean>
+
+	<bean id="webscript.eu.cec.digit.circabc.app.distribution.mails.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.AppDistributionMailsGet"
+		parent="webscript">
+		<property name="appMessageApi" ref="AppMessageApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	
+	<bean id="webscript.eu.cec.digit.circabc.app.distribution.mails.delete"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.AppDistributionMailsDelete"
+		parent="circabc.webscript">
+		<property name="appMessageApi" ref="AppMessageApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	
+	<bean id="webscript.eu.cec.digit.circabc.app.distribution.mails.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.AppDistributionMailsPost"
+		parent="circabc.webscript">
+		<property name="appMessageApi" ref="AppMessageApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	
+	<bean id="webscript.eu.cec.digit.circabc.app.distribution.mails.exist.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.AppDistributionMailsExistGet"
+		parent="webscript">
+		<property name="appMessageApi" ref="AppMessageApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	
+	<bean id="webscript.eu.cec.digit.circabc.app.distribution.mails.export.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.AppDistributionMailsExportGet"
+		parent="webscript">
+		<property name="appMessageApi" ref="AppMessageApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>	
+	
+	<bean id="webscript.eu.cec.digit.circabc.user.preference.get"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.UserPreferenceGet"
+		parent="webscript">
+		<property name="usersApi" ref="UsersApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>
+	
+	<bean id="webscript.eu.cec.digit.circabc.user.preference.post"
+		class="eu.cec.digit.circabc.repo.web.scripts.bean.UserPreferencePost"
+		parent="webscript">
+		<property name="usersApi" ref="UsersApi" />
+		<property name="currentUserPermissionCheckerService" ref="currentUserPermissionCheckerService" />
+	</bean>	
+</beans>

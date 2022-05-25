@@ -1,0 +1,31 @@
+<span *ngIf="user && !user.visibility">{{ fullName }}</span>
+<a
+  *ngIf="user && user.visibility"
+  class="user-link"
+  [class.disabled]="disabled"
+  (click)="toggleVisible()"
+  >{{ fullName }}</a
+>
+<section
+  class="user-card"
+  *ngIf="user && visible"
+  [class.right-side]="rightSide"
+>
+  <a class="close" (click)="toggleVisible()">x</a>
+  <div class="avatar">
+    <img
+      [attr.src]="user.avatar | cbcDownload | cbcSecure"
+      alt=""
+      width="50"
+      height="50"
+    />
+  </div>
+  <div class="details">
+    {{ user.firstname }}
+    <br />
+    <span class="lastname">{{ user.lastname }}</span>
+    <span class="email">
+      <a href="mailto:{{ user.email }}">{{ user.email }}</a>
+    </span>
+  </div>
+</section>

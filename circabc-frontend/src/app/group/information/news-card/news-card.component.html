@@ -1,0 +1,159 @@
+<div
+  *ngIf="news"
+  class="news-card"
+  [class.important]="isImportant()"
+  [class.reminder]="isReminder()"
+  [class.news-card--height-2]="isIframe()"
+  [class.highlighted]="highlighted"
+>
+  <div class="container" *ngIf="!isIframe()">
+    <section
+      *ngIf="isImage() || isDocument() || isDate()"
+      class="news-complement"
+    >
+      <div
+        *ngIf="isImage() && !preview"
+        class="imageContainer"
+        [style.backgroundPositionX]="'center'"
+        [style.backgroundPositionY]="'center'"
+        [style.backgroundSize]="'cover'"
+        [style.backgroundImage]="
+          prepareUrl(getNewsFileId() | cbcDownload | cbcSecure)
+        "
+      ></div>
+      <div
+        *ngIf="isImage() && preview && hasPreviewImage()"
+        class="imageContainer"
+        [style.backgroundPositionX]="'center'"
+        [style.backgroundPositionY]="'center'"
+        [style.backgroundSize]="'cover'"
+        [style.backgroundImage]="prepareUrl(getPreviewImage())"
+      ></div>
+      <div
+        *ngIf="isImage() && preview && !hasPreviewImage() && !hasFile()"
+        class="imageContainer"
+        [style.backgroundPositionX]="'center'"
+        [style.backgroundPositionY]="'center'"
+        [style.backgroundSize]="'cover'"
+        [style.backgroundImage]="'url(img/image-place-holder.png)'"
+      ></div>
+      <div
+        *ngIf="isImage() && preview && !hasPreviewImage() && hasFile()"
+        class="imageContainer"
+        [style.backgroundPositionX]="'center'"
+        [style.backgroundPositionY]="'center'"
+        [style.backgroundSize]="'cover'"
+        [style.backgroundImage]="
+          prepareUrl(getNewsFileId() | cbcDownload | cbcSecure)
+        "
+      ></div>
+      <div *ngIf="news && isDate()" class="dayContainer">
+        <span class="dayDate">{{ news.date | date: 'dd' }}</span>
+        <br />
+        <span class="monthDate">{{ news.date | date: 'MMM yyyy' }}</span>
+      </div>
+      <div *ngIf="isDocument()" class="docContainer">
+        <div *ngIf="!isPDFDocument()">
+          <img src="img/bigicon-file.png" title="file" />
+        </div>
+        <div *ngIf="isPDFDocument() && !highlighted && !preview  ">
+          <img src="img/bigicon-file.png" title="file" />
+        </div>
+        <div *ngIf="isPDFDocument() && (highlighted || preview)">
+          <ngx-extended-pdf-viewer
+            [src]="getPreviewPDF()"
+            [useBrowserLocale]="true"
+            height="30vh"
+            [showToolbar]="false"
+            [zoom]="30"
+            [showBorders]="false"
+            [rotation]="0"
+            [useBrowserLocale]="true"
+            [textLayer]="true"
+            [showHandToolButton]="true"
+            [showBookmarkButton]="false"
+            [delayFirstView]="250"
+          ></ngx-extended-pdf-viewer>
+        </div>
+
+        <br />
+        {{ 'label.attached.file' | transloco }}
+        <br />
+        <section class="fileLink">
+          <a (click)="saveFile()">{{ getNewsFileName() }}</a>
+        </section>
+      </div>
+    </section>
+    <section
+      class="metadata-created"
+      *ngIf="!isIframe()"
+      [class.more-margin]="!(isImage() || isDate() || isDocument())"
+    >
+      <span class="metadata-author" *ngIf="!isIframe()">
+        {{ 'label.by' | transloco }} <span *ngIf="preview">John Doe</span>
+        <cbc-user-card
+          [userId]="this.news.creator"
+          *ngIf="news && !preview"
+        ></cbc-user-card>
+      </span>
+      {{ getDateCreated() | date: 'MMMM d yyyy HH:mm' }}
+      <span
+        class="edition-indicator"
+        *ngIf="isEdited()"
+        (click)="showCreator = !showCreator"
+      >
+        ({{ 'label.edited' | transloco }})
+      </span>
+      <div *ngIf="showCreator" class="original-matatada">
+        {{ 'label.modified' | transloco }}:&nbsp;{{ getDate() | date: 'MMMM d
+        yyyy HH:mm' }}
+        <br />
+        {{ 'label.by' | transloco }} <span *ngIf="preview">John Doe</span>
+        <cbc-user-card
+          [userId]="this.news.modifier"
+          *ngIf="news && !preview"
+        ></cbc-user-card>
+      </div>
+    </section>
+    <header
+      *ngIf="titleIsNotEmpty()"
+      class="clickable"
+      (click)="propagateClick()"
+    >
+      <img
+        class="news-icon"
+        src="img/school-calendar-green-32.png"
+        alt="reminder.png"
+        *ngIf="isReminder()"
+      />
+      <img
+        class="news-icon"
+        src="img/error-triangle-orange-32.png"
+        alt="imporant.png"
+        *ngIf="isImportant()"
+      />
+      {{ news.title | cbcI18n }}
+    </header>
+    <section class="content" [innerHTML]="getSanitizedContent()"></section>
+  </div>
+
+  <iframe
+    *ngIf="news && news.url && isIframe() && hasValidUrl()"
+    [src]="news.url | cbcSafe"
+  ></iframe>
+  <div class="container" *ngIf="isIframe() && !hasValidUrl()">
+    <p>{{ 'label.invalid.url' | transloco }}</p>
+  </div>
+
+  <footer *ngIf="isNewsManage() && !hideActions">
+    <a
+      [routerLink]="['.', news.id, 'edit']"
+      *cbcIfRoleGE="[news, 'InfManage', ['InfManage']]"
+      >{{ 'label.edit' | transloco }}</a
+    >
+    <cbc-inline-delete
+      (deletionConfirmed)="deleteNews()"
+      *cbcIfRoleGE="[news, 'InfManage', ['InfManage']]"
+    ></cbc-inline-delete>
+  </footer>
+</div>

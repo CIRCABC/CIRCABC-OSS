@@ -1,0 +1,27 @@
+<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+<h2
+  >{{ 'label.memberships' | transloco }}
+  <cbc-spinner *ngIf="loading"></cbc-spinner
+></h2>
+<div class="actions"> </div>
+<h3>{{ 'explorer.categories' | transloco }}</h3>
+<ul *ngIf="!error">
+  <li *ngFor="let category of categories">
+    <cbc-category-box
+      [category]="category"
+      [userId]="userId"
+      (userUninvited)="mustRefresh()"
+    ></cbc-category-box>
+  </li>
+</ul>
+<h3>{{ 'label.group' | transloco }}</h3>
+<ul *ngIf="!error">
+  <li *ngFor="let membership of memberships">
+    <cbc-group-box
+      [membership]="membership"
+      [userId]="userId"
+      (userUninvited)="mustRefresh()"
+    ></cbc-group-box>
+  </li>
+</ul>
+<p *ngIf="error"> {{ 'label.nothing.to.display' | transloco }} </p>

@@ -1,0 +1,55 @@
+<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+
+<a
+  class="step-link"
+  [class.step-link-selected]="filter === 'waiting'"
+  (click)="selectWaiting()"
+  >{{ 'label.waiting' | transloco }}</a
+>
+<a
+  class="step-link"
+  [class.step-link-selected]="filter === 'approved'"
+  (click)="selectApproved()"
+  >{{ 'label.approved' | transloco }}</a
+>
+<a
+  class="step-link"
+  [class.step-link-selected]="filter === 'rejected'"
+  (click)="selectRejected()"
+  >{{ 'label.rejected' | transloco }}</a
+>
+
+<section *ngIf="requests" class="request-container">
+  <header class="header">
+    <cbc-pager
+      [length]="totalItems"
+      [pageSize]="listingOptions.limit"
+      [pageIndex]="listingOptions.page"
+      (pageChanged)="goToPage($event)"
+    ></cbc-pager>
+  </header>
+
+  <section class="request-grid-container">
+    <cbc-group-request-element
+      *ngFor="let request of requests.data; trackBy: trackById"
+      [request]="request"
+      [categoryId]="categoryId"
+      (mustRefresh)="loadGroupRequests()"
+    ></cbc-group-request-element>
+  </section>
+
+  <p *ngIf="requests.total === 0">
+    {{ 'label.nothing.to.display' | transloco }}
+  </p>
+
+  <div class="footer" style="margin-top: 25px">
+    <cbc-pager
+      [length]="totalItems"
+      [pageSize]="listingOptions.limit"
+      [pageIndex]="listingOptions.page"
+      (pageChanged)="goToPage($event)"
+    ></cbc-pager>
+  </div>
+
+  <br />
+</section>

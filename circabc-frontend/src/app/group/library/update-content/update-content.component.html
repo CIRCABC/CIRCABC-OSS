@@ -1,0 +1,80 @@
+<!-- MODAL BOX -->
+<div
+  class="black-overlayer"
+  *ngIf="showWizard"
+  [class.overlayer-shown]="showWizard"
+  [class.overlayer-hidden]="!showWizard"
+></div>
+<section
+  class="modal modal--select-files"
+  *ngIf="showWizard"
+  [class.modal-shown]="showWizard"
+  [class.modal-hidden]="!showWizard"
+  style="margin-top: 0"
+>
+  <a class="close-icon" (click)="cancelWizard('close')"></a>
+  <header>
+    <a class="back-link" (click)="cancelWizard('close')"
+      >{{ 'label.back' | transloco }}</a
+    >
+    <h2 class="title">{{ 'label.select.file.upload' | transloco }}</h2>
+  </header>
+
+  <section class="modal-content">
+    <!--  file -->
+    <div class="field field--file">
+      <!-- Note: You need javascript here to know when the files are selected, see in the footer -->
+      <span style="margin-right: 35px">{{ 'label.file' | transloco }}</span>
+      <input
+        type="file"
+        id="file"
+        class="inputfile inputfile-6"
+        (change)="fileChangeEvent($event)"
+        data-multiple-caption="{count} files selected"
+        multiple
+      />
+      <label for="file"
+        ><span class="result"></span
+        ><span class="button">{{ 'label.browse' | transloco }}</span></label
+      >
+    </div>
+
+    <div
+      class="drop-zone"
+      (dragenter)="dragenter($event)"
+      (dragover)="dragover($event)"
+      (drop)="drop($event)"
+    >
+      {{ 'label.drag.drop.file' | transloco }}
+    </div>
+
+    <div class="field">
+      <label>{{ 'label.file.uploaded' | transloco }}</label> ( {{ 'label.size' |
+      transloco }}: {{ (fileToUpload === undefined ? '0' : fileToUpload.size) |
+      cbcSize: true }} )
+      <br />
+      <div class="listToBeUploaded">
+        <ul>
+          <li>{{ fileToUpload === undefined ? '' : fileToUpload.name }}</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="field" *ngIf="uploading">
+      <label
+        >{{ 'label.uploading' | transloco }}<cbc-spinner></cbc-spinner
+      ></label>
+    </div>
+  </section>
+  <section class="modal-footer">
+    <!-- Buttons -->
+    <div class="buttons-group">
+      <a
+        class="cta"
+        (click)="update()"
+        *ngIf="fileToUpload !== undefined && !uploading"
+        >{{ 'label.update' | transloco }}</a
+      >
+    </div>
+  </section>
+</section>

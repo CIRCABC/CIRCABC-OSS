@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Removes a news from the information service</shortname>
+  <description>Removes a news from the information service</description>
+    <url>/circabc/news/{id}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

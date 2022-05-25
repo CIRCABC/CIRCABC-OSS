@@ -1,0 +1,127 @@
+<div class="fluid page-container">
+  <div class="file-details">
+    <div class="wrap">
+      <div class="page-header">
+        <div class="page-header__actions">
+          <ul class="links">
+            <li>
+              <a
+                [routerLink]="['../../../permissions', forum.id]"
+                [queryParams]="{ from: 'forum' }"
+                *ngIf="isForumAdmin()"
+                >{{ 'label.permissions' | transloco }}</a
+              > </li
+            >&nbsp;&nbsp;&nbsp;
+            <li>
+              <a
+                [routerLink]="['../../../notification-status', forum.id]"
+                [queryParams]="{ from: 'forum' }"
+                *ngIf="isForumAdmin()"
+                >{{ 'label.notifications' | transloco }}</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+      <section class="box">
+        <header class="header">
+          <span *ngIf="viewing" class="title"
+            >{{ 'forum.view.details' | transloco }}</span
+          >
+          <span *ngIf="!viewing" class="title"
+            >{{ 'forum.edit.details' | transloco }}</span
+          >
+        </header>
+        <div class="main">
+          <section class="file-informations">
+            <form [formGroup]="updateForumForm">
+              <div class="field switch">
+                <!-- Forum details -->
+                <cbc-multilingual-input
+                  formControlName="title"
+                  [enabled]="!viewing"
+                  [label]="'label.title' | transloco"
+                  [lang]="'EN'"
+                ></cbc-multilingual-input>
+                <cbc-control-message
+                  [control]="updateForumForm.controls['title']"
+                ></cbc-control-message>
+                <cbc-multilingual-input
+                  formControlName="description"
+                  [enabled]="!viewing"
+                  [textarea]="true"
+                  [label]="'label.description' | transloco"
+                  [lang]="'EN'"
+                ></cbc-multilingual-input>
+                <div class="field">
+                  <label>{{ 'label.version' | transloco }}</label>
+                  <label *ngIf="forum">{{ versionLabel }}</label>
+                </div>
+                <div class="field">
+                  <label>{{ 'label.creator' | transloco }}</label>
+                  <label *ngIf="forum && creator !== undefined"
+                    >{{ creator.firstname }} {{ creator.lastname }}</label
+                  >
+                </div>
+                <div class="field">
+                  <label>{{ 'label.created' | transloco }}</label>
+                  <label *ngIf="forum">{{ created }}</label>
+                </div>
+                <div class="field">
+                  <label>{{ 'label.modifier' | transloco }}</label>
+                  <label *ngIf="forum && modifier !== undefined"
+                    >{{ modifier.firstname }} {{ modifier.lastname }}</label
+                  >
+                </div>
+                <div class="field">
+                  <label>{{ 'label.modified' | transloco }}</label>
+                  <label *ngIf="forum">{{ modified }}</label>
+                </div>
+                <div class="field">
+                  <label>{{ 'label.moderated' | transloco }}</label>
+                  <label *ngIf="forum"
+                    >{{ (ismoderated === 'true' ? 'label.yes' : 'label.no') |
+                    transloco }}</label
+                  >
+                </div>
+              </div>
+            </form>
+            <div class="field" *ngIf="processing">
+              <label
+                >{{ 'label.updating' | transloco }}...
+                <cbc-spinner></cbc-spinner>
+              </label>
+            </div>
+            <br *ngIf="!processing && viewing" />
+            <section
+              class="actions"
+              style="height: 127px"
+              *ngIf="!processing && viewing"
+            >
+              <ul class="actions__secondary-actions--left">
+                <li>
+                  <a class="edit" (click)="enableEdit()"
+                    >{{ 'label.edit' | transloco }}</a
+                  >
+                </li>
+              </ul>
+            </section>
+            <!-- Buttons -->
+            <div class="buttons-group center" *ngIf="!processing && !viewing">
+              <a
+                class="cta"
+                [routerLink]="['.']"
+                *ngIf="updateForumForm.status === 'VALID'"
+                (click)="update()"
+                >{{ 'label.update' | transloco }}</a
+              >
+              <a class="button" [routerLink]="['.']" (click)="cancel()"
+                >{{ 'label.cancel' | transloco }}</a
+              >
+            </div>
+          </section>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

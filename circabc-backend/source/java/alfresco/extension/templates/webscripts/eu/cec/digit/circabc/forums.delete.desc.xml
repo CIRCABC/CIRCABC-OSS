@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Delete one forum</shortname>
+  <description>Delete one forum</description>
+    <url>/circabc/forums/{id}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

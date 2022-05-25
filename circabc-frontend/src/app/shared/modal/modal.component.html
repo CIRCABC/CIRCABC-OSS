@@ -1,0 +1,44 @@
+<!-- MODAL BOX -->
+<div
+  class="black-overlayer"
+  *ngIf="visible"
+  [class.overlayer-shown]="visible"
+  [class.overlayer-hidden]="!visible"
+></div>
+<section
+  class="modal modal--select-files"
+  *ngIf="visible"
+  [class.modal-shown]="visible"
+  [class.modal-hidden]="!visible"
+  [ngStyle]="{ 'margin-top.px': 0 }"
+>
+  <a class="close-icon" (click)="onCancel()"></a>
+  <header>
+    <h2>{{ title | transloco }}</h2>
+  </header>
+  <section [ngClass]="contentClass">
+    <ng-content></ng-content>
+    <div class="field" *ngIf="executing">
+      <label
+        >{{ executingLabel | transloco }}... <cbc-spinner></cbc-spinner
+      ></label>
+    </div>
+  </section>
+
+  <section class="modal-footer" *ngIf="!executing">
+    <!-- Buttons -->
+    <div class="buttons-group">
+      <a
+        data-cy="ok"
+        class="cta"
+        (click)="!showOkButton ? '' : onOk()"
+        [class.disabled]="!showOkButton"
+      >
+        {{ okLabel | transloco }}</a
+      >
+      <a *ngIf="displayCloseButton" class="button" (click)="onCancel()"
+        >{{ cancelLabel | transloco }}</a
+      >
+    </div>
+  </section>
+</section>

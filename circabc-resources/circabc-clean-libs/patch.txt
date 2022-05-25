@@ -1,0 +1,423 @@
+--- <unnamed>
++++ <unnamed>
+@@ -1,15 +1,11 @@
+ abdera-client-0.4.0-incubating.jar
+ abdera-core-0.4.0-incubating.jar
+-abdera-extensions-html-0.4.0-incubating.jar
+ abdera-extensions-json-0.4.0-incubating.jar
+-abdera-extensions-main-0.4.0-incubating.jar
+ abdera-i18n-0.4.0-incubating.jar
+ abdera-parser-0.4.0-incubating.jar
+-abdera-server-0.4.0-incubating.jar
+ acegi-security-0.8.2_patched.jar
+ activation-1.1.jar
+ activiti-bpmn-converter-5.13-alf-20140708.jar
+-activiti-bpmn-layout-5.13-alf-20140708.jar
+ activiti-bpmn-model-5.13-alf-20140708.jar
+ activiti-engine-5.13-alf-20140708.jar
+ activiti-explorer-5.13-alf-20140708.jar
+@@ -23,26 +19,18 @@
+ alfresco-deployment-4.2.4.15.jar
+ alfresco-enterprise-remote-api-4.2.4.15.jar
+ alfresco-enterprise-repo-4.2.4.15.jar
+-alfresco-enterprise-repository-4.2.4.15.jar
+ alfresco-jlan-embed-4.2.4.15.jar
+ alfresco-mbeans-4.2.4.15.jar
+ alfresco-opencmis-extension-1.0.jar
+ alfresco-remote-api-4.2.4.15.jar
+ alfresco-repository-4.2.4.15.jar
+-alfresco-wdr-deployment-4.2.4.15.jar
+ alfresco-wdr-deployment.jar
+ alfresco-web-client-4.2.4.15.jar
+ alfresco-web-framework-commons-4.2.4.15.jar
+ alfresco-xmlfactory-1.0.3.jar
+ ant-1.7.1.jar
+-ant-launcher-1.7.1.jar
+-ant-optional-1.5.1.jar
+ antisamy-1.4.3.jar
+-antlr-2.7.7.jar
+ antlr-3.5.2-complete.jar
+-antlr-3.5.2.jar
+-antlr-runtime-3.5.2.jar
+-aopalliance-1.0.jar
+ aopalliance.jar
+ apache-mime4j-core-0.7.2.jar
+ apache-mime4j-dom-0.7.2.jar
+@@ -51,34 +39,13 @@
+ aspectjrt-1.6.11.jar
+ AutonomyACIAPI-4.9.2.jar
+ avalon-framework-4.2.0.jar
+-avalon-framework-api-4.2.0.jar
+-avalon-framework-api-4.3.1.jar
+-avalon-framework-impl-4.2.0.jar
+-avalon-framework-impl-4.3.1.jar
+ axiom-api-1.2.5.jar
+-axiom-api-1.2.7.jar
+ axiom-impl-1.2.5.jar
+ axis-1.4.jar
+-axis-wsdl4j-1.5.1.jar
+ batik-all-1.6.jar
+-batik-awt-util-1.6-1.jar
+-batik-bridge-1.6-1.jar
+-batik-css-1.6-1.jar
+ batik-css-1.7.jar
+-batik-dom-1.6-1.jar
+-batik-ext-1.6-1.jar
+ batik-ext-1.7.jar
+-batik-extension-1.6-1.jar
+-batik-gui-util-1.6-1.jar
+-batik-gvt-1.6-1.jar
+-batik-parser-1.6-1.jar
+-batik-script-1.6-1.jar
+-batik-svg-dom-1.6-1.jar
+-batik-transcoder-1.6-1.jar
+-batik-util-1.6-1.jar
+ batik-util-1.7.jar
+-batik-xml-1.6-1.jar
+-bcel-5.1.jar
+ bcel.jar
+ bcmail-jdk15-1.45.jar
+ bcprov-jdk15-1.45.jar
+@@ -86,11 +53,9 @@
+ boilerpipe-1.1.0.jar
+ bsf-2.4.0.jar
+ bsh-1.3.0.jar
+-bsh-core-2.0b4.jar
+ calendartag-1.0.1.jar
+ cglib-2.2.jar
+ chemistry-abdera-0.1-incubating-SNAPSHOT.jar
+-chemistry-abdera-0.1-incubating-unreleased.jar
+ chemistry-opencmis-client-api-0.11.0.jar
+ chemistry-opencmis-client-bindings-0.11.0.jar
+ chemistry-opencmis-client-impl-0.11.0.jar
+@@ -101,38 +66,22 @@
+ chemistry-opencmis-test-browser-0.11.0.jar
+ chemistry-opencmis-test-tck-0.11.0.jar
+ chemistry-tck-atompub-0.1-incubating-SNAPSHOT.jar
+-chemistry-tck-atompub-0.1-incubating-unreleased.jar
+-chiba-1.3.0-alfresco-patched.jar
+ chiba-1.3.0-patched.jar
+-com.google.gdata.gdata-client-1.0.jar
+-com.google.gdata.gdata-core-1.0.jar
+-com.google.gdata.gdata-docs-3.0.jar
+-com.google.gdata.gdata-media-1.0.jar
+-com.google.ical-20110304.jar
+ commons-beanutils-1.7.0.jar
+-commons-beanutils-1.8.3.jar
+-commons-beanutils-core-1.7.0.jar
+ commons-codec-1.5.jar
+ commons-collections-3.2.1.jar
+ commons-compress-1.8.jar
+-commons-configuration-1.5.jar
+ commons-csv-20110211.jar
+-commons-dbcp-1.4-DBCP330.jar
+ commons-dbcp-1.4-patched.jar
+ commons-digester-1.6.jar
+-commons-digester-1.8.jar
+ commons-discovery-0.2.jar
+-commons-el-1.0.jar
+ commons-el.jar
+-commons-email-1.2.jar
+ commons-fileupload-1.3.1.jar
+-commons-httpclient-3.1-HTTPCLIENT-1265.jar
+ commons-httpclient-3.1-patched.jar
+ commons-io-2.4.jar
+ commons-jxpath-1.2.jar
+ commons-lang-2.6.jar
+ commons-logging-1.1.1.jar
+-commons-modeler-1.1.jar
+ commons-modeler.jar
+ commons-net-2.2.jar
+ commons-pool-1.5.5.jar
+@@ -141,17 +90,14 @@
+ cors-filter-2.5.jar
+ cxf-2.2.2-patched.jar
+ dom4j-1.6.1.jar
+-ecas-weblogic-12.2.1-authprovider-4.26.3.jar
+ el-ri-1.0.jar
+ esapi-2.0.1.jar
+-facebook-java-api-070716.jar
+ facebook_070716.jar
+ FastInfoset-1.2.2.jar
+ fontbox-1.8.4.jar
+ fop-0.94.jar
+ freemarker-2.3.20-alfresco-patched.jar
+ ftp4j-1.5-src.zip
+-ftp4j-1.5.1.jar
+ ftp4j-1.5.jar
+ gdata-analytics-2.1.jar
+ gdata-analytics-meta-2.1.jar
+@@ -196,8 +142,6 @@
+ gdata-webmastertools-meta-2.0.jar
+ gdata-youtube-2.0.jar
+ gdata-youtube-meta-2.0.jar
+-geronimo-activation_1.0.2_spec-1.1.jar
+-geronimo-activation_1.1_spec-1.0.2.jar
+ geronimo-annotation_1.0_spec-1.1.1.jar
+ geronimo-jaxws_2.1_spec-1.0.jar
+ geronimo-stax-api_1.0_spec-1.0.1.jar
+@@ -205,40 +149,28 @@
+ gnumail-providers.jar
+ gnumail.jar
+ google-collect-1.0.jar
+-google-collections-1.0.jar
+-greenmail-1.3-alfresco-20141112.jar
+ greenmail-1.3-patched.jar
+ groovy-all-2.4.4.jar
+ guessencoding-1.0.jar
+-h2-1.3.170.jar
+-hamcrest-core-1.3.jar
+ hazelcast-2.4.jar
+ hazelcast-cloud-2.4.jar
+ hazelcast-spring-2.4.jar
+-hibernate-3.2.6-alf-20131023.jar
+ hibernate-3.2.6-patched.jar
+ htmllexer-2.1.jar
+ htmlparser-2.1.jar
+ httpclient-4.1.1.jar
+ httpclient-cache-4.1.1.jar
+ httpcore-4.1.3.jar
+-httpcore-4.1.jar
+ ical4j-1.0-rc1.jar
+-icu4j-3.6.1.jar
+ icu4j_3_6_1.jar
+ inetlib.jar
+-ipm-ws-client-1.0.0.jar
+ ipm-ws-client.jar
+ isoparser-1.0-RC-1.jar
+-itext-1.4.8.jar
+ jackson-core-asl-1.9.9.jar
+ jackson-mapper-asl-1.9.9.jar
+ jakarta-oro-2.0.8.jar
+ java-libpst-0.7.jar
+ java-property-utils-1.9.1.jar
+-javaGeom-0.11.0.jar
+-javax.inject-1.jar
+-javax.mail-1.5.2.jar
+ javax.mail.jar
+ jaxb-2.0-xjc-value-constructor-plugin-20071126-1834.jar
+ jaxb-api-2.1.jar
+@@ -247,87 +179,61 @@
+ jaxb-impl-2.1.11.jar
+ jaxb-xjc-2.1.7.jar
+ jaxen-1.1.3.jar
+-jaxrpc-api-1.1.jar
+ jaxrpc.jar
+ jaxws-api-2.1.jar
+ jaxws-rt-2.1.7.jar
+ jbpm-identity-3.3.1.jar
+ jbpm-jpdl-3.3.1-patched.jar
+ jcr-1.0.jar
+-jdom-b9.jar
+ je-3.3.75.jar
+ jempbox-1.8.4.jar
+-jetty-continuation-7.3.0.v20110203.jar
+-jetty-http-7.3.0.v20110203.jar
+-jetty-io-7.3.0.v20110203.jar
+-jetty-security-7.3.0.v20110203.jar
+-jetty-server-7.3.0.v20110203.jar
+-jetty-servlet-7.3.0.v20110203.jar
+-jetty-util-7.3.0.v20110203.jar
+-jetty-webapp-7.3.0.v20110203.jar
+-jetty-xml-7.3.0.v20110203.jar
+-jgraphx-1.10.4.2.jar
++jetty-6.0.0beta15.jar
++jetty-util-6.0.0beta17.jar
+ jhighlight-1.0.jar
+ jibx-bind-1.2.5.jar
+ jibx-run-1.2.5.jar
+ jid3lib-0.5.4.jar
+ jira-javamelody-1.40.0.jar
+-jmagick-6.2.4.jar
+ JMagick.jar
+ joda-time-2.3.jar
+-jodconverter-2.1.0-alfresco-patched.jar
+-jodconverter-core-3.0-alfresco-patched-20141024.jar
+ jodconverter-core-3.0-SNAPSHOT-patched.jar
+ jooconverter-2.1.0-patched.jar
+ jrobin-1.5.14.jar
+-js-1.6R7-patched.jar
+ JSCalendar.jar
+ jsf-facelets-1.1.11.jar
+ JSlideShare-0.6.jar
+-json-20090211.jar
+ json-simple-1.1.1.jar
+ json.jar
+ jsoup-1.6.1.jar
+-jsp-api-2.0.jar
+ jsr107cache-1.0.jar
+ jsr181-api-1.0-MR1.jar
+ jsr250-api-1.0.jar
+-jsr305-1.3.9.jar
+ jstl-1.1.0.jar
+-jta-1.0.1b.jar
+ jta.jar
+-jug-2.0.0-asl.jar
+ jug-asl-2.0.0.jar
+-juh-3.1.0.jar
+-junit-4.11.jar
+ junit-dep-4.11.jar
+ juniversalchardet-1.0.3.jar
+-jurt-3.1.0.jar
+-jut-1.0-alfresco.jar
+ jut.jar
+ jutf7-1.0.0.jar
+ lesscss-engine-1.3.3.jar
+ liquibase-1.9.4.jar
+-list_new.txt
++list_old.txt
+ livetribe-jsr223-2.0.6.jar
+ log4j-1.2.15.jar
++log4j-patched-1.0-AlfrescoPatched.jar
+ lucene-analyzers-2.4.1.jar
+ lucene-core-2.4.1.jar
+ lucene-regex-2.4.1.jar
+ lucene-snowball-2.4.1.jar
+-mail-1.4.jar
+ metadata-extractor-2.6.2.jar
+ mimepull-1.9.4.jar
+ mockito-all-1.8.0.jar
+-mx4j-jmx-1.1.jar
+-mybatis-3.0.4-alfresco-patched.jar
+ mybatis-3.0.4-patched.jar
+ mybatis-spring-1.0.1.jar
+ myfaces-api-1.1.8.jar
+ myfaces-impl-1.1.8.jar
+ neethi-2.0.4.jar
+ nekohtml-1.9.12.jar
+-netcdf-4.2-min.jar
+ netcdf-4.2.jar
+ not-yet-commons-ssl-0.3.9.jar
+ ooxml-schemas-1.1.jar
+@@ -351,78 +257,43 @@
+ org.springframework.transaction-3.0.5.RELEASE.jar
+ org.springframework.web-3.0.5.RELEASE.jar
+ org.springframework.web.servlet-3.0.5.RELEASE.jar
+-oro-2.0.8.jar
+ pdfbox-1.8.4-alfresco-patched.jar
+ PDFRenderer-0.9.1-patched.jar
+ plexus-cipher-1.4.jar
+ plexus-sec-dispatcher-1.4.jar
+ plexus-utils-3.0.22.jar
+ poi-3.10.1-20140818.jar
+-poi-3.10.1.jar
+-poi-ooxml-3.10.1-20140922-alfresco-patched.jar
+ poi-ooxml-3.10.1-20140922-patched.jar
+ poi-scratchpad-3.10.1-20140818.jar
+-poi-scratchpad-3.10.1.jar
+-portlet-api-2.0.jar
+-quartz-1.8.3-alfresco-patched.jar
+ quartz-1.8.3-patched.jar
+-regexp-1.2.jar
+ resolver-20050927.jar
+ rfc2445.jar
+ rhino-js-1.6R7.jar
+-ridl-3.1.0.jar
+ rome-0.9.jar
+ saaj-api-1.3.jar
+ saaj-impl-1.3.3.jar
+-servlet-api-2.5.jar
+ servlet-resources-2.4.jar
+ shale-test-1.0.4.jar
+ slf4j-api-1.7.5.jar
+ slf4j-log4j12-1.7.5.jar
+-solr-solrj-1.4.1.jar
+ sonar-maven-plugin-3.5.0.1254.jar
+ sonar-scanner-api-2.10.0.1189.jar
+-spring-aop-3.0.6.RELEASE.jar
+-spring-asm-3.0.5.RELEASE.jar
+-spring-beans-3.0.5.RELEASE.jar
+-spring-cmis-framework-1.2.0-M35.jar
+ spring-cmis-framework-1.2.0-SNAPSHOT.jar
+-spring-context-3.0.5.RELEASE.jar
+-spring-context-support-3.0.5.RELEASE.jar
+-spring-core-3.0.5.RELEASE.jar
+-spring-expression-3.0.6.RELEASE.jar
+-spring-jdbc-3.0.5.RELEASE.jar
+-spring-modules-jbpm31-0.5.jar
+-spring-orm-3.0.5.RELEASE.jar
+ spring-security-core-3.1.0.RC2.jar
+-spring-security-core-3.1.0.RELEASE.jar
+-spring-security-crypto-3.1.3.RELEASE.jar
+ spring-social-core-1.0.3.RELEASE.jar
+ spring-social-facebook-1.0.0.RC1.jar
+ spring-social-facebook-web-1.0.0.RC1.jar
+-spring-social-facebook-web-1.0.0.RELEASE.jar
+-spring-social-linkedin-1.0.0-20110711.jar
+ spring-social-linkedin-1.0.0.BUILD-SNAPSHOT.jar
+ spring-social-test-1.0.3.RELEASE.jar
+ spring-social-twitter-1.0.5.RELEASE.jar
+ spring-social-web-1.0.3.RELEASE.jar
+-spring-surf-1.2.0-M35.jar
+ spring-surf-1.2.0-SNAPSHOT.jar
+ spring-surf-api-1.2.0-SNAPSHOT.jar
+-spring-surf-core-1.2.0-M35.jar
+ spring-surf-core-1.2.0-SNAPSHOT.jar
+-spring-surf-core-configservice-1.2.0-M35.jar
+ spring-surf-core-configservice-1.2.0-SNAPSHOT.jar
+-spring-tx-3.0.5.RELEASE.jar
+-spring-web-3.0.5.RELEASE.jar
+-spring-webmvc-3.0.5.RELEASE.jar
+-spring-webscripts-1.2.0-M35.jar
+ spring-webscripts-1.2.0-SNAPSHOT.jar
+-spring-webscripts-api-1.2.0-M35.jar
+ spring-webscripts-api-1.2.0-SNAPSHOT.jar
+ springmodules-jbpm31.jar
+-ST4-4.0.8.jar
+-standard-1.1.0.jar
+ standard.jar
+ stax-api-1.0-2.jar
+ stax-api-1.0.1.jar
+@@ -432,18 +303,15 @@
+ streambuffer-0.9.jar
+ stringtemplate-3.2.1.jar
+ subethasmtp-3.1.6.jar
++support-tools.jar
+ tagsoup-1.2.1.jar
+ tika-core-1.6-20140428-alfresco-patched.jar
+ tika-parsers-1.6-20140428-alfresco-patched.jar
+-tomahawk-1.1.8.jar
+ tomahawk-1.1.9-SNAPSHOT.jar
+ tomahawk-sandbox-1.1.9-SNAPSHOT.jar
+ truelicense-1_29-patched.jar
+-truelicense-xml-1_29-patched.jar
+ truexml-1_29-patched.jar
+-truezip-6.6.jar
+ truezip.jar
+-unoil-3.1.0.jar
+ urlrewritefilter-4.0.4.jar
+ vaadin-6.8.8.jar
+ velocity-1.5.jar
+@@ -455,31 +323,22 @@
+ ws-commons-util-1.0.2.jar
+ wsdl4j-1.6.2.jar
+ wss4j-1.5.12.jar
+-wstx-asl-3.2.7.jar
+-xalan-2.7.0.jar
+ xercesImpl-2.10.0-alfresco-patched.jar
+ xercesImpl-2.8.0.jar
+-xercesImpl-2.8.1.jar
+-xml-apis-1.3.04.jar
+ xml-apis-1.4.01.jar
+ xml-apis-ext-1.3.04.jar
+ xml-apis.jar
+ xml-resolver-1.2.jar
+ xmlbeans-2.6.0.jar
+ xmlgraphics-commons-1.2.jar
+-xmlParserAPIs-2.0.2.jar
+-xmlParserAPIs-2.6.2.jar
+ xmlrpc-client-3.1.3.jar
+ xmlrpc-common-3.1.3.jar
+ XmlSchema-1.4.5.jar
+ xmlsec-1.4.5.jar
+ xmltooling-1.3.4.jar
+ xmpcore-5.1.2.jar
+-xom-1.1.jar
+ xpp3-1.1.3_8.jar
+-xpp3_min-1.1.3.4.O.jar
+ xstream-1.2.2.jar
+ xz-1.0.jar
+ xz-1.5.jar
+-yuicompressor-2.4.7-patched.jar
+ yuicompressor-2.4.7.jar
+

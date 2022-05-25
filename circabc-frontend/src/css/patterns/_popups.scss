@@ -1,0 +1,217 @@
+@use 'sass:color';
+@use '../global/variables-mixins-keyframes';
+
+/*  POPUPS */
+
+.popup {
+  border-radius: 3px;
+  background: #fff;
+  box-shadow: 0 0 8px rgb(0 0 0 / 0.3);
+  width: 385px;
+  position: absolute;
+  top: 0;
+  z-index: 1;
+  margin-bottom: 30px;
+
+  .title {
+    font-family: variables-mixins-keyframes.$titling;
+    font-weight: 200;
+    text-transform: uppercase;
+    color: variables-mixins-keyframes.$textAAA;
+  }
+
+  &::before {
+    content: '';
+    width: 17px;
+    height: 52px;
+    position: absolute;
+    top: 25px;
+    left: -17px;
+    background: url(^img/popup-arrow-left-grey.png) no-repeat;
+  }
+}
+
+.popup--calendar {
+  right: -390px;
+  box-shadow: 0 0 20px rgb(0 0 0 / 0.4);
+
+  .events-of-the-day {
+    padding: 15px;
+    background: #f5fafa;
+    overflow-y: scroll;
+    max-height: 300px;
+    border-top: 1px solid #e1e3e8;
+    border-radius: 0 0 3px 3px;
+    min-height: 280px;
+
+    // scroll bar design
+    &::-webkit-scrollbar {
+      width: 14px;
+      height: 18px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      height: 6px;
+      border: 4px solid rgb(0 0 0 / 0);
+      -webkit-border-radius: 7px;
+      background-color: rgb(0 0 0 / 0.15);
+      background-clip: padding-box;
+      -webkit-box-shadow: inset -1px -1px 0 rgb(0 0 0 / 0.05),
+        inset 1px 1px 0 rgb(0 0 0 / 0.05);
+    }
+
+    &::-webkit-scrollbar-button {
+      display: none;
+      width: 0;
+      height: 0;
+    }
+
+    &::-webkit-scrollbar-corner {
+      background-color: transparent;
+    }
+
+    .events {
+      margin-top: 15px;
+    }
+  }
+
+  .event {
+    margin: 7px 0;
+
+    .hour {
+      display: block;
+      color: color.adjust(variables-mixins-keyframes.$link, $lightness: 20%);
+      min-width: 50px;
+      font-size: 12px;
+      float: left;
+      position: relative;
+      top: 2px;
+    }
+
+    .event-name {
+      color: variables-mixins-keyframes.$link;
+      font-size: 14px;
+      display: block;
+      margin-left: 50px;
+      margin-bottom: 6px;
+    }
+
+    .details {
+      margin-left: 50px;
+
+      p {
+        color: variables-mixins-keyframes.$textAA;
+        margin: 0;
+        margin-bottom: 6px;
+        font-size: 13px;
+      }
+
+      .duration,
+      .location,
+      .abstract,
+      .repetition {
+        display: inline-block;
+        margin-right: 15px;
+        font-size: 12px;
+        color: #b3b3b1;
+        margin-bottom: 6px;
+
+        &::before {
+          content: '';
+          display: inline-block;
+          vertical-align: bottom;
+          margin-right: 5px;
+          width: 16px;
+          height: 16px;
+          background-position: center center;
+          background-repeat: no-repeat;
+        }
+      }
+
+      .duration::before {
+        background-image: url(^img/icon-clock.png);
+      }
+
+      .location::before {
+        background-image: url(^img/icon-location.png);
+      }
+
+      .repetition::before {
+        background-image: url(^img/icon-repetition.png);
+      }
+
+      .abstract::before {
+        background-image: url(^img/open-book-top-view-C4C6C4.png);
+      }
+    }
+  }
+}
+
+.popup--members {
+  right: -380px;
+}
+
+.popup--notification {
+  &::before {
+    content: '';
+    width: 17px;
+    height: 52px;
+    position: absolute;
+    top: 25px;
+    left: -17px;
+    background: url(^img/popup-arrow.png) no-repeat;
+  }
+
+  .notification-tour {
+    padding: 15px;
+
+    .notification-tour__header {
+      overflow: hidden;
+    }
+
+    .title {
+      float: left;
+
+      .current {
+        margin-left: 5px;
+        font-size: 18px;
+        font-weight: 700;
+      }
+    }
+
+    .link-next {
+      float: right;
+      position: relative;
+      top: 5px;
+      font-size: 12px;
+
+      &::after {
+        content: '';
+        display: inline-block;
+        width: 5px;
+        height: 7px;
+        margin-left: 5px;
+        background: url(^img/small-arrow-right.png);
+      }
+    }
+
+    .subject {
+      margin-top: 10px;
+      color: variables-mixins-keyframes.$dark-green;
+      color: #4d8c55;
+
+      p {
+        color: variables-mixins-keyframes.$textAA;
+      }
+    }
+
+    p {
+      font-size: 12px;
+      line-height: 22px;
+    }
+
+    .cta {
+      text-transform: none;
+    }
+  }
+}

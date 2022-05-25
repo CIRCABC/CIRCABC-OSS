@@ -1,0 +1,156 @@
+{{ 'contact.support' | transloco | cbcSetTitle }}
+<div class="wrap page-container my-account">
+  <section class="box">
+    <header class="header">
+      <span class="title">{{ 'contact.support' | transloco }}</span>
+    </header>
+    <div class="main" *ngIf="!isGuest()">
+      <form [formGroup]="contactForm">
+        <div class="field">
+          <label for="reason" class="mandatory"
+            >{{ 'label.reason' | transloco }}</label
+          >
+          <div class="custom-select select--form">
+            <select id="reason" formControlName="reason">
+              <option *ngFor="let reason of reasons" value="{{ reason }}"
+                >{{ reason | transloco }}</option
+              >
+            </select>
+          </div>
+          <cbc-control-message
+            *ngIf="contactForm"
+            [control]="reasonControl"
+          ></cbc-control-message>
+        </div>
+        <div class="field">
+          <label for="name" class="mandatory"
+            >{{ 'label.name' | transloco }}</label
+          >
+          <input type="text" formControlName="name" />
+          <cbc-control-message
+            *ngIf="contactForm"
+            [control]="nameControl"
+          ></cbc-control-message>
+        </div>
+        <div class="field">
+          <label for="email" class="mandatory"
+            >{{ 'label.email' | transloco }}</label
+          >
+          <input type="text" formControlName="email" />
+          <cbc-control-message
+            *ngIf="contactForm"
+            [control]="emailControl"
+          ></cbc-control-message>
+        </div>
+        <div class="field" *ngIf="needsSubject()">
+          <label for="subject" class="mandatory"
+            >{{ 'label.subject' | transloco }}</label
+          >
+          <input type="text" formControlName="subject" />
+          <cbc-control-message
+            *ngIf="contactForm"
+            [control]="subjectControl"
+          ></cbc-control-message>
+        </div>
+
+        <div class="field">
+          <label for="content" style="vertical-align: top" class="mandatory"
+            >{{ 'label.text' | transloco }}</label
+          >
+          <br /><br />
+          <div class="editor">
+            <p-editor
+              id="content"
+              formControlName="content"
+              [style]="{ height: '270px' }"
+            >
+              <p-header>
+                <span class="ql-formats">
+                  <select class="ql-header">
+                    <option value="1"></option>
+                    <option value="2"></option>
+                    <option value="3"></option>
+                    <option selected></option>
+                    <option value="4"></option>
+                    <option value="5"></option>
+                    <option value="6"></option>
+                  </select>
+                </span>
+                <span class="ql-formats">
+                  <button class="ql-bold" aria-label="Bold"></button>
+                  <button class="ql-italic" aria-label="Italic"></button>
+                  <button class="ql-underline" aria-label="Underline"></button>
+                  <button class="ql-strike" aria-label="Strike"></button>
+                </span>
+                <span class="ql-formats">
+                  <button class="ql-blockquote" aria-label="Strike"></button>
+                  <button class="ql-link" aria-label="link"></button>
+                </span>
+              </p-header>
+            </p-editor>
+          </div>
+
+          <cbc-control-message
+            *ngIf="contactForm"
+            [control]="contentControl"
+          ></cbc-control-message>
+        </div>
+
+        <div class="field field--file">
+          <span class="label">{{ 'label.file' | transloco }}</span>
+          <input
+            type="file"
+            id="file"
+            class="inputfile inputfile-6"
+            formControlName="file"
+            (change)="fileChangeEvent($event)"
+          />
+          <label for="file"
+            ><span class="result">{{ getFileName() }}</span
+            ><span class="button">{{ 'label.browse.file' | transloco }}</span>
+          </label>
+        </div>
+      </form>
+
+      <div class="actions" *ngIf="processing">
+        <p
+          >{{ 'label.sending' | transloco }}...
+          <cbc-spinner></cbc-spinner>
+        </p>
+      </div>
+      <div class="actions buttons-group" *ngIf="!processing">
+        <a
+          class="cta"
+          (click)="!contactForm.valid ? '' : contact()"
+          [class.disabled]="!contactForm.valid"
+          >{{ 'label.send' | transloco }}</a
+        >
+        <a class="button" [routerLink]="['/help/start']"
+          >{{ 'label.cancel' | transloco }}</a
+        >
+      </div>
+    </div>
+    <div class="main" *ngIf="isGuest()">
+      <img src="img/question-answer.png" />
+      <h1>{{ 'help.contact.guest.title' | transloco }}</h1>
+      <p> {{ 'help.contact.guest.explanation' | transloco }} </p>
+      <p>
+        <strong>{{ 'help.contact.guest.internal' | transloco }}</strong>
+        <br />
+        {{ 'label.email' | transloco }}:
+        <a href="mailto:EC-HELPDESK-IT@ec.europa.eu"
+          >EC-HELPDESK-IT@ec.europa.eu</a
+        >
+      </p>
+      <p>
+        <strong>{{ 'help.contact.guest.external' | transloco }}</strong>
+        <br />
+        {{ 'label.email' | transloco }}:
+        <a href="mailto:EC-CENTRAL-HELPDESK@ec.europa.eu"
+          >EC-CENTRAL-HELPDESK@ec.europa.eu</a
+        >
+      </p>
+    </div>
+    <footer class="footer"> </footer>
+  </section>
+</div>

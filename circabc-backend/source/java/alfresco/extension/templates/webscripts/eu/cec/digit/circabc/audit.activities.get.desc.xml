@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>audit.activities.get</shortname>
+  <description>Get the activities</description>
+  <url>/circabc/audit/{id}/activities</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

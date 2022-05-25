@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Get the versions of one content</shortname>
+  <description>Get the versions of one content</description>
+    <url>/circabc/users/{userId}/dashboard/newsfeed</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

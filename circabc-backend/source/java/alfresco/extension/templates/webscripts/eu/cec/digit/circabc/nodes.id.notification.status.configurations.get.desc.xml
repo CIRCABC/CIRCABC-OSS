@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>nodes.id.notification.status.configurations.get</shortname>
+  <description>Get the notification configurations of a node</description>
+    <url>/circabc/nodes/{id}/notifications/status/configurations</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

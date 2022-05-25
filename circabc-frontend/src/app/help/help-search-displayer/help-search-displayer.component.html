@@ -1,0 +1,57 @@
+<div class="result-wrap">
+  <div *ngIf="searching" class="search-progress">
+    {{ 'label.searching' | transloco }} <img src="img/spinner.gif" />
+  </div>
+  <div *ngIf="!searching && !hasResult()" class="search-null">
+    {{ 'help.search.empty.result' | transloco }}
+  </div>
+  <div *ngIf="!searching && hasResult()" class="search-results">
+    <div *ngIf="result?.categories" class="categories-list">
+      <h2>
+        {{ 'help.categories' | transloco }} ({{ result?.categories?.length }})
+      </h2>
+      <ul>
+        <li *ngFor="let category of result?.categories">
+          <a (click)="goToCategoryLink(category?.id)">
+            <span class="number-article">
+              <img src="img/icon-forums-grey.png" />{{
+              category?.numberOfArticles }} {{ (category?.numberOfArticles === 1
+              ? 'help.article' : 'help.articles' ) | transloco }} </span
+            >{{ category.title | cbcI18n }}</a
+          >
+        </li>
+      </ul>
+    </div>
+
+    <div *ngIf="result?.articles" class="article-list">
+      <h2
+        >{{ 'help.articles' | transloco }} ({{ result?.articles?.length }})</h2
+      >
+      <ul>
+        <li *ngFor="let article of result?.articles">
+          <a (click)="goToArticleLink(article.parentId, article.id)">
+            {{ article.title | cbcI18n }}
+            <p class="metadata">
+              {{ 'label.last.updated.on' | transloco }} {{ article.lastUpdate |
+              date }}
+            </p>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div *ngIf="result?.links" class="links-list">
+      <h2>
+        {{ 'help.userful.links.title' | transloco }} ({{ result?.links?.length
+        }})
+      </h2>
+      <ul>
+        <li *ngFor="let link of result?.links">
+          <a class="alink" [href]="sanitizeLinkRef(link.href)" target="_blank"
+            >{{ link.title | cbcI18n }}</a
+          >
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

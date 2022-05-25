@@ -1,0 +1,156 @@
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+	<mapper namespace="Documents">
+		<select id="getAllLibraryDocuments" resultType="eu.cec.digit.circabc.migration.reader.impl.circa.domain.Document">
+			SELECT
+				DC_IDENTIFIER          as identifier,
+				DOC_POOL               as docPool,
+				PARENT_URL             as parentUrl,
+				DC_TITLE               as title,
+				DCTERMS_ALTERNATIVE    as alternative,
+				DC_LANGUAGE            as language,
+				CLASSIFICATION         as classification,
+				CIRCA_VERSION          as version,
+				DC_SUBJECT             as subject,
+				DC_CREATOR             as creator,
+				date_format(DCTERMS_AVAILABLE,'%Y-%m-%d') as created,
+				date_format(DCTERMS_VALID,'%Y-%m-%d')     as expiration,
+				CIRCA_OWNER            as owner,
+				DCTERMS_MODIFIED       as modified,
+				DCTERMS_ABSTRACT       as abstractDesc,
+				date_format(DCTERMS_ISSUED,'%Y-%m-%d')    as issued,
+				CIRCA_AVAILABILITY     as availability,
+				DCTERMS_REFERENCES     as reference,
+				CIRCA_STATUS           as status,
+				ATTR1                  as dynAttribute1,
+				ATTR2                  as dynAttribute2,
+				ATTR3                  as dynAttribute3,
+				ATTR4                  as dynAttribute4,
+				ATTR5                  as dynAttribute5
+			FROM $virtualCirca$_$interestGroup$_Doc
+		</select>
+
+		<select id="getLibraryDocument" resultType="eu.cec.digit.circabc.migration.reader.impl.circa.domain.Document">
+			SELECT
+
+				DC_IDENTIFIER          as identifier,
+				DOC_POOL               as docPool,
+				PARENT_URL             as parentUrl,
+				DC_TITLE               as title,
+				DCTERMS_ALTERNATIVE    as alternative,
+				DC_LANGUAGE            as language,
+				CLASSIFICATION         as classification,
+				CIRCA_VERSION          as version,
+				DC_SUBJECT             as subject,
+				DC_CREATOR             as creator,
+				date_format(DCTERMS_AVAILABLE,'%Y-%m-%d') as created,
+				date_format(DCTERMS_VALID,'%Y-%m-%d')     as expiration,
+				CIRCA_OWNER            as owner,
+				DCTERMS_MODIFIED       as modified,
+				DCTERMS_ABSTRACT       as abstractDesc,
+				date_format(DCTERMS_ISSUED,'%Y-%m-%d')    as issued,
+				CIRCA_AVAILABILITY     as availability,
+				DCTERMS_REFERENCES     as reference,
+				CIRCA_STATUS           as status,
+				ATTR1                  as dynAttribute1,
+				ATTR2                  as dynAttribute2,
+				ATTR3                  as dynAttribute3,
+				ATTR4                  as dynAttribute4,
+				ATTR5                  as dynAttribute5
+			FROM $virtualCirca$_$interestGroup$_Doc
+			WHERE dc_identifier = #identifier#
+		</select>
+		
+		<select id="getAllLibraryDocumentsByType" resultType="eu.cec.digit.circabc.migration.reader.impl.circa.domain.Document">
+			SELECT
+
+				DC_IDENTIFIER          as identifier,
+				DOC_POOL               as docPool,
+				PARENT_URL             as parentUrl,
+				DC_TITLE               as title,
+				DCTERMS_ALTERNATIVE    as alternative,
+				DC_LANGUAGE            as language,
+				CLASSIFICATION         as classification,
+				CIRCA_VERSION          as version,
+				DC_SUBJECT             as subject,
+				DC_CREATOR             as creator,
+				date_format(DCTERMS_AVAILABLE,'%Y-%m-%d') as created,
+				date_format(DCTERMS_VALID,'%Y-%m-%d')     as expiration,
+				CIRCA_OWNER            as owner,
+				DCTERMS_MODIFIED       as modified,
+				DCTERMS_ABSTRACT       as abstractDesc,
+				date_format(DCTERMS_ISSUED,'%Y-%m-%d')    as issued,
+				CIRCA_AVAILABILITY     as availability,
+				DCTERMS_REFERENCES     as reference,
+				CIRCA_STATUS           as status,
+				ATTR1                  as dynAttribute1,
+				ATTR2                  as dynAttribute2,
+				ATTR3                  as dynAttribute3,
+				ATTR4                  as dynAttribute4,
+				ATTR5                  as dynAttribute5
+			FROM $virtualCirca$_$interestGroup$_Doc
+			WHERE dcterms_medium = #type#
+		</select>
+
+		<select id="getLibraryDocumentFromPool" resultType="eu.cec.digit.circabc.migration.reader.impl.circa.domain.Document">
+			SELECT
+				DC_IDENTIFIER          as identifier,
+				DOC_POOL               as docPool,
+				PARENT_URL             as parentUrl,
+				DC_TITLE               as title,
+				DCTERMS_ALTERNATIVE    as alternative,
+				DC_LANGUAGE            as language,
+				CLASSIFICATION         as classification,
+				CIRCA_VERSION          as version,
+				DC_SUBJECT             as subject,
+				DC_CREATOR             as creator,
+				date_format(DCTERMS_AVAILABLE,'%Y-%m-%d') as created,
+				date_format(DCTERMS_VALID,'%Y-%m-%d')     as expiration,
+				CIRCA_OWNER            as owner,
+				DCTERMS_MODIFIED       as modified,
+				DCTERMS_ABSTRACT       as abstractDesc,
+				date_format(DCTERMS_ISSUED,'%Y-%m-%d')    as issued,
+				CIRCA_AVAILABILITY     as availability,
+				DCTERMS_REFERENCES     as reference,
+				CIRCA_STATUS           as status,
+				ATTR1                  as dynAttribute1,
+				ATTR2                  as dynAttribute2,
+				ATTR3                  as dynAttribute3,
+				ATTR4                  as dynAttribute4,
+				ATTR5                  as dynAttribute5
+			FROM $virtualCirca$_$interestGroup$_Doc
+			WHERE doc_pool = #docPool#
+			AND parent_url = #parentUrl#
+		</select>
+
+		<select id="getLibraryDocumentWhereIdentifierLike" resultType="eu.cec.digit.circabc.migration.reader.impl.circa.domain.Document">
+			SELECT
+				DC_IDENTIFIER          as identifier,
+				DOC_POOL               as docPool,
+				PARENT_URL             as parentUrl,
+				DC_TITLE               as title,
+				DCTERMS_ALTERNATIVE    as alternative,
+				DC_LANGUAGE            as language,
+				CLASSIFICATION         as classification,
+				CIRCA_VERSION          as version,
+				DC_SUBJECT             as subject,
+				DC_CREATOR             as creator,
+				date_format(DCTERMS_AVAILABLE,'%Y-%m-%d') as created,
+				date_format(DCTERMS_VALID,'%Y-%m-%d')     as expiration,
+				CIRCA_OWNER            as owner,
+				DCTERMS_MODIFIED       as modified,
+				DCTERMS_ABSTRACT       as abstractDesc,
+				date_format(DCTERMS_ISSUED,'%Y-%m-%d')    as issued,
+				CIRCA_AVAILABILITY     as availability,
+				DCTERMS_REFERENCES     as reference,
+				CIRCA_STATUS           as status,
+				ATTR1                  as dynAttribute1,
+				ATTR2                  as dynAttribute2,
+				ATTR3                  as dynAttribute3,
+				ATTR4                  as dynAttribute4,
+				ATTR5                  as dynAttribute5
+			FROM $virtualCirca$_$interestGroup$_Doc
+			WHERE dc_identifier like #identifier#
+		</select>
+	</mapper>

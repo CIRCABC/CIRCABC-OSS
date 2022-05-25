@@ -1,0 +1,159 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--+
+    |     Copyright European Community 2006 - Licensed under the EUPL V.1.0
+    |
+    |  		   http://ec.europa.eu/idabc/en/document/6523
+    |
+    +-->
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+
+<beans>
+
+    <bean id="formatMessageTemplateExtension" parent="baseTemplateImplementation" class="eu.cec.digit.circabc.repo.template.I18NFormatMessageMethod">
+        <property name="extensionName">
+            <value>formatMessage</value>
+        </property>
+        <property name="webMessageBundle">
+            <value>alfresco.extension.webclient</value>
+        </property>
+    </bean>
+
+    <bean id="fullUserNameTemplateExtension" parent="baseTemplateImplementation" class="eu.cec.digit.circabc.repo.template.UserDisplayNameMethod">
+        <property name="extensionName">
+            <value>fullName</value>
+        </property>
+        <property name="serviceRegistry">
+            <ref bean="ServiceRegistry"/>
+        </property>
+    </bean>
+
+
+    <bean id="loginUserNameTemplateExtension" parent="baseTemplateImplementation" class="eu.cec.digit.circabc.repo.template.LoginUserNameMethod">
+        <property name="extensionName">
+            <value>loginUserName</value>
+        </property>
+        <property name="serviceRegistry">
+            <ref bean="ServiceRegistry"/>
+        </property>
+    </bean>
+
+    <bean id="ConcatAsStringTemplateExtension" parent="baseTemplateImplementation" class="eu.cec.digit.circabc.repo.template.ConcatAsStringMethod">
+        <property name="extensionName">
+            <value>concatStr</value>
+        </property>
+    </bean>
+
+    <bean id="nodeRefBaseTemplateImplementation" parent="baseTemplateImplementation" abstract="true" >
+        <property name="nodeService">
+            <ref bean="nodeService"/>
+        </property>
+    </bean>
+
+    <bean id="directAccessUrlTemplateExtension" parent="nodeRefBaseTemplateImplementation" class="eu.cec.digit.circabc.repo.template.DirectAccessUrlMethod">
+        <property name="extensionName">
+            <value>accessUrl</value>
+        </property>
+    </bean>
+    
+    <bean id="simpleDirectAccessUrlTemplateExtension" parent="nodeRefBaseTemplateImplementation" class="eu.cec.digit.circabc.repo.template.SimpleDirectAccessUrlMethod">
+        <property name="extensionName">
+            <value>simpleAccessUrl</value>
+        </property>
+    </bean>
+
+    <bean id="directDownloadUrlTemplateExtension" parent="nodeRefBaseTemplateImplementation" class="eu.cec.digit.circabc.repo.template.DirectDowloadUrlMethod">
+        <property name="extensionName">
+            <value>downloadUrl</value>
+        </property>
+    </bean>
+    
+    <bean id="simpleDirectDownloadUrlTemplateExtension" parent="nodeRefBaseTemplateImplementation" class="eu.cec.digit.circabc.repo.template.SimpleDirectDowloadUrlMethod">
+        <property name="extensionName">
+            <value>simpleDownloadUrl</value>
+        </property>
+    </bean>
+
+    <bean id="NodePathTemplateExtension" parent="nodeRefBaseTemplateImplementation" class="eu.cec.digit.circabc.repo.template.NodePathMethod">
+        <property name="extensionName">
+            <value>circabcPath</value>
+        </property>
+    </bean>
+    
+    <bean id="LibraryNodePathTemplateExtension" parent="nodeRefBaseTemplateImplementation" class="eu.cec.digit.circabc.repo.template.LibraryNodePathMethod">
+        <property name="extensionName">
+            <value>libraryPath</value>
+        </property>
+    </bean>
+
+    <bean id="TitleOrNameMethod" parent="nodeRefBaseTemplateImplementation" class="eu.cec.digit.circabc.repo.template.TitleOrNameMethod">
+        <property name="extensionName">
+            <value>titleOrName</value>
+        </property>
+    </bean>
+    
+    <bean id="DynamicPropertyDescriptionMethod" parent="baseTemplateImplementation" class="eu.cec.digit.circabc.repo.template.DynamicPropertyDescriptionMethod">
+        <property name="extensionName">
+            <value>dynamicPropertyDescriptions</value>
+        </property>
+        <property name="dynamicPropertiesService">
+            <ref bean="dynamicPropertiesService"/>
+        </property>
+    </bean>
+    
+    <bean id="UserNameOrEcasUserName" parent="nodeRefBaseTemplateImplementation" class="eu.cec.digit.circabc.repo.template.UserNameOrEcasUserNameMethod">
+        <property name="extensionName">
+            <value>userNameOrEcasUserName</value>
+        </property>
+    </bean>
+	
+    <bean id="MailAddress" parent="nodeRefBaseTemplateImplementation" class="eu.cec.digit.circabc.repo.template.MailAddress">
+        <property name="extensionName">
+            <value>mailAddress</value>
+        </property>
+    </bean>
+    
+    <!-- Extensions made for the new UI links -->
+    
+    <bean id="libraryNodeLinkTemplateExtension" parent="nodeRefBaseTemplateImplementation" class="eu.cec.digit.circabc.repo.template.LibraryNodeLinkMethod">
+        <property name="extensionName">
+            <value>libraryAccessUrl</value>
+        </property>
+    </bean>
+    
+    <bean id="groupNodeLinkTemplateExtension" parent="nodeRefBaseTemplateImplementation" class="eu.cec.digit.circabc.repo.template.GroupNodeLinkMethod">
+        <property name="extensionName">
+            <value>groupAccessUrl</value>
+        </property>
+    </bean>
+    
+    <bean id="agendaNodeLinkTemplateExtension" parent="nodeRefBaseTemplateImplementation" class="eu.cec.digit.circabc.repo.template.AgendaNodeLinkMethod">
+        <property name="extensionName">
+            <value>agendaAccessUrl</value>
+        </property>
+    </bean>
+    
+    <bean id="forumNodeLinkTemplateExtension" parent="nodeRefBaseTemplateImplementation" class="eu.cec.digit.circabc.repo.template.ForumNodeLinkMethod">
+        <property name="extensionName">
+            <value>forumAccessUrl</value>
+        </property>
+    </bean>
+    
+    <bean id="categoryGroupRequestAccessUrlTemplateExtension" parent="nodeRefBaseTemplateImplementation" class="eu.cec.digit.circabc.repo.template.CategoryGroupRequesLinkMethod">
+        <property name="extensionName">
+            <value>categoryGroupRequestAccessUrl</value>
+        </property>
+    </bean>
+    
+    <bean id="getMLDisplayTitleTemplateExtension" parent="nodeRefBaseTemplateImplementation" class="eu.cec.digit.circabc.repo.template.MLDisplayTitleMethod">
+        <property name="extensionName">
+            <value>getMLDisplayTitle</value>
+        </property>
+    </bean>
+    
+    <bean id="getMLDisplayDescriptionTemplateExtension" parent="nodeRefBaseTemplateImplementation" class="eu.cec.digit.circabc.repo.template.MLDisplayDescriptionMethod">
+        <property name="extensionName">
+            <value>getMLDisplayDescription</value>
+        </property>
+    </bean>
+    
+</beans>

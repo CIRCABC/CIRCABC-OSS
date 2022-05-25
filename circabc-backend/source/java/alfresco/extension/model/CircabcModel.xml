@@ -1,0 +1,842 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Copyright 2006 European Community
+  
+   Licensed under the EUPL, Version 1.1 or as soon they
+   will be approved by the European Commission - subsequent
+   versions of the EUPL (the "Licence");
+   You may not use this work except in compliance with the
+   Licence.
+   You may obtain a copy of the Licence at:
+  
+   https://joinup.ec.europa.eu/software/page/eupl
+  
+   Unless required by applicable law or agreed to in
+   writing, software distributed under the Licence is
+   distributed on an "AS IS" basis,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+   express or implied.
+   See the Licence for the specific language governing
+   permissions and limitations under the Licence.
+-->
+
+<!-- Definition of new Model for circabc -->
+<model name="ci:circamodel"
+  xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+  <!-- Optional meta-data about the model -->
+  <description>Circabc Model</description>
+  <author>Ph Dubois</author>
+  <version>1.1</version>
+
+  <!-- Imports are required to allow references to definitions in other models -->
+  <imports>
+    <!-- Import Alfresco Dictionary Definitions -->
+    <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+    <!-- Import Alfresco Content Domain Model Definitions -->
+    <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+    <import uri="http://www.alfresco.org/model/system/1.0" prefix="sys" />
+    <!--  Import the keyword model to set an assocition from the ig to the keyword container-->
+    <import uri="http://www.cc.cec/circabc/model/keyword/1.0" prefix="kw" />
+    <!--  Import the dynamic properties to set an assocition from the ig to the dynamic properties container-->
+    <import uri="http://www.cc.cec/circabc/model/dynamicproperties/1.0" prefix="dp" />
+    <!--  Import Circabc Event Service Model-->
+    <import uri="http://www.cc.cec/circabc/model/events/1.0" prefix="ce" />
+    <!--  Import Circabc Share Space Service Model-->
+	<import uri="http://www.cc.cec/circabc/model/sharespace/1.0" prefix="ss" />
+  </imports>
+
+  <!-- Introduction of new namespaces defined by this model -->
+  <!-- NOTE: The following namespace my.new.model should be changed to reflect your own namespace -->
+  <namespaces>
+    <namespace uri="http://www.cc.cec/circabc/model/content/1.0" prefix="ci" />
+  </namespaces>
+
+  <types>
+
+    <type name="ci:circaBCService">
+      <title>Circa Service Type</title>
+      <parent>sys:base</parent>
+      <properties>
+        <property name="ci:circaBCPermissionSet">
+          <title>PermissionSet</title>
+          <type>d:any</type>
+          <mandatory enforced="true">true</mandatory>
+        </property>
+      </properties>
+    </type>
+
+    <type name="ci:circaCategoryService">
+      <title>Circa Service Type</title>
+      <parent>sys:base</parent>
+      <properties>
+        <property name="ci:circaCategoryPermissionSet">
+          <title>PermissionSet</title>
+          <type>d:any</type>
+          <mandatory enforced="true">true</mandatory>
+        </property>
+      </properties>
+    </type>
+
+    <type name="ci:circaIGRootService">
+      <title>Circa Service Type</title>
+      <parent>sys:base</parent>
+      <properties>
+        <property name="ci:circaIGRootPermissionSet">
+          <title>PermissionSet</title>
+          <type>d:any</type>
+          <mandatory enforced="true">true</mandatory>
+        </property>
+      </properties>
+    </type>
+
+    <type name="ci:circaLibraryService">
+      <title>Circa Service Type</title>
+      <parent>sys:base</parent>
+      <properties>
+        <property name="ci:circaLibraryPermissionSet">
+          <title>PermissionSet</title>
+          <type>d:any</type>
+          <mandatory enforced="true">true</mandatory>
+        </property>
+      </properties>
+    </type>
+
+    <!-- profile -->
+    <type name="ci:circaBCProfile">
+      <title>Circabc profile</title>
+      <parent>sys:base</parent>
+      <properties>
+        <property name="ci:circaBCProfileGroupName">
+          <title>Group Name</title>
+          <type>d:text</type>
+          <mandatory enforced="true">true</mandatory>
+          <index enabled="false" />
+        </property>
+      </properties>
+      <associations>
+        <child-association name="ci:circaBCServiceAssoc">
+          <source>
+            <mandatory>false</mandatory>
+            <many>true</many>
+          </source>
+          <target>
+            <class>ci:circaBCService</class>
+            <mandatory>false</mandatory>
+            <many>true</many>
+          </target>
+          <duplicate>false</duplicate>
+        </child-association>
+      </associations>
+      <mandatory-aspects>
+          <aspect>cm:titled</aspect>
+      </mandatory-aspects>
+    </type>
+
+	<type name="ci:circaCategoryProfile">
+      <title>CircaCategory profile</title>
+      <parent>sys:base</parent>
+      <properties>
+        <property name="ci:circaCategoryProfileGroupName">
+          <title>Group Name</title>
+          <type>d:text</type>
+          <mandatory enforced="true">true</mandatory>
+          <index enabled="false" />
+        </property>
+      </properties>
+      <associations>
+        <child-association name="ci:circaCategoryServiceAssoc">
+          <source>
+            <mandatory>false</mandatory>
+            <many>true</many>
+          </source>
+          <target>
+            <class>ci:circaCategoryService</class>
+            <mandatory>false</mandatory>
+            <many>true</many>
+          </target>
+          <duplicate>false</duplicate>
+        </child-association>
+      </associations>
+      <mandatory-aspects>
+          <aspect>cm:titled</aspect>
+      </mandatory-aspects>
+    </type>
+
+	<type name="ci:circaIGRootProfile">
+      <title>CircaIGRoot profile</title>
+      <parent>sys:base</parent>
+      <properties>
+        <property name="ci:circaIGRootProfileGroupName">
+          <title>Group Name</title>
+          <type>d:text</type>
+          <mandatory enforced="true">true</mandatory>
+          <index enabled="false" />
+        </property>
+      </properties>
+      <associations>
+        <child-association name="ci:circaIGRootServiceAssoc">
+          <source>
+            <mandatory>false</mandatory>
+            <many>true</many>
+          </source>
+          <target>
+            <class>ci:circaIGRootService</class>
+            <mandatory>false</mandatory>
+            <many>true</many>
+          </target>
+          <duplicate>false</duplicate>
+        </child-association>
+      </associations>
+      <mandatory-aspects>
+          <aspect>cm:titled</aspect>
+          <aspect>ci:importable</aspect>
+      </mandatory-aspects>
+    </type>
+
+	<!--  The container where is stored the directory service -->
+	<type name="ci:circaDirectoryRoot">
+		<title>Directory container</title>
+		<parent>sys:container</parent>
+	 </type>
+
+	 <type name="ci:customizationContainer">
+	      <title>Customization container</title>
+	      <parent>sys:container</parent>
+	 </type>
+
+	 <type name="ci:customizationFolder">
+	      <title>Customization folder</title>
+	      <parent>sys:container</parent>
+	 </type>
+
+	 <type name="ci:customizationContent">
+	      <title>Customization content</title>
+	      <parent>cm:cmobject</parent>
+	      <properties>
+            <property name="ci:content">
+               <type>d:content</type>
+               <mandatory>false</mandatory>
+               <!--- Index content in the background -->
+               <index enabled="true">
+                  <atomic>true</atomic>
+                  <stored>false</stored>
+                  <tokenised>true</tokenised>
+               </index>
+            </property>
+         </properties>
+	 </type>
+	 
+	 <!-- Types to stores the external repository configuration -->
+	 <type name="ci:externalRepositoryConfigurationFolder">
+	      <title>External Repository Configuration Folder</title>
+	      <parent>cm:cmobject</parent>
+         <associations>
+            <child-association name="ci:containsConfigurations">
+               <source>
+                  <mandatory>false</mandatory>
+                  <many>true</many>
+               </source>
+               <target>
+                  <class>sys:base</class>
+                  <mandatory>false</mandatory>
+                  <many>true</many>
+               </target>
+               <duplicate>false</duplicate>
+               <propagateTimestamps>true</propagateTimestamps>
+            </child-association>
+         </associations>
+	 </type>
+	 
+	 <type name="ci:externalRepositoryConfiguration">
+	      <title>External Repository Configuration</title>
+	      <parent>cm:cmobject</parent>
+	 </type>
+	 
+	 <!-- Types to stores the external repository configuration -->
+	 <type name="ci:news">
+      <title>A news node</title>
+      <parent>cm:folder</parent>
+	 </type>
+	 
+  </types>
+
+
+  <aspects>
+   	
+    <aspect name="ci:savedRootSearchable">
+      <title>Saved Search Location Aspect</title>
+      <properties>
+        <property name="ci:location">
+          <type>d:text</type>
+          <mandatory>true</mandatory>
+          <index enabled="true" />
+        </property>
+      </properties>
+    </aspect>
+	
+    <aspect name="ci:externallyPublished">
+      <title>Externally Published Aspect</title>
+      <properties>
+        <property name="ci:repositoriesInfo">
+          <type>d:any</type>
+          <mandatory>true</mandatory>
+          <index enabled="true" />
+        </property>
+      </properties>
+    </aspect>
+ 	
+    <!-- circaProfile is ancestor of all Aspect who has to implements Profile -->
+    <aspect name="ci:circaBC">
+      <title>CircaBC Aspect</title>
+      <properties>
+        <!-- Goup name of the users invited in the group -->
+        <!-- All the groups used for profile management are included in that group -->
+        <property name="ci:circaBCGroupMembers">
+          <type>d:text</type>
+          <mandatory>false</mandatory>
+          <index enabled="false" />
+        </property>
+      </properties>
+      <associations>
+        <child-association name="ci:circaBCProfileAssoc">
+          <source>
+            <mandatory>false</mandatory>
+            <many>true</many>
+          </source>
+          <target>
+            <class>ci:circaBCProfile</class>
+            <mandatory>false</mandatory>
+            <many>true</many>
+          </target>
+          <duplicate>false</duplicate>
+        </child-association>
+      </associations>
+    </aspect>
+
+    <aspect name="ci:circaCategory">
+      <title>CircaCategory Aspect</title>
+      <properties>
+        <!-- Goup name of the users invited in the group -->
+        <!-- All the groups used for profile management are included in that group -->
+        <property name="ci:circaCategoryGroupMembers">
+          <type>d:text</type>
+          <mandatory>false</mandatory>
+          <index enabled="false" />
+        </property>
+		<!-- Added residual properties for Solr harvesting - Alfresco 4 -->
+        <property name="ci:circaCategorySubsGroup">
+         <type>d:text</type>
+         <mandatory>false</mandatory>
+         <index enabled="true" />
+        </property>
+        <property name="ci:circaCategoryMasterGroup">
+         <type>d:text</type>
+         <mandatory>false</mandatory>
+         <index enabled="true" />
+        </property>
+        <property name="ci:circaCategoryInvitedUsersGroup">
+         <type>d:text</type>
+         <mandatory>false</mandatory>
+         <index enabled="true" />
+        </property>
+      </properties>
+      <associations>
+        <child-association name="ci:circaCategoryProfileAssoc">
+          <source>
+            <mandatory>false</mandatory>
+            <many>true</many>
+          </source>
+          <target>
+           	<class>ci:circaCategoryProfile</class>
+            <mandatory>false</mandatory>
+            <many>true</many>
+          </target>
+          <duplicate>false</duplicate>
+        </child-association>
+        <child-association name="ci:logoContainerAssoc">
+          <source>
+            <mandatory>false</mandatory>
+            <many>true</many>
+          </source>
+          <target>
+           	<class>cm:folder</class>
+            <mandatory>false</mandatory>
+            <many>true</many>
+          </target>
+          <duplicate>false</duplicate>
+        </child-association>
+      </associations>
+    </aspect>
+
+    <!-- Definition of new Content Aspects: Content Hits -->
+    <aspect name="ci:circaContentHits">
+      <title>Circa Content Hits</title>
+      <properties>
+        <property name="ci:countStartedDate">
+          <type>d:date</type>
+          <mandatory>true</mandatory>
+          <index enabled="false" />
+        </property>
+        <property name="ci:updateCount">
+          <type>d:int</type>
+          <default>0</default>
+        </property>
+        <property name="ci:readCount">
+          <type>d:int</type>
+          <default>0</default>
+        </property>
+      </properties>
+    </aspect>
+
+    <!-- Definition of new Content Aspects: Circa Content Notify -->
+    <aspect name="ci:circaContentNotify">
+      <title>Circa Content Notify</title>
+      <properties>
+      </properties>
+    </aspect>
+
+ 	<!-- Aspect to add to a node to disabled the notification at the next event -->
+    <aspect name="ci:noNotificationLastTime">
+      <title>Notification disabled</title>
+      <properties>
+      </properties>
+    </aspect>
+
+    <!-- Definition of new circa Aspects: CircaIGRoot is applied to the root of an IG -->
+    <aspect name="ci:circaIGRoot">
+      <title>Interest Group Root Aspect</title>
+      <properties>
+        <!-- Group name of the users invited in the group -->
+        <!-- All the groups used for profile management are included in that group -->
+        <property name="ci:groupMembers">
+          <type>d:text</type>
+          <mandatory>false</mandatory>
+          <index enabled="false" />
+        </property>
+        <property name="ci:contact">
+         <type>d:mltext</type>
+         <mandatory>false</mandatory>
+         <index enabled="false" />
+        </property>
+        <property name="ci:lightDescription">
+         <type>d:mltext</type>
+         <mandatory>false</mandatory>
+         <index enabled="false" />
+        </property>
+        <property name="ci:canRegisteredApply">
+         <type>d:boolean</type>
+         <mandatory>false</mandatory>
+         <index enabled="false" />
+        </property>
+        <property name="ci:nbDaysWhatsNew">
+         <type>d:int</type>
+         <mandatory>false</mandatory>
+         <index enabled="false" />
+        </property>
+		<!-- Added residual properties for Solr harvesting - Alfresco 4 -->
+        <property name="ci:circaIGRootMasterGroup">
+         <type>d:text</type>
+         <mandatory>false</mandatory>
+         <index enabled="true" />
+        </property>
+        <property name="ci:circaIGRootInvitedUsersGroup">
+         <type>d:text</type>
+         <mandatory>false</mandatory>
+         <index enabled="true" />
+        </property>
+      </properties>
+      <!--  Link to the Keyword container -->
+      <associations>
+		<child-association name="ci:circaIGRootProfileAssoc">
+          <source>
+            <mandatory>false</mandatory>
+            <many>true</many>
+          </source>
+          <target>
+            <class>ci:circaIGRootProfile</class>
+            <mandatory>false</mandatory>
+            <many>true</many>
+          </target>
+          <duplicate>false</duplicate>
+        </child-association>
+        <!--  Link to the Keyword container -->
+		<child-association name="ci:igKwContainer">
+          <source>
+            <mandatory>false</mandatory>
+            <many>false</many>
+          </source>
+          <target>
+            <class>kw:keywordContainer</class>
+            <mandatory>false</mandatory>
+            <many>false</many>
+          </target>
+          <duplicate>false</duplicate>
+        </child-association>
+        <!--  Link to the Dynamic properties container -->
+		<child-association name="ci:igDpContainer">
+          <source>
+            <mandatory>false</mandatory>
+            <many>false</many>
+          </source>
+          <target>
+            <class>dp:Container</class>
+            <mandatory>false</mandatory>
+            <many>false</many>
+          </target>
+          <duplicate>false</duplicate>
+        </child-association>
+        <!--  Link to the directory IG Service -->
+        <child-association name="ci:igDirectoryContainer">
+          <source>
+            <mandatory>false</mandatory>
+            <many>false</many>
+          </source>
+          <target>
+            <class>ci:circaDirectoryRoot</class>
+            <mandatory>false</mandatory>
+            <many>false</many>
+          </target>
+          <duplicate>false</duplicate>
+        </child-association>
+      </associations>
+    </aspect>
+
+    <aspect name="ci:circabcManagement">
+    	<title>CircabcManagement Aspect</title>
+    	<properties>
+    		<property name="ci:igRootNodeIdArchived">
+    			<type>d:text</type>
+    			<mandatory>false</mandatory>
+    			<index enabled="true">
+                  <atomic>true</atomic>
+                  <stored>true</stored>
+                  <tokenised>false</tokenised>
+               </index>
+    		</property>
+    	</properties>
+		<associations>
+	    	<!--  Link to the customization container -->
+			<child-association name="ci:customize">
+				<source>
+				    <mandatory>false</mandatory>
+				    <many>false</many>
+				</source>
+				<target>
+				    <class>ci:customizationContainer</class>
+				    <mandatory>false</mandatory>
+				    <many>false</many>
+				</target>
+				<duplicate>false</duplicate>
+			</child-association>
+      </associations>
+    </aspect>
+
+    <aspect name="ci:circaLibraryRoot">
+      <title>CircaLibraryRoot Aspect</title>
+      <!-- parent>ci:circaLibrary</parent -->
+      <properties>
+      </properties>
+      <mandatory-aspects>
+		<aspect>ci:circaLibrary</aspect>
+      </mandatory-aspects>
+    </aspect>
+    <aspect name="ci:circaLibrary">
+      <title>CircaLibrary Aspect</title>
+	  <properties>
+        <!-- Goup name of the users invited in the group -->
+        <!-- All the groups used for profile management are included in that group -->
+        <property name="ci:circaLibraryGroupMembers">
+          <type>d:text</type>
+          <mandatory>false</mandatory>
+          <index enabled="false" />
+        </property>
+      </properties>
+    </aspect>
+
+    <!--  newsgroup -->
+    <aspect name="ci:circaNewsGroupRoot">
+      <title>NewsGroupRoot Aspect</title>
+      <!-- parent>ci:circaLibrary</parent -->
+      <properties>
+      </properties>
+      <mandatory-aspects>
+		<aspect>ci:circaNewsGroup</aspect>
+      </mandatory-aspects>
+    </aspect>
+    <aspect name="ci:circaNewsGroup">
+      <title>CircaNewsGroup Aspect</title>
+	  <properties>
+        <!-- Goup name of the users invited in the group -->
+        <!-- All the groups used for profile management are included in that group -->
+        <property name="ci:circaNewsGroupGroupMembers">
+          <type>d:text</type>
+          <mandatory>false</mandatory>
+        </property>
+      </properties>
+    </aspect>
+	<aspect name="ci:circaNewsGroupModerated">
+      <title>NewsGroupModerated Aspect</title>
+      <properties>
+      </properties>
+    </aspect>
+
+    <!--  survey -->
+    <aspect name="ci:circaSurveyRoot">
+      <title>SurveyRoot Aspect</title>
+      <properties>
+      </properties>
+      <mandatory-aspects>
+		<aspect>ci:circaSurvey</aspect>
+      </mandatory-aspects>
+    </aspect>
+    <aspect name="ci:circaSurvey">
+      <title>Survey Aspect</title>
+	  <properties>
+        <!-- Goup name of the users invited in the group -->
+        <!-- All the groups used for profile management are included in that group -->
+        <property name="ci:circaSurveyGroupMembers">
+          <type>d:text</type>
+          <mandatory>false</mandatory>
+        </property>
+      </properties>
+    </aspect>
+
+    <!--  Information Service -->
+	<aspect name="ci:circabcInformationRoot">
+		<title>Informartion Service Root Aspect</title>
+		<properties>
+			<property name="ci:infAdapt">
+				<title>Adapt the welcome page to screen</title>
+				<type>d:boolean</type>
+          		<mandatory>false</mandatory>
+				<default>yes</default>
+			</property>
+	        <property name="ci:infIndexPage">
+				<title>The name of the index page</title>
+    	      	<type>d:text</type>
+          		<mandatory>false</mandatory>
+    		    <default>index.html</default>
+	        </property>
+	        <property name="ci:displayOldInformation">
+				<title>The boolean to display or not the index page</title>
+    	      	<type>d:boolean</type>
+          		<mandatory>false</mandatory>
+    		    <default>false</default>
+	        </property>
+		</properties>
+		<mandatory-aspects>
+			<aspect>ci:circabcInformation</aspect>
+		</mandatory-aspects>
+    </aspect>
+
+    <aspect name="ci:circabcInformation">
+      <title>Information Aspect</title>
+	  <properties>
+        <!-- Goup name of the users invited in the group -->
+        <!-- All the groups used for profile management are included in that group -->
+        <property name="ci:circabcInformationGroupMembers">
+          <type>d:text</type>
+          <mandatory>false</mandatory>
+        </property>
+      </properties>
+    </aspect>
+    
+    <aspect name="ci:circabcInformationNews">
+      <title>Information Aspect</title>
+      <!-- the aspect that manages the news items inside the Information service-->
+	  <properties>
+        <property name="ci:newsContent">
+          <type>d:text</type>
+          <mandatory>false</mandatory>
+        </property>
+        <property name="ci:newsDate">
+        	<!-- if type of news is date, then it's the date that will be shown in the card, not the creation date, nor the modified date -->
+          <type>d:date</type>
+          <mandatory>false</mandatory>
+        </property>
+        <property name="ci:newsPattern">
+          <type>d:text</type>
+          <mandatory>true</mandatory>
+          <default>text</default>
+        </property>
+        <property name="ci:newsSize">
+          <type>d:int</type>
+          <mandatory>true</mandatory>
+          <default>1</default>
+        </property>
+        <property name="ci:newsLayout">
+          <type>d:text</type>
+          <mandatory>true</mandatory>
+          <default>normal</default>
+        </property>
+        <property name="ci:newsUrl">
+          <type>d:text</type>
+          <mandatory>false</mandatory>
+        </property>
+      </properties>
+    </aspect>
+
+    <!--  Information Service -->
+	<aspect name="ci:circabcEventRoot">
+      <title>Event Service Root Aspect</title>
+      <properties>
+		<property name="ci:timezone">
+			<type>d:text</type>
+			<mandatory>true</mandatory>
+			<default>GMT+1</default>
+			<constraints>
+				<constraint ref="ce:timeZoneConstraint" />
+			</constraints>
+		</property>
+		<property name="ci:weekStartDay">
+			<type>d:text</type>
+			<mandatory>true</mandatory>
+			<default>monday</default>
+			<constraints>
+				<constraint ref="ce:weekStartDayConstraint" />
+			</constraints>
+		</property>
+      </properties>
+      <mandatory-aspects>
+		<aspect>ci:circabcEvent</aspect>
+      </mandatory-aspects>
+    </aspect>
+    <aspect name="ci:circabcEvent">
+      <title>Event Aspect</title>
+	  <properties>
+        <!-- Goup name of the users invited in the group -->
+        <!-- All the groups used for profile management are included in that group -->
+        <property name="ci:circabcEventGroupMembers">
+          <type>d:text</type>
+          <mandatory>false</mandatory>
+        </property>
+      </properties>
+
+      <associations>
+		<child-association name="ci:eventAssociation">
+			<source>
+				<mandatory>false</mandatory>
+				<many>false</many>
+			</source>
+			<target>
+				<class>ce:baseEventDefinition</class>
+				<mandatory>false</mandatory>
+				<many>true</many>
+			</target>
+			<duplicate>false</duplicate>
+		</child-association>
+      </associations>
+    </aspect>
+
+	<!-- aspect to put on Shared Space   -->
+	<aspect name="ci:circabcSharedSpace">
+		<associations>
+			<child-association name="ci:shareSpaceContainer">
+				<source>
+					<mandatory>false</mandatory>
+					<many>false</many>
+				</source>
+				<target>
+					<class>ss:Container</class>
+					<mandatory>false</mandatory>
+					<many>false</many>
+				</target>
+				<duplicate>false</duplicate>
+			</child-association>
+		</associations>
+	</aspect>
+
+	<aspect name="ci:importable">
+         <title>Importable</title>
+         <properties>
+			<property name="ci:isExported">
+          		<title>Group Name</title>
+	          	<type>d:boolean</type>
+    	      	<mandatory enforced="true">false</mandatory>
+          		<index enabled="false" />
+			</property>
+			<property name="ci:isImported">
+				<title>Group Name</title>
+				<type>d:boolean</type>
+				<mandatory enforced="true">false</mandatory>
+				<index enabled="false" />
+			</property>
+			<property name="ci:importedNodeRef">
+				<title>NodeRef of the imported Profile</title>
+				<type>d:noderef</type>
+				<mandatory enforced="true">false</mandatory>
+				<index enabled="false" />
+			</property>
+         </properties>
+         <associations>
+            <association name="ci:importedTo">
+               <source>
+                  <mandatory>false</mandatory>
+                  <many>true</many>
+               </source>
+               <target>
+                  <class>ci:circaIGRootProfile</class>
+                  <mandatory>false</mandatory>
+                  <many>true</many>
+               </target>
+            </association>
+         </associations>
+      </aspect>
+
+     <!-- aspect set a simple revisionNumber   -->
+	 <aspect name="ci:revisionable">
+	 	<title>Revisionable</title>
+        <properties>
+			<property name="ci:revisionNumber">
+				<title>A simple revision number</title>
+				<type>d:int</type>
+				<mandatory>false</mandatory>
+			</property>
+		</properties>
+	</aspect>
+	<aspect name="ci:notifyPasteAll">
+      <title>Circabc Notify on Paste all Aspect</title>
+    </aspect>
+    <aspect name="ci:notifyPaste">
+      <title>Circabc Notify on Paste Aspect</title>
+    </aspect>
+    <aspect name="ci:belongToInterestGroup">
+         <title>BelongToInterestGroup</title>
+         <properties>
+			<property name="ci:interestGroupNodeRef">
+				<title>NodeRef of the Interest groups</title>
+				<type>d:noderef</type>
+				<mandatory enforced="true">false</mandatory>
+				<index enabled="true" />
+			</property>
+         </properties>
+      </aspect>>
+
+	<aspect name="ci:lockedForAccess">
+      <title>Locked for Access</title>
+    </aspect>
+
+	<aspect name="ci:lockedForAccessEnabled">
+      <title>Locked for Access Enabled</title>
+    </aspect>
+    
+    <aspect name="ci:helpCategory">
+      <title>A category for the new help service</title>
+    </aspect>
+    
+    <aspect name="ci:helpArticle">
+      <title>An article for the new help service</title>
+    </aspect>
+    
+    <aspect name="ci:helpArticleHighlighted">
+      <title>An article for the new help service, which is displayed in the help center homepage</title>
+    </aspect>
+    
+    <aspect name="ci:helpLink">
+      <title>a Useful link in the help service</title>
+    </aspect>
+
+  </aspects>
+</model>

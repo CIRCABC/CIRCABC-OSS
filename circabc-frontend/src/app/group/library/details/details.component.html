@@ -1,0 +1,942 @@
+<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+<div class="fluid page-container">
+  <div class="file-details" *ngIf="node">
+    <div class="page-header">
+      <span
+        class="page-header__title"
+        [innerHtml]="getPageTitle() | transloco"
+      ></span>
+      <div class="page-header__actions">
+        <cbc-reponsive-sub-menu>
+          <a (click)="backToContainer()" class="page-header__backlink"
+            >{{ 'label.back' | transloco }}</a
+          >
+          <a [routerLink]="['.']" class="selected"
+            >{{ 'label.details' | transloco }}</a
+          >
+          <a
+            *ngIf="
+              !isVersion() | cbcIfRoleGE: [node, 'LibAdmin', ['LibManageOwn']]
+            "
+            [routerLink]="[
+              versionLabel === undefined
+                ? '../../../permissions'
+                : '../../../../permissions',
+              node.id
+            ]"
+            [queryParams]="{ from: 'library' }"
+            >{{ 'label.permissions' | transloco }}</a
+          >
+          <a
+            *ngIf="!isVersion() | cbcIfRoleGE: [node, 'LibAdmin', []]"
+            [routerLink]="[
+              versionLabel === undefined
+                ? '../../../notification-status'
+                : '../../../../notification-status',
+              nodeId
+            ]"
+            [queryParams]="{ from: 'library' }"
+            >{{ 'label.notifications' | transloco }}</a
+          >
+        </cbc-reponsive-sub-menu>
+      </div>
+    </div>
+
+    <cbc-group-breadcrumb
+      [node]="nodeId"
+      [noMarginBottom]="true"
+      *ngIf="!restrictedMode"
+      [displayName]="false"
+    ></cbc-group-breadcrumb>
+
+    <section class="details-container">
+      <section class="box details-metadata-container">
+        <header class="header-details">
+          <div class="title">
+            {{ node.name }}<br />
+            <span class="visibility" *ngIf="isFile()"
+              >({{ 'label.version.number' | transloco: { number:
+              nodeVersionLabel } }})</span
+            >
+          </div>
+
+          <div class="icons">
+            <cbc-favourite-switch
+              [node]="node"
+              class="favourite-no-float"
+            ></cbc-favourite-switch>
+
+            <div
+              class="dropdown-trigger dropdown-trigger--with-icons"
+              *ngIf="!isGuest()"
+            >
+              <img
+                src="img/visibility.png"
+                *ngIf="isSubscribedToNotifications()"
+                alt="Notifications"
+              />
+              <img
+                src="img/no-visibility.png"
+                *ngIf="!isSubscribedToNotifications()"
+                alt="Notifications"
+              />
+              <div class="dropdown dropdown--library-settings">
+                <div class="number-of-items">
+                  {{ 'label.notifications' | transloco }}:
+                  <br />
+                  <br />
+                  <a
+                    (click)="changeNotificationSubscription('on')"
+                    *ngIf="!isSubscribedToNotifications()"
+                    >{{ 'label.subscribe' | transloco }}
+                    <img src="img/visibility.png" alt="Notifications" />
+                  </a>
+                  <a
+                    (click)="changeNotificationSubscription('off')"
+                    *ngIf="isSubscribedToNotifications()"
+                    >{{ 'label.unsubscribe' | transloco }}
+                    <img src="img/no-visibility.png" alt="Notifications" />
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <cbc-share
+              [showLabel]="false"
+              [orientationRight]="false"
+              [enableDirectDownload]="isFile() && !isLink()"
+            >
+            </cbc-share>
+
+            <cbc-spinner *ngIf="processing"></cbc-spinner>
+          </div>
+        </header>
+        <div class="main">
+          <section class="file-informations">
+            <a *ngIf="isPreviewable()" (click)="previewContent()">
+              <img
+                *ngIf="node.id && node.name && isFile() && !isLink()"
+                class="thumbnail"
+                [attr.src]="node.id | cbcThumbnail: isVersion() | cbcSecure"
+                alt="{{ node.name }}"
+              />
+              <img
+                *ngIf="isLink()"
+                src="img/icon-link-big-818181.png"
+                class="thumbnail-default"
+                width="130"
+                height="130"
+                alt=""
+              />
+              <img
+                *ngIf="isSharedSpaceLink(node)"
+                src="img/linked-folder-155D79.png"
+                class="thumbnail-default"
+                alt=""
+              />
+              <img
+                *ngIf="isFolder(node)"
+                src="img/bigicon-folder.png"
+                class="thumbnail-default"
+                alt=""
+              />
+            </a>
+            <span *ngIf="!isPreviewable()">
+              <img
+                *ngIf="node.id && node.name && isFile() && !isLink()"
+                class="thumbnail"
+                [attr.src]="node.id | cbcThumbnail: isVersion() | cbcSecure"
+                alt="{{ node.name }}"
+              />
+              <img
+                *ngIf="isLink()"
+                src="img/icon-link-big-818181.png"
+                class="thumbnail-default"
+                width="130"
+                height="130"
+                alt=""
+              />
+              <img
+                *ngIf="isSharedSpaceLink(node)"
+                src="img/linked-folder-155D79.png"
+                class="thumbnail-default"
+                alt=""
+              />
+              <img
+                *ngIf="isFolder(node)"
+                src="img/bigicon-folder.png"
+                class="thumbnail-default"
+                alt=""
+              />
+            </span>
+
+            <div class="items">
+              <a
+                *ngIf="!isFolder(node)"
+                class="step-link"
+                [class.step-link-selected]="step === 'metadata'"
+                (click)="step = 'metadata'"
+                >{{ 'label.details' | transloco }}</a
+              >
+              <a
+                *ngIf="!isFolder(node)"
+                class="step-link"
+                [class.step-link-selected]="step === 'dynprop'"
+                (click)="step = 'dynprop'"
+                >{{ 'label.group.medatada' | transloco }}</a
+              >
+
+              <table class="main-infos" *ngIf="step === 'metadata'">
+                <tbody>
+                  <tr>
+                    <td class="title">{{ 'label.title' | transloco }}:</td>
+                    <td class="metadata-value">{{ title }}</td>
+                  </tr>
+                  <tr>
+                    <td class="title">
+                      {{ 'label.description' | transloco }}:&nbsp;
+                    </td>
+                    <td [innerHTML]="description" class="span-description"></td>
+                  </tr>
+                  <tr>
+                    <td class="title">{{ 'label.Size' | transloco }}:&nbsp;</td>
+                    <td *ngIf="isFile()" class="metadata-value">
+                      {{ size | cbcSize: true }}
+                    </td>
+                    <td *ngIf="isFolder(node)" class="metadata-value">
+                      {{ folderSize | cbcSize: true }}
+                    </td>
+                  </tr>
+                  <tr *ngIf="isFile() && isMultiLingual()">
+                    <td class="title">
+                      {{ 'label.language' | transloco }}:&nbsp;
+                    </td>
+                    <td class="metadata-value">{{ locale }}</td>
+                  </tr>
+                  <tr *ngIf="isFile()">
+                    <td class="title">
+                      {{ 'label.content.type' | transloco }}:&nbsp;
+                    </td>
+                    <td class="metadata-value">{{ mimetypeName }}</td>
+                  </tr>
+                  <tr>
+                    <td class="title">
+                      {{ 'label.last.modification' | transloco }}:&nbsp;
+                    </td>
+                    <td class="metadata-value">
+                      {{ modified | date: 'y MMM d, H:mm' }} {{ 'label.by' |
+                      transloco }}
+                      <cbc-user-card [userId]="modifier"></cbc-user-card>
+                    </td>
+                  </tr>
+                  <tr *ngIf="isFile()">
+                    <td class="title">
+                      {{ 'label.keywords' | transloco }}:&nbsp;
+                    </td>
+                    <td>
+                      <cbc-keyword-tag
+                        *ngFor="let keyword of keywords"
+                        [keyword]="keyword"
+                        [lang]="currentLang"
+                        [removable]="
+                          !isLocked()
+                            | cbcIfRoleGE
+                              : [node, 'LibEditOnly', ['LibManageOwn']]
+                        "
+                        [documentNode]="node"
+                        (removed)="onKeywordRemoved()"
+                        [showLang]="false"
+                      ></cbc-keyword-tag>
+                      <cbc-add-keyword
+                        *ngIf="
+                          isLastVersionOfContent()
+                            | cbcIfRoleGE
+                              : [node, 'LibEditOnly', ['LibManageOwn']]
+                        "
+                        [documentNode]="node"
+                        [groupNode]="group"
+                        (addedKeyword)="onKeywordAdded($event)"
+                      >
+                      </cbc-add-keyword>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <br />
+              <p-accordion [multiple]="true">
+                <p-accordionTab
+                  [selected]="true"
+                  header="{{ 'label.metadata' | transloco }}"
+                  *ngIf="step === 'metadata'"
+                >
+                  <table *ngIf="step === 'metadata'">
+                    <tbody>
+                      <tr *ngIf="isFile()">
+                        <td class="title">
+                          {{ 'label.author' | transloco }}:&nbsp;
+                        </td>
+                        <td class="metadata-value">{{ author }}</td>
+                      </tr>
+                      <tr *ngIf="isLink()">
+                        <td class="title">
+                          {{ 'label.url' | transloco }}:&nbsp;
+                        </td>
+                        <td class="metadata-value">{{ url }}</td>
+                      </tr>
+                      <tr *ngIf="isFile()">
+                        <td class="title">
+                          {{ 'label.encoding' | transloco }}:&nbsp;
+                        </td>
+                        <td class="metadata-value">{{ encoding }}</td>
+                      </tr>
+                      <tr *ngIf="isFile()">
+                        <td class="title">
+                          {{ 'label.status' | transloco }}:&nbsp;
+                        </td>
+                        <td class="metadata-value">
+                          {{ status === 'RELEASE' ? 'RELEASED' : status }}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="title">
+                          {{ 'label.created' | transloco }}:&nbsp;
+                        </td>
+                        <td class="metadata-value">
+                          {{ created | date: 'y MMM d, H:mm' }} {{ 'label.by' |
+                          transloco }}
+                          <cbc-user-card [userId]="creator"></cbc-user-card>
+                        </td>
+                      </tr>
+                      <tr *ngIf="isFile()">
+                        <td class="title">
+                          {{ 'label.reference' | transloco }}:&nbsp;
+                        </td>
+                        <td class="metadata-value">{{ reference }}</td>
+                      </tr>
+                      <tr *ngIf="isFile()">
+                        <td class="title">
+                          {{ 'label.version' | transloco }}:&nbsp;
+                        </td>
+                        <td class="metadata-value">{{ nodeVersionLabel }}</td>
+                      </tr>
+                      <tr *ngIf="isFile()">
+                        <td class="title">
+                          {{ 'label.security.marking' | transloco }}:&nbsp;
+                        </td>
+                        <td class="metadata-value">{{ securityRanking }}</td>
+                      </tr>
+                      <tr *ngIf="isFile()">
+                        <td class="title">
+                          {{ 'label.issue.date' | transloco }}:&nbsp;
+                        </td>
+                        <td class="metadata-value">
+                          {{ issueDate | date: 'y MMM d, H:mm' }}
+                        </td>
+                      </tr>
+                      <tr *ngIf="isFile()">
+                        <td class="title">
+                          {{ 'label.expiration.date' | transloco }}:&nbsp;
+                        </td>
+                        <td class="metadata-value">
+                          {{ expirationDate | date: 'y MMM d' }}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </p-accordionTab>
+
+                <p-accordionTab
+                  [selected]="true"
+                  header="{{ 'admin.tab.external.repositories' | transloco }}"
+                  *ngIf="isFile() && hasAresLogVersion"
+                >
+                  <h4>Ares</h4>
+                  <div class="ares-info">
+                    <table>
+                      <tbody>
+                        <tr *ngIf="formAresInfo">
+                          <td class="title">
+                            {{ 'label.save.number' | transloco }}:&nbsp;
+                          </td>
+                          <td class="metadata-value">
+                            <a [href]="aresDocumentLink" target="_blank"
+                              >{{ formAresInfo.value.saveNumber }}</a
+                            >
+                          </td>
+                        </tr>
+                        <tr
+                          *ngIf="formAresInfo && !isEmptyRegistrationNumber()"
+                        >
+                          <td class="title">
+                            {{ 'label.registration.number' | transloco }}:&nbsp;
+                          </td>
+                          <td class="metadata-value">
+                            <a [href]="aresDocumentLink" target="_blank"
+                              >{{ formAresInfo.value.registrationNumber }}</a
+                            >
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </p-accordionTab>
+              </p-accordion>
+
+              <span *ngIf="isFile() && step === 'dynprop'">
+                <table *ngIf="node.properties">
+                  <tbody>
+                    <tr *ngFor="let dynprop of dynamicPropertiesModel">
+                      <td class="title">
+                        {{ dynprop.title | cbcI18n }}:&nbsp;
+                      </td>
+                      <td *ngIf="isDateField(dynprop)">
+                        {{ node.properties['dynAttr' + getIndex(dynprop)] |
+                        date: 'y MMM d, H:mm' }}
+                      </td>
+                      <td *ngIf="isSelectionField(dynprop)">
+                        {{ humanReadableSelectionDynProp(
+                        node.properties['dynAttr' + getIndex(dynprop)] ) }}
+                      </td>
+                      <td
+                        *ngIf="
+                          !isSelectionField(dynprop) && !isDateField(dynprop)
+                        "
+                        [innerHTML]="
+                          node.properties['dynAttr' + getIndex(dynprop)]
+                        "
+                        class="dyn-text-display"
+                      ></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </span>
+            </div>
+
+            <div class="library-link" *ngIf="isLibraryLink(node)">
+              <a class="cta" [routerLink]="['../..', destinationId, 'details']"
+                >{{ 'label.visit.link.target' | transloco }}</a
+              >
+            </div>
+          </section>
+        </div>
+        <div
+          id="lockedContentId"
+          style="
+            color: #ccc;
+            font-size: 18px;
+            text-align: center;
+            padding: 15px;
+            background-color: #fff;
+            line-height: 64px;
+          "
+          *ngIf="isLocked() && isFile()"
+        >
+          {{ 'label.content.locked' | transloco }}
+          <img
+            src="img/locked-padlock.png"
+            style="vertical-align: middle; margin: 0 25px"
+            alt=""
+          />
+          <a
+            *ngIf="workingCopyId !== ''"
+            class="more dropdown-toggle"
+            [routerLink]="
+              endsWithDetails()
+                ? ['../../', workingCopyId, 'details']
+                : ['../../../', workingCopyId, 'details']
+            "
+            >{{ 'label.go.to.working.copy' | transloco }} &rarr;</a
+          >
+        </div>
+      </section>
+
+      <section class="box actions details-actions-container">
+        <header class="header-details">
+          <div class="title">{{ 'label.actions' | transloco }}</div>
+        </header>
+
+        <div class="main">
+          <ul class="actions__main-actions" *ngIf="!isFolder(node)">
+            <cbc-save-as
+              [id]="node.id"
+              [name]="node.name"
+              *ngIf="!isLibraryLink(node)"
+            ></cbc-save-as>
+            <li
+              *ngIf="
+                isLastVersionOfContent() &&
+                !isWorkingCopy() &&
+                !isLocked() &&
+                !isLink() &&
+                !isLibraryLink(node)
+              "
+            >
+              <a
+                *cbcIfRoleGE="[node, 'LibEditOnly', ['LibManageOwn']]"
+                class="update"
+                (click)="showUpdateWizard = true"
+                >{{ 'label.update' | transloco }}</a
+              >
+            </li>
+            <li
+              *ngIf="isLastVersionOfContent() && isWorkingCopy() && !isLink() && currentUserHasAccess()"
+            >
+              <a
+                *cbcIfRoleGE="[node, 'LibEditOnly', ['LibManageOwn']]"
+                class="update"
+                (click)="showUpdateWizard = true"
+                >{{ 'label.update.working.copy' | transloco }}</a
+              >
+            </li>
+            <li
+              *ngIf="isLastVersionOfContent() && !isLocked() && currentUserHasAccess() && isEditOnline()"
+            >
+              <a
+                (click)="openDocInOffice()"
+                *cbcIfRoleGE="[node, 'LibEditOnly', ['LibManageOwn']]"
+                class="edit-in-office-big"
+                >{{ 'label.end.editing.in.office' | transloco }}</a
+              >
+            </li>
+            <li
+              *ngIf="isLastVersionOfContent() && !isLocked() && currentUserHasAccess()"
+            >
+              <a
+                *cbcIfRoleGE="[node, 'LibEditOnly', ['LibManageOwn']]"
+                class="edit"
+                [routerLink]="['../edit']"
+                >{{ 'label.edit' | transloco }}</a
+              >
+            </li>
+          </ul>
+
+          <ul
+            class="actions__main-actions"
+            *ngIf="isFolder(node)"
+            [class.no-margin]="isAccess()"
+          >
+            <li>
+              <a
+                class="edit"
+                [routerLink]="['../edit']"
+                *cbcIfRoleGE="[node, 'LibEditOnly', ['LibManageOwn']]"
+                >{{ 'label.edit' | transloco }}</a
+              >
+            </li>
+          </ul>
+
+          <ul
+            class="actions__secondary-actions--left"
+            *ngIf="isFile() && isWorkingCopy() && (currentUserHasAccess() || isLibAdmin())"
+          >
+            <li *ngIf="isFile() && isWorkingCopy() && currentUserHasAccess()">
+              <a class="checkin" (click)="checkinShowModal = true"
+                >{{ 'label.checkin' | transloco }}</a
+              >
+            </li>
+            <li
+              *ngIf="isFile() && isWorkingCopy() && (currentUserHasAccess() || isLibAdmin())"
+            >
+              <a
+                class="cancel-checkout"
+                (click)="cancelCheckoutShowModal = true"
+                >{{ 'label.cancel.checkout' | transloco }}</a
+              >
+            </li>
+          </ul>
+
+          <ul class="actions__secondary-actions--left" *ngIf="isFolder(node)">
+            <li>
+              <a class="copy" (click)="addToClipboard()"
+                >{{ 'label.copy' | transloco }}</a
+              >
+            </li>
+            <li *ngIf="!isCurrentOwner() | cbcIfRole: [node, 'LibAdmin', []]">
+              <a class="ownership" (click)="takeOwnership()"
+                >{{ 'label.take.ownership' | transloco }}</a
+              >
+            </li>
+            <li *cbcIfRoleGE="[node, 'LibEditOnly', ['LibManageOwn']]">
+              <a class="history" (click)="historyShowModal = true"
+                >{{ 'label.history' | transloco }}</a
+              >
+            </li>
+            <li
+              *cbcIfRoles="[
+                node,
+                ['LibAdmin', 'LibManageOwn', 'LibFullEdit'],
+                ['LibFullEdit', 'LibManageOwn']
+              ]"
+            >
+              <cbc-delete-action
+                [node]="node"
+                (modalHide)="onDeletedElement($event)"
+              >
+              </cbc-delete-action>
+            </li>
+            <li *ngIf="isFolder(node)" (click)="getFolderSize(node.id)">
+              <a class="file-size">{{ 'label.calculate.size' | transloco }}</a>
+            </li>
+          </ul>
+
+          <ul
+            class="actions__secondary-actions--left"
+            *ngIf="!isLocked() && !isWorkingCopy() && isFile()"
+          >
+            <li
+              *ngIf="
+                isFile() &&
+                  isMultiLingual() &&
+                  !isLink() &&
+                  !isLibraryLink(node)
+                  | cbcIfRoleGE: [node, 'LibEditOnly', ['LibManageOwn']]
+              "
+            >
+              <a
+                class="translation"
+                [routerLink]="['../..', pivotId, 'translations', 'add']"
+                >{{ 'label.add.translation' | transloco }}</a
+              >
+            </li>
+            <li
+              *ngIf="
+                isFile() &&
+                  !isMultiLingual() &&
+                  !isLink() &&
+                  !isLibraryLink(node)
+                  | cbcIfRoleGE: [node, 'LibEditOnly', ['LibManageOwn']]
+              "
+            >
+              <a
+                class="translation"
+                (click)="showEnableMultilingualModal = true"
+                >{{ 'label.make.multilingual' | transloco }}</a
+              >
+            </li>
+            <li *ngIf="!isCurrentOwner() | cbcIfRole: [node, 'LibAdmin', []]">
+              <a class="ownership" (click)="takeOwnership()"
+                >{{ 'label.take.ownership' | transloco }}</a
+              >
+            </li>
+            <li
+              *ngIf="
+                isFile() && !isLink() && !isLibraryLink(node)
+                  | cbcIfRoleGE: [node, 'LibEditOnly', ['LibManageOwn']]
+              "
+            >
+              <a class="checkout" [routerLink]="['.']" (click)="checkout()"
+                >{{ 'label.checkout' | transloco }}</a
+              >
+            </li>
+            <li
+              *ngIf="
+                isFile() && !isLink() && !isLibraryLink(node)
+                  | cbcIfRoleGE: [node, 'LibEditOnly', ['LibManageOwn']]
+              "
+            >
+              <a class="auto-upload" [routerLink]="['..', 'auto-upload']"
+                >{{ 'label.configure.auto.upload' | transloco }}</a
+              >
+            </li>
+            <li *ngIf="!isLibraryLink(node)">
+              <a class="copy" (click)="addToClipboard()"
+                >{{ 'label.copy' | transloco }}</a
+              >
+            </li>
+            <li *cbcIfRoleGE="[node, 'LibEditOnly', ['LibManageOwn']]">
+              <a class="history" (click)="historyShowModal = true"
+                >{{ 'label.history' | transloco }}</a
+              >
+            </li>
+            <li *ngIf="canEditInOffice()">
+              <a class="edit-in-office" (click)="openDocInOffice()"
+                >{{ 'label.edit.in.office' | transloco }}</a
+              >
+            </li>
+            <li *ngIf="isPreviewable()">
+              <a class="content-preview" (click)="previewContent()"
+                >{{ 'label.preview' | transloco }}</a
+              >
+            </li>
+
+            <li
+              *cbcIfRoles="[
+                node,
+                ['LibAdmin', 'LibManageOwn', 'LibFullEdit'],
+                ['LibFullEdit', 'LibManageOwn']
+              ]"
+            >
+              <cbc-delete-action
+                [node]="node"
+                (modalHide)="onDeletedElement($event)"
+              >
+              </cbc-delete-action>
+            </li>
+          </ul>
+          <mat-divider *ngIf="canSendToAresBridge()"></mat-divider>
+          <ul
+            class="actions__secondary-actions--left"
+            *ngIf="canSendToAresBridge()"
+          >
+            <li>
+              <a
+                class="ares"
+                (click)="sendToAresBridge()"
+                title="{{ 'label.send.to.ares' | transloco }}"
+              >
+                {{ 'label.send.to.ares' | transloco }}</a
+              >
+            </li>
+          </ul>
+
+          <cbc-history
+            [itemId]="nodeId"
+            [historyText]="
+              (isFile() ? 'label.content.history' : 'label.folder.history')
+                | transloco
+            "
+            [showModal]="historyShowModal"
+            (modalHide)="historyShowModal = false"
+          ></cbc-history>
+        </div>
+
+        <section
+          *ngIf="isContent() && isFile()"
+          class="file-history fixed-height--scrollable"
+        >
+          <h2>{{ 'label.file.history' | transloco }}</h2>
+          <table>
+            <thead>
+              <td>{{ 'label.version' | transloco }}</td>
+              <td>{{ 'label.creator' | transloco }}</td>
+              <td>{{ 'label.date' | transloco }}</td>
+              <td class="col-hidable">{{ 'label.notes' | transloco }}</td>
+            </thead>
+            <tr *ngFor="let version of versions">
+              <td>
+                <a
+                  *ngIf="versionLabel"
+                  [routerLink]="['../', version.versionLabel]"
+                  >{{ version.versionLabel }}</a
+                >
+                <a
+                  *ngIf="!versionLabel"
+                  [routerLink]="['../details', version.versionLabel]"
+                  >{{ version.versionLabel }}</a
+                >
+              </td>
+              <td>
+                <cbc-user-card
+                  [userId]="getVersionModifier(version)"
+                  [rightSide]="true"
+                ></cbc-user-card>
+              </td>
+              <td>{{ getVersionModifed(version) | date: 'y MMM d, H:mm' }}</td>
+              <td class="col-hidable">{{ version.notes }}</td>
+            </tr>
+            <tr *ngIf="hasMoreVersions && versions.length <= 10">
+              <td colspan="3">
+                <a (click)="loadAllVersions()"
+                  >{{ 'label.versions.load.all' | transloco }}</a
+                >
+              </td>
+            </tr>
+          </table>
+        </section>
+
+        <section
+          class="file-history fixed-height--scrollable"
+          *ngIf="isNotFolder && translationSet"
+        >
+          <h2>{{ 'label.file.translations' | transloco }}</h2>
+          <table>
+            <thead>
+              <td>{{ 'label.language' | transloco }}</td>
+              <td>{{ 'label.name' | transloco }}</td>
+              <td></td>
+            </thead>
+            <tr *ngFor="let translation of translationSet.translations">
+              <td>{{ translation.properties?.locale }}</td>
+              <td>
+                <a [routerLink]="['../../', translation.id, 'details']"
+                  >{{ translation.name }}</a
+                >
+              </td>
+              <td>
+                <span *ngIf="translation.id === pivotId"
+                  >{{ 'label.pivot.document' | transloco }}</span
+                >
+              </td>
+            </tr>
+          </table>
+        </section>
+      </section>
+
+      <section class="details-comments-container">
+        <div
+          class="page-header"
+          *ngIf="isContent() && !isFolderLink(node) && !isLibraryLink(node)"
+          style="height: 14px"
+        >
+          <span class="page-header__title"
+            >{{ 'label.comments' | transloco }}</span
+          >
+        </div>
+
+        <section
+          class="box box--tabs"
+          *ngIf="isContent() && !isFolderLink(node) && !isLibraryLink(node)"
+        >
+          <ul class="header">
+            <li *ngFor="let topic of topics">
+              <a
+                class="tab"
+                [class.tab--current]="topic.id === currentTopic.id"
+                (click)="loadTopic(topic.id)"
+              >
+                <span class="tab-text">{{ topic.name }}</span>
+                <a
+                  class="sub-actions"
+                  (click)="prepareEdition(topic)"
+                  title="{{ 'label.edit' | transloco }}"
+                  *cbcIfRoleGE="[node, 'LibManageOwn', ['LibManageOwn']]"
+                >
+                  <img src="img/icon-edit-20x20.png" alt="edit" />
+                </a>
+                <a
+                  class="sub-actions"
+                  (click)="prepareDeletion(topic)"
+                  title="{{ 'label.delete' | transloco }}"
+                  *cbcIfRoleGE="[node, 'LibManageOwn', ['LibManageOwn']]"
+                >
+                  <img src="img/icon-close-20x20.png" alt="edit" />
+                </a>
+              </a>
+            </li>
+            <li
+              *ngIf="
+                !isLocked()
+                  | cbcIfRoleGE: [node, 'LibManageOwn', ['LibManageOwn']]
+              "
+            >
+              <a
+                class="tab"
+                title="New thread"
+                (click)="showCreateTopic = true"
+              >
+                <img
+                  src="img/add-plus-button.png"
+                  alt="Add"
+                  title="{{ 'label.new.comment.thread' | transloco }}"
+                />
+                <span class="tab-text"></span>
+              </a>
+            </li>
+          </ul>
+
+          <div class="main">
+            <div
+              *ngIf="hasComments()"
+              class="table-container"
+              style="margin: 0"
+            >
+              <cbc-post
+                *ngFor="let post of comments.data"
+                [post]="post"
+                [topic]="currentTopic"
+                (replyClicked)="prepareQuote($event)"
+                (deleted)="refreshComments($event)"
+                (editClicked)="prepareEdit($event)"
+              ></cbc-post>
+
+              <div class="footer">
+                <cbc-pager
+                  [length]="totalCommentItems"
+                  [pageSize]="listingCommentOptions.limit"
+                  [pageIndex]="listingCommentOptions.page"
+                  (pageChanged)="changeCommentPage($event)"
+                ></cbc-pager>
+              </div>
+            </div>
+
+            <div class="container--empty" *ngIf="!hasComments()">
+              {{ (!hasTopics() ? 'label.no.topic' : 'label.no.comment') |
+              transloco }}
+              <img src="img/chat.png" alt="chat" />
+            </div>
+          </div>
+          <div class="postFooter" *ngIf="topics.length > 0">
+            <cbc-add-post
+              [topic]="currentTopic"
+              (postedComment)="refreshComments($event)"
+              [futureQuote]="futureQuote"
+              [editPost]="editPost"
+            ></cbc-add-post>
+          </div>
+        </section>
+      </section>
+    </section>
+
+    <cbc-snackbar
+      *ngIf="isNotItemToClipboardUndefined"
+      [message]="'clipboard.item.added' | transloco: { name: itemToClipboard }"
+      (snackFinished)="itemToClipboard = undefined"
+    ></cbc-snackbar>
+
+    <cbc-cancel-checkout
+      [showModal]="cancelCheckoutShowModal"
+      (modalHide)="cancelCheckoutShowModal = false"
+      (checkoutCanceled)="cancelCheckout()"
+    ></cbc-cancel-checkout>
+
+    <cbc-checkin
+      *ngIf="node && node.properties"
+      [nodeId]="node.properties.originalNodeId"
+      [showModal]="checkinShowModal"
+      (modalHide)="checkinShowModal = false"
+      (checkedIn)="checkinDone()"
+    ></cbc-checkin>
+
+    <div *ngIf="!isContent()" class="clean--bottom"></div>
+  </div>
+</div>
+
+<cbc-update-content
+  [updateCheckedOut]="isWorkingCopy()"
+  [showWizard]="showUpdateWizard"
+  [targetNode]="node"
+  *ngIf="node && currentUserHasAccess()"
+  (modalHide)="onCloseUpdateWizard($event)"
+></cbc-update-content>
+<cbc-create-details-topic
+  [showModal]="showCreateTopic"
+  [forum]="node"
+  *ngIf="node"
+  (modalHide)="refreshCreateTopic($event)"
+></cbc-create-details-topic>
+<cbc-delete-topic
+  [showModal]="showDeleteTopic"
+  [topic]="currentDeletedTopic"
+  *ngIf="currentDeletedTopic"
+  (modalHide)="refreshDeleteTopic($event)"
+></cbc-delete-topic>
+<cbc-edit-topic
+  [showModal]="showEditTopic"
+  [topic]="currentEditedTopic"
+  (modalHide)="refreshEditTopic($event)"
+>
+</cbc-edit-topic>
+<cbc-enable-multilingual
+  [showModal]="showEnableMultilingualModal"
+  (modalCanceled)="showEnableMultilingualModal = false"
+  [targetNode]="node"
+  (mutlilingualEnabled)="onCloseMakeMultiModal($event)"
+></cbc-enable-multilingual>
+<cbc-content-preview-ext
+  [showModal]="showPreview"
+  [contentURL]="contentURL"
+  [documentId]="previewDocumentId"
+  [content]="node"
+  (contentPreviewed)="closePreview()"
+></cbc-content-preview-ext>

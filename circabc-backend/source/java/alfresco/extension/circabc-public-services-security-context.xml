@@ -1,0 +1,1480 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<!--+
+    |     Copyright European Community 2006 - Licensed under the EUPL V.1.0
+    |
+    |  		   http://ec.europa.eu/idabc/en/document/6523
+    |
+    +-->
+
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+
+<!-- ========================== -->
+<!-- Enforcement of permissions -->
+<!-- ========================== -->
+
+<!--                                                                                     -->
+<!-- This file defines the beans that intercept method calls to the repository services  -->
+<!-- and enforce security based on the currently authenticated user.                     -->
+<!--                                                                                     -->
+
+
+<beans>
+
+
+  <!-- ======================= -->
+  <!-- Support for permissions -->
+  <!-- ========================-->
+	
+    <bean id="permissionService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="proxyInterfaces">
+            <value>org.alfresco.repo.security.permissions.PermissionServiceSPI</value>
+        </property>
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="target">
+            <ref bean="permissionServiceImpl" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+	
+<!--    <bean id="permissionServiceImpl" class="org.alfresco.repo.security.permissions.impl.PermissionServiceImpl" init-method="init"> -->
+    <bean id="permissionServiceImpl" class="eu.cec.digit.circabc.repo.security.CircabcPermissionServiceImpl" init-method="init">
+        <property name="nodeService">
+            <ref bean="mtAwareNodeService"/>
+        </property>
+        <property name="tenantService">
+            <ref bean="tenantService"/>
+        </property>
+        <property name="dictionaryService">
+            <ref bean="dictionaryService" />
+        </property>
+        <property name="permissionsDaoComponent">
+            <ref bean="permissionsDaoComponent" />
+        </property>
+        <property name="modelDAO">
+            <ref bean="permissionsModelDAO" />
+        </property>
+        <property name="authorityService">
+            <ref bean="authorityService" />
+        </property>
+        <property name="accessCache">
+            <ref bean="permissionsAccessCache" />
+        </property>
+        <property name="readersCache">
+            <ref bean="readersCache" />
+        </property>
+        <property name="readersDeniedCache">
+            <ref bean="readersDeniedCache" />
+        </property>
+        <property name="policyComponent">
+            <ref bean="policyComponent" />
+        </property>
+        <property name="aclDAO">
+            <ref bean="aclDAO" />
+        </property>
+        <property name="ownableService">
+            <ref bean="ownableService" />
+        </property>
+        <property name="anyDenyDenies">
+            <value>${security.anyDenyDenies}</value>
+        </property>
+		
+        <!-- Dynamic authorities are evaluated in the context of a store/node etc -->
+        <!-- as opposed to being fixed like user name and groups.                -->
+        <!-- There are two dynamic authorities, the owner of a node and the owner -->
+        <!-- of a lock on a node.                                                -->
+		<property name="dynamicAuthorities">
+            <list>
+                <ref bean="ownerDynamicAuthority" />
+                <ref bean="lockOwnerDynamicAuthority" />
+            </list>
+        </property>
+
+
+    </bean>
+	
+	<bean id="circabcDynamicAuthorityMethodCacheInterceptor" class="eu.cec.digit.circabc.spring.interceptor.MethodCacheInterceptor">
+		<property name="cache">
+			<ref bean="circabcDynamicAuthorityMethodCache" />
+		</property>
+	</bean>
+	
+	<bean id="circabcDynamicAuthorityMethodCachePointCut" class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+		<property name="advice">
+			<ref local="circabcDynamicAuthorityMethodCacheInterceptor"/>
+		</property>
+		<property name="patterns">
+			<list>
+			  <value>.*hasAuthority</value>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- DynamicAuthorityCached -->
+	<bean id="circabcDynamicAuthorityCached" class="org.springframework.aop.framework.ProxyFactoryBean">
+		<property name="target">
+			<ref local="circabcDynamicAuthority"/>
+		</property>
+		<property name="interceptorNames">
+			<list>
+				<value>circabcDynamicAuthorityMethodCachePointCut</value>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- OwnerDynamicAuthorityCached -->
+	<bean id="circabcOwnerDynamicAuthorityCached" class="org.springframework.aop.framework.ProxyFactoryBean">
+		<property name="target">
+			<ref local="circabcOwnerDynamicAuthority"/>
+		</property>
+		<property name="interceptorNames">
+			<list>
+				<value>circabcDynamicAuthorityMethodCachePointCut</value>
+			</list>
+		</property>
+	</bean>
+	
+	
+  <!-- =================== -->
+  <!-- Dynamic Authorities -->
+  <!-- =================== -->
+
+  <bean id="transgressCutHeritance"
+		class="eu.cec.digit.circabc.service.dynamic.authority.AbstractTransgressCutHeritance"
+		abstract="true">
+		<property name="nodeService">
+			<ref bean="nodeService" />
+		</property>
+		<property name="permissionsDaoComponent">
+			<ref bean="permissionsDaoComponent" />
+		</property>
+		<property name="authorityService">
+			<ref bean="authorityService" />
+		</property>
+		<property name="modelDAO">
+			<ref bean="permissionsModelDAO" />
+		</property>
+		<property name="roleToGrant" value="ROLE_TRANSGRESS_CUT_HERITANCE" />
+		<property name="permissionToCheck" value="TransgressCutInheritancePermission" />
+	</bean>
+	
+	<!-- The provider that evaluate if the current user has trnasgress permission on one of his parents nodes -->
+	<bean id="circabcDynamicAuthority"
+		class="eu.cec.digit.circabc.service.dynamic.authority.TransgressCutHeritance"
+		parent="transgressCutHeritance">
+		<property name="circabcService" value="circabcDynamicAuthority" />
+		<property name="mandatoryAspects">
+			<map>
+				<entry key="{http://www.cc.cec/circabc/model/content/1.0}circaLibrary">
+					<value>{http://www.cc.cec/circabc/model/content/1.0}circaLibraryRoot</value>
+				</entry>
+				<entry key="{http://www.cc.cec/circabc/model/content/1.0}circaNewsGroup">
+					<value>{http://www.cc.cec/circabc/model/content/1.0}circaNewsGroupRoot</value>
+				</entry>
+				<entry key="{http://www.cc.cec/circabc/model/content/1.0}circabcManagement">
+					<value>{http://www.cc.cec/circabc/model/content/1.0}circaIGRoot</value>
+				</entry>
+				<entry key="{http://www.cc.cec/circabc/model/content/1.0}circabcInformation">
+					<value>{http://www.cc.cec/circabc/model/content/1.0}circabcInformationRoot</value>
+				</entry>
+				<entry key="{http://www.cc.cec/circabc/model/content/1.0}circabcEvent">
+					<value>{http://www.cc.cec/circabc/model/content/1.0}circabcEventRoot</value>
+				</entry>
+				<entry key="{http://www.cc.cec/circabc/model/content/1.0}circaSurvey">
+					<value>{http://www.cc.cec/circabc/model/content/1.0}circaSurveyRoot</value>
+				</entry>
+			</map>
+		</property>
+		<property name="requiredFor">
+			<list>
+				<value>InfAdmin</value>
+				<value>LibAdmin</value>
+				<value>DirAdmin</value>
+				<value>NwsAdmin</value>
+				<value>NwsModerate</value>
+				<value>EveAdmin</value>
+				<value>SurAdmin</value>
+			</list>
+		</property>
+	</bean>
+
+  <!-- The provider to evaluate if the current authentication is the owner of a node and also member of CIRCABC groups  -->
+  <bean id="circabcOwnerDynamicAuthority" class="eu.cec.digit.circabc.service.dynamic.authority.CircabcOwnerDynamicAuthority">
+    <property name="ownableService">
+      <ref bean="ownableService" />
+     </property>
+     <property name="nodeService">
+      <ref bean="nodeService" />
+     </property>
+     <property name="serviceRegistry">
+      <ref bean="ServiceRegistry" />
+     </property>
+     <property name="authorityService">
+      <ref bean="authorityService" />
+     </property>
+	 <property name="circabcService">
+		  <ref bean="circabcService" />
+	 </property>
+  </bean>
+  
+  
+  <!-- ===================== -->
+  <!-- Permissions Model DAO -->
+  <!-- ===================== -->
+
+    <bean id='permissionsModelDAO' class="org.alfresco.repo.security.permissions.impl.model.PermissionModel" init-method="init">
+        <property name="model">
+      		<value>alfresco/extension/config/circabc-permissionDefinitions.xml</value>
+        </property>
+        <property name="dtdSchema">
+            <value>alfresco/model/permissionSchema.dtd</value>
+        </property>
+        <property name="nodeService">
+            <ref bean="nodeService" />
+        </property>
+        <property name="dictionaryService">
+            <ref bean="dictionaryService" />
+        </property>
+    </bean>
+
+  <!-- ================================ -->
+  <!-- Beans that enforce secure access -->
+  <!-- ================================ -->
+
+  <!-- Each bean defines a new methos security interceptor wired up with the           -->
+  <!-- authenticationManager, accessDecisionManager and afterInvocationManager, which  -->
+  <!-- can all be reused.                                                              -->
+
+  <!-- If one method cal requires security enforcement - all methods must gave a       -->
+  <!-- security entry of some sort. ACL_ALLOW can be used to give access to all        -->
+  <!-- ROLE_ADMINISTRATOR can be used to grant access to administrator related methods -->
+
+  <!-- ============================== -->
+  <!-- FileFolder Service Permissions -->
+  <!-- ============================== -->
+
+    <bean id="FileFolderService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
+        <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+        <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+        <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+        <property name="objectDefinitionSource">
+            <value>
+               org.alfresco.service.cmr.model.FileFolderService.list=ACL_NODE.0.sys:base.ReadChildren,AFTER_ACL_NODE.sys:base.ReadProperties
+               org.alfresco.service.cmr.model.FileFolderService.listFiles=ACL_NODE.0.sys:base.ReadChildren,AFTER_ACL_NODE.sys:base.ReadProperties
+               org.alfresco.service.cmr.model.FileFolderService.listFolders=ACL_NODE.0.sys:base.ReadChildren,AFTER_ACL_NODE.sys:base.ReadProperties
+               org.alfresco.service.cmr.model.FileFolderService.listDeepFolders=ACL_NODE.0.sys:base.ReadChildren,AFTER_ACL_NODE.sys:base.ReadProperties
+               org.alfresco.service.cmr.model.FileFolderService.getLocalizedSibling=ACL_ALLOW,AFTER_ACL_NODE.sys:base.ReadProperties
+               org.alfresco.service.cmr.model.FileFolderService.search=ACL_NODE.0.sys:base.ReadChildren,AFTER_ACL_NODE.sys:base.Read
+               org.alfresco.service.cmr.model.FileFolderService.searchSimple=ACL_NODE.0.sys:base.ReadChildren,AFTER_ACL_NODE.sys:base.Read
+               org.alfresco.service.cmr.model.FileFolderService.rename=ACL_NODE.0.sys:base.WriteProperties
+               org.alfresco.service.cmr.model.FileFolderService.move=ACL_NODE.0.sys:base.DeleteNode,ACL_NODE.1.sys:base.CreateChildren
+               org.alfresco.service.cmr.model.FileFolderService.moveFrom=ACL_NODE.0.sys:base.DeleteNode,ACL_NODE.2.sys:base.CreateChildren
+               org.alfresco.service.cmr.model.FileFolderService.copy=ACL_NODE.0.sys:base.Read,ACL_NODE.1.sys:base.CreateChildren
+               org.alfresco.service.cmr.model.FileFolderService.create=ACL_NODE.0.sys:base.CreateChildren
+               org.alfresco.service.cmr.model.FileFolderService.delete=ACL_NODE.0.sys:base.DeleteNode
+               org.alfresco.service.cmr.model.FileFolderService.getNamePath=ACL_NODE.1.sys:base.ReadProperties
+               org.alfresco.service.cmr.model.FileFolderService.getNameOnlyPath=ACL_NODE.1.sys:base.ReadProperties
+               org.alfresco.service.cmr.model.FileFolderService.resolveNamePath=ACL_ALLOW,AFTER_ACL_NODE.sys:base.ReadProperties
+               org.alfresco.service.cmr.model.FileFolderService.getFileInfo=ACL_NODE.0.sys:base.ReadProperties
+               org.alfresco.service.cmr.model.FileFolderService.getReader=ACL_NODE.0.sys:base.ReadContent
+               org.alfresco.service.cmr.model.FileFolderService.getWriter=ACL_NODE.0.sys:base.WriteContent
+               org.alfresco.service.cmr.model.FileFolderService.exists=ACL_ALLOW
+               org.alfresco.service.cmr.model.FileFolderService.getType=ACL_ALLOW
+               org.alfresco.service.cmr.model.FileFolderService.isHidden=ACL_NODE.0.sys:base.ReadProperties
+               org.alfresco.service.cmr.model.FileFolderService.setHidden=ACL_NODE.0.sys:base.WriteProperties
+               org.alfresco.service.cmr.model.FileFolderService.*=ACL_DENY
+            </value>
+        </property>
+    </bean>
+
+  <!-- =============================================================  -->
+  <!-- InformationProfileManagerService_security Service Permissions -->
+  <!-- =============================================================  -->
+
+  <bean id="InformationProfileManagerService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
+    <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+    <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+    <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+    <property name="objectDefinitionSource">
+      <value>
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.addApplicantPerson=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.addPersonToProfile=ACL_NODE.0.ci:circabcInformation.InfAdmin
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.addProfile=ACL_NODE.0.ci:circabcInformation.InfAdmin
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.addProfileDescriptions=ACL_NODE.0.ci:circabcInformation.InfAdmin
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.addProfileTitles=ACL_NODE.0.ci:circabcInformation.InfAdmin
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.changePersonProfile=ACL_NODE.0.ci:circabcInformation.InfAdmin		
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.createInvitedUsersGroup=ACL_NODE.0.ci:circabcInformation.InfAdmin
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.createMasterGroup=ACL_NODE.0.ci:circabcInformation.InfAdmin
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.createSubsGroup=ACL_NODE.0.ci:circabcInformation.InfAdmin		
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.deleteProfile=ACL_NODE.0.ci:circabcInformation.InfAdmin
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.exportProfile=ACL_NODE.0.ci:circabcInformation.InfAdmin
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.getApplicantUsers=ACL_NODE.0.ci:circabcInformation.InfAccess
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.getApplicantUsersMapName=ACL_NODE.0.ci:circabcInformation.InfAccess
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.getApplicantUsersMapName=ACL_NODE.0.ci:circabcInformation.InfAccess
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.getCircaHome=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.getCurrentAspectRoot=ACL_NODE.0.ci:circabcInformation.InfAccess
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.getExportedProfiles=ACL_NODE.0.ci:circabcInformation.InfAccess
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.getInvitedUsers=ACL_NODE.0.ci:circabcInformation.InfAccess
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.getInvitedUsersProfiles=ACL_NODE.0.ci:circabcInformation.InfAccess
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.getInvitedUsersGroupName=ACL_NODE.0.ci:circabcInformation.InfAccess
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.getInvitedUsersGroupQName=ACL_NODE.0.ci:circabcInformation.InfAccess
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.getMasterGroupQName=ACL_NODE.0.ci:circabcInformation.InfAccess
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.getMasterInvitedGroupName=ACL_NODE.0.ci:circabcInformation.InfAccess
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.getMasterUsers=ACL_NODE.0.ci:circabcInformation.InfAccess
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.getPersonInProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.getPersonProfile=ACL_ALLOW
+        eu.cec.digit.circabc.service.profile.InformationProfileManagerService.getProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.getProfileFromGroup=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.getProfileMap=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.getProfiles=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.getProfilesRecursivly=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.getRefInExportedProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.getRegistredUsers=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.getServices=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.getSubsGroupName=ACL_NODE.0.ci:circabcInformation.InfAccess
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.getSubsGroupQName=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.hasApplicantFeature=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.hasMasterParentGroup=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.hasParentSubsGroup=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.importProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.isProfileDeletable=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.removeApplicantPerson=ACL_NODE.0.ci:circabcInformation.InfAdmin
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.renameProfile=ACL_NODE.0.ci:circabcInformation.InfAdmin
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.uninvitePerson=ACL_NODE.0.ci:circabcInformation.InfAdmin
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.updateProfile=ACL_NODE.0.ci:circabcInformation.InfAdmin
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.getAllSubUsers=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.*=ACL_DENY
+      </value>
+    </property>
+  </bean>
+
+  <!-- =============================================================  -->
+  <!-- EventProfileManagerService_security Service Permissions -->
+  <!-- =============================================================  -->
+
+  <bean id="EventProfileManagerService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
+    <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+    <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+    <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+    <property name="objectDefinitionSource">
+      <value>
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.addApplicantPerson=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.addPersonToProfile=ACL_NODE.0.ci:circabcEvent.EveAdmin
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.addProfile=ACL_NODE.0.ci:circabcEvent.EveAdmin
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.addProfileDescriptions=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.addProfileTitles=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.changePersonProfile=ACL_NODE.0.ci:circabcEvent.EveAdmin
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.createInvitedUsersGroup=ACL_NODE.0.ci:circabcEvent.EveAdmin
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.createMasterGroup=ACL_NODE.0.ci:circabcEvent.EveAdmin
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.createSubsGroup=ACL_NODE.0.ci:circabcEvent.EveAdmin
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.deleteProfile=ACL_NODE.0.ci:circabcEvent.EveAdmin
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.exportProfile=ACL_ALLOW
+        eu.cec.digit.circabc.service.profile.EventProfileManagerService.getApplicantUsers=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.getApplicantUsersMapName=ACL_NODE.0.ci:circabcEvent.EveAccess
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.getCircaHome=ACL_ALLOW
+        eu.cec.digit.circabc.service.profile.EventProfileManagerService.getCurrentAspectRoot=ACL_NODE.0.ci:circabcEvent.EveAccess
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.getExportedProfiles=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.getInvitedUsers=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.getInvitedUsersProfiles=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.getInvitedUsersGroupName=ACL_NODE.0.ci:circabcEvent.EveAccess
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.getInvitedUsersGroupQName=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.getMasterGroupQName=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.getMasterInvitedGroupName=ACL_NODE.0.ci:circabcEvent.EveAccess
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.getMasterUsers=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.getPersonInProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.getPersonProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.getProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.getProfileFromGroup=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.getProfileMap=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.getProfiles=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.getProfilesRecursivly=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.getRefInExportedProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.getRegistredGroupName=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.getRegistredUsers=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.getServices=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.getSubsGroupName=ACL_NODE.0.ci:circabcEvent.EveAccess
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.getSubsGroupQName=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.hasApplicantFeature=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.hasMasterParentGroup=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.hasParentSubsGroup=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.importProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.isProfileDeletable=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.removeApplicantPerson=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.renameProfile=ACL_NODE.0.ci:circabcEvent.EveAdmin
+		eu.cec.digit.circabc.service.profile.EventProfileManagerService.uninvitePerson=ACL_NODE.0.ci:circabcEvent.EveAdmin		
+        eu.cec.digit.circabc.service.profile.EventProfileManagerService.updateProfile=ACL_NODE.0.ci:circabcEvent.EveAdmin
+        eu.cec.digit.circabc.service.profile.EventProfileManagerService.getAllSubUsers=ACL_ALLOW
+        eu.cec.digit.circabc.service.profile.EventProfileManagerService.*=ACL_DENY
+      </value>
+    </property>
+  </bean>
+
+  <!-- =============================================================  -->
+  <!-- LibraryProfileManagerService_security Service Permissions -->
+  <!-- =============================================================  -->
+
+  <bean id="LibraryProfileManagerService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
+    <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+    <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+    <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+    <property name="objectDefinitionSource">
+      <value>
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.addApplicantPerson=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.addPersonToProfile=ACL_NODE.0.cm:cmobject.LibAdmin
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.addProfile=ACL_NODE.0.cm:cmobject.LibAdmin
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.addProfileDescriptions=ACL_ALLOW
+        eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.addProfileTitles=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.changePersonProfile=ACL_NODE.0.cm:cmobject.LibAdmin
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.createInvitedUsersGroup=ACL_NODE.0.cm:cmobject.LibAdmin
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.createMasterGroup=ACL_NODE.0.cm:cmobject.LibAdmin
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.createSubsGroup=ACL_NODE.0.cm:cmobject.LibAdmin		
+        eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.deleteProfile=ACL_NODE.0.cm:cmobject.LibAdmin
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.exportProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.getApplicantUsers=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.getApplicantUsersMapName=ACL_NODE.0.cm:cmobject.LibAccess
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.getCircaHome=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.getCurrentAspectRoot=ACL_NODE.0.cm:cmobject.LibAccess
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.getExportedProfiles=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.getInvitedUsers=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.getInvitedUsersProfiles=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.getInvitedUsersGroupName=ACL_NODE.0.cm:cmobject.LibAccess
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.getInvitedUsersGroupQName=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.getMasterGroupQName=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.getMasterInvitedGroupName=ACL_NODE.0.cm:cmobject.LibAccess
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.getMasterUsers=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.getPersonInProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.getPersonProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.getProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.getProfileFromGroup=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.getProfileMap=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.getProfiles=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.getProfilesRecursivly=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.getRefInExportedProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.getRegistredGroupName=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.getRegistredUsers=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.getServices=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.getSubsGroupName=ACL_NODE.0.cm:cmobject.LibAccess
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.getSubsGroupQName=ACL_NODE.0.cm:cmobject.LibAccess
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.hasApplicantFeature=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.hasMasterParentGroup=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.hasParentSubsGroup=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.importProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.isProfileDeletable=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.removeApplicantPerson=ACL_NODE.0.cm:cmobject.LibAdmin
+        eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.renameProfile=ACL_NODE.0.cm:cmobject.LibAdmin
+		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.uninvitePerson=ACL_NODE.0.cm:cmobject.LibAdmin
+        eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.updateProfile=ACL_NODE.0.cm:cmobject.LibAdmin
+        eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.getAllSubUsers=ACL_ALLOW
+        eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.*=ACL_DENY
+      </value>
+    </property>
+  </bean>
+
+  <!-- ============================================================= -->
+  <!-- NewsGroupProfileManagerService_security Service Permissions -->
+  <!-- ============================================================= -->
+
+  <bean id="NewsGroupProfileManagerService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
+    <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+    <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+    <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+    <property name="objectDefinitionSource">
+      <value>
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.addApplicantPerson=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.addPersonToProfile=ACL_NODE.0.ci:circaNewsGroup.NwsAdmin
+        eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.addProfile=ACL_NODE.0.ci:circaNewsGroup.NwsAdmin
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.addProfileDescriptions=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.addProfileTitles=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.changePersonProfile=ACL_NODE.0.ci:circaNewsGroup.NwsAdmin
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.createInvitedUsersGroup=ACL_NODE.0.ci:circaNewsGroup.NwsAdmin
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.createMasterGroup=ACL_NODE.0.ci:circaNewsGroup.NwsAdmin
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.createSubsGroup=ACL_NODE.0.ci:circaNewsGroup.NwsAdmin
+        eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.deleteProfile=ACL_NODE.0.ci:circaNewsGroup.NwsAdmin
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.exportProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.getApplicantUsers=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.getApplicantUsersMapName=ACL_NODE.0.ci:circaNewsGroup.NwsAccess
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.getCircaHome=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.getCurrentAspectRoot=ACL_NODE.0.ci:circaNewsGroup.NwsAccess
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.getExportedProfiles=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.getInvitedUsers=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.getInvitedUsersProfiles=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.getInvitedUsersGroupName=ACL_NODE.0.ci:circaNewsGroup.NwsAccess
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.getInvitedUsersGroupQName=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.getMasterGroupQName=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.getMasterInvitedGroupName=ACL_NODE.0.ci:circaNewsGroup.NwsAccess
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.getMasterUsers=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.getPersonInProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.getPersonProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.getProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.getProfileFromGroup=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.getProfileMap=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.getProfiles=ACL_ALLOW		
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.getProfilesRecursivly=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.getRefInExportedProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.getRegistredGroupName=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.getRegistredUsers=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.getServices=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.getSubsGroupName=ACL_NODE.0.ci:circaNewsGroup.NwsAccess
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.getSubsGroupQName=ACL_NODE.0.ci:circaNewsGroup.NwsAccess
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.hasApplicantFeature=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.hasMasterParentGroup=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.hasParentSubsGroup=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.importProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.isProfileDeletable=ACL_ALLOW		
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.removeApplicantPerson=ACL_NODE.0.ci:circaNewsGroup.NwsAdmin
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.renameProfile=ACL_NODE.0.ci:circaNewsGroup.NwsAdmin
+		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.uninvitePerson=ACL_NODE.0.ci:circaNewsGroup.NwsAdmin        
+        eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.updateProfile=ACL_NODE.0.ci:circaNewsGroup.NwsAdmin
+        eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.getAllSubUsers=ACL_ALLOW
+        eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.*=ACL_DENY
+      </value>
+    </property>
+  </bean>
+
+   <!-- ============================================================= -->
+  <!-- SurveyProfileManagerService_security Service Permissions -->
+  <!-- ============================================================= -->
+
+  <bean id="SurveyProfileManagerService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
+    <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+    <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+    <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+    <property name="objectDefinitionSource">
+      <value>
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.addApplicantPerson=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.addPersonToProfile=ACL_NODE.0.su:surveys.SurAdmin
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.addProfile=ACL_NODE.0.su:surveys.SurAdmin
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.addProfileDescriptions=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.addProfileTitles=ACL_ALLOW
+        eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.changePersonProfile=ACL_NODE.0.su:surveys.SurAdmin
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.createInvitedUsersGroup=ACL_NODE.0.su:surveys.SurAdmin
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.createMasterGroup=ACL_NODE.0.su:surveys.SurAdmin
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.createSubsGroup=ACL_NODE.0.su:surveys.SurAdmin
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.deleteProfile=ACL_NODE.0.su:surveys.SurAdmin
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.exportProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.getApplicantUsers=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.getApplicantUsersMapName=ACL_NODE.0.su:surveys.SurAccess
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.getCircaHome=ACL_ALLOW		
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.getCurrentAspectRoot=ACL_NODE.0.su:surveys.SurAccess
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.getExportedProfiles=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.getInvitedUsers=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.getInvitedUsersProfiles=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.getInvitedUsersGroupName=ACL_NODE.0.su:surveys.SurAccess
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.getInvitedUsersGroupQName=ACL_ALLOW
+        eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.getMasterGroupQName=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.getMasterInvitedGroupName=ACL_NODE.0.su:surveys.SurAccess
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.getMasterUsers=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.getPersonInProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.getPersonProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.getProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.getProfileFromGroup=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.getProfileMap=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.getProfiles=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.getProfilesRecursivly=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.getRefInExportedProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.getRegistredGroupName=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.getRegistredUsers=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.getServices=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.getSubsGroupName=ACL_NODE.0.su:surveys.SurAccess
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.getSubsGroupQName=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.hasApplicantFeature=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.hasMasterParentGroup=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.hasParentSubsGroup=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.importProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.isProfileDeletable=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.removeApplicantPerson=ACL_NODE.0.su:surveys.SurAdmin
+        eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.renameProfile=ACL_NODE.0.su:surveys.SurAdmin
+		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.uninvitePerson=ACL_NODE.0.su:surveys.SurAdmin
+        eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.updateProfile=ACL_NODE.0.su:surveys.SurAdmin
+        eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.getAllSubUsers=ACL_ALLOW
+        eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.*=ACL_DENY        
+      </value>
+    </property>
+  </bean>
+
+   <!-- ================================================================ -->
+   <!-- IGRootProfileManagerService_security Service Permissions -->
+   <!-- ================================================================ -->
+  <bean id="IGRootProfileManagerService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
+    <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+    <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+    <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+    <property name="objectDefinitionSource">
+      <value>
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.addApplicantPerson=ACL_NODE.0.ci:circaIGRoot.Join
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.addPersonToProfile=ACL_NODE.0.ci:circaIGRoot.DirManageMembers
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.addProfile=ACL_NODE.0.ci:circaIGRoot.DirAdmin
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.addProfileDescriptions=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.addProfileTitles=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.changePassword=ACL_NODE.0.ci:circaIGRoot.DirAdmin
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.changePersonProfile=ACL_NODE.0.ci:circaIGRoot.DirManageMembers
+        eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.createInvitedUsersGroup=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.createMasterGroup=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.createSubsGroup=ACL_ALLOW
+        eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.deleteProfile=ACL_NODE.0.ci:circaIGRoot.DirAdmin
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.exportProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.getApplicantUsers=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.getApplicantUsersMapName=ACL_NODE.0.ci:circaIGRoot.DirAccess
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.getCircaHome=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.getContactParamName=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.getCurrentAspectRoot=ACL_NODE.0.ci:circaIGRoot.DirAccess
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.getExportedProfiles=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.getInvitedUsers=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.getInvitedUsersProfiles=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.getInvitedUsersGroupName=ACL_NODE.0.ci:circaIGRoot.DirAccess
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.getMasterGroupQName=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.getMasterInvitedGroupName=ACL_NODE.0.ci:circaIGRoot.DirAccess
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.getMasterUsers=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.getPersonInProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.getPersonProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.getProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.getProfileNoCache=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.getProfileFromGroup=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.getProfileMap=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.getProfiles=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.getProfilesRecursivly=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.getRefInExportedProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.getRegistredGroupName=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.getRegistredUsers=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.getServices=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.getSubsGroupName=ACL_NODE.0.ci:circaIGRoot.DirAccess
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.getSubsGroupQName=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.hasApplicantFeature=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.hasMasterParentGroup=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.hasParentSubsGroup=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.importProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.isProfileDeletable=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.removeApplicantPerson=ACL_NODE.0.ci:circaIGRoot.DirManageMembers
+        eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.renameProfile=ACL_NODE.0.ci:circaIGRoot.DirAdmin
+		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.uninvitePerson=ACL_ALLOW
+        eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.updateProfile=ACL_NODE.0.ci:circaIGRoot.DirAdmin
+        eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.getAllSubUsers=ACL_ALLOW
+        eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.*=ACL_DENY
+      </value>
+    </property>
+  </bean>
+
+  <!-- ========================================================= -->
+  <!-- CircabcRootProfileManagerService_security Service Permissions -->
+  <!-- ========================================================= -->
+  <bean id="CircabcRootProfileManagerService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
+    <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+    <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+    <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+    <property name="objectDefinitionSource">
+      <value>
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.addApplicantPerson=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.addPersonToProfile=ACL_NODE.0.ci:circaBC.CircaBCManageMembers
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.addProfile=ACL_NODE.0.ci:circaBC.CircaBCAdmin
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.addProfileDescriptions=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.addProfileTitles=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.changePersonProfile=ACL_NODE.0.ci:circaBC.CircaBCManageMembers
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.createAllCircaUsersGroup=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.createCircaSupportGroup=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.createInvitedUsersGroup=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.createMasterGroup=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.createSubsGroup=ACL_ALLOW		
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.deleteProfile=ACL_NODE.0.ci:circaBC.CircaBCAdmin
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.exportProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.getAllCircaUsersGroupName=ACL_ALLOW		
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.getApplicantUsers=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.getApplicantUsersMapName=ACL_NODE.0.ci:circaBC.CircaBCAccess
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.getCircaHome=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.getCurrentAspectRoot=ACL_NODE.0.ci:circaBC.CircaBCAccess
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.getExportedProfiles=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.getInvitedUsers=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.getInvitedUsersProfiles=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.getInvitedUsersGroupName=ACL_NODE.0.ci:circaBC.CircaBCAccess
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.getInvitedUsersGroupQName=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.getMasterGroupQName=ACL_ALLOW		
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.getMasterInvitedGroupName=ACL_NODE.0.ci:circaBC.CircaBCAccess
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.getMasterUsers=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.getPersonInProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.getPersonProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.getPrefixedAllCircaUsersGroupName=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.getProfile=ACL_ALLOW		
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.getProfileFromGroup=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.getProfileMap=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.getProfiles=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.getProfilesRecursivly=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.getRefInExportedProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.getRegistredGroupName=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.getRegistredUsers=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.getServices=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.getSubsGroupName=ACL_NODE.0.ci:circaBC.CircaBCAccess
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.getSubsGroupQName=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.hasApplicantFeature=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.hasMasterParentGroup=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.hasParentSubsGroup=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.importProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.isProfileDeletable=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.removeApplicantPerson=ACL_NODE.0.ci:circaBC.CircaBCManageMembers
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.renameProfile=ACL_NODE.0.ci:circaBC.CircaBCAdmin
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.setAlfrescoAdminPermissions=ACL_NODE.0.ci:circaBC.CircaBCAdmin
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.uninvitePerson=ACL_NODE.0.ci:circaBC.CircaBCManageMembers
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.updateProfile=ACL_NODE.0.ci:circaBC.CircaBCAdmin
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.getAllSubUsers=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.*=ACL_DENY
+      </value>
+    </property>
+  </bean>
+  <!-- -->
+  <!-- =============================================================== -->
+  <!-- CategoryProfileManagerService_security Service Permissions -->
+  <!-- =============================================================== -->
+  <bean id="CategoryProfileManagerService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
+    <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+    <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+    <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+    <property name="objectDefinitionSource">
+      <value>
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.addApplicantPerson=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.addPersonToProfile=ACL_NODE.0.ci:circaCategory.CircaCategoryManageMembers
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.addProfile=ACL_NODE.0.ci:circaCategory.CircaCategoryAdmin
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.addProfileDescriptions=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.addProfileTitles=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.changePersonProfile=ACL_NODE.0.ci:circaCategory.CircaCategoryManageMembers
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.createInvitedUsersGroup=ACL_NODE.0.ci:circaCategory.CircaCategoryManageMembers
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.createMasterGroup=ACL_NODE.0.ci:circaCategory.CircaCategoryManageMembers
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.createSubsGroup=ACL_NODE.0.ci:circaCategory.CircaCategoryManageMembers		
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.deleteProfile=ACL_NODE.0.ci:circaCategory.CircaCategoryAdmin
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.exportProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.getApplicantUsers=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.getApplicantUsersMapName=ACL_NODE.0.ci:circaCategory.CircaCategoryAccess
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.getCircaHome=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.getCurrentAspectRoot=ACL_NODE.0.ci:circaCategory.CircaCategoryAccess
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.getExportedProfiles=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.getInvitedUsers=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.getInvitedUsersProfiles=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.getInvitedUsersGroupName=ACL_NODE.0.ci:circaCategory.CircaCategoryAccess
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.getInvitedUsersGroupQName=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.getMasterGroupQName=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.getMasterInvitedGroupName=ACL_NODE.0.ci:circaCategory.CircaCategoryAccess
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.getMasterUsers=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.getPersonInProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.getPersonProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.getProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.getProfileFromGroup=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.getProfileMap=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.getProfiles=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.getProfilesRecursivly=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.getRefInExportedProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.getRegistredGroupName=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.getRegistredUsers=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.getServices=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.getSubsGroupName=ACL_NODE.0.ci:circaCategory.CircaCategoryAccess
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.getSubsGroupQName=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.hasApplicantFeature=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.hasMasterParentGroup=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.hasParentSubsGroup=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.importProfile=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.isProfileDeletable=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.removeApplicantPerson=ACL_NODE.0.ci:circaCategory.CircaCategoryManageMembers
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.renameProfile=ACL_NODE.0.ci:circaCategory.CircaCategoryAdmin
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.uninvitePerson=ACL_NODE.0.ci:circaCategory.CircaCategoryManageMembers
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.updateProfile=ACL_NODE.0.ci:circaCategory.CircaCategoryAdmin
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.getAllSubUsers=ACL_ALLOW
+		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.*=ACL_DENY
+      </value>
+
+    </property>
+  </bean>
+
+  <!--  TODO to secure !!! -->
+
+  <bean id="UserService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+			eu.cec.digit.circabc.service.user.UserService.createLdapUser=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.createUser=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.deleteUser=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.getAccountExpirationDays=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.getCategories=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.getCircabcUserDataBean=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.getEventRootNodes=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.getInterestGroups=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.getLDAPUserDataByUid=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.getLDAPUserDataNoFilterByUid=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.getLDAPUserIDByIdMonikerEmailCn=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.getLDAPUserIDByMail=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.getLDAPUserIDByMailDomain=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.getPerson=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.getPreference=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.getUserByEmail=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.getUserDomain=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.getUserEmail=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.getUserFullName=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.getUserNameByEmail=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.getUsersByDomainFirstNameLastNameEmail=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.getUsersByMailDomain=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.getUsersWithPermission=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.isEmailExists=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.setPassword=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.setPreference=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.updateMissingLastNamePersons=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.updateUser=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.isUserOnline=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.getAllOnlineUsers=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.getOnlineUsers=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.copyUser=ACL_METHOD.ROLE_ADMINISTRATOR
+			eu.cec.digit.circabc.service.user.UserService.getEcasUserDomains=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.isUserExists=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.getCurrentTicket=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.deleteUsers=ACL_METHOD.ROLE_ADMINISTRATOR
+			eu.cec.digit.circabc.service.user.UserService.getRedirectUrlAfterLogout=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.userExists=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.UserService.setAuthenticationEnabled=ACL_METHOD.ROLE_ADMINISTRATOR
+			eu.cec.digit.circabc.service.user.UserService.getAuthenticationEnabled=ACL_METHOD.ROLE_ADMINISTRATOR
+			eu.cec.digit.circabc.service.user.UserService.*=ACL_DENY
+         </value>
+      </property>
+	</bean>
+
+   <!--  TODO to secure !!! -->
+
+	<bean id="LdapUserService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+			eu.cec.digit.circabc.service.user.LdapUserService.getLDAPUserDataByUid=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.LdapUserService.getLDAPUserDataNoFilterByUid=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.LdapUserService.getLDAPUserIDByIdMonikerEmailCn=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.LdapUserService.getLDAPUserIDByMail=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.LdapUserService.getLDAPUserIDByMailDomain=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.LdapUserService.getUsersByDomainFirstNameLastNameEmail=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.LdapUserService.getUsersByMailDomain=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.LdapUserService.getEcasUserDomains=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.LdapUserService.userExists=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.LdapUserService.*=ACL_DENY
+         </value>
+      </property>
+	</bean>
+
+    <!--  TODO to secure !!! -->
+	<!--  TODO to secure the methods.
+			** Every body can read a keyword (visibility on ig)
+			** The create/remove/update keyword is performed only by AllAdmin (libadmin + newsadmin + diradmin + suradmin)
+			For instance, only the weblcient is secured!!!
+	-->
+	<bean id="KeywordsService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+			eu.cec.digit.circabc.service.keyword.KeywordsService.addKeywordToNode=ACL_ALLOW
+			eu.cec.digit.circabc.service.keyword.KeywordsService.buildKeywordWithId=ACL_ALLOW
+			eu.cec.digit.circabc.service.keyword.KeywordsService.createKeyword=ACL_ALLOW
+			eu.cec.digit.circabc.service.keyword.KeywordsService.exists=ACL_ALLOW
+			eu.cec.digit.circabc.service.keyword.KeywordsService.getKeywords=ACL_ALLOW
+			eu.cec.digit.circabc.service.keyword.KeywordsService.getKeywordsForNode=ACL_ALLOW
+			eu.cec.digit.circabc.service.keyword.KeywordsService.getNodesForKeywords=ACL_ALLOW
+			eu.cec.digit.circabc.service.keyword.KeywordsService.isKeywordMultilingual=ACL_ALLOW
+			eu.cec.digit.circabc.service.keyword.KeywordsService.removeKeyword=ACL_ALLOW
+			eu.cec.digit.circabc.service.keyword.KeywordsService.setKeywordsToNode=ACL_ALLOW
+			eu.cec.digit.circabc.service.keyword.KeywordsService.updateKeyword=ACL_ALLOW
+			eu.cec.digit.circabc.service.keyword.KeywordsService.*=ACL_DENY
+         </value>
+      </property>
+	</bean>
+
+	<bean id="EventService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+			eu.cec.digit.circabc.service.event.EventService.createEvent=ACL_NODE.0.sys:base.CreateChildren
+			eu.cec.digit.circabc.service.event.EventService.createMeeting=ACL_NODE.0.sys:base.CreateChildren
+			eu.cec.digit.circabc.service.event.EventService.deleteAllEvents=ACL_NODE.0.sys:base.DeleteNode
+			eu.cec.digit.circabc.service.event.EventService.deleteAppointment=ACL_NODE.0.sys:base.DeleteNode
+			eu.cec.digit.circabc.service.event.EventService.getAllAppointments=ACL_ALLOW
+			eu.cec.digit.circabc.service.event.EventService.getAllOccurences=ACL_ALLOW
+			eu.cec.digit.circabc.service.event.EventService.getAppointmentByNodeRef=ACL_ALLOW
+			eu.cec.digit.circabc.service.event.EventService.getAppointments=ACL_ALLOW
+			eu.cec.digit.circabc.service.event.EventService.getCalendarEventsOnDate=ACL_ALLOW
+			eu.cec.digit.circabc.service.event.EventService.getEventsBetweenDates=ACL_ALLOW
+			eu.cec.digit.circabc.service.event.EventService.getMeetingNodeRef=ACL_ALLOW
+			eu.cec.digit.circabc.service.event.EventService.getMeetingStatus=ACL_ALLOW
+			eu.cec.digit.circabc.service.event.EventService.setMeetingRequestStatus=ACL_ALLOW
+			eu.cec.digit.circabc.service.event.EventService.updateAppointment=ACL_NODE.0.sys:base.WriteProperties
+			eu.cec.digit.circabc.service.event.EventService.*=ACL_DENY
+         </value>
+      </property>
+	</bean>
+
+    <!--  TODO to secure !!! -->
+
+	<bean id="ShareSpaceService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+			eu.cec.digit.circabc.service.sharespace.ShareSpaceService.getAllSharedSpaceInInterestGroup=ACL_ALLOW
+			eu.cec.digit.circabc.service.sharespace.ShareSpaceService.getAvailableInterestGroups=ACL_ALLOW
+			eu.cec.digit.circabc.service.sharespace.ShareSpaceService.getAvailableShareSpaces=ACL_ALLOW
+			eu.cec.digit.circabc.service.sharespace.ShareSpaceService.getInvitedInterestGroups=ACL_ALLOW
+			eu.cec.digit.circabc.service.sharespace.ShareSpaceService.inviteInterestGroup=ACL_ALLOW
+			eu.cec.digit.circabc.service.sharespace.ShareSpaceService.linkSharedSpace=ACL_ALLOW
+			eu.cec.digit.circabc.service.sharespace.ShareSpaceService.unInviteInterestGroup=ACL_ALLOW
+			eu.cec.digit.circabc.service.sharespace.ShareSpaceService.*=ACL_DENY
+         </value>
+      </property>
+	</bean>
+
+	<!--  TODO to secure !!! -->
+	<bean id="MailToMembersService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+			eu.cec.digit.circabc.service.mail.MailToMembersService.sendToAllMembers=ACL_ALLOW
+			eu.cec.digit.circabc.service.mail.MailToMembersService.*=ACL_DENY
+         </value>
+      </property>
+	</bean>
+
+    <!--  TODO to secure !!! -->
+	<!--  TODO to secure the methods.
+			Only the admin of the current node can set the notification status. IGLeader on ig, LibAdmin on library, NewsAdmin sur Newsgroup ...
+			For instance, only the weblcient is secured!!!
+	-->
+	<bean id="NotificationSubscriptionService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+			eu.cec.digit.circabc.service.notification.NotificationSubscriptionService.getAuthorityNotificationStatus=ACL_ALLOW
+			eu.cec.digit.circabc.service.notification.NotificationSubscriptionService.getNotifiableUsers=ACL_ALLOW
+			eu.cec.digit.circabc.service.notification.NotificationSubscriptionService.getNotifications=ACL_ALLOW
+			eu.cec.digit.circabc.service.notification.NotificationSubscriptionService.getUserNotificationReport=ACL_ALLOW
+			eu.cec.digit.circabc.service.notification.NotificationSubscriptionService.removeNotification=ACL_ALLOW
+			eu.cec.digit.circabc.service.notification.NotificationSubscriptionService.setNotificationStatus=ACL_ALLOW
+			eu.cec.digit.circabc.service.notification.NotificationSubscriptionService.*=ACL_DENY
+         </value>
+      </property>
+	</bean>
+
+	<bean id="EcasAdapterService_security" class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor" />
+
+
+    <bean id="ManagementService_security" class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor" />
+
+    <!-- =============================================================== -->
+    <!-- CategoryProfileManagerService_security Service Permissions -->
+    <!-- =============================================================== -->
+    <bean id="CircaGenericProfileManagerService_security" class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor" />
+
+    <!-- ============= -->
+    <!-- Audit Service -->
+    <!-- ============= -->
+
+    <!-- TODO: Add audit security -->
+
+    <bean id="AuditService_security" class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor" />
+
+
+   	<bean id="CircabcNotificationService_security" class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor" />
+
+   	<bean id="NotificationManagerService_security" class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor" />
+
+   	<bean id="CircabcMailService_security" class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor" />
+
+   	<bean id="BulkService_security" class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor" />
+
+   	<bean id="IndexService_security" class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor" />
+
+   	<bean id="ZipService_security" class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor" />
+
+	<bean id="AttachementService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+      	<value>
+				eu.cec.digit.circabc.service.newsgroup.AttachementService.attach=ACL_NODE.0.sys:base.WriteContent
+				eu.cec.digit.circabc.service.newsgroup.AttachementService.getAttachements=ACL_NODE.0.sys:base.Read
+				eu.cec.digit.circabc.service.newsgroup.AttachementService.isHiddenAttachement=ACL_ALLOW
+				eu.cec.digit.circabc.service.newsgroup.AttachementService.*=ACL_DENY
+      	</value>
+      </property>
+	</bean>
+	
+    <!--  TODO to secure !!! -->
+	<bean id="DynamicPropertiesService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+			eu.cec.digit.circabc.service.dynamic.property.DynamicPropertyService.addDynamicProperty=ACL_ALLOW
+			eu.cec.digit.circabc.service.dynamic.property.DynamicPropertyService.deleteDynamicProperty=ACL_ALLOW
+			eu.cec.digit.circabc.service.dynamic.property.DynamicPropertyService.getDynamicProperties=ACL_ALLOW
+			eu.cec.digit.circabc.service.dynamic.property.DynamicPropertyService.getDynamicPropertyByID=ACL_ALLOW
+			eu.cec.digit.circabc.service.dynamic.property.DynamicPropertyService.getPropertyQname=ACL_ALLOW
+			eu.cec.digit.circabc.service.dynamic.property.DynamicPropertyService.updateDynamicPropertyLabel=ACL_ALLOW
+			eu.cec.digit.circabc.service.dynamic.property.DynamicPropertyService.updateDynamicPropertyValidValues=ACL_ALLOW
+			eu.cec.digit.circabc.service.dynamic.property.DynamicPropertyService.*=ACL_DENY
+         </value>
+      </property>
+	</bean>
+	
+	<!--  TODO to secure !!! -->
+	<bean id="LogoPreferencesService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+			eu.cec.digit.circabc.service.customisation.logo.LogoPreferencesService.addLogo=ACL_ALLOW
+			eu.cec.digit.circabc.service.customisation.logo.LogoPreferencesService.getAllLogos=ACL_ALLOW
+			eu.cec.digit.circabc.service.customisation.logo.LogoPreferencesService.getDefault=ACL_ALLOW
+			eu.cec.digit.circabc.service.customisation.logo.LogoPreferencesService.removeConfiguration=ACL_ALLOW
+			eu.cec.digit.circabc.service.customisation.logo.LogoPreferencesService.removeLogo=ACL_ALLOW
+			eu.cec.digit.circabc.service.customisation.logo.LogoPreferencesService.setDefault=ACL_ALLOW
+			eu.cec.digit.circabc.service.customisation.logo.LogoPreferencesService.setMainPageLogoConfig=ACL_ALLOW
+			eu.cec.digit.circabc.service.customisation.logo.LogoPreferencesService.setOtherPagesLogoConfig=ACL_ALLOW
+			eu.cec.digit.circabc.service.customisation.logo.LogoPreferencesService.getOrCreateConfiguraton=ACL_ALLOW
+			eu.cec.digit.circabc.service.customisation.logo.LogoPreferencesService.forceClearCache=ACL_ALLOW
+			eu.cec.digit.circabc.service.customisation.logo.LogoPreferencesService.*=ACL_DENY
+         </value>
+      </property>
+	</bean>
+
+	<!--  TODO to secure !!! -->
+	<bean id="MailPreferencesService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+			eu.cec.digit.circabc.service.customisation.mail.MailPreferencesService.addMailTemplate=ACL_ALLOW
+			eu.cec.digit.circabc.service.customisation.mail.MailPreferencesService.buildDefaultModel=ACL_ALLOW
+			eu.cec.digit.circabc.service.customisation.mail.MailPreferencesService.getDefaultMailTemplate=ACL_ALLOW
+			eu.cec.digit.circabc.service.customisation.mail.MailPreferencesService.getDisclamerLogo=ACL_ALLOW
+			eu.cec.digit.circabc.service.customisation.mail.MailPreferencesService.getMailTemplates=ACL_ALLOW
+			eu.cec.digit.circabc.service.customisation.mail.MailPreferencesService.getTemplateUserDetails=ACL_ALLOW
+			eu.cec.digit.circabc.service.customisation.mail.MailPreferencesService.replaceDefaultMailTemplate=ACL_ALLOW
+			eu.cec.digit.circabc.service.customisation.mail.MailPreferencesService.*=ACL_DENY
+         </value>
+      </property>
+	</bean>
+	
+    <!--  TODO to secure !!! -->
+   	<!--  TODO to secure the methods.
+			NwsAdmin (or LibAdmin) can: applyModeration
+			NwsModerate (or LibAdmin) can: accept, reject, signalNotAbuse
+			EveryBody can: WaitForApprovale, is*, get*
+	-->
+	<bean id="ModerationService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+			eu.cec.digit.circabc.service.newsgroup.ModerationService.accept=ACL_ALLOW
+			eu.cec.digit.circabc.service.newsgroup.ModerationService.applyModeration=ACL_ALLOW
+			eu.cec.digit.circabc.service.newsgroup.ModerationService.getAbuses=ACL_ALLOW
+			eu.cec.digit.circabc.service.newsgroup.ModerationService.isApproved=ACL_ALLOW
+			eu.cec.digit.circabc.service.newsgroup.ModerationService.isContainerModerated=ACL_ALLOW
+			eu.cec.digit.circabc.service.newsgroup.ModerationService.isRejected=ACL_ALLOW
+			eu.cec.digit.circabc.service.newsgroup.ModerationService.isWaitingForApproval=ACL_ALLOW
+			eu.cec.digit.circabc.service.newsgroup.ModerationService.reject=ACL_ALLOW
+			eu.cec.digit.circabc.service.newsgroup.ModerationService.signalAbuse=ACL_ALLOW
+			eu.cec.digit.circabc.service.newsgroup.ModerationService.signalNotAbuse=ACL_ALLOW
+			eu.cec.digit.circabc.service.newsgroup.ModerationService.waitForApproval=ACL_ALLOW
+			eu.cec.digit.circabc.service.newsgroup.ModerationService.stopModeration=ACL_ALLOW
+			eu.cec.digit.circabc.service.newsgroup.ModerationService.*=ACL_DENY
+         </value>
+      </property>
+	</bean>
+	
+    <!--  TODO to secure !!! -->
+	<bean id="NavigationPreferencesService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+	        eu.cec.digit.circabc.service.customisation.nav.NavigationPreferencesService.addServicePreference=ACL_ALLOW
+	        eu.cec.digit.circabc.service.customisation.nav.NavigationPreferencesService.getServicePreference=ACL_ALLOW
+	        eu.cec.digit.circabc.service.customisation.nav.NavigationPreferencesService.removeServicePreference=ACL_ALLOW
+	        eu.cec.digit.circabc.service.customisation.nav.NavigationPreferencesService.*=ACL_DENY
+         </value>
+      </property>
+	</bean>
+	
+	<bean id="NodePreferencesService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+			eu.cec.digit.circabc.service.customisation.NodePreferencesService.addCustomizationFile=ACL_NODE.0.sys:base.WriteContent
+			eu.cec.digit.circabc.service.customisation.NodePreferencesService.customizationFileExists=ACL_NODE.0.sys:base.Read
+			eu.cec.digit.circabc.service.customisation.NodePreferencesService.getConfigurationFiles=ACL_NODE.0.sys:base.Read
+			eu.cec.digit.circabc.service.customisation.NodePreferencesService.getCustomization=ACL_NODE.0.sys:base.Read
+			eu.cec.digit.circabc.service.customisation.NodePreferencesService.getCustomizationFromNode=ACL_NODE.0.sys:base.Read
+			eu.cec.digit.circabc.service.customisation.NodePreferencesService.getDefaultConfigurationFile=ACL_NODE.0.sys:base.Read
+			eu.cec.digit.circabc.service.customisation.NodePreferencesService.isNodeConfigurable=ACL_NODE.0.sys:base.Read
+			eu.cec.digit.circabc.service.customisation.NodePreferencesService.makeConfigurable=ACL_NODE.0.sys:base.WriteContent
+			eu.cec.digit.circabc.service.customisation.NodePreferencesService.removeCustomization=ACL_NODE.0.sys:base.Read
+			eu.cec.digit.circabc.service.customisation.NodePreferencesService.updateRootReference=ACL_ALLOW
+			eu.cec.digit.circabc.service.customisation.NodePreferencesService.*=ACL_DENY
+         </value>
+      </property>
+	</bean>
+	
+	<bean id="SupportService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+			eu.cec.digit.circabc.service.support.SupportService.isUserFromSupport=ACL_ALLOW
+			eu.cec.digit.circabc.service.support.SupportService.setSupportGroupName=ACL_ALLOW
+			eu.cec.digit.circabc.service.support.SupportService.getAllSupportContacts=ACL_ALLOW
+			eu.cec.digit.circabc.service.support.SupportService.getContactById=ACL_ALLOW
+			eu.cec.digit.circabc.service.support.SupportService.sendSupportRequest=ACL_ALLOW
+			eu.cec.digit.circabc.service.support.SupportService.sendSupportRequestAsGuest=ACL_ALLOW
+			eu.cec.digit.circabc.service.support.SupportService.*=ACL_DENY
+         </value>
+      </property>
+	</bean>
+	
+	
+	<bean id="IgStatisticsService_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getNumberOfUsers=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getIGCreationDate=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getNumberOfLibraryDocuments=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getNumberOfLibrarySpaces=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getNumberOfInformationDocuments=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getNumberOfInformationSpaces=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getIGTitle=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getNumbetOfMeetings=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getNumbetOfEvents=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getNumberOfForums=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getNumberOfTopics=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getNumberOfPosts=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getContentSizeOfLibrary=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getContentSizeOfInformation=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getLibraryStructure=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getInformationStructure=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getNewsgroupsStructure=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getListOfActivityCount=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.buildStatsData=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getNumberOfVersions=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getSizeOfVersions=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getNumberOfCustomizationAndHiddenContent=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getSizeOfCustomizationAndHiddenContent=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.*=ACL_DENY
+         </value>
+      </property>
+	</bean>
+
+	<bean id="GlobalStatisticsService_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+			eu.cec.digit.circabc.service.statistics.global.GlobalStatisticsService.prepareFolderRecipient=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.global.GlobalStatisticsService.makeGlobalStats=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.global.GlobalStatisticsService.saveStatsToExcel=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.global.GlobalStatisticsService.getReportSaveFolder=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.global.GlobalStatisticsService.isReportSaveFolderExisting=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.global.GlobalStatisticsService.getLastLoginDateOfUser=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.global.GlobalStatisticsService.getListOfReportFiles=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.global.GlobalStatisticsService.cleanAndZipPreviousReportFiles=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.global.GlobalStatisticsService.makeDetailedIgStats=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.global.GlobalStatisticsService.saveDetailedIgStatsToExcel=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.global.GlobalStatisticsService.getListOfCircabcInterestGroups=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.global.GlobalStatisticsService.getListOfCircabcInterestGroups=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.global.GlobalStatisticsService.getCategoryGroupStatsFiles=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.global.GlobalStatisticsService.prepareCategoryReportsFolderRecipient=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.global.GlobalStatisticsService.getCategoryReportsFolderRecipient=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.global.GlobalStatisticsService.computeCategoryGroupStatistics=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.global.GlobalStatisticsService.saveCategoryGroupStatistics=ACL_ALLOW
+			eu.cec.digit.circabc.service.statistics.global.GlobalStatisticsService.*=ACL_DENY
+         </value>
+      </property>
+	</bean>
+	
+	<bean id="AutoUploadManagementService_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+			eu.cec.digit.circabc.service.config.auto.upload.AutoUploadManagementService.registerConfiguration=ACL_ALLOW
+			eu.cec.digit.circabc.service.config.auto.upload.AutoUploadManagementService.listConfigurations=ACL_ALLOW
+			eu.cec.digit.circabc.service.config.auto.upload.AutoUploadManagementService.deleteConfiguration=ACL_ALLOW
+			eu.cec.digit.circabc.service.config.auto.upload.AutoUploadManagementService.updateConfiguration=ACL_ALLOW
+			eu.cec.digit.circabc.service.config.auto.upload.AutoUploadManagementService.getConfigurationById=ACL_ALLOW
+			eu.cec.digit.circabc.service.config.auto.upload.AutoUploadManagementService.getConfigurationByNodeRef=ACL_ALLOW
+			eu.cec.digit.circabc.service.config.auto.upload.AutoUploadManagementService.buildDefaultExtractRule=ACL_ALLOW
+			eu.cec.digit.circabc.service.config.auto.upload.AutoUploadManagementService.addAutoExtractRuleToSpace=ACL_ALLOW
+			eu.cec.digit.circabc.service.config.auto.upload.AutoUploadManagementService.listAllConfigurations=ACL_ALLOW
+			eu.cec.digit.circabc.service.config.auto.upload.AutoUploadManagementService.updateContent=ACL_ALLOW
+			eu.cec.digit.circabc.service.config.auto.upload.AutoUploadManagementService.logJobResult=ACL_ALLOW
+			eu.cec.digit.circabc.service.config.auto.upload.AutoUploadManagementService.sendJobNofitication=ACL_ALLOW
+			eu.cec.digit.circabc.service.config.auto.upload.AutoUploadManagementService.extractZip=ACL_ALLOW
+			eu.cec.digit.circabc.service.config.auto.upload.AutoUploadManagementService.documentExists=ACL_ALLOW
+			eu.cec.digit.circabc.service.config.auto.upload.AutoUploadManagementService.createContent=ACL_ALLOW
+			eu.cec.digit.circabc.service.config.auto.upload.AutoUploadManagementService.lockJobFile=ACL_ALLOW
+			eu.cec.digit.circabc.service.config.auto.upload.AutoUploadManagementService.unlockJobFile=ACL_ALLOW
+			eu.cec.digit.circabc.service.config.auto.upload.AutoUploadManagementService.*=ACL_DENY
+         </value>
+      </property>
+	</bean>
+	
+	<bean id="ExternalRepositoriesManagementService_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+			eu.cec.digit.circabc.service.external.repositories.ExternalRepositoriesManagementService.*=ACL_ALLOW
+         </value>
+      </property>
+	</bean>
+	
+	<bean id="AutonomySearchService_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+			eu.cec.digit.circabc.service.search.autonomy.AutonomySearchService.*=ACL_ALLOW
+         </value>
+      </property>
+	</bean>
+	
+	<bean id="SynchronizationService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+         	eu.cec.digit.circabc.service.iam.SynchronizationService.grantThemeRole=ACL_ALLOW
+         	eu.cec.digit.circabc.service.iam.SynchronizationService.grantThemeRoles=ACL_ALLOW
+	     	eu.cec.digit.circabc.service.iam.SynchronizationService.revokeThemeRole=ACL_ALLOW
+		 	eu.cec.digit.circabc.service.iam.SynchronizationService.getEcordaThemeIds=ACL_ALLOW
+		 	eu.cec.digit.circabc.service.iam.SynchronizationService.*=ACL_DENY
+	     </value>
+      </property>
+	</bean>
+
+	<bean id="BulkUserImportService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+         	eu.cec.digit.circabc.service.user.BulkUserImportService.listMembers=ACL_ALLOW
+         	eu.cec.digit.circabc.service.user.BulkUserImportService.loadWork=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.BulkUserImportService.saveWork=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.BulkUserImportService.parseProfilesToBeCreated=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.BulkUserImportService.listGroupProfiles=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.BulkUserImportService.inviteUsers=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.BulkUserImportService.addAll=ACL_ALLOW
+			eu.cec.digit.circabc.service.user.BulkUserImportService.*=ACL_DENY
+	     </value>
+      </property>
+	</bean>
+	
+	<bean id="TranslationService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+            eu.cec.digit.circabc.service.translation.TranslationService.getAvailableLanguages=ACL_ALLOW
+			eu.cec.digit.circabc.service.translation.TranslationService.translateProperty=ACL_ALLOW
+			eu.cec.digit.circabc.service.translation.TranslationService.translateDocument=ACL_ALLOW
+			eu.cec.digit.circabc.service.translation.TranslationService.getMTUserDetails=ACL_ALLOW
+			eu.cec.digit.circabc.service.translation.TranslationService.copyDocumentToBeTranslated=ACL_ALLOW
+			eu.cec.digit.circabc.service.translation.TranslationService.processTranslatedFiles=ACL_ALLOW
+			eu.cec.digit.circabc.service.translation.TranslationService.canBeTranslated=ACL_ALLOW
+			eu.cec.digit.circabc.service.translation.TranslationService.cleanTempSpace=ACL_ALLOW
+			eu.cec.digit.circabc.service.translation.TranslationService.*=ACL_DENY
+	     </value>
+      </property>
+	</bean>
+	
+	<bean id="ApplicationCustomisationService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+            eu.cec.digit.circabc.service.customisation.ApplicationCustomisationService.getDefaultLogoNodeRef=ACL_ALLOW
+            eu.cec.digit.circabc.service.customisation.ApplicationCustomisationService.updateDefaultLogo=ACL_ALLOW
+            eu.cec.digit.circabc.service.customisation.ApplicationCustomisationService.getListOfTemplates=ACL_ALLOW
+            eu.cec.digit.circabc.service.customisation.ApplicationCustomisationService.updateTemplate=ACL_ALLOW
+            eu.cec.digit.circabc.service.customisation.ApplicationCustomisationService.getDefaultLogoDisclaimerNodeRef=ACL_ALLOW
+            eu.cec.digit.circabc.service.customisation.ApplicationCustomisationService.updateDefaultLogoDisclaimer=ACL_ALLOW
+            eu.cec.digit.circabc.service.customisation.ApplicationCustomisationService.updateContactLink=ACL_ALLOW
+            eu.cec.digit.circabc.service.customisation.ApplicationCustomisationService.getContactlink=ACL_ALLOW
+            eu.cec.digit.circabc.service.customisation.ApplicationCustomisationService.getBannerLogoRef=ACL_ALLOW
+            eu.cec.digit.circabc.service.customisation.ApplicationCustomisationService.removeBannerLogoRef=ACL_ALLOW
+            eu.cec.digit.circabc.service.customisation.ApplicationCustomisationService.updateBannerLogoRef=ACL_ALLOW
+            eu.cec.digit.circabc.service.customisation.ApplicationCustomisationService.getDisplaySearchLink=ACL_ALLOW
+            eu.cec.digit.circabc.service.customisation.ApplicationCustomisationService.getDisplayLegalLink=ACL_ALLOW
+            eu.cec.digit.circabc.service.customisation.ApplicationCustomisationService.setDisplaySearchLink=ACL_ALLOW
+            eu.cec.digit.circabc.service.customisation.ApplicationCustomisationService.setDisplayLegalLink=ACL_ALLOW
+            eu.cec.digit.circabc.service.customisation.ApplicationCustomisationService.geteLearningLink=ACL_ALLOW
+            eu.cec.digit.circabc.service.customisation.ApplicationCustomisationService.seteLearningLink=ACL_ALLOW
+            eu.cec.digit.circabc.service.customisation.ApplicationCustomisationService.getDisplayeLearningLink=ACL_ALLOW
+            eu.cec.digit.circabc.service.customisation.ApplicationCustomisationService.setDisplayeLearningLink=ACL_ALLOW
+            eu.cec.digit.circabc.service.customisation.ApplicationCustomisationService.getErrorMessageContent=ACL_ALLOW
+            eu.cec.digit.circabc.service.customisation.ApplicationCustomisationService.setErrorMessageContent=ACL_ALLOW
+            eu.cec.digit.circabc.service.customisation.ApplicationCustomisationService.*=ACL_DENY
+	     </value>
+      </property>
+	</bean>
+	
+	<bean id="ProfilesApi_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
+    <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+    <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+    <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+    <property name="objectDefinitionSource">
+      <value>
+      	io.swagger.api.ProfilesApi.groupsIdProfilesGet=ACL_ALLOW
+		io.swagger.api.ProfilesApi.groupsIdProfilesPost=ACL_NODE.0.ci:circaIGRoot.DirAdmin
+		io.swagger.api.ProfilesApi.groupsIdImportedProfilesPost=ACL_NODE.0.ci:circaIGRoot.DirAdmin
+		io.swagger.api.ProfilesApi.profilesIdDelete=ACL_ALLOW
+		io.swagger.api.ProfilesApi.profilesIdPut=ACL_ALLOW
+		io.swagger.api.ProfilesApi.getInvitedUsers=ACL_ALLOW
+		io.swagger.api.ProfilesApi.profilesIdGet=ACL_ALLOW
+		io.swagger.api.ProfilesApi.*=ACL_DENY
+      </value>
+    </property>
+  </bean>
+  <bean id="GroupsApi_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
+    <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+    <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+    <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+    <property name="objectDefinitionSource">
+      <value>
+      	io.swagger.api.GroupsApi.groupsIdMembersPost=ACL_NODE.0.ci:circaIGRoot.DirManageMembers
+      	io.swagger.api.GroupsApi.groupsIdMembersPut=ACL_NODE.0.ci:circaIGRoot.DirManageMembers
+      	io.swagger.api.GroupsApi.groupsIdMembersGet=ACL_ALLOW
+		io.swagger.api.GroupsApi.groupsIdMembersUserIdDelete=ACL_ALLOW
+		io.swagger.api.GroupsApi.groupsIdPut=ACL_ALLOW
+		io.swagger.api.GroupsApi.getInterestGroupDetails=ACL_ALLOW
+		io.swagger.api.GroupsApi.getInterestGroup=ACL_ALLOW
+		io.swagger.api.GroupsApi.getGroupDashboard=ACL_ALLOW
+		io.swagger.api.GroupsApi.groupsIdMembersApplicantsGet=ACL_ALLOW
+		io.swagger.api.GroupsApi.groupsIdMembersApplicantsPut=ACL_ALLOW
+		io.swagger.api.GroupsApi.groupsIdMembersApplicantsPost=ACL_ALLOW
+		io.swagger.api.GroupsApi.getIGSummaryStatistics=ACL_ALLOW
+		io.swagger.api.GroupsApi.getIGSummaryTimeline=ACL_ALLOW
+		io.swagger.api.GroupsApi.getIGSummaryStructure=ACL_ALLOW
+		io.swagger.api.GroupsApi.exportSummary=ACL_ALLOW
+		io.swagger.api.GroupsApi.generateImportIndexFileTemplate=ACL_ALLOW
+		io.swagger.api.GroupsApi.importZipFile=ACL_ALLOW
+		io.swagger.api.GroupsApi.getGroupRecentDiscussions=ACL_ALLOW
+		io.swagger.api.GroupsApi.getVisitedGroups=ACL_ALLOW
+		io.swagger.api.GroupsApi.getInterestGroupConfiguration=ACL_ALLOW
+		io.swagger.api.GroupsApi.putInterestGroupConfiguration=ACL_ALLOW
+		io.swagger.api.GroupsApi.getInterestGroupLogos=ACL_ALLOW
+		io.swagger.api.GroupsApi.postGroupLogoByGroupId=ACL_ALLOW
+		io.swagger.api.GroupsApi.putSelectedLogo=ACL_ALLOW
+		io.swagger.api.GroupsApi.deleteLogo=ACL_ALLOW
+		io.swagger.api.GroupsApi.countMembersInIg=ACL_ALLOW
+		io.swagger.api.GroupsApi.groupsIdMembersUserIdExpirationDelete=ACL_ALLOW
+		io.swagger.api.GroupsApi.groupsIdMembersUserIdExpirationPut=ACL_ALLOW
+		io.swagger.api.GroupsApi.groupsIdMembersUserIdExpirationPost=ACL_ALLOW
+		io.swagger.api.GroupsApi.groupsIdDelete=ACL_ALLOW
+		io.swagger.api.GroupsApi.*=ACL_DENY
+      </value>
+    </property>
+  </bean>
+  <bean id="ArchiveApi_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
+    <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+    <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+    <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+    <property name="objectDefinitionSource">
+      <value>
+		io.swagger.api.ArchiveApi.groupsIdDocumentsDeletedGet=ACL_ALLOW
+		io.swagger.api.ArchiveApi.groupsIdDocumentsDeletedPost=ACL_ALLOW
+		io.swagger.api.ArchiveApi.groupsIdDocumentsDeletedNodeIdDelete=ACL_ALLOW
+		io.swagger.api.ArchiveApi.*=ACL_DENY
+      </value>
+    </property>
+  </bean>
+  <bean id="DashboardApi_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
+    <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+    <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+    <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+    <property name="objectDefinitionSource">
+      <value>
+		io.swagger.api.DashboardApi.usersUserIdDashboardDownloadsGet=ACL_ALLOW
+		io.swagger.api.DashboardApi.usersUserIdDashboardUploadsGet=ACL_ALLOW
+		io.swagger.api.DashboardApi.usersUserIdDashboardNewsfeedGet=ACL_ALLOW
+		io.swagger.api.DashboardApi.*=ACL_DENY
+      </value>
+    </property>
+  </bean>
+  <bean id="CategoriesApi_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
+    <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+    <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+    <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+    <property name="objectDefinitionSource">
+      <value>
+		io.swagger.api.CategoriesApi.getCategories=ACL_ALLOW
+		io.swagger.api.CategoriesApi.getInterestGroupByCategoryId=ACL_ALLOW
+		io.swagger.api.CategoriesApi.categoriesIdGroupsPost=ACL_ALLOW
+		io.swagger.api.CategoriesApi.getIGStatisticsContents=ACL_ALLOW
+		io.swagger.api.CategoriesApi.calculateIGStatistics=ACL_ALLOW
+		io.swagger.api.CategoriesApi.categoriesIdGroupRequestPost=ACL_ALLOW
+		io.swagger.api.CategoriesApi.categoriesIdExportedProfilesGet=ACL_ALLOW
+		io.swagger.api.CategoriesApi.getCategoryLogoByCategoryId=ACL_ALLOW
+		io.swagger.api.CategoriesApi.postCategoryLogoByCategoryId=ACL_ALLOW
+		io.swagger.api.CategoriesApi.selectCategoryLogoByLogoId=ACL_ALLOW
+		io.swagger.api.CategoriesApi.deleteCategoryLogoByLogoId=ACL_ALLOW
+		io.swagger.api.CategoriesApi.categoriesIdPut=ACL_ALLOW
+		io.swagger.api.CategoriesApi.categoriesIdAdminsGet=ACL_ALLOW
+		io.swagger.api.CategoriesApi.categoriesIdAdminsPost=ACL_ALLOW
+		io.swagger.api.CategoriesApi.categoriesIdAdminsDelete=ACL_ALLOW
+		io.swagger.api.CategoriesApi.headersIdCategoryPost=ACL_ALLOW
+		io.swagger.api.CategoriesApi.categoriesIdGet=ACL_ALLOW
+		io.swagger.api.CategoriesApi.categoriesIdAdminContactPost=ACL_ALLOW
+		io.swagger.api.CategoriesApi.categoriesIdGroupRequestsGet=ACL_ALLOW
+		io.swagger.api.CategoriesApi.categoriesIdGroupRequestApprovalPost=ACL_ALLOW
+		io.swagger.api.CategoriesApi.categoriesGroupRequestPut=ACL_ALLOW
+		io.swagger.api.CategoriesApi.*=ACL_DENY
+      </value>
+    </property>
+  </bean>
+  <bean id="circabcService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
+    <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+    <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+    <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+    <property name="objectDefinitionSource">
+      <value>
+		eu.cec.digit.circabc.repo.app.CircabcServiceImpl.*=ACL_ALLOW
+      </value>
+    </property>
+  </bean>
+</beans>

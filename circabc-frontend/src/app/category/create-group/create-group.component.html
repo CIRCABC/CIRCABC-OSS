@@ -1,0 +1,164 @@
+<cbc-modal
+  [title]="'admin.group.add'"
+  (ok)="okAction()"
+  (cancel)="cancel()"
+  [okLabel]="getOkLabel()"
+  [(visible)]="showModal"
+  [showOkButton]="areFormsValid()"
+  [executing]="processing"
+  [executingLabel]="'label.creating'"
+>
+  <a
+    class="step-link"
+    [class.step-link-selected]="showDetailsForm"
+    (click)="setDetailsForm()"
+    >{{ 'label.details' | transloco }}</a
+  >
+  <a
+    class="step-link"
+    [class.step-link-selected]="showLeadersForm"
+    (click)="setLeadersForm()"
+    >{{ 'label.group.leaders' | transloco }}</a
+  >
+  <a
+    class="step-link"
+    [class.step-link-selected]="showNotificationForm"
+    (click)="setNotificationForm()"
+    >{{ 'label.notifications' | transloco }}</a
+  >
+  <br />
+  <br />
+  <div *ngIf="showDetailsForm">
+    <form [formGroup]="groupDetailsForm">
+      <div class="field">
+        <label for="name"
+          >{{ 'label.name' | transloco }}
+          <span style="color: red">&nbsp;*</span>
+        </label>
+        <input data-cy="name" type="text" id="name" formControlName="name" />
+        <cbc-control-message [control]="nameControl"></cbc-control-message>
+      </div>
+      <cbc-multilingual-input
+        data-cy="title"
+        formControlName="title"
+        [label]="'label.title' | transloco"
+        [lang]="'EN'"
+        [required]="true"
+      ></cbc-multilingual-input>
+      <cbc-control-message [control]="titleControl"></cbc-control-message>
+      <cbc-multilingual-input
+        data-cy="description"
+        formControlName="description"
+        [label]="'label.description' | transloco"
+        [lang]="'EN'"
+        [textarea]="true"
+      ></cbc-multilingual-input>
+      <cbc-multilingual-input
+        data-cy="contact"
+        formControlName="contact"
+        [label]="'label.contact' | transloco"
+        [lang]="'EN'"
+        [textarea]="true"
+      ></cbc-multilingual-input>
+    </form>
+  </div>
+  <div *ngIf="showLeadersForm">
+    <form [formGroup]="groupLeadersForm">
+      <div class="field">
+        <label for="search">{{ 'label.search' | transloco }}</label>
+        <input
+          data-cy="search"
+          type="text"
+          id="search"
+          value=""
+          placeholder="User name / email / ..."
+          formControlName="search"
+        />
+        <a
+          data-cy="search-button"
+          [class.disabled]="searchExpressionEmpty()"
+          class="button"
+          (click)="searchUsers()"
+          >{{ 'label.search' | transloco }}</a
+        >
+        <a (click)="resetSearchForm()">{{ 'label.clear' | transloco }}</a>
+        <cbc-spinner *ngIf="searchingUsers"></cbc-spinner>
+      </div>
+
+      <!-- Select Multiple-->
+      <div class="field">
+        <label for="sMultiple">{{ 'label.results' | transloco }}</label>
+        <div
+          class="custom-select select--multiple"
+          style="width: 585px; height: 150px"
+        >
+          <select
+            data-cy="users"
+            multiple
+            id="sMultiple"
+            style="width: 585px; height: 150px"
+            formControlName="possibleUsers"
+          >
+            <option
+              *ngFor="let user of availableUsers"
+              value="{{ user.userId }}"
+              >{{ user.firstname + ' ' + user.lastname + ' (' + user.email + ')'
+              }}</option
+            >
+          </select>
+        </div>
+        <label></label>
+        <input
+          data-cy="select"
+          type="button"
+          value="{{ 'label.select' | transloco }}"
+          (click)="selectUsers()"
+        />
+      </div>
+
+      <div class="field">
+        <label for="sMultiple">{{ 'label.leaders' | transloco }}</label>
+        <br />
+        <br />
+        <ul>
+          <li *ngFor="let futureMember of futureMembers">
+            {{ futureMember.firstname + ' ' + futureMember.lastname + ' (' +
+            futureMember.email + ')' }}
+            <a (click)="removeFromFutureMember(futureMember)">
+              <img
+                src="img/icon-close-20x20.png"
+                style="vertical-align: middle"
+              />
+            </a>
+          </li>
+        </ul>
+      </div>
+    </form>
+  </div>
+  <div *ngIf="showNotificationForm">
+    <form [formGroup]="groupNotificationForm">
+      <div class="field switch">
+        <div class="label">{{ 'label.notify' | transloco }}</div>
+        <input
+          id="cmn-toggle-1"
+          class="cmn-toggle cmn-toggle-round"
+          type="checkbox"
+          formControlName="notify"
+        />
+        <label for="cmn-toggle-1" class="nonBlockLabel"></label>
+        <span
+          >{{ groupNotificationForm.controls['notify'].value === true ? 'Yes' :
+          'No' }}</span
+        >
+      </div>
+      <cbc-multilingual-input
+        *ngIf="groupNotificationForm.controls['notify'].value === true"
+        data-cy="notificationText"
+        formControlName="notificationText"
+        [label]="'label.notification' | transloco"
+        [lang]="'EN'"
+        [textarea]="true"
+      ></cbc-multilingual-input>
+    </form>
+  </div>
+</cbc-modal>

@@ -1,0 +1,20 @@
+<section
+  class="user-box"
+  [class.focused]="focusedUserId === user.userId"
+  (click)="toggleFocus()"
+>
+  <div class="select-box">
+    <a (click)="triggerSelect($event)" *ngIf="showSelect"
+      >{{ 'label.select' | transloco }}</a
+    >
+    <span *ngIf="showRemove && showSelect">&nbsp;|&nbsp;</span>
+    <a (click)="triggerRemove($event)" *ngIf="showRemove"
+      >{{ 'label.unselect' | transloco }}</a
+    >
+  </div>
+  <div class="display-holder">
+    {{ user.firstname + ' ' + user.lastname }}
+    <br />
+    <span class="bolder">{{ user.userId + ' - ' + user.email }}</span>
+  </div>
+</section>

@@ -1,0 +1,31 @@
+<cbc-modal
+  [title]="'label.import'"
+  (ok)="import()"
+  (cancel)="cancelWizard()"
+  [okLabel]="'label.import'"
+  [(visible)]="showModal"
+  [(executing)]="importing"
+  [executingLabel]="'label.importing'"
+  [showOkButton]="!importing && importProfileForm.valid"
+>
+  <p> {{ 'profile.import.help' | transloco }} </p>
+  <br />
+  <form [formGroup]="importProfileForm">
+    <div class="field">
+      <label for="selectedProfile">{{ 'label.profile' | transloco }}</label>
+      <div class="custom-select select--form reset-width select-align">
+        <select
+          name="selectedProfile"
+          id="selectedProfile"
+          formControlName="selectedProfile"
+        >
+          <option
+            *ngFor="let profile of exportedProfiles"
+            value="{{ profile.id }}"
+            >{{ profile.title | cbcI18n }}</option
+          >
+        </select>
+      </div>
+    </div>
+  </form>
+</cbc-modal>

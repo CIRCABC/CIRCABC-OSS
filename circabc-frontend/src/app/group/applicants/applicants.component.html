@@ -1,0 +1,62 @@
+<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+<div class="wrap page-container">
+  <div class="page-header">
+    <span class="page-header__title"
+      >{{ 'applicants.page.title' | transloco }}</span
+    >
+    <div class="page-header__actions">
+      <ul class="links">
+        <cbc-reponsive-sub-menu>
+          <a
+            *ngIf="currentGroup && (isDirAdmin() || isDirManageMembers())"
+            [routerLink]="['../members/bulk-invite', currentGroup.id]"
+            >{{ 'label.bulk.invite' | transloco }}</a
+          >
+          <a
+            *ngIf="currentGroup && isMember()"
+            [routerLink]="['../members/contact']"
+            >{{ 'label.send.email' | transloco }}</a
+          >
+          <a [routerLink]="['.']" class="selected"
+            >{{ 'label.member.requests' | transloco }}</a
+          >
+          <a [routerLink]="['../members']">{{ 'label.members' | transloco }}</a>
+          <a *ngIf="currentGroup && isDirAdmin()" [routerLink]="['../profiles']"
+            >{{ 'label.profiles' | transloco }}</a
+          >
+        </cbc-reponsive-sub-menu>
+      </ul>
+    </div>
+  </div>
+  <section class="table-container no-margin" *ngIf="applicants.length > 1">
+    <div class="header">
+      <div class="total-container" *ngIf="applicants">
+        {{ 'applicants.total.sentence' | transloco : { currentIndex:
+        currentIndex, total: applicants.length } }}
+      </div>
+      <div class="nav-pages">
+        <div class="buttons">
+          <a class="previous-page" (click)="previousPage()"
+            >{{ 'label.previous.page' | transloco }}</a
+          >
+          <a class="next-page" (click)="nextPage()"
+            >{{ 'label.next.page' | transloco }}</a
+          >
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="empty-request" *ngIf="applicants.length === 0">
+    {{ 'applicants.requests.none' | transloco }}
+    <img src="img/group-64.png" />
+  </section>
+  <section [@state]="state" class="request-container">
+    <cbc-request
+      [applicant]="currentApplicant"
+      *ngIf="currentApplicant"
+      [availableProfiles]="profiles"
+      [groupId]="igId"
+      (requestProcessed)="onRequestProcessed($event)"
+    ></cbc-request>
+  </section>
+</div>

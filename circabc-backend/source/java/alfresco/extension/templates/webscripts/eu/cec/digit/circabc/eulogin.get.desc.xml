@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>EULogin</shortname>
+  <description>Establish a ticket and session</description>
+  <url>/circabc/eulogin?u={username}&amp;t={ticket}</url>
+  <format default="xml"/>
+  <authentication>none</authentication>
+  <transaction>required</transaction>
+</webscript>

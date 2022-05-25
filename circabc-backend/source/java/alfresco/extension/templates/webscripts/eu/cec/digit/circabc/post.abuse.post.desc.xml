@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>post.abuse.post</shortname>
+  <description>signal an abuse</description>
+    <url>/circabc/posts/{id}/abuse</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

@@ -1,0 +1,63 @@
+<section class="box box--alternate-lines box--button">
+  <header class="header">
+    <span class="title">{{ 'forum.recent.discussions' | transloco }}</span>
+  </header>
+  <cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+  <div class="main main--listing" *ngIf="!loading">
+    <ul
+      *ngIf="
+        discussions !== undefined && discussions.length > 0 && !restCallError
+      "
+    >
+      <li
+        *ngFor="let recentPost of getRecentDiscussions()"
+        class="row post-preview"
+      >
+        <div class="preview-link">
+          <img
+            class="message-icon"
+            src="img/icon-forums-grey.png"
+            alt="msg.png"
+          />
+          <a [routerLink]="['./forum/topic', recentPost.topic.id]"
+            >{{ recentPost.post?.properties?.message }}</a
+          >
+        </div>
+        <p class="sub-text">
+          {{ 'label.in' | transloco }}&nbsp;
+          <span class="topic-title-name"
+            >{{ getTitleOrName(recentPost.topic) }}</span
+          >&nbsp; {{ 'label.by' | transloco }}&nbsp;
+          <cbc-user-card
+            [userId]="recentPost.post?.properties?.modifier"
+            [rightSide]="true"
+          ></cbc-user-card
+          >&nbsp; {{ 'label.on' | transloco }}&nbsp; {{
+          recentPost.post?.properties?.modified | date: 'y MMM d, H:mm' }}
+        </p>
+      </li>
+    </ul>
+    <ul
+      *ngIf="
+        (discussions === undefined || discussions.length === 0) &&
+        !restCallError
+      "
+    >
+      <li class="row">{{ 'forums.dashlet.empty' | transloco }}</li>
+    </ul>
+    <ul *ngIf="restCallError">
+      <li class="row">{{ 'forums.dashlet.not.available' | transloco }}</li>
+    </ul>
+  </div>
+  <footer
+    *ngIf="discussions !== undefined && discussions.length > 8"
+    class="footer"
+  >
+    <a (click)="more = true" *ngIf="!more" class="footer__button"
+      >{{ 'label.show.more' | transloco }}</a
+    >
+    <a (click)="more = false" *ngIf="more" class="footer__button"
+      >{{ 'label.show.less' | transloco }}</a
+    >
+  </footer>
+</section>

@@ -1,0 +1,21 @@
+<cbc-modal
+  [title]="keyword === undefined ? 'keywords.add' : 'keywords.update'"
+  (ok)="keyword === undefined ? create() : update()"
+  (cancel)="cancelWizard()"
+  [okLabel]="keyword === undefined ? 'label.add' : 'label.update'"
+  [(visible)]="showModal"
+  [executing]="creating"
+  [executingLabel]="'label.adding'"
+  [showOkButton]="createKeywordForm.valid && !creating"
+>
+  <form [formGroup]="createKeywordForm">
+    <cbc-multilingual-input
+      formControlName="title"
+      [label]="'Title'"
+      [placeholder]="'Title'"
+      [lang]="'EN'"
+      [showTranslationPanel]="true"
+    ></cbc-multilingual-input>
+    <cbc-control-message [control]="titleControl"></cbc-control-message>
+  </form>
+</cbc-modal>

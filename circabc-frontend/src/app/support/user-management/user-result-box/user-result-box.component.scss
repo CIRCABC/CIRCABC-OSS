@@ -1,0 +1,27 @@
+.user-box {
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  background-color: #fcfcfc;
+  border: 0;
+  min-height: 60px;
+  clear: both;
+  cursor: pointer;
+
+  .select-box {
+    padding: 9px 10px;
+    float: right;
+    min-height: 50px;
+    font-size: 11px;
+  }
+}
+
+.focused {
+  border: 1px solid #ddf5ff;
+  background-color: #ebf8fd;
+}
+
+.bolder {
+  font-style: italic;
+  font-size: 12px;
+}

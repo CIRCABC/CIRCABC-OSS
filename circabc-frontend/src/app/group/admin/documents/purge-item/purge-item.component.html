@@ -1,0 +1,23 @@
+<cbc-modal
+  [title]="'admin.deleted.items.purge.title'"
+  (ok)="purge()"
+  (cancel)="onCancel()"
+  [okLabel]="'label.delete'"
+  [(executing)]="processing"
+  [executingLabel]="'label.purging'"
+  [(visible)]="showModal"
+  [contentClass]="'modal-content section-scroll'"
+>
+  <span class="highlighted"
+    >{{ 'admin.deleted.items.purge.text' | transloco }}</span
+  >
+  <br />
+  <br />
+  <ul class="archive-list">
+    <li *ngFor="let archNode of purgeableNodes">
+      {{ archNode.name }} (
+      <span *ngIf="isFolder(archNode)">{{ 'label.folder' | transloco }}</span>
+      <span *ngIf="!isFolder(archNode)">{{ 'label.file' | transloco }}</span> )
+    </li>
+  </ul>
+</cbc-modal>

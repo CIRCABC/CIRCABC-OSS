@@ -1,0 +1,212 @@
+<article class="explorer-component" #browserComponentArea>
+  <aside
+    class="explorer-menu-left"
+    #menuLeft
+    [style.height]="heightMenu"
+    *ngIf="forums"
+  >
+    <div class="explorer-menu-title">
+      {{ 'label.forum.structure' | transloco }}
+    </div>
+
+    <cbc-tree-view
+      *ngIf="root && path && groupConfiguration"
+      [disabled]="false"
+      [folderId]="getSearchedNodeId()"
+      [root]="root"
+      [showSelector]="false"
+      [displayedPath]="path"
+      (clickedNodeEmitter)="propagateNavigation($event)"
+      [service]="'newsgroups'"
+      [flagNewDays]="
+        groupConfiguration.newsgroups.enableFlagNewForum
+          ? groupConfiguration.newsgroups.ageFlagNewForum
+          : -1
+      "
+    >
+    </cbc-tree-view>
+  </aside>
+
+  <div
+    class="explorer-main box box--alternate-lines"
+    #mainContent
+    [style.height]="heightMain"
+    *ngIf="topics"
+  >
+    <header class="header">
+      <cbc-group-breadcrumb
+        [node]="forum.id"
+        [displayName]="false"
+        *ngIf="forum"
+      ></cbc-group-breadcrumb>
+
+      <div class="float-right">
+        <ul *ngIf="!isNwsRoot(forum) && group" class="forum-actions">
+          <li class="action-layout" *ngIf="isNewsgroupAdminModerate()">
+            <a [routerLink]="['..', forum?.id, 'details']"
+              >{{ 'label.edit' | transloco }}</a
+            >
+          </li>
+          <li class="action-layout" *ngIf="isNewsgroupAdminModerate()">
+            <a (click)="prepareForumDeletion(forum)" title="delete"
+              >{{ 'label.delete' | transloco }}</a
+            >
+          </li>
+          <li class="action-layout" *ngIf="isNewsgroupAdminModerate()">
+            <a (click)="prepareForumModeration(forum)" title="moderation"
+              >{{ 'label.moderation' | transloco }}</a
+            >
+          </li>
+          <li class="action-layout">|</li>
+        </ul>
+        <span class="icons">
+          <cbc-share [showLabel]="false" [orientationRight]="false"></cbc-share>
+          <div
+            class="dropdown-trigger dropdown-trigger--with-icons force-inline"
+            *ngIf="!isGuest()"
+          >
+            <img
+              src="img/visibility.png"
+              *ngIf="isSubscribedToNotifications()"
+              alt="Notifications"
+            />
+            <img
+              src="img/no-visibility.png"
+              *ngIf="!isSubscribedToNotifications()"
+              alt="Notifications"
+            />
+            <div class="dropdown dropdown--library-settings">
+              <div class="number-of-items">
+                {{ 'label.notifications' | transloco }}:
+                <br />
+                <br />
+                <a
+                  (click)="changeNotificationSubscription('on')"
+                  *ngIf="!isSubscribedToNotifications()"
+                  >{{ 'label.subscribe' | transloco }}
+                  <img src="img/visibility.png" alt="Notifications" />
+                </a>
+                <a
+                  (click)="changeNotificationSubscription('off')"
+                  *ngIf="isSubscribedToNotifications()"
+                  >{{ 'label.unsubscribe' | transloco }}
+                  <img src="img/no-visibility.png" alt="Notifications" />
+                </a>
+              </div>
+            </div>
+          </div>
+          <cbc-hint
+            [title]="'forum.help.title' | transloco"
+            [text]="'forum.help.text' | transloco"
+          ></cbc-hint>
+        </span>
+      </div>
+    </header>
+
+    <div style="margin-bottom: 25px">
+      <cbc-notification-message
+        [message]="'forums.message.publicly.available' | transloco"
+        [severity]="1"
+        [guestAllowed]="forum?.hasGuestAccess"
+      ></cbc-notification-message>
+    </div>
+    <span class="title explorer-title">{{ 'label.topics' | transloco }}</span>
+
+    <br />
+
+    <div class="main main--listing">
+      <ul>
+        <li class="row" *ngFor="let item of topics">
+          <div class="name-and-actions fix-line">
+            <span
+              *ngIf="isNewTopic(item)"
+              class="pennant--new"
+              pTooltip="{{
+                'label.within.last'
+                  | transloco
+                    : { nbDays: groupConfiguration.newsgroups.ageFlagNewTopic }
+              }}"
+              tooltipPosition="top"
+              >{{ 'label.new' | transloco }}</span
+            >
+
+            <a
+              class="subcategory-name"
+              [routerLink]="['../topic', item.id]"
+              pTooltip="{{ item.description | cbcI18n }}"
+              [escape]="false"
+              [showDelay]="1200"
+              [tooltipDisabled]="item.description === {}"
+              [tooltipPosition]="'top'"
+            >
+              <span
+                *ngIf="
+                  item.title !== undefined && (item.title | cbcI18n) !== ''
+                "
+                >{{ item.title | cbcI18n }}</span
+              >
+              <span *ngIf="(item.title | cbcI18n) === ''">{{ item.name }}</span>
+              <span *ngIf="(item.title | cbcI18n) === '' && !nameExists(item)"
+                >{{ 'label.no.name' | transloco }}</span
+              >
+            </a>
+
+            <ul class="actions">
+              <li>
+                <a
+                  *cbcIfRoleGE="[item, 'NwsPost', ['NwsPost']]"
+                  [routerLink]="['..', item.id, 'topic-details']"
+                  >{{ 'label.edit' | transloco }}</a
+                >
+              </li>
+              <li>
+                <a
+                  *cbcIfRoleGE="[item, 'NwsPost', ['NwsPost']]"
+                  (click)="prepareTopicDeletion(item)"
+                  title="delete"
+                  >{{ 'label.delete' | transloco }}</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="topic-metadata">
+            <span class="topics-number">
+              {{ 'label.on' | transloco }} {{ modified(item) | date: 'd/MMM/y,
+              H:mm' }}
+            </span>
+            <span class="people-number">
+              {{ 'label.by' | transloco }}
+              <cbc-user-card [userId]="creator(item)"></cbc-user-card>
+            </span>
+          </div>
+        </li>
+        <li class="row" *ngIf="topics.length === 0">
+          <div class="description">
+            <p>{{ 'label.nothing.to.display' | transloco }}</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</article>
+
+<cbc-delete-topic
+  [showModal]="showDeleteTopic"
+  [topic]="currentDeletedTopic"
+  *ngIf="currentDeletedTopic"
+  (modalHide)="refreshDeleteTopic($event)"
+></cbc-delete-topic>
+
+<cbc-delete-forum
+  [showModal]="showDeleteForum"
+  [forum]="currentDeletedForum"
+  *ngIf="currentDeletedForum"
+  (modalHide)="refreshDeleteForum($event)"
+></cbc-delete-forum>
+
+<cbc-moderate-forum
+  [showModal]="showModerateForum"
+  [forum]="currentModerateForum"
+  *ngIf="currentModerateForum"
+  (modalHide)="refreshModerateForum($event)"
+></cbc-moderate-forum>

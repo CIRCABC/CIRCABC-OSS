@@ -1,0 +1,110 @@
+.div-spinner {
+  margin-right: 0;
+  font-size: small;
+  float: right;
+  padding-top: 3px;
+}
+
+.padding-spinner-text {
+  padding-right: 10px;
+}
+
+.field label {
+  width: unset !important;
+}
+
+.view-select {
+  width: 100px;
+  height: 25px;
+}
+
+.select--form select {
+  width: 100px;
+  height: 25px;
+  padding-top: 0;
+  padding-bottom: 1px;
+  padding-left: 10px;
+}
+
+.field-select {
+  margin-bottom: 0;
+  font-size: 13px;
+  float: right;
+  color: #757575;
+}
+
+.field-in-date {
+  width: 150px;
+  padding: 0;
+  font-size: 13px;
+  float: right;
+  height: 25px;
+  margin-right: 10px;
+  padding-left: 10px;
+}
+
+.apply-button {
+  float: right;
+  height: 24px;
+  padding-top: 3px;
+  margin-right: 10px;
+}
+
+.ui-inputtext {
+  max-width: 100px !important;
+  font-size: 13px !important;
+}
+
+.ui-calendar {
+  float: right !important;
+}
+
+.field {
+  float: right;
+  margin-bottom: 0;
+}
+
+@media screen and (max-width: 740px) {
+  .page-header__actions {
+    position: relative;
+    right: -5px;
+    top: 10px;
+  }
+
+  .calendar-container {
+    position: relative;
+    top: 20px;
+  }
+
+  .header-width {
+    min-width: 280px;
+  }
+
+  .view-select {
+    margin-right: 0;
+  }
+
+  .view-down {
+    margin-top: 15px;
+  }
+
+  .select--form select {
+    width: 80px;
+  }
+
+  .current-month {
+    font-size: 11px !important;
+  }
+
+  .current-week {
+    @extend .current-month;
+
+    width: 150px !important;
+  }
+
+  .current-day {
+    @extend .current-month;
+
+    width: 150px !important;
+  }
+}

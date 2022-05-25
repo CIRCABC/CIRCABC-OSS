@@ -1,0 +1,36 @@
+@use '~css/global/variables-mixins-keyframes';
+
+aside.sidebar-left {
+  float: left;
+  margin-right: 20px;
+}
+
+.flex-container {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
+
+.flex-item {
+  width: 345px;
+  margin: 0 20px;
+  flex-grow: 1;
+
+  @media screen and (max-width: 1380px) {
+    width: 40%;
+  }
+}
+
+.flex-timeline {
+  width: 690px;
+  margin: 0 20px;
+
+  @media screen and (max-width: 1380px) {
+    width: 80%;
+    order: -1;
+  }
+}

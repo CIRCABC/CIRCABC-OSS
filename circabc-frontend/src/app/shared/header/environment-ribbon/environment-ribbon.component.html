@@ -1,0 +1,11 @@
+<div class="box-ribbon" *ngIf="environmentType !== 'prod'">
+  <div
+    class="ribbon"
+    [class.ribbon-red]="environmentType === 'stress'"
+    [class.ribbon-violet]="environmentType === 'local'"
+    [class.ribbon-orange]="environmentType === 'dev'"
+    [class.ribbon-blue]="environmentType === 'test'"
+    [class.ribbon-green]="environmentType === 'acc'"
+    ><span>{{ environmentType }}</span></div
+  >
+</div>

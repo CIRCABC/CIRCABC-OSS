@@ -1,0 +1,49 @@
+/*  MY ACCOUNT */
+
+.my-account {
+  .main {
+    padding: 25px;
+  }
+
+  h2 {
+    font-weight: 500;
+    font-size: 16px;
+    margin-top: 50px;
+    color: #000;
+
+    &:first-of-type {
+      margin-top: 0;
+    }
+  }
+
+  .field {
+    margin-bottom: 10px;
+  }
+
+  label {
+    display: inline-block;
+    width: 162px;
+  }
+
+  .url {
+    display: inline-block;
+    padding: 13px;
+  }
+
+  textarea {
+    resize: none;
+    width: 585px;
+    height: 94px;
+  }
+
+  .field--picture {
+    .picture {
+      width: 138px;
+      height: 138px;
+    }
+  }
+
+  .buttons-group {
+    margin-top: 40px;
+  }
+}

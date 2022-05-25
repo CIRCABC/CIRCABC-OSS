@@ -1,0 +1,11 @@
+<cbc-modal
+  [title]="'label.delete'"
+  (ok)="delete()"
+  (cancel)="cancel()"
+  [okLabel]="'label.delete'"
+  [(visible)]="showModal"
+  [executing]="deleting"
+  [executingLabel]="'label.deleting'"
+>
+  {{ 'help.delete.article.confirmation' | transloco }}
+</cbc-modal>

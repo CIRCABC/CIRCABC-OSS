@@ -1,0 +1,61 @@
+@use '~css/global/variables-mixins-keyframes';
+
+.half-oval {
+  width: 15px;
+  margin-top: 60px;
+  position: fixed !important;
+
+  a {
+    background-image: url(^img/clipboard-aside.png);
+    width: 15px;
+    height: 35px;
+    display: inline-block;
+
+    &:hover {
+      background-image: url(^img/clipboard-aside-hover.png);
+    }
+  }
+}
+
+.info-badge {
+  margin-top: 48px;
+  margin-left: 5px;
+  background-color: #005c78;
+  color: #fff;
+  font-size: 10px;
+  display: inline-block;
+  padding-left: 6px;
+  padding-right: 6px;
+  position: fixed !important;
+  z-index: 10;
+  height: 20px;
+  min-width: 20px;
+  line-height: 20px;
+  border-radius: 50%;
+}
+
+.hide-badge {
+  display: none;
+}
+
+.explorer {
+  float: right;
+  width: 100%;
+  transition: 0.3s;
+}
+
+.explorer--small {
+  width: 80%;
+  transition: 0.3s;
+}
+
+@media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+  .explorer--small {
+    width: 100%;
+    transition: 0.3s;
+
+    ::ng-deep .table-container {
+      margin-top: 0 !important;
+    }
+  }
+}

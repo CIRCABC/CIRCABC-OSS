@@ -1,0 +1,11 @@
+@use '~css/global/variables-mixins-keyframes';
+
+.adjust {
+  width: 375px;
+  padding: 20px 20px 0;
+
+  @media screen and (max-width: variables-mixins-keyframes.$break-small) {
+    width: 200px;
+    padding: 20px;
+  }
+}

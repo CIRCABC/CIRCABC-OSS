@@ -1,0 +1,60 @@
+<cbc-modal
+  [title]="'label.add'"
+  (ok)="addNotifications()"
+  (cancel)="cancelWizard()"
+  [okLabel]="'label.add'"
+  [(visible)]="showModal"
+  [(executing)]="adding"
+  [executingLabel]="'label.adding'"
+  [showOkButton]="isShowAddButton()"
+>
+  <div class="formDiv">
+    <form [formGroup]="newNotificationForm">
+      <p> {{ 'notifications.selection.explanation' | transloco }} </p>
+      <cbc-users-picker
+        [igId]="ig"
+        formControlName="invitedUsersOrProfiles"
+        (afterSelectionMade)="assign()"
+        [showSelectedList]="false"
+      ></cbc-users-picker>
+    </form>
+
+    {{ 'notifications.future.configuration' | transloco }}
+    <table class="authorityTable">
+      <thead>
+        <tr>
+          <th>{{ 'label.who' | transloco }}</th>
+          <th>{{ 'label.notification' | transloco }}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let pair of configModel">
+          <td
+            ><span class="authorityName"
+              >{{ getAuthorityDisplay(pair.authValue.authority) }}</span
+            ></td
+          >
+          <td>
+            <cbc-inline-select
+              [values]="['ALLOWED', 'DENIED']"
+              [value]="pair.authValue.notifications"
+              [translationPrefix]="'notifications'"
+              (selectionChanged)="switchValue(pair.authKey)"
+            ></cbc-inline-select>
+          </td>
+          <td>
+            <span class="authorityPerm">
+              <a
+                (click)="removeNotification(pair.authKey)"
+                title="{{ 'label.delete' | transloco }}"
+              >
+                <img src="img/icon-close-20x20.png" width="16" />
+              </a>
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</cbc-modal>

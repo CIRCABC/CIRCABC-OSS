@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Creates a new application for membership</shortname>
+  <description>Creates a new  application for membership</description>
+    <url>/circabc/groups/{igId}/members/applicants</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

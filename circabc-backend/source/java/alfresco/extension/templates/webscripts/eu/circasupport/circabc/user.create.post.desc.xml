@@ -1,0 +1,8 @@
+<webscript>
+    <shortname>user.create</shortname>
+    <description>Create Alfresco User</description>
+    <url>/circabc/users</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction>required</transaction>
+</webscript>

@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>get the user revocations</shortname>
+  <description>get the user revocations</description>
+    <url>/circabc/history/job/memberships/revocation</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

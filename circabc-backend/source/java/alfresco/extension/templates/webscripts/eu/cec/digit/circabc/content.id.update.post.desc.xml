@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>content.id.update.post</shortname>
+  <description>Updates the content of a working copy that has already been checked out without checking it in</description>
+    <url>/circabc/content/{id}/update</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

@@ -1,0 +1,129 @@
+<cbc-header></cbc-header>
+<cbc-navigator></cbc-navigator>
+<div class="wrap page-container my-account">
+  <section class="box">
+    <header class="header">
+      <span class="title"
+        >{{ 'label.contact.category.admins' | transloco }}</span
+      >
+    </header>
+    <div class="main">
+      <form [formGroup]="form">
+        <p style="font-weight: bold">
+          {{ 'label.request.contact.selection.title' | transloco }}
+        </p>
+        <div class="small-padding">
+          <div class="field">
+            <label for="header">{{ 'label.header' | transloco }}</label>
+            <div class="custom-select select--form">
+              <select name="" id="header" formControlName="header">
+                <option *ngFor="let header of headers" [value]="header.id"
+                  >{{ header.name }}</option
+                >
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="category">{{ 'label.category' | transloco }}</label>
+            <div class="custom-select select--form">
+              <select name="" id="category" formControlName="category">
+                <option
+                  *ngFor="let category of categories"
+                  [value]="category.id"
+                  >{{ getNameOrTitle(category) }}</option
+                >
+              </select>
+            </div>
+          </div>
+        </div>
+        <p style="font-weight: bold"> {{ 'label.message' | transloco }} </p>
+        <div class="small-padding">
+          <div class="field">
+            <label for="messageContent" style="vertical-align: top"
+              >{{ 'label.text' | transloco }}</label
+            >
+            <div class="editor">
+              <p-editor
+                id="messageContent"
+                formControlName="messageContent"
+                [style]="{ height: '370px' }"
+              >
+                <p-header>
+                  <span class="ql-formats">
+                    <select class="ql-header">
+                      <option value="1"></option>
+                      <option value="2"></option>
+                      <option value="3"></option>
+                      <option selected></option>
+                      <option value="4"></option>
+                      <option value="5"></option>
+                      <option value="6"></option>
+                    </select>
+                  </span>
+                  <span class="ql-formats">
+                    <button class="ql-bold" aria-label="Bold"></button>
+                    <button class="ql-italic" aria-label="Italic"></button>
+                    <button
+                      class="ql-underline"
+                      aria-label="Underline"
+                    ></button>
+                    <button class="ql-strike" aria-label="Strike"></button>
+                  </span>
+                  <span class="ql-formats">
+                    <button
+                      class="ql-list"
+                      aria-label="list"
+                      value="ordered"
+                    ></button>
+                    <button
+                      class="ql-list"
+                      aria-label="list"
+                      value="bullet"
+                    ></button>
+                  </span>
+                  <span class="ql-formats">
+                    <button class="ql-blockquote" aria-label="Strike"></button>
+                    <button class="ql-link" aria-label="link"></button>
+                  </span>
+                </p-header>
+              </p-editor>
+            </div>
+          </div>
+        </div>
+        <div class="field switch">
+          <div class="label"
+            >{{ 'admin.category.support.contact.send.copy' | transloco }}</div
+          >
+          <input
+            id="sendCopy"
+            class="cmn-toggle cmn-toggle-round"
+            type="checkbox"
+            formControlName="sendCopy"
+          />
+          <label for="sendCopy" class="nonBlockLabel"></label>
+          <span
+            >{{ (form.value.sendCopy === true ? 'label.yes' : 'label.no') |
+            transloco }}</span
+          >
+        </div>
+      </form>
+      <div class="actions" *ngIf="processing">
+        <p
+          >{{ 'label.processing' | transloco }}...
+          <cbc-spinner></cbc-spinner>
+        </p>
+      </div>
+      <div class="actions buttons-group" *ngIf="!processing">
+        <a
+          class="cta"
+          (click)="!form.valid ? '' : contact()"
+          [class.disabled]="!form.valid"
+          >{{ 'label.send' | transloco }}</a
+        >
+        <a class="button" [routerLink]="['..']"
+          >{{ 'label.cancel' | transloco }}</a
+        >
+      </div>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>spaces.folder.size.get</shortname>
+  <description>Get the size of a folder based on its id</description>
+    <url>/circabc/spaces/{id}/folderSize</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

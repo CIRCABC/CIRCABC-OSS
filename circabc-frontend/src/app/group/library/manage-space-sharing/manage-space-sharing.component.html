@@ -1,0 +1,75 @@
+<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+<div class="fluid page-container">
+  <div class="page-header">
+    <div class="page-header__actions">
+      <a class="cta cta--plus" (click)="inviteIGToShareSpace()"
+        >{{ 'spaces.sharing.share' | transloco }}</a
+      >
+    </div>
+  </div>
+
+  <section class="table-container">
+    <header class="header">
+      <cbc-pager
+        [length]="totalItems"
+        [pageSize]="listingOptions.limit"
+        [pageIndex]="listingOptions.page"
+        (pageChanged)="goToPage($event)"
+      ></cbc-pager>
+    </header>
+
+    <table class="main">
+      <thead>
+        <tr>
+          <th></th>
+          <th style="width: 22px"></th>
+          <th> {{ 'label.name' | transloco }} </th>
+          <th> {{ 'label.permission' | transloco }} </th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr class="row empty-row" *ngIf="shares !== undefined">
+          <td
+            style="padding-left: 22px"
+            colspan="4"
+            *ngIf="shares.length === 0"
+          >
+            {{ 'spaces.sharing.display.none' | transloco }}
+          </td>
+        </tr>
+
+        <tr class="row" *ngFor="let share of shares">
+          <td class="cell-left-border"></td>
+          <td class="cell-checkbox"></td>
+          <td class="cell-file-name" style="width: 30px">
+            {{ share.igName }}
+            <ul class="actions" style="width: 80px">
+              <li>
+                <cbc-inline-delete
+                  (deletionConfirmed)="removeShare(share)"
+                ></cbc-inline-delete>
+              </li>
+            </ul>
+          </td>
+          <td>{{ 'permissions.' + share.permission | transloco }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="footer">
+      <cbc-pager
+        [length]="totalItems"
+        [pageSize]="listingOptions.limit"
+        [pageIndex]="listingOptions.page"
+        (pageChanged)="goToPage($event)"
+      ></cbc-pager>
+    </div>
+  </section>
+</div>
+
+<cbc-share-space
+  [showModal]="showShareSpaceModal"
+  [spaceId]="spaceId"
+  (modalHide)="refresh($event)"
+></cbc-share-space>

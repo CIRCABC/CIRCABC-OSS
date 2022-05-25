@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Edit one profile definition</shortname>
+  <description>Edit one profile and all its permissions</description>
+    <url>/circabc/profiles/{id}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

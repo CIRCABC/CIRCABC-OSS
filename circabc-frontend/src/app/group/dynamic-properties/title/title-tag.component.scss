@@ -1,0 +1,26 @@
+.titleTag {
+  height: 20px;
+  border-radius: 10px;
+  background-color: lightblue;
+  display: inline-block;
+  margin-right: 5px;
+}
+
+.titleTagLang {
+  background-color: #035;
+  height: 20px;
+  width: 20px;
+  padding: 3px 2px;
+  border-radius: 10px;
+  font-size: 10px;
+  text-align: center;
+  float: left;
+  color: white;
+}
+
+.titleTagValue {
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #5b5b5b;
+  font-size: 12px;
+}

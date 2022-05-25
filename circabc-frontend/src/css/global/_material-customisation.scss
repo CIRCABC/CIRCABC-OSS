@@ -1,0 +1,22 @@
+@import '@angular/material/prebuilt-themes/deeppurple-amber.css';
+
+.mat-slide-toggle.mat-checked .mat-slide-toggle-thumb {
+  background-color: #4caf50;
+}
+
+.mat-slide-toggle.mat-checked .mat-slide-toggle-bar {
+  background-color: #8ce196;
+}
+
+.mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element {
+  opacity: 0 !important;
+  background-color: #4caf50 !important;
+}
+
+.mat-radio-button.mat-accent .mat-radio-inner-circle {
+  background-color: #4caf50 !important;
+}
+
+.mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
+  border-color: #4caf50 !important;
+}

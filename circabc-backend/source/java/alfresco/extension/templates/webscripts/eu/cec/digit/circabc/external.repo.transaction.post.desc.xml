@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>external.repo.transaction.post</shortname>
+  <description>save external transaction id</description>
+    <url>/circabc/repositories/{id}/transaction</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

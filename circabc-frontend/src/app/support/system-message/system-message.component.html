@@ -1,0 +1,38 @@
+<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+
+<header class="header">
+  <div class="header__actions">
+    <a class="cta cta--plus" [routerLink]="['create']"
+      >{{ 'label.add' | transloco }}</a
+    >
+  </div>
+  <cbc-pager
+    [length]="totalItems"
+    [pageSize]="listingOptions.limit"
+    [pageIndex]="listingOptions.page"
+    (pageChanged)="goToPage($event)"
+  ></cbc-pager>
+</header>
+
+<cbc-old-ui-configuration></cbc-old-ui-configuration>
+
+<ul *ngIf="templates" style="margin-bottom: 20px">
+  <li *ngFor="let template of templates.data; trackBy: trackById">
+    <cbc-template-renderer
+      [template]="template"
+      (delete)="refresh($event)"
+    ></cbc-template-renderer>
+  </li>
+  <li *ngIf="templates.total === 0" class="empty-list">
+    <p>{{ 'label.nothing.to.display' | transloco }}</p>
+  </li>
+</ul>
+
+<div class="footer" style="height: 20px">
+  <cbc-pager
+    [length]="totalItems"
+    [pageSize]="listingOptions.limit"
+    [pageIndex]="listingOptions.page"
+    (pageChanged)="goToPage($event)"
+  ></cbc-pager>
+</div>

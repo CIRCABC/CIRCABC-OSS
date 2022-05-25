@@ -1,0 +1,472 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+	<bean id="exportation-properties"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="ignoreUnresolvablePlaceholders">
+            <value>true</value>
+        </property>
+        <property name="locations">
+            <list>
+                <value>classpath:alfresco/extension/migration/circabc-exportation.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <!--
+    		Main (generic) circa specific readers (to inject to ExportService)
+     -->
+
+    <bean id="migration.circaLibFileReader" class="eu.cec.digit.circabc.migration.reader.impl.circa.CircaLibFileReaderImpl">
+		<property name="fileClient">
+			<ref bean="migration.circa.fileClient" />
+		</property>
+		<property name="homePageReader">
+			<ref bean="migration.circaHomePageReader" />
+		</property>
+		<property name="ldapClient">
+			<ref bean="migration.circaLdapClient" />
+		</property>
+		<property name="linkPrefix">
+			<value>${export.file.domain.prefix}</value>
+		</property>
+	</bean>
+
+	<bean id="migration.circaInfFileReader" class="eu.cec.digit.circabc.migration.reader.impl.circa.CircaInfFileReaderImpl" parent="migration.circaLibFileReader">
+		<property name="fileClient">
+			<ref bean="migration.circa.fileClient" />
+		</property>
+	</bean>
+
+	<bean id="migration.circaSecurityReader" class="eu.cec.digit.circabc.migration.reader.impl.circa.CircaSecurityReaderImpl">
+		<property name="ldapClient">
+			<ref bean="migration.circaLdapClient" />
+		</property>
+		<property name="fileClient">
+			<ref bean="migration.circa.fileClient" />
+		</property>
+		<property name="dbClient">
+			<ref bean="migration.circaDbClient" />
+		</property>
+		<property name="userReader">
+			<ref bean="migration.circaUserReader" />
+		</property>
+		<property name="daoFactory">
+			<ref bean="migration.circa.daoFactory" />
+		</property>
+		<property name="circaDomainPrefix">
+			<value>${export.file.domain.prefix}</value>
+		</property>
+	</bean>
+
+    <bean id="migration.circaMetadataReader" class="eu.cec.digit.circabc.migration.reader.impl.circa.CircaMetadataReaderImpl">
+		<property name="fileClient">
+			<ref bean="migration.circa.fileClient" />
+		</property>
+		<property name="configReader">
+			<ref bean="migration.circaIGConfigReader" />
+		</property>
+		<property name="circabcServiceRegistry">
+			<ref bean="circabcServiceRegistry" />
+		</property>
+		<property name="circaDomainPrefix">
+			<value>${export.file.domain.prefix}</value>
+		</property>
+	</bean>
+
+    <bean id="migration.circaUserReader" class="eu.cec.digit.circabc.migration.reader.impl.circa.CircaUserReaderImpl">
+		<property name="ldapClient">
+			<ref bean="migration.circaLdapClient" />
+		</property>
+	</bean>
+
+	<bean id="migration.calendarReader" class="eu.cec.digit.circabc.migration.reader.impl.circa.AppointmentsReaderImpl">
+		<property name="fileClient">
+			<ref bean="migration.circa.fileClient" />
+		</property>
+		<property name="daoFactory">
+			<ref bean="migration.circa.daoFactory" />
+		</property>
+		<property name="userReader">
+			<ref bean="migration.circaUserReader" />
+		</property>
+		<property name="circaDomainPrefix">
+			<value>${export.file.domain.prefix}</value>
+		</property>
+	</bean>
+
+	<bean id="migration.circaNewsgroupReader" class="eu.cec.digit.circabc.migration.reader.impl.circa.NewsgroupReaderImpl" >
+		<property name="nntpClient">
+			<ref bean="migration.circa.nntpClient" />
+		</property>
+		<property name="fileClient">
+			<ref bean="migration.circa.fileClient" />
+		</property>
+		<property name="fileReader">
+			<ref bean="migration.circaLibFileReader" />
+		</property>
+		<property name="domainPrefix">
+			<value>${export.file.domain.prefix}</value>
+		</property>
+	</bean>
+
+	<bean id="migration.circa.logFilesReader" class="eu.cec.digit.circabc.migration.reader.impl.circa.LogFilesReaderImpl">
+		<property name="circaLogConfig">
+			<ref bean="circaLogsConfig" />
+		</property>
+		<property name="fileClient">
+			<ref bean="migration.circa.fileClient" />
+		</property>
+		<property name="circabcServiceRegistry">
+			<ref bean="circabcServiceRegistry" />
+		</property>
+		<property name="logFilesLocation">
+			<value>${export.logs.location}</value>
+		</property>
+		<property name="currentLogFilename">
+			<value>${export.logs.filename}</value>
+		</property>
+		<property name="gzipFilenameRegex">
+			<value>${export.logs.archice.name.regex}</value>
+		</property>
+		<property name="logSeparator">
+			<value>${export.logs.separator}</value>
+		</property>
+		<property name="logDateFormat">
+			<value>${export.logs.date.format}</value>
+		</property>
+		<property name="ignoreErrorEntries">
+			<value>${export.logs.error.key.ignore}</value>
+		</property>
+	</bean>
+
+	<!--
+			Access classes to the different circa elements (ftp, nntp, berkeley, ....)
+	 -->
+
+    <bean id="migration.circa.clients.registry" class="eu.cec.digit.circabc.migration.reader.impl.circa.CircaClientsRegistry">
+		<property name="dbClient">
+			<ref bean="migration.circaDbClient" />
+		</property>
+		<property name="daoFactory">
+			<ref bean="migration.circa.daoFactory" />
+		</property>
+		<property name="homePageReader">
+			<ref bean="migration.circaHomePageReader" />
+		</property>
+		<property name="configReader">
+			<ref bean="migration.circaIGConfigReader" />
+		</property>
+		<property name="fileClient">
+			<ref bean="migration.circa.fileClient" />
+		</property>
+		<property name="ldapClient">
+			<ref bean="migration.circaLdapClient" />
+		</property>
+		<property name="nntpClient">
+			<ref bean="migration.circa.nntpClient" />
+		</property>
+		<property name="libFileReader">
+			<ref bean="migration.circaLibFileReader" />
+    	</property>
+		<property name="infFileReader">
+			<ref bean="migration.circaInfFileReader" />
+    	</property>
+		<property name="securityReader">
+			<ref bean="migration.circaSecurityReader" />
+    	</property>
+		<property name="metadataReader">
+			<ref bean="migration.circaMetadataReader" />
+    	</property>
+		<property name="userReader">
+			<ref bean="migration.circaUserReader" />
+		</property>
+		<property name="calendarReader">
+			<ref bean="migration.calendarReader" />
+		</property>
+		<property name="newsgroupReader">
+			<ref bean="migration.circaNewsgroupReader" />
+		</property>
+		<property name="logFileReader">
+			<ref bean="migration.circa.logFilesReader" />
+		</property>
+		<property name="resourceManager">
+			<ref bean="migration.resourceManager" />
+    	</property>
+	</bean>
+
+     <bean id="migration.circa.ftpFileClient" class="eu.cec.digit.circabc.migration.reader.impl.circa.file.CircaFTP4jClient" singleton="false" >
+		<property name="ftpListFilesCache">
+			<ref bean="migration.circa.ftpListFilesCache" />
+		</property>
+		<property name="ftpFilesCache">
+			<ref bean="migration.circa.ftpFilesCache" />
+		</property>
+		<property name="ftpHost">
+			<value>${export.ftp.host}</value>
+		</property>
+		<property name="ftpPort">
+			<value>${export.ftp.port}</value>
+		</property>
+		<property name="ftpUser">
+			<value>${export.ftp.user}</value>
+		</property>
+		<property name="ftpPassword">
+			<value>${export.ftp.pwd}</value>
+		</property>
+		<property name="dataRoot">
+			<value>${export.ftp.dataRoot}</value>
+		</property>
+		<property name="iconRoot">
+			<value>${export.ftp.iconRoot}</value>
+		</property>
+		<property name="ftpTimeout">
+			<value>${export.ftp.timeout}</value>
+		</property>
+		<property name="libraryDataLocation">
+			<value>${export.file.library.data.location}</value>
+		</property>
+		<property name="informationDataLocation">
+			<value>${export.file.info.data.location}</value>
+		</property>
+		<property name="meetingsDataLocation">
+			<value>${export.file.meetings.data.location}</value>
+		</property>
+		<property name="directoryDataLocation">
+			<value>${export.file.directory.data.location}</value>
+		</property>
+		<property name="newsDataLocation">
+			<value>${export.file.newsgroup.data.location}</value>
+		</property>
+		<property name="passiveMode">
+			<value>${export.ftp.passivemode}</value>
+		</property>
+		<property name="systemEncoding">
+			<value>${export.ftp.system.encoding}</value>
+		</property>
+	</bean>
+
+	<bean id="ftpPoolTargetSource" class="org.springframework.aop.target.CommonsPoolTargetSource">
+	  <property name="targetBeanName" value="migration.circa.ftpFileClient"/>
+	  <property name="maxSize" value="25"/>
+	</bean>
+
+	<bean id="migration.circa.fileClient" class="org.springframework.aop.framework.ProxyFactoryBean">
+	  <property name="targetSource" ref="ftpPoolTargetSource"/>
+	</bean>
+
+	<bean id="migration.circaHomePageReader" class="eu.cec.digit.circabc.migration.reader.impl.circa.file.CircaHomePageReader">
+		<property name="fileClient">
+			<ref bean="migration.circa.fileClient" />
+		</property>
+		<property name="circaHomePage">
+			<value>${export.circa.main.page}</value>
+		</property>
+		<property name="topCatgeryRegex">
+			<value>${export.circa.main.page.topcategories.regex}</value>
+		</property>
+		<property name="categoryRegex">
+			<value>${export.circa.main.page.virtualcira.regex}</value>
+		</property>
+		<property name="defaultHeaderName">
+			<value>${export.circa.main.page.default.virtualcirca}</value>
+		</property>
+	</bean>
+
+	<bean id="migration.circaIGConfigReader" class="eu.cec.digit.circabc.migration.reader.impl.circa.file.CircaIGConfigReader">
+		<property name="fileClient">
+			<ref bean="migration.circa.fileClient" />
+		</property>
+		<property name="iconFolderName">
+			<value>${export.prop.iconFolderName}</value>
+		</property>
+		<property name="igConfigFile">
+			<value>${export.prop.igConfigFile}</value>
+		</property>
+		<property name="iconPropertyName">
+			<value>${export.prop.iconPropName}</value>
+		</property>
+		<property name="igHomePropertyName">
+			<value>${export.prop.igHome}</value>
+		</property>
+		<property name="infHomePropertyName">
+			<value>${export.prop.infHome}</value>
+		</property>
+	</bean>
+
+	<bean id="migration.circa.calendar.dao" class="eu.cec.digit.circabc.migration.reader.impl.circa.ibatis.CalendarDaoImpl" />
+	<bean id="migration.circa.document.dao" class="eu.cec.digit.circabc.migration.reader.impl.circa.ibatis.DocumentDaoImpl" />
+	<bean id="migration.circa.global.dao" class="eu.cec.digit.circabc.migration.reader.impl.circa.ibatis.GlobalDaoImpl" />
+	<bean id="migration.circa.news.dao" class="eu.cec.digit.circabc.migration.reader.impl.circa.ibatis.NewsDaoImpl" />
+	<bean id="migration.circa.section.dao" class="eu.cec.digit.circabc.migration.reader.impl.circa.ibatis.SectionDaoImpl" />
+
+	<bean id="migration.circa.daoFactory" class="eu.cec.digit.circabc.migration.reader.impl.circa.dao.CircaDaoFactory">
+		<property name="calendarDao">
+			<ref bean="migration.circa.calendar.dao" />
+		</property>
+		<property name="documentDao">
+			<ref bean="migration.circa.document.dao" />
+		</property>
+		<property name="globalDao">
+			<ref bean="migration.circa.global.dao" />
+		</property>
+		<property name="newsDao">
+			<ref bean="migration.circa.news.dao" />
+		</property>
+		<property name="sectionDao">
+			<ref bean="migration.circa.section.dao" />
+		</property>
+	</bean>
+
+	<bean id="migration.circaDbClient" class="eu.cec.digit.circabc.migration.reader.impl.circa.berkeley.DbClient">
+		<property name="fileClient">
+			<ref bean="migration.circa.fileClient" />
+		</property>
+		<property name="berkeleyDBCache">
+			<ref bean="migration.circa.berkeleyDBCache" />
+		</property>
+	</bean>
+
+	 <bean id="migration.circaLdapClient" class="eu.cec.digit.circabc.migration.reader.impl.circa.ldap.CircaLdapClient">
+		<property name="contextFactory">
+			<value>${export.user.ldap.context.factory}</value>
+		</property>
+		<property name="providerUrl">
+			<value>${export.user.ldap.provider.url}</value>
+		</property>
+		<property name="authentication">
+			<value>${export.user.ldap.security.authentication}</value>
+		</property>
+		<property name="principal">
+			<value>${export.user.ldap.security.principal}</value>
+		</property>
+		<property name="credentials">
+			<value>${export.user.ldap.security.credentials}</value>
+		</property>
+		<property name="usersLocation">
+			<value>${export.user.ldap.users.location}</value>
+		</property>
+		<property name="igLocation">
+			<value>${export.user.ldap.ig.location}</value>
+		</property>
+		<property name="catLocation">
+			<value>${export.user.ldap.cat.location}</value>
+		</property>
+		<property name="rootLocation">
+			<value>${export.user.ldap.root.location}</value>
+		</property>
+		<property name="systemEncoding">
+			<value>${export.user.ldap.encoding}</value>
+		</property>
+	</bean>
+
+ 	<bean id="migration.circa.circabcNntpClient" class="eu.cec.digit.circabc.migration.reader.impl.circa.nntp.NNTPClient" singleton="false" >
+		<property name="nntpNewsgroupCache">
+			<ref bean="migration.circa.nntpNewsgroupCache" />
+		</property>
+		<property name="nntpMessagesCache">
+			<ref bean="migration.circa.nntpMessagesCache" />
+		</property>
+		<property name="fileClient">
+			<ref bean="migration.circa.fileClient" />
+		</property>
+		<property name="nntpHost">
+			<value>${export.nntp.host}</value>
+		</property>
+		<property name="nntpPort">
+			<value>${export.nntp.port}</value>
+		</property>
+		<property name="nntpUser">
+			<value>${export.nntp.user}</value>
+		</property>
+		<property name="nntpPassword">
+			<value>${export.nntp.pwd}</value>
+		</property>
+		<property name="timeout">
+			<value>${export.nntp.timeout}</value>
+		</property>
+		<property name="connectiontimeout">
+			<value>${export.nntp.connectiontimeout}</value>
+		</property>
+		<property name="circaNNTPRootFolder">
+			<value>${export.nntp.rootFolder}</value>
+		</property>
+	</bean>
+
+
+	<bean id="nntpPoolTargetSource" class="org.springframework.aop.target.CommonsPoolTargetSource">
+	  <property name="targetBeanName" value="migration.circa.circabcNntpClient"/>
+	  <property name="maxSize" value="25"/>
+	</bean>
+
+	<bean id="migration.circa.nntpClient" class="org.springframework.aop.framework.ProxyFactoryBean">
+	  <property name="targetSource" ref="nntpPoolTargetSource"/>
+	</bean>
+
+
+	<bean id="circaLogsConfigConfigService" class="org.springframework.extensions.config.xml.XMLConfigService" init-method="init" >
+		<constructor-arg>
+			<bean class="org.springframework.extensions.config.source.UrlConfigSource">
+				<constructor-arg>
+					<list>
+						<value>classpath:alfresco/extension/migration/ig-logfiles-config.xml</value>
+					</list>
+				</constructor-arg>
+			</bean>
+		</constructor-arg>
+    </bean>
+
+	<bean id="circaLogsConfig" class="eu.cec.digit.circabc.migration.reader.impl.circa.logs.CircaLogConfig" init-method="init">
+      <property name="configService">
+         <ref bean="circaLogsConfigConfigService" />
+      </property>
+    </bean>
+
+
+	<!-- Cache for berkeley db  -->
+	<bean name="migration.circa.berkeleyDBCache" factory-bean="cacheFactory" factory-method="createCache">
+	   <constructor-arg value="eu.cec.digit.circabc.cache.migration.circa.berkeleyDBCache"/>
+	</bean>
+	
+	<!-- Cache the ftp files  -->
+	<bean name="migration.circa.ftpFilesCache" factory-bean="cacheFactory" factory-method="createCache">
+	   <constructor-arg value="eu.cec.digit.circabc.cache.migration.circa.ftpFilesCache"/>
+	</bean>
+	
+	<bean name="migration.circa.ftpListFilesCache" factory-bean="cacheFactory" factory-method="createCache">
+	   <constructor-arg value="eu.cec.digit.circabc.cache.migration.circa.ftpListFilesCache"/>
+	</bean>
+	
+	<!-- Cache the nntp newsgroups  -->
+	<bean name="migration.circa.nntpNewsgroupCache" factory-bean="cacheFactory" factory-method="createCache">
+	   <constructor-arg value="eu.cec.digit.circabc.cache.migration.circa.nntpNewsgroupCache"/>
+	</bean>
+	
+	<!-- Cache the nntp messages  -->
+	<bean name="migration.circa.nntpMessagesCache" factory-bean="cacheFactory" factory-method="createCache">
+	   <constructor-arg value="eu.cec.digit.circabc.cache.migration.circa.nntpMessagesCache"/>
+	</bean>
+	
+	<!-- Cache the log path  -->
+	<bean name="migration.circa.logPathNodeRefCache" factory-bean="cacheFactory" factory-method="createCache">
+	   <constructor-arg value="eu.cec.digit.circabc.cache.migration.circa.logPathNodeRefCache"/>
+	</bean>
+
+
+	<bean id="exportationTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<property name="corePoolSize" value="${export.mt.maxthread}" />
+	</bean>
+
+
+	<!-- Fake implementation to deactivate one or more circa features -->
+
+	<bean id="exportation.fake.calendarReader" class="eu.cec.digit.circabc.migration.reader.impl.fake.CalendarReaderNOOPImpl" />
+	<bean id="exportation.fake.logsReader" class="eu.cec.digit.circabc.migration.reader.impl.fake.LogFileReaderNOOPImpl" />
+	<bean id="exportation.fake.metadataReader" class="eu.cec.digit.circabc.migration.reader.impl.fake.MetadataReaderNOOPImpl" />
+	<bean id="exportation.fake.newsgroupReader" class="eu.cec.digit.circabc.migration.reader.impl.fake.NewsgroupReaderNOOPImpl" />
+	<bean id="exportation.fake.fileReader" class="eu.cec.digit.circabc.migration.reader.impl.fake.RemoteFileReaderNOOPImpl" />
+	<bean id="exportation.fake.securityReader" class="eu.cec.digit.circabc.migration.reader.impl.fake.SecurityReaderNOOPImpl" />
+	<bean id="exportation.fake.userReader" class="eu.cec.digit.circabc.migration.reader.impl.fake.UserReaderNOOPImpl" />
+
+</beans>

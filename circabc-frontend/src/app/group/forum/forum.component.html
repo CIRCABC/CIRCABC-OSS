@@ -1,0 +1,49 @@
+{{ 'label.forums.title' | transloco: { groupName: group?.name } | cbcSetTitle }}
+<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+<div class="fluid forums page-container">
+  <div class="page-header">
+    <span
+      class="page-header__title"
+      [innerHTML]="'forums.page.title' | transloco"
+    ></span>
+    <div class="page-header__actions" *ngIf="group && node">
+      <cbc-reponsive-sub-menu>
+        <a
+          [routerLink]="['../../permissions', node.id]"
+          [queryParams]="{ from: 'forum' }"
+          *ngIf="!isNewsgroupRoot() && isNewsgroupAdmin()"
+          >{{ 'label.permissions' | transloco }}</a
+        >
+        <a
+          [routerLink]="['../../notification-status', node.id]"
+          [queryParams]="{ from: 'forum' }"
+          *ngIf="isNewsgroupAdmin()"
+          >{{ 'label.notifications' | transloco }}</a
+        >
+        <a (click)="showConfigurationModal = true" *ngIf="isNewsgroupAdmin()"
+          >{{ 'label.configuration' | transloco }}</a
+        >
+      </cbc-reponsive-sub-menu>
+      <cbc-forum-dropdown
+        [currentNode]="node"
+        [enableAddTopic]="isNewsgroupPost() || isNewsgroupAdmin()"
+        [enableAddForum]="isNewsgroupModerateAdmin()"
+        (actionFinished)="refresh($event)"
+        *ngIf="isNewsgroupPost() || isNewsgroupModerateAdmin()"
+      ></cbc-forum-dropdown>
+    </div>
+  </div>
+
+  <cbc-forum-browser
+    *ngIf="group && groupConfiguration"
+    [forum]="node"
+    [groupConfiguration]="groupConfiguration"
+    [group]="group"
+  ></cbc-forum-browser>
+</div>
+
+<cbc-configure-forum-service
+  [(showModal)]="showConfigurationModal"
+  [groupId]="groupId"
+  (modalHide)="refreshConf($event)"
+></cbc-configure-forum-service>

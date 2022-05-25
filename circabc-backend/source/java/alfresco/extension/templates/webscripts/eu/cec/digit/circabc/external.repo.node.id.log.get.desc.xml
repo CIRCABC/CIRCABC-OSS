@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>external.repo.node.id.log</shortname>
+  <description>Get external repository log for node</description>
+    <url>/circabc/nodes/{id}/repositories/{repoId}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

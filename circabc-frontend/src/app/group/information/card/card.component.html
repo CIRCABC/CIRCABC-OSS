@@ -1,0 +1,26 @@
+<div
+  #cardDiv
+  class="card"
+  [class.card--1-3]="size === 1"
+  [class.card--2-3]="size === 2"
+  [class.card--3-3]="size === 3"
+  [class.card--double-height]="height === 2"
+  [class.card--text-image]="card.type === 'text-image'"
+  [class.skin-blue]="skin === 'blue'"
+  [class.skin-green]="skin === 'green'"
+  [class.skin-orange]="skin === 'orange'"
+>
+  <div #cardHeader class="card--header"> </div>
+  <div class="card--content">
+    <span *ngIf="isText()" class="card--title"> {{ card.title }} </span>
+    <div *ngIf="card.properties && isEvent()" class="card--event">
+      <span class="card--event-day">{{ card.properties.day }}</span>
+      <br />
+      <span>{{ card.properties.month }} {{ card.properties.year }}</span>
+    </div>
+    <p *ngIf="isEvent() || isText()" [innerHtml]="card.text"> </p>
+
+    <iframe *ngIf="isWebdav()" [src]="getWebdavUrl() | cbcSafe"> </iframe>
+  </div>
+  <div class="card--footer" *ngIf="!isWebdav()"> 09/11/2016 </div>
+</div>

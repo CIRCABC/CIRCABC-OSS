@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Get one version of one content</shortname>
+  <description>Get one version of one content</description>
+    <url>/circabc/content/{id}/versions/{versionId}</url>
+  <format default="json"/>
+  <authentication>guest</authentication>
+  <transaction>required</transaction>
+</webscript>

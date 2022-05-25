@@ -1,0 +1,302 @@
+<!-- MODAL BOX -->
+<div
+  class="black-overlayer"
+  *ngIf="showWizard"
+  [class.overlayer-shown]="showWizard"
+  [class.overlayer-hidden]="!showWizard"
+></div>
+<section
+  class="modal modal--select-files"
+  *ngIf="showAddWizardStep1"
+  [class.modal-shown]="showAddWizardStep1"
+  [class.modal-hidden]="!showAddWizardStep1"
+  style="margin-top: 0"
+>
+  <a class="close-icon" (click)="cancelWizard('close')"></a>
+  <header>
+    <h2 class="title">{{ 'members.invite.select.user' | translate }}</h2>
+  </header>
+
+  <section class="modal-content">
+    <form [formGroup]="addUserForm">
+      <div *ngIf="!isOSS" class="field switch">
+        <div class="label longer">
+          {{ 'label.search.type' | translate }}
+        </div>
+        <input
+          id="filter"
+          class="cmn-toggle cmn-toggle-round"
+          type="checkbox"
+          formControlName="filter"
+        />
+        <label for="filter" class="nonBlockLabel"></label>
+        <span>{{
+          (addUserForm.value.filter === true
+            ? 'label.search.eulogin'
+            : 'label.search.all.cenrral.database'
+          ) | translate
+        }}</span>
+      </div>
+      <div class="field">
+        <label for="name">{{ 'label.search' | translate }}</label>
+        <input
+          type="text"
+          id="name"
+          value=""
+          placeholder="User name / email / ..."
+          formControlName="name"
+        />
+        <a
+          class="button"
+          value="Search"
+          (click)="searchUsers()"
+          [class.disabled]="isSearchEmpty()"
+          >{{ 'label.search' | translate }}</a
+        >
+        <a (click)="resetForm()">{{ 'label.clear' | translate }}</a>
+        <cbc-spinner *ngIf="searchingUsers"></cbc-spinner>
+      </div>
+
+      <!-- Select Multiple-->
+      <div class="field">
+        <label for="sMultiple">{{ 'label.results' | translate }}</label>
+        <div
+          class="custom-select select--multiple"
+          style="width: 585px; height: auto"
+        >
+          <select
+            multiple
+            id="sMultiple"
+            style="width: 585px; min-height: 150px; resize: vertical"
+            formControlName="possibleUsers"
+          >
+            <option
+              *ngFor="let user of availableUsers"
+              value="{{ user.userId }}"
+              [disabled]="isAlreadyMember(user)"
+              >{{
+                user.firstname + ' ' + user.lastname + ' (' + user.email + ')'
+              }}
+              <span *ngIf="isAlreadyMember(user)"
+                >[{{ 'label.already.member' | translate }}]</span
+              >
+            </option>
+          </select>
+        </div>
+      </div>
+      <!-- Select -->
+      <div class="field">
+        <label for="groupContact">{{ 'label.profile' | translate }}</label>
+        <div class="custom-select select--form">
+          <select
+            name="profileName"
+            id="profileName"
+            formControlName="selectedProfile"
+          >
+            <option
+              *ngFor="let profile of availableProfiles"
+              value="{{ profile.id }}"
+              >{{ profile.title | cbcI18n }}</option
+            >
+          </select>
+        </div>
+        <input
+          type="button"
+          value="{{ 'label.add.selection' | translate }}"
+          (click)="selectUsers()"
+          *ngIf="hasSelectedUserAndProfile()"
+        />
+      </div>
+
+      <!-- Select Multiple-->
+      <div class="field" *ngIf="futureMembers.length > 0">
+        <label>{{ 'label.invitations' | translate }}</label>
+        <br /><br />
+        <ul>
+          <li *ngFor="let futureMember of futureMembers">
+            {{
+              '[' +
+                (futureMember.profile?.title | cbcI18n) +
+                '] ' +
+                futureMember.user?.firstname +
+                ' ' +
+                futureMember.user?.lastname +
+                ' (' +
+                futureMember.user?.email +
+                ')'
+            }}
+            <a (click)="removeFromFutureMember(futureMember)"
+              ><img
+                src="img/icon-close-20x20.png"
+                style="vertical-align: middle"
+                alt="close"
+            /></a>
+          </li>
+        </ul>
+      </div>
+      <div class="field" *ngIf="restorableUsers.length > 0">
+        <label>
+          <cbc-hint
+            [text]="'label.restorable.memberships.explanation' | translate"
+          ></cbc-hint
+          >{{ 'label.restorable.memberships' | translate }}
+        </label>
+        <br /><br />
+        <ul>
+          <li *ngFor="let ruser of restorableUsers">
+            {{
+              '[' +
+                (ruser.recoveryOption?.profile?.title | cbcI18n) +
+                '] ' +
+                ruser?.user?.firstname +
+                ' ' +
+                ruser?.user?.lastname +
+                ' (' +
+                ruser.user.email +
+                ')'
+            }}
+            <cbc-spinner *ngIf="restoringId === ruser.userId"></cbc-spinner>
+            <a (click)="restoreMember(ruser)"
+              ><img
+                src="img/undo-arrow-3355.png"
+                style="vertical-align: sub; width: 14px"
+                alt="undo"
+            /></a>
+            <a (click)="cleanRestoreMember(ruser)"
+              ><img
+                src="img/icon-remove-picture.png"
+                style="vertical-align: middle; width: 18px"
+                alt="remove"
+            /></a>
+          </li>
+        </ul>
+      </div>
+    </form>
+    <!-- {{ addUserForm.value | json }} -->
+  </section>
+  <section class="modal-footer">
+    <!-- Buttons -->
+    <div class="buttons-group">
+      <a
+        class="cta"
+        (click)="hasUsersSelected() ? launchAddWizardStep2() : ''"
+        [class.disabled]="!hasUsersSelected()"
+        >{{ 'label.next' | translate }}</a
+      >
+      <a class="button" (click)="cancelWizard('close')">{{
+        'label.cancel' | translate
+      }}</a>
+    </div>
+  </section>
+</section>
+
+<section
+  class="modal noMarginTop"
+  *ngIf="showAddWizardStep2"
+  [class.modal-shown]="showAddWizardStep2"
+  [class.modal-hidden]="!showAddWizardStep2"
+>
+  <a class="close-icon" (click)="cancelWizard('close')"></a>
+  <header>
+    <a class="back-link" (click)="cancelWizard('step1')">{{
+      'label.back' | translate
+    }}</a>
+    <h2 class="title">{{ 'label.notifications' | translate }}</h2>
+  </header>
+
+  <section class="modal-content" style="height: 400px">
+    <form [formGroup]="notificationForm">
+      <div class="field switch">
+        <div class="label longer">
+          {{ 'label.memberships.expiry.date' | translate }}
+        </div>
+        <input
+          id="expiration"
+          class="cmn-toggle cmn-toggle-round"
+          type="checkbox"
+          formControlName="expiration"
+        />
+        <label for="expiration" class="nonBlockLabel"></label>
+        <span>{{
+          (notificationForm.value.expiration === true
+            ? 'label.yes'
+            : 'label.no'
+          ) | translate
+        }}</span>
+      </div>
+      <div
+        class="field field--with-icon field--date"
+        *ngIf="notificationForm.value.expiration"
+      >
+        <label for="date">{{ 'label.when' | translate }}</label>
+        <p-calendar
+          formControlName="expirationDateTime"
+          [showTime]="true"
+          [dateFormat]="'dd/mm/yy'"
+          [placeholder]="'dd/mm/yyyy'"
+          [showIcon]="true"
+        ></p-calendar>
+        <cbc-control-message
+          [control]="expirationDateTimeControl"
+        ></cbc-control-message>
+      </div>
+      <div class="field--separator"></div>
+      <div class="field switch">
+        <div class="label" style="width: 340px">
+          {{ 'label.user.notifications.invite' | translate }}
+        </div>
+        <input
+          id="cmn-toggle-1"
+          class="cmn-toggle cmn-toggle-round"
+          type="checkbox"
+          formControlName="userNotifications"
+        />
+        <label for="cmn-toggle-1" class="nonBlockLabel"></label>
+        <span>{{
+          notificationForm.controls['userNotifications'].value === true
+            ? 'Yes'
+            : 'No'
+        }}</span>
+      </div>
+
+      <div class="field switch">
+        <div class="label" style="width: 340px">
+          {{ 'label.admin.notifications.invite' | translate }}
+        </div>
+        <input
+          id="cmn-toggle-2"
+          class="cmn-toggle cmn-toggle-round"
+          type="checkbox"
+          formControlName="adminNotifications"
+        />
+        <label for="cmn-toggle-2" class="nonBlockLabel"></label>
+        <span>{{
+          notificationForm.controls['adminNotifications'].value === true
+            ? 'Yes'
+            : 'No'
+        }}</span>
+      </div>
+
+      <div *ngIf="inviting">
+        <label
+          >{{ 'label.inviting' | translate }}... <cbc-spinner></cbc-spinner
+        ></label>
+      </div>
+    </form>
+  </section>
+
+  <section class="modal-footer">
+    <!-- Buttons -->
+    <div class="buttons-group" *ngIf="!inviting">
+      <a
+        class="cta"
+        (click)="hasUsersSelected() ? submitMembers() : ''"
+        [class.disabled]="!hasUsersSelected()"
+        >{{ 'label.invite' | translate }}</a
+      >
+      <a class="button" (click)="cancelWizard('close')">{{
+        'label.cancel' | translate
+      }}</a>
+    </div>
+  </section>
+</section>

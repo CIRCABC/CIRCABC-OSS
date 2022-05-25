@@ -1,0 +1,61 @@
+@use '~css/global/variables-mixins-keyframes';
+
+h2 {
+  font-size: 2.4em;
+}
+
+.help-highlight {
+  background-color: #fff;
+  color: #035;
+  padding: 25px;
+
+  h2 {
+    margin-top: 0;
+  }
+}
+
+.slider {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 24px 1fr 24px;
+  grid-template-columns: 24px 1fr 24px;
+
+  .previous-slider {
+    -ms-grid-column: 1;
+  }
+
+  .next-slider {
+    -ms-grid-column: 3;
+  }
+
+  .a-previous,
+  .a-next {
+    width: 24px;
+    height: 250px;
+    padding: 0 5px;
+    vertical-align: middle;
+    display: inline-block;
+    line-height: 250px;
+
+    &:hover {
+      background-color: #f5f5f5;
+    }
+  }
+
+  .card-container {
+    -ms-grid-column: 2;
+    display: flex;
+
+    & > * {
+      width: calc((100% / 3));
+    }
+
+    @media screen and (max-width: variables-mixins-keyframes.$break-small) {
+      display: initial;
+
+      & > * {
+        width: 100%;
+      }
+    }
+  }
+}

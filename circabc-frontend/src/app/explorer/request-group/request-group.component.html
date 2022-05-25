@@ -1,0 +1,213 @@
+<cbc-header></cbc-header>
+<cbc-navigator></cbc-navigator>
+<div class="wrap page-container my-account">
+  <section class="box">
+    <header class="header">
+      <span class="title"
+        >{{ 'label.request.interest-group' | transloco }}</span
+      >
+    </header>
+    <div class="main">
+      <div *ngIf="step1">
+        <form [formGroup]="form">
+          <p style="font-weight: bold">
+            {{ 'group.request.category.selection.title' | transloco }}
+          </p>
+          <div class="small-padding">
+            <div class="field">
+              <label for="header">{{ 'label.header' | transloco }}</label>
+              <div class="custom-select select--form">
+                <select name="" id="header" formControlName="header">
+                  <option *ngFor="let header of headers" [value]="header.id"
+                    >{{ header.name }}</option
+                  >
+                </select>
+                <cbc-control-message
+                  [control]="headerControl"
+                ></cbc-control-message>
+              </div>
+            </div>
+            <div class="field">
+              <label for="category">{{ 'label.category' | transloco }}</label>
+              <div class="custom-select select--form">
+                <select name="" id="category" formControlName="category">
+                  <option
+                    *ngFor="let category of categories"
+                    [value]="category.id"
+                    >{{ getNameOrTitle(category) }}</option
+                  >
+                </select>
+                <cbc-control-message
+                  [control]="categoryControl"
+                ></cbc-control-message>
+              </div>
+            </div>
+          </div>
+          <p style="font-weight: bold">
+            {{ 'group.request.details.title' | transloco }}
+          </p>
+          <div class="small-padding">
+            <div class="field">
+              <label for="name">{{ 'label.name' | transloco }} *</label>
+              <input type="text" formControlName="name" />
+              <cbc-control-message
+                [control]="nameControl"
+              ></cbc-control-message>
+            </div>
+            <div class="field">
+              <label for="title">{{ 'label.title' | transloco }}</label>
+              <input type="text" formControlName="title" />
+            </div>
+            <div class="field">
+              <label for="description"
+                >{{ 'label.description' | transloco }}</label
+              >
+              <textarea
+                id="description"
+                formControlName="description"
+              ></textarea>
+            </div>
+            <div class="field">
+              <label for="comment"
+                >{{ 'group.request.comment.title' | transloco }} *</label
+              >
+              <textarea id="comment" formControlName="comment"></textarea>
+              <cbc-control-message
+                [control]="commentControl"
+              ></cbc-control-message>
+            </div>
+          </div>
+        </form>
+        <form [formGroup]="groupLeadersForm">
+          <p style="font-weight: bold">
+            {{ 'group.request.leaders.title' | transloco }}
+          </p>
+          <div class="small-padding">
+            <div class="field">
+              <label for="search">{{ 'label.search' | transloco }}</label>
+              <input
+                type="text"
+                id="search"
+                value=""
+                placeholder="User name / email / ..."
+                formControlName="search"
+              />
+              <button class="button" (click)="searchUsers()"
+                >{{ 'label.search' | transloco }}</button
+              >
+              <a (click)="resetSearchForm()">{{ 'label.clear' | transloco }}</a>
+              <cbc-spinner *ngIf="searchingUsers"></cbc-spinner>
+            </div>
+            <!-- Select Multiple-->
+            <div class="field">
+              <label for="sMultiple">{{ 'label.results' | transloco }}</label>
+              <div
+                class="custom-select select--multiple"
+                style="width: 585px; height: 150px"
+              >
+                <select
+                  multiple
+                  id="sMultiple"
+                  style="width: 585px; height: 150px"
+                  formControlName="possibleUsers"
+                >
+                  <option
+                    *ngFor="let user of availableUsers"
+                    value="{{ user.userId }}"
+                    >{{ user.firstname + ' ' + user.lastname + ' (' + user.email
+                    + ')' }}</option
+                  >
+                </select>
+              </div>
+              <label></label>
+              <input
+                type="button"
+                value="{{ 'label.select' | transloco }}"
+                (click)="selectUsers()"
+              />
+            </div>
+            <div class="field">
+              <label for="sMultiple">{{ 'label.leaders' | transloco }}</label>
+              <cbc-leader-card
+                *ngFor="let futureMember of futureMembers"
+                [user]="futureMember"
+                (removeClicked)="removeFromFutureMember(futureMember)"
+              ></cbc-leader-card>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div *ngIf="step2">
+        <p style="font-weight: bold"
+          >{{ 'group.request.verify.title' | transloco }}</p
+        >
+        <table>
+          <tbody>
+            <tr>
+              <td class="reviewLabel">
+                {{ 'group.request.future.category' | transloco }}
+              </td>
+              <td> {{ getNameOrTitle(selectedCategory) }} </td>
+            </tr>
+            <tr>
+              <td class="reviewLabel"> {{ 'label.name' | transloco }} </td>
+              <td> {{ form.value.name }} </td>
+            </tr>
+            <tr>
+              <td class="reviewLabel"> {{ 'label.title' | transloco }} </td>
+              <td> {{ form.value.title }} </td>
+            </tr>
+            <tr>
+              <td class="reviewLabel">
+                {{ 'label.description' | transloco }}
+              </td>
+              <td> {{ form.value.description }} </td>
+            </tr>
+            <tr>
+              <td class="reviewLabel"> {{ 'label.comment' | transloco }} </td>
+              <td> {{ form.value.comment }} </td>
+            </tr>
+            <tr>
+              <td class="reviewLabel"> {{ 'label.leaders' | transloco }} </td>
+              <td>
+                <cbc-leader-card
+                  *ngFor="let futureMember of futureMembers"
+                  [user]="futureMember"
+                  [showDelete]="false"
+                ></cbc-leader-card>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="actions" *ngIf="processing">
+        <p
+          >{{ 'label.processing' | transloco }}...
+          <cbc-spinner></cbc-spinner>
+        </p>
+      </div>
+      <div class="actions buttons-group" *ngIf="!processing">
+        <a
+          class="cta"
+          *ngIf="step1"
+          (click)="!form.valid ? '' : confirm()"
+          [class.disabled]="!form.valid"
+          >{{ 'label.next' | transloco }}</a
+        >
+        <a class="button" *ngIf="step2" (click)="revert()"
+          >{{ 'label.previous' | transloco }}</a
+        >
+        <a
+          class="cta"
+          *ngIf="step2"
+          (click)="!form.valid ? '' : requestGroup()"
+          [class.disabled]="!form.valid"
+          >{{ 'label.submit' | transloco }}</a
+        >
+        <a class="button" [routerLink]="['..']"
+          >{{ 'label.cancel' | transloco }}</a
+        >
+      </div>
+    </div>
+  </section>
+</div>

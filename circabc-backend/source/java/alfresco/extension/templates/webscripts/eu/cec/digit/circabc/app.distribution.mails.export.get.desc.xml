@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Get all the app distribution emails as excel file</shortname>
+  <description>Get all the app distribution emails as excel file</description>
+  <url>/circabc/app/distribution/emails/export</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

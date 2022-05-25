@@ -1,0 +1,17 @@
+<div class="box box--alternate-lines">
+  <div class="main main--listing">
+    <ul>
+      <li class="row" style="padding: 0px"></li>
+      <li data-cy="groups" *ngFor="let group of interestGroups" class="row">
+        <a [routerLink]="['/group', group.id]" class="group-title"
+          >{{ getNameOrTitle(group) }}</a
+        >
+        <br />
+        <span class="grey-name"> {{ group.name }} </span>
+      </li>
+      <li *ngIf="interestGroups.length === 0" class="row">
+        <p> {{ 'label.nothing.to.display' | transloco }} </p>
+      </li>
+    </ul>
+  </div>
+</div>

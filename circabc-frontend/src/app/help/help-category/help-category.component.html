@@ -1,0 +1,72 @@
+<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+
+<div class="help-category-container" *ngIf="category">
+  <header class="breadcrumb">
+    <span class="crumb">
+      <a [routerLink]="['/help']" class="home">
+        <img src="img/icon-dashboard-blue.png" /> {{ 'label.help' | transloco }}
+      </a>
+      <img src="img/small-arrow-right.png" class="separator" />
+      <span> {{ category.title | cbcI18n }} </span>
+    </span>
+  </header>
+  <br class="cleaner" />
+
+  <section class="category-contained">
+    <aside class="category-list">
+      <cbc-category-list-select
+        [categories]="categories"
+        [currentId]="category.id"
+      ></cbc-category-list-select>
+    </aside>
+
+    <aside class="article-list">
+      <header class="actions" *ngIf="isAdminOrSupport()">
+        <a (click)="showUpdateModal = true">{{ 'label.edit' | transloco }}</a>
+        <a (click)="showDeleteModal = true">{{ 'label.delete' | transloco }}</a>
+        <a class="cta" (click)="showCreateModal = true"
+          >{{ 'help.add.article' | transloco }}</a
+        >
+      </header>
+
+      <h2>{{ 'help.articles' | transloco }}</h2>
+
+      <ul>
+        <li *ngFor="let article of articles">
+          <a [routerLink]="['article', article.id]">
+            {{ article.title | cbcI18n }}
+            <p class="metadata">
+              {{ 'label.last.updated.on' | transloco }} {{ article.lastUpdate |
+              date }}
+            </p>
+          </a>
+        </li>
+        <li *ngIf="articles.length === 0" class="empty-category">
+          {{ 'help.no.article' | transloco }}
+        </li>
+      </ul>
+    </aside>
+  </section>
+</div>
+
+<cbc-add-help-article
+  *ngIf="category"
+  [(showModal)]="showCreateModal"
+  [categoryId]="category.id"
+  (articleCreated)="refresh($event)"
+>
+</cbc-add-help-article>
+
+<cbc-delete-help-category
+  *ngIf="category"
+  [(showModal)]="showDeleteModal"
+  [categoryId]="category.id"
+  (categoryDeleted)="redirect()"
+></cbc-delete-help-category>
+
+<cbc-add-help-category
+  *ngIf="category"
+  [categoryId]="category.id"
+  [(showModal)]="showUpdateModal"
+  (categoryCreated)="reload($event)"
+></cbc-add-help-category>

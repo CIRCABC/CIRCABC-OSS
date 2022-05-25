@@ -1,0 +1,174 @@
+@use '~css/global/variables-mixins-keyframes';
+
+.news-card {
+  background-color: #fff;
+  box-shadow: 0 0 10px rgb(0 0 0 / 0.2);
+  height: 350px;
+  position: relative;
+
+  .container {
+    height: 320px;
+    overflow: auto;
+    padding: 0 15px;
+  }
+
+  header {
+    padding: 20px 0;
+    font-size: 14px;
+    font-weight: bold;
+    color: #035;
+  }
+
+  .metadata-created,
+  .metadata-author {
+    font-size: 10px;
+    color: #ccc;
+  }
+
+  .metadata-created {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-weight: bold;
+    border-bottom: 1px solid #efefef;
+  }
+
+  .metadata-author {
+    float: right;
+  }
+
+  .more-margin {
+    margin-top: 30px;
+  }
+
+  .content {
+    font-size: 10px;
+
+    ::ng-deep ol {
+      margin-left: 20px;
+      list-style-type: decimal;
+    }
+
+    ::ng-deep ul {
+      margin-left: 20px;
+      list-style-type: circle;
+    }
+
+    ::ng-deep img {
+      max-width: 100%;
+      height: auto;
+    }
+  }
+
+  footer {
+    text-align: center;
+    position: absolute;
+    width: 100%;
+    height: 20px;
+    bottom: 0;
+    right: 0;
+    padding: 3px;
+    background-color: #afafaf;
+    color: #fff;
+
+    ::ng-deep * {
+      color: #fff;
+    }
+  }
+
+  iframe {
+    width: 100%;
+    max-height: 580px;
+    min-height: 350px;
+    border: 0;
+  }
+}
+
+.highlighted {
+  height: 700px;
+  width: 800px;
+
+  @media screen and (max-width: 1318px) {
+    width: 100% !important;
+  }
+}
+
+.important {
+  border-top: 3px solid #ff6a00;
+
+  header {
+    color: #ff6a00;
+  }
+
+  .content {
+    max-height: 154px !important;
+  }
+}
+
+.reminder {
+  border-top: 3px solid #86d300;
+
+  header {
+    color: #86d300;
+  }
+
+  .content {
+    max-height: 154px !important;
+  }
+}
+
+.news-icon {
+  float: right;
+  width: 32px;
+  height: 32px;
+  margin-left: 10px;
+  margin-top: -5px;
+}
+
+.news-card--height-2 {
+  height: 350px !important;
+}
+
+.news-complement {
+  margin-bottom: 15px;
+  height: 145px;
+
+  .imageContainer {
+    height: 142px !important;
+
+    img {
+      width: 100%;
+    }
+  }
+
+  .dayContainer {
+    text-align: center;
+    padding-top: 34px;
+    color: #035;
+
+    .dayDate {
+      font-size: 36px;
+      font-weight: bold;
+    }
+
+    .monthDate {
+      font-size: 32px;
+    }
+  }
+
+  .docContainer {
+    padding-top: 40px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+
+    img {
+      margin: 20px 10px;
+      vertical-align: middle;
+    }
+
+    .fileLink {
+      font-size: 14px;
+      font-weight: normal;
+    }
+  }
+}

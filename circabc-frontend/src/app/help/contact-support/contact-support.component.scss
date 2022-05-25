@@ -1,0 +1,9 @@
+.main {
+  padding: 25px !important;
+}
+
+.mandatory::after {
+  content: '*';
+  color: red;
+  margin-left: 15px;
+}

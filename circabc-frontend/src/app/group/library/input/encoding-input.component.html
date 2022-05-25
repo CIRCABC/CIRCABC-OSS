@@ -1,0 +1,12 @@
+<div class="field" [formGroup]="form">
+  <label for="encoding">{{ 'label.encoding' | transloco }}</label>
+  <div class="custom-select select--form">
+    <select id="encoding" formControlName="encoding">
+      <option
+        *ngFor="let encoding of getAvailableEncodings()"
+        value="{{ encoding }}"
+        >{{ encoding }}</option
+      >
+    </select>
+  </div>
+</div>

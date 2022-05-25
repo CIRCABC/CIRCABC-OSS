@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>autoupload.delete</shortname>
+  <description>Delete an autoupload configuration</description>
+  <url>/circabc/groups/{id}/autoupload</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

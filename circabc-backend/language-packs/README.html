@@ -1,0 +1,1251 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  <meta content="text/html;charset=UTF-8" http-equiv="Content-Type">
+
+
+
+
+
+
+
+  
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <title>Dutch Language Pack</title>
+  <meta content="Andries Broekema" name="author">
+</head>
+
+
+<body>
+
+
+
+
+
+
+
+
+<h1 style="font-family: Trebuchet MS;">Dutch Language Pack
+- Nederlandse vertaling</h1>
+
+
+
+
+
+
+
+
+<span style="font-family: Trebuchet MS;"></span>
+<h2>Installatie</h2>
+
+
+
+
+
+
+
+
+Zie ook de Alfresco Wiki: <a href="http://wiki.alfresco.com/wiki/Language_Pack_Installation">http://wiki.alfresco.com/wiki/Language_Pack_Installation</a>&nbsp;.
+De *nl.properties bestanden zijn de algemeen Nederlandse bestanden. De
+*nl_BE* verbijzonderd naar Nederlands-Belgi&euml;. De *nl_NL*
+verbijzonderd naar Nederlands-Nederland.
+<h3><span class="mw-headline">Voor Tomcat</span></h3>
+
+
+
+
+
+
+
+
+<span style="font-family: Courier New,Courier,monospace;">*nl*.properties</span>
+- kopi&euml;ren naar&nbsp;<span style="font-family: Courier New,Courier,monospace;">&lt;Tomcat
+home&gt;/shared/classes/alfresco/messages</span>
+<h3>Voor JBoss</h3>
+
+
+
+
+
+
+
+
+<span style="font-family: Courier New,Courier,monospace;">*nl*.properties</span>&nbsp;-
+kopi&euml;ren naar&nbsp;<span style="font-family: Courier New,Courier,monospace;">&lt;JBoss
+home&gt;/server/default/conf/alfresco/messages</span>
+<h3><span class="editsection"></span><span class="mw-headline">Login Language Options</span></h3>
+
+
+
+
+
+
+
+
+<p>To change the language options offered on the login screen,
+you need to modify the <b>web-client-config-custom</b>
+file (you may need to rename the sample file):
+</p>
+
+
+
+
+
+
+
+
+<ul>
+
+
+
+
+
+
+
+
+  <li>Edit 'web-client-config-custom.xml' file in the
+&lt;custom config&gt;/extension folder </li>
+
+
+
+
+
+
+
+
+  <li>Find the '&lt;languages&gt;' section </li>
+
+
+
+
+
+
+
+
+  <li>Add or remove language entries of the form
+'&lt;language
+locale="XX_YY"&gt;LangName&lt;/language&gt;' </li>
+
+
+
+
+
+
+
+
+  <li>Save the file </li>
+
+
+
+
+
+
+
+
+</ul>
+
+
+
+
+
+
+
+
+<pre><br> &lt;config evaluator="string-compare" condition="Languages"&gt;<br> &lt;languages&gt;<br> &lt;language locale="nl_BE"&gt;Nederlands (Belgi&euml;)&lt;/language&gt;<br> &lt;language locale="nl_NL"&gt;Nederlands (Nederland)&lt;/language&gt;<br> &lt;/languages&gt;<br> &lt;/config&gt;<br><span style="font-family: Trebuchet MS;"><span style="font-weight: bold;"><br></span></span></pre>
+
+
+
+
+
+
+
+
+<h2><span style="font-family: Trebuchet MS;">Uitgangspunten
+en richtlijnen voor&nbsp;vertalers</span></h2>
+
+
+
+
+
+
+
+
+De vertaling sluit zoveel mogelijk aan bij richtlijnen voor andere
+vertaal projecten, zoals de Nederlandse vertaling van OpenOffice.org.
+Een nuttige richtlijn is hier te vinden: <a href="http://confluence.sakaiproject.org/confluence/display/I18N/Styleguide">http://confluence.sakaiproject.org/confluence/display/I18N/Styleguide</a><br>
+
+
+
+
+
+
+
+
+<br>
+
+
+
+
+
+
+
+
+<path style="font-family: Trebuchet MS;"></path>
+<table border="1" cellpadding="2" cellspacing="0">
+
+
+
+
+
+
+
+
+  <tbody>
+
+
+
+
+
+
+
+
+    <tr>
+
+
+
+
+
+
+
+
+      <td><span style="font-weight: bold;">en_US</span></td>
+
+
+
+
+
+
+
+
+      <td><span style="font-weight: bold;">nl</span></td>
+
+
+
+
+
+
+
+
+      <td><span style="font-weight: bold;">nl_BE</span></td>
+
+
+
+
+
+
+
+
+      <td><span style="font-weight: bold;">nl_NL</span></td>
+
+
+
+
+
+
+
+
+    </tr>
+
+
+
+
+
+
+
+
+    <tr>
+
+
+
+
+
+
+
+
+      <td>space</td>
+
+
+
+
+
+
+
+
+      <td>ruimte</td>
+
+
+
+
+
+
+
+
+      <td></td>
+
+
+
+
+
+
+
+
+      <td></td>
+
+
+
+
+
+
+
+
+    </tr>
+
+
+
+
+
+
+
+
+    <tr>
+
+
+
+
+
+
+
+
+      <td>content</td>
+
+
+
+
+
+
+
+
+      <td>inhoud</td>
+
+
+
+
+
+
+
+
+      <td></td>
+
+
+
+
+
+
+
+
+      <td></td>
+
+
+
+
+
+
+
+
+    </tr>
+
+
+
+
+
+
+
+
+    <tr>
+
+
+
+
+
+
+
+
+      <td>shelf</td>
+
+
+
+
+
+
+
+
+      <td>werkblad</td>
+
+
+
+
+
+
+
+
+      <td></td>
+
+
+
+
+
+
+
+
+      <td></td>
+
+
+
+
+
+
+
+
+    </tr>
+
+
+
+
+
+
+
+
+    <tr>
+
+
+
+
+
+
+
+
+      <td>item</td>
+
+
+
+
+
+
+
+
+      <td>item</td>
+
+
+
+
+
+
+
+
+      <td></td>
+
+
+
+
+
+
+
+
+      <td></td>
+
+
+
+
+
+
+
+
+    </tr>
+
+
+
+
+
+
+
+
+    <tr>
+
+
+
+
+
+
+
+
+      <td>Company Home</td>
+
+
+
+
+
+
+
+
+      <td>Home</td>
+
+
+
+
+
+
+
+
+      <td></td>
+
+
+
+
+
+
+
+
+      <td></td>
+
+
+
+
+
+
+
+
+    </tr>
+
+
+
+
+
+
+
+
+    <tr>
+
+
+
+
+
+
+
+
+      <td>...</td>
+
+
+
+
+
+
+
+
+      <td>Mijn Start</td>
+
+
+
+
+
+
+
+
+      <td></td>
+
+
+
+
+
+
+
+
+      <td></td>
+
+
+
+
+
+
+
+
+    </tr>
+
+
+
+
+
+
+
+
+    <tr>
+
+
+
+
+
+
+
+
+      <td>My Alfresco Dashboard</td>
+
+
+
+
+
+
+
+
+      <td>Mijn Alfresco Dashboard</td>
+
+
+
+
+
+
+
+
+      <td></td>
+
+
+
+
+
+
+
+
+      <td></td>
+
+
+
+
+
+
+
+
+    </tr>
+
+
+
+
+
+
+
+
+    <tr>
+
+
+
+
+
+
+
+
+      <td>view</td>
+
+
+
+
+
+
+
+
+      <td>overzicht</td>
+
+
+
+
+
+
+
+
+      <td></td>
+
+
+
+
+
+
+
+
+      <td></td>
+
+
+
+
+
+
+
+
+    </tr>
+
+
+
+
+
+
+
+
+    <tr>
+
+
+
+
+
+
+
+
+      <td>option</td>
+
+
+
+
+
+
+
+
+      <td>instelling/voorkeur</td>
+
+
+
+
+
+
+
+
+      <td></td>
+
+
+
+
+
+
+
+
+      <td></td>
+
+
+
+
+
+
+
+
+    </tr>
+
+
+
+
+
+
+
+
+    <tr>
+
+
+
+
+
+
+
+
+      <td>wizard</td>
+
+
+
+
+
+
+
+
+      <td>assistent</td>
+
+
+
+
+
+
+
+
+      <td></td>
+
+
+
+
+
+
+
+
+      <td></td>
+
+
+
+
+
+
+
+
+    </tr>
+
+
+
+
+
+
+
+
+    <tr>
+
+
+
+
+
+
+
+
+      <td>approve</td>
+
+
+
+
+
+
+
+
+      <td>fiatteren</td>
+
+
+
+
+
+
+
+
+      <td></td>
+
+
+
+
+
+
+
+
+      <td></td>
+
+
+
+
+
+
+
+
+    </tr>
+
+
+
+
+
+
+
+
+    <tr>
+
+
+
+
+
+
+
+
+      <td>invite</td>
+
+
+
+
+
+
+
+
+      <td>machtiging</td>
+
+
+
+
+
+
+
+
+      <td></td>
+
+
+
+
+
+
+
+
+      <td></td>
+
+
+
+
+
+
+
+
+    </tr>
+
+
+
+
+
+
+
+
+    <tr>
+
+
+
+
+
+
+
+
+      <td>inherit</td>
+
+
+
+
+
+
+
+
+      <td>meegekregen</td>
+
+
+
+
+
+
+
+
+      <td></td>
+
+
+
+
+
+
+
+
+      <td></td>
+
+
+
+
+
+
+
+
+    </tr>
+
+
+
+
+
+
+
+
+    <tr>
+
+
+
+
+
+
+
+
+      <td>workflow</td>
+
+
+
+
+
+
+
+
+      <td>workflow</td>
+
+
+
+
+
+
+
+
+      <td></td>
+
+
+
+
+
+
+
+
+      <td></td>
+
+
+
+
+
+
+
+
+    </tr>
+
+
+
+
+
+
+
+
+    <tr>
+
+
+
+
+
+
+
+      <td>file</td>
+
+
+
+
+
+
+
+      <td>bestand</td>
+
+
+
+
+
+
+
+      <td></td>
+
+
+
+
+
+
+
+      <td></td>
+
+
+
+
+
+
+
+    </tr>
+
+
+
+
+
+
+
+    <tr>
+
+
+
+
+
+
+
+      <td>upload</td>
+
+
+
+
+
+
+
+      <td>upload</td>
+
+
+
+
+
+
+
+      <td></td>
+
+
+
+
+
+
+
+      <td></td>
+
+
+
+
+
+
+
+    </tr>
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  </tbody>
+</table>
+
+
+
+
+
+
+
+<br>
+
+
+
+
+
+
+
+<h2>Changelog - Geschiedenis</h2>
+
+
+
+
+
+
+
+<span style="font-weight: bold;">2008 06 05 - Alfresco 2.9B nl 04</span>:
+Ongeveer 80% van de teksten is vertaald. De *nl_BE en *nl_NL zijn leeggemaakt.<br>
+
+
+<span style="font-weight: bold;"><br>
+</span><span style="font-weight: bold;">2008 05 25 - Alfresco 2.9B nl 03</span>:
+Ongeveer 75% van de teksten is vertaald. Op veel plaatsen is de vertaling consequenter gemaakt.<br>
+
+
+<span style="font-weight: bold;"></span><span style="font-weight: bold;"><br>
+
+
+2008 05 18 - Alfresco 2.9B nl 02</span>:
+Ongeveer 60% van de teksten is vertaald. De bestaande vertaling is
+verbeterd door consequent gebruik van dezelfde vertaaltermen voor
+woorden met dezelfde betekenis. Op veel plaatsen is de gebiedende wijs
+vervangen door de onbepaalde wijs. Voorbeelden: "Gebruikers beheren" in
+plaats van "Beheer gebruikers", "Knippen" in plaats van "Knip". Het pakket is nu gestructureerd volgens:<br>
+
+
+
+
+
+
+<span style="font-family: Courier New,Courier,monospace;">*nl.properties</span> - algemeen Nederlandse vertaling, zowel Vlaams als Nederlands<br>
+
+
+
+
+
+
+<span style="font-family: Courier New,Courier,monospace;">*nl_BE</span> - Vlaams, Nederlands-Belgi&euml;<br>
+
+
+
+
+
+
+<span style="font-family: Courier New,Courier,monospace;">*nl_NL</span> - Nederlands-Nederland<br>
+
+
+
+
+In deze versie zijn de *nl_BE* bestanden van de vorige vertaling
+(Alfresco 1.3). Door dus te kiezen voor de nl_BE vertaling heeft u nog
+de beschikking over de vorige teksten aangevuld met nieuwe.<br>
+
+
+
+
+
+
+<br>
+
+
+
+
+
+
+
+<span style="font-weight: bold;">2008 05 16 - Alfresco 2.9B nl_NL 01</span>: De
+eerste beta release van de Nederlandse vertaling voor Alfresco 2.9B.
+Vertalingen voor Alfresco 1.3, 1.4 en 2.0 zijn samengevoegd en deels
+aangepast. De teksten in de nl_NL-01 release zijn voor 46% vertaald. De
+kwaliteit van de vertalingens is nog niet op 100%.
+					 
+				
+			
+			
+		
+		
+</body>
+</html>

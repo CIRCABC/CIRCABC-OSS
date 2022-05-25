@@ -1,0 +1,89 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<!--+
+    |     Copyright European Community 2006 - Licensed under the EUPL V.1.0
+    |
+    |  		   http://ec.europa.eu/idabc/en/document/6523
+    |
+    +-->
+
+<!DOCTYPE faces-config PUBLIC "-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.1//EN"
+                              "http://java.sun.com/dtd/web-facesconfig_1_1.dtd">
+<faces-config>
+  <application>
+    <navigation-handler>
+       eu.cec.digit.circabc.web.app.CircabcNavigationHandler
+    </navigation-handler>
+    <!-- variable-resolver>org.springframework.web.jsf.DelegatingVariableResolver</variable-resolver -->
+    <variable-resolver>
+      eu.cec.digit.circabc.util.ExtensionVariableResolver
+    </variable-resolver>
+    <locale-config>
+      <default-locale>en</default-locale>
+    </locale-config>
+  </application>
+  <lifecycle>
+  	<phase-listener>eu.cec.digit.circabc.myfaces.application.jsp.LifeCycleListener</phase-listener>
+  </lifecycle>
+  <!--  Only  <navigation-rule> here  -->
+  <navigation-rule>
+    <from-view-id>/jsp/*</from-view-id>
+    <navigation-case>
+      <from-outcome>logout</from-outcome>
+      <to-view-id>/jsp/extension/wai/login.jsp</to-view-id>
+    </navigation-case>
+  </navigation-rule>
+
+  <navigation-rule>
+    <from-view-id>/jsp/extension/wai/login.jsp</from-view-id>
+    <navigation-case>
+      <from-outcome>success</from-outcome>
+      <to-view-id>/jsp/extension/welcome.jsp</to-view-id>
+    </navigation-case>
+  </navigation-rule>
+
+  <navigation-rule>
+    <from-view-id>/jsp/extension/wai/ecas/ecaslogin.jsp</from-view-id>
+    <navigation-case>
+      <from-outcome>success</from-outcome>
+      <to-view-id>/jsp/extension/welcome.jsp</to-view-id>
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>login</from-outcome>
+      <to-view-id>/jsp/extension/wai/login.jsp</to-view-id>
+    </navigation-case>
+  </navigation-rule>
+
+  <navigation-rule>
+    <description>
+      The decision rule used by the NavigationHandler to determine which view
+      must be displayed after the current view, login.jsp is processed.
+    </description>
+    <from-view-id>/jsp/*</from-view-id>
+    <navigation-case>
+      <description></description>
+      <from-outcome>ecaspage</from-outcome>
+      <to-view-id>/jsp/extension/wai/ecas/ecaslogin.jsp</to-view-id>
+      <redirect />
+    </navigation-case>
+  </navigation-rule>
+
+<!--   @TODO TO KEEP THIS COMMENT UNTIL END OF SURVEYS DEPLOYMENT
+  <navigation-rule>
+    <from-view-id>/jsp/extension/surveys/surveys.jsp</from-view-id>
+    <navigation-case>
+      <from-outcome>survey</from-outcome>
+      <to-view-id>/jsp/extension/surveys/survey.jsp</to-view-id>
+    </navigation-case>
+	  </navigation-rule>
+
+  <navigation-rule>
+    <from-view-id>/jsp/extension/surveys/survey.jsp</from-view-id>
+    <navigation-case>
+      <from-outcome>surveys</from-outcome>
+      <to-view-id>/jsp/extension/surveys/surveys.jsp</to-view-id>
+    </navigation-case>
+  </navigation-rule>
+-->
+
+</faces-config>

@@ -1,0 +1,15 @@
+<div>
+  <select
+    class="reset-width"
+    #timezoneSelect
+    (change)="onTimezoneChange(timezoneSelect.value)"
+    [disabled]="disable"
+  >
+    <option
+      *ngFor="let tz of availableTimezones"
+      value="{{ tz.value }}"
+      [selected]="tz.value === selectedTimezone"
+      >{{ tz.text }}</option
+    >
+  </select>
+</div>

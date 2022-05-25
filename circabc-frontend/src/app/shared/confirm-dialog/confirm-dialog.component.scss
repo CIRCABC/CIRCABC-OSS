@@ -1,0 +1,24 @@
+::ng-deep .mat-dialog-container {
+  padding: unset;
+}
+
+.message {
+  font-size: 1.4rem;
+}
+
+td,
+span {
+  font-size: 1.3rem;
+}
+
+.alert {
+  display: flex;
+}
+
+.alert-icon {
+  align-self: center;
+}
+
+.inviteUserButton {
+  width: 250px;
+}

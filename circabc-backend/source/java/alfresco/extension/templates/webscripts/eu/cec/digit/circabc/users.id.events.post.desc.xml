@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>users.id.events.post</shortname>
+  <description>Accepts or rejects a meeting request for the given user</description>
+  <url>/circabc/users/{userId}/events</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

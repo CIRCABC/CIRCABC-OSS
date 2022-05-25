@@ -1,0 +1,6 @@
+<div class="box--messages" [class.box--messages--prepare]="messages.length > 0">
+  <cbc-ui-message-rendered
+    *ngFor="let msg of messages"
+    [message]="msg"
+  ></cbc-ui-message-rendered>
+</div>

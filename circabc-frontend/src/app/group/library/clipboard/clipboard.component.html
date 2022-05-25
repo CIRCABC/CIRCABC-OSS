@@ -1,0 +1,99 @@
+<div
+  id="theSidenav"
+  class="sidenav"
+  (click)="clickedInside($event)"
+  (mouseover)="visible = true"
+  [class.open-sidenav]="opened"
+  [class.close-sidenav]="!opened"
+>
+  <a class="closebtn clipboard-title" (click)="close()">&times;</a>
+  <p class="clipboard-title">{{ 'label.my.clipboard' | transloco }}</p>
+
+  <p *ngIf="nodes.length === 0" class="sidenav-item"
+    >{{ 'label.clipboard.empty' | transloco }}</p
+  >
+
+  <ul>
+    <li *ngFor="let node of nodes" class="sidenav-item">
+      <div class="item-actions">
+        <div
+          id="removeItemFromClipboardId"
+          class="tooltip"
+          title="{{ 'label.remove' | transloco }}"
+        >
+          <a (click)="removeItem(node)">
+            <img src="img/icon-delete-white.png" width="16" height="16" />
+          </a>
+        </div>
+        <div
+          id="copyItemFromClipboardId"
+          class="tooltip"
+          title="{{ 'label.copy.here' | transloco }}"
+        >
+          <a *ngIf="isAuthorized(node, 'Copy')" (click)="copyPasteItem(node)">
+            <img src="img/icon-paste-white.png" width="16" height="16" />
+          </a>
+        </div>
+        <div
+          id="cutItemFromClipboardId"
+          class="tooltip"
+          title="{{ 'label.move.here' | transloco }}"
+        >
+          <a *ngIf="isAuthorized(node, 'Move')" (click)="cutPasteItem(node)">
+            <img src="img/icon-move-white.png" width="16" height="16" />
+          </a>
+        </div>
+        <div
+          id="linkItemFromClipboardId"
+          class="tooltip"
+          title="{{ 'label.link.here' | transloco }}"
+        >
+          <a *ngIf="isAuthorized(node, 'Link')" (click)="linkPasteItem(node)">
+            <img src="img/icon-link-white.png" width="16" height="16" />
+          </a>
+        </div>
+      </div>
+      <div class="item-name" title="{{ node.name }}">{{ node.name }}</div>
+    </li>
+  </ul>
+
+  <div *ngIf="nodes.length !== 0" class="sidenav-all">
+    <br />
+    <br />
+    <br />
+    <div class="tooltip" title="{{ 'label.remove.all' | transloco }}">
+      <a (click)="removeAll()">
+        <img src="img/icon-delete-white.png" width="20" height="20" />
+      </a> </div
+    >&nbsp;
+    <div class="tooltip" title="{{ 'label.copy.all.here' | transloco }}">
+      <a *ngIf="allAuthorized('Copy')" (click)="copyPasteAll()">
+        <img src="img/icon-paste-white.png" width="25" height="25" />
+      </a> </div
+    >&nbsp;
+    <div class="tooltip" title="{{ 'label.move.all.here' | transloco }}">
+      <a *ngIf="allAuthorized('Move')" (click)="cutPasteAll()">
+        <img src="img/icon-move-white.png" width="25" height="25" />
+      </a> </div
+    >&nbsp;
+    <div class="tooltip" title="{{ 'label.link.all.here' | transloco }}">
+      <a *ngIf="allAuthorized('Link')" (click)="linkPasteAll()">
+        <img src="img/icon-link-white.png" width="25" height="25" />
+      </a> </div
+    >&nbsp;
+    <div class="tooltip" title="{{ 'label.bulk.download' | transloco }}">
+      <a href="#" (click)="bulkDownload()">
+        <img src="img/icon-download-white.png" width="20" height="20" />
+      </a>
+    </div>
+  </div>
+
+  <div *ngIf="processing" style="padding-left: 30%">
+    <br />
+    <br />
+    <span id="clipboardSpinnerId" class="clipboard-spinner"
+      >{{ 'label.processing' | transloco }}...</span
+    >
+    <img width="40" height="40" src="img/spinner.gif" />
+  </div>
+</div>

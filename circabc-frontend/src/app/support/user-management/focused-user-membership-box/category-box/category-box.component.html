@@ -1,0 +1,16 @@
+<section class="group-box">
+  <div class="profile">
+    <strong>{{ 'label.category.administrator' | transloco }}</strong>
+  </div>
+  <div class="group" *ngIf="category && category.title">
+    <strong>{{ category.title | cbcI18n }}</strong>
+    <br />
+    {{ category.name }}
+  </div>
+  <div class="actions">
+    <cbc-inline-delete
+      [deleteLabel]="'label.remove' | transloco"
+      (deletionConfirmed)="uninviteUSer()"
+    ></cbc-inline-delete>
+  </div>
+</section>

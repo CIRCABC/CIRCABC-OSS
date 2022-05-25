@@ -1,0 +1,374 @@
+*
+{
+	font-family:"Arial";
+	margin:0;
+}
+
+body
+{
+	background-color:#FAFAFA;
+}
+
+a, a:visited
+{
+	text-decoration: none;
+	color:#173553;
+}
+
+a:hover
+{
+	font-weight:bold;
+}
+
+
+#header
+{
+	float:left;
+	width:245px;
+}
+
+#header h1
+{
+	width:245px;
+	text-align:center;
+	color:#173553;
+	margin-bottom:15px;
+
+}
+
+#header h1 a
+{
+	text-decoration:none;
+	color:#173553;
+
+}
+
+#header ul
+{
+	margin:0px;
+	padding:0px;
+}
+
+
+#header ul li
+{
+	border-top:1px solid #547FAC;
+	border-bottom:1px solid #173553;
+	list-style-type:none;
+	padding:0px 15px;
+	padding-bottom:7px;
+	background-color:#294F77;
+	color:#FFF;
+	text-align:justify;
+	
+}
+
+#header ul li:hover
+{
+	background-color:#547fac;
+	color:#FFF;
+}
+
+#header ul li.selected
+{
+	background-color:#173553;
+	border-top:1px solid #000;
+	border-bottom:1px solid #294F77;
+	color:#FFF;
+}
+
+
+#header ul li a
+{
+	text-decoration:none;
+	font-weight: bold;
+	color:#EEE;
+	font-size:95%;
+	line-height: 25px;
+}
+
+#header ul li p
+{
+	text-decoration:none;
+	color:#EEE;
+	font-size:75%;
+	padding-left:25px;
+	margin:10px 0px 10px 0px;
+}
+
+
+#header ul li a img
+{
+	margin-top:10px;
+	margin-right:10px;
+	border:0px;
+	width:18px;	
+}
+
+#header ul li a:hover
+{
+	color:#FFF;
+	
+}
+
+#sectionDesccription
+{
+	clear:left;
+	padding-left:280px;
+	background-color:#DFDFDF;
+	padding-top:15px;
+	padding-bottom:15px;
+	color:#555;
+	font-size:95%;
+}
+
+.sectionDesccriptionImg
+{
+	float:left;
+	margin-right:10px;
+}
+
+div#content
+{
+	width:75%;
+	margin-left:240px;
+	margin-right:50px;
+	margin-top:25px;
+	font-size:90%;
+	color:#294F77;
+}
+
+div#content ul.faqList
+{
+	margin-left:10px;
+	list-style-type: none;
+
+}
+
+div#content ul.faqList li.faqListItem h2
+{
+	font-weight:bolder;
+	border-left:10px solid;
+	padding-left:15px;
+	margin-bottom:15px;
+	font-size: 125%;
+	line-height:200%;
+}
+
+div#content ul.faqList li.faqListItem 
+{
+	
+		background-color:#FFF;
+	border: 1px solid #DFDFDF;
+	margin-bottom:5px;
+	padding:10px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+}
+
+div#content ul.faqList li.faqListItem:hover
+{
+	background-color: #EEEEEE;
+}
+
+
+p.text
+{
+	margin-bottom:5px;
+	padding:0px 100px 0px 0px;
+	margin-left:10px;
+}
+
+
+img.faqImg
+{
+	padding-top:15px;
+	padding-left:15%;
+	padding-bottom:15px;
+}
+
+img.faq65
+{
+	width:65%;
+}
+
+img.faq85
+{
+	width:85%;
+}
+
+p.hint
+{
+	
+
+	margin:10px 10px; 10px 100px;
+	display:block;
+	border: 1px solid #a4c5e7;
+	background-color:#cbdff4;
+	padding:6px;
+	color:#294f77;
+}
+
+
+p.hint_red
+{
+	
+
+	margin:10px 10px; 10px 100px;
+	display:block;
+	border: 1px solid #C25374;
+	background-color:#F0B1C4;
+	padding:6px;
+	color:#6B283C;
+}
+
+p.hint img, p.hint_red img
+{
+	width:18px;
+	margin-left:0px;
+	margin-right:10px;
+}
+
+p.hint span.hintTitle, p.hint_red span.hintTitle
+{
+	display:block;
+	font-weight: 800;
+}
+
+div#links
+{
+	
+	margin-left:290px;
+	margin-right:50px;
+
+	font-size:90%;
+	color:#294F77;
+	background-color:#CBDFF4;
+	padding:10px;
+	width: 70%;
+	clear:right;
+}
+
+
+div#links:hover
+{
+	cursor:pointer;
+}
+
+div#links img
+{
+	width:24px;
+	margin-left:24px;
+}
+
+div#links ul
+{
+	list-style-type:none;
+}
+
+div#links ul a
+{
+	text-decoration:none;
+	color:#173553;
+}
+
+h3
+{
+	font-size:95%;
+	border-top:1px solid #A4C5E7;
+	padding-top:5px;
+	margin-top:15px;
+	margin-bottom:15px;
+}
+
+div.summary
+{
+	width:70%;
+	margin-left:auto;
+	margin-right:auto;
+	
+	
+}
+
+div.summaryHeader
+{
+	text-align:center;
+	background-color:#EEEEEE;
+	border: 1px solid #FFF;
+	margin-bottom:5px;
+	padding:10px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	
+}
+
+div.summaryHeader h1
+{
+	line-height: 76px;
+	vertical-align: middle;
+
+}
+
+div.summary ul
+{
+	margin:30px 0px 0px 0px;
+
+}
+
+div.summary ul li
+{
+	float:left;
+	list-style-type:none;
+	width:128px;
+	height:128px;
+	border:1px solid #547FAC;
+	padding:15px 15px 0px 15px;
+
+	background-color:#294F77;
+	color:#EEE;
+	text-align:center;
+	margin:5px;
+	
+}
+
+div.summary ul li:hover
+{
+	background-color:#173553;
+	color:#FFF;
+}
+
+div.summary ul li.selected
+{
+	background-color:#173553;
+	border-top:1px solid #000;
+	border-bottom:1px solid #294F77;
+	color:#FFF;
+}
+
+div.summary ul li a
+{
+	font-weight:bold;
+	color:#EEE;
+}
+
+div.summary p.description
+{
+	margin-top:15px;
+	font-size:85%;
+	font-style: italic;
+}
+
+.no-hover a:hover
+{
+	font-weight:normal;	
+}
+
+.lang{
+	font-size:14px; 
+	font-weight:normal; 
+	margin:10px 50px 10px 290px; 
+	width:70%; 
+	text-align:right;
+}

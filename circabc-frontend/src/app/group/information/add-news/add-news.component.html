@@ -1,0 +1,224 @@
+<div class="fluid page-container">
+  <div class="page-header">
+    <span class="page-header__title" *ngIf="!inEditMode()"
+      >{{ 'information.create.news.title' | transloco }}</span
+    >
+    <span class="page-header__title" *ngIf="inEditMode()"
+      >{{ 'information.edit.news.title' | transloco }}</span
+    >
+  </div>
+  <div class="box box--news">
+    <header class="header"></header>
+    <div class="main">
+      <form [formGroup]="newsForm" enctype="multipart/form-data">
+        <fieldset>
+          <legend>{{ 'label.design' | transloco }}</legend>
+
+          <div class="field">
+            <div class="label" for="pattern">
+              {{ 'label.type' | transloco }}
+            </div>
+            <div class="custom-select select--form">
+              <select name="" id="pattern" formControlName="pattern">
+                <option value="text">{{ 'label.text' | transloco }}</option>
+                <option value="image">{{ 'label.image' | transloco }}</option>
+                <option value="document">
+                  {{ 'label.document' | transloco }}
+                </option>
+                <option value="date">{{ 'label.date' | transloco }}</option>
+                <option value="iframe">{{ 'label.iframe' | transloco }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="label" for="layout">
+              {{ 'label.layout' | transloco }}
+            </div>
+            <div class="custom-select select--form">
+              <select name="" id="layout" formControlName="layout">
+                <option value="normal">{{ 'label.normal' | transloco }}</option>
+                <option value="important">
+                  {{ 'label.important' | transloco }}
+                </option>
+                <option value="reminder">
+                  {{ 'label.reminder' | transloco }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>{{ 'label.content' | transloco }}</legend>
+          <div>
+            <cbc-notification-message
+              [severity]="1"
+              [message]="'group.information.add.news.public' | transloco"
+              [guestAllowed]="infoNode?.hasGuestAccess"
+            ></cbc-notification-message>
+          </div>
+          <div class="field field--file" *ngIf="isFileOrImageSelected()">
+            <span class="label"
+              >{{ 'label.file' | transloco }}<span style="color: red"
+                >*</span
+              ></span
+            >
+
+            <input
+              type="file"
+              id="file"
+              class="inputfile inputfile-6"
+              formControlName="file"
+              (change)="fileChangeEvent($event)"
+            />
+            <label for="file" style="width: 100%">
+              <div style="display: flex">
+                <div style="flex: 1">
+                  <span class="result">{{ getFileName() }}</span>
+                </div>
+                <div style="flex: 0">
+                  <span class="button"
+                    >{{ 'label.browse.file' | transloco }}</span
+                  >
+                </div>
+              </div>
+            </label>
+          </div>
+
+          <cbc-multilingual-input
+            *ngIf="!isIFrameSelected()"
+            formControlName="title"
+            [label]="'Title'"
+            [placeholder]="'Title'"
+            [lang]="'EN'"
+            [required]="true"
+          ></cbc-multilingual-input>
+          <cbc-control-message [control]="titleControl"></cbc-control-message>
+
+          <div class="field" *ngIf="!isIFrameSelected()">
+            <label for="content" class="label">
+              {{ 'label.text' | transloco }}
+              <span style="color: red">&nbsp;*</span>
+            </label>
+            <div class="editor">
+              <p-editor
+                id="content"
+                formControlName="content"
+                [style]="{ height: '220px' }"
+              >
+                <p-header>
+                  <span class="ql-formats">
+                    <select class="ql-header">
+                      <option value="1"></option>
+                      <option value="2"></option>
+                      <option value="3"></option>
+                      <option selected></option>
+                      <option value="4"></option>
+                      <option value="5"></option>
+                      <option value="6"></option>
+                    </select>
+                  </span>
+                  <span class="ql-formats">
+                    <button class="ql-bold" aria-label="Bold"></button>
+                    <button class="ql-italic" aria-label="Italic"></button>
+                    <button
+                      class="ql-underline"
+                      aria-label="Underline"
+                    ></button>
+                    <button class="ql-strike" aria-label="Strike"></button>
+                  </span>
+                  <span class="ql-formats">
+                    <button
+                      class="ql-list"
+                      aria-label="list"
+                      value="ordered"
+                    ></button>
+                    <button
+                      class="ql-list"
+                      aria-label="list"
+                      value="bullet"
+                    ></button>
+                  </span>
+                  <span class="ql-formats">
+                    <button class="ql-blockquote" aria-label="Strike"></button>
+                    <button class="ql-link" aria-label="link"></button>
+                    <button
+                      class="ql-image"
+                      aria-label="image"
+                      value=""
+                    ></button>
+                    <button
+                      class="ql-code-block"
+                      aria-label="code-block"
+                    ></button>
+                  </span>
+                </p-header>
+              </p-editor>
+            </div>
+            <cbc-control-message
+              [control]="contentControl"
+            ></cbc-control-message>
+          </div>
+
+          <div
+            class="field field--with-icon field--date"
+            *ngIf="isDateSelected()"
+          >
+            <label for="date">{{ 'label.date' | transloco }}</label>
+            <p-calendar
+              formControlName="date"
+              [dateFormat]="'dd/mm/yy'"
+              [placeholder]="'dd/mm/yyyy'"
+              [showIcon]="true"
+            ></p-calendar>
+          </div>
+
+          <div class="field" *ngIf="isIFrameSelected()">
+            <label class="label" for="url"
+              >{{ 'label.iframe' | transloco }}</label
+            >
+            <input type="text" id="url" formControlName="url" />
+          </div>
+        </fieldset>
+
+        <div *ngIf="executing">
+          {{ 'label.posting' | transloco }} ...
+          <cbc-spinner></cbc-spinner>
+        </div>
+
+        <div class="buttons-group" *ngIf="!executing">
+          <a
+            class="cta"
+            (click)="isFormValid() ? saveNews() : ''"
+            *ngIf="!inEditMode()"
+            [class.disabled]="!isFormValid()"
+            >{{ 'label.create' | transloco }}</a
+          >
+          <a
+            class="cta"
+            (click)="isFormValid() ? updateNews() : ''"
+            *ngIf="inEditMode()"
+            [class.disabled]="!isFormValid()"
+            >{{ 'label.update' | transloco }}</a
+          >
+          <a class="button" (click)="cancel()"
+            >{{ 'label.cancel' | transloco }}</a
+          >
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="preview--container">
+    <div class="preview">
+      <h2>{{ 'label.preview' | transloco }}</h2>
+
+      <cbc-news-card
+        [news]="newsForm.value"
+        [preview]="true"
+        [previewImageLocal]="getFile()"
+      ></cbc-news-card>
+    </div>
+  </div>
+</div>

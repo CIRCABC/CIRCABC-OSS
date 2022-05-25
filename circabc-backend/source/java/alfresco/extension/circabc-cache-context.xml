@@ -1,0 +1,340 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+  Copyright 2006 European Community
+  
+   Licensed under the EUPL, Version 1.1 or \?as soon they
+   will be approved by the European Commission - subsequent
+   versions of the EUPL (the "Licence");
+   You may not use this work except in compliance with the
+   Licence.
+   You may obtain a copy of the Licence at:
+  
+   https://joinup.ec.europa.eu/software/page/eupl
+  
+   Unless required by applicable law or agreed to in
+   writing, software distributed under the Licence is
+   distributed on an "AS IS" basis,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+   express or implied.
+   See the Licence for the specific language governing
+   permissions and limitations under the Licence.
+-->
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+
+<!--
+   Configuration of in-transaction caches along with the shared (cross-transaction) caches.
+   The in-transaction caches do not share the same configuration as the shared caches.
+   This is because the shared caches can support replication, while the
+   in-transaction caches must not use these features.
+-->
+<beans>
+	
+	<!-- AfterReturningAdvice for cache tracking -->
+
+	  <bean id="cacheFactory" class="org.alfresco.repo.cache.DefaultCacheFactory">
+      <property name="properties" ref="global-properties"/>
+   </bean>
+	
+	
+	<!-- Caches -->
+	
+   <!-- The cross-transaction shared cache for profiles Mapping -->
+
+   <bean name="profileMapSharedCache" factory-bean="cacheFactory" factory-method="createCache">
+      <constructor-arg value="eu.cec.digit.circabc.cache.profileMapCache"/>
+   </bean>
+
+   <!-- The transactional cache for profile Mapping -->
+
+   <bean name="profileMapCache" class="org.alfresco.repo.cache.TransactionalCache">
+      <property name="sharedCache">
+         <ref bean="profileMapSharedCache" />
+      </property>
+      <property name="name">
+         <value>eu.cec.digit.circabc.profileMapTransactionalCache</value>
+      </property>
+      <property name="maxCacheSize" value="${eu.cec.digit.circabc.cache.profileMapCache.tx.maxItems}" />
+      <property name="mutable" value="false" />
+      <property name="disableSharedCache" value="${system.cache.disableImmutableSharedCaches}" />
+   </bean>
+   
+   
+   <!-- The cross-transaction shared cache for invited users -->
+
+   <bean name="invitedUsersSharedCache" factory-bean="cacheFactory" factory-method="createCache">
+      <constructor-arg value="eu.cec.digit.circabc.cache.invitedUsersCache"/>      
+   </bean>
+
+   <!-- The transactional cache for invited users -->
+
+   <bean name="invitedUsersCache" class="org.alfresco.repo.cache.TransactionalCache">
+      <property name="sharedCache">
+         <ref bean="invitedUsersSharedCache" />
+      </property>
+      <property name="name">
+         <value>eu.cec.digit.circabc.invitedUsersTransactionalCache</value>
+      </property>
+      <property name="maxCacheSize" value="${eu.cec.digit.circabc.cache.invitedUsersCache.tx.maxItems}" />
+      <property name="mutable" value="false" />
+      <property name="disableSharedCache" value="${system.cache.disableImmutableSharedCaches}" />
+   </bean>
+   
+
+   <!-- The cross-transaction shared cache for DynamicAuthority -->
+
+   <bean name="dynamicAuthoritySharedCache" factory-bean="cacheFactory" factory-method="createCache">
+      <constructor-arg value="eu.cec.digit.circabc.cache.dynamicAuthorityCache"/>      
+   </bean>
+
+   <!-- The transactional cache for DynamicAuthority -->
+
+   <bean name="dynamicAuthorityCache" class="org.alfresco.repo.cache.TransactionalCache">
+      <property name="sharedCache">
+         <ref bean="dynamicAuthoritySharedCache" />
+      </property>
+      <property name="name">
+         <value>eu.cec.digit.circabc.dynamicAuthorityTransactionalCache</value>
+      </property>
+      <property name="maxCacheSize" value="${eu.cec.digit.circabc.cache.dynamicAuthorityCache.tx.maxItems}" />
+      <property name="mutable" value="false" />
+      <property name="disableSharedCache" value="${system.cache.disableImmutableSharedCaches}" />
+   </bean>
+
+
+   <!-- The cross-transaction shared cache for Whats new Nodes -->
+
+   <bean name="whatsNewNodesSharedCache" factory-bean="cacheFactory" factory-method="createCache">
+      <constructor-arg value="eu.cec.digit.circabc.cache.whatsNewNodesCache"/>      
+   </bean>
+
+   <!-- The transactional cache for Whats new Nodes -->
+
+   <bean name="whatsNewNodesCache" class="org.alfresco.repo.cache.TransactionalCache">
+      <property name="sharedCache">
+         <ref bean="whatsNewNodesSharedCache" />
+      </property>
+      <property name="name">
+         <value>eu.cec.digit.circabc.whatsNewNodesTransactionalCache</value>
+      </property>
+      <property name="maxCacheSize" value="${eu.cec.digit.circabc.cache.whatsNewNodesCache.tx.maxItems}" />
+      <property name="mutable" value="false" />
+      <property name="disableSharedCache" value="${system.cache.disableImmutableSharedCaches}" />
+   </bean>
+
+
+	<!--  caches for node customization -->
+
+   <!-- The cross-transaction shared cache for customization containers Searching -->
+
+   <bean name="customization.containerSharedCache" factory-bean="cacheFactory" factory-method="createCache">
+      <constructor-arg value="eu.cec.digit.circabc.cache.custom.customizationContainer"/>      
+   </bean>
+
+   <!-- The transactional cache for customization containers Searching -->
+   
+   <bean name="customization.containerCache" class="org.alfresco.repo.cache.TransactionalCache">
+      <property name="sharedCache">
+         <ref bean="customization.containerSharedCache" />
+      </property>
+      <property name="name">
+         <value>eu.cec.digit.circabc.custom.customizationTransactionalContainer</value>
+      </property>
+      <property name="maxCacheSize" value="${eu.cec.digit.circabc.cache.custom.customizationContainer.tx.maxItems}" />
+      <property name="mutable" value="false" />
+      <property name="disableSharedCache" value="${system.cache.disableImmutableSharedCaches}" />
+   </bean>
+
+
+   <!-- The cross-transaction shared cache for customization folders (in custom containers) Searching -->
+
+   <bean name="customization.foldersSharedCache" factory-bean="cacheFactory" factory-method="createCache">
+      <constructor-arg value="eu.cec.digit.circabc.cache.custom.customizationContainerFolders"/>      
+   </bean>
+
+   <!-- The transactional cache for customization folders (in custom containers) Searching -->
+
+   <bean name="customization.foldersCache" class="org.alfresco.repo.cache.TransactionalCache">
+      <property name="sharedCache">
+         <ref bean="customization.foldersSharedCache" />
+      </property>
+      <property name="name">
+         <value>eu.cec.digit.circabc.custom.customizationFoldersTransactionalContainer</value>
+      </property>
+      <property name="maxCacheSize" value="${eu.cec.digit.circabc.cache.custom.customizationContainerFolders.tx.maxItems}" />
+      <property name="mutable" value="false" />
+      <property name="disableSharedCache" value="${system.cache.disableImmutableSharedCaches}" />
+   </bean>
+
+
+   <!-- The cross-transaction shared cache for navigation preferences Mapping -->
+
+   <bean name="customization.navigation.preferenceSharedCache" factory-bean="cacheFactory" factory-method="createCache">
+      <constructor-arg value="eu.cec.digit.circabc.cache.custom.navigationPreferenceFolders"/>      
+   </bean>
+
+   <!-- The transactional cache for navigation preferences Mapping -->
+
+   <bean name="customization.navigation.preferenceCache" class="org.alfresco.repo.cache.TransactionalCache">
+      <property name="sharedCache">
+         <ref bean="customization.navigation.preferenceSharedCache" />
+      </property>
+      <property name="name">
+         <value>eu.cec.digit.circabc.custom.navigationPreferenceTransactionalContainer</value>
+      </property>
+      <property name="maxCacheSize" value="${eu.cec.digit.circabc.cache.custom.navigationPreferenceFolders.tx.maxItems}" />
+      <property name="mutable" value="false" />
+      <property name="disableSharedCache" value="${system.cache.disableImmutableSharedCaches}" />
+   </bean>
+
+
+   <!-- The cross-transaction shared cache for logo configuration Mapping -->
+
+   <bean name="customization.logo.configSharedCache" factory-bean="cacheFactory" factory-method="createCache">
+      <constructor-arg value="eu.cec.digit.circabc.cache.custom.logoConfig"/>      
+   </bean>
+
+   <!-- The transactional cache for logo configuration Mapping -->
+
+   <bean name="customization.logo.configCache" class="org.alfresco.repo.cache.TransactionalCache">
+      <property name="sharedCache">
+         <ref bean="customization.logo.configSharedCache" />
+      </property>
+      <property name="name">
+         <value>eu.cec.digit.circabc.custom.logoConfigTransactionalContainer</value>
+      </property>
+      <property name="maxCacheSize" value="${eu.cec.digit.circabc.cache.custom.logoConfig.tx.maxItems}" />
+      <property name="mutable" value="false" />
+      <property name="disableSharedCache" value="${system.cache.disableImmutableSharedCaches}" />
+   </bean>
+
+
+   <!-- The cross-transaction shared cache for logo images Mapping -->
+
+   <bean name="customization.logo.imagesSharedCache" factory-bean="cacheFactory" factory-method="createCache">
+      <constructor-arg value="eu.cec.digit.circabc.cache.custom.logoImages"/>      
+   </bean>
+
+   <!-- The transactional cache for logo images Mapping -->
+
+   <bean name="customization.logo.imagesCache" class="org.alfresco.repo.cache.TransactionalCache">
+      <property name="sharedCache">
+         <ref bean="customization.logo.imagesSharedCache" />
+      </property>
+      <property name="name">
+         <value>eu.cec.digit.circabc.custom.logoImagesTransactionalContainer</value>
+      </property>
+      <property name="maxCacheSize" value="${eu.cec.digit.circabc.cache.custom.logoImages.tx.maxItems}" />
+      <property name="mutable" value="false" />
+      <property name="disableSharedCache" value="${system.cache.disableImmutableSharedCaches}" />
+   </bean>
+
+   
+   <bean name="ldapEcasDomainServiceCache" factory-bean="cacheFactory" factory-method="createCache">
+      <constructor-arg value="eu.cec.digit.circabc.repo.user.ldapEcasDomainServiceCache"/>      
+   </bean>
+
+
+   <bean name="circabcFileFolderServiceCache" factory-bean="cacheFactory" factory-method="createCache">
+      <constructor-arg value="eu.cec.digit.circabc.repo.filefolder.circabcFileFolderServiceCache"/>      
+   </bean>
+
+
+	<!-- The cross-transaction shared cache for header Nodes -->
+  
+   <bean name="headerNodesSharedCache" factory-bean="cacheFactory" factory-method="createCache">
+      <constructor-arg value="eu.cec.digit.circabc.cache.headerNodesCache"/>      
+   </bean>
+
+   <!-- The transactional cache for header Nodes -->
+
+   <bean name="headerNodesCache" class="org.alfresco.repo.cache.TransactionalCache">
+      <property name="sharedCache">
+         <ref bean="headerNodesSharedCache" />
+      </property>
+      <property name="name">
+         <value>eu.cec.digit.circabc.headerNodesTransactionalCache</value>
+      </property>
+      <property name="maxCacheSize" value="${eu.cec.digit.circabc.cache.headerNodesCache.tx.maxItems}" />
+      <property name="mutable" value="false" />
+      <property name="disableSharedCache" value="${system.cache.disableImmutableSharedCaches}" />
+   </bean>
+
+
+	<!-- The cross-transaction shared cache for header Nodes -->
+
+   <bean name="categoryHeadersSharedCache" factory-bean="cacheFactory" factory-method="createCache">
+      <constructor-arg value="eu.cec.digit.circabc.cache.categoryHeadersCache"/>      
+   </bean>
+
+   <!-- The transactional cache for header Nodes -->
+
+   <bean name="categoryHeadersCache" class="org.alfresco.repo.cache.TransactionalCache">
+      <property name="sharedCache">
+         <ref bean="categoryHeadersSharedCache" />
+      </property>
+      <property name="name">
+         <value>eu.cec.digit.circabc.categoryHeadersTransactionalCache</value>
+      </property>
+      <property name="maxCacheSize" value="1000" />
+      <property name="mutable" value="false" />
+      <property name="disableSharedCache" value="${system.cache.disableImmutableSharedCaches}" />
+   </bean>
+
+
+	<!-- The cross-transaction shared cache for dynamic properties -->
+
+   <bean name="dynamicPropertySharedCache" factory-bean="cacheFactory" factory-method="createCache">
+      <constructor-arg value="eu.cec.digit.circabc.repo.dynamic.property.dynamicPropertyService"/>      
+   </bean>
+
+	<!-- The transactional cache for dynamic properties -->
+
+   <bean name="dynamicPropertyCache" class="org.alfresco.repo.cache.TransactionalCache">
+      <property name="sharedCache">
+         <ref bean="dynamicPropertySharedCache" />
+      </property>
+      <property name="name">
+         <value>eu.cec.digit.circabc.repo.dynamic.property.dynamicPropertyServiceImpl</value>
+      </property>
+      <property name="maxCacheSize" value="${eu.cec.digit.circabc.repo.dynamic.property.dynamicPropertyService.tx.maxItems}" />
+      <property name="mutable" value="false" />
+      <property name="disableSharedCache" value="${system.cache.disableImmutableSharedCaches}" />
+   </bean>	
+
+
+	<!-- The cross-transaction shared cache for HRS internal entities -->
+
+   <bean name="hrsInternalEntitiesSharedCache" factory-bean="cacheFactory" factory-method="createCache">
+      <constructor-arg value="eu.cec.digit.circabc.cache.hrsInternalEntitiesCache"/>      
+   </bean>
+	
+   <!-- The transactional cache for HRS internal entities -->
+   
+   <bean name="hrsInternalEntitiesCache" class="org.alfresco.repo.cache.TransactionalCache">
+      <property name="sharedCache">
+         <ref bean="hrsInternalEntitiesSharedCache" />
+      </property>
+      <property name="name">
+         <value>eu.cec.digit.circabc.hrsInternalEntitiesTransactionalCache</value>
+      </property>
+      <property name="maxCacheSize" value="${eu.cec.digit.circabc.cache.hrsInternalEntitiesCache.tx.maxItems}" />
+      <property name="mutable" value="false" />
+      <property name="disableSharedCache" value="${system.cache.disableImmutableSharedCaches}" />
+   </bean>
+	
+	
+   <!-- Dynamic authority caches -->
+   
+   <bean name="circabcDynamicAuthorityMethodCache" factory-bean="cacheFactory" factory-method="createCache">
+      <constructor-arg value="eu.cec.digit.circabc.service.dynamic.authority.circabcDynamicAuthority"/>      
+   </bean>
+<!-- 	
+   <bean name="lockOwnerDynamicAuthority" factory-bean="cacheFactory" factory-method="createCache">
+      <constructor-arg value="org.alfresco.dynamic.authority.lockOwnerDynamicAuthority"/>      
+   </bean>
+	
+   <bean name="ownerDynamicAuthority" factory-bean="cacheFactory" factory-method="createCache">
+      <constructor-arg value="org.alfresco.dynamic.authority.ownerDynamicAuthority"/>      
+   </bean>
+ -->	
+</beans>

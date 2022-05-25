@@ -1,0 +1,28 @@
+<cbc-modal
+  [title]="'label.make.multilingual'"
+  (ok)="enableMultilingual()"
+  (cancel)="cancel()"
+  [okLabel]="'label.accept'"
+  [executing]="processing"
+  [executingLabel]="'label.updating'"
+  [(visible)]="showModal"
+  [contentClass]="'modal-content'"
+>
+  <form [formGroup]="enableMultilingualForm">
+    <p> {{ 'translations.make.multilingual.introduction' | transloco }} </p>
+    <div class="field">
+      <label for="author">{{ 'label.author' | transloco }}</label>
+      <input type="text" formControlName="author" />
+      <cbc-control-message [control]="authorControl"></cbc-control-message>
+    </div>
+    <div class="field">
+      <label for="language">{{ 'label.language' | transloco }}</label>
+      <div class="custom-select select--form reset-width">
+        <cbc-lang-selector
+          formControlName="lang"
+          [worldwide]="true"
+        ></cbc-lang-selector>
+      </div>
+    </div>
+  </form>
+</cbc-modal>

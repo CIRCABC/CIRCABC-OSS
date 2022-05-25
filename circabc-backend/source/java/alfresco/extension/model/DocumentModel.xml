@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Copyright 2006 European Community
+  
+   Licensed under the EUPL, Version 1.1 or \?as soon they
+   will be approved by the European Commission - subsequent
+   versions of the EUPL (the "Licence");
+   You may not use this work except in compliance with the
+   Licence.
+   You may obtain a copy of the Licence at:
+  
+   https://joinup.ec.europa.eu/software/page/eupl
+  
+   Unless required by applicable law or agreed to in
+   writing, software distributed under the Licence is
+   distributed on an "AS IS" basis,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+   express or implied.
+   See the Licence for the specific language governing
+   permissions and limitations under the Licence.
+-->
+
+<!-- Definition of Circabc Document Model. It extends the cm:??? contentModel -->
+<model name="cd:circadocumentmodel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+   <!-- Optional meta-data about the model -->
+   <description>CircaDocumentModel Model</description>
+   <author>Trasys</author>
+   <version>1.0</version>
+
+   <!-- Imports are required to allow references to definitions in other models -->
+   <imports>
+   	  <!-- Import Alfresco Dictionary Definitions -->
+      <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+      <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+   </imports>
+
+   <!-- Introduction of new namespaces defined by this model -->
+   <namespaces>
+      <namespace uri="http://www.cc.cec/circabc/model/document/1.0" prefix="cd"/>
+   </namespaces>
+
+   <!-- Type and Aspect definitions go here -->
+
+	<types>
+		<type name="cd:hiddenContent">
+			<title>Customization content</title>
+			<parent>cm:cmobject</parent>
+			<properties>
+				<property name="cd:content">
+					<type>d:content</type>
+               		<mandatory>false</mandatory>
+	               	<index enabled="false" />
+				</property>
+			</properties>
+	 	</type>
+	</types>
+
+    <aspects>
+
+    <aspect name="cd:circadocument">
+		 <title>CircaDocument</title>
+		<mandatory-aspects>
+            <aspect>cd:bproperties</aspect>
+            <aspect>cd:cproperties</aspect>
+        	<aspect>cm:versionable</aspect>
+         </mandatory-aspects>
+	</aspect>
+
+
+    <!-- Definition of new BProperties -->
+    <aspect name="cd:bproperties">
+         <title>BProperties</title>
+         <properties>
+         <property name="cd:security_ranking">
+					<type>d:text</type>
+					<mandatory>false</mandatory>
+					<default>NORMAL</default>
+					<constraints>
+					<constraint name="cd:list_security_ranking" type="LIST">
+				        <parameter name="allowedValues">
+				            <list>
+								<value>NORMAL</value>
+								<value>SENSITIVE</value>
+								<value>SPECIAL_HANDLING</value>	
+				                <value>PUBLIC</value>
+				                <value>INTERNAL</value>
+				                <value>LIMITED</value>
+				            </list>
+				        </parameter>
+				        <parameter name="caseSensitive"><value>false</value></parameter>
+				     </constraint>
+				     </constraints>
+				</property>
+				<property name="cd:expiration_date">
+					<type>d:datetime</type>
+					<mandatory>false</mandatory>
+					<index enabled="true">
+                  <atomic>true</atomic>
+                  <stored>false</stored>
+                  <tokenised>true</tokenised>
+               </index>
+				</property>
+         </properties>
+    </aspect>
+
+    <!-- Definition of new CProperties -->
+    <aspect name="cd:cproperties">
+         <title>CProperties</title>
+         <properties>
+			<property name="cd:keyword">
+               <title>Keywords</title>
+               <type>d:category</type>
+               <mandatory>false</mandatory>
+               <multiple>true</multiple>
+               <index enabled="true">
+                  <atomic>true</atomic>
+                  <stored>true</stored>
+                  <tokenised>true</tokenised>
+               </index>
+            </property>
+			<property name="cd:status">
+					<type>d:text</type>
+					<mandatory>true</mandatory>
+					<default>DRAFT</default>
+					<constraints>
+					<constraint name="cd:list_status" type="LIST">
+				        <parameter name="allowedValues">
+				            <list>
+				                <value>DRAFT</value>
+				                <value>FINAL</value>
+				                <value>RELEASE</value>
+				            </list>
+				        </parameter>
+				        <parameter name="caseSensitive"><value>false</value></parameter>
+				     </constraint>
+				     </constraints>
+				</property>
+				<property name="cd:issue_date">
+					<type>d:datetime</type>
+					<mandatory>false</mandatory>
+					<index enabled="true">
+                  <atomic>true</atomic>
+                  <stored>false</stored>
+                  <tokenised>true</tokenised>
+               </index>
+				</property>
+				<property name="cd:reference">
+					<type>d:text</type>
+					<mandatory>false</mandatory>
+					<index enabled="true">
+                  <atomic>true</atomic>
+                  <stored>false</stored>
+                  <tokenised>true</tokenised>
+               </index>
+			</property>
+			<property name="cd:dynAttr1">
+				<type>d:text</type>
+				<mandatory>false</mandatory>
+				<index enabled="true">
+					<atomic>true</atomic>
+					<stored>false</stored>
+					<tokenised>true</tokenised>
+				</index>
+			</property>
+			<property name="cd:dynAttr2">
+				<type>d:text</type>
+				<mandatory>false</mandatory>
+				<index enabled="true">
+					<atomic>true</atomic>
+					<stored>false</stored>
+					<tokenised>true</tokenised>
+				</index>
+			</property>
+			<property name="cd:dynAttr3">
+				<type>d:text</type>
+				<mandatory>false</mandatory>
+				<index enabled="true">
+					<atomic>true</atomic>
+					<stored>false</stored>
+					<tokenised>true</tokenised>
+				</index>
+			</property>
+			<property name="cd:dynAttr4">
+				<type>d:text</type>
+				<mandatory>false</mandatory>
+				<index enabled="true">
+					<atomic>true</atomic>
+					<stored>false</stored>
+					<tokenised>true</tokenised>
+				</index>
+			</property>
+			<property name="cd:dynAttr5">
+				<type>d:text</type>
+				<mandatory>false</mandatory>
+				<index enabled="true">
+					<atomic>true</atomic>
+					<stored>false</stored>
+					<tokenised>true</tokenised>
+				</index>
+			</property>
+			<property name="cd:dynAttr6">
+				<type>d:text</type>
+				<mandatory>false</mandatory>
+				<index enabled="true">
+					<atomic>true</atomic>
+					<stored>false</stored>
+					<tokenised>true</tokenised>
+				</index>
+			</property>
+			<property name="cd:dynAttr7">
+				<type>d:text</type>
+				<mandatory>false</mandatory>
+				<index enabled="true">
+					<atomic>true</atomic>
+					<stored>false</stored>
+					<tokenised>true</tokenised>
+				</index>
+			</property>
+			<property name="cd:dynAttr8">
+				<type>d:text</type>
+				<mandatory>false</mandatory>
+				<index enabled="true">
+					<atomic>true</atomic>
+					<stored>false</stored>
+					<tokenised>true</tokenised>
+				</index>
+			</property>
+			<property name="cd:dynAttr9">
+				<type>d:text</type>
+				<mandatory>false</mandatory>
+				<index enabled="true">
+					<atomic>true</atomic>
+					<stored>false</stored>
+					<tokenised>true</tokenised>
+				</index>
+			</property>
+			<property name="cd:dynAttr10">
+				<type>d:text</type>
+				<mandatory>false</mandatory>
+				<index enabled="true">
+					<atomic>true</atomic>
+					<stored>false</stored>
+					<tokenised>true</tokenised>
+				</index>
+			</property>
+			<property name="cd:dynAttr11">
+				<type>d:text</type>
+				<mandatory>false</mandatory>
+				<index enabled="true">
+					<atomic>true</atomic>
+					<stored>false</stored>
+					<tokenised>true</tokenised>
+				</index>
+			</property>
+			<property name="cd:dynAttr12">
+				<type>d:text</type>
+				<mandatory>false</mandatory>
+				<index enabled="true">
+					<atomic>true</atomic>
+					<stored>false</stored>
+					<tokenised>true</tokenised>
+				</index>
+			</property>
+			<property name="cd:dynAttr13">
+				<type>d:text</type>
+				<mandatory>false</mandatory>
+				<index enabled="true">
+					<atomic>true</atomic>
+					<stored>false</stored>
+					<tokenised>true</tokenised>
+				</index>
+			</property>
+			<property name="cd:dynAttr14">
+				<type>d:text</type>
+				<mandatory>false</mandatory>
+				<index enabled="true">
+					<atomic>true</atomic>
+					<stored>false</stored>
+					<tokenised>true</tokenised>
+				</index>
+			</property>
+			<property name="cd:dynAttr15">
+				<type>d:text</type>
+				<mandatory>false</mandatory>
+				<index enabled="true">
+					<atomic>true</atomic>
+					<stored>false</stored>
+					<tokenised>true</tokenised>
+				</index>
+			</property>
+			<property name="cd:dynAttr16">
+				<type>d:text</type>
+				<mandatory>false</mandatory>
+				<index enabled="true">
+					<atomic>true</atomic>
+					<stored>false</stored>
+					<tokenised>true</tokenised>
+				</index>
+			</property>
+			<property name="cd:dynAttr17">
+				<type>d:text</type>
+				<mandatory>false</mandatory>
+				<index enabled="true">
+					<atomic>true</atomic>
+					<stored>false</stored>
+					<tokenised>true</tokenised>
+				</index>
+			</property>
+			<property name="cd:dynAttr18">
+				<type>d:text</type>
+				<mandatory>false</mandatory>
+				<index enabled="true">
+					<atomic>true</atomic>
+					<stored>false</stored>
+					<tokenised>true</tokenised>
+				</index>
+			</property>
+			<property name="cd:dynAttr19">
+				<type>d:text</type>
+				<mandatory>false</mandatory>
+				<index enabled="true">
+					<atomic>true</atomic>
+					<stored>false</stored>
+					<tokenised>true</tokenised>
+				</index>
+			</property>
+			<property name="cd:dynAttr20">
+				<type>d:text</type>
+				<mandatory>false</mandatory>
+				<index enabled="true">
+					<atomic>true</atomic>
+					<stored>false</stored>
+					<tokenised>true</tokenised>
+				</index>
+			</property>
+         </properties>
+      </aspect>
+
+
+      <aspect name="cd:urlable">
+         <title>URL Aspect</title>
+         <properties>
+            <property name="cd:url">
+               <type>d:text</type>
+			   <mandatory>true</mandatory>
+            </property>
+         </properties>
+      </aspect>
+
+	<aspect name="cd:attachable">
+         <title>Related Referencing</title>
+         <associations>
+            <association name="cd:externalReferences">
+               <source>
+                  <role>cd:referencedBy</role>
+                  <mandatory>false</mandatory>
+                  <many>true</many>
+               </source>
+               <target>
+                  <class>cm:cmobject</class>
+                  <role>cd:references</role>
+                  <mandatory>false</mandatory>
+                  <many>true</many>
+               </target>
+            </association>
+            <child-association name="cd:hiddenReferences">
+               <source>
+                  <mandatory>false</mandatory>
+                  <many>true</many>
+               </source>
+               <target>
+                  <class>cd:hiddenContent</class>
+                  <mandatory>false</mandatory>
+                  <many>true</many>
+               </target>
+               <duplicate>false</duplicate>
+               <propagateTimestamps>true</propagateTimestamps>
+            </child-association>
+         </associations>
+      </aspect>
+
+      <aspect name="cd:encryptable">
+         <title>Encryptable Aspect</title>
+         <properties>
+            <property name="cd:encryptedText">
+               <type>d:encrypted</type>
+			   <mandatory>false</mandatory>
+            </property>
+            <property name="cd:encryptedText2">
+               <type>d:encrypted</type>
+			   <mandatory>false</mandatory>
+            </property>
+         </properties>
+      </aspect>
+
+   </aspects>
+
+</model>

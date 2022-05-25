@@ -1,0 +1,17 @@
+<section class="box">
+  <div class="index"> {{ property.index }} </div>
+  <div class="type"> {{ property.propertyType }} </div>
+  {{ 'label.title' | transloco }}:
+  <cbc-title-tag
+    *ngFor="let entry of getTitleAsArray()"
+    [entry]="entry"
+  ></cbc-title-tag>
+  <div *ngIf="isSelection()" class="possibleValues">
+    {{ 'label.values' | transloco }}:
+    <span *ngFor="let val of property.possibleValues">{{ val }}</span>
+  </div>
+  <div class="actions">
+    <a (click)="bubbleDynpropEdit()">{{ 'label.edit' | transloco }}</a>
+    <a (click)="bubbleDynpropDeleted()">{{ 'label.delete' | transloco }}</a>
+  </div>
+</section>

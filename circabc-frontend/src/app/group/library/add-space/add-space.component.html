@@ -1,0 +1,70 @@
+<cbc-modal
+  *ngIf="createSpaceForm !== undefined"
+  [title]="'add.space.create.space'"
+  (ok)="createSpace()"
+  (cancel)="cancelWizard('close')"
+  [okLabel]="'label.create'"
+  [(visible)]="showWizard"
+  [executing]="creating"
+  [executingLabel]="'label.creating'"
+  [showOkButton]="createSpaceForm.valid && !creating"
+>
+  <form [formGroup]="createSpaceForm">
+    <div class="field">
+      <label for="name" style="padding-bottom: 5px"
+        >{{ 'label.name' | transloco }}</label
+      >
+      <input
+        formControlName="name"
+        type="text"
+        id="name"
+        value=""
+        placeholder="{{ 'label.placeholder.space.name' | transloco }}"
+        style="width: 100%"
+      />
+      <cbc-control-message [control]="nameControl"></cbc-control-message>
+    </div>
+    <cbc-multilingual-input
+      formControlName="title"
+      [label]="'label.title' | transloco"
+      [placeholder]="'label.title' | transloco"
+      [lang]="'EN'"
+    ></cbc-multilingual-input>
+    <br />
+    <cbc-multilingual-input
+      formControlName="description"
+      [label]="'label.description' | transloco"
+      [placeholder]="'label.description' | transloco"
+      [lang]="'EN'"
+      [textarea]="true"
+    ></cbc-multilingual-input>
+
+    <div class="permission">
+      <div class="permission_control">
+        <strong>{{ 'label.permissions.manage' | transloco }}</strong>
+
+        <cbc-hint
+          [title]="'label.permissions.inherited.help-title' | transloco"
+          [text]="'label.permissions.inherited.help' | transloco"
+        ></cbc-hint>
+
+        <mat-slide-toggle
+          formControlName="managePermited"
+          (click)="setPermissionMsg()"
+        ></mat-slide-toggle>
+        <strong
+          >{{ (createSpaceForm.value.managePermited? "label.yes":"label.no") |
+          transloco}}</strong
+        >
+      </div>
+      <div class="permission_info_msg">
+        <span *ngIf="createSpaceForm.value.managePermited"
+          ><em>{{ 'label.permissions.inherited.true' | transloco }}</em></span
+        >
+        <span *ngIf="!createSpaceForm.value.managePermited"
+          ><em>{{ 'label.permissions.inherited.false' | transloco }}</em></span
+        >
+      </div>
+    </div>
+  </form>
+</cbc-modal>

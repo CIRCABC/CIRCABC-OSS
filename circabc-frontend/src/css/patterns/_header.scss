@@ -1,0 +1,506 @@
+@use '../global/variables-mixins-keyframes';
+
+/* HEADER */
+
+.main-header {
+  height: 65px;
+  min-width: 1024px;
+  background: #1f3341;
+  background: url(^img/header.jpg) no-repeat center bottom;
+
+  @include variables-mixins-keyframes.background-cover;
+
+  color: #fff;
+  font-size: 11.5px;
+  font-size: 1.15rem;
+
+  @include variables-mixins-keyframes.responsive-break-medium();
+
+  .home-link {
+    text-decoration: none;
+  }
+
+  .logo {
+    margin-top: 8px;
+  }
+
+  .search-bar {
+    display: inline-block;
+    vertical-align: top;
+    width: 500px;
+    border: 1px solid #fff;
+    background-color: rgb(255 255 255 / 0.1);
+    background-image: url(^img/icon-search-white.png);
+    background-repeat: no-repeat;
+    background-position: 98% center;
+    border-radius: 4px;
+    color: #fff;
+    font-family: variables-mixins-keyframes.$standardText;
+    font-size: 11.5px;
+    font-size: 1.15rem;
+    padding: 10px;
+    margin: 16px;
+    margin-left: 125px;
+
+    &::-webkit-input-placeholder {
+      /* WebKit browsers */
+
+      color: #fff;
+    }
+
+    &:-moz-placeholder {
+      /* Mozilla Firefox 4 to 18 */
+
+      color: #fff;
+      opacity: 1;
+    }
+
+    &::-moz-placeholder {
+      /* Mozilla Firefox 19+ */
+
+      color: #fff;
+      opacity: 1;
+    }
+
+    &:-ms-input-placeholder {
+      /* Internet Explorer 10+ */
+
+      color: #fff;
+    }
+
+    &::after {
+      content: 'icon';
+    }
+  }
+
+  .search-bar:focus {
+    background-color: rgb(255 255 255 / 1);
+    background-image: url(^img/icon-search-blue.png);
+    outline: none;
+    color: variables-mixins-keyframes.$link;
+
+    &::-webkit-input-placeholder {
+      /* WebKit browsers */
+
+      color: variables-mixins-keyframes.$link;
+    }
+
+    &:-moz-placeholder {
+      /* Mozilla Firefox 4 to 18 */
+
+      color: variables-mixins-keyframes.$link;
+      opacity: 1;
+    }
+
+    &::-moz-placeholder {
+      /* Mozilla Firefox 19+ */
+
+      color: variables-mixins-keyframes.$link;
+      opacity: 1;
+    }
+
+    &:-ms-input-placeholder {
+      /* Internet Explorer 10+ */
+
+      color: variables-mixins-keyframes.$link;
+    }
+  }
+
+  .personal-menu {
+    position: relative;
+    text-align: left;
+    display: inline-block;
+    vertical-align: top;
+    color: #fff;
+    text-decoration: none;
+    margin-top: 18px;
+
+    .personal-menu__name {
+      display: inline-block;
+      vertical-align: middle;
+      max-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+        display: none;
+        visibility: hidden;
+      }
+    }
+
+    .ctn-img {
+      display: inline-block;
+      vertical-align: middle;
+      background: variables-mixins-keyframes.$fluo-green;
+      border: 1px solid transparent;
+      border-radius: 50%;
+      overflow: hidden;
+      height: 36px;
+      width: 36px;
+      text-align: center;
+      line-height: 59px;
+
+      .img-default {
+        @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+          display: none;
+          visibility: hidden;
+        }
+      }
+
+      a {
+        display: none;
+
+        @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+          display: inline;
+        }
+      }
+    }
+
+    img {
+      border-radius: 50%;
+      border: 2px solid variables-mixins-keyframes.$link;
+      transition: 300ms all ease-out;
+      height: 34px;
+    }
+
+    .notif-box {
+      margin-left: -10px;
+      display: inline-block;
+      vertical-align: middle;
+      font-size: 13px;
+      font-size: 1.3rem;
+      font-weight: 500;
+      background: #8dcb6c;
+      background: -moz-linear-gradient(
+        top,
+        variables-mixins-keyframes.$dark-green 0%,
+        variables-mixins-keyframes.$light-green 100%
+      );
+      background: -webkit-gradient(
+        linear,
+        left top,
+        left bottom,
+        color-stop(0%, variables-mixins-keyframes.$dark-green),
+        color-stop(100%, variables-mixins-keyframes.$light-green)
+      );
+      background: -webkit-linear-gradient(
+        top,
+        variables-mixins-keyframes.$dark-green 0%,
+        variables-mixins-keyframes.$light-green 100%
+      );
+      background: -o-linear-gradient(
+        top,
+        variables-mixins-keyframes.$dark-green 0%,
+        variables-mixins-keyframes.$light-green 100%
+      );
+      background: -ms-linear-gradient(
+        top,
+        variables-mixins-keyframes.$dark-green 0%,
+        variables-mixins-keyframes.$light-green 100%
+      );
+      background: linear-gradient(
+        to bottom,
+        variables-mixins-keyframes.$dark-green 0%,
+        variables-mixins-keyframes.$light-green 100%
+      );
+      filter: progid:DXImageTransform.Microsoft.gradient(
+        startColorstr='#8dcb6c',
+        endColorstr='#58c37e',
+        GradientType=0
+      );
+      padding: 5px;
+      border-radius: 50%;
+      text-shadow: 0 0 5px rgb(0 0 0 / 0.5);
+    }
+  }
+
+  .personal-menu:hover {
+    .dropdown--personal-menu {
+      display: block;
+    }
+  }
+}
+
+.main-nav {
+  background: #fff;
+  height: 52px;
+
+  .tab {
+    font-size: 13px;
+    display: inline-block;
+    font-family: variables-mixins-keyframes.$titling;
+    text-decoration: none;
+    color: variables-mixins-keyframes.$textAAA;
+    height: 52px;
+    line-height: 52px;
+    padding: 0 18px;
+  }
+
+  .tab:hover {
+    background: #f5fafa;
+  }
+
+  .tab--group-name {
+    max-width: 400px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    font-size: 15px;
+    font-weight: 700;
+    color: #757575;
+  }
+
+  .tab--info,
+  .tab--library,
+  .tab--members,
+  .tab--agenda,
+  .tab--roles,
+  .tab--share,
+  .tab--forums,
+  .tab--admin,
+  .tab--dashboard,
+  .tab--tasks,
+  .tab--searches,
+  .tab--last,
+  .tab--group-browser,
+  .tab--help,
+  .tab--group-name {
+    position: relative;
+
+    &::before {
+      position: absolute;
+      left: calc(50% - 9px);
+      top: 8px;
+      content: '';
+      display: block;
+      width: 18px;
+      height: 18px;
+    }
+
+    .label {
+      position: relative;
+      top: 10px;
+    }
+  }
+
+  .tab--info::before {
+    background: url(^img/icon-info-grey.png) no-repeat;
+  }
+
+  .tab--library::before {
+    background: url(^img/icon-library-grey.png) no-repeat;
+  }
+
+  .tab--members::before {
+    background: url(^img/icon-members-grey.png) no-repeat;
+  }
+
+  .tab--agenda::before {
+    background: url(^img/icon-agenda-grey.png) no-repeat;
+  }
+
+  .tab--forums::before {
+    background: url(^img/icon-forums-grey.png) no-repeat;
+  }
+
+  .tab--admin::before {
+    background: url(^img/icon-admin-grey.png) no-repeat;
+  }
+
+  .tab--roles::before {
+    background: url(^img/business-card.png) no-repeat;
+    background-size: 18px 18px;
+  }
+
+  .tab--share::before {
+    background: url(^img/icon-share-grey.png) no-repeat;
+    background-size: 18px 18px;
+  }
+
+  // Tabs from personal/other pages
+  .tab--dashboard::before {
+    background: url(^img/icon-dashboard-grey.png) no-repeat;
+  }
+
+  .tab--tasks::before {
+    background: url(^img/icon-tasks-grey.png) no-repeat;
+  }
+
+  .tab--searches::before {
+    background: url(^img/icon-search-grey.png) no-repeat;
+  }
+
+  .tab--last::before {
+    background: url(^img/icon-last-grey.png) no-repeat;
+  }
+
+  .tab--group-browser::before {
+    background: url(^img/icon-group-browser-grey.png) no-repeat;
+    background-size: 20px;
+  }
+
+  .tab--help::before {
+    background: url(^img/icon-help-grey.png) no-repeat;
+  }
+
+  // States
+  .tab--has-notif .notification {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    position: relative;
+    top: 10px;
+    border-radius: 50%;
+    margin-left: 5px;
+    background: #8dcb6c;
+    background: -moz-linear-gradient(
+      bottom,
+      variables-mixins-keyframes.$light-green 0%,
+      variables-mixins-keyframes.$dark-green 100%
+    );
+    background: -webkit-gradient(
+      linear,
+      left bottom,
+      left top,
+      color-stop(0%, variables-mixins-keyframes.$light-green),
+      color-stop(100%, variables-mixins-keyframes.$dark-green)
+    );
+    background: -webkit-linear-gradient(
+      bottom,
+      variables-mixins-keyframes.$light-green 0%,
+      variables-mixins-keyframes.$dark-green 100%
+    );
+    background: -o-linear-gradient(
+      bottom,
+      variables-mixins-keyframes.$light-green 0%,
+      variables-mixins-keyframes.$dark-green 100%
+    );
+    background: -ms-linear-gradient(
+      bottom,
+      variables-mixins-keyframes.$light-green 0%,
+      variables-mixins-keyframes.$dark-green 100%
+    );
+    background: linear-gradient(
+      to top,
+      variables-mixins-keyframes.$light-green 0%,
+      variables-mixins-keyframes.$dark-green 100%
+    );
+    filter: progid:DXImageTransform.Microsoft.gradient(
+      startColorstr='#8dcb6c',
+      endColorstr='#58c37e',
+      GradientType=0
+    );
+  }
+
+  .tab--current {
+    color: variables-mixins-keyframes.$link;
+    position: relative;
+
+    &::after {
+      content: '';
+      height: 4px;
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: 0;
+      background: #8dcb6c;
+      background: -moz-linear-gradient(
+        right,
+        variables-mixins-keyframes.$light-green 0%,
+        variables-mixins-keyframes.$dark-green 100%
+      );
+      background: -webkit-gradient(
+        linear,
+        right,
+        left,
+        color-stop(0%, variables-mixins-keyframes.$light-green),
+        color-stop(100%, variables-mixins-keyframes.$dark-green)
+      );
+      background: -webkit-linear-gradient(
+        right,
+        variables-mixins-keyframes.$light-green 0%,
+        variables-mixins-keyframes.$dark-green 100%
+      );
+      background: -o-linear-gradient(
+        right,
+        variables-mixins-keyframes.$light-green 0%,
+        variables-mixins-keyframes.$dark-green 100%
+      );
+      background: -ms-linear-gradient(
+        right,
+        variables-mixins-keyframes.$light-green 0%,
+        variables-mixins-keyframes.$dark-green 100%
+      );
+      background: linear-gradient(
+        to left,
+        variables-mixins-keyframes.$light-green 0%,
+        variables-mixins-keyframes.$dark-green 100%
+      );
+      filter: progid:DXImageTransform.Microsoft.gradient(
+        startColorstr='#8dcb6c',
+        endColorstr='#58c37e',
+        GradientType=0
+      );
+    }
+
+    &.tab--info::before {
+      background: url(^img/icon-info-blue.png) no-repeat;
+    }
+
+    &.tab--library::before {
+      background: url(^img/icon-library-blue.png) no-repeat;
+    }
+
+    &.tab--members::before {
+      background: url(^img/icon-members-blue.png) no-repeat;
+    }
+
+    &.tab--agenda::before {
+      background: url(^img/icon-agenda-blue.png) no-repeat;
+    }
+
+    &.tab--roles::before {
+      background: url(^img/business-card-blue.png) no-repeat;
+      background-size: 18px 18px;
+    }
+
+    &.tab--forums::before {
+      background: url(^img/icon-forums-blue.png) no-repeat;
+    }
+
+    &.tab--admin::before {
+      background: url(^img/icon-admin-blue.png) no-repeat;
+    }
+
+    &.tab--dashboard::before {
+      background: url(^img/icon-dashboard-blue.png) no-repeat;
+    }
+
+    &.tab--tasks::before {
+      background: url(^img/icon-tasks-blue.png) no-repeat;
+    }
+
+    &.tab--searches::before {
+      background: url(^img/icon-search-blue.png) no-repeat;
+    }
+
+    &.tab--last::before {
+      background: url(^img/icon-last-blue.png) no-repeat;
+    }
+
+    &.tab--group-browser::before {
+      background: url(^img/icon-group-browser-blue.png) no-repeat;
+    }
+
+    &.tab--help::before {
+      background: url(^img/icon-help-blue.png) no-repeat;
+    }
+  }
+}
+
+.page-header__backlink {
+  background: url(^img/icon-back.png) no-repeat;
+  padding: 4px 30px 5px !important;
+  font-size: 13px;
+}

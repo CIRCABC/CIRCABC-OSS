@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Invite the users in an IG</shortname>
+  <description>Invite the users in an IG</description>
+    <url>/circabc/groups/{igId}/members</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<!--+
+    |     Copyright European Community 2006 - Licensed under the EUPL V.1.0
+    |
+    |          http://ec.europa.eu/idabc/en/document/6523
+    |
+    +-->
+
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+  
+  <!--                    -->
+  <!--  PERSISTENCE       -->
+  <!--                    -->
+  
+  <bean id="dataSource"
+    class="eu.cec.digit.circabc.springframework.jndi.JndiObjectFactoryBean">
+    <property name="jndiName" value="${db.jndiName}" />
+  </bean>
+  
+  <bean id="auditDataSource"
+    class="eu.cec.digit.circabc.springframework.jndi.JndiObjectFactoryBean">
+    <property name="jndiName" value="${circabcdb.jndiName}" />
+  </bean>
+  
+  <!-- Datasource to use for Activiti -->
+  <bean id="activitiIdGeneratorDataSource" class="org.alfresco.config.JndiObjectFactoryBean">
+    <property name="jndiName" value="${db.jndiName}" />
+    <property name="defaultObject">
+      <ref bean="defaultActivitiIdGeneratorDataSource" />
+    </property>
+  </bean>
+  
+</beans>

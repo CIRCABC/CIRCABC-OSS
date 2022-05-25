@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>CIRCABC categories contact form</shortname>
+  <description>Contact the admins of a category</description>
+  <url>/circabc/categories/{id}/contact</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

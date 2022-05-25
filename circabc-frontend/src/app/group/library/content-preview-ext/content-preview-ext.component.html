@@ -1,0 +1,48 @@
+<cbc-preview
+  [title]="'label.preview'"
+  (ok)="close()"
+  (cancel)="close()"
+  [okLabel]="'label.close'"
+  [(visible)]="showModal"
+  [displayCloseButton]="false"
+  (visibleChange)="visibleChange($event)"
+>
+  <div *ngIf="previewResult !== undefined">
+    <div class="page-content" style="width: 100%">
+      <ngx-extended-pdf-viewer
+        *ngIf="isDocumentPreview"
+        [src]="contentURL"
+        (on-error)="onError($event)"
+        (on-progress)="onProgress($event)"
+        [height]="'100vh'"
+        [useBrowserLocale]="true"
+        [textLayer]="true"
+        [showHandToolButton]="true"
+        [showBookmarkButton]="false"
+      >
+      </ngx-extended-pdf-viewer>
+
+      <img *ngIf="isImagePreview" [src]="contentURL" style="width: 100%" />
+      <video *ngIf="isVideoPreview" controls style="width: 100%">
+        <source [src]="mediaContentURL()" />
+        <p>{{ 'error.video' | transloco }}</p>
+      </video>
+      <audio *ngIf="isAudioPreview" controls style="width: 100%">
+        <source [src]="mediaContentURL()" />
+        <p>{{ 'error.video' | transloco }}</p>
+      </audio>
+      <span *ngIf="progressing"
+        >{{ 'preview.messages.opening.document' | transloco }}
+        <span *ngIf="progressPercent > 0">{{ progressPercent }}%</span>
+      </span>
+      <span *ngIf="error">{{ 'label.error' | transloco }}: {{ theError }}</span>
+      <span *ngIf="isErrorMessage"
+        >{{ 'preview.messages.' + previewResult.messageCode | transloco }}</span
+      >
+    </div>
+    <div *ngIf="isSpinner" style="padding-left: 44%">
+      <br />
+      <img width="60" height="60" src="img/spinner-dark.gif" />
+    </div>
+  </div>
+</cbc-preview>

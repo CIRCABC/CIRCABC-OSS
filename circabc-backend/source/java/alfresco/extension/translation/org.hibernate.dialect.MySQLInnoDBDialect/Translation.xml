@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2006 European Community Licensed under the EUPL, Version 1.1 
+	or – as soon they will be approved by the European Commission - subsequent 
+	versions of the EUPL (the "Licence"); You may not use this work except in 
+	compliance with the Licence. You may obtain a copy of the Licence at: https://joinup.ec.europa.eu/software/page/eupl 
+	Unless required by applicable law or agreed to in writing, software distributed 
+	under the Licence is distributed on an "AS IS" basis, WITHOUT WARRANTIES 
+	OR CONDITIONS OF ANY KIND, either express or implied. See the Licence for 
+	the specific language governing permissions and limitations under the Licence. -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Translation">
+
+	<insert id="insert_request" parameterType="Request">
+		insert into
+		cbc_mt_request ( request_id, source_lang, target_langs, doc_url,
+		target_path, text, username, req_date, document_id, property_q_name,notify,email)
+		values ( #{requestID}, #{sourceLang}, #{targetLangs}, #{docURL},
+		#{targetPath},
+		#{text}, #{username}, #{reqDate}, #{documentID},
+		#{propertyQName , jdbcType=VARCHAR}, #{notify}, #{email})
+	</insert>
+
+	<insert id="insert_response" parameterType="Response">
+		insert into cbc_mt_response ( request_id, target_lang, delivery_url,
+		translated_text, err_code, err_msg, resp_date, translated,
+		document_updated)
+		values ( #{requestID}, #{targetLang}, #{deliveryURL, jdbcType=VARCHAR}, #{translatedText, jdbcType=VARCHAR},
+		#{errCode, jdbcType=VARCHAR},
+		#{errMsg, jdbcType=VARCHAR}, #{respDate}, #{translated}, #{documentUpdated})
+	</insert>
+
+	<select id="selectItemsToProccess" parameterType="Search" resultType="SearchResult">
+		select
+		cbc_mt_response.request_id as requestID, 	
+		target_lang as targetLang,
+		cbc_mt_request.target_path as targetPath,
+		translated_text as translatedText ,
+		username as username,
+		document_id as documentID,
+		property_q_name as propertyQName 
+		from cbc_mt_response ,
+		cbc_mt_request
+		where cbc_mt_request.request_id = cbc_mt_response.request_id
+		and resp_date > #{fromDate} 
+		and translated =1
+		and document_updated = 0 
+		order by resp_date
+	</select>
+
+	<select id="selectUsersToNotify" parameterType="Search" resultType="SearchResultNotify">
+		select cbc_mt_response.request_id as requestID, 	
+		target_langs as targetLangs,
+		cbc_mt_request.target_path as targetPath,
+		username as username,
+    	email as email,
+		document_id as documentID,
+		property_q_name as propertyQName,
+  		count(*) translationCount
+		from cbc_mt_response ,
+  		cbc_mt_request
+		where cbc_mt_request.request_id = cbc_mt_response.request_id
+		and resp_date                   >  #{fromDate} 
+		and translated                  =1
+		and document_updated            = 1
+		and cbc_mt_request.notify       = 1
+		group by cbc_mt_response.request_id , 	
+		target_langs ,
+		cbc_mt_request.target_path ,
+		username ,
+    	email ,
+		document_id ,
+		property_q_name 
+	</select>
+	
+	<update id="updateResponse" parameterType="Response">
+		update  cbc_mt_response set document_updated = 1
+		where  request_id = #{requestID} and  target_lang = #{targetLang}
+	</update>
+	
+	<update id="updateRequest" parameterType="Request">
+		update  cbc_mt_request set notify = 0
+		where  request_id  =#{requestID} 
+	</update>
+	
+	<select id="getEroroCount" parameterType="String" resultType="Integer">
+		select count(*) as error_count
+		from cbc_mt_response
+		where request_id = #{value}
+		and err_code  is not null
+	</select>
+	
+</mapper>

@@ -1,0 +1,21 @@
+<div class="summary-box">
+  <section class="big-icon">
+    <img
+      src="img/upload-white-64.png"
+      alt="upload.png"
+      *ngIf="label === 'uploads'"
+    />
+    <img
+      src="img/update-white-64.png"
+      alt="updates.png"
+      *ngIf="label === 'updates'"
+    />
+    <img
+      src="img/chat-white-64.png"
+      alt="comments.png"
+      *ngIf="label === 'comments'"
+    />
+  </section>
+  <section class="content-top"> {{ number }} </section>
+  <section class="content-bottom">{{ 'label.' + label | transloco }}</section>
+</div>

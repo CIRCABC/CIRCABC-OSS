@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Updates the members of an IG</shortname>
+  <description>Updates the members of an IG</description>
+    <url>/circabc/groups/{igId}/members</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

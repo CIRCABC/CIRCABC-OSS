@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Update one category's details</shortname>
+  <description>Set the name, title, etc of a category node</description>
+  <url>/circabc/categories/{id}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

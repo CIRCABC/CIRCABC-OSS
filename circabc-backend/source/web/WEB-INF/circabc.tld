@@ -1,0 +1,2415 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--+
+    |     Copyright European Community 2006 - Licensed under the EUPL V.1.0
+    |
+    |  		   http://ec.europa.eu/idabc/en/document/6523
+    |
+    +-->
+
+<!DOCTYPE taglib PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.2//EN" "http://java.sun.com/dtd/web-jsptaglibrary_1_2.dtd">
+
+<taglib>
+
+	<tlib-version>1.0</tlib-version>
+	<jsp-version>1.2</jsp-version>
+	<short-name>circabc</short-name>
+	<display-name>Circabc JSF Components</display-name>
+	<description>
+		Tag library consisting of Circabc JSF components
+	</description>
+
+	<tag>
+		<name>surveyLangs</name>
+		<tag-class>
+			eu.cec.digit.circabc.web.ui.tag.SurveyLangsTag
+		</tag-class>
+		<body-content>JSP</body-content>
+		<display-name>Survey Languages</display-name>
+		<description>
+			Displays the list of translations for a survey
+		</description>
+
+		<attribute>
+			<name>value</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>A List of language code</description>
+		</attribute>
+
+		<attribute>
+			<name>wai</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>If true the component will be render with a wai compliant renderer</description>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>listContainsEvaluator</name>
+		<tag-class>
+			eu.cec.digit.circabc.web.ui.tag.ListContainsEvaluatorTag
+		</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>value</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>list</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>encode</name>
+		<tag-class>
+			eu.cec.digit.circabc.web.ui.tag.EncodeIpmTag
+		</tag-class>
+		<body-content>empty</body-content>
+
+		<attribute>
+			<name>value</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>survey</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>lang</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>actionLink</name>
+		<tag-class>
+			eu.cec.digit.circabc.web.ui.common.tag.ActionLinkTag
+		</tag-class>
+		<body-content>JSP</body-content>
+
+		<description>
+			The actionLink component provides the user with a clickable
+			link, image or both to represent an action in the UI. The
+			component provides standard action and actionListener
+			command properties for developers to handle user
+			interaction.
+		</description>
+
+		<attribute>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>value</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>The text of the link</description>
+		</attribute>
+
+		<attribute>
+			<name>rendered</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>action</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>actionListener</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>href</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+				If specified, override the action and actionListener
+				attribute. Used to render a standart link
+			</description>
+		</attribute>
+
+		<attribute>
+			<name>target</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>styleClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>tooltip</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>To specify the title attribute</description>
+		</attribute>
+
+		<attribute>
+			<name>image</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>To specify an image as the link</description>
+		</attribute>
+
+		<attribute>
+			<name>showLink</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+				If true and an image is specified, the value will be
+				also shown.
+			</description>
+		</attribute>
+
+		<attribute>
+			<name>anchor</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+				Must be used only to specified an anchor when using
+				Action ou ActionListener attribute. To navigate inside
+				the same page, use the href attribute starting with an
+				"#". A leading "n" will be add to respect spec which
+				anchor don't have to start with an number
+			</description>
+		</attribute>
+
+		<attribute>
+			<name>immediate</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>noDisplay</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>If true, no html code will be rendered. This is a tip to declare optional link into the JSF tree</description>
+		</attribute>
+
+		<attribute>
+			<name>padding</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+				The number of blanck spaces to insert between the image and the link
+			</description>
+		</attribute>
+
+		<attribute>
+         	<name>onclick</name>
+         	<required>false</required>
+         	<rtexprvalue>true</rtexprvalue>
+      	</attribute>
+      	
+      	<attribute>
+			<name>escape</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>clipboardShelfItem</name>
+		<tag-class>eu.cec.digit.circabc.web.ui.repo.tag.shelf.ClipboardShelfItemTag</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>rendered</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>collections</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>pasteActionListener</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>downloadAllActionListener</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>styleClass</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+
+
+
+	<tag>
+		<name>column</name>
+		<tag-class>
+			eu.cec.digit.circabc.web.ui.common.tag.data.ColumnTag
+		</tag-class>
+		<body-content>JSP</body-content>
+
+		<description>
+			The column component is a child of a data container
+			component such as the RichList. It should always be
+			contained within such a component. A column is simply a
+			container for other components which are themselves bound to
+			values from the current row supplied when the parent data
+			container iterates over its content. The column has several
+			well known facet components which can be used to specify
+			child components used for specific purposes during the list
+			rendering process.
+		</description>
+
+		<attribute>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>binding</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>rendered</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Must be the same for all lines in one listing else there are issues</description>
+		</attribute>
+
+		<attribute>
+			<name>styleClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>primary</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>!!! Warning !!! Has not the same effect as previous. Tell to display the column on the header even if the rendered's attribute is false</description>
+		</attribute>
+
+		<attribute>
+			<name>actions</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+
+
+
+   <tag>
+      <name>dataPager</name>
+      <tag-class>eu.cec.digit.circabc.web.ui.common.tag.data.DataPagerTag</tag-class>
+      <body-content>JSP</body-content>
+
+      <description>
+         The dataPager component enables a user to page through a large dataset. The component must be a
+         child of a data component. It is generally contained within the footer area of a richList component
+         or similar. The component keeps track of the current page and displays it to the user. The
+         component does not require any developer intervention and therefore does not provide action
+         command listeners.
+      </description>
+
+      <attribute>
+         <name>id</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>rendered</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+         <description>This component will only render itself if the parent DataContainer is setup with a valid "pageSize" property</description>
+      </attribute>
+
+      <attribute>
+         <name>styleClass</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+	</tag>
+
+
+
+
+	<tag>
+		<name>displayer</name>
+		<tag-class>
+			eu.cec.digit.circabc.web.ui.tag.DisplayerTag
+		</tag-class>
+		<body-content>JSP</body-content>
+
+		<description>
+			The displayer component output "inner components and html"
+			if the rendered attribute is set to true
+		</description>
+
+		<attribute>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>rendered</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+	</tag>
+
+
+
+
+	<tag>
+		<name>errors</name>
+		<tag-class>eu.cec.digit.circabc.web.ui.common.tag.ErrorsTag</tag-class>
+		<body-content>JSP</body-content>
+
+		<description>Displays global errors</description>
+
+		<attribute>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>rendered</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>styleClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>infoClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+				The style to use to display INFO level messsages
+			</description>
+		</attribute>
+
+		<attribute>
+			<name>warnClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+				The style to use to display WARN level messsages
+			</description>
+		</attribute>
+
+		<attribute>
+			<name>errorClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+				The style to use to display ERROR and FATAL level
+				messsages
+			</description>
+		</attribute>
+
+		<attribute>
+			<name>escape</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+				The style to use to display ERROR and FATAL level
+				messsages
+			</description>
+		</attribute>
+	</tag>
+
+
+
+
+	<tag>
+		<name>inputDatePicker</name>
+		<tag-class>eu.cec.digit.circabc.web.ui.common.tag.InputDatePickerTag</tag-class>
+		<body-content>JSP</body-content>
+		<display-name>Date Picker</display-name>
+		<description>Provides a custom WAI renderer to display an input component with year, month, day drop-downs</description>
+
+		<attribute>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>The component identifier for this component</description>
+		</attribute>
+
+		<attribute>
+			<name>value</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>The current value of this component</description>
+		</attribute>
+
+		<attribute>
+			<name>binding</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description> The value binding expression linking this component to a property in a backing bean</description>
+		</attribute>
+
+		<attribute>
+			<name>rendered</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>styleClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>startYear</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>The year to appear first in the list</description>
+		</attribute>
+
+		<attribute>
+			<name>yearCount</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>The number of years to display in the list</description>
+		</attribute>
+
+		<attribute>
+			<name>showTime</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Determines whether to show the time (hour and minute)</description>
+		</attribute>
+
+		<attribute>
+			<name>initialiseIfNull</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Whether to initialise the control showing today's date if the underlying value in the model is null. This will also hide the None button thus disallowing the user to set the date back to null.</description>
+		</attribute>
+
+		<attribute>
+			<name>noneLabel</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Label to use when there is no date currently set</description>
+		</attribute>
+
+		<attribute>
+			<name>showDate</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Determines whether to show the date (Day/month/Year)</description>
+		</attribute>
+
+		<attribute>
+			<name>timeAsList</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Determines whether to show the time is display as a list with step min of intervals</description>
+		</attribute>
+		
+		<attribute>
+			<name>step</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Determines step in minutes to show in minutes list 15 deault</description>
+		</attribute>
+
+	</tag>
+
+
+
+	<tag>
+		<name>lockIcon</name>
+		<tag-class>eu.cec.digit.circabc.web.ui.repo.tag.LockIconTag</tag-class>
+		<body-content>JSP</body-content>
+
+		<attribute>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>rendered</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>styleClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>lockImage</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>lockOwnerImage</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>lockedOwnerTooltip</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>lockedUserTooltip</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>value</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>NodeRef to test upon</description>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>categoryList</name>
+		<tag-class>
+			eu.cec.digit.circabc.web.ui.tag.CategoryListTag
+		</tag-class>
+		<body-content>JSP</body-content>
+		<description>
+			Display a List Of Categories
+		</description>
+		<attribute>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>value</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>chooseHeader</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>displayCategories</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+	</tag>	
+
+	<tag>
+		<name>multiList</name>
+		<tag-class>
+			eu.cec.digit.circabc.web.ui.common.tag.data.MultiListTag
+		</tag-class>
+		<body-content>JSP</body-content>
+		<description>
+			The MultiList component is capable of rendering a list of
+			java bean objects. A List of objects is bound to the
+			component through the value attribute and components within
+			the list can bind to a specific fields (column) through
+			getter methods for each bean object within the list. His
+			purpose is to render a simple list of element of several
+			columns. Columns to be rendered have to be equals to
+			attribute numColumn.
+		</description>
+
+		<attribute>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>value</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>rendered</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>styleClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>headerStyleClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+				It can be overrided if a styleClass is specified in the
+				header column tag
+			</description>
+		</attribute>
+
+		<attribute>
+			<name>rowStyleClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>altRowStyleClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>var</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Array to be filled</description>
+		</attribute>
+
+		<attribute>
+			<name>initialSortColumn</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>initialSortDescending</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>listConfig</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>pageSize</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+				Here pageSize is equals to the number of rows
+			</description>
+		</attribute>
+
+		<attribute>
+			<name>numColumn</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+				Specified the number of column within the list.
+			</description>
+		</attribute>
+	</tag>
+
+
+
+	<tag>
+		<name>navigationList</name>
+		<tag-class>
+			eu.cec.digit.circabc.web.ui.tag.NavigationListTag
+		</tag-class>
+		<body-content>JSP</body-content>
+
+		<description>Displays a navigation list</description>
+
+		<attribute>
+			<name>id</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		
+		<attribute>
+			<name>bannerStyle</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			
+		</attribute>
+
+		<attribute>
+			<name>actionListener</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>The listener in charge of the navigation</description>
+		</attribute>
+
+		<attribute>
+			<name>rendered</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>value</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+				A node list containing the navigation
+			</description>
+		</attribute>
+
+		<attribute>
+			<name>separator</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>The separator between the link</description>
+		</attribute>
+
+		<attribute>
+			<name>separatorClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+				The style to use for the separator string
+			</description>
+		</attribute>
+
+		<attribute>
+			<name>separatorFirst</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>If specified and false, the separator will not be put ahead</description>
+		</attribute>
+
+		<attribute>
+			<name>styleClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>The style to apply to the link</description>
+		</attribute>
+
+		<attribute>
+         	<name>onclick</name>
+         	<required>false</required>
+         	<rtexprvalue>true</rtexprvalue>
+      	</attribute>
+      	
+      	<attribute>
+			<name>renderPropertyName</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			
+		</attribute>
+
+	</tag>
+
+
+
+	<tag>
+		<name>panel</name>
+		<tag-class>
+			eu.cec.digit.circabc.web.ui.common.tag.PanelTag
+		</tag-class>
+		<body-content>JSP</body-content>
+		<description>Put a border and a title</description>
+
+		<attribute>
+			<name>id</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>rendered</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>styleClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>styleClassLabel</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>label</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>tooltip</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+				To specify the alt text of the image on the left of the
+				label
+			</description>
+		</attribute>
+
+	  <attribute>
+         <name>binding</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+		<attribute>
+         <name>facetsId</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+	</tag>
+
+	<tag>
+      <name>permissionEvaluator</name>
+      <tag-class>eu.cec.digit.circabc.web.ui.repo.tag.evaluator.PermissionEvaluatorTag</tag-class>
+      <body-content>JSP</body-content>
+
+      <attribute>
+         <name>id</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>value</name>
+         <required>true</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>binding</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>allow</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>deny</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+   </tag>
+
+	<tag>
+		<name>richList</name>
+		<tag-class>
+			eu.cec.digit.circabc.web.ui.common.tag.data.RichListTag
+		</tag-class>
+		<body-content>JSP</body-content>
+		<description>
+			The RichList component is capable of rendering a list of
+			java bean objects. A List of objects is bound to the
+			component through the value attribute and components within
+			the list can bind to specific fields (columns) through
+			getter methods for each bean object within the list.
+		</description>
+
+		<attribute>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>value</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>binding</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>rendered</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>styleClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>headerStyleClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+				It can be overrided if a styleClass is specified in the
+				header column tag
+			</description>
+		</attribute>
+
+		<attribute>
+			<name>rowStyleClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>altRowStyleClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>var</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>initialSortColumn</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>initialSortDescending</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>listConfig</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>viewMode</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>pageSize</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		
+		<attribute>
+         	<name>refreshOnBind</name>
+         	<required>false</required>
+         	<rtexprvalue>true</rtexprvalue>
+      	</attribute>
+		
+	</tag>
+
+	<tag>
+		<name>customList</name>
+		<tag-class>
+			eu.cec.digit.circabc.web.ui.common.tag.data.CustomListTag
+		</tag-class>
+		<body-content>JSP</body-content>
+		<description>
+			Custom list
+		</description>
+
+		<attribute>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>value</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>binding</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>rendered</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>styleClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>headerStyleClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+				It can be overrided if a styleClass is specified in the
+				header column tag
+			</description>
+		</attribute>
+
+		<attribute>
+			<name>rowStyleClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>altRowStyleClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>configuration</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+
+
+	<tag>
+		<name>simpleSearch</name>
+		<tag-class>
+			eu.cec.digit.circabc.web.ui.repo.tag.SimpleSearchTag
+		</tag-class>
+		<body-content>JSP</body-content>
+
+		<description>
+			Displays the box on the left menu for simple search.
+		</description>
+
+		<attribute>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>rendered</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>label</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>The label of the Box</description>
+		</attribute>
+
+		<attribute>
+			<name>labelAltText</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+				The alt text of the image at the left of the label
+			</description>
+		</attribute>
+
+		<attribute>
+			<name>button</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>The label of the button</description>
+		</attribute>
+
+		<attribute>
+			<name>buttonAltText</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+				The alt text of the button for the search action
+			</description>
+		</attribute>
+
+		<attribute>
+			<name>styleClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>actionListener</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>autonomySearch</name>
+		<tag-class>
+			eu.cec.digit.circabc.web.ui.repo.tag.AutonomySearchTag
+		</tag-class>
+		<body-content>JSP</body-content>
+
+		<description>
+			Displays the box on the left menu for autonomy search.
+		</description>
+
+		<attribute>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>rendered</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>label</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>The label of the Box</description>
+		</attribute>
+
+		<attribute>
+			<name>labelAltText</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+				The alt text of the image at the left of the label
+			</description>
+		</attribute>
+
+		<attribute>
+			<name>button</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>The label of the button</description>
+		</attribute>
+
+		<attribute>
+			<name>buttonAltText</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+				The alt text of the button for the search action
+			</description>
+		</attribute>
+
+		<attribute>
+			<name>styleClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>actionListener</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+
+
+	<tag>
+		<name>sortLink</name>
+		<tag-class>
+			eu.cec.digit.circabc.web.ui.common.tag.data.SortLinkTag
+		</tag-class>
+		<body-content>JSP</body-content>
+
+		<description>
+			The sortLink component enables the user to sort a dataset by
+			clicking an HTML link. The component must be a child of a
+			data component. It is generally contained inside a header
+			facet component within a column component. It automatically
+			handles sorting of the appropriate data type for the column
+			bean getter method it is bound too. The control displays a
+			small clickable icon to indicate sorting direction and the
+			direction of sorting can be toggled by clicking the icon.
+			The component does not require any developer intervention
+			and therefore does not provide action command listeners.
+		</description>
+
+		<attribute>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>value</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Tne name of the variable to sort</description>
+		</attribute>
+
+		<attribute>
+			<name>binding</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>rendered</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>label</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>The label of the link</description>
+		</attribute>
+
+		<attribute>
+			<name>tooltipAscending</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+				Tooltip displaying to change order to ascending
+			</description>
+		</attribute>
+
+		<attribute>
+			<name>tooltipDescending</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+				Tooltip displaying to change order to descending
+			</description>
+		</attribute>
+
+		<attribute>
+			<name>styleClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>mode</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+	</tag>
+
+
+
+
+	<tag>
+
+		<name>param</name>
+		<tag-class>org.apache.myfaces.taglib.core.ParamTag</tag-class>
+		<body-content>JSP</body-content>
+		<description>
+			Add a child UIParameter component to the UIComponent
+			associated with the closed parent UIComponent custom action.
+		</description>
+
+		<attribute>
+			<name>binding</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+			<description>
+				Value binding expression to a backing bean property
+				bound to the component instance for the UIComponent
+				created by this custom action.
+			</description>
+		</attribute>
+
+		<attribute>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+				Component identifier of the UIParameter component to be
+				created.
+			</description>
+		</attribute>
+
+		<attribute>
+			<name>name</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+				Name of the parameter to be created.
+			</description>
+		</attribute>
+
+		<attribute>
+			<name>value</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Value of the parameter to be set.</description>
+		</attribute>
+
+	</tag>
+
+
+	<tag>
+		<name>view</name>
+		<tag-class>eu.cec.digit.circabc.myfaces.taglib.core.CircabcViewTag</tag-class>
+		<body-content>JSP</body-content>
+		<description>
+			Creates a JSF View, which is a container that holds all of the components that are part of the view.
+			Unless otherwise specified, all attributes accept static values or EL expressions.
+		</description>
+
+		<attribute>
+			<name>locale</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+			<description>The locale of this view.  Default:  the default locale from the configuration file.</description>
+		</attribute>
+	</tag>
+
+
+   <tag>
+      <name>actions</name>
+      <tag-class>eu.cec.digit.circabc.web.ui.repo.tag.ActionsTag</tag-class>
+      <body-content>JSP</body-content>
+
+      <description>
+         The actions component renders a group of actionLink components as defined by an Action Group
+         in the web-client-config-actions.xml config file. Each action groups can contain many actions
+         which are individually rendered as ActionLink components. The action group uses a Node object
+         as the context for the various actions defined in config.
+      </description>
+
+      <attribute>
+         <name>id</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>value</name>
+         <required>true</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>context</name>
+         <required>true</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>binding</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>rendered</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>style</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>styleClass</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+
+      <attribute>
+         <name>showLink</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>vertical</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+         <description>display actions in a vertical container</description>
+      </attribute>
+   </tag>
+
+
+
+   <tag>
+      <name>propertySheetGrid</name>
+      <tag-class>eu.cec.digit.circabc.web.ui.repo.tag.property.PropertySheetGridTag</tag-class>
+      <body-content>JSP</body-content>
+      <display-name>Property Sheet</display-name>
+      <description>Displays the current properties for a node in the repository</description>
+
+      <attribute>
+         <name>id</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+         <description>The component identifier for this component</description>
+      </attribute>
+
+      <attribute>
+         <name>value</name>
+         <required>true</required>
+         <rtexprvalue>true</rtexprvalue>
+         <description>A NodeRef object representing the node to show the properties of</description>
+      </attribute>
+
+      <attribute>
+         <name>binding</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+         <description>The value binding expression linking this component to a property in a backing bean</description>
+      </attribute>
+
+      <attribute>
+         <name>rendered</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>readOnly</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>validationEnabled</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>finishButtonId</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>nextButtonId</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>var</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>columns</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>mode</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+         <description>Whether the property sheet is in read-only mode or edit mode, values can be "view" or "edit"</description>
+      </attribute>
+
+      <attribute>
+         <name>labelStyleClass</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>cellpadding</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>cellspacing</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>externalConfig</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>configArea</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+   </tag>
+
+
+
+   <tag>
+      <name>dialogButtons</name>
+      <tag-class>eu.cec.digit.circabc.web.ui.repo.tag.DialogButtonsTag</tag-class>
+      <body-content>JSP</body-content>
+
+      <description>
+         The dialogButtons component displays the buttons for a dialog.
+      </description>
+
+      <attribute>
+         <name>id</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>styleClass</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+   </tag>
+
+   <tag>
+      <name>uploadForm</name>
+      <tag-class>eu.cec.digit.circabc.web.ui.repo.tag.UploadFormTag</tag-class>
+      <body-content>JSP</body-content>
+      <description>This is to handle the upload form required by the uploadServlet. It ouputs the form skeleton and the return-page field.</description>
+
+      <attribute>
+         <name>id</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>returnPage</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+         <description>To specifed an other page at the end of the upload Servlet process</description>
+      </attribute>
+
+      <attribute>
+         <name>submitCallback</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+         <description>Specify a method callback that must be called after submit. Requires org.alfresco.web.bean.FileUploadBean parameter.</description>
+      </attribute>
+   </tag>
+
+   <tag>
+      <name>circabcStatistics</name>
+      <tag-class>eu.cec.digit.circabc.web.ui.repo.tag.debug.CircabcStatisticsTag</tag-class>
+      <body-content>JSP</body-content>
+      <description>Displays the Circabc Statistics properties in a table</description>
+
+      <attribute>
+         <name>id</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>rendered</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>title</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+   </tag>
+
+   <tag>
+      <name>serverConfiguration</name>
+      <tag-class>eu.cec.digit.circabc.web.ui.repo.tag.debug.ServerConfigurationTag</tag-class>
+      <body-content>JSP</body-content>
+      <description>Displays the Server Configuration in a table</description>
+
+      <attribute>
+         <name>id</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>rendered</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>title</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+   </tag>
+
+   <tag>
+      <name>configFileReader</name>
+      <tag-class>eu.cec.digit.circabc.web.ui.repo.tag.debug.ConfigFileReaderTag</tag-class>
+      <body-content>JSP</body-content>
+      <description>Displays the configuration files in a table</description>
+
+      <attribute>
+         <name>id</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>rendered</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>title</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+   </tag>
+
+    <tag>
+      <name>schedulerReporter</name>
+      <tag-class>eu.cec.digit.circabc.web.ui.repo.tag.debug.SchedulerReporterTag</tag-class>
+      <body-content>JSP</body-content>
+      <description>Displays the Scheduler Reporte in a table</description>
+
+      <attribute>
+         <name>id</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>rendered</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>title</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+   </tag>
+
+ 	<tag>
+      <name>memoryReporter</name>
+      <tag-class>eu.cec.digit.circabc.web.ui.repo.tag.debug.MemoryReporterTag</tag-class>
+      <body-content>JSP</body-content>
+      <description>Displays the Memory usage and cache management in a table</description>
+
+      <attribute>
+         <name>id</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>rendered</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>title</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+   </tag>
+
+   <tag>
+      <name>searchDynamicProperties</name>
+      <tag-class>eu.cec.digit.circabc.web.ui.repo.tag.SearchDynamicPropertiesTag</tag-class>
+      <body-content>JSP</body-content>
+
+      <attribute>
+         <name>id</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>binding</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>rendered</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>style</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>styleClass</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>bean</name>
+         <required>true</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>var</name>
+         <required>true</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+   </tag>
+   <tag>
+      <name>nodeSelector</name>
+      <tag-class>eu.cec.digit.circabc.web.ui.repo.tag.NodeSelectorTag</tag-class>
+      <body-content>JSP</body-content>
+
+      <attribute>
+         <name>id</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>binding</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>rendered</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>style</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>styleClass</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>nodeStyle</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>nodeStyleClass</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>value</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>label</name>
+         <required>true</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>spacing</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>initialSelection</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>disabled</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>rootNode</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>showContents</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>pathLabel</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>pathErrorMessage</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+   </tag>
+
+   <tag>
+      <name>calendar</name>
+      <tag-class>eu.cec.digit.circabc.web.ui.tag.CalendarTag</tag-class>
+      <body-content>JSP</body-content>
+	  <display-name>calendar</display-name>
+      <description>Renders a HTML calendar using the specific attributes.</description>
+
+        <!--Visual attributes-->
+        <attribute>
+            <name>dayWidth</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>The width to make each day.  If you want the calendar to be 700 wide pixels make the dayWidth 100.</description>
+        </attribute>
+
+        <attribute>
+            <name>dayHeight</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>The height to make each day.  Typically making this equal to dayWidth is the best solution.</description>
+        </attribute>
+
+        <attribute>
+            <name>id</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+            <description>The id is used as a unique identifier for the table that contains the calendar.  It is also used to distinguish multiple interactive calendars in the url.
+            </description>
+        </attribute>
+
+        <attribute>
+            <name>cssPrefix</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>The cssPrefix is placed before the default stylesheet names to make it easier to include multiple calendars on one page that do not share css definitions.</description>
+        </attribute>
+
+        <attribute>
+            <name>weekStart</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+            <description>The first day of the week, ie weekStart="monday" this also supports "today" to set the current date's DAY_OF_WEEK as the first day of the week</description>
+        </attribute>
+
+        <!--Literal attributes-->
+        <attribute>
+            <name>day</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+            <description>The day should be an integer representing the day of the month to have selected by default. If the day attribute is set it automatically overrides the startDate, endDate and date attributes</description>
+        </attribute>
+
+        <attribute>
+            <name>month</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+            <description>The month should be an integer representing the month to display. If the month attribute is set it automatically overrides the startDate, endDate and date attributes
+            </description>
+        </attribute>
+
+        <attribute>
+            <name>year</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+            <description>The year should be an integer representing the year of the month that is being display.  If the year attribute is set it automatically overrides the startDate, endDate and date attributes</description>
+        </attribute>
+
+        <attribute>
+            <name>action</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+            <description>Action used to construct links when changing pages and clicking dates.  Supports expressions.</description>
+        </attribute>
+
+        <attribute>
+            <name>actionListener</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+            <description>Action Listener used to construct links when changing pages and clicking dates.  Supports expressions.</description>
+        </attribute>
+
+        <attribute>
+            <name>viewMode</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+            <description>Determines the period to display. Support: month, week, workweek, day</description>
+        </attribute>
+
+        <!--Object attributes-->
+
+        <attribute>
+            <name>date</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>A Data object that specifies the day, month and year.  If the date attribute
+                is specified at the same time as the startDate and endDate and is between the two it will be
+                used to specify the selected date.  If it is not between the two it will throw an exception.</description>
+        </attribute>
+
+        <attribute>
+            <name>startDate</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>A Data object that specifies the first date to be shown on the calendar. If the startDate
+                is specified an endDate must also be specified.</description>
+        </attribute>
+
+        <attribute>
+            <name>endDate</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>A Data object that specifies the last date to be shown on the calendar. If the endDate
+                is specified a startDate must also be specified.</description>
+        </attribute>
+
+        <attribute>
+            <name>decorator</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>An object which implements CalendarDecorator</description>
+        </attribute>
+
+        <attribute>
+            <name>showPreviousNextLinks</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>True or false, whether or not to display the previous and next links on the calendar
+            </description>
+        </attribute>
+
+        <attribute>
+            <name>beyond</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>To go beyond the current mounth</description>
+        </attribute>
+
+   </tag>
+
+   <tag>
+      <name>genericPicker</name>
+      <tag-class>eu.cec.digit.circabc.web.ui.tag.GenericPickerTag</tag-class>
+      <body-content>JSP</body-content>
+
+      <attribute>
+         <name>id</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>binding</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>rendered</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>showFilter</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>showContains</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>showAddButton</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>filterRefresh</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>multiSelect</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>addButtonLabel</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>action</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>actionListener</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>width</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>height</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>filters</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>multipleFilters</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>queryCallback</name>
+         <required>true</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+   </tag>
+
+   <tag>
+      <name>upload</name>
+      <tag-class>eu.cec.digit.circabc.web.ui.tag.UploadInputTag</tag-class>
+      <body-content>JSP</body-content>
+      <description>
+         Component for uploading files in the dialog framework. It use
+         dynamically created hidden iframes to upload files.
+      </description>
+
+      <attribute>
+         <name>id</name>
+         <required>false</required>
+         <rtexprvalue>false</rtexprvalue>
+         <type>java.lang.String</type>
+      </attribute>
+
+      <attribute>
+         <name>value</name>
+         <required>true</required>
+         <rtexprvalue>true</rtexprvalue>
+         <description>
+            This property points to name of the uploaded file.
+         </description>
+      </attribute>
+
+       <attribute>
+         <name>framework</name>
+         <required>true</required>
+         <rtexprvalue>true</rtexprvalue>
+         <description>
+            This attribute describes framework type.
+            It can takes "dialog" or "wizard" values.
+         </description>
+      </attribute>
+
+       <attribute>
+         <name>onSubmit</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+         <description>
+            A javascript ro run on submit .
+         </description>
+      </attribute>
+   </tag>
+	
+   <tag>
+      <name>association</name>
+      <tag-class>eu.cec.digit.circabc.web.ui.repo.tag.property.CircabcAssociationTag</tag-class>
+      <body-content>JSP</body-content>
+      
+      <attribute>
+         <name>id</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      
+      <attribute>
+         <name>name</name>
+         <required>true</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      
+      <attribute>
+         <name>rendered</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      
+      <attribute>
+         <name>displayLabel</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      
+      <attribute>
+         <name>readOnly</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      
+      <attribute>
+         <name>mode</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      
+      <attribute>
+         <name>converter</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      
+      <attribute>
+         <name>interestGroupNodeRef</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      
+   </tag>
+	
+	<tag>
+      <name>associationEditor</name>
+      <tag-class>eu.cec.digit.circabc.web.ui.repo.tag.property.CircabcAssociationEditorTag</tag-class>
+      <body-content>JSP</body-content>
+      
+      <attribute>
+         <name>value</name>
+         <required>true</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      
+      <attribute>
+         <name>associationName</name>
+         <required>true</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      
+      <attribute>
+         <name>availableOptionsSize</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      
+      <attribute>
+         <name>selectItemMsg</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      
+      <attribute>
+         <name>selectItemsMsg</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      
+      <attribute>
+         <name>selectedItemsMsg</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      
+      <attribute>
+         <name>noSelectedItemsMsg</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      
+      <attribute>
+         <name>id</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      
+      <attribute>
+         <name>binding</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      
+      <attribute>
+         <name>rendered</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      
+      <attribute>
+         <name>style</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      
+      <attribute>
+         <name>styleClass</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+   </tag>
+   
+   <tag>
+      <name>contentSelector</name>
+      <tag-class>eu.cec.digit.circabc.web.ui.repo.tag.CircabcContentSelectorTag</tag-class>
+      <body-content>JSP</body-content>
+      
+      <attribute>
+         <name>value</name>
+         <required>true</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      
+      <attribute>
+         <name>availableOptionsSize</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      
+      <attribute>
+         <name>multiSelect</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      
+      <attribute>
+         <name>id</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      
+      <attribute>
+         <name>binding</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      
+      <attribute>
+         <name>rendered</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+
+      <attribute>
+         <name>style</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      
+      <attribute>
+         <name>styleClass</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      
+      <attribute>
+         <name>interestGroupNodeRef</name>
+         <required>false</required>
+         <rtexprvalue>true</rtexprvalue>
+      </attribute>
+      
+   </tag>
+
+</taglib>

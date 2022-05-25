@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>post.id.attachment.link.post</shortname>
+  <description>Add a link attachment with destinationId to the post with the given id</description>
+    <url>/circabc/posts/{id}/attachment/link/{destinationId}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

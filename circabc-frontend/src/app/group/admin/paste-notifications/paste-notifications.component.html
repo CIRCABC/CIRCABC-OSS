@@ -1,0 +1,40 @@
+<h2>{{ 'admin.paste.notifications.page.title' | transloco }}</h2>
+<br />
+<form [formGroup]="pasteNotificationsForm">
+  <div class="field switch">
+    <div class="label longer"
+      >{{ 'admin.paste.notifications.paste.all' | transloco }}</div
+    >
+    <input
+      id="notifyPasteAll"
+      class="cmn-toggle cmn-toggle-round"
+      type="checkbox"
+      formControlName="notifyPasteAll"
+    />
+    <label for="notifyPasteAll" class="nonBlockLabel"></label>
+    <span
+      >{{ (pasteNotificationsForm.value.notifyPasteAll === true ? 'label.yes' :
+      'label.no' ) | transloco }}</span
+    >
+  </div>
+  <div class="field switch">
+    <div class="label longer"
+      >{{ 'admin.paste.notifications.paste' | transloco }}</div
+    >
+    <input
+      id="notifyPaste"
+      class="cmn-toggle cmn-toggle-round"
+      type="checkbox"
+      formControlName="notifyPaste"
+    />
+    <label for="notifyPaste" class="nonBlockLabel"></label>
+    <span
+      >{{ (pasteNotificationsForm.value.notifyPaste === true ? 'label.yes' :
+      'label.no' ) | transloco }}</span
+    >
+  </div>
+</form>
+<div class="buttons-group" *ngIf="!saving">
+  <a class="cta" (click)="save()">{{ 'label.save' | transloco }}</a>
+  <a class="button" (click)="cancel()">{{ 'label.cancel' | transloco }}</a>
+</div>

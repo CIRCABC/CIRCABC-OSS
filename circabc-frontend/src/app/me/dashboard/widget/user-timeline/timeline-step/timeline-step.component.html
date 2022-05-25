@@ -1,0 +1,30 @@
+<section class="timeline-step">
+  <header> {{ 'dashboard.' + when + '.highlights' | transloco }} </header>
+  <section class="summary">
+    <cbc-summary-box
+      [number]="userFeed && userFeed.uploads ? userFeed.uploads : 0"
+      [label]="'uploads'"
+    ></cbc-summary-box>
+    <cbc-summary-box
+      [number]="userFeed && userFeed.updates ? userFeed.updates : 0"
+      [label]="'updates'"
+    ></cbc-summary-box>
+    <cbc-summary-box
+      [number]="userFeed && userFeed.comments ? userFeed.comments : 0"
+      [label]="'comments'"
+    ></cbc-summary-box>
+  </section>
+  <section class="groups" *ngIf="userFeed">
+    <cbc-group-step
+      *ngFor="let groupFeed of userFeed.groupFeeds"
+      [groupFeed]="groupFeed"
+      [type]="userFeed.when"
+    ></cbc-group-step>
+    <p
+      *ngIf="userFeed.groupFeeds && userFeed.groupFeeds.length === 0"
+      class="empty"
+    >
+      {{ 'label.nothing.to.display' | transloco }}
+    </p>
+  </section>
+</section>

@@ -1,0 +1,357 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+  Copyright 2006 European Community
+  
+   Licensed under the EUPL, Version 1.1 or – as soon they
+   will be approved by the European Commission - subsequent
+   versions of the EUPL (the "Licence");
+   You may not use this work except in compliance with the
+   Licence.
+   You may obtain a copy of the Licence at:
+  
+   https://joinup.ec.europa.eu/software/page/eupl
+  
+   Unless required by applicable law or agreed to in
+   writing, software distributed under the Licence is
+   distributed on an "AS IS" basis,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+   express or implied.
+   See the Licence for the specific language governing
+   permissions and limitations under the Licence.
+-->
+<alfresco-config>
+
+	<plug-ins>
+		<evaluators>
+			<evaluator id="multiple-aspect-name" class="eu.cec.digit.circabc.web.config.MultipleAspectsEvaluator" />
+			<evaluator id="node-type-multiple-aspect-name" class="eu.cec.digit.circabc.web.config.NodeTypeMultipleAspectsEvaluator" />
+		</evaluators>
+	</plug-ins>
+
+   <config evaluator="node-type-multiple-aspect-name" condition="content;ci:circabcManagement;ci:circaLibrary">
+      <property-sheet>
+         <show-property name="cd:status" display-label-id="status"  component-generator="I18NTextFieldGenerator" converter="eu.cec.digit.circabc.faces.I18NTextFieldConverter" />
+         <show-property name="cd:issue_date" display-label-id="issue_date" component-generator="CircabcDatePickerGenerator" />
+         <show-property name="cd:reference" display-label-id="reference" />
+         <show-property name="cd:keyword" display-label-id="keyword" component-generator="KeywordPickerGenerator" converter="eu.cec.digit.circabc.faces.KeywordConverter"  />
+         <show-property name="cd:dynAttr1" ignore-if-missing="false" component-generator="DynamicPropertyGenerator" converter="eu.cec.digit.circabc.faces.DynamicPropertyConverter" />
+         <show-property name="cd:dynAttr2" ignore-if-missing="false" component-generator="DynamicPropertyGenerator" converter="eu.cec.digit.circabc.faces.DynamicPropertyConverter" />
+         <show-property name="cd:dynAttr3" ignore-if-missing="false" component-generator="DynamicPropertyGenerator" converter="eu.cec.digit.circabc.faces.DynamicPropertyConverter" />
+         <show-property name="cd:dynAttr4" ignore-if-missing="false" component-generator="DynamicPropertyGenerator" converter="eu.cec.digit.circabc.faces.DynamicPropertyConverter" />
+         <show-property name="cd:dynAttr5" ignore-if-missing="false" component-generator="DynamicPropertyGenerator" converter="eu.cec.digit.circabc.faces.DynamicPropertyConverter" />
+         <show-property name="cd:dynAttr6" ignore-if-missing="false" component-generator="DynamicPropertyGenerator" converter="eu.cec.digit.circabc.faces.DynamicPropertyConverter" />
+         <show-property name="cd:dynAttr7" ignore-if-missing="false" component-generator="DynamicPropertyGenerator" converter="eu.cec.digit.circabc.faces.DynamicPropertyConverter" />
+         <show-property name="cd:dynAttr8" ignore-if-missing="false" component-generator="DynamicPropertyGenerator" converter="eu.cec.digit.circabc.faces.DynamicPropertyConverter" />
+         <show-property name="cd:dynAttr9" ignore-if-missing="false" component-generator="DynamicPropertyGenerator" converter="eu.cec.digit.circabc.faces.DynamicPropertyConverter" />
+         <show-property name="cd:dynAttr10" ignore-if-missing="false" component-generator="DynamicPropertyGenerator" converter="eu.cec.digit.circabc.faces.DynamicPropertyConverter" />
+         <show-property name="cd:dynAttr11" ignore-if-missing="false" component-generator="DynamicPropertyGenerator" converter="eu.cec.digit.circabc.faces.DynamicPropertyConverter" />
+         <show-property name="cd:dynAttr12" ignore-if-missing="false" component-generator="DynamicPropertyGenerator" converter="eu.cec.digit.circabc.faces.DynamicPropertyConverter" />
+         <show-property name="cd:dynAttr13" ignore-if-missing="false" component-generator="DynamicPropertyGenerator" converter="eu.cec.digit.circabc.faces.DynamicPropertyConverter" />
+         <show-property name="cd:dynAttr14" ignore-if-missing="false" component-generator="DynamicPropertyGenerator" converter="eu.cec.digit.circabc.faces.DynamicPropertyConverter" />
+         <show-property name="cd:dynAttr15" ignore-if-missing="false" component-generator="DynamicPropertyGenerator" converter="eu.cec.digit.circabc.faces.DynamicPropertyConverter" />
+         <show-property name="cd:dynAttr16" ignore-if-missing="false" component-generator="DynamicPropertyGenerator" converter="eu.cec.digit.circabc.faces.DynamicPropertyConverter" />
+         <show-property name="cd:dynAttr17" ignore-if-missing="false" component-generator="DynamicPropertyGenerator" converter="eu.cec.digit.circabc.faces.DynamicPropertyConverter" />
+         <show-property name="cd:dynAttr18" ignore-if-missing="false" component-generator="DynamicPropertyGenerator" converter="eu.cec.digit.circabc.faces.DynamicPropertyConverter" />
+         <show-property name="cd:dynAttr19" ignore-if-missing="false" component-generator="DynamicPropertyGenerator" converter="eu.cec.digit.circabc.faces.DynamicPropertyConverter" />
+         <show-property name="cd:dynAttr20" ignore-if-missing="false" component-generator="DynamicPropertyGenerator" converter="eu.cec.digit.circabc.faces.DynamicPropertyConverter" />
+         <show-property name="cd:security_ranking" display-label-id="security_ranking"  component-generator="I18NTextFieldGenerator" converter="eu.cec.digit.circabc.faces.I18NTextFieldConverter" />
+         <show-property name="cd:expiration_date" display-label-id="expiration_date" component-generator="CircabcDatePickerGenerator"/>
+         <show-property name="cd:encryptedText" display-label-id="encryptedText" converter="eu.cec.digit.circabc.faces.EncryptDencryptConverter" />
+         <show-property name="cd:encryptedText2" display-label-id="encryptedText" converter="eu.cec.digit.circabc.faces.EncryptDencryptConverter" />
+      </property-sheet>
+   </config>
+
+   <config evaluator="node-type-multiple-aspect-name" condition="cm:mlContainer;cd:bproperties">
+      <property-sheet>
+         <show-property name="cd:security_ranking" display-label-id="security_ranking" component-generator="I18NTextFieldGenerator" converter="eu.cec.digit.circabc.faces.I18NTextFieldConverter" />
+         <show-property name="cd:expiration_date" display-label-id="expiration_date" component-generator="CircabcDatePickerGenerator"/>
+      </property-sheet>
+   </config>
+
+   <config evaluator="node-type-multiple-aspect-name" condition="folder;ci:circaLibrary;!ci:circaLibraryRoot">
+      <property-sheet>
+        <show-property name="cd:expiration_date"
+        			component-generator="CircabcDatePickerGenerator"
+        			ignore-if-missing="false"
+        			display-label-id="expiration_date"/>
+      </property-sheet>
+   </config>
+
+  <config evaluator="aspect-name" condition="cm:ownable">
+		<property-sheet>
+			<show-property name="cm:owner" display-label-id="owner"  converter="eu.cec.digit.circabc.faces.UseridConverter"/>
+		</property-sheet>
+	</config>
+
+	<config evaluator="aspect-name" condition="cm:lockable">
+		<property-sheet>
+			<show-property name="ci:description" display-label-id="description" />
+		</property-sheet>
+	</config>
+
+	<config evaluator="aspect-name" condition="ci:circaIGRoot">
+		<property-sheet>
+			<show-property name="ci:contact" component-generator="TranslateLongTextPropertyGenerator" display-label-id="contact" />
+		</property-sheet>
+	</config>
+	
+	<config evaluator="aspect-name" condition="ci:circaIGRoot">
+		<property-sheet>
+			<show-property name="ci:lightDescription" component-generator="TranslateLongTextPropertyGeneratorNoRichText" display-label-id="lightDescription" />
+		</property-sheet>
+	</config>
+	
+	<config evaluator="aspect-name" condition="ci:circaIGRoot">
+		<property-sheet>
+			<show-property name="ci:nbDaysWhatsNew" display-label-id="nbDaysWhatsNew" />
+		</property-sheet>
+	</config>
+
+	<config evaluator="aspect-name" condition="ci:circaIGRootProfile">
+		<property-sheet>
+			<show-property name="ci:contact" component-generator="TranslateLongTextPropertyGenerator" display-label-id="contact" />
+		</property-sheet>
+	</config>
+
+	<config evaluator="aspect-name" condition="ci:circaContentHits">
+		<property-sheet>
+			<show-property name="ci:countStartedDate" />
+			<show-property name="ci:updateCount" />
+			<show-property name="ci:readCount" />
+		</property-sheet>
+	</config>
+
+	<config evaluator="aspect-name" condition="ci:circaContentNotify">
+  		<property-sheet>
+		</property-sheet>
+	</config>
+
+	<config evaluator="node-type" condition="app:filelink">
+      <property-sheet>
+         <show-property name="name" display-label-id="name"/>
+         <show-property name="title" component-generator="TextFieldGenerator" display-label-id="title"/>
+         <show-property name="description" component-generator="TextAreaGenerator" display-label-id="description" />
+         <!--  Override the converter to have a path that start from the Library -->
+         <show-property name="destination" converter="eu.cec.digit.circabc.faces.StaticServiceDisplayPathConverter" display-label-id="link_destination"/>
+         <show-property name="author" show-in-edit-mode="false" show-in-view-mode="false" display-label-id="author" />
+      </property-sheet>
+   </config>
+
+   <config evaluator="node-type" condition="app:folderlink">
+      <property-sheet>
+         <show-property name="name" display-label-id="name"/>
+         <show-property name="title" component-generator="TextFieldGenerator" display-label-id="title"/>
+         <show-property name="description" component-generator="TextAreaGenerator" display-label-id="description"/>
+       	 <!--  Override the converter to have a path that start from the Library -->
+         <show-property name="destination" converter="eu.cec.digit.circabc.faces.StaticServiceDisplayPathConverter" display-label-id="link_destination"/>
+         <show-property name="author" show-in-edit-mode="false" show-in-view-mode="false" display-label-id="author"/>
+      </property-sheet>
+   </config>
+
+	<!-- Bug fix DIGIT-CIRCABC-637: hide the Email ID property -->
+	<config evaluator="node-type" condition="content">
+		<property-sheet>
+			<show-property name="sys:node-dbid" display-label="Email ID" show-in-edit-mode="false" show-in-view-mode="false"/>
+		</property-sheet>
+	</config>
+	<config evaluator="node-type" condition="folder">
+		<property-sheet>
+			<show-property name="sys:node-dbid" display-label="Email ID" show-in-edit-mode="false" show-in-view-mode="false"/>
+		</property-sheet>
+	</config>
+	<config evaluator="node-type" condition="fm:forum">
+		<property-sheet>
+			<show-property name="sys:node-dbid" display-label="Email ID" show-in-edit-mode="false" show-in-view-mode="false" />
+		</property-sheet>
+	</config>
+	<config evaluator="node-type" condition="fm:topic">
+		<property-sheet>
+       		<show-property name="cd:security_ranking" display-label-id="security_ranking"  component-generator="I18NTextFieldGenerator" converter="eu.cec.digit.circabc.faces.I18NTextFieldConverter" />
+	        <show-property name="cd:expiration_date" display-label-id="expiration_date" component-generator="CircabcDatePickerGenerator"/>
+			<show-property name="sys:node-dbid" display-label="Email ID" show-in-edit-mode="false" show-in-view-mode="false"/>
+		</property-sheet>
+	</config>
+
+	<config evaluator="node-type" condition="content">
+      <property-sheet>
+         <show-property name="name" display-label="name" />
+         <show-property name="mimetype" display-label-id="content_type"
+                        component-generator="MimeTypeSelectorGenerator" display-label="mimetype"/>
+         <show-property name="encoding" display-label-id="encoding"
+                        ignore-if-missing="false"
+                        component-generator="CharsetSelectorGenerator" />
+         <!-- NOTE: The following 3 properties are defined here to cover the scenario where folders are created via CIFS or FTP and so the properties are missing -->
+         <show-property name="title" display-label-id="title"
+                        ignore-if-missing="false" component-generator="TranslatePropertyGenerator" />
+         <show-property name="description" display-label-id="description"
+                        ignore-if-missing="false" component-generator="TranslateLongTextPropertyGenerator" />
+         <show-property name="author" display-label-id="author"
+                        ignore-if-missing="false" />
+         <show-property name="size" display-label-id="size"
+                        converter="org.alfresco.faces.ByteSizeConverter"
+                        show-in-edit-mode="false" />
+      </property-sheet>
+   </config>
+
+   <config evaluator="node-type" condition="folder">
+      <property-sheet>
+         <show-property name="name" display-label="name"/>
+         <!-- NOTE: The following 3 properties are defined here to cover the scenario where folders are created via CIFS or FTP and so the properties are missing -->
+         <show-property name="title" display-label-id="title"
+                        ignore-if-missing="false" component-generator="TranslatePropertyGenerator" />
+         <show-property name="description" display-label-id="description"
+                        ignore-if-missing="false" component-generator="TranslateLongTextPropertyGenerator" />
+         <show-property name="app:icon" show-in-view-mode="false" display-label-id="icon"
+                        component-generator="SpaceIconPickerGenerator"
+                        ignore-if-missing="false" />
+      </property-sheet>
+   </config>
+
+   <config evaluator="aspect-name" condition="titled">
+      <property-sheet>
+         <!-- The 'name' property isn't part of the uifacets aspect but it's presence here will force it to the top -->
+         <show-property name="name" display-label="name" />
+         <show-property name="title" component-generator="TranslatePropertyGenerator" display-label="title"/>
+         <show-property name="description" component-generator="TranslateLongTextPropertyGenerator" display-label="description" />
+      </property-sheet>
+   </config>
+
+   <config evaluator="aspect-name" condition="app:uifacets">
+      <property-sheet>
+         <!-- The 'name' property isn't part of the uifacets aspect but it's presence here will force it to the top -->
+         <show-property name="name" display-label="name"/>
+         <show-property name="title" component-generator="TranslatePropertyGenerator" display-label="title"/>
+         <show-property name="description" component-generator="TranslateLongTextPropertyGenerator" display-label="description"/>
+         <show-property name="app:icon" show-in-view-mode="false" display-label-id="icon"
+                        component-generator="SpaceIconPickerGenerator" />
+      </property-sheet>
+   </config>
+
+   <config evaluator="aspect-name" condition="cd:urlable">
+		<property-sheet>
+			<show-property name="cd:url" display-label="url" />
+			<show-property name="mimetype" show-in-edit-mode="false" show-in-view-mode="false" />
+         	<show-property name="encoding" show-in-edit-mode="false" show-in-view-mode="false" />
+		</property-sheet>
+	</config>
+
+   <config evaluator="aspect-name" condition="cm:ownable">
+      <property-sheet>
+         <show-property name="cm:owner" display-label="owner" show-in-edit-mode="true" show-in-view-mode="true"  read-only="true"  converter="eu.cec.digit.circabc.faces.UseridConverter"/>
+      </property-sheet>
+   </config>
+
+   <config evaluator="aspect-name" condition="ci:circabcInformationRoot">
+      <property-sheet>
+         <show-property name="ci:infAdapt" display-label="infadap" display-label-id="information_adapt" ignore-if-missing="false" show-in-edit-mode="true" show-in-view-mode="true" read-only="false"/>
+         <show-property name="ci:infIndexPage" display-label="infindexpage" display-label-id="information_index_page" ignore-if-missing="false" show-in-edit-mode="true" show-in-view-mode="true" read-only="false"/>
+         <show-property name="ci:displayOldInformation" display-label="displayOldInformation" display-label-id="display_old_information" ignore-if-missing="false" show-in-edit-mode="false" show-in-view-mode="false" read-only="false"/>
+         <show-property name="app:icon" show-in-view-mode="false" show-in-edit-mode="false" />
+      </property-sheet>
+   </config>
+
+   <config evaluator="aspect-name" condition="ci:circabcEventRoot">
+      <property-sheet>
+         <show-property name="ce:timezone" display-label-id="timezone" ignore-if-missing="false" show-in-edit-mode="true" show-in-view-mode="true" read-only="false" />
+         <show-property name="ce:weekStartDay" display-label-id="week_start_day" ignore-if-missing="false" show-in-edit-mode="true" show-in-view-mode="true" read-only="false" component-generator="I18NTextFieldGenerator" converter="eu.cec.digit.circabc.faces.I18NTextFieldConverter" />
+      </property-sheet>
+   </config>
+
+   <config evaluator="aspect-name" condition="ci:circabcInformation">
+      <property-sheet>
+         <show-property name="cd:dynAttr1" show-in-view-mode="false" show-in-edit-mode="false" />
+         <show-property name="cd:dynAttr2" show-in-view-mode="false" show-in-edit-mode="false" />
+         <show-property name="cd:dynAttr3" show-in-view-mode="false" show-in-edit-mode="false" />
+         <show-property name="cd:dynAttr4" show-in-view-mode="false" show-in-edit-mode="false" />
+         <show-property name="cd:dynAttr5" show-in-view-mode="false" show-in-edit-mode="false" />
+         <show-property name="cd:dynAttr6" show-in-view-mode="false" show-in-edit-mode="false" />
+         <show-property name="cd:dynAttr7" show-in-view-mode="false" show-in-edit-mode="false" />
+         <show-property name="cd:dynAttr8" show-in-view-mode="false" show-in-edit-mode="false" />
+         <show-property name="cd:dynAttr9" show-in-view-mode="false" show-in-edit-mode="false" />
+         <show-property name="cd:dynAttr10" show-in-view-mode="false" show-in-edit-mode="false" />
+         <show-property name="cd:dynAttr11" show-in-view-mode="false" show-in-edit-mode="false" />
+         <show-property name="cd:dynAttr12" show-in-view-mode="false" show-in-edit-mode="false" />
+         <show-property name="cd:dynAttr13" show-in-view-mode="false" show-in-edit-mode="false" />
+         <show-property name="cd:dynAttr14" show-in-view-mode="false" show-in-edit-mode="false" />
+         <show-property name="cd:dynAttr15" show-in-view-mode="false" show-in-edit-mode="false" />
+         <show-property name="cd:dynAttr16" show-in-view-mode="false" show-in-edit-mode="false" />
+         <show-property name="cd:dynAttr17" show-in-view-mode="false" show-in-edit-mode="false" />
+         <show-property name="cd:dynAttr18" show-in-view-mode="false" show-in-edit-mode="false" />
+         <show-property name="cd:dynAttr19" show-in-view-mode="false" show-in-edit-mode="false" />
+         <show-property name="cd:dynAttr20" show-in-view-mode="false" show-in-edit-mode="false" />
+         <show-property name="cd:expiration_date" show-in-view-mode="false" show-in-edit-mode="false" />
+      </property-sheet>
+   </config>
+
+    <config evaluator="aspect-name" condition="ci:revisionable">
+      <property-sheet>
+         <show-property name="ci:revisionNumber" read-only="true" display-label-id="revision_number" />
+      </property-sheet>
+   </config>
+
+	 <config evaluator="aspect-name" condition="mo:moderated">
+      <property-sheet>
+         <show-property name="mo:ismoderated" read-only="true" show-in-edit-mode="false" display-label-id="moderated" />
+      </property-sheet>
+   </config>
+
+   <config evaluator="aspect-name" condition="mo:approved">
+      <property-sheet>
+         <show-property name="mo:approvedBy" read-only="true" show-in-edit-mode="false" display-label-id="approved_by"  converter="eu.cec.digit.circabc.faces.UseridConverter"/>
+         <show-property name="mo:approvedOn" read-only="true" show-in-edit-mode="false" display-label-id="approved_on" />
+      </property-sheet>
+   </config>
+
+   <config evaluator="aspect-name" condition="mo:rejected">
+      <property-sheet>
+         <show-property name="mo:rejectedBy" read-only="true" show-in-edit-mode="false" display-label-id="rejected_by"  converter="eu.cec.digit.circabc.faces.UseridConverter"/>
+         <show-property name="mo:rejectedOn" read-only="true" show-in-edit-mode="false" display-label-id="rejected_on" />
+         <show-property name="mo:rejectMessage" read-only="true" show-in-edit-mode="false" display-label-id="reject_message" />
+      </property-sheet>
+   </config>
+
+    <config evaluator="aspect-name" condition="mo:abuseSignaled">
+      <property-sheet>
+         <show-property name="mo:messages" read-only="true" show-in-edit-mode="false" display-label-id="abuse_signaled" component-generator="TextAreaGenerator" converter="eu.cec.digit.circabc.faces.AbuseConverter" />
+      </property-sheet>
+   </config>
+   
+   <config evaluator="aspect-name" condition="auditable">
+      <property-sheet>
+         <show-property name="creator" read-only="true" show-in-edit-mode="false" converter="eu.cec.digit.circabc.faces.UseridConverter"/>
+         <show-property name="created" read-only="true" show-in-edit-mode="false" />
+         <show-property name="modifier" read-only="true" show-in-edit-mode="false" converter="eu.cec.digit.circabc.faces.UseridConverter"/>
+         <show-property name="modified" read-only="true" show-in-edit-mode="false" />
+      </property-sheet>
+   </config>
+   
+   <config evaluator="aspect-name" condition="versionable">
+      <property-sheet>
+         <show-property name="versionLabel" show-in-edit-mode="false" />
+         <show-property name="autoVersion"  show-in-edit-mode="false" show-in-view-mode="false" converter="org.alfresco.faces.BooleanLabelConverter"/>
+      </property-sheet>
+   </config>
+   
+   <config evaluator="node-type" condition="wfag:submitAdhocGroupTask" replace="true">
+      <property-sheet>
+         <separator name="sep1" display-label-id="general" component-generator="HeaderSeparatorGenerator" />
+         <show-property name="bpm:workflowDescription" component-generator="TextAreaGenerator" />
+         <show-property name="bpm:workflowPriority" display-label-id="wf_adhoc_priority" />
+         <show-property name="bpm:workflowDueDate" display-label-id="wf_adhoc_due_date" />
+         <show-property name="wfag:notifyMe" />
+         <separator name="sep2" display-label-id="user_filter_user" component-generator="HeaderSeparatorGenerator" />
+         <show-association name="bpm:groupAssignee" display-label-id="wf_adhoc_assign_to" />
+      </property-sheet>
+   </config>
+	
+   <config evaluator="aspect-name" condition="ci:lockedForAccess">
+      <property-sheet>
+      </property-sheet>
+   </config>
+
+   <config evaluator="aspect-name" condition="ci:lockedForAccessEnabled">
+      <property-sheet>
+      </property-sheet>
+   </config>
+
+</alfresco-config>

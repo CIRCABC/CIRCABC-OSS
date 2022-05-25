@@ -1,0 +1,29 @@
+.pdfViewStyle {
+   margin-left: 15px;
+   margin-right: 15px;
+   margin-bottom: 15px;
+   margin-top: 15px;
+   height: 80%;
+}
+
+#pdf p {
+   padding: 1em;
+}
+
+#pdf object {
+   display: block;
+   border: solid 1px #666;
+}
+
+.ui-menu { 
+	width: 150px;
+}
+
+.ui-dialog {
+	font-size: 80%;
+}
+
+.a-center {
+	text-align: center;
+	font-size: 250%;
+}

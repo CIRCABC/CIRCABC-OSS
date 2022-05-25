@@ -1,0 +1,104 @@
+<!-- MODAL BOX -->
+<div
+  class="black-overlayer"
+  *ngIf="showWizard"
+  [class.overlayer-shown]="showWizard"
+  [class.overlayer-hidden]="!showWizard"
+></div>
+<section
+  class="modal modal--select-files"
+  *ngIf="showAddWizardStep1"
+  [class.modal-shown]="showAddWizardStep1"
+  [class.modal-hidden]="!showAddWizardStep1"
+  style="margin-top: 0"
+>
+  <a class="close-icon" (click)="cancelWizard('close')"></a>
+  <header>
+    <a class="back-link" (click)="cancelWizard('close')"
+      >{{ 'label.back' | transloco }}</a
+    >
+    <h2 class="title">{{ 'avatar.select.image' | transloco }}</h2>
+  </header>
+
+  <section class="modal-content">
+    <!--  file -->
+    <div class="field field--file">
+      <!-- Note: You need javascript here to know when the files are selected, see in the footer -->
+      <span style="margin-right: 35px">{{ 'label.image' | transloco }}</span>
+      <input
+        type="file"
+        id="file"
+        class="inputfile inputfile-6"
+        (change)="fileChangeEvent($event)"
+      />
+      <label for="file"
+        ><span class="result"></span
+        ><span class="button">{{ 'label.browse' | transloco }}</span></label
+      >
+    </div>
+
+    <div
+      class="drop-zone"
+      (dragenter)="dragenter($event)"
+      (dragover)="dragover($event)"
+      (drop)="drop($event)"
+    >
+      {{ 'avatar.drag.drop' | transloco }}
+    </div>
+
+    <div *ngIf="fileToUpload !== undefined" class="field">
+      <label>{{ 'avatar.file.upload' | transloco }}</label> ( {{ 'label.size' |
+      transloco }}: {{ fileToUpload.size | cbcSize: true }} )
+      <br />
+      <div class="listToBeUploaded">
+        <ul>
+          <li>{{ fileToUpload.name }}</li>
+        </ul>
+      </div>
+    </div>
+
+    <div style="color: green">{{ 'image.upload.1mb' | transloco }}</div>
+    <span *ngIf="!fileNameValid()" style="color: red"
+      >{{ 'error.image.upload' | transloco }}</span
+    >
+  </section>
+  <section class="modal-footer">
+    <!-- Buttons -->
+    <div class="buttons-group">
+      <a
+        class="cta"
+        (click)="launchAddWizardStep2()"
+        [class.disabled]="!fileNameValid()"
+        *ngIf="fileToUpload !== undefined"
+        >{{ 'label.upload' | transloco }}</a
+      >
+    </div>
+  </section>
+</section>
+
+<section
+  class="modal"
+  *ngIf="showAddWizardStep2"
+  [class.modal-shown]="showAddWizardStep2"
+  [class.modal-hidden]="!showAddWizardStep2"
+  style="margin-top: 0"
+>
+  <a class="close-icon" (click)="cancelWizard('close')"></a>
+  <header>
+    <h2 class="title">{{ 'avatar.uploading' | transloco }}</h2>
+  </header>
+
+  <section class="modal-content">
+    <div class="field">
+      <label
+        >{{ 'label.progress' | transloco }}
+        <cbc-spinner *ngIf="progressValue !== progressMax"></cbc-spinner
+      ></label>
+      <progress
+        class="progressUploadBar"
+        [value]="progressValue"
+        [max]="progressMax"
+      ></progress>
+    </div>
+  </section>
+</section>

@@ -1,0 +1,21 @@
+{
+  "name": "circabc-e2e",
+  "version": "4.1.0",
+  "license": "EUPL-1.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "cy:run": "cypress run",
+    "cy:run-ent": "cypress run --config-file cypress-ent.json",
+    "cy:open": "cypress open",
+    "cy:open-ent": "cypress open --config-file cypress-ent.json",
+    "tsc": "tsc  --project tsconfig.json --pretty"
+  },
+  "devDependencies": {
+    "cypress": "9.5.4",
+    "cypress-file-upload": "5.0.8"
+  },
+  "dependencies": {
+    "typescript": "4.6.3"
+  }
+}

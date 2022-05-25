@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>remove a category adminss</shortname>
+  <description>uninvite a category administrators of the category</description>
+  <url>/circabc/categories/{id}/admins/{userId}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

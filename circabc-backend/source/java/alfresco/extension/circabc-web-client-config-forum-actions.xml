@@ -1,0 +1,138 @@
+<!--+
+    |     Copyright European Community 2006 - Licensed under the EUPL V.1.0
+    |
+    |  		   http://ec.europa.eu/idabc/en/document/6523
+    |
+    +-->
+
+<alfresco-config>
+
+	<config>
+		<actions>
+
+         <!-- Forums overrides the checkin document action - as it has more complex evaluation
+              logic which takes into account any child forums attached to the node. -->
+         <!-- Checkin document -->
+         <!-- Override the cut action to check for discussions, don't allow them to be cut -->
+         <!-- Cut a document or space to the clipboard, from browse or doc details screens -->
+         <!-- Override the copy action to check for discussions, don't allow them to be copied -->
+         <!-- Copy a document or space to the clipboard, from browse or doc details screens -->
+         <!-- Discuss document or space e.g. jump to Forums view for this node -->
+         <!-- Discuss document or space e.g. jump to Forums view for this node -->
+        <!-- Discuss multilingual content e.g. jump to Forums view for this node -->
+         <!-- Create a Forums space -->
+         <!-- Create a Forum -->
+         <!-- Delete a Forums space -->
+         <!-- Delete a Forum space -->
+         <!-- Create a Topic -->
+         <!-- Delete a Topic -->
+         <!-- Create a Topic -->
+         <!-- Post a reply to a Topic -->
+         <!-- Edit an existing Post -->
+         <!-- Delete a Post -->
+         <!-- the 'action-group' elements define unique blocks of actions that reference the actions
+              as defined above and can override or supply display elements for the group of actions -->
+         <!-- the component is responsible for making the context Node object available with name
+              of 'actionContext' so the actions can access it directly to get properties -->
+         <!-- Override browse actions and doc/space details screen actions for the Forums module -->
+         <!-- Actions for a document in the Browse screen -->
+         <!-- Actions Menu for a document in the Browse screen -->
+         <!-- Actions for a space in the Browse screen -->
+         <!-- Actions Menu for a space in the Browse screen -->
+         <!-- Actions Menu for Document Details screen -->
+         <!-- Actions Menu for Multilingual Document Details screen -->
+         <!-- Actions Menu for Space Details screen -->
+         <!-- Actions Menu for Forums Details page -->
+         <action-group id="forums_details_actions">
+            <action idref="cut_node" hide="true"/>
+            <action idref="copy_node" hide="true" />
+            <action idref="import_space" hide="true" />
+            <action idref="export_space" hide="true" />
+            <action idref="manage_space_users" hide="true" />
+            <action idref="create_shortcut" />
+         </action-group>
+
+         <!-- Actions Menu for Forum Details page -->
+         <action-group id="forum_details_actions">
+            <action idref="cut_node" hide="true" />
+            <action idref="copy_node" hide="true" />
+            <action idref="manage_space_users" hide="true" />
+            <action idref="create_shortcut" />
+            <action idref="import_space" hide="true" />
+            <action idref="export_space" hide="true" />
+         </action-group>
+
+         <!-- Actions Menu for Topic Details page -->
+         <action-group id="topic_details_actions">
+            <action idref="cut_node" hide="true" />
+            <action idref="copy_node" hide="true" />
+            <action idref="manage_space_users" hide="true" />
+            <action idref="create_shortcut" />
+            <action idref="import_space" hide="true" />
+            <action idref="export_space" hide="true" />
+
+         </action-group>
+
+         <!-- Create Actions Menu for Forums view -->
+
+         <!-- More Actions Menu for Forums view -->
+         <action-group id="forums_actions_menu">
+         	<action idref="back_to_WAI" />
+            <action idref="cut_node" hide="true" />
+            <action idref="copy_node" hide="true" />
+            <action idref="paste_all" hide="true" />
+            <action idref="manage_space_users" hide="true" />
+            <action idref="import_space" hide="true" />
+            <action idref="export_space" hide="true" />
+         </action-group>
+
+         <!-- Actions for a Forums Space or Forum in Forums view -->
+         <action-group id="forums_actions">
+            <show-link>false</show-link>
+            <style-class>inlineAction</style-class>
+            <action idref="cut_node" hide="true" />
+            <action idref="copy_node" hide="true" />
+         </action-group>
+
+         <!-- Create Actions Menu for Forum view -->
+
+         <!-- More Actions Menu for Forum view -->
+         <action-group id="forum_actions_menu">
+         	<action idref="back_to_WAI" />
+            <action idref="cut_node" hide="true" />
+            <action idref="copy_node" hide="true" />
+            <action idref="paste_all" hide="true" />
+            <action idref="manage_space_users" hide="true" />
+         </action-group>
+
+         <!-- Actions for topics in Forum view -->
+         <action-group id="forum_actions">
+            <show-link>false</show-link>
+            <style-class>inlineAction</style-class>
+            <action idref="cut_node" hide="true" />
+            <action idref="copy_node" hide="true" />
+         </action-group>
+
+         <!-- Create Actions Menu for Topic view -->
+
+         <!-- More Actions Menu for Topic view -->
+         <action-group id="topic_actions_menu">
+            <action idref="back_to_WAI" />
+            <action idref="cut_node" hide="true" />
+            <action idref="copy_node" hide="true" />
+            <action idref="manage_space_users" hide="true" />
+         </action-group>
+
+         <!-- Actions for topics in Topic view -->
+         <action-group id="topic_actions">
+            <show-link>false</show-link>
+            <style-class>inlineAction</style-class>
+            <action idref="post_reply" />
+            <action idref="edit_post" />
+            <action idref="delete_post" />
+         </action-group>
+
+		</actions>
+	</config>
+
+</alfresco-config>

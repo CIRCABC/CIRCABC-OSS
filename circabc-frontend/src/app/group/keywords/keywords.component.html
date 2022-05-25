@@ -1,0 +1,178 @@
+<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+<div class="wrap page-container">
+  <div class="page-header">
+    <span
+      class="page-header__title"
+      [innerHTML]="'keywords.manage.page.title' | transloco"
+    ></span>
+    <div class="page-header__actions">
+      <cbc-reponsive-sub-menu *ngIf="currentLibrary">
+        <a [routerLink]="['../library', currentLibrary.id]"
+          >{{ 'label.library' | transloco }}</a
+        >
+        <a [routerLink]="['.']" class="selected"
+          >{{ 'label.keywords' | transloco }}</a
+        >
+        <a *ngIf="isLibAdmin()" [routerLink]="['../dynamic-properties']"
+          >{{ 'label.dynamic.properties' | transloco }}</a
+        >
+        <a
+          *ngIf="isLibAdmin()"
+          [routerLink]="['../admin/documents']"
+          [queryParams]="{ expired: 1 }"
+          >{{ 'label.expired.items' | transloco }}</a
+        >
+      </cbc-reponsive-sub-menu>
+      <div
+        class="cta cta--plus dropdown-trigger"
+        (click)="showAddDropdown = !showAddDropdown"
+      >
+        {{ 'keywords.add' | transloco }}
+        <div class="dropdown dropdown--add-file" *ngIf="showAddDropdown">
+          <ul>
+            <li>
+              <a class="keyword" (click)="showCreateModal = true">
+                {{ 'label.keyword' | transloco }}
+              </a>
+            </li>
+            <li>
+              <a class="import" (click)="showImportModal = true">
+                {{ 'label.import' | transloco }}
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <section class="table-container">
+    <header class="header">
+      <div class="float-left">
+        <div class="nav-pages"> </div>
+      </div>
+      <span class="icons"> </span>
+    </header>
+    <table class="main">
+      <thead>
+        <tr *ngIf="keywords.length > 0">
+          <td></td>
+          <td class="cell-checkbox">
+            <input
+              type="checkbox"
+              name=""
+              value=""
+              (click)="toggleSelect()"
+              [checked]="allSelected"
+            />
+          </td>
+          <td> {{ 'label.keyword' | transloco }} </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td
+            colspan="3"
+            *ngIf="selection !== undefined && selection.length > 0"
+          >
+            <ul class="bulk-actions">
+              <li>
+                <cbc-number-badge
+                  [number]="selection.length"
+                ></cbc-number-badge>
+              </li>
+              <li>
+                <a (click)="showDeleteAllModal()"
+                  >{{ 'label.delete' | transloco }}</a
+                >
+              </li>
+            </ul>
+          </td>
+        </tr>
+        <tr class="row" *ngFor="let keyword of keywords">
+          <td class="cell-left-border"></td>
+          <td class="cell-checkbox">
+            <input
+              type="checkbox"
+              name=""
+              value=""
+              [checked]="keyword.selected"
+              (click)="toggleSelected(keyword)"
+            />
+          </td>
+          <td class="cell-file-name">
+            <div class="file-name">
+              <cbc-keyword-tag [keyword]="keyword"></cbc-keyword-tag>
+            </div>
+            <ul class="actions">
+              <li>
+                <cbc-delete-keyword
+                  [keyword]="keyword"
+                  (modalHide)="afterKeywordDeletion($event)"
+                ></cbc-delete-keyword>
+              </li>
+              <li>
+                <a (click)="showUpdateKeyword(keyword)"
+                  >{{ 'label.edit' | transloco }}</a
+                >
+              </li>
+            </ul>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div
+      style="
+        color: #ccc;
+        font-size: 18px;
+        text-align: center;
+        padding: 15px;
+        background-color: #fff;
+        line-height: 64px;
+      "
+      *ngIf="keywords.length === 0"
+    >
+      {{ 'keywords.empty.list' | transloco }}
+      <img
+        src="img/rounded-block-sign.png"
+        style="vertical-align: middle; margin: 0 25px"
+      />
+    </div>
+    <ul
+      class="bulk-actions"
+      *ngIf="selection !== undefined && selection.length > 0"
+    >
+      <li>
+        <cbc-number-badge [number]="selection.length"></cbc-number-badge>
+      </li>
+      <li>
+        <a (click)="showDeleteAllModal()">{{ 'label.delete' | transloco }}</a>
+      </li>
+    </ul>
+    <div class="footer">
+      <div class="float-left">
+        <div class="nav-pages"> </div>
+      </div>
+      <div *ngIf="keywords.length !== 0" class="right-actions">
+        <a (click)="bulkDownload()"
+          >{{ 'label.download.all.keywords' | transloco }}</a
+        >
+      </div>
+    </div>
+  </section>
+</div>
+<cbc-delete-multi-keywords
+  [keywords]="selection"
+  [showModal]="showMultipleDeleteWizard"
+  (modalHide)="refreshAfterAllDeletion($event)"
+></cbc-delete-multi-keywords>
+<cbc-create-keyword
+  [showModal]="showCreateModal"
+  [keyword]="selectedKeyword"
+  [parentIgId]="nodeId"
+  (modalHide)="refreshAfterCreation($event)"
+></cbc-create-keyword>
+<cbc-import-keyword
+  [showModal]="showImportModal"
+  [parentIgId]="nodeId"
+  (modalHide)="refreshAfterCreation($event)"
+></cbc-import-keyword>

@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>create a new help link</shortname>
+  <description>create a new help link</description>
+  <url>/circabc/help/links</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

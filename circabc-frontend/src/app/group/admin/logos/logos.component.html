@@ -1,0 +1,58 @@
+{{ 'label.appearance.title' | transloco: { groupName: group?.name } |
+cbcSetTitle }}
+<a class="cta cta--plus cta--upload" (click)="showUploadModal = true"
+  >{{ 'admin.upload.logo.action' | transloco }}</a
+>
+
+<h3>{{ 'label.appearance' | transloco }}</h3>
+
+<section class="table-container">
+  <table class="main">
+    <thead>
+      <tr>
+        <th class="fixedWidth">{{ 'label.logo' | transloco }}</th>
+        <th class="fixedWidth">{{ 'label.image' | transloco }}</th>
+        <th class="fixedWidth">{{ 'label.actions' | transloco }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td colspan="3"></td>
+      </tr>
+      <tr *ngFor="let logo of logos" class="row">
+        <td class="logoCell fixedWidth">
+          <img [attr.src]="logo.id | cbcDownload | cbcSecure" />
+        </td>
+        <td class="fixedWidth"> {{ logo.name }} </td>
+        <td class="fixedWidth">
+          <ul style="display: flex">
+            <li>
+              <a
+                (click)="select(logo.id)"
+                class="selectAction"
+                title="{{ 'label.select' | transloco }}"
+              >
+                <img src="img/check.png" *ngIf="isSelected(logo.id)" />
+                <img src="img/check-grey.png" *ngIf="!isSelected(logo.id)" />
+              </a>
+            </li>
+            <li>
+              <cbc-inline-delete
+                (deletionConfirmed)="delete(logo?.id)"
+                [useIcon]="true"
+                [useText]="false"
+              ></cbc-inline-delete>
+            </li>
+          </ul>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<cbc-add-group-logo
+  *ngIf="group"
+  [groupId]="group.id"
+  [showModal]="showUploadModal"
+  (modalHide)="refresh($event)"
+></cbc-add-group-logo>

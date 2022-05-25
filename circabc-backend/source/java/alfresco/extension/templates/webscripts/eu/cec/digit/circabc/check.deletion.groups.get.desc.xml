@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Get the report if the group can be deleted</shortname>
+  <description>Get the report if the group can be deleted</description>
+    <url>/circabc/check/deletion/groups/{id}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

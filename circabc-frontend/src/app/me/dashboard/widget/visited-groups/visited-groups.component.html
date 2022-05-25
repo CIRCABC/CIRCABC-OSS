@@ -1,0 +1,24 @@
+<section class="box box--alternate-lines box--button limit-height">
+  <header class="header">
+    <span class="title">{{ 'label.recent.ig.visit' | transloco }}</span>
+    <span class="icons">
+      <img
+        class="header-icon"
+        src="img/users-group.png"
+        alt="users-group.png"
+      />
+    </span>
+  </header>
+  <div class="main main--listing">
+    <ul>
+      <li class="row" *ngFor="let group of visitedIgs">
+        <a [routerLink]="['/group', group.id]"
+          >{{ getGroupNameOrTitle(group) }}</a
+        >
+      </li>
+      <li class="row" *ngIf="visitedIgs.length === 0">
+        {{ 'label.nothing.to.display' | transloco }}
+      </li>
+    </ul>
+  </div>
+</section>

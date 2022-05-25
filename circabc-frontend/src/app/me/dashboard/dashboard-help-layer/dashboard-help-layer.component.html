@@ -1,0 +1,98 @@
+<cbc-overlayer
+  [visible]="showOverlayHelp"
+  (closed)="saveAsViewed($event)"
+  [enabledClose]="showClose"
+  [useKeepDisplay]="true"
+>
+  <div *ngIf="step === 0" class="welcome">
+    <h1>{{ 'splash.help.welcome' | transloco }}</h1>
+    <p>
+      {{ 'splash.help.intro.1' | transloco }}
+      <br />
+      {{ 'splash.help.intro.2' | transloco }}
+      <br />
+    </p>
+    <p style="padding: 50px">
+      <img src="img/help/route-help-welcome.png" />
+    </p>
+
+    <section class="section-end">
+      <a class="button" (click)="toStep(1)"
+        >{{ 'label.continue' | transloco }}</a
+      >
+    </section>
+  </div>
+  <div *ngIf="step === 1">
+    <h1
+      >{{ 'splash.help.explore.title' | transloco }} {{ step }}/{{ maxStep
+      }}</h1
+    >
+    <p>
+      {{ 'splash.help.explore.intro' | transloco }}
+      <br />
+      <img src="img/help/dashboard-help-screen-1.jpg" class="img-float-right" />
+    </p>
+    <ol>
+      <li [innerHTML]="'splash.help.explore.content.1' | transloco"> </li>
+      <li [innerHTML]="'splash.help.explore.content.2' | transloco"> </li>
+      <li [innerHTML]="'splash.help.explore.content.3' | transloco"> </li>
+      <li [innerHTML]="'splash.help.explore.content.4' | transloco"> </li>
+      <li [innerHTML]="'splash.help.explore.content.5' | transloco"> </li>
+      <li [innerHTML]="'splash.help.explore.content.6' | transloco"> </li>
+      <li [innerHTML]="'splash.help.explore.content.7' | transloco"> </li>
+      <li [innerHTML]="'splash.help.explore.content.8' | transloco"> </li>
+      <li [innerHTML]="'splash.help.explore.content.9' | transloco"> </li>
+    </ol>
+    <section class="section-end">
+      <a class="button" (click)="toStep(2)"
+        >{{ 'label.continue' | transloco }}</a
+      >
+      <a class="back" (click)="toStep(0)">{{ 'label.back' | transloco }}</a>
+    </section>
+  </div>
+  <div *ngIf="step === 2">
+    <h1
+      >{{ 'splash.help.information.title' | transloco }} {{ step }}/{{ maxStep
+      }}</h1
+    >
+    <p>
+      {{ 'splash.help.information.intro' | transloco }}
+      <br />
+      <img
+        src="img/help/information-help-screen-1.jpg"
+        class="img-float-left"
+      />
+    </p>
+    <ol>
+      <li [innerHTML]="'splash.help.information.content.1' | transloco"> </li>
+      <li [innerHTML]="'splash.help.information.content.2' | transloco"> </li>
+      <li [innerHTML]="'splash.help.information.content.3' | transloco"> </li>
+      <li [innerHTML]="'splash.help.information.content.4' | transloco"> </li>
+      <li [innerHTML]="'splash.help.information.content.5' | transloco"> </li>
+    </ol>
+    <section class="section-end">
+      <a class="button" (click)="toStep(3)"
+        >{{ 'label.continue' | transloco }}</a
+      >
+      <a class="back" (click)="toStep(1)">{{ 'label.back' | transloco }}</a>
+    </section>
+  </div>
+  <div *ngIf="step === 3">
+    <h1>{{ 'splash.help.help.title' | transloco }} {{ step }}/{{ maxStep }}</h1>
+    <p>
+      {{ 'splash.help.help.intro' | transloco }}
+      <br />
+      <img src="img/help/help-help-screen-1.jpg" class="img-float-left" />
+    </p>
+    <ol>
+      <li [innerHTML]="'splash.help.help.content.1' | transloco"> </li>
+      <li [innerHTML]="'splash.help.help.content.2' | transloco"> </li>
+      <li [innerHTML]="'splash.help.help.content.3' | transloco"> </li>
+      <li [innerHTML]="'splash.help.help.content.4' | transloco"> </li>
+      <li [innerHTML]="'splash.help.help.content.5' | transloco"> </li>
+    </ol>
+    <section class="section-end">
+      <a class="back" (click)="toStep(2)">{{ 'label.back' | transloco }}</a>
+    </section>
+  </div>
+</cbc-overlayer>

@@ -1,0 +1,673 @@
+<div class="wrap admin page-container" *ngIf="formReady">
+  <form [formGroup]="updateEventForm">
+    <!-- Update info -->
+    <section class="box">
+      <header class="header">
+        <span *ngIf="isEventViewDetails" class="title"
+          >{{ 'event.view.details' | transloco }}</span
+        >
+        <span *ngIf="isMeetingViewDetails" class="title"
+          >{{ 'meeting.view.details' | transloco }}</span
+        >
+        <span *ngIf="isEventEditDetails" class="title"
+          >{{ 'event.edit.details' | transloco }}</span
+        >
+        <span *ngIf="isMeetingEditDetails" class="title"
+          >{{ 'meeting.edit.details' | transloco }}</span
+        >
+      </header>
+      <div class="main" *ngIf="repeatsControl.value && isEveAdmin()">
+        <section class="file-informations">
+          <div style="font-size: 13px">
+            <img src="img/info-xxl.png" height="15" width="15" />
+            <label class="notice" *ngIf="appointmentTypeEvent"
+              >{{ 'update-event.info.recurrent.event' | transloco }}</label
+            >
+            <label class="notice" *ngIf="!appointmentTypeEvent"
+              >{{ 'update-event.info.recurrent.meeting' | transloco }}</label
+            >
+            <br />
+            <br />
+            <div class="move-to-center">
+              <input
+                id="single"
+                type="radio"
+                formControlName="occurrenceSelection"
+                value="Single"
+              />&nbsp;{{ 'update-event.occurrence.single' | transloco }}
+            </div>
+            <div class="move-to-center">
+              <input
+                type="radio"
+                id="allOccurences"
+                formControlName="occurrenceSelection"
+                value="AllOccurences"
+              />&nbsp;{{ 'update-event.occurrence.all' | transloco }}
+            </div>
+            <div class="move-to-center">
+              <input
+                type="radio"
+                id="futurOccurences"
+                formControlName="occurrenceSelection"
+                value="FuturOccurences"
+              />&nbsp;{{ 'update-event.occurrence.future' | transloco }}
+            </div>
+            <br />
+          </div>
+        </section>
+      </div>
+    </section>
+    <section class="box box--tabs">
+      <ul class="header">
+        <li>
+          <a
+            class="tab"
+            [class.tab--current]="isGeneralTab()"
+            (click)="setTab('GeneralInformation')"
+          >
+            <img src="img/newspaper-818181.png" width="20" height="20" />
+            <span class="tab-text"
+              >{{ 'label.general.information' | transloco }}</span
+            >
+          </a>
+        </li>
+        <li *ngIf="!appointmentTypeEvent && hasLibraryAccess()">
+          <a
+            class="tab"
+            [class.tab--current]="isRelevantSpaceTab()"
+            (click)="setTab('RelevantSpace')"
+          >
+            <img src="img/open-archive-818181.png" width="20" height="20" />
+            <span class="tab-text"
+              >{{ 'label.relevant.space' | transloco }}</span
+            >
+          </a>
+        </li>
+        <li>
+          <a
+            class="tab"
+            [class.tab--current]="isAudienceTab()"
+            (click)="setTab('Audience')"
+          >
+            <img src="img/audience-818181.png" width="20" height="20" />
+            <span class="tab-text">{{ 'label.audience' | transloco }}</span>
+          </a>
+        </li>
+        <li>
+          <a
+            class="tab"
+            [class.tab--current]="isContactTab()"
+            (click)="setTab('ContactInformation')"
+          >
+            <img src="img/contact-818181.png" width="20" height="20" />
+            <span class="tab-text"
+              >{{ 'label.contact.details' | transloco }}</span
+            >
+          </a>
+        </li>
+      </ul>
+      <div class="main">
+        <section class="file-informations">
+          <div *ngIf="isGeneralTab()">
+            <!-- Event details -->
+            <div class="field">
+              <label for="title">{{ 'label.title' | transloco }}</label>
+              <input type="text" id="title" formControlName="title" />
+              <cbc-control-message
+                [control]="titleControl"
+              ></cbc-control-message>
+            </div>
+            <div class="field" *ngIf="appointmentTypeEvent">
+              <label for="eventType">{{ 'label.type' | transloco }}</label>
+              <div class="custom-select select--form reset-width select-align">
+                <select name="" id="eventType" formControlName="eventType">
+                  <!-- Options for Event -->
+                  <option value="Task">{{ 'label.task' | transloco }}</option>
+                  <option value="Appointment">
+                    {{ 'label.appointment' | transloco }}
+                  </option>
+                  <option value="Other">{{ 'label.other' | transloco }}</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field" *ngIf="!appointmentTypeEvent">
+              <label for="meetingType">{{ 'label.type' | transloco }}</label>
+
+              <div class="custom-select select--form reset-width select-align">
+                <select name="" id="meeting-type" formControlName="meetingType">
+                  <!-- Options for Event -->
+                  <option value="FaceToFace">
+                    {{ 'create-event.option.FaceToFace' | transloco }}
+                  </option>
+                  <option value="VirtualMeeting">
+                    {{ 'create-event.option.VirtualMeeting' | transloco }}
+                  </option>
+                </select>
+              </div>
+            </div>
+            <cbc-control-message
+              [control]="meetingTypeControl"
+            ></cbc-control-message>
+
+            <div formGroupName="dateInfo">
+              <!-- Groups the date info for validation -->
+              <div class="field field--with-icon field--date">
+                <label>{{ 'label.date' | transloco }}</label>
+                <label>{{ dateControl.value | date }}</label>
+                <cbc-control-message
+                  [control]="dateInfoControl"
+                ></cbc-control-message>
+              </div>
+              <div class="field field--with-icon field--time">
+                <label for="startTime"
+                  >{{ 'label.start.time' | transloco }}</label
+                >
+                <input type="time" id="startTime" formControlName="startTime" />
+              </div>
+              <div class="field field--with-icon field--time">
+                <label for="endTime">{{ 'label.end.time' | transloco }}</label>
+                <input type="time" id="endTime" formControlName="endTime" />
+              </div>
+            </div>
+            <div class="field">
+              <label for="language">{{ 'label.language' | transloco }}</label>
+              <div class="custom-select select--form reset-width">
+                <cbc-lang-selector
+                  [disable]="!isEveAdmin()"
+                  formControlName="language"
+                ></cbc-lang-selector>
+              </div>
+            </div>
+            <div class="field">
+              <label for="timezone">{{ 'label.timezone' | transloco }}</label>
+              <label>{{ timezoneControl.value }}</label>
+            </div>
+            <div class="field">
+              <label for="abstract">{{ 'label.abstract' | transloco }}</label>
+              <textarea
+                id="abstract"
+                style="height: auto"
+                [rows]="3"
+                formControlName="abstract"
+              ></textarea>
+            </div>
+            <div class="field">
+              <label for="invitationMessage"
+                >{{ 'label.invitation.message' | transloco }}</label
+              >
+              <textarea
+                id="invitationMessage"
+                style="height: auto"
+                [rows]="3"
+                formControlName="invitationMessage"
+              ></textarea>
+            </div>
+            <div class="field">
+              <label for="location">{{ 'label.location' | transloco }}</label>
+              <input type="text" id="location" formControlName="location" />
+            </div>
+            <div class="field" *ngIf="appointmentTypeEvent">
+              <label for="eventPriority"
+                >{{ 'label.priority' | transloco }}</label
+              >
+              <div class="custom-select select--form reset-width select-align">
+                <select
+                  name=""
+                  id="eventPriority"
+                  formControlName="eventPriority"
+                >
+                  <option value="Low">{{ 'label.low' | transloco }}</option>
+                  <option value="Medium">
+                    {{ 'label.medium' | transloco }}
+                  </option>
+                  <option value="High">{{ 'label.high' | transloco }}</option>
+                  <option value="Urgent">
+                    {{ 'label.urgent' | transloco }}
+                  </option>
+                </select>
+              </div>
+            </div>
+            <div class="field" *ngIf="!appointmentTypeEvent">
+              <label for="meetingOrganisation"
+                >{{ 'label.organisation' | transloco }}</label
+              >
+              <input
+                type="text"
+                id="meetingOrganisation"
+                formControlName="meetingOrganisation"
+              />
+            </div>
+            <div class="field switch" *ngIf="!appointmentTypeEvent">
+              <div class="label">
+                {{ 'label.public.availability' | transloco }}
+              </div>
+              <input
+                id="meetingPublicAvailability"
+                class="cmn-toggle cmn-toggle-round"
+                type="checkbox"
+                checked
+                formControlName="meetingPublicAvailability"
+              />
+              <label
+                for="meetingPublicAvailability"
+                class="nonBlockLabel"
+              ></label>
+              <span
+                >{{ (meetingPublicAvailabilityControl.value === true ?
+                'label.public' : 'label.private' ) | transloco }}</span
+              >
+            </div>
+            <div formGroupName="repeatsInfo">
+              <!-- Groups the repeats info for validation -->
+              <div class="field">
+                <div class="label">{{ 'label.frequency' | transloco }}</div>
+                <!-- [Daily] for [2] times.
+                      Every [2] [days] for [2] times. -->
+                <label *ngIf="!repeatsControl.value"
+                  >{{ 'label.once' | transloco }}</label
+                >
+                <label
+                  class="legend-width"
+                  *ngIf="repeatsControl.value && whenOrEverySelectControl.value"
+                  >{{ 'update-event.repeats.legend.every' | transloco : {
+                  everyTime: everyTimeControl.value, everyTimesOccurence:
+                  everyTimesOccurenceControl.value | transloco, times:
+                  timesControl.value } }}</label
+                >
+                <label
+                  class="legend-width"
+                  *ngIf="
+                    repeatsControl.value && !whenOrEverySelectControl.value
+                  "
+                  >{{ 'update-event.repeats.legend.when' | transloco : {
+                  timesOccurrence: 'label.' + timesOccurenceControl.value |
+                  transloco, times: timesControl.value } }}</label
+                >
+              </div>
+              <div class="field" *ngIf="repeatsSelected">
+                <label for="when"
+                  >{{ 'create-event.frequency.when' | transloco }}</label
+                >
+                <input
+                  type="radio"
+                  id="whenSelect"
+                  name="whenOrEverySelect"
+                  value="whenSelect"
+                  checked
+                  formControlName="whenOrEverySelect"
+                />
+                <div
+                  class="custom-select select--form when2-width select-align"
+                >
+                  <select
+                    name="timesOccurence"
+                    id="timesOccurence"
+                    formControlName="timesOccurence"
+                  >
+                    <option value="Daily">
+                      {{ 'label.Daily' | transloco }}
+                    </option>
+                    <option value="Weekly">
+                      {{ 'label.Weekly' | transloco }}
+                    </option>
+                    <option value="EveryTwoWeeks">
+                      {{ 'label.EveryTwoWeeks' | transloco }}
+                    </option>
+                    <option value="MonthlyByDate">
+                      {{ 'label.MonthlyByDate' | transloco }}
+                    </option>
+                    <option value="MonthlyByWeekday">
+                      {{ 'label.MonthlyByWeekday' | transloco }}
+                    </option>
+                    <option value="Yearly">
+                      {{ 'label.Yearly' | transloco }}
+                    </option>
+                    <option value="MondayToFriday">
+                      {{ 'label.MondayToFriday' | transloco }}
+                    </option>
+                    <option value="MondayWednseyFriday">
+                      {{ 'label.MondayWednseyFriday' | transloco }}
+                    </option>
+                    <option value="TuesdayThursday">
+                      {{ 'label.TuesdayThursday' | transloco }}
+                    </option>
+                  </select>
+                </div>
+                <label for="times" class="short-label"
+                  >{{ 'create-event.frequency.for' | transloco }}</label
+                >
+                <input
+                  type="text"
+                  id="times"
+                  list="timesList"
+                  class="times-width"
+                  formControlName="times"
+                />
+                <datalist id="timesList">
+                  <option value="2"></option>
+                  <option value="3"></option>
+                  <option value="4"></option>
+                  <option value="5"></option>
+                </datalist>
+                <label for="times"
+                  >{{ 'create-event.frequency.times' | transloco }}</label
+                >
+              </div>
+              <div class="field" *ngIf="repeatsSelected">
+                <label for="everyTimesOccurence"
+                  >{{ 'create-event.frequency.every' | transloco }}</label
+                >
+                <input
+                  type="radio"
+                  id="everySelect"
+                  name="whenOrEverySelect"
+                  value="everySelect"
+                  formControlName="whenOrEverySelect"
+                />
+                <input
+                  type="text"
+                  id="everyTime"
+                  list="timesList"
+                  class="times-width"
+                  formControlName="everyTime"
+                />
+                <div class="custom-select select--form when-width select-align">
+                  <select
+                    name="everyTimesOccurence"
+                    id="everyTimesOccurence"
+                    formControlName="everyTimesOccurence"
+                  >
+                    <option value="days">{{ 'label.days' | transloco }}</option>
+                    <option value="weeks">
+                      {{ 'label.weeks' | transloco }}
+                    </option>
+                    <option value="months">
+                      {{ 'label.months' | transloco }}
+                    </option>
+                  </select>
+                </div>
+                <label for="times" class="short-label"
+                  >{{ 'create-event.frequency.for' | transloco }}</label
+                >
+                <input
+                  type="text"
+                  id="times"
+                  list="timesList"
+                  class="times-width"
+                  formControlName="times"
+                />
+                <label for="times"
+                  >{{ 'create-event.frequency.times' | transloco }}</label
+                >
+              </div>
+            </div>
+            <cbc-control-message
+              [control]="repeatsInfoControl"
+            ></cbc-control-message>
+          </div>
+          <div *ngIf="isAudienceTab()">
+            <div>
+              <div formGroupName="attendantsInfo">
+                <div class="field switch">
+                  <div class="label">
+                    {{ 'label.audience.status' | transloco }}
+                  </div>
+                  <input
+                    id="audienceStatusOpen"
+                    class="cmn-toggle cmn-toggle-round"
+                    type="checkbox"
+                    (change)="toggleAudienceStatus()"
+                    checked
+                    formControlName="audienceStatusOpen"
+                  />
+                  <label for="audienceStatusOpen" class="nonBlockLabel"></label>
+                  <span
+                    >{{ (audienceStatusOpenControl.value === true ? 'label.open'
+                    : 'label.closed' ) | transloco }}</span
+                  >
+                </div>
+                <!-- When viewing -->
+                <div *ngIf="audience.length > 0 && isEveAdmin()">
+                  <div class="field">
+                    <label *ngIf="isEvent()"
+                      >{{ 'label.current.audience' | transloco }}</label
+                    >
+                    <label *ngIf="isMeeting()"
+                      >{{ 'label.current.audience.status' | transloco }}</label
+                    >
+                  </div>
+                  <div class="margin-l">
+                    <table>
+                      <tr *ngFor="let audienceEntry of audience">
+                        <td>
+                          <img
+                            src="img/icon-members-blue.png"
+                            style="vertical-align: middle"
+                            width="18"
+                            height="18"
+                          />&nbsp;
+                          <span *ngIf="!isEmail(audienceEntry)">
+                            <cbc-user-card
+                              [userId]="audienceEntry.userDetails"
+                            ></cbc-user-card>
+                            <label
+                              >&nbsp;({{ audienceEntry.userDetails }})</label
+                            >
+                          </span>
+                          <span *ngIf="isEmail(audienceEntry)">
+                            <label>{{ audienceEntry.userDetails }}</label>
+                          </span>
+                        </td>
+                        <td *ngIf="isMeeting()">
+                          &nbsp;<img
+                            src="img/{{ audienceEntry.status }}.png"
+                            style="vertical-align: middle"
+                            title="{{
+                              'label.meeting.request.status.' +
+                                audienceEntry.status | transloco
+                            }}"
+                            width="20"
+                            height="20"
+                          />
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <br />
+                </div>
+                <!-- When editing -->
+                <div *ngIf="!viewing && isEveAdmin()">
+                  <div *ngIf="!audienceStatusOpenControl.value">
+                    <span *ngIf="showPicker">
+                      <label>{{ 'create-event.part.a' | transloco }}</label>
+                      <cbc-users-picker
+                        [igId]="igId"
+                        formControlName="invitedUsersOrProfiles"
+                        (userOrProfileQueryError)="showNoPickerText()"
+                      ></cbc-users-picker>
+                    </span>
+                    <span *ngIf="!showPicker">
+                      <div style="color: red">
+                        {{ 'members.alternate.access' | transloco }}
+                      </div>
+                    </span>
+                    <br />
+                    <label>{{ 'create-event.part.b' | transloco }}</label>
+                    <div class="field">
+                      <textarea
+                        id="invitedExternalEmails"
+                        formControlName="invitedExternalEmails"
+                      ></textarea>
+                    </div>
+                    <cbc-control-message
+                      [control]="invitedExternalEmailsControl"
+                    ></cbc-control-message>
+                  </div>
+                </div>
+              </div>
+              <cbc-control-message
+                [control]="attendantsInfoControl"
+              ></cbc-control-message>
+              <div *ngIf="audienceStatusOpenControl.value && isEveAdmin()">
+                <label for="enableNotification">
+                  <input
+                    type="checkbox"
+                    id="enableNotification"
+                    formControlName="enableNotification"
+                  />&nbsp;{{ 'create-event.meeting.automatically.send.details' |
+                  transloco }}</label
+                >
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="field"
+            *ngIf="!appointmentTypeEvent && hasLibraryAccess()"
+            [class.hide-relevant-space]="!isRelevantSpaceTab()"
+          >
+            <label>{{ 'label.library.section' | transloco }}</label>
+            <label
+              >{{ !isMeetingLibrarySectionSelected() ? ('label.none' |
+              transloco) : ('label.selected' | transloco) }}&nbsp;
+              <a
+                *ngIf="isMeetingLibrarySectionSelected()"
+                [routerLink]="[
+                  '/group',
+                  igId,
+                  'library',
+                  meetingLibrarySectionControl.value
+                ]"
+              >
+                <img src="img/icon-more-20x20.png" />
+              </a>
+            </label>
+            <br />
+            <div>
+              <br />
+              <cbc-tree-view
+                [disabled]="viewing"
+                [root]="libraryRoot"
+                [folderId]="meetingLibrarySectionControl.value"
+                [displayedPath]="path"
+                (selectedNodeEmitter)="setLibrarySectionNode($event)"
+              ></cbc-tree-view>
+            </div>
+          </div>
+          <div *ngIf="isContactTab()">
+            <div class="field">
+              <label for="contactName">{{ 'label.name' | transloco }}</label>
+              <input
+                type="text"
+                id="contactName"
+                formControlName="contactName"
+              />
+              <cbc-control-message
+                [control]="contactNameControl"
+              ></cbc-control-message>
+            </div>
+            <div class="field">
+              <label for="contactPhone">{{ 'label.phone' | transloco }}</label>
+              <input
+                type="text"
+                id="contactPhone"
+                formControlName="contactPhone"
+              />
+              <cbc-control-message
+                [control]="contactNameControl"
+              ></cbc-control-message>
+            </div>
+            <div class="field">
+              <label for="contactEmail">{{ 'label.email' | transloco }}</label>
+              <input
+                type="text"
+                id="contactEmail"
+                formControlName="contactEmail"
+              />
+              <cbc-control-message
+                [control]="contactEmailControl"
+              ></cbc-control-message>
+            </div>
+            <div class="field">
+              <label for="contactURL">{{ 'label.url' | transloco }}</label>
+              <input type="text" id="contactURL" formControlName="contactURL" />
+            </div>
+          </div>
+          <div class="field" *ngIf="processing">
+            <label
+              >{{ 'label.updating' | transloco }}...
+              <cbc-spinner></cbc-spinner>
+            </label>
+          </div>
+          <br *ngIf="!processing && viewing" />
+          <section
+            class="actions"
+            style="height: 127px"
+            *ngIf="!processing && viewing"
+          >
+            <ul class="actions__secondary-actions--left">
+              <li>
+                <a class="edit" (click)="enableEdit()"
+                  >{{ 'label.edit' | transloco }}</a
+                >
+              </li>
+              <li>
+                <a
+                  *ngIf="
+                    userInAudienceAndStatus('Pending') ||
+                    userInAudienceAndStatus('Rejected')
+                  "
+                  class="accept"
+                  (click)="updateMeetingRequest('Accepted')"
+                  >{{ 'label.accept.meeting.request' | transloco }}</a
+                >
+              </li>
+              <li>
+                <a
+                  *ngIf="
+                    userInAudienceAndStatus('Pending') ||
+                    userInAudienceAndStatus('Accepted')
+                  "
+                  class="decline"
+                  (click)="updateMeetingRequest('Rejected')"
+                  >{{ 'label.decline.meeting.request' | transloco }}</a
+                >
+              </li>
+              <li>
+                <a class="history" (click)="historyShowModal = true"
+                  >{{ 'label.history' | transloco }}</a
+                >
+              </li>
+            </ul>
+          </section>
+          <!-- Buttons -->
+          <div class="buttons-group" *ngIf="!processing && !viewing">
+            <a
+              class="cta"
+              [routerLink]="['.']"
+              *ngIf="updateEventForm.errors === null && isEveAdmin()"
+              (click)="update()"
+              >{{ 'label.update' | transloco }}</a
+            >
+            <a class="button" [routerLink]="['.']" (click)="cancel()"
+              >{{ 'label.cancel' | transloco }}</a
+            >
+            <a
+              class="button"
+              [routerLink]="['.']"
+              (click)="historyShowModal = true"
+              >{{ 'label.history' | transloco }}</a
+            >
+          </div>
+        </section>
+      </div>
+    </section>
+  </form>
+  <cbc-history
+    [itemId]="eventId"
+    [historyText]="'label.event.history' | transloco"
+    [showModal]="historyShowModal"
+    (modalHide)="historyShowModal = false"
+  ></cbc-history>
+</div>

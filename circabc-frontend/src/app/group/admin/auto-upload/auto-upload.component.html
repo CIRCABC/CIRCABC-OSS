@@ -1,0 +1,149 @@
+{{ 'admin.tab.auto.upload' | transloco | cbcSetTitle }}
+<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+<div class="fluid page-container">
+  <a class="cta cta--plus" style="float: right" (click)="showAddModal = true"
+    >{{ 'label.add.configuration' | transloco }}</a
+  >
+  <br />
+  <section class="table-container">
+    <header class="header">
+      <cbc-pager
+        [length]="totalItems"
+        [pageSize]="listingOptions.limit"
+        [pageIndex]="listingOptions.page"
+        (pageChanged)="goToPage($event)"
+      ></cbc-pager>
+      <cbc-pager-configuration
+        (pageSizeChanged)="changeLimit($event)"
+      ></cbc-pager-configuration>
+      <div style="float: right; font-size: 12px">
+        <img src="img/light-bulb-3355.png" width="17" height="17" />&nbsp;{{
+        'label.enabled' | transloco }}&nbsp;&nbsp;
+        <img src="img/cancel.png" width="15" height="15" />&nbsp;{{
+        'label.disabled' | transloco }}&nbsp;&nbsp;
+        <img src="img/problem-003355.png" width="15" height="15" />&nbsp;{{
+        'label.problem.verify' | transloco }}
+      </div>
+    </header>
+
+    <table class="main">
+      <thead>
+        <tr>
+          <th></th>
+          <th style="width: 22px"></th>
+          <th> {{ 'label.status' | transloco }} </th>
+          <th> {{ 'label.path.to.file' | transloco }} </th>
+          <th> {{ 'label.file.name' | transloco }} </th>
+          <th> {{ 'label.ftp.host' | transloco }} </th>
+          <th> {{ 'label.job.notification' | transloco }} </th>
+          <th> {{ 'label.auto.extract' | transloco }} </th>
+          <th> {{ 'label.date.restriction' | transloco }} </th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr class="row empty-row" *ngIf="configurations !== undefined">
+          <td
+            style="padding-left: 22px"
+            colspan="9"
+            *ngIf="configurations.length === 0"
+          >
+            {{ 'auto.upload.display.none' | transloco }}
+          </td>
+        </tr>
+
+        <tr
+          class="row"
+          *ngFor="let configuration of configurations; trackBy: trackById"
+        >
+          <td class="cell-left-border"></td>
+          <td class="cell-checkbox"></td>
+          <td class="cell-file-name" style="width: 30px">
+            <a (click)="toggleConfiguration(configuration)">
+              <img
+                *ngIf="configuration.status === 1"
+                src="img/light-bulb-3355.png"
+                width="17"
+                height="17"
+              />
+              <img
+                *ngIf="configuration.status === 0"
+                src="img/cancel.png"
+                width="15"
+                height="15"
+              />
+              <img
+                *ngIf="configuration.status === 2"
+                src="img/problem-003355.png"
+                width="15"
+                height="15"
+              />
+            </a>
+            <ul class="actions" style="width: 80px">
+              <li>
+                <cbc-inline-delete
+                  (deletionConfirmed)="deleteConfiguration(configuration)"
+                ></cbc-inline-delete>
+              </li>
+            </ul>
+          </td>
+          <td>{{ configuration.parentId }}</td>
+          <td>{{ configuration.fileId }}</td>
+          <td>{{ configuration.ftpHost }}</td>
+          <td>
+            <img
+              class="center-img"
+              *ngIf="configuration.jobNotifications"
+              src="img/light-bulb-3355.png"
+              width="17"
+              height="17"
+            />
+            <img
+              class="center-img"
+              *ngIf="!configuration.jobNotifications"
+              src="img/cancel.png"
+              width="15"
+              height="15"
+            />
+          </td>
+          <td>
+            <img
+              class="center-img"
+              *ngIf="configuration.autoExtract"
+              src="img/light-bulb-3355.png"
+              width="17"
+              height="17"
+            />
+            <img
+              class="center-img"
+              *ngIf="!configuration.autoExtract"
+              src="img/cancel.png"
+              width="15"
+              height="15"
+            />
+          </td>
+          <td>{{ configuration.dateRestriction }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="footer">
+      <cbc-pager
+        [length]="totalItems"
+        [pageSize]="listingOptions.limit"
+        [pageIndex]="listingOptions.page"
+        (pageChanged)="goToPage($event)"
+      ></cbc-pager>
+      <cbc-pager-configuration
+        (pageSizeChanged)="changeLimit($event)"
+      ></cbc-pager-configuration>
+    </div>
+  </section>
+
+  <cbc-add-configuration
+    [showWizard]="showAddModal"
+    [igId]="igId"
+    (configurationAdded)="configurationAdded()"
+    (canceled)="showAddModal = false"
+  ></cbc-add-configuration>
+</div>

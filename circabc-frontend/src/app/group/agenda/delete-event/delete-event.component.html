@@ -1,0 +1,48 @@
+<cbc-modal
+  [title]="'delete-event.delete.event'"
+  (ok)="delete()"
+  (cancel)="closePopupWindow()"
+  [okLabel]="'label.delete'"
+  [(executing)]="processing"
+  [executingLabel]="'label.deleting'"
+  [(visible)]="showModal"
+  [contentClass]="'modal-content section-scroll'"
+>
+  <span *ngIf="event !== undefined"
+    >{{ 'label.delete.appointment.question' | transloco: { title: event.title }
+    }}</span
+  >
+  <br /><br />
+  <form *ngIf="!isSingleEvent()" [formGroup]="form">
+    <!-- Single, AllOccurences, FuturOccurences -->
+    <div class="field field--radio">
+      <div class="move-to-center">
+        <input
+          id="single"
+          type="radio"
+          formControlName="occurrenceSelection"
+          value="Single"
+        />
+        {{ 'delete-event.occurrence.single' | transloco }}
+      </div>
+      <div class="move-to-center">
+        <input
+          type="radio"
+          id="allOccurences"
+          formControlName="occurrenceSelection"
+          value="AllOccurences"
+        />
+        {{ 'delete-event.occurrence.all' | transloco }}
+      </div>
+      <div class="move-to-center">
+        <input
+          type="radio"
+          id="futurOccurences"
+          formControlName="occurrenceSelection"
+          value="FuturOccurences"
+        />
+        {{ 'delete-event.occurrence.future' | transloco }}
+      </div>
+    </div>
+  </form>
+</cbc-modal>

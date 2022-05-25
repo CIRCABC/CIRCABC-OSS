@@ -1,0 +1,23 @@
+.keywordList {
+  max-height: 200px;
+  overflow: auto;
+
+  ul {
+    li {
+      padding: 5px 0;
+      border-top: 1px solid #ececec;
+
+      &:first-child {
+        border-top: 0;
+      }
+    }
+  }
+}
+
+.deletingBox {
+  margin-top: 25px;
+
+  progress {
+    width: 100%;
+  }
+}

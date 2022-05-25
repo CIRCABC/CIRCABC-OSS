@@ -1,0 +1,51 @@
+.paddingMain {
+  padding-top: 0;
+  padding-left: 0;
+}
+
+.stats-container {
+  clear: left;
+  overflow: auto;
+}
+
+.statistics-container {
+  border-radius: 10px;
+  margin-right: 40px;
+  margin-bottom: 40px;
+  max-width: 600px;
+  border: 2px solid rgb(238 245 244 / 1);
+  float: left;
+
+  .header {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    background-color: rgb(209 232 242 / 1);
+  }
+
+  .row {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    background: rgb(238 245 244 / 1);
+  }
+
+  .row:nth-child(odd) {
+    background: white;
+  }
+
+  .tds {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+.flex-structure {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+}

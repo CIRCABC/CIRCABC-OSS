@@ -1,0 +1,9 @@
+<h2>{{ 'help.categories' | transloco }}</h2>
+<ul>
+  <li
+    *ngFor="let category of categories"
+    [class.selected]="category.id === currentId"
+  >
+    <a [routerLink]="['..', category.id]">{{ category.title | cbcI18n }}</a>
+  </li>
+</ul>

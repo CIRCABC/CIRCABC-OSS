@@ -1,0 +1,43 @@
+.explorer {
+  max-height: 400px;
+  overflow: auto;
+
+  header {
+    padding: 10px 0;
+    height: auto;
+  }
+}
+
+table {
+  width: 100%;
+
+  tr th {
+    color: #035;
+
+    &.date {
+      width: 20%;
+    }
+
+    &.selector {
+      width: 20px;
+    }
+
+    &.width-1-3 {
+      width: 25%;
+    }
+
+    &.width-2-3 {
+      width: 70%;
+    }
+  }
+
+  thead tr th {
+    text-align: left;
+  }
+
+  tr td.empty {
+    font-size: 14px;
+    vertical-align: middle;
+    margin: 0 25px;
+  }
+}

@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>gets a news from the information service</shortname>
+  <description>gets a news from the information service</description>
+    <url>/circabc/news/{id}</url>
+  <format default="json"/>
+  <authentication>guest</authentication>
+  <transaction>required</transaction>
+</webscript>

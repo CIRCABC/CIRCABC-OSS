@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Get the user from the uploaded list details</shortname>
+  <description>Get the user from the uploaded list details</description>
+    <url>/circabc/users/retrieval</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

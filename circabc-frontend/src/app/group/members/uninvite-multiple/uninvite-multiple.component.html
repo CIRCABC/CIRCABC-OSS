@@ -1,0 +1,17 @@
+<cbc-modal
+  [executing]="deleting"
+  [executingLabel]="'label.removing'"
+  [(visible)]="showModal"
+  [okLabel]="'label.remove'"
+  [title]="'label.delete.multiple.user'"
+  (ok)="deleteMembers()"
+  (cancel)="cancel()"
+>
+  <p> {{ 'members.remove.multiple.confirmation' | transloco }} </p>
+  <ul>
+    <li *ngFor="let user of users">
+      {{ user.user?.firstname + ' ' + user.user?.lastname + ' [ ' +
+      (user.profile?.title | cbcI18n) + ' ] ' }}
+    </li>
+  </ul>
+</cbc-modal>

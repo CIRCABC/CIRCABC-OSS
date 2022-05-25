@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+	<mapper namespace="Section">
+		<select id="getAllSections"  resultType="eu.cec.digit.circabc.migration.reader.impl.circa.domain.Section">
+			SELECT
+				DC_IDENTIFIER          as identifier,
+				CLASSIFICATION         as classification,
+				PARENT_URL             as parentURL,
+				CREATED                as created,
+				date_format(DCTERMS_VALID,'%Y-%m-%d')     as expiration,
+				DCTERMS_MODIFIED       as modified,
+				USERS_PERMS            as usersPerms,
+				CLASS_PERMS            as classPerms,
+				DC_CREATOR             as creator,
+				CIRCA_OWNER            as owner,
+				ORIGINATOR             as originator,
+				SHARE_STATUS           as shareStatus
+			FROM $virtualCirca$_$interestGroup$_Sec
+		</select>
+
+		<select id="getSection"  resultType="eu.cec.digit.circabc.migration.reader.impl.circa.domain.Section">
+			SELECT
+				DC_IDENTIFIER          as identifier,
+				CLASSIFICATION         as classification,
+				PARENT_URL             as parentURL,
+				CREATED                as created,
+				date_format(DCTERMS_VALID,'%Y-%m-%d')     as expiration,
+				DCTERMS_MODIFIED       as modified,
+				USERS_PERMS            as usersPerms,
+				CLASS_PERMS            as classPerms,
+				DC_CREATOR             as creator,
+				CIRCA_OWNER            as owner,
+				ORIGINATOR             as originator,
+				SHARE_STATUS           as shareStatus
+			FROM $virtualCirca$_$interestGroup$_Sec
+			WHERE dc_identifier = #identifier#
+		</select>
+
+		<select id="getAllSectionLinguistics" resultType="eu.cec.digit.circabc.migration.reader.impl.circa.domain.SectionLinguistic">
+			SELECT
+				DC_IDENTIFIER          as identifier,
+				CLASSIFICATION         as classification,
+				DC_LANGUAGE            as language,
+				PARENT_URL             as parentURL,
+				CREATED                as created,
+				DCTERMS_MODIFIED       as modified,
+				DC_TITLE               as title,
+				DC_SUBJECT             as subject,
+				DC_CREATOR             as creator,
+				DCTERMS_EXTENT         as extent,
+				DCTERMS_MEDIUM         as medium,
+				DCTERMS_ABSTRACT       as abstractDesc,
+				SUMMARY                as summary
+			FROM $virtualCirca$_$interestGroup$_SecL
+		</select>
+
+		<select id="getSectionLinguistic" resultType="eu.cec.digit.circabc.migration.reader.impl.circa.domain.SectionLinguistic">
+			SELECT
+				DC_IDENTIFIER          as identifier,
+				CLASSIFICATION         as classification,
+				DC_LANGUAGE            as language,
+				PARENT_URL             as parentURL,
+				CREATED                as created,
+				DCTERMS_MODIFIED       as modified,
+				DC_TITLE               as title,
+				DC_SUBJECT             as subject,
+				DC_CREATOR             as creator,
+				DCTERMS_EXTENT         as extent,
+				DCTERMS_MEDIUM         as medium,
+				DCTERMS_ABSTRACT       as abstractDesc,
+				SUMMARY                as summary
+			FROM $virtualCirca$_$interestGroup$_SecL
+			WHERE dc_identifier = #identifier#
+		</select>
+	</mapper>

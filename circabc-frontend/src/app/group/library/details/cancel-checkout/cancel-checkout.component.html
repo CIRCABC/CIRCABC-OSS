@@ -1,0 +1,17 @@
+<cbc-modal
+  [title]="'label.cancel.checkout'"
+  (ok)="cancelCheckout()"
+  (cancel)="closePopupWindow()"
+  [okLabel]="'label.undo.checkout'"
+  [executingLabel]="''"
+  [(visible)]="showModal"
+  [contentClass]="'modal-content'"
+>
+  <p>
+    {{ 'label.sure.cancel.checkout' | transloco }}
+    <br /><br />
+    <span class="hint">
+      {{ 'label.sure.cancel.checkout.hint' | transloco }}
+    </span>
+  </p>
+</cbc-modal>

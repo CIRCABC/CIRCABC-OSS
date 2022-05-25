@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>content.bulk.download.get</shortname>
+  <description>Bulk download a set of files as a zip file</description>
+    <url>/circabc/content/bulk</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

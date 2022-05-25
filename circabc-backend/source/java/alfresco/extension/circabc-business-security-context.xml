@@ -1,0 +1,260 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+  Copyright 2006 European Community
+  
+   Licensed under the EUPL, Version 1.1 or as soon they
+   will be approved by the European Commission - subsequent
+   versions of the EUPL (the "Licence");
+   You may not use this work except in compliance with the
+   Licence.
+   You may obtain a copy of the Licence at:
+  
+   https://joinup.ec.europa.eu/software/page/eupl
+  
+   Unless required by applicable law or agreed to in
+   writing, software distributed under the Licence is
+   distributed on an "AS IS" basis,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+   express or implied.
+   See the Licence for the specific language governing
+   permissions and limitations under the Licence.
+-->
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+
+<beans>
+
+	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+	<!-- You specify here Spring beans related to CIRCABC Business Layer  -->
+	<!-- You ONLY add PUBLIC business services                            -->
+	<!-- You DO NOT MODIFY here beans related to Alfresco                 -->
+	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+
+	<!-- Acl entry voter that check permissions on AclAwareWrapper objects -->
+	<bean id="business.aclEntryVoter" class="eu.cec.digit.circabc.business.acl.ACLEntryVoter" parent="aclEntryVoter" >
+	</bean>
+
+	<!-- Add AclAwareWrapper voter support -->
+	<bean id="business.accessDecisionManager" parent="accessDecisionManager" >
+		<property name="decisionVoters" >
+			<list>
+                <ref bean="roleVoter"/>
+                <ref bean="groupVoter"/>
+                <ref bean="aclEntryVoter"/>
+		        <ref bean="business.aclEntryVoter" />
+			</list>
+		</property>
+	</bean>
+
+	<!-- Post method Acl entry voter that check permissions on AclAwareWrapper objects -->
+    <bean id="business.afterAcl" parent="afterAcl" >
+	</bean>
+
+	<!-- Add AclAwareWrapper voter support -->
+    <bean id="business.afterInvocationManager" parent="afterInvocationManager">
+    <property name="providers" >
+      <list>
+            <ref bean="afterAcl"/>
+			<ref bean="business.afterAcl"/>
+      </list>
+    </property>
+  </bean>
+
+
+  <!-- ================================== -->
+  <!-- Business layer permissions support -->
+  <!-- ================================== -->
+
+	<bean id="MailMeContentBusinessSrv_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="business.accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="business.afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+			eu.cec.digit.circabc.business.api.mail.MailMeContentBusinessSrv.send=ACL_NODE.0.sys:base.Read
+         </value>
+      </property>
+	</bean>
+
+	<bean id="ContentBusinessSrv_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="business.accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="business.afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+			eu.cec.digit.circabc.business.api.content.ContentBusinessSrv.addContent=ACL_NODE.0.sys:base.CreateChildren
+         </value>
+      </property>
+	</bean>
+
+	<bean id="CociContentBusinessSrv_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="business.accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="business.afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+			eu.cec.digit.circabc.business.api.content.CociContentBusinessSrv.checkOut=ACL_NODE.0.cm:lockable.CheckOut
+			eu.cec.digit.circabc.business.api.content.CociContentBusinessSrv.checkIn=ACL_NODE.0.cm:workingcopy.CheckIn
+			eu.cec.digit.circabc.business.api.content.CociContentBusinessSrv.cancelCheckOut=ACL_NODE.0.cm:workingcopy.CancelCheckOut
+			eu.cec.digit.circabc.business.api.content.CociContentBusinessSrv.checkOutForWorkflow=ACL_NODE.0.cm:lockable.CheckOut
+			eu.cec.digit.circabc.business.api.content.CociContentBusinessSrv.getWorkingCopy=ACL_NODE.0.sys:base.Read
+			eu.cec.digit.circabc.business.api.content.CociContentBusinessSrv.getWorkingCopyOf=ACL_NODE.0.sys:base.Read
+			eu.cec.digit.circabc.business.api.content.CociContentBusinessSrv.lock=ACL_NODE.0.cm:lockable.CheckOut
+			eu.cec.digit.circabc.business.api.content.CociContentBusinessSrv.unlock=ACL_NODE.0.cm:lockable.CheckIn
+			eu.cec.digit.circabc.business.api.content.CociContentBusinessSrv.update=ACL_NODE.0.sys:base.WriteContent
+         </value>
+      </property>
+	</bean>
+
+	<bean id="NavigationBusinessSrv_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="business.accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="business.afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+		eu.cec.digit.circabc.business.api.nav.NavigationBusinessSrv.getCategory=ACL_ALLOW
+		eu.cec.digit.circabc.business.api.nav.NavigationBusinessSrv.getCategories=ACL_ALLOW
+		eu.cec.digit.circabc.business.api.nav.NavigationBusinessSrv.getCategoriesByHeader=ACL_ALLOW
+		eu.cec.digit.circabc.business.api.nav.NavigationBusinessSrv.getCircabcRoot=ACL_ALLOW
+		eu.cec.digit.circabc.business.api.nav.NavigationBusinessSrv.getHeaders=ACL_ALLOW
+		eu.cec.digit.circabc.business.api.nav.NavigationBusinessSrv.getInterestGroups=ACL_NODE.0.sys:base.Read
+		eu.cec.digit.circabc.business.api.nav.NavigationBusinessSrv.getInterestGroupsByMode=ACL_NODE.0.sys:base.Read
+		eu.cec.digit.circabc.business.api.nav.NavigationBusinessSrv.getInterestGroupServices=ACL_NODE.0.sys:base.Read
+		eu.cec.digit.circabc.business.api.nav.NavigationBusinessSrv.getNodePathString=ACL_NODE.0.sys:base.Read
+		eu.cec.digit.circabc.business.api.nav.NavigationBusinessSrv.isContainer=ACL_NODE.0.sys:base.Read
+		eu.cec.digit.circabc.business.api.nav.NavigationBusinessSrv.isContent=ACL_NODE.0.sys:base.Read
+         </value>
+		 <!--
+			eu.cec.digit.circabc.business.api.nav.NavigationBusinessSrv.getNodeCategory=ACL_ALLOW
+			eu.cec.digit.circabc.business.api.nav.NavigationBusinessSrv.getNodeInterestGroup=ACL_ALLOW
+			eu.cec.digit.circabc.business.api.nav.NavigationBusinessSrv.getNodeIgService=ACL_ALLOW
+			eu.cec.digit.circabc.business.api.nav.NavigationBusinessSrv.getCircabcDataDictionary=ACL_ALLOW
+			eu.cec.digit.circabc.business.api.nav.NavigationBusinessSrv.getCompanyHome=ACL_ALLOW			
+			eu.cec.digit.circabc.business.api.nav.NavigationBusinessSrv.getDataDictionary=ACL_ALLOW
+			eu.cec.digit.circabc.business.api.nav.NavigationBusinessSrv.getRootHeader=ACL_ALLOW
+		 -->
+      </property>
+	</bean>
+
+	<bean id="SpaceBusinessSrv_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="business.accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="business.afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+			eu.cec.digit.circabc.business.api.space.SpaceBusinessSrv.createSpace=ACL_NODE.0.sys:base.CreateChildren
+			eu.cec.digit.circabc.business.api.space.SpaceBusinessSrv.getSpaceIcons=ACL_ALLOW
+         </value>
+      </property>
+	</bean>
+
+	<bean id="PropertiesBusinessSrv_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="business.accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="business.afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+			eu.cec.digit.circabc.business.api.props.PropertiesBusinessSrv.computeLanguageTranslation=ACL_ALLOW
+			eu.cec.digit.circabc.business.api.props.PropertiesBusinessSrv.computeValidName=ACL_ALLOW			
+			eu.cec.digit.circabc.business.api.props.PropertiesBusinessSrv.computeValidUniqueName=ACL_NODE.0.sys:base.Read
+			eu.cec.digit.circabc.business.api.props.PropertiesBusinessSrv.getProperties=AFTER_ACL_NODE.sys:base.ReadProperties
+         </value>
+      </property>
+	</bean>
+
+	<bean id="DossierBusinessSrv_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="business.accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="business.afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+			eu.cec.digit.circabc.business.api.space.DossierBusinessSrv.createDossier=ACL_NODE.0.sys:base.CreateChildren
+			eu.cec.digit.circabc.business.api.space.DossierBusinessSrv.getDossierIcons=ACL_ALLOW
+         </value>
+      </property>
+	</bean>
+
+	<bean id="LinksBusinessSrv_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="business.accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="business.afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+			eu.cec.digit.circabc.business.api.link.LinksBusinessSrv.applySharing=ACL_NODE.0.sys:base.WriteContent
+			eu.cec.digit.circabc.business.api.link.LinksBusinessSrv.createLink=ACL_NODE.0.sys:base.CreateChildren
+			eu.cec.digit.circabc.business.api.link.LinksBusinessSrv.createSharedSpaceLink=ACL_NODE.0.sys:base.CreateChildren
+			eu.cec.digit.circabc.business.api.link.LinksBusinessSrv.findSharedSpaces=ACL_NODE.0.sys:base.Read
+			eu.cec.digit.circabc.business.api.link.LinksBusinessSrv.getAvailableSharedSpaces=ACL_NODE.0.sys:base.Read
+			eu.cec.digit.circabc.business.api.link.LinksBusinessSrv.getInterestGroupForSharing=ACL_NODE.0.sys:base.Read
+			eu.cec.digit.circabc.business.api.link.LinksBusinessSrv.getInvitationsForSharing=ACL_NODE.0.sys:base.Read
+			eu.cec.digit.circabc.business.api.link.LinksBusinessSrv.getSpaceLinkIcons=ACL_ALLOW
+			eu.cec.digit.circabc.business.api.link.LinksBusinessSrv.removeSharing=ACL_NODE.0.sys:base.WriteContent
+         </value>
+      </property>
+	</bean>
+
+	<bean id="ProfileBusinessSrv_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="business.accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="business.afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+         </value>
+      </property>
+	</bean>
+
+	<bean id="PermissionsBusinessSrv_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="business.accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="business.afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+
+         </value>
+      </property>
+	</bean>
+
+	<bean id="UserDetailsBusinessSrv_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="business.accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="business.afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+			eu.cec.digit.circabc.business.api.user.UserDetailsBusinessSrv.getAvatar=ACL_ALLOW
+			eu.cec.digit.circabc.business.api.user.UserDetailsBusinessSrv.getDefaultAvatar=ACL_ALLOW
+			eu.cec.digit.circabc.business.api.user.UserDetailsBusinessSrv.getUserDetails=ACL_ALLOW
+			eu.cec.digit.circabc.business.api.user.UserDetailsBusinessSrv.getMyDetails=ACL_ALLOW
+			eu.cec.digit.circabc.business.api.user.UserDetailsBusinessSrv.removeAvatar=ACL_NODE.0.sys:base.WriteProperties
+			eu.cec.digit.circabc.business.api.user.UserDetailsBusinessSrv.updateAvatar=ACL_NODE.0.sys:base.WriteProperties			
+			eu.cec.digit.circabc.business.api.user.UserDetailsBusinessSrv.updateUserDetails=ACL_NODE.0.sys:base.WriteProperties
+         </value>
+      </property>
+	</bean>
+
+	<bean id="RemoteUserBusinessSrv_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="business.accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="business.afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+			eu.cec.digit.circabc.business.api.user.RemoteUserBusinessSrv.isRemoteManagementAvailable=ACL_ALLOW
+			eu.cec.digit.circabc.business.api.user.RemoteUserBusinessSrv.reloadDetails=ACL_ALLOW
+			eu.cec.digit.circabc.business.api.user.RemoteUserBusinessSrv.userExists=ACL_ALLOW
+         </value>
+      </property>
+	</bean>
+
+	<bean id="AttachementBusinessSrv_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
+      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+      <property name="accessDecisionManager"><ref bean="business.accessDecisionManager"/></property>
+      <property name="afterInvocationManager"><ref bean="business.afterInvocationManager"/></property>
+      <property name="objectDefinitionSource">
+         <value>
+        	eu.cec.digit.circabc.business.api.content.AttachementBusinessSrv.addAttachement=ACL_NODE.0.sys:base.CreateChildren
+			eu.cec.digit.circabc.business.api.content.AttachementBusinessSrv.addTempAttachement=ACL_ALLOW			
+			eu.cec.digit.circabc.business.api.content.AttachementBusinessSrv.getAttachements=ACL_NODE.0.sys:base.Read
+			eu.cec.digit.circabc.business.api.content.AttachementBusinessSrv.removeAttachement=ACL_NODE.0.sys:base.Write
+         </value>
+      </property>
+	</bean>
+
+</beans>

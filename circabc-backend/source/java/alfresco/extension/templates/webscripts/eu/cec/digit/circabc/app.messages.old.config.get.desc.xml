@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>get the enable value of the old message</shortname>
+  <description>get the enable value of the old message show or not show the message in the old ui</description>
+  <url>/circabc/app/messages/old/config</url>
+  <format default="json"/>
+  <authentication>guest</authentication>
+  <transaction>required</transaction>
+</webscript>

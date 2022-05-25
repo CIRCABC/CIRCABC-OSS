@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--+
+    |     Copyright European Community 2011 - Licensed under the EUPL V.1.0
+    |
+    |  		   http://ec.europa.eu/idabc/en/document/6523
+    |
+    +-->
+
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<!-- This file declares the Authentication beans (filters) to use by the new authentication subsystems with ECAS -->
+<beans>
+	
+	<!-- WebDAV authentication -->
+	
+	<bean id="wdPassthruServers" class="org.alfresco.filesys.auth.PassthruServerFactory">
+		<property name="localServer">
+			<value>false</value>
+		</property>
+		<property name="server">
+			<value>${webdav.passthru.server}</value>
+		</property>
+		<property name="domain">
+			<value></value>
+		</property>
+		<property name="timeout">
+			<value>5000</value>
+		</property>
+		<property name="offlineCheckInterval">
+			<value>300</value>
+		</property>
+		<property name="protocolOrder">
+			<value>${webdav.passthru.protocolOrder}</value>
+		</property>
+		<property name="nullDomainUseAnyServer">
+			<value>true</value>
+		</property>
+	</bean>
+	
+	<bean id="wdAuthenticationComponent" class="org.alfresco.repo.security.authentication.ntlm.NTLMAuthenticationComponentImpl" parent="authenticationComponentBase">
+		<property name="passthruServers">
+			<ref bean="wdPassthruServers" />
+		</property>
+		<property name="personService">
+			<ref bean="personService" />
+		</property>
+		<property name="nodeService">
+			<ref bean="nodeService" />
+		</property>
+		<property name="transactionService">
+			<ref bean="transactionComponent" />
+		</property>
+		<property name="guestAccess">
+			<value>false</value>
+		</property>
+		<property name="defaultAdministratorUserNameList">
+			<value></value>
+		</property>
+	</bean>
+	
+	<!-- Wrapped version to be used within subsystem -->
+	<bean id="WDAuthenticationComponent" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="proxyInterfaces">
+			<list>
+				<value>org.alfresco.repo.security.authentication.AuthenticationComponent</value>
+				<value>org.alfresco.repo.security.authentication.ntlm.NLTMAuthenticator</value>
+			</list>
+		</property>
+		<property name="transactionManager">
+			<ref bean="transactionManager" />
+		</property>
+		<property name="target">
+			<ref bean="wdAuthenticationComponent" />
+		</property>
+		<property name="transactionAttributes">
+			<props>
+				<prop key="*">${server.transaction.mode.default}</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<!-- Authenticaton service for chaining -->
+	<bean id="wdLocalAuthenticationService" class="org.alfresco.repo.security.authentication.AuthenticationServiceImpl">
+		<property name="ticketComponent">
+			<ref bean="ticketComponent" />
+		</property>
+		<property name="authenticationComponent">
+			<ref bean="wdAuthenticationComponent" />
+		</property>
+		<property name="sysAdminParams">
+			<ref bean="sysAdminParams" />
+		</property>
+	</bean>
+<!--	
+	<bean id="webDavAuthenticationFilter" class="eu.cec.digit.circabc.web.servlet.CircabcWebdavNTLMAuthenticationFilter">
+		<property name="store">
+			<value>workspace://SpacesStore</value>
+		</property>
+		<property name="rootPath">
+			<value>/app:company_home</value>
+		</property>
+		<property name="ecasLoginPage">
+			<value>/faces/jsp/extension/wai/ecas/ecaslogin.jsp</value>
+		</property>
+		<property name="webdavRootPath">
+			<value>/webdav</value>
+		</property>
+		<property name="searchService">
+			<ref bean="searchService" />
+		</property>
+		<property name="namespaceService">
+			<ref bean="NamespaceService" />
+		</property>
+		<property name="permissionService">
+			<ref bean="permissionService" />
+		</property>
+		<property name="active">
+			<value>true</value>
+		</property>
+		<property name="ticketLogons">
+			<value>true</value>
+		</property>
+		<property name="serverConfiguration">
+			<ref bean="fileServerConfiguration" />
+		</property>
+		<property name="authenticationListener">
+			<ref bean="webDavAuthenticationListener"/>
+		</property>
+		<property name="authenticationService">
+			<ref bean="wdLocalAuthenticationService" />
+		</property>
+		<property name="authenticationComponent">
+			<ref bean="WDAuthenticationComponent" />
+		</property>
+		<property name="personService">
+			<ref bean="personService" />
+		</property>
+		<property name="nodeService">
+			<ref bean="NodeService" />
+		</property>
+		<property name="transactionService">
+			<ref bean="TransactionService" />
+		</property>
+		<property name="mapUnknownUserToGuest">
+			<value>false</value>
+		</property>
+		<property name="remoteUserMapper">
+		   <ref bean="RemoteUserMapper" />
+		</property>
+		<property name="fallback">
+		   <ref bean="ntlm_SSOFallbackBasicAuthenticationDriver"/>
+		</property>
+	</bean>
+--> 	
+	<bean id="webDavAuthenticationFilter" class="eu.cec.digit.circabc.web.servlet.CircabcWebdavAuthenticationFilter" init-method="init">
+		<property name="guestDisabledForLibrary">
+			<value>true</value>
+		</property>
+		<property name="store">
+			<value>workspace://SpacesStore</value>
+		</property>
+		<property name="rootPath">
+			<value>/app:company_home</value>
+		</property>
+		<property name="ecasLoginPage">
+			<value>/faces/jsp/extension/wai/ecas/ecaslogin.jsp</value>
+		</property>
+		<property name="loginPage">
+			<value>/faces/jsp/extension/wai/login.jsp</value>
+		</property>
+		<property name="webdavRootPath">
+			<value>/webdav</value>
+		</property>
+		<property name="authenticationListener">
+			<ref bean="webDavAuthenticationListener"/>
+		</property>
+		<property name="authenticationService">
+			<ref bean="AuthenticationService" />
+		</property>
+		<property name="authenticationComponent">
+			<ref bean="AuthenticationComponent" />
+		</property>
+		<property name="personService">
+			<ref bean="personService" />
+		</property>
+		<property name="fileFolderService">
+			<ref bean="fileFolderService" />
+		</property>
+		<property name="nodeService">
+			<ref bean="NodeService" />
+		</property>
+		<property name="searchService">
+			<ref bean="searchService" />
+		</property>
+		<property name="namespaceService">
+			<ref bean="NamespaceService" />
+		</property>
+		<property name="transactionService">
+			<ref bean="TransactionService" />
+		</property>
+		<property name="permissionService">
+			<ref bean="permissionService" />
+		</property>
+		<property name="remoteUserMapper">
+			<ref bean="RemoteUserMapper" />
+		</property>
+	</bean>
+	
+	<!-- ECAS authentication -->
+	
+	<bean id="authenticationFilter" class="eu.cec.digit.circabc.web.servlet.EcasAuthenticationFilter">
+		<property name="ecasLoginPage">
+			<value>/jsp/extension/wai/ecas/ecaslogin.jsp</value>
+		</property>
+		<property name="enableGuestSessionTimeout">
+			<value>false</value>
+		</property>
+		<property name="guestSessionTimeoutInMinutes">
+			<value>5</value>
+		</property>
+		<property name="configService">
+			<ref bean="webClientConfigService" />
+		</property>
+		<property name="originalSessionTimeoutInMinutes">
+			<value>60</value>
+		</property>
+	</bean>
+	
+	<!-- Authentication service for chaining (for the ECAS context) -->
+	<bean id="localAuthenticationService" class="org.alfresco.repo.security.authentication.MutableAuthenticationServiceImpl">
+		<property name="authenticationDao">
+			<ref bean="authenticationDao" />
+		</property>
+		<property name="ticketComponent">
+			<ref bean="ticketComponent" />
+		</property>
+		<property name="authenticationComponent">
+			<ref bean="authenticationComponent" />
+		</property>
+		<property name="sysAdminParams">
+			<ref bean="sysAdminParams" />
+		</property>
+	</bean>
+	
+   <!-- Wrapped version to be used within subsystem -->
+   <bean id="AuthenticationComponent" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+      <property name="proxyInterfaces">
+         <list>
+            <value>org.alfresco.repo.security.authentication.AuthenticationComponent</value>
+            <value>org.alfresco.repo.security.authentication.ntlm.NLTMAuthenticator</value>
+         </list>
+      </property>
+      <property name="transactionManager">
+         <ref bean="transactionManager" />
+      </property>
+      <property name="target">
+         <ref bean="authenticationComponent" />
+      </property>
+      <property name="transactionAttributes">
+         <props>
+            <prop key="*">${server.transaction.mode.default}</prop>
+         </props>
+      </property>
+   </bean>
+	
+	<!-- Authentication component to be used by the ECAS subsystem. An authentication component has to be defined to avoid a recursive loop into the 
+	SubsystemChainingAuthenticationComponent -->
+	<bean id="authenticationComponent" class="org.alfresco.repo.security.authentication.AuthenticationComponentImpl" parent="authenticationComponentBase">
+		<property name="authenticationDao">
+			<ref bean="authenticationDao" />
+		</property>
+		<property name="authenticationManager">
+			<ref bean="authenticationManager" />
+		</property>
+		<property name="allowGuestLogin">
+			<value>true</value>
+		</property>
+		<property name="nodeService">
+			<ref bean="nodeService" />
+		</property>
+		<property name="personService">
+			<ref bean="personService" />
+		</property>
+		<property name="transactionService">
+			<ref bean="transactionService" />
+		</property>
+		<!--                                                                  -->
+		<!-- A list of default users with admin rights.                       -->
+		<!--                                                                  -->
+		<!-- If the security framework is case sensitive these values should  -->
+		<!-- be case sensitive user names. If the security framework is not   -->
+		<!-- case sensitive these values should be the lower-case user names. -->
+		<!--                                                                  -->
+		<!-- By default this includes:                                        -->
+		<!--    admin (the user name of default alfresco admin user)          -->
+		<!--    administrator (the windows default admin user)                -->
+		<!--                                                                  -->
+		<!-- This assumes that user names are not case sensitive.             -->
+		<!--                                                                  -->
+		<property name="defaultAdministratorUserNames">
+			<set>
+				<value>admin</value>
+				<value>administrator</value>
+			</set>
+		</property>
+		<!--                                                                  -->
+		<!-- A list of default users acting as guests.                        -->
+		<!--                                                                  -->
+		<!-- By default this includes:                                        -->
+		<!--    guest (the user name of default alfresco guest user)          -->
+		<!--                                                                  -->
+		<!-- This assumes that user names are not case sensitive.             -->
+		<!--                                                                  -->
+		<property name="defaultGuestUserNames">
+			<set>
+				<value>guest</value>
+			</set>
+		</property>
+	</bean>
+	
+</beans>

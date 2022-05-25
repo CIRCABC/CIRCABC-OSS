@@ -1,0 +1,120 @@
+@use '~css/global/variables-mixins-keyframes';
+
+.flexContainer {
+  display: flex;
+  flex-flow: row;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.flexGap {
+  gap: 15px;
+}
+
+.flexFullRow {
+  flex: 1 1 100%;
+}
+
+.flexWrap {
+  flex: 1 1 300px;
+}
+
+.flex0 {
+  flex: 0;
+}
+
+.step {
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+}
+
+.stepNumber {
+  flex: 0 0 auto;
+  color: #fff;
+  background-color: #035;
+  font-size: 24px;
+  width: 30px;
+  height: 30px;
+  border-radius: 25px;
+  text-align: center;
+}
+
+.stepTitle {
+  flex: 0;
+  padding: 0 15px;
+}
+
+.stepTitleList {
+  display: flex;
+  padding: 0 15px;
+}
+
+.stepLine {
+  flex: 1 1 auto;
+  height: 1px;
+  padding-left: 10px;
+  background-color: #035;
+}
+
+.stepLineVertical {
+  flex: 0 0 1px;
+  margin: -11px 4px -24px 14px;
+  background-color: #035;
+}
+
+.opacity {
+  opacity: 0.3;
+}
+
+.stepCountFile {
+  margin-top: 5px;
+  color: #fff;
+  background-color: #4caf50;
+  font-size: 14px;
+  width: 20px;
+  height: 20px;
+  border-radius: 25px;
+  text-align: center;
+}
+
+@media screen and (min-width: 620px) {
+  .stepLineVertical {
+    visibility: hidden;
+  }
+}
+
+@media screen and (max-width: 620px) {
+  .stepLine {
+    visibility: hidden;
+  }
+}
+
+.upload-page,
+.upload-actions {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 auto;
+  padding-bottom: 40px;
+}
+
+.file-input,
+.file-list {
+  flex: 1;
+  margin: 10px;
+  min-width: 300px;
+}
+
+.file-metadata {
+  flex: 2 1 400px;
+  margin: 10px;
+  min-width: 300px;
+}
+
+.upload-actions {
+  justify-content: center;
+}
+
+.step-hidden {
+  opacity: 0;
+}

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xs:schema
+        attributeFormDefault="unqualified" elementFormDefault="qualified"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:annotation>
+        <xs:documentation>Schema for batch loading of selfregistered external users in Aida</xs:documentation>
+        <xs:appinfo>v1.0</xs:appinfo>
+    </xs:annotation>
+    <xs:element name="users">
+        <xs:complexType>
+            <xs:sequence>
+
+                <xs:element minOccurs="1" maxOccurs="unbounded" name="user">
+                    <xs:complexType>
+                        <xs:all>
+                            <xs:element name="moniker" type="monikerType" minOccurs="0"/>
+                            <xs:element name="firstname" type="nameType"/>
+                            <xs:element name="lastname" type="nameType"/>
+                            <xs:element name="email" type="emailType"/>
+                        </xs:all>
+                    </xs:complexType>
+
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+        <xs:key name="emailKey">
+            <xs:selector xpath="user"/>
+            <xs:field xpath="email"/>
+        </xs:key>
+        <xs:unique name="monikerUnique">
+            <xs:selector xpath="user"/>
+
+            <xs:field xpath="moniker"/>
+        </xs:unique>
+	<xs:unique name="userUnique">
+            <xs:selector xpath="user"/>
+            <xs:field xpath="firstname"/>
+            <xs:field xpath="lastname"/>
+	</xs:unique>
+    </xs:element>
+    <xs:simpleType name="monikerType">
+
+        <xs:restriction base="xs:token">
+            <xs:pattern value="[A-Za-z][A-Za-z0-9\._\-]*"/>
+            <xs:minLength value="1"/>
+            <xs:maxLength value="32"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="nameType">
+        <xs:restriction base="ISO8859_1">
+            <xs:pattern value="[\p{L}\p{M}][\p{L}\p{M}\.\-' ]*">
+
+                <xs:annotation>
+                    <xs:documentation>Pattern to restrict to letters, diacritics, dot, hyphen, single quote and space</xs:documentation>
+                </xs:annotation>
+            </xs:pattern>
+            <xs:minLength value="1"/>
+            <xs:maxLength value="100"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="emailType">
+        <xs:restriction base="xs:token">
+            <xs:pattern value="[A-Za-z0-9!#$%&amp;'\*+/=\?\^_`{|}~\-]+(\.[A-Za-z0-9!#$%&amp;'\*\+/=\?\^_`{|}~\-]+)*@([A-Za-z0-9]([A-Za-z0-9\-]*[A-Za-z0-9])?\.)+[A-Za-z0-9]([A-Za-z0-9\-]*[A-Za-z0-9])?"/>
+            <xs:minLength value="1"/>
+            <xs:maxLength value="100"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="ISO8859_1">
+        <xs:restriction base="xs:token">
+            <xs:pattern value="(\p{IsBasicLatin}|\p{IsLatin-1Supplement})*">
+                <xs:annotation>
+                    <xs:documentation>Pattern for latin1 character block</xs:documentation>
+                </xs:annotation>
+            </xs:pattern>
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>

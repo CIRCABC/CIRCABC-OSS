@@ -1,0 +1,14 @@
+<a (click)="showModal = true" class="delete"
+  >{{ 'label.delete' | transloco }}</a
+>
+<cbc-modal
+  [title]="'label.delete'"
+  (ok)="delete()"
+  (cancel)="cancelWizard('close')"
+  [okLabel]="'label.delete'"
+  [(visible)]="showModal"
+  [executing]="deleting"
+  [executingLabel]="'label.deleting'"
+>
+  {{ confirmationMessage | transloco }}
+</cbc-modal>

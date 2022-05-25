@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>creates a new app message template</shortname>
+  <description>creates a new app message template</description>
+  <url>/circabc/app/messages/templates</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

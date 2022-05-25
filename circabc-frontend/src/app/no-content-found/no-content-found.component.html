@@ -1,0 +1,24 @@
+<div class="groups-browser">
+  <cbc-header></cbc-header>
+  <cbc-navigator></cbc-navigator>
+  <div class="wrap page-container">
+    <section class="not-found-container">
+      <aside class="right-decoration">
+        <img src="img/magnifier.png" />
+      </aside>
+      <h1>{{ 'error.not.found.title' | transloco }}</h1>
+      <p [innerHTML]="'error.content.not.found.text' | transloco"> </p>
+      <p
+        style="color: #003355"
+        [innerHTML]="'error.content.not.found.text.2' | transloco"
+      >
+      </p>
+      <p style="text-align: center">
+        <img src="img/rubbish-bin.png" alt="bin" />&nbsp;<img
+          src="img/triangular-arrows-sign-for-recycle.png"
+          atl="recycle"
+        />
+      </p>
+    </section>
+  </div>
+</div>

@@ -1,0 +1,26 @@
+<section class="help-highlight" *ngIf="highlightedArticles.length > 0">
+  <h2>{{ 'help.highlights' | transloco }}</h2>
+
+  <div class="slider">
+    <div class="previous-slider">
+      <a
+        class="a-previous"
+        *ngIf="highlightedArticles.length > 3"
+        (click)="previous()"
+      >
+        <img src="img/arrow-left-blue.png" />
+      </a>
+    </div>
+    <div class="card-container">
+      <cbc-article-card
+        *ngFor="let article of displayedArticles"
+        [article]="article"
+      ></cbc-article-card>
+    </div>
+    <div class="next-slider">
+      <a class="a-next" *ngIf="highlightedArticles.length > 3" (click)="next()">
+        <img src="img/arrow-right-blue.png" />
+      </a>
+    </div>
+  </div>
+</section>

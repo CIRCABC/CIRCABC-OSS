@@ -1,0 +1,137 @@
+@use '~css/global/variables-mixins-keyframes';
+
+.box--groups {
+  padding: 0 25px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.top-section {
+  margin-bottom: 20px;
+  clear: both;
+
+  h3 {
+    font-size: 14px;
+    color: #035;
+  }
+
+  .breadcrump {
+    font-size: 14px;
+    color: #757575;
+
+    img {
+      vertical-align: bottom;
+    }
+
+    a {
+      color: #757575;
+    }
+  }
+}
+
+.category--header {
+  padding: 10px 20px;
+  border-radius: 5px;
+  background-color: #1f313d;
+  height: 118px;
+
+  @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+    height: 100px;
+  }
+
+  @media screen and (max-width: variables-mixins-keyframes.$break-small) {
+    height: 60px;
+  }
+
+  .logo-container {
+    border-radius: 5px;
+    background-color: #fff;
+    line-height: initial;
+    padding: 10px;
+    float: left;
+    margin-bottom: 15px;
+
+    img {
+      width: 200px;
+
+      @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+        width: 100px;
+      }
+
+      @media screen and (max-width: variables-mixins-keyframes.$break-small) {
+        width: 30px;
+      }
+    }
+  }
+
+  .title {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 24px;
+    color: #fff;
+    text-align: right;
+    text-transform: uppercase;
+
+    @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+      font-size: 20px;
+    }
+
+    @media screen and (max-width: variables-mixins-keyframes.$break-small) {
+      font-size: 16px;
+    }
+  }
+}
+
+.grid--container {
+  flex-wrap: wrap;
+  display: flex;
+  justify-content: center;
+
+  .header-category {
+    margin-right: 25px;
+    margin-bottom: 25px;
+    background-color: #fff;
+    border-radius: 5px;
+    text-align: center;
+    padding: 20px;
+    cursor: pointer;
+    width: 350px;
+    flex-grow: 1;
+
+    @media screen and (max-width: 813px) {
+      width: 100% !important;
+    }
+
+    .logo-container {
+      margin: 5px 10px 20px;
+
+      img {
+        max-width: 175px;
+      }
+    }
+
+    .link {
+      font-size: 20px;
+      height: 52px;
+      overflow-x: hidden;
+      text-overflow: ellipsis;
+      color: #035;
+    }
+  }
+}
+
+.letter {
+  float: left;
+  width: 64px;
+  padding: 12px;
+  font-size: 48px;
+  color: #035;
+}
+
+.list-groups {
+  clear: left;
+  color: #035;
+  font-size: 14px;
+  padding-top: 15px;
+}

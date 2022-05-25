@@ -1,0 +1,158 @@
+/* --- Central stylesheet - Commission templates v. 2.0 --- */
+/* --- Rules for Internet Explorer 6 - They may include non standard instructions --- */
+
+/* Banner */
+
+#imageBanner { 
+	background: none; 
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/wel/template_2007/images/banners/banner-right.png', sizingMethod='image');
+}
+		
+#banner { width: 99%; }
+
+.title { 
+	position: absolute;
+	top: 10px;
+	left: 75px;
+}
+
+#title-bg {
+	background: none;
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/wel/template_2007/images/banners/title_bg.png', sizingMethod='image');
+	}
+#title-cs {
+	background: none;
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/wel/template_2007/images/banners/title_cs.png', sizingMethod='image');
+	}
+#title-da {
+	background: none;
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/wel/template_2007/images/banners/title_da.png', sizingMethod='image');
+	}
+#title-de {
+	background: none;
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/wel/template_2007/images/banners/title_de.png', sizingMethod='image');
+	}
+#title-el {
+	background: none;
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/wel/template_2007/images/banners/title_el.png', sizingMethod='image');
+	}
+#title-en {
+	background: none;
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/wel/template_2007/images/banners/title_en.png', sizingMethod='image');
+	}
+#title-es {
+	background: none;
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/wel/template_2007/images/banners/title_es.png', sizingMethod='image');
+	}
+#title-et {
+	background: none;
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/wel/template_2007/images/banners/title_et.png', sizingMethod='image');
+	}
+#title-fi {
+	background: none;
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/wel/template_2007/images/banners/title_fi.png', sizingMethod='image');
+	}
+
+#title-fr {
+	background: none;
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/wel/template_2007/images/banners/title_fr.png', sizingMethod='image');
+	}
+	
+#title-ga {
+	background: none;
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/wel/template_2007/images/banners/title_ga.png', sizingMethod='image');
+	}
+#title-hu {
+	background: none;
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/wel/template_2007/images/banners/title_hu.png', sizingMethod='image');
+	}
+#title-it {
+	background: none;
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/wel/template_2007/images/banners/title_it.png', sizingMethod='image');
+	}
+#title-lt {
+	background: none;
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/wel/template_2007/images/banners/title_lt.png', sizingMethod='image');
+	}
+#title-lv {
+	background: none;
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/wel/template_2007/images/banners/title_lv.png', sizingMethod='image');
+	}
+#title-mt {
+	background: none;
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/wel/template_2007/images/banners/title_mt.png', sizingMethod='image');
+	}
+#title-nl {
+	background: none;
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/wel/template_2007/images/banners/title_nl.png', sizingMethod='image');
+	}
+#title-pl {
+	background: none;
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/wel/template_2007/images/banners/title_pl.png', sizingMethod='image');
+	}
+#title-pt {
+	background: none;
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/wel/template_2007/images/banners/title_pt.png', sizingMethod='image');
+	}
+#title-ro {
+	background: none;
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/wel/template_2007/images/banners/title_ro.png', sizingMethod='image');
+	}
+#title-sk {
+	background: none;
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/wel/template_2007/images/banners/title_sk.png', sizingMethod='image');
+	}
+#title-sl {
+	background: none;
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/wel/template_2007/images/banners/title_sl.png', sizingMethod='image');
+	}
+#title-sv {
+	background: none;
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/wel/template_2007/images/banners/title_sv.png', sizingMethod='image');
+	}
+
+
+/* Links */
+
+#linkBoxTools {
+	background-image: none;
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/wel/template_2007/images/bg_links-tools.png', sizingMethod='crop');
+	width: 1000px;
+	padding: 3px 0 0 0;
+	}
+	
+#linkBoxTools ul { 
+	padding: 0;
+	position: relative;
+	margin-right: 10px;	
+	}
+
+#linkBoxTools li { padding: 0; position: relative; }
+
+#linkBoxTools li a { position: relative; }
+	
+#langsFormContainer	{ top: 0;	}
+
+	
+/* Path */
+
+#path { width: 100%; overflow: visible; }
+
+#path div ul li.first-child {
+	padding-left: 0;
+	background-image: none;
+}
+
+
+/* Language Selector */
+
+#langsFormContainer	{ right: 0; }
+
+#langsSelector	{
+	padding: 1px 0 0 0;
+}
+
+
+/* Font sizer */
+
+#fontSize { width: 42px; }

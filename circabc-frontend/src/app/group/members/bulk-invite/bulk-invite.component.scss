@@ -1,0 +1,70 @@
+.select--form {
+  width: 400px;
+}
+
+.select--form select {
+  width: 400px;
+}
+
+.view-select {
+  width: 400px;
+  height: 25px;
+}
+
+.select--form2 {
+  width: 110px;
+  background-image: url(^img/arrow-dropdown.png);
+  background-repeat: no-repeat;
+  background-position: 95% 50%;
+  border: 1px solid #dedede;
+  border-radius: 3px;
+}
+
+.select--form2 select {
+  width: 110px;
+  height: 25px;
+  padding-left: 8px;
+  padding-bottom: 3px;
+}
+
+.view-select2 {
+  width: 110px;
+  height: 25px;
+}
+
+.box {
+  margin-bottom: 0;
+}
+
+.drop-zone {
+  display: block;
+  border: 2px dashed #999;
+  height: 100px;
+  margin: 10px auto;
+  text-align: center;
+  padding-top: 40px;
+  color: #035;
+}
+
+.center-img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 60%;
+}
+
+fieldset {
+  border: 0;
+  border-top: 2px solid #ccc;
+  padding-top: 30px;
+
+  legend {
+    padding: 0 30px;
+    margin-left: -30px;
+    font-weight: bold;
+  }
+}
+
+.table-container {
+  margin: 0 !important;
+}

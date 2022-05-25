@@ -1,0 +1,53 @@
+table.minicalendarTableStyle {
+	border:             black 1px solid;
+}
+
+table.minicalendarTableStyle .minicalendarPreviousLinkStyle  {
+	font-size: 			12px;
+	text-align: 		left;
+}
+
+table.minicalendarTableStyle .minicalendarNextLinkStyle  {
+	font-size: 			10px;
+	text-align: 		right;
+}
+
+table.minicalendarTableStyle .minicalendarTitleStyle  {
+	text-align:         center;
+	font-size: 			12px;
+	letter-spacing: 	2px;
+}
+
+table.minicalendarTableStyle .minicalendarWeekdayStyle  {
+	text-align:         center;
+	font-size:          9px;
+}
+
+table.minicalendarTableStyle .minicalendarOddMonthStyle, .minicalendarEvenMonthStyle, .minicalendarActiveDayStyle, .minicalendarEvenMonthStyle, .minicalendarEmptyDayStyle {
+	font-size:          9px;
+	vertical-align:     top;
+	text-align:         left;
+}
+
+table.minicalendarTableStyle .minicalendarEmptyDayStyle {
+	background-color:   #F0F0F0;
+}
+
+table.minicalendarTableStyle .minicalendarEvenMonthStyle  {
+	background-color:   #F0F0F0;
+}
+
+table.minicalendarTableStyle .minicalendarOddMonthStyle  {
+	background-color:   #F0F0F0;
+}
+
+table.minicalendarTableStyle .minicalendarActiveDayStyle {
+	background-color:   #FAF0F0;
+	font-weight:        bold;
+	color:              black;
+}
+
+table.minicalendarTableStyle a, a:visited .a:active {
+    text-decoration:    none;
+    color:              black;
+}

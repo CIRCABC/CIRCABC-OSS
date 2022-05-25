@@ -1,0 +1,285 @@
+/*--+
+    |     Copyright European Community 2006 - Licensed under the EUPL V.1.0
+    |  
+    |  		   http://ec.europa.eu/idabc/en/document/6523
+    |  		   
+    +--*/
+
+/* BODY APPEARANCE */
+
+body {
+	background-color: #FFFFFF;
+	color: #000000;
+	margin: 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+	margin-left: 0px;
+	padding: 0px;
+	padding-top: 0px;
+	padding-right: 0px;
+	padding-bottom: 0px;
+	padding-left: 0px;
+}
+	
+
+/* STANDARD ELEMENTS APPEARANCE */
+
+/* Banner, important legal notice and languages */
+
+.backgroundbanner {
+	background-color: #3399CC;
+	color: #FFFFFF;
+}
+
+.backgroundnotice, .backgroundnotice a:link, .backgroundnotice a:visited, .backgroundnotice a:hover {
+	font-family: Arial, Helvetica, sans-serif;
+	background-color: #3399CC;
+	color: #FFFFFF;
+	font-size: 0px;
+	text-decoration: none;
+}
+
+.formlang {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 13px;
+	margin: 0px;
+	padding: 0px;
+} 
+
+.language, a.language:link, a.language:visited, a.language:hover, a.language:active {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-style: normal;
+	font-weight: bold;
+	color: #ffffff;
+	text-decoration: underline;
+	background-color: #3399CC;
+}
+
+.languagenolink {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-style: normal;
+	font-weight: bold;
+	color: #FFFFFF;
+	text-decoration: none;
+	background-color: #3399CC;
+}
+
+.langsel {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 13px;
+}
+
+@media print { 
+	img.resize{width: 150px}
+}
+
+/* COLOUR LINE */
+
+.yellowline { background-color: #ffff00; }
+
+/* NAVIGATION PATH */
+
+.navigation, a.navigation:link, a.navigation:visited, a.navigation:active {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	color: #FFFFFF;
+	text-decoration: none;
+	font-style: normal;
+	background-color: #330099;
+}
+.navigation a:link, .navigation a:visited, .navigation a:active{
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	color: #FFFFFF;
+	text-decoration: none;
+	font-style: normal;
+	background-color: #330099;
+}
+
+a.navigation:hover {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	color: #FFFFFF;
+	text-decoration: underline;
+	font-style: normal;
+	background-color: #330099;
+}
+
+/* TOOLS SECTION */
+
+.compulsorytools, a.compulsorytools:link, a.compulsorytools:visited, a.compulsorytools:active {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	color: #FFFFFF;
+	text-decoration: none;
+	font-style: normal;
+	background-color: #330099;
+}
+
+a.compulsorytools:hover {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	color: #FFFFFF;
+	text-decoration: underline;
+	font-style: normal;
+	background-color: #330099;
+}
+
+/* OTHER TOOLS */
+
+.toolslinks, a.toolslinks:link, a.toolslinks:visited, a.toolslinks:active {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #330099;
+	font-weight: normal;
+	text-decoration: none;
+	font-style: normal;
+	background-color: #FFFFFF;
+}
+
+a.toolslinks:hover {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #330099;
+	font-weight: normal;
+	text-decoration: underline;
+	font-style: normal;
+	background-color: #FFFFFF;
+}
+
+/* BOTTOM NAVIGATION */
+
+.bottom-navigation, a.bottom-navigation:link, a.bottom-navigation:visited, a.bottom-navigation:active {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #999999;
+	text-decoration: none;
+	font-style: normal;
+	font-weight: normal;
+	background-color: #FFFFFF;
+}
+
+a.bottom-navigation:hover {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #999999;
+	text-decoration: underline;
+	font-style: normal;
+	font-weight: normal;
+	background-color: #FFFFFF;
+}
+
+.bottom-separator {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #666666;
+	font-weight: normal;
+	text-decoration: none;
+	font-style: normal;
+	background-color: #FFFFFF;
+}
+
+/* DATE OF LAST UPDATE */
+
+.dateupdate {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 70%;
+	color: #000000;
+	font-weight: normal;
+	font-style: normal;
+	margin-left: 25px;
+}
+
+/* Classes from old versions of the template */
+
+.backgroundtoolslinks {
+	background-color: #FFFFFF;
+}
+.backgroundnavigation {
+	background-color: #330099;
+}
+.taille-zero {
+	font-size: 0px;
+}
+.rubric {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	color: #FFFFFF;
+	text-decoration: none;
+	font-style: normal;
+	background-color: #330099;
+}
+
+/* CONTENT AREA APPEARANCE */
+
+.text1 {
+	font-size: 80%;
+	color: #000000;
+	font-weight: normal;
+	font-style: normal;
+}
+
+.text1-b {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 100%;
+	color: #000000;
+	font-weight: bold;
+	font-style: normal
+}
+
+.text2 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 120%;
+	color: #000000;
+	font-weight: normal;
+	font-style: normal;
+}
+
+.text2-b {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 120%;
+	color: #000000;
+	font-weight: bold;
+	font-style: normal;
+}
+
+.title1 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 200%;
+	font-weight: bold;
+	color: #000000;
+	font-style: normal;
+}
+
+.title2 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 175%;
+	font-weight: bold;
+	color: #000000;
+	font-style: normal;
+}
+
+.title3 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 150%;
+	font-weight: bold;
+	color: #000000;
+	font-style: normal;
+}
+
+.title4 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 125%;
+	font-weight: bold;
+	color: #000000;
+	font-style: normal;
+}

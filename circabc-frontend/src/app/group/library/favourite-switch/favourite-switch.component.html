@@ -1,0 +1,6 @@
+<span class="favourite-container" *ngIf="shaw">
+  <a (click)="toggleFav()">
+    <img src="img/star-empty.png" *ngIf="!isFavourite()" />
+    <img src="img/star-full-yellow.png" *ngIf="isFavourite()" />
+  </a>
+</span>

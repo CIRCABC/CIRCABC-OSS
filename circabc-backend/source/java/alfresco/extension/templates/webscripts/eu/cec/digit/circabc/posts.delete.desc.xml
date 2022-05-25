@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Delete one post in one topic</shortname>
+  <description>Delete one post in one topic</description>
+    <url>/circabc/posts/{id}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

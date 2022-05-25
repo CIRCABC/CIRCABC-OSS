@@ -1,0 +1,30 @@
+<cbc-modal
+  [title]="'label.create.forum'"
+  (ok)="createForum()"
+  (cancel)="cancelWizard('close')"
+  [okLabel]="'label.create'"
+  [(visible)]="showWizard"
+  [executing]="creating"
+  [executingLabel]="'label.creating'"
+  [showOkButton]="createForumForm.valid && !creating"
+>
+  <form [formGroup]="createForumForm">
+    <cbc-multilingual-input
+      formControlName="title"
+      [label]="'label.title' | transloco"
+      [placeholder]="'label.title' | transloco"
+      [lang]="'EN'"
+      [required]="true"
+    ></cbc-multilingual-input>
+    <cbc-control-message
+      [control]="createForumForm.controls['title']"
+    ></cbc-control-message>
+
+    <cbc-multilingual-input
+      formControlName="description"
+      [textarea]="true"
+      [label]="'label.description' | transloco"
+      [lang]="'EN'"
+    ></cbc-multilingual-input>
+  </form>
+</cbc-modal>

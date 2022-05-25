@@ -1,0 +1,31 @@
+.category--header {
+  padding: 10px 20px;
+  border-radius: 5px;
+  background-color: #1f313d;
+  height: 118px;
+  clear: right;
+  margin-top: 15px;
+
+  .logo-container {
+    border-radius: 5px;
+    background-color: #fff;
+    line-height: initial;
+    padding: 10px;
+    float: left;
+    margin-bottom: 15px;
+
+    img {
+      width: 200px;
+    }
+  }
+
+  .title {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 24px;
+    color: #fff;
+    text-align: right;
+    text-transform: uppercase;
+  }
+}

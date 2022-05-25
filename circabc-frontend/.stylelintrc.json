@@ -1,0 +1,54 @@
+{
+  "extends": "stylelint-config-standard",
+  "rules": {
+    "color-function-notation": "modern",
+    "alpha-value-notation": "number",
+    "shorthand-property-no-redundant-values": true,
+    "media-feature-name-no-vendor-prefix": null,
+    "keyframes-name-pattern": null,
+    "value-no-vendor-prefix": null,
+    "function-no-unknown": null,
+    "at-rule-no-vendor-prefix": null,
+    "selector-no-vendor-prefix": null,
+    "function-url-quotes": null,
+    "selector-class-pattern": null,
+    "property-no-vendor-prefix": null,
+    "declaration-block-no-redundant-longhand-properties": null,
+    "string-quotes": "single",
+    "no-descending-specificity": null,
+    "declaration-colon-newline-after": null,
+    "function-name-case": [
+      "lower",
+      { "ignoreFunctions": ["DXImageTransform.Microsoft.gradient"] }
+    ],
+    "at-rule-no-unknown": [
+      true,
+      {
+        "ignoreAtRules": ["extend", "include", "mixin", "use"]
+      }
+    ],
+    "selector-pseudo-element-no-unknown": [
+      true,
+      { "ignorePseudoElements": ["hover", "/^ng-/"] }
+    ],
+    "property-no-unknown": [
+      true,
+      { "ignoreProperties": ["animate", "font-smoothing"] }
+    ],
+    "declaration-block-no-duplicate-properties": [
+      true,
+      { "ignore": ["consecutive-duplicates-with-different-values"] }
+    ],
+    "font-family-no-missing-generic-family-keyword": [
+      true,
+      { "ignoreFontFamilies": ["Flaticon"] }
+    ],
+    "value-keyword-case": [
+      "lower",
+      {
+        "ignoreKeywords": ["fadeIn", "optimizeLegibility"]
+      }
+    ],
+    "selector-type-no-unknown": [true, { "ignore": ["custom-elements"] }]
+  }
+}

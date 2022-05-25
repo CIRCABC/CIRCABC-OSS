@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>spaces.id.exportedshares.get</shortname>
+  <description>Get the shares that are available</description>
+    <url>/circabc/spaces/{id}/exportedshares</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

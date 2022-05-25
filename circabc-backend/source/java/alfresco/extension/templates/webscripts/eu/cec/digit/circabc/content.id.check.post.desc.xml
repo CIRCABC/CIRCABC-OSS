@@ -1,0 +1,9 @@
+<webscript>
+  <shortname>content.id.check.post</shortname>
+  <description>Checkout - Checks the given item out (given the id)</description>
+    <url>/circabc/content/{id}/check</url>
+    <url>/circabc/content/{id}/check?editInline={editInline}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

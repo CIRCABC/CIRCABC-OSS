@@ -1,0 +1,131 @@
+.post {
+  width: 100%;
+  padding: 15px;
+  display: flex;
+  flex-direction: row;
+}
+
+.reply {
+  width: 100px;
+}
+
+.comment-author {
+  width: 60px;
+
+  div {
+    border-radius: 25px;
+    border-radius: 50%;
+    overflow: hidden;
+    width: 50px;
+    height: 50px;
+  }
+}
+
+.comment-content {
+  width: 90%;
+
+  ::ng-deep img {
+    max-width: 100%;
+  }
+
+  .comment-message {
+    word-break: break-all;
+  }
+}
+
+div.comment-actions {
+  text-align: right;
+  border: 0;
+
+  a {
+    padding: 0 10px;
+  }
+}
+
+:host ::ng-deep p {
+  blockquote {
+    border-left: 2px lightslategrey solid;
+    padding-left: 15px;
+  }
+
+  ul {
+    margin: 1em 40px;
+
+    li {
+      list-style-type: circle;
+    }
+  }
+
+  ol {
+    margin: 1em 40px;
+
+    li {
+      list-style-type: decimal;
+    }
+  }
+}
+
+/* Popup container */
+.popup-sm {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+/* The actual popup (appears on top) */
+.popup-sm .popuptext {
+  visibility: hidden;
+  min-width: 360px;
+  background-color: #555;
+  color: #fff;
+  text-align: left;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 105%;
+  left: 50%;
+  margin-left: -20px;
+  overflow-x: auto;
+  display: none;
+}
+
+/* Toggle this class when clicking on the popup container (hide and show the popup) */
+.popup-sm .show {
+  visibility: visible;
+  display: block;
+  -webkit-animation: fadeIn 1s;
+  animation: fadeIn 1s;
+}
+
+/* Add animation (fade in the popup) */
+
+@-webkit-keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.attachment {
+  display: inline-block;
+  margin-right: 5px;
+  font-size: 11px;
+
+  .attachment-icon {
+    text-align: center;
+  }
+}

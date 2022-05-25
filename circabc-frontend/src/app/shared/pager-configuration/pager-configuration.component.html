@@ -1,0 +1,14 @@
+<span class="icons">
+  <div class="dropdown-trigger">
+    <img src="img/icon-admin-blue.png" alt="Settings" />
+    <div class="dropdown dropdown--library-settings">
+      <div class="number-of-items">
+        {{ 'label.show' | transloco }}:
+        <a (click)="changePageSize(10)">10</a>
+        <a (click)="changePageSize(25)">25</a>
+        <a (click)="changePageSize(50)">50</a>
+        <a (click)="changePageSize(0)">{{ 'label.all' | transloco }}</a>
+      </div>
+    </div>
+  </div>
+</span>

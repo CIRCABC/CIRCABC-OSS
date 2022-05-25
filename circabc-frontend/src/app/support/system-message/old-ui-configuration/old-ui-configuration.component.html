@@ -1,0 +1,31 @@
+<div>
+  <form [formGroup]="form">
+    <div class="field switch">
+      <div class="label">{{ 'admin.enable.old.message' | transloco }}</div>
+      <input
+        id="enabled"
+        class="cmn-toggle cmn-toggle-round"
+        type="checkbox"
+        formControlName="enableOld"
+      />
+      <label for="enabled" class="nonBlockLabel"></label>
+      <span
+        >{{ (form.value.enableOld ? 'label.yes' : 'label.no') | transloco
+        }}</span
+      >
+    </div>
+    <div class="field switch" *ngIf="form.value.enableOld === true">
+      <div class="label">{{ 'admin.display.old.message' | transloco }}</div>
+      <input
+        id="displayed"
+        class="cmn-toggle cmn-toggle-round"
+        type="checkbox"
+        formControlName="display"
+      />
+      <label for="displayed" class="nonBlockLabel"></label>
+      <span
+        >{{ (form.value.display ? 'label.yes' : 'label.no') | transloco }}</span
+      >
+    </div>
+  </form>
+</div>

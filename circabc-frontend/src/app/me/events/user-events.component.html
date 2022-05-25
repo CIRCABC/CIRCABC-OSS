@@ -1,0 +1,30 @@
+<section class="box box--next-events box--alternate-lines box--button">
+  <header class="header">
+    <span class="title">{{ 'event.my.events' | transloco }}</span>
+  </header>
+  <div class="main main--listing">
+    <ul *ngIf="events !== undefined && events.length > 0">
+      <li *ngFor="let event of events" class="row">
+        <span class="date"
+          >{{ event.appointmentDate | cbcDate: event.startTime: event.timeZone
+          }} - {{ event.appointmentDate | cbcTime: event.startTime:
+          event.timeZone}}
+        </span>
+        <a [routerLink]="['/group', event.igId, 'agenda', event.id, 'details']"
+          >{{ event.title }}</a
+        >
+        <span class="hidable"
+          >({{ 'label.' + event.meetingStatus | transloco }})</span
+        >
+      </li>
+    </ul>
+    <ul *ngIf="events === undefined || events.length === 0">
+      <li class="row">{{ 'label.nothing.to.display' | transloco }}</li>
+    </ul>
+  </div>
+  <div class="footer">
+    <a class="footer__button" [routerLink]="['/me/calendar']"
+      >{{ 'label.my.calendar' | transloco }}</a
+    >
+  </div>
+</section>

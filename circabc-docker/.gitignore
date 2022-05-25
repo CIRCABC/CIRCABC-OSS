@@ -1,0 +1,7 @@
+oracle_xe.docker.image
+weblogic.docker.image
+tomcat/logs
+logs
+mysql/data/
+tomcat/volumes/
+tomcat-dev/dist

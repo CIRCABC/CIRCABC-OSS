@@ -1,0 +1,72 @@
+@use '~css/global/variables-mixins-keyframes';
+
+.editor {
+  width: 500px;
+  display: flex;
+}
+
+.main {
+  padding: 25px;
+}
+
+.preview {
+  background-color: #efefef;
+  box-shadow: 0 0 10px #ccc;
+  padding: 25px;
+  margin-top: 25px;
+  margin-right: auto;
+  width: 600px;
+}
+
+.preview--container {
+  float: left;
+  margin: 25px;
+  max-width: 50%;
+
+  .preview {
+    background-color: #efefef;
+    box-shadow: 0 0 10px #ccc;
+    border-radius: 6px;
+    padding: 25px;
+  }
+}
+
+fieldset {
+  border: 0;
+  border-top: 2px solid #ccc;
+  padding-top: 30px;
+  margin-bottom: 15px;
+
+  legend {
+    padding: 0 30px;
+    margin-left: -30px;
+    font-weight: bold;
+  }
+}
+
+.box--news {
+  max-width: 50%;
+  float: left;
+
+  @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+    max-width: 100%;
+  }
+}
+
+.label {
+  display: flex;
+  padding-bottom: 8px;
+}
+
+select,
+.select--form {
+  width: 100%;
+}
+
+p-editor {
+  width: 100%;
+}
+
+.result {
+  width: 100% !important;
+}

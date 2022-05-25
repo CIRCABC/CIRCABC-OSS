@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>delete the help link</shortname>
+  <description>delete the help link</description>
+  <url>/circabc/help/links/{id}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

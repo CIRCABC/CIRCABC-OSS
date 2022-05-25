@@ -1,0 +1,34 @@
+<section class="box box--alternate-lines box--button">
+  <header class="header">
+    <span class="title">{{ 'label.events' | transloco }}</span>
+  </header>
+  <cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+  <div class="main main--listing" *ngIf="!loading">
+    <ul *ngIf="events !== undefined && events.length > 0 && !restCallError">
+      <li *ngFor="let event of getListOfEvents()" class="row">
+        <span class="date"
+          >{{ event.appointmentDate | cbcDate: event.startTime: event.timeZone
+          }} - {{ event.appointmentDate | cbcTime: event.startTime:
+          event.timeZone}}</span
+        >&nbsp;&nbsp;&nbsp;
+        <a [routerLink]="['/group', event.igId, 'agenda', event.id, 'details']"
+          >{{ event.title }}</a
+        >
+      </li>
+    </ul>
+    <ul *ngIf="(events === undefined || events.length === 0) && !restCallError">
+      <li class="row">{{ 'events.dashlet.no-event' | transloco }}</li>
+    </ul>
+    <ul *ngIf="restCallError">
+      <li class="row">{{ 'forums.dashlet.not.available' | transloco }}</li>
+    </ul>
+  </div>
+  <footer *ngIf="events !== undefined && events.length > 8" class="footer">
+    <a (click)="more = true" *ngIf="!more" class="footer__button"
+      >{{ 'label.show.more' | transloco }}</a
+    >
+    <a (click)="more = false" *ngIf="more" class="footer__button"
+      >{{ 'label.show.less' | transloco }}</a
+    >
+  </footer>
+</section>

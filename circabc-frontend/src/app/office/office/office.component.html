@@ -1,0 +1,19 @@
+<h1>
+  <p style="text-align: center" *ngIf="!isLogged">
+    {{ 'label.office.login' | transloco }}
+  </p>
+  <p *ngIf="!isLogged" style="text-align: center">
+    {{ 'label.office.accounts' | transloco }}
+  </p>
+  <mgt-login (loginCompleted)="onLogin()"></mgt-login>
+  <p *ngIf="mode==='edit' && isLogged" style="text-align: center">
+    {{ 'label.office.edit' | transloco }}
+  </p>
+  <p *ngIf="mode==='update'  && isLogged" style="text-align: center">
+    {{ 'label.office.update' | transloco }}
+  </p>
+  <mat-progress-spinner
+    style="margin: 0 auto"
+    [mode]="spinnerMode"
+  ></mat-progress-spinner>
+</h1>

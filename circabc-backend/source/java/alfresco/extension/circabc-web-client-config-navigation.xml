@@ -1,0 +1,24 @@
+<!--+
+    |     Copyright European Community 2006 - Licensed under the EUPL V.1.0
+    |
+    |  		   http://ec.europa.eu/idabc/en/document/6523
+    |
+    +-->
+
+<alfresco-config>
+   <config evaluator="node-type" condition="su:surveys">
+      <navigation>
+         <override from-view-id="/jsp/browse/browse.jsp" to-view-id="/jsp/extension/surveys/surveys.jsp" />
+         <override from-outcome="browse" to-view-id="/jsp/extension/surveys/surveys.jsp" />
+      </navigation>
+   </config>
+
+
+   <config evaluator="node-type" condition="app:filelink">
+      <navigation>
+         <override from-view-id="/jsp/extension/dialog/document-details.jsp" to-view-id="/jsp/dialog/extension/filelink-details.jsp" />
+         <override from-outcome="showDocDetailsWAI" to-view-id="/jsp/extension/dialog/filelink-details.jsp" />
+      </navigation>
+   </config>
+
+</alfresco-config>

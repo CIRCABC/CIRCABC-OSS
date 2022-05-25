@@ -1,0 +1,23 @@
+<cbc-modal
+  [title]="'memberships.revocation.user.modal.title' | transloco"
+  [visible]="showModal"
+  (cancel)="cancel()"
+  (ok)="schedule()"
+  [contentClass]="'modal-content-visible'"
+>
+  {{ 'memberships.revocation.user.explanation' | transloco }} {{
+  'memberships.revocation.user.list.count' | transloco: { nbusers:
+  userIds.length } }}
+  <h2>{{ 'create-event.frequency.when' | transloco }}</h2>
+  <form [formGroup]="scheduleForm">
+    <h3>
+      <p-calendar
+        formControlName="scheduleDate"
+        [dateFormat]="'dd/mm/yy'"
+        [placeholder]="'dd/mm/yyyy, HH:mm'"
+        [showIcon]="true"
+        [showTime]="true"
+      ></p-calendar>
+    </h3>
+  </form>
+</cbc-modal>

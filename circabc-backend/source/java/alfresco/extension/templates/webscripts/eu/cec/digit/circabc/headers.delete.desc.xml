@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Delete header</shortname>
+  <description>Delete header by id</description>
+  <url>/circabc/headers/{id}</url>
+  <format default="json">argument</format>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

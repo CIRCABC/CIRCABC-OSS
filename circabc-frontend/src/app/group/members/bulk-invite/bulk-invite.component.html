@@ -1,0 +1,368 @@
+<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+<div class="wrap admin page-container">
+  <div class="page-header">
+    <span
+      class="page-header__title"
+      [innerHtml]="'label.bulk.invite.users.description' | transloco"
+    ></span>
+    <div class="page-header__actions">
+      <cbc-reponsive-sub-menu>
+        <a class="selected" [routerLink]="['.']"
+          >{{ 'label.bulk.invite' | transloco }}</a
+        >
+        <a *ngIf="currentGroup && isMember()" [routerLink]="['../../contact']"
+          >{{ 'label.send.email' | transloco }}</a
+        >
+        <a
+          *ngIf="currentGroup && (isDirAdmin() || isDirManageMembers())"
+          [routerLink]="['../../../applicants']"
+          >{{ 'label.member.requests' | transloco }}</a
+        >
+        <a [routerLink]="['../../../members']"
+          >{{ 'label.members' | transloco }}</a
+        >
+        <a
+          *ngIf="currentGroup && isDirAdmin()"
+          [routerLink]="['../../../profiles']"
+          >{{ 'label.profiles' | transloco }}</a
+        >
+      </cbc-reponsive-sub-menu>
+    </div>
+  </div>
+
+  <section class="box">
+    <form [formGroup]="bulkInviteForm">
+      <header class="header">
+        <span class="title">{{ 'label.bulk.invite.users' | transloco }}</span>
+      </header>
+      <div class="main">
+        <fieldset>
+          <legend>{{ 'label.select.invite.users' | transloco }}</legend>
+          <div class="field">
+            <label for="categories"
+              >{{ 'explorer.categories' | transloco }}</label
+            >
+            <div class="custom-select select--form">
+              <select
+                #categorySelect
+                (change)="setCategory(categorySelect.value)"
+              >
+                <option
+                  *ngFor="let availableCategory of availableCategories"
+                  [value]="availableCategory.id"
+                >
+                  {{ availableCategory.name }}
+                </option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label>{{ 'label.interest.groups' | transloco }}</label>
+            <cbc-item-multiselector
+              [availableItems]="availableInterestGroups"
+              [(selectedItems)]="selectedInterestGroups"
+              (itemsChanged)="loadMembers()"
+            ></cbc-item-multiselector>
+          </div>
+          <div class="switch">
+            <span class="label"
+              >{{ 'label.bulk.invite.new.profiles' | transloco }}</span
+            >&nbsp;&nbsp;
+            <input
+              id="createNewProfiles"
+              name="createNewProfiles"
+              class="cmn-toggle cmn-toggle-round"
+              type="checkbox"
+              formControlName="createNewProfiles"
+            />
+            <label for="createNewProfiles" class="nonBlockLabel"></label>
+            <span
+              >{{ (bulkInviteForm.controls['createNewProfiles'].value === true ?
+              'label.yes' : 'label.no' ) | transloco }}</span
+            >
+          </div>
+
+          <br />
+        </fieldset>
+
+        <!--  file -->
+        <fieldset>
+          <legend>{{ 'label.user.list.import' | transloco }}</legend>
+          <div class="field field--file">
+            <span style="margin-right: 140px"
+              >{{ 'label.file' | transloco }}</span
+            >
+            <input
+              type="file"
+              id="file"
+              class="inputfile inputfile-6"
+              (change)="fileChangeEvent($event)"
+              [accept]="'.xls,.xlsx,.csv,.xml'"
+            />
+            <label for="file"
+              ><span class="result"></span
+              ><span class="button"
+                >{{ 'label.browse' | transloco }}</span
+              ></label
+            >
+            ({{ 'label.import.accepted.files' | transloco }})
+          </div>
+          <div class="field">
+            <label></label>
+            {{ 'label.need.bulk.template.download' | transloco }}&nbsp;<a
+              href="assets/files/Import_template.xlsx"
+              target="_blank"
+              ><img src="img/download-blue-small.png" alt="download"
+            /></a>
+            <br />
+            <label></label>
+            {{ 'label.need.bulk.template.restrictions' | transloco }}
+          </div>
+
+          <div *ngIf="fileToUpload !== undefined" class="field">
+            <label>{{ 'label.file.imported' | transloco }}: </label>
+            <div style="display: inline-block" class="listToBeUploaded">
+              <ul>
+                <li>
+                  {{ fileToUpload.name }}&nbsp;<a (click)="deleteFile()"
+                    ><img
+                      src="img/icon-delete-818181.png"
+                      height="15"
+                      width="15"
+                  /></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>{{ 'label.edit.invite.users' | transloco }}</legend>
+
+          <section class="table-container">
+            <header class="header">
+              <cbc-pager
+                [length]="totalItems"
+                [pageSize]="listingOptions.limit"
+                [pageIndex]="listingOptions.page"
+                (pageChanged)="goToPage($event)"
+              ></cbc-pager>
+              <span class="icons col-hidable">
+                <div class="dropdown-trigger">
+                  <img src="img/icon-admin-blue.png" alt="Settings" />
+                  <div class="dropdown dropdown--library-settings">
+                    <div class="number-of-items">
+                      {{ 'label.show' | transloco }}:
+                      <a (click)="changeLimit(10)">10</a>
+                      <a (click)="changeLimit(25)">25</a>
+                      <a (click)="changeLimit(50)">50</a>
+                      <a (click)="changeLimit(-1)"
+                        >{{ 'label.all' | transloco }}</a
+                      >
+                    </div>
+                  </div>
+                </div>
+              </span>
+            </header>
+
+            <ul class="bulk-actions bulk-actions--grey">
+              <li>
+                <cbc-number-badge
+                  [number]="selectedMembers.length"
+                ></cbc-number-badge>
+              </li>
+              <li *ngIf="selectedMembers.length > 0">
+                {{ 'label.profile' | transloco }}
+                <div class="custom-select select--form2 view-select">
+                  <select
+                    #profileSelect
+                    (change)="setSelectedProfiles(profileSelect.value)"
+                  >
+                    <option
+                      *ngFor="let profile of availableProfiles"
+                      [value]="profile.name"
+                    >
+                      {{ truncateProfileTitle(profile.title) }}
+                    </option>
+                  </select>
+                </div>
+              </li>
+              <li *ngIf="selectedMembers.length > 0">
+                <cbc-inline-delete
+                  (deletionConfirmed)="deleteSelectedMembers()"
+                  [deleteInline]="false"
+                ></cbc-inline-delete>
+              </li>
+            </ul>
+
+            <table class="main">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th class="cell-checkbox">
+                    <input
+                      type="checkbox"
+                      (click)="selectAll()"
+                      [checked]="allSelected"
+                    />
+                  </th>
+                  <th> {{ 'label.ig' | transloco }} </th>
+                  <th *ngIf="this.fileToUpload !== undefined">
+                    {{ 'label.file' | transloco }}
+                  </th>
+                  <th> {{ 'label.username' | transloco }} </th>
+                  <th> {{ 'label.email' | transloco }} </th>
+                  <th> {{ 'label.profile' | transloco }} </th>
+                  <th> {{ 'label.status' | transloco }} </th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr class="row empty-row" *ngIf="members !== undefined">
+                  <td colspan="7" *ngIf="members.length === 0 && !loading">
+                    {{ 'members.display.bulk.none' | transloco }}
+                  </td>
+                  <span class="field" *ngIf="loading">
+                    <label
+                      >{{ 'label.loading' | transloco }}...<cbc-spinner
+                      ></cbc-spinner
+                    ></label>
+                  </span>
+                </tr>
+
+                <tr
+                  class="row"
+                  *ngFor="let member of members; trackBy: trackMember"
+                >
+                  <td class="cell-left-border"></td>
+                  <td class="cell-checkbox">
+                    <input
+                      type="checkbox"
+                      [checked]="member.selected"
+                      (click)="toggleSelectedUser(member)"
+                    />
+                  </td>
+                  <td class="cell-file-name">
+                    {{ member.igName === '' ? ('label.na' | transloco) :
+                    member.igName }}
+                    <ul class="actions">
+                      <li>
+                        <cbc-inline-delete
+                          (deletionConfirmed)="deleteMember(member)"
+                        ></cbc-inline-delete>
+                      </li>
+                    </ul>
+                  </td>
+                  <td
+                    *ngIf="this.fileToUpload !== undefined"
+                    class="cell-access-level"
+                  >
+                    {{ member.fromFile === '' ? ('label.na' | transloco) :
+                    member.fromFile }}
+                  </td>
+                  <td class="cell-access-level">{{ member.username }}</td>
+                  <td class="cell-access-level">{{ member.email }}</td>
+                  <td class="cell-access-level" class="col-hidable">
+                    <span *ngIf="member.status !== 'ok'"
+                      >{{ 'label.na' | transloco }}</span
+                    >
+                    <div
+                      *ngIf="member.status === 'ok'"
+                      class="custom-select select--form2 view-select"
+                    >
+                      <select
+                        #profileSelect1
+                        (change)="
+                          setSelectedProfile(member, profileSelect1.value)
+                        "
+                      >
+                        <option
+                          *ngFor="let profile of availableProfiles"
+                          [selected]="member.profileId === profile.name"
+                          [value]="profile.name"
+                        >
+                          {{ truncateProfileTitle(profile.title) }}
+                        </option>
+                      </select>
+                    </div>
+                  </td>
+                  <td class="cell-access-level center-img">
+                    <img
+                      src="img/Accepted.png"
+                      height="20"
+                      width="20"
+                      *ngIf="member.status === 'ok'"
+                      title="{{ 'label.ok.to.invite' | transloco }}"
+                    />
+                    <img
+                      src="img/member.png"
+                      height="20"
+                      width="20"
+                      *ngIf="member.status === 'member'"
+                      title="{{ 'label.already.member' | transloco }}"
+                    />
+                    <img
+                      src="img/error-triangle-orange-32.png"
+                      height="20"
+                      width="20"
+                      *ngIf="
+                        member.status === 'nok' || member.status === 'ignore'
+                      "
+                      title="{{ 'label.error' | transloco }}"
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="footer">
+              <cbc-pager
+                [length]="totalItems"
+                [pageSize]="listingOptions.limit"
+                [pageIndex]="listingOptions.page"
+                (pageChanged)="goToPage($event)"
+              ></cbc-pager>
+            </div>
+          </section>
+
+          <div class="switch">
+            <span class="label">{{ 'label.notify.users' | transloco }}</span
+            >&nbsp;&nbsp;
+            <input
+              id="notifyUsers"
+              name="notifyUsers"
+              class="cmn-toggle cmn-toggle-round"
+              type="checkbox"
+              formControlName="notifyUsers"
+            />
+            <label for="notifyUsers" class="nonBlockLabel"></label>
+            <span
+              >{{ (bulkInviteForm.controls['notifyUsers'].value === true ?
+              'label.yes' : 'label.no' ) | transloco }}</span
+            >
+          </div>
+
+          <!-- Buttons -->
+          <div class="buttons-group" *ngIf="!processing">
+            <a
+              class="cta"
+              [routerLink]="['.']"
+              (click)="!canInvite() ? '' : invite()"
+              [class.disabled]="!canInvite()"
+              >{{ 'label.invite' | transloco }}</a
+            >
+            <a class="button" [routerLink]="['.']" (click)="close()"
+              >{{ 'label.cancel' | transloco }}</a
+            >
+          </div>
+
+          <div class="field" *ngIf="processing">
+            <label
+              >{{ 'label.inviting' | transloco }}...<cbc-spinner></cbc-spinner
+            ></label>
+          </div>
+        </fieldset>
+      </div>
+    </form>
+  </section>
+</div>

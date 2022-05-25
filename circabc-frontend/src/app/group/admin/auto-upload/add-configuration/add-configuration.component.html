@@ -1,0 +1,250 @@
+<!-- MODAL BOX -->
+<div
+  class="black-overlayer"
+  *ngIf="showWizard"
+  [class.overlayer-shown]="showWizard"
+  [class.overlayer-hidden]="!showWizard"
+></div>
+<section
+  class="modal modal--select-files"
+  *ngIf="showWizard"
+  [class.modal-shown]="showWizard"
+  [class.modal-hidden]="!showWizard"
+  style="margin-top: 0"
+>
+  <a class="close-icon" (click)="cancelWizard()"></a>
+
+  <header>
+    <a class="back-link" *ngIf="canGoBack()" (click)="previousWizardStep()"
+      >{{ 'label.back' | transloco }}</a
+    >
+    <h2 class="title">{{ 'label.add.configuration' | transloco }}</h2>
+  </header>
+
+  <section class="modal-content">
+    <form [formGroup]="autoUploadForm">
+      <!-- first wizard step -->
+      <div *ngIf="wizardStep === 1">
+        <div class="field">
+          <label for="ftpHost">{{ 'label.ftp.host' | transloco }}</label>
+          <input
+            type="text"
+            id="ftpHost"
+            (change)="resetConnection()"
+            formControlName="ftpHost"
+          />
+          <cbc-control-message
+            [showInvalid]="true"
+            [control]="ftpHostControl"
+          ></cbc-control-message>
+        </div>
+        <div class="field">
+          <label for="ftpPort">{{ 'label.ftp.port' | transloco }}</label>
+          <input
+            type="text"
+            id="ftpPort"
+            (change)="resetConnection()"
+            formControlName="ftpPort"
+          />
+          <cbc-control-message
+            [showInvalid]="true"
+            [control]="ftpPortControl"
+          ></cbc-control-message>
+        </div>
+        <br />
+        <div class="field">
+          <label for="pathToFile">{{ 'label.path.to.file' | transloco }}</label>
+          <input
+            type="text"
+            id="pathToFile"
+            (change)="resetConnection()"
+            formControlName="pathToFile"
+          />
+        </div>
+        <br />
+        <div class="field">
+          <label for="username">{{ 'label.login' | transloco }}</label>
+          <input
+            type="text"
+            id="username"
+            (change)="resetConnection()"
+            formControlName="username"
+          />
+        </div>
+        <div class="field">
+          <label for="password">{{ 'label.password' | transloco }}</label>
+          <input
+            type="password"
+            id="password"
+            (change)="resetConnection()"
+            formControlName="password"
+          />
+        </div>
+        <div style="margin-left: 165px">
+          <a class="button apply-button" (click)="testConnection()"
+            >{{ 'label.test.connection' | transloco }}</a
+          >
+          <span *ngIf="connectionResult === 1" style="color: green"
+            >{{ 'label.success' | transloco }}</span
+          >
+          <span
+            *ngIf="connectionResult === 0 && testedOnce"
+            style="color: orange"
+            >{{ 'label.ftp.ok.no.file' | transloco }}</span
+          >
+          <span *ngIf="connectionResult < 0" style="color: red"
+            >{{ 'label.failure' | transloco }}</span
+          >
+        </div>
+      </div>
+
+      <!-- second wizard step -->
+      <div *ngIf="wizardStep === 2">
+        <label *ngIf="destinationSelected()" class="nonBlockLabel"
+          >{{ 'auto.upload.select.destination' | transloco }}</label
+        >
+        <label
+          *ngIf="!destinationSelected()"
+          class="nonBlockLabel"
+          style="color: red"
+          >{{ 'auto.upload.select.destination' | transloco }}</label
+        >
+        <br />
+        <cbc-tree-view
+          *ngIf="libraryRoot !== undefined"
+          [root]="libraryRoot"
+          [folderId]="destinationValue"
+          (selectedNodeEmitter)="setDestination($event)"
+          [displayedPath]="path"
+        ></cbc-tree-view>
+        <br />
+        <br />
+        <div class="field">
+          <label for="uploadDay"
+            >{{ 'auto.upload.file.upload.day' | transloco }}</label
+          >
+          <div class="custom-select select--form short-width select-align">
+            <select name="" id="uploadDay" formControlName="uploadDay">
+              <option value="-1">{{ 'label.every.day' | transloco }}</option>
+              <option value="1">{{ 'label.monday' | transloco }}</option>
+              <option value="2">{{ 'label.tuesday' | transloco }}</option>
+              <option value="3">{{ 'label.wednesday' | transloco }}</option>
+              <option value="4">{{ 'label.thursday' | transloco }}</option>
+              <option value="5">{{ 'label.friday' | transloco }}</option>
+              <option value="6">{{ 'label.saturday' | transloco }}</option>
+              <option value="7">{{ 'label.sunday' | transloco }}</option>
+            </select>
+          </div>
+          <label for="uploadHour" style="width: 35px"
+            >{{ 'auto.upload.file.upload.hour' | transloco }}</label
+          >
+          <div class="custom-select select--form short-width select-align">
+            <select name="" id="uploadHour" formControlName="uploadHour">
+              <option value="-1">{{ 'label.every.hour' | transloco }}</option>
+              <option
+                *ngFor="
+                  let hour of [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9,
+                    10,
+                    11,
+                    12,
+                    13,
+                    14,
+                    15,
+                    16,
+                    17,
+                    18,
+                    19,
+                    20,
+                    21,
+                    22,
+                    23
+                  ]
+                "
+                [value]="hour"
+                >{{ hour }}:00</option
+              >
+            </select>
+          </div>
+        </div>
+        <div class="field switch">
+          <div class="label"
+            >{{ 'auto.upload.auto.extract.zip' | transloco }}</div
+          >
+          <input
+            id="autoExtractZip"
+            class="cmn-toggle cmn-toggle-round"
+            type="checkbox"
+            formControlName="autoExtractZip"
+          />
+          <label for="autoExtractZip" class="nonBlockLabel"></label>
+          <span
+            >{{ (autoUploadForm.value.autoExtractZip === true ? 'label.yes' :
+            'label.no' ) | transloco }}</span
+          >
+        </div>
+        <div class="field switch">
+          <div class="label">{{ 'label.job.notification' | transloco }}</div>
+          <input
+            id="jobNotifications"
+            class="cmn-toggle cmn-toggle-round"
+            type="checkbox"
+            formControlName="jobNotifications"
+          />
+          <label for="jobNotifications" class="nonBlockLabel"></label>
+          <span
+            >{{ (autoUploadForm.value.jobNotifications === true ? 'label.yes' :
+            'label.no' ) | transloco }}</span
+          >
+        </div>
+        <div class="field">
+          <div class="label">{{ 'label.email.recipients' | transloco }}</div>
+          <textarea
+            id="emailRecipients"
+            formControlName="emailRecipients"
+          ></textarea>
+          <cbc-control-message
+            [showInvalid]="true"
+            [control]="emailRecipientsControl"
+          ></cbc-control-message>
+        </div>
+        <span style="margin-left: 165px"
+          >{{ 'label.email.recipients.multiple' | transloco }}</span
+        >
+      </div>
+    </form>
+  </section>
+
+  <section class="modal-footer">
+    <!-- Buttons -->
+    <div class="buttons-group">
+      <a
+        class="cta"
+        *ngIf="wizardStep === 1"
+        [class.disabled]="connectionResult < 0 || !testedOnce"
+        (click)="nextWizardStep()"
+        >{{ 'label.next' | transloco }}</a
+      >
+      <a
+        class="cta"
+        [routerLink]="['.']"
+        *ngIf="wizardStep === 2"
+        (click)="!autoUploadForm.valid ? '' : addConfiguration()"
+        [class.disabled]="!autoUploadForm.valid"
+        >{{ 'label.add' | transloco }}</a
+      >
+      <a class="button" (click)="cancelWizard()"
+        >{{ 'label.cancel' | transloco }}</a
+      >
+    </div>
+  </section>
+</section>

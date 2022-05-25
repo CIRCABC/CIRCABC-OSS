@@ -1,0 +1,40 @@
+<h2>{{ 'admin.general.page.title' | transloco }}</h2>
+<form [formGroup]="igForm">
+  <div class="field">
+    <label for="name">{{ 'label.name' | transloco }}</label>
+    <input type="text" formControlName="name" [cbcFocus]="true" />
+    <cbc-control-message [control]="nameControl"></cbc-control-message>
+  </div>
+  <cbc-multilingual-input
+    formControlName="title"
+    [label]="'label.title' | transloco"
+    [placeholder]="'label.title' | transloco"
+    [lang]="'en'"
+  ></cbc-multilingual-input>
+  <cbc-multilingual-input
+    formControlName="description"
+    [label]="'label.description' | transloco"
+    [placeholder]="'label.description' | transloco"
+    [lang]="'en'"
+    [textarea]="true"
+  ></cbc-multilingual-input>
+  <cbc-multilingual-input
+    formControlName="contact"
+    [label]="'label.contact' | transloco"
+    [placeholder]="'label.contact' | transloco"
+    [lang]="'en'"
+    [textarea]="true"
+  ></cbc-multilingual-input>
+  <div class="field" *ngIf="saving">
+    <label
+      >{{ 'label.saving' | transloco }}...
+      <cbc-spinner></cbc-spinner>
+    </label>
+  </div>
+</form>
+<div class="buttons-group" *ngIf="!saving">
+  <a class="cta" (click)="save()" [class.disabled]="!igForm.valid"
+    >{{ 'label.save' | transloco }}</a
+  >
+  <a class="button" (click)="cancel()">{{ 'label.cancel' | transloco }}</a>
+</div>

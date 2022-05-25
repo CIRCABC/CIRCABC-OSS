@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright 2006 European Community
+  
+   Licensed under the EUPL, Version 1.1 or \?as soon they
+   will be approved by the European Commission - subsequent
+   versions of the EUPL (the "Licence");
+   You may not use this work except in compliance with the
+   Licence.
+   You may obtain a copy of the Licence at:
+  
+   https://joinup.ec.europa.eu/software/page/eupl
+  
+   Unless required by applicable law or agreed to in
+   writing, software distributed under the Licence is
+   distributed on an "AS IS" basis,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+   express or implied.
+   See the Licence for the specific language governing
+   permissions and limitations under the Licence.
+-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="CircabcReporting">
+
+<!-- This query includes documents + all versions of this documents -->
+  <select id="select_count_documents" resultType="Integer" parameterType="ContentNumberParametersDAO">
+		SELECT
+		COUNT(*)
+		FROM
+		alf_node
+		WHERE
+		store_id = #{versionStoreID}
+		AND
+		type_qname_id = #{contentQnameID}
+		AND
+		audit_creator != 'System'
+   </select>
+   
+   <select id="select_qname_id_by_local_name__and_uri" resultType="Integer" parameterType="map" >
+   	  	select id from alf_qname where local_name = #{localName} and ns_id = (select id from alf_namespace where uri = #{uri} )
+   </select>
+   
+   <select id="select_shared_spaces_by_ig" resultType="String" parameterType="ShareSpaceQueryParameter">
+   		SELECT CONCAT(ALF_STORE.PROTOCOL,
+  			'&#58;//',
+  			ALF_STORE.identifier,
+  			'/',
+  			ALF_NODE.UUID)
+		FROM ALF_NODE
+		INNER JOIN ALF_NODE_PROPERTIES
+		ON ALF_NODE.ID = ALF_NODE_PROPERTIES.NODE_ID
+		INNER JOIN ALF_STORE
+		ON ALF_NODE.STORE_ID                 = ALF_STORE.ID
+		WHERE ALF_NODE.TYPE_QNAME_ID         = #{typeQnameId}
+		AND ALF_NODE_PROPERTIES.QNAME_ID     = #{propQnameId}
+		AND ALF_NODE.STORE_ID                = #{storeID}
+		AND ALF_NODE_PROPERTIES.STRING_VALUE = #{igNodeRef}
+   </select>
+   
+   <select id="select_store_id_by_protocol_protocol" resultType="Integer" parameterType="map" >
+   	  	select id from alf_store where protocol = #{protocol}  and  identifier = #{identifier}
+   </select>
+   
+   
+   
+</mapper>

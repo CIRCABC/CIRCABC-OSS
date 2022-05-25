@@ -1,0 +1,71 @@
+/*  DASHBOARD SETTINGS */
+
+.dashboard-settings {
+  .main {
+    padding: 25px;
+
+    p {
+      margin: 0 0 25px;
+    }
+  }
+
+  .folders,
+  .files,
+  .members,
+  .events,
+  .forums {
+    margin-bottom: 30px;
+    position: relative;
+    padding: 0 0 0 50px;
+
+    &::before {
+      content: '';
+      display: block;
+      width: 30px;
+      height: 30px;
+      position: absolute;
+      left: 0;
+      top: 5px;
+      border-radius: 50%;
+      background-color: rgb(245 246 250);
+      box-shadow: 0 2px 2px rgb(0 0 0 / 0.1);
+      background-repeat: no-repeat;
+      background-position: center center;
+    }
+
+    li {
+      margin-bottom: 5px;
+    }
+
+    label {
+      display: inline-block;
+      padding: 5px 0;
+    }
+
+    input {
+      margin-right: 10px;
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  .folders::before {
+    background-image: url(^img/icon-library-grey.png);
+  }
+
+  .files::before {
+    background-image: url(^img/icon-file-grey.png);
+  }
+
+  .events::before {
+    background-image: url(^img/icon-agenda-grey.png);
+  }
+
+  .members::before {
+    background-image: url(^img/icon-members-grey.png);
+  }
+
+  .forums::before {
+    background-image: url(^img/icon-forums-grey.png);
+  }
+}

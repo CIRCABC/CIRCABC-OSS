@@ -1,0 +1,32 @@
+.help-search-wrap {
+  transition-duration: 250ms;
+  transition-timing-function: ease-out;
+  opacity: 0;
+  width: calc(100% - 300px);
+  margin: 50px 150px;
+  top: 50px;
+  height: 0;
+  border-radius: 5px;
+  position: absolute;
+  overflow: auto;
+
+  .button {
+    float: right;
+    margin: 5px;
+  }
+}
+
+.close-action {
+  margin: 5px 10px;
+  font-size: 24px;
+  display: inline-block;
+  position: absolute;
+  right: 0;
+}
+
+.visible {
+  opacity: 1;
+  height: calc(100% - 100px);
+  background-color: #fff;
+  box-shadow: 0 0 25px rgb(55 55 55 / 0.5);
+}

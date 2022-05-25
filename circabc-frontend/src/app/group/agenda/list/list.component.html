@@ -1,0 +1,187 @@
+<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+<div class="wrap page-container">
+  <div class="page-header">
+    <span
+      class="page-header__title"
+      [innerHtml]="'agenda-list.page.title' | transloco"
+    ></span>
+    <div class="page-header__actions">
+      <cbc-reponsive-sub-menu>
+        <a [routerLink]="['..']">{{ 'label.view.as.calendar' | transloco }}</a>
+      </cbc-reponsive-sub-menu>
+    </div>
+  </div>
+  <section class="table-container">
+    <header class="header">
+      <cbc-pager
+        [length]="appointments.length"
+        [pageSize]="listingOptions.limit"
+        [pageIndex]="listingOptions.page"
+        (pageChanged)="goToPage($event)"
+      ></cbc-pager>
+
+      <span class="icons">
+        <div class="dropdown-trigger">
+          <img src="img/icon-admin-blue.png" alt="Settings" />
+          <div class="dropdown dropdown--library-settings">
+            <div class="number-of-items">
+              {{ 'label.show' | transloco }}:
+              <a (click)="changeLimit(10)">10</a>
+              <a (click)="changeLimit(25)">25</a>
+              <a (click)="changeLimit(50)">50</a>
+              <a (click)="changeLimit(100)">100</a>
+              <a (click)="changeLimit(-1)">{{ 'label.all' | transloco }}</a>
+            </div>
+          </div>
+        </div>
+        <cbc-hint
+          [title]="'agenda-list.description' | transloco"
+          [text]="'agenda-list.page.help' | transloco"
+        ></cbc-hint>
+      </span>
+    </header>
+
+    <form [formGroup]="changeDateForm">
+      <div class="filtering">
+        {{ 'label.filter.by' | transloco }}:
+        <a
+          [class.link-underline]="filter === 'Previous'"
+          (click)="changeFilter('Previous')"
+          >{{ 'agenda-list.past.events' | transloco }}</a
+        >
+        |
+        <a
+          [class.link-underline]="filter === 'Future'"
+          (click)="changeFilter('Future')"
+          >{{ 'agenda-list.future.events' | transloco }}</a
+        >
+        |
+        <a
+          [class.link-underline]="filter === 'Exact'"
+          (click)="changeFilter('Exact')"
+          >{{ 'agenda-list.exact.date' | transloco }}</a
+        >
+        <p-calendar
+          *ngIf="filter === 'Exact'"
+          #datePicker
+          dateFormat="yy-mm-dd"
+          [placeholder]="getFormattedTodaysDate()"
+          formControlName="date"
+        ></p-calendar>
+      </div>
+    </form>
+
+    <table class="main">
+      <thead>
+        <tr>
+          <th></th>
+          <th style="width: 22px"></th>
+          <th>
+            <a (click)="changeSort('title')">{{ 'label.title' | transloco }}</a>
+            <span
+              class="order-arrow-up"
+              *ngIf="listingOptions.sort === 'title_ASC'"
+            ></span>
+            <span
+              class="order-arrow-down"
+              *ngIf="listingOptions.sort === 'title_DESC'"
+            ></span>
+          </th>
+          <th>
+            <a (click)="changeSort('appointmentDate')"
+              >{{ 'label.date' | transloco }}</a
+            >
+            <span
+              class="order-arrow-up"
+              *ngIf="listingOptions.sort === 'appointmentDate_ASC'"
+            ></span>
+            <span
+              class="order-arrow-down"
+              *ngIf="listingOptions.sort === 'appointmentDate_DESC'"
+            ></span>
+          </th>
+          <th class="col-hidable">
+            <a (click)="changeSort('appointmentType')"
+              >{{ 'label.type' | transloco }}</a
+            >
+            <span
+              class="order-arrow-up"
+              *ngIf="listingOptions.sort === 'appointmentType_ASC'"
+            ></span>
+            <span
+              class="order-arrow-down"
+              *ngIf="listingOptions.sort === 'appointmentType_DESC'"
+            ></span>
+          </th>
+          <th>
+            <a (click)="changeSort('contact')"
+              >{{ 'welcome.contact' | transloco }}</a
+            >
+            <span
+              class="order-arrow-up"
+              *ngIf="listingOptions.sort === 'contact_ASC'"
+            ></span>
+            <span
+              class="order-arrow-down"
+              *ngIf="listingOptions.sort === 'contact_DESC'"
+            ></span>
+          </th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr class="row empty-row" *ngIf="appointments !== undefined">
+          <td
+            style="padding-left: 22px"
+            colspan="7"
+            *ngIf="appointments.length === 0"
+          >
+            {{ 'event.display.none' | transloco }}
+          </td>
+        </tr>
+
+        <tr
+          class="row"
+          *ngFor="let appointment of appointments; trackBy: trackById"
+        >
+          <td class="cell-left-border"></td>
+          <td class="cell-checkbox"></td>
+          <td class="cell-file-name">
+            <div class="file-name">{{ appointment.title }}</div>
+            <ul class="actions">
+              <li *ngIf="isEveAdmin()">
+                <a (click)="popupDeleteEvent(appointment)"
+                  >{{ 'label.delete' | transloco }}</a
+                >
+              </li>
+              <li>
+                <a [routerLink]="['..', appointment.id, 'details']"
+                  >{{ 'event.view.details' | transloco }}</a
+                >
+              </li>
+            </ul>
+          </td>
+          <td>{{ appointment.appointmentDate }}</td>
+          <td>{{ appointment.appointmentType }}</td>
+          <td>{{ appointment.contact }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="footer">
+      <cbc-pager
+        [length]="appointments.length"
+        [pageSize]="listingOptions.limit"
+        [pageIndex]="listingOptions.page"
+        (pageChanged)="goToPage($event)"
+      ></cbc-pager>
+    </div>
+  </section>
+
+  <cbc-delete-event
+    [showModal]="deleteEventShowModal"
+    [event]="eventToDelete"
+    (modalHide)="deleteEventShowModal = false"
+    (eventMeetingDeleted)="redisplayListAfterDelete()"
+  ></cbc-delete-event>
+</div>

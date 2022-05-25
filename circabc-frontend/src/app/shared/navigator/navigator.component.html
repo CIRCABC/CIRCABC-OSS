@@ -1,0 +1,209 @@
+<div
+  style="
+    display: flex;
+    justify-content: flex-end;
+    background: #fff;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+  "
+>
+  <nav class="main-nav menu1">
+    <div [ngSwitch]="location">
+      <ul class="topnav">
+        <ng-template [ngSwitchCase]="'default'">
+          <li>
+            <a
+              data-cy="me"
+              *ngIf="!isGuest"
+              [class.tab--current]="isMe"
+              class="tab tab--info"
+              [routerLink]="['/me']"
+            >
+              <span class="label">{{ 'label.dashboard' | transloco }}</span>
+            </a>
+          </li>
+          <li>
+            <a
+              data-cy="me-calendar"
+              *ngIf="!isGuest"
+              [class.tab--current]="isCalendar"
+              class="tab tab--agenda"
+              [routerLink]="['/me/calendar']"
+            >
+              <span class="label">{{ 'label.my.calendar' | transloco }}</span>
+            </a>
+          </li>
+          <li>
+            <a
+              data-cy="roles"
+              *ngIf="!isGuest"
+              [class.tab--current]="isRoles"
+              class="tab tab--roles"
+              [routerLink]="['/me/roles']"
+            >
+              <span class="label">{{ 'label.my.roles' | transloco }}</span>
+            </a>
+          </li>
+          <li>
+            <a
+              data-cy="explore"
+              [class.tab--current]="isExplore"
+              class="tab tab--group-browser"
+              [routerLink]="['/explore']"
+            >
+              <span class="label"
+                >{{ 'navigator.browse-groups' | transloco }}</span
+              >
+            </a>
+          </li>
+          <li *ngIf="isShareEnabled()">
+            <a
+              data-cy="share"
+              class="tab tab--share"
+              [href]="environmentShareURL()"
+              target="_blank"
+            >
+              <span class="label">{{ 'label.share' | transloco }}</span>
+            </a>
+          </li>
+        </ng-template>
+        <ng-template [ngSwitchCase]="'in-group'">
+          <li>
+            <a
+              *ngIf="currentIg.title"
+              [class.tab--current]="isGroupDashboard"
+              class="tab tab--group-name"
+              [routerLink]="['.']"
+              title="{{
+              (currentIg.title | cbcI18n) !== ''
+                ? (currentIg.title | cbcI18n)
+                : ('en' | i18nSelect: currentIg.title) !== ''
+                ? ('en' | i18nSelect: currentIg.title)
+                : currentIg.name
+            }}"
+            >
+              {{ (currentIg.title | cbcI18n) !== '' ? (currentIg.title |
+              cbcI18n) : ('en' | i18nSelect: currentIg.title) !== '' ? ('en' |
+              i18nSelect: currentIg.title) : currentIg.name }}</a
+            >
+          </li>
+          <li *ngIf="canSeeInformation">
+            <a
+              data-cy="information"
+              [class.tab--current]="isInformation"
+              class="tab tab--info"
+              [routerLink]="['information']"
+            >
+              <span class="label">{{ 'label.information' | transloco }}</span>
+            </a>
+          </li>
+          <li *ngIf="canSeeLibrary">
+            <a
+              data-cy="library"
+              [class.tab--current]="isInsideLibrary"
+              class="tab tab--library"
+              [routerLink]="['library', currentIg.libraryId]"
+            >
+              <span class="label">{{ 'label.library' | transloco }}</span>
+            </a>
+          </li>
+          <li *ngIf="canSeeMembers">
+            <a
+              data-cy="members"
+              [class.tab--current]="isInsideMembers"
+              class="tab tab--members"
+              [routerLink]="['members']"
+            >
+              <span class="label">{{ 'label.members' | transloco }}</span>
+            </a>
+          </li>
+          <li *ngIf="canSeeEvents">
+            <a
+              data-cy="forum"
+              [class.tab--current]="isAgenda"
+              class="tab tab--agenda"
+              [routerLink]="['agenda']"
+            >
+              <span class="label">{{ 'label.agenda' | transloco }}</span>
+            </a>
+          </li>
+          <li *ngIf="canSeeNewsgroups">
+            <a
+              [class.tab--current]="isForum"
+              class="tab tab--forums"
+              [routerLink]="['forum', currentIg.newsgroupId]"
+            >
+              <span class="label">{{ 'label.forums' | transloco }}</span>
+            </a>
+          </li>
+          <li *ngIf="isGroupAdmin">
+            <a
+              data-cy="admin"
+              class="tab tab--admin"
+              [class.tab--current]="isAdmin"
+              [routerLink]="['admin']"
+            >
+              <span class="label">{{ 'label.admin' | transloco }}</span>
+            </a>
+          </li>
+        </ng-template>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="main-nav menu2">
+    <div class="menuitem switch-ui" *ngIf="uiSwitchEnabled()">
+      <a
+        class="switch-ui--link"
+        title="{{ 'navigator.switch.ui.help' | transloco }}"
+        [href]="environmentServerUrl()"
+      >
+      </a>
+    </div>
+
+    <div class="menuitem">
+      <div class="personal-menu-help">
+        <a data-cy="help" [class.tab--current]="isHelp" class="tab tab--help">
+          <span class="label">{{ 'label.help' | transloco }}</span>
+        </a>
+
+        <div class="dropdown-help dropdown--personal-menu-help">
+          <section class="dropdown--personal-menu__sidebar">
+            <nav>
+              <div class="links-group">
+                <a [routerLink]="['/help']"
+                  >{{ 'label.help-center' | transloco }}</a
+                >
+
+                <a [routerLink]="['/help/contact']"
+                  >{{ 'welcome.contact.support' | transloco }}</a
+                >
+
+                <a target="_blank" href="https://github.com/CIRCABC/Circabc-OSS"
+                  >{{ 'label.download.source' | transloco }}</a
+                >
+
+                <a [routerLink]="['/help/about']"
+                  >{{ 'label.about' | transloco }}</a
+                >
+
+                <a [routerLink]="['/support']" *ngIf="isAppAdmin()"
+                  >{{ 'label.support.area' | transloco }}</a
+                >
+              </div>
+            </nav>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <div class="menuitem">
+      <a
+        class="icon"
+        style="font-size: 15px"
+        onClick="document.getElementsByClassName('topnav')[0].classList.toggle('responsive');"
+      >
+        <img src="./img/menu.png" title="menu" alt="menu-icon" />
+      </a>
+    </div>
+  </div>
+</div>

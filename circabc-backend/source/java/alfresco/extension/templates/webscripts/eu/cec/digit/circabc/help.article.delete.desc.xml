@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>remove one of the help articles</shortname>
+  <description>remove one of the help articles</description>
+  <url>/circabc/help/articles/{id}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

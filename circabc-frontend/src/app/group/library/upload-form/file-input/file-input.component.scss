@@ -1,0 +1,59 @@
+@use '~css/global/variables-mixins-keyframes';
+
+.container-file {
+  background-color: #fff;
+  padding: 25px;
+  border-radius: 5px;
+  box-shadow: 2px 2px 10px #888;
+}
+
+h1 {
+  color: #035;
+
+  img {
+    height: 22px;
+    float: right;
+    margin-top: 2px;
+  }
+}
+
+.field--file {
+  width: 100%;
+  text-align: center;
+
+  input {
+    display: none;
+  }
+
+  label {
+    min-width: initial;
+    cursor: pointer;
+  }
+}
+
+.drop-zone {
+  font-size: 12px;
+  display: block;
+  border: 2px dashed #999;
+  height: 100px;
+  margin: 10px auto;
+  text-align: center;
+  padding-top: 40px;
+  color: #035;
+
+  @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+    display: none;
+  }
+}
+
+.info {
+  color: #757575;
+  font-style: italic;
+  margin: 0;
+  font-size: 12px;
+  text-align: center;
+
+  img {
+    vertical-align: middle;
+  }
+}

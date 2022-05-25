@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>recover the membership option in a group</shortname>
+  <description>recover the membership option in a group</description>
+    <url>/circabc/history/{userId}/groups/{groupId}/recoverable/profiles/{profileId}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

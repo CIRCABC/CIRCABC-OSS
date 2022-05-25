@@ -1,0 +1,605 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>CIRCABC FAQ</title>
+        <link href="../css/style2.css" type="text/css" rel="stylesheet"/>
+         <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico">
+        <script src="../js/jquery-1.10.2.min.js" type="application/javascript"></script>
+        <script type="application/javascript">
+        	$(document).ready(function(){
+        		
+        		if($("#links h2 img").attr("alt") == "open")
+        			{
+        				$("#links h2 img").attr("src","../imgs/arrow_carrot-up_alt2.png");
+        				$("#links ul#linkList").css("display","block");
+        				$("#links h2 img").attr("alt","closed");
+        			}
+        			else
+        			{
+        				$("#links h2 img").attr("src","../imgs/arrow_carrot-down_alt2.png");
+        				$("#links ul#linkList").css("display","none");
+        				$("#links h2 img").attr("alt","open");
+        			}
+        		
+        		$("#links h2").click(function(){
+        			
+        			
+        			if($("#links h2 img").attr("alt") == "open")
+        			{
+        				$("#links h2 img").attr("src","../imgs/arrow_carrot-up_alt2.png");
+        				$("#links ul#linkList").css("display","block");
+        				$("#links h2 img").attr("alt","closed");
+        			}
+        			else
+        			{
+        				$("#links h2 img").attr("src","../imgs/arrow_carrot-down_alt2.png");
+        				$("#links ul#linkList").css("display","none");
+        				$("#links h2 img").attr("alt","open");
+        			}
+        		});
+        		
+        	});
+        </script>
+    </head>
+    <body>
+<!--     	<div class="no-hover lang">
+		    <a href="../en/library.html" style="margin-right:10px;">[EN]</a>
+		    <a href="../fr/library.html" style="margin-right:10px;">[FR]</a>
+		    <a href="../de/library.html" style="margin-right:10px;">[DE]</a>
+	    </div>  -->
+    	
+        <div id="header" >
+        	<!--<img src="imgs/banner.jpg" alt="logo" class="logo"/>-->
+        	<img src="../imgs/Help-File-icon.png" width="76" style="float:right;"/>
+        	<h1><a href="index.html">CIRCABC<br/>Help</a></h1>
+        	<ul>
+<!--         		<li><a href="authentication.html"><img src="../imgs/icon_profile.png"/>Authentication</a></li> -->
+        		<li ><a href="administration.html"><img src="../imgs/icon_adjust-vert.png"/>Administration</a></li>
+        		<li class="selected"><a href="library.html"><img src="../imgs/icon_document_alt.png"/>Library</a><br/><p>Questions about the library</p></li>
+        		<li ><a href="newsgroups.html"><img src="../imgs/icon_comment_alt.png"/>Newsgroups</a></li>
+        		<li ><a href="events.html"><img src="../imgs/icon_calendar.png"/>Events</a></li>
+        		<li ><a href="information.html"><img src="../imgs/icon_info_alt.png"/>Information</a></li>
+        		<li ><a href="notification.html"><img src="../imgs/icon_mail_alt.png"/>Notification</a></li>
+        		<li ><a href="search.html"><img src="../imgs/icon_search.png"/>Search</a></li>
+        		<li ><a href="known_bugs.html"><img src="../imgs/icon_error-triangle_alt.png"/>Known bugs</a></li>
+        	</ul>
+        	
+        	
+        </div>
+        
+        <div id="links">
+        		<h2>Table of content <img src="../imgs/arrow_carrot-down_alt2.png" alt="closed"/></h2>
+        		<ul id="linkList">
+        			<li><a href="#how_create_space">How to create a new space</a></li>
+        			<li><a href="#what_is_dossier">What is a dossier?</a></li>
+        			<li><a href="#how_upload">How to upload a new document</a></li>
+        			<li><a name="#upload_name_changer">I have uploaded a new document and the name has been changed</a></li>
+        			<li><a href="#howto_rename_description">How to rename or add a description to an item (Space &amp; Content)</a></li>
+        			<li><a href="#howto_delete">How to delete an item (Space &amp; Content)</a></li>
+        			<li><a href="#howto_delete">I cannot delete a document, what can I do?</a></li>
+        			<li><a href="#howto_recover">How to recover deleted items</a></li>
+        			<li><a href="#howto_create_multilingual">How to create a multilingual document</a></li>
+        			<li><a href="#hat_is_checkin">What is the check-out check-in mechanism? </a></li>
+        			<li><a href="#howto_unlock">How to unlock a document (Users / Leaders)</a></li>
+        			<li><a href="#howto_copy">How to copy or move an item (Space &amp; Content)</a></li>
+        			<li><a href="#howto_bulk_upload">How to import (Bulk upload) several documents</a></li>
+        			<li><a href="#howto_make_public">How to make the content of the library public</a></li>
+        			<li><a href="#howto_update">How can I update my document?</a></li>
+        			<li><a href="#howto_bulk_download">How to bulk download documents</a></li>
+        			<li><a href="#howto_link">How to create links to your documents</a>"</li>
+        			<li><a href="#howto_link_resource">Where can I find the right link to my Interest group?</a></li>
+        			<li><a href="#can_i_share">Can I share a space with another Interest Group? </a></li>
+        			<li><a href="#howto_customize_navigation">How to customize my navigation columns (name, title, etc.) (for Leaders)</a></li>
+        		</ul>
+        </div>
+        
+        <div id="content">
+        	
+        	
+        	
+        	<ul class="faqList">
+        		
+        		<li class="faqListItem">
+        			<h2><a name="how_create_space">How to create a new space</a></h2>
+        			<p class="text">
+        			Browse to the library or to the space where you want to create a new space. <br/>
+        			Click on <b>Create space</b><br/><br/>
+					<img class="faqImg" src="../imgs/content/library_create_space_menu.png" />
+					</p>
+					<p class="hint">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" /></span>
+        				If you cannot see the feature "Create space", this means that you don't have the appropriate permission, and we suggest that you contact the leaders of your group.
+        			</p>
+        			<p class="text">
+        			Name your space<br/>
+					And click on: <b>Create space</b>
+					<br/><br/>
+					<img class="faqImg faq65" src="../imgs/content/library_create_space_form.png" />
+					</p>
+					<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		
+        		
+        		<li class="faqListItem">
+        			<h2><a name="what_is_dossier">What is a dossier?</a></h2>
+        			<p class="text">
+        			A dossier is a space where you can store only links (links to spaces or links to contents)
+					</p>
+    				<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		
+        		<li class="faqListItem">
+        			<h2><a name="how_upload">How to upload a new document</a></h2>
+        			<p class="text">
+        			Navigate to the library or to the space where you want to upload the new document, <br/>
+					Click on <b>Add content</b>
+
+        			Click on <b>Create space</b><br/>
+					<img class="faqImg" src="../imgs/content/library_upload_menu.png" />
+					</p>
+					<p class="hint_red">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" /></span>
+        				If you cannot see the feature "Add Content", this means that you don't have the appropriate permission, and we suggest that you contact the leaders of your group.
+        			</p>
+        			<p class="text">
+        			Browse and select the document you want to upload<br/>
+					Click on <b>Upload</b><br/>
+
+					<img class="faqImg faq65" src="../imgs/content/library_upload_select_file.png" />
+					</p>
+					<p class="hint">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" /></span>
+        				The maximum size authorized is 100 MB
+        			</p>
+        			<p class="text">
+        			Feel free to change the available properties, disable notifications for this upload, or display more properties:<br/><br/>
+					<img class="faqImg faq85" src="../imgs/content/library_upload_properties.png" />
+					<br/><br/>
+					You can browse and select other documents.<br/>
+					Then click on <b>Finish.</b>
+					</p>
+					<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+				<li class="faqListItem">
+        			<h2><a name="upload_name_changer">I have uploaded a new document and the name has been changed</a></h2>
+        			<p class="text">
+        			The name and title may be different. <br/><br/>
+					Here is an example of a word document where the name is: <b>FAQ CIRCABC ver3.doc</b> and the title is <b>FAQ</b> (visible on File - Info)
+					<br/><br/>
+					<img class="faqImg" src="../imgs/content/library_upload_menu.png" />
+					</p>
+					<p class="hint_red">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" /></span>
+        				If you cannot see the feature "Add Content", this means that you don't have the appropriate permission, and we suggest that you contact the leaders of your group.
+        			</p>
+        			<p class="text">
+        			Browse and select the document you want to upload<br/>
+					Click on <b>Upload</b>
+					<br/><br/>
+
+					<img class="faqImg faq65" src="../imgs/content/library_doc_details.png" />
+					<br/>
+					<br/>
+					Both options can be customized on the library of your Interest Group:
+					<br/>
+					<br/>
+					<img class="faqImg faq65" src="../imgs/content/library_name_title.png" />
+					<br/>
+					We propose that you check <a style="color:red" href="">How to customize my navigation columns (name, title, etc.)- (for Leaders)</a>
+					</p>
+					
+					<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		<li class="faqListItem">
+        			<h2><a name="howto_rename_description">How to rename or add a description to an item (Space &amp; Content)</a></h2>
+
+        			<p class="text">
+        			Click on the <b>view details</b> icon next to the item:<br/>
+        			<img class="faqImg faq85"  src="../imgs/content/library_view_details.png" />
+        			<br/><br/>
+        			From the Actions (left of the page), click on <b>Modify Content Properties,</b><br/>
+					Change the title, name, description or any other properties <br/>
+					Then click on <b>OK.</b><br/>
+					</p>
+        			<p class="hint_red">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" /></span>
+        				If you cannot see the option Modify Content Properties, this means that you don't have the appropriate permission, and we suggest that you contact the leaders of your group
+        			</p>
+        			<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		<li class="faqListItem">
+        			<h2><a name="howto_delete">How to delete an item (Space &amp; Content)</a></h2>
+
+        			<p class="text">
+        			Click on the <b>view details</b> icon next to the item:<br/>
+        			<img class="faqImg faq85"  src="../imgs/content/library_view_details.png" />
+        			<br/><br/>
+        			From the Actions (left of the page), click on <b>Delete</b><br/>
+					Then click on <b>OK.</b><br/>
+					</p>
+        			<p class="hint">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" /></span>
+        				If you cannot see the option Delete, this may mean that the document is checked out (locked) or you don't have the appropriate permission. <br/> 
+        				We therefore propose that you check the point: I cannot delete a document, what to do? Or contact the Leaders of your group.
+        			</p>
+        			<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		<li class="faqListItem">
+        			<h2><a name="howto_delete">I cannot delete a document, what can I do?</a></h2>
+					<p class="hint">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" /></span>
+        				Documents can be deleted only by Leaders or the user who uploaded the document 
+        			</p>
+        			<p class="text">
+        			If you cannot see the option Delete, this may mean that the document is checked out (locked).<br/><br/>
+        			You have therefore first to cancel the checkout, then you will be able to remove it, this can be done by any leader or by the user who made the check out.<br/><br/>
+					From the <b>View detail of the working copy</b><br/>
+					<img class="faqImg faq85" src="../imgs/content/library_view_details_working_copy.png" />
+					<br/>
+					Click on <b>Undo checkout</b><br/>
+					<img class="faqImg" src="../imgs/content/library_content_actions_undo.png" />
+					<br/>
+					This will remove the working copy, and you will be able to remove the original document.
+					</p>
+        			
+        			<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		<li class="faqListItem">
+        			<h2><a name="howto_recover">How to recover deleted items</a></h2>
+					
+        			<p class="text">
+        			Go to the <b>Library Administration page</b> (from the Library page click on Administration or from any other page of the group, follow this path: Administration &gt; Go to the Library Administration page)
+        			<br/><br/>
+        			Click on <b>Manage Deleted Items</b>
+        			<br/><br/>
+        			<b>Leaders</b> can recover the documents deleted during a given span of time, specific documents (selected from name or content…)<br/>
+					<img class="faqImg faq85" src="../imgs/content/library_recover_screen.png" />
+					<br/>
+					Select a location where to recover the item. Otherwise it will be reinstated to its original location<br/>
+					<img class="faqImg faq85" src="../imgs/content/library_recover_space.png" />
+					<br/>
+					Then click on <b>Yes</b>
+					</p>
+        			
+        			<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		<li class="faqListItem">
+        			<h2><a name="howto_create_multilingual">How to create a multilingual document</a></h2>
+					
+        			<p class="text">
+        			A multilingual document can be created in two different ways:
+        			<br/><br/>
+        			<h3>1- When the document is uploaded, tick the option: <b>This will be a multilingual document</b> and chose the language of the first document called the <b>Pivot language</b>,</h3>
+        			<br/><br/>
+        			<b>Upload</b> this document:<br/>
+					<img class="faqImg" src="../imgs/content/library_upload_multilingual.png" />
+					<br/>
+					Browse, select the first translation and click on upload:<br/>
+					<img class="faqImg" src="../imgs/content/library_upload_translation.png" />
+					
+					</p>
+        			<p class="hint">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" /></span>
+        				As this document will be a translation of the first one, do not tick the option: This will be a multilingual document. 
+        			</p>
+        			<p class="text">
+        				Add this document as a translation of the first one, select the language and click <b>make</b>:
+        				<br/>
+        				<img class="faqImg faq65"  src="../imgs/content/library_upload_translation_select.png" />
+        				<br/>
+        				Then click <b>Finish</b>.
+        			</p>
+        			<p class="hint">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" /></span>
+        				You can upload several translations (Browse, Upload and select languages one by one)
+        			</p>
+        			<p class="text">
+        				<h3>2- Or from the <b>View detail</b> icon of a document available in the library:</h3>
+        				<br/>
+        				<img class="faqImg faq65"  src="../imgs/content/library_view_details_multilingual.png" />
+        				<br/>
+        				From the Actions (left of the page), click on <b>Make Multilingual</b>.
+        				<br/>
+        				<br/>
+        				Chose the language of the first document called the <b>Pivot language</b>, tick the option Add translation when this dialog closes and click on <b>OK</b>.
+        				<br/>
+        				<img class="faqImg faq65" src="../imgs/content/library_make_multilingual.png"/>
+        				<br/>
+        				You will be invited to upload translations one by one
+        				<br/>
+        				<img class="faqImg faq65" src="../imgs/content/library_add_translation.png" />
+        				<br/>
+        				Then click <b>Ok</b>.
+        				<br/>
+        				<img class="faqImg" src="../imgs/content/library_multilingual_result.png"/>
+        			</p>
+        			<p class="hint">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" /></span>
+        				Once the multilingual mechanism is enabled, from "View detail" you can add new translations at any time.
+        			</p>
+        			<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		
+        		<li class="faqListItem">
+        			<h2><a name="what_is_checkin">What is the check-out check-in mechanism? </a></h2>
+        			<p class="text">
+        			<b>Check out</b> provides you with a <b>working copy</b> where you make the changes you need while the main document remains <b>locked</b> for anybody but you. Once you have made all the changes you wish, you check in which replace the original document by the working copy, create a new version and unlocks the content.
+					</p>
+    				<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		
+        		<li class="faqListItem">
+        			<h2><a name="howto_unlock">How to unlock a document (Users / Leaders)</a></h2>
+        			<p class="text">
+        			From the <b>View detail</b> of the working copy related to the locked document:<br/>
+        			<img class="faqImg faq85" src="../imgs/content/library_view_details_working_copy.png"/>
+        			<br/>
+        			Click on <b>Undo checkout or Checkin.</b>
+					</p>
+    				<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		
+        		<li class="faqListItem">
+        			<h2><a name="howto_copy">How to copy or move an item (Space &amp; Content)</a></h2>
+        			<p class="text">
+        			From the <b>View detail</b> icon:<br/>
+        			<img class="faqImg faq85" src="../imgs/content/library_view_details_normal.png"/>
+        			<br/>
+        			Click on <b>Cut or Copy</b>, it will add your item to the clipboard.
+					</p>
+					<p class="hint">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" /></span>
+        				If you cannot see the option "Cut" this means that you don't have the appropriate permission. Authors cannot move a document uploaded by another member.  
+        			</p>
+        			<p class="text">
+        			Close Details page,<br/>
+        			Navigate to the space where you want to move or paste the item,<br/>
+					From the Clipboard Click Paste or Create a link:<br/>
+
+        			<img class="faqImg" src="../imgs/content/library_clipboard.png"/>
+
+					</p>
+    				<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		
+        		<li class="faqListItem">
+        			<h2><a name="howto_bulk_upload">How to import (Bulk upload) several documents</a></h2>
+        			<p class="text">
+	        			This will upload the contents along with their structure (folders and sub-folders)<br/>
+	        			First build an archive (.ZIP) containing:
+	        			<ul>
+	        				<li>The documents to be uploaded</li>
+	        				<li>Optional index which includes the properties of these documents. For more information concerning the index file we refer you to the <a href="https://circabc.europa.eu/w/browse/69603bf4-d923-432e-ba5b-a8fe8ac773cb">user guide</a></li>
+	        			</ul>
+	        			
+					</p>
+					<p class="hint">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" /></span>
+        				7Z format cannot be used; only ZIP is recognized by CIRCABC. 
+        			</p>
+        			<p class="text">
+	        			Navigate  <b>to the library or to the space</b> where you want to import documents, <br/>
+	        			Click on Import, <br/>
+	        			<img class="faqImg" src="../imgs/content/library_import_menu.png"/>
+						<br/>
+						Browse, select the zip file, Upload and click on Import<br/>
+						<img class="faqImg faq65" src="../imgs/content/library_import_form.png"/>
+						<br/>
+						Your upload will be available as ZIP file in the content part and extracted in a few seconds (depends on the workload).
+					</p>
+    				<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		
+        		<li class="faqListItem">
+        			<h2><a name="howto_make_public">How to make the content of the library public</a></h2>
+        			<p class="text">
+	        			From the main page of your Interest Group, click on <b>"Administration"  "Access profiles",</b><br/>
+	        			<b>Enable</b> the Registered &amp; Public Access,<br/>
+	        			Change the permission to Access for library:<br/>
+	        			<img class="faqImg faq65" src="../imgs/content/library_make_public.png"/>
+					</p>
+					<p class="hint">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" /></span>
+        				The content of the library will be available for anonymous users (anyone). 
+        			</p>
+    				<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		
+        		<li class="faqListItem">
+        			<h2><a name="howto_update">How can I update my document?</a></h2>
+        			<p class="text">
+	        			Documents can be updated in two different ways:
+	        			<h3>1- Using the action update (or view detail - Update)</h3>
+	        			<img class="faqImg faq65" src="../imgs/content/library_update_action.png"/>
+	        			<br/>
+	        			<b>Browse</b>, select the new version, Upload and click on Update,<br/>
+	        			<img class="faqImg faq65" src="../imgs/content/library_update_form.png"/>
+	        			<br/>
+	        			<h3>2- Or using the check-out check-in mechanism</h3>
+	        			<img class="faqImg faq65" src="../imgs/content/library_checkout_action.png"/>
+	        			<br/>
+	        			Checkout will <b>lock</b> your document and create a <b>working copy</b> which can only be changed by you,
+	        			<img class="faqImg faq65" src="../imgs/content/library_checkout_working_copy.png" />
+	        			<br/>
+	        			Update the working copy<br/>
+						Click on Checkin from the working copy<br/>
+						<img class="faqImg faq65" src="../imgs/content/library_checkout_checkin_action.png"/>
+						<br/>
+						Parameter the Checkin: <br/>
+						Specify if the new version is a minor (1.1) or major version (2.0) <br/>
+						Add optional notes to the new version<br/>
+						And click on OK<br/>
+						This will replace the original document by the working copy, remove the working copy and will unlock the original document.
+					</p>
+					<p class="hint">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" /></span>
+        				It is much safer to use the check-out / check-in mechanism when documents may be changed by several users.
+        			</p>
+    				<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		
+        		<li class="faqListItem">
+        			<h2><a name="howto_bulk_download">How to bulk download documents</a></h2>
+        			<p class="text">
+	        			Click on <b>copy</b> beside the documents you want to download or use the <b>Library Bulk Operation</b> to copy several documents 
+	        			<br/>
+	        			<img class="faqImg faq65" src="../imgs/content/library_bulk_download.png"/>
+	        			<br/>
+	        			It will add these documents to the clipboard
+	        			<br/>
+	        			Then Click <b>Download All</b><br/>
+	        			<img class="faqImg" src="../imgs/content/library_download_all.png"/>
+	        			
+					</p>
+					<p class="hint">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" /></span>
+        				
+        				The allowed size for the bulk download is limited, <br/>we therefore propose that you use the 'simple' download for bigger file:
+        				<img src="../imgs/content/library_bulk_download_signle.png" style="width:148px;"/>
+        			</p>
+    				<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		
+        		<li class="faqListItem">
+        			<h2><a name="howto_link">How to create links to your documents</a></h2>
+        			<p class="text">
+	        			Click on <b>copy</b> beside the documents you want to download or use the <b>Library Bulk Operation</b> to copy several documents 
+	        			<br/>
+	        			<img class="faqImg faq65" src="../imgs/content/library_create_link.png"/>
+	        			<br/>
+	        			This will add this document to the clipboard
+	        			<br/>
+	        			Navigate to the space where you want to create a link,<br/>
+	        			From the Clipboard click on <b>Create a link</b>:<br/>
+	        			<img class="faqImg" src="../imgs/content/library_link_action.png"/>
+	        			
+					</p>
+    				<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		
+        		<li class="faqListItem">
+        			<h2><a name="howto_link_resource">Where can I find the right link to my Interest group?</a></h2>
+        			<p class="text">
+	        			Navigate to the Interest Group, service, space or to the document for which you want to have a link, 
+					</p>
+					<p class="hint">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" /></span>
+        				
+        				You can also click on the "View detail" icon next to the document, 
+        			</p>
+        			<p class="text">
+	        			<b>Right click on Http </b>(Top / Right of the page)<br/>
+						You can then copy the link from Copy Shortcut<br/>
+						<img class="faqImg" src="../imgs/content/library_http_link.png"/>
+					</p>
+    				<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		
+        		<li class="faqListItem">
+        			<h2><a name="howto_link_resource">Where can I find the right link to my Interest group?</a></h2>
+        			<p class="text">
+	        			Navigate to the Interest Group, service, space or to the document for which you want to have a link, 
+					</p>
+					<p class="hint">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" /></span>
+        				
+        				You can also click on the "View detail" icon next to the document, 
+        			</p>
+        			<p class="text">
+	        			<b>Right click on Http </b>(Top / Right of the page)<br/>
+						You can then copy the link from Copy Shortcut<br/>
+						<img class="faqImg" src="../imgs/content/library_http_link.png"/>
+					</p>
+    				<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		
+        		<li class="faqListItem">
+        			<h2><a name="can_i_share">Can I share a space with another Interest Group? </a></h2>
+        			<p class="text">
+	        			The library spaces can be shared with other Interest Groups in the same category as explained below:<br/>
+	        			Step 1: from Interest Group 1, Leaders or Authors should invite IG 2 to share space,<br/>
+	        			Step 2: Leaders or Authors of IG 2 make the shared space available in the IG 2.
+	        			<h3>Step 1</h3>
+	        			From <b>View details</b> icon next to the space that should be shared:
+	        			<ul>
+	        				<li>Click on action <b>Manage shared space</b> (right box),</li>
+	        				<li>On top right of the page: <b>Invite IG to share this space,</b></li>
+	        				<li><b>Select an Interest Group</b>:  you will be able to select an IG from your category (This will be IG2),</li>
+	        				<li><b>Select Maximum permission </b>:  you want to give to IG 2 members</li>
+	        			</ul>
+	        			Click on Next and Finish
+	        			<br/>
+	        			<img class="faqImg faq65" src="../imgs/content/library_share_space.png"/>
+					</p>
+					<p class="hint">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" /></span>
+        				
+        				Maximum permission means that if IG 2 members have more rights to the Library they will have only the selected permission to the shared space,
+        			</p>
+        			<p class="text">
+	        			<h3>Step 2</h3>
+	        			From IG 2, Navigate to the library or to the space where you want to create the shared space:
+	        			<ul>
+	        				<li><b>Create Space</b></li>
+	        				<li><b>Name</b> your space</li>
+	        				<li>Select <b>Share Space Link</b> on Space type</li>
+	        				<li>Then select the <b>shared space</b> from the list</li>
+	        			</ul>
+	        			<img class="faqImg faq65" src="../imgs/content/library_import_share.png"/>
+					</p>
+					<p class="hint">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" /></span>
+        				If the shared space does not appear in the list we recommend retrying step 2 in 15 minutes. 
+        			</p>
+    				<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		
+        		<li class="faqListItem">
+        			<h2><a name="howto_customize_navigation">How to customize my navigation columns (name, title, etc.) (for Leaders)</a></h2>
+        			<p class="text">
+	        			Through the <b>"Manage look &amp; feel"</b> features leaders can customize the navigation preferences:
+	        			<br/>
+	        			Navigation Preferences and Custom Logo are available on interest group administration page.
+	        			<br/>
+	        			<img class="faqImg faq85" src="../imgs/content/library_navigation_preferences.png"/>
+	        			<br/>
+	        			Go to the <b>Navigation Preferences</b><br/>
+	        			Select which service and type you want to customize
+	        			<br/>
+	        			<img class="faqImg faq65" src="../imgs/content/library_navigation_preferences_menu.png"/>
+	        			<br/>
+	        			You can then specify mandatory columns (Name, Title or both), optional columns, actions and other options like: Initial Sorting column or Row to display.
+					</p>
+    				<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        		
+        		<!--
+        			<li class="faqListItem">
+        			<h2><a name="howto_create">How to create your ECAS account (External users only)</a></h2>
+
+        			<p class="hint">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" /></span>
+        				Users from the European Commission and other EU institutions and bodies already have an ECAS account and can login to CIRCABC. 
+        			</p>
+        			
+        			<p class="text">
+        			<img class="faqImg"  src="resources/gle.jpg" />
+        			<br/><br/>
+        			Il a souvent été estimé, évalué, mais jamais calculé. Le chiffre d'affaires de Google en France aurait, pour la première fois, été mesuré par VRDCI, une petite entreprise spécialisée dans le référencement naturel (une manière de remonter dans les recherches du moteur sans payer de publicité). L'étude (PDF) devait être publiée mercredi 18 décembre.<br/><br/>
+					Et le résultat est à la hauteur des prédictions. En un an, entre novembre 2012 et novembre 2013, le géant américain aurait réalisé 1,43 milliard d'euros en France. Soit très loin des 193 millions d'euros déclarés par l'entreprise en France au titre de son exercice fiscal 2012. Certes, celui de cette année n'a pas encore été rendu public. Il n'empêche : difficile d'imaginer que Google déclare plus de 1 milliard de revenus en France pour 2013.
+					</p>
+        			<p class="hint">
+        				<span class="hintTitle"><img src="../imgs/icon_pushpin.png" />Hint</span>
+        				Bla bla bla bla bla
+        				<br/>
+        				Blaaaablaa Bla
+        			</p>
+        			<p style="text-align:right"><a href="#links">Top of the page</a></p>
+        		</li>
+        			
+        		-->
+        	</ul>
+        </div>
+    </body>
+</html>

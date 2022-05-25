@@ -1,0 +1,63 @@
+diff --git a/node_modules/@microsoft/mgt-proxy-provider/dist/es6/ProxyGraph.js b/node_modules/@microsoft/mgt-proxy-provider/dist/es6/ProxyGraph.js
+index bde6e05..c051e2e 100644
+--- a/node_modules/@microsoft/mgt-proxy-provider/dist/es6/ProxyGraph.js
++++ b/node_modules/@microsoft/mgt-proxy-provider/dist/es6/ProxyGraph.js
+@@ -4,32 +4,28 @@
+  * See License in the project root for license information.
+  * -------------------------------------------------------------------------------------------
+  */
+-import { Client, HTTPMessageHandler, RetryHandler, RetryHandlerOptions, TelemetryHandler } from '@microsoft/microsoft-graph-client';
+-import { Graph, chainMiddleware } from '@microsoft/mgt-element';
+-import { SdkVersionMiddleware } from '@microsoft/mgt-element/dist/es6/utils/SdkVersionMiddleware';
+-import { PACKAGE_VERSION } from '@microsoft/mgt-element/dist/es6/utils/version';
+-import { CustomHeaderMiddleware } from './CustomHeaderMiddleware';
+-/**
+- * ProxyGraph Instance
+- *
+- * @export
+- * @class ProxyGraph
+- * @extends {Graph}
+- */
+-// tslint:disable-next-line: max-classes-per-file
+-export class ProxyGraph extends Graph {
+-    constructor(baseUrl, getCustomHeaders) {
+-        const middleware = [
+-            new RetryHandler(new RetryHandlerOptions()),
+-            new TelemetryHandler(),
+-            new SdkVersionMiddleware(PACKAGE_VERSION),
+-            new CustomHeaderMiddleware(getCustomHeaders),
+-            new HTTPMessageHandler()
+-        ];
+-        super(Client.initWithMiddleware({
+-            baseUrl,
+-            middleware: chainMiddleware(...middleware)
+-        }));
+-    }
+-}
+-//# sourceMappingURL=ProxyGraph.js.map
+\ No newline at end of file
++ import { Client, HTTPMessageHandler, RetryHandler, RetryHandlerOptions } from '@microsoft/microsoft-graph-client';
++ import { Graph, chainMiddleware } from '@microsoft/mgt-element';
++ import { CustomHeaderMiddleware } from './CustomHeaderMiddleware';
++ /**
++  * ProxyGraph Instance
++  *
++  * @export
++  * @class ProxyGraph
++  * @extends {Graph}
++  */
++ // tslint:disable-next-line: max-classes-per-file
++ export class ProxyGraph extends Graph {
++     constructor(baseUrl, getCustomHeaders) {
++         const middleware = [
++             new RetryHandler(new RetryHandlerOptions()),
++             new CustomHeaderMiddleware(getCustomHeaders),
++             new HTTPMessageHandler()
++         ];
++         super(Client.initWithMiddleware({
++             baseUrl,
++             middleware: chainMiddleware(...middleware)
++         }));
++     }
++ }
++ //# sourceMappingURL=ProxyGraph.js.map

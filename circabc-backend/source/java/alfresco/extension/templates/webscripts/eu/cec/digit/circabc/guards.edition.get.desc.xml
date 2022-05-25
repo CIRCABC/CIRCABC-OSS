@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Node GUARD</shortname>
+  <description>return if the edition is granted to the current authority user</description>
+  <url>/circabc/guards/edition/{id}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

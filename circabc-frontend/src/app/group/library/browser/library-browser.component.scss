@@ -1,0 +1,32 @@
+.dropdown-trigger--with-icons {
+  a img {
+    vertical-align: middle;
+  }
+}
+
+.restricted-back {
+  font-size: 12px;
+  padding: 5px;
+
+  .back-link {
+    position: inherit !important;
+  }
+}
+
+.underline-selector {
+  text-decoration: underline;
+  font-size: bold;
+}
+
+.normal-selector {
+  text-decoration: none;
+  font-size: normal !important;
+}
+
+::ng-deep .hint {
+  padding-left: unset !important;
+}
+
+::ng-deep .hinttext {
+  margin-left: -205px !important;
+}

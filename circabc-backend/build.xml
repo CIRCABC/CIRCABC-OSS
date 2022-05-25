@@ -1,0 +1,372 @@
+<?xml version="1.0"?>
+
+<!--+
+    |     Copyright European Community 2006 - Licensed under the EUPL V.1.0
+    |
+    |  		   http://ec.europa.eu/idabc/en/document/6523
+    |
+    +-->
+
+<project name="Circabc Build File" default="Publish" basedir=".">
+	<property file="build.properties" />
+
+	<macrodef name="delFromZip">
+		<attribute name="zipFile"/>
+		<element   name="selectors" implicit="true" optional="true"/>
+		<sequential>
+			<mkdir dir="${dir.target.temp}"/>
+			<unzip dest="${dir.target.temp}" src="@{zipFile}"/>
+			<delete file="@{zipFile}" verbose="true" failonerror="true"/>
+			<delete verbose="true">
+				<fileset dir="${dir.target.temp}">
+					<selectors/>
+				</fileset>
+			</delete>
+			<zip destfile="@{zipFile}" basedir="${dir.target.temp}"/>
+			<!--
+			<delete dir="${dir.target.temp}"/>
+			-->
+		</sequential>
+	</macrodef>
+	
+	<target name="gen-circabc-web-service" depends="init">
+			<mkdir dir="${dir.src.java.generated}/eu/cec/digit/circabc/repo/webservice/authentication" />
+			<delete>
+				<fileset dir="${dir.src.java.generated}/eu/cec/digit/circabc/repo/webservice/authentication" />
+			</delete>
+			<wsdl2java url="${dir.src.wsdl}/circabc-authentication-service.wsdl" output="${dir.src.java.generated}" serverSide="true" all="true">
+				<mapping namespace="http://www.cc.cec/circabc/ws/service/authentication/1.0" package="eu.cec.digit.circabc.repo.webservice.authentication" />
+			</wsdl2java>
+
+	</target>
+	
+	<!-- Deploy circa user service -->
+		<target name="deploy-circabc-web-service" depends="Publish">
+			<copy todir="${dir.webapp.alfresco}/wsdl">
+				<fileset dir="${dir.src.wsdl}" />
+			</copy>
+		</target>
+
+	<target name="tld" description="Extract tld from war">
+		<echo>!!!Warning!!! Do an prepare.war before if required</echo>
+		<unzip dest="${dir.env.tld.temp}">
+		    <patternset>
+	    	    <include name="**/*.tld"/>
+		    </patternset>
+			<fileset dir="${dir.project}">
+			        <include name="**/*.jar"/>
+			</fileset>
+		</unzip>
+		<move todir="${dir.env.tld}" overwrite="true" flatten="true">
+    		<fileset dir="${dir.env.tld.temp}">
+      			<include name="**/*.tld"/>
+    		</fileset>
+  		</move>
+		<copy todir="${dir.env.tld}" overwrite="true" flatten="true">
+			<fileset dir="${dir.build.unwar}">
+				<include name="**/*.tld"/>
+			</fileset>
+		</copy>
+  		<delete dir="${dir.env.tld.temp}" />
+	</target>
+
+	<target name="init">
+		<taskdef name="wsdl2java" classpath="${axis-ant.jar};${axis.jar};${jaxrpc.jar};${commons-logging.jar};${commons-discovery.jar};${saaj.jar};${wsdl4j.jar};${activation.jar};${mail.jar}"
+		     classname="org.apache.axis.tools.ant.wsdl.Wsdl2javaAntTask">
+	</taskdef>
+		<property name="files.delete.include" value="undeploy.wsdd,*Impl.java" />
+	</target>
+	<!-- Expand the war of alfresco into the webapps of the server plugin -->
+	<target name="clean" depends="clean-tomcat-catalina-cache-alfresco">
+		<echo>Delete alfresco webapp...</echo>
+		<delete failonerror="false" dir="${dir.tomcat.webapps}/alfresco" />
+		<mkdir dir="${dir.tomcat.webapps}/alfresco" />
+
+		<echo>Clean temporary folder</echo>
+		<delete failonerror="false" dir="${dir.build.temp}" />
+		<mkdir dir="${dir.build.temp}" />
+
+		<echo>Delete previous alfresco unwar...</echo>
+		<delete failonerror="false" dir="${dir.build.unwar}" />
+		<mkdir dir="${dir.build.unwar}" />
+	</target>
+
+	<target name="prepare.unwar" depends="clean">
+		<echo>Synchronise (to temporary folder) language pack extension</echo>
+		<mkdir dir="${dir.build.temp.webinf.classes.messages}" />
+		<copy todir="${dir.build.temp.webinf.classes.messages}" overwrite="false" verbose="true">
+			<fileset dir="${dir.lang-packs}" excludes="**/*.svn"/>
+		</copy>
+
+		<echo>Expand the archive alfresco.war...</echo>
+		<unwar src="${alfresco.war}" dest="${dir.build.unwar}" />
+
+		<echo>Add the language pack to alfresco unwar...</echo>
+		<copy todir="${dir.build.unwar}" verbose="true">
+			<fileset dir="${dir.build.temp}" />
+		</copy>
+		<echo>Clean temp files...</echo>
+		<delete failonerror="true" dir="${dir.build.temp.webinf}" />
+	</target>
+
+	<!-- Clean the DB and the alf_data folder -->
+	<target name="clean-db" depends="clean-tomcat-catalina-cache-alfresco">
+		<echo>Drop database</echo>
+		<!-- Delete the alf_data folder -->
+		<delete dir="${dir.alf_data}" failonerror="false" />
+		<mkdir dir="${dir.alf_data}" />
+		<echo>${db.jar}</echo>
+		<!-- Intialize the DB -->
+		<sql classpath="${db.jar}"
+			 driver="${db.driver}"
+			 src="${db.init.sql}"
+			 url="${db.url}"
+			 userid="${db.user}"
+			 password="${db.password}"
+			 onerror="continue"/>
+	</target>
+
+	<target name="clean-db-oracle" depends="clean-tomcat-catalina-cache-alfresco">
+			<echo>Drop database</echo>
+			<!-- Delete the alf_data folder -->
+			<delete dir="${dir.alf_data}" failonerror="false" />
+			<mkdir dir="${dir.alf_data}" />
+			<echo>${db.jar}</echo>
+			<!-- Intialize the DB -->
+			<sql classpath="${db.oracle.jar}"
+				 driver="${db.oracle.driver}"
+				 src="${db.oracle.init.sql}"
+				 url="${db.oracle.url}"
+				 userid="${db.user}"
+				 password="${db.password}"
+				 onerror="continue"/>
+		</target>
+
+	<target name="backup-all" depends="-backup-alf_data, -export-database-mysql">
+		<echo>Backup all data finished</echo>
+	</target>
+
+	<target name="restore-all" depends=" -restore-alf_data, -import-database-mysql">
+		<echo>Restore all data finished</echo>
+	</target>
+
+	<!-- backup alf_data -->
+	<target name="-backup-alf_data">
+		<echo>Backup alf_data</echo>
+		<delete dir="${dir.backup.alf_data}" />
+		<copy todir="${dir.backup.alf_data}" verbose="true">
+			<fileset dir="${dir.alf_data}" />
+		</copy>
+	</target>
+
+	<!-- restore alf_data -->
+	<target name="-restore-alf_data">
+		<echo>Restore alf_data</echo>
+		<delete dir="${dir.alf_data}" />
+		<copy todir="${dir.alf_data}" verbose="true">
+			<fileset dir="${dir.backup.alf_data}" />
+		</copy>
+	</target>
+
+	<!-- export db mysql -->
+	<target name="-export-database-mysql">
+		<echo>Export database</echo>
+		<delete dir="${dir.backup.db}" />
+		<mkdir dir="${dir.backup.db}"/>
+		<exec dir="" executable="${mysqldump}">
+			<arg line="--host=${db.host}" />
+			<arg line="--port=${db.host.port}" />
+			<arg line="--user=${db.user}" />
+			<arg line="--password=${db.password}" />
+			<arg line=" ${db.name}" />
+			<arg line="--verbose" />
+			<arg line="--result-file=${dir.backup.db}/backup.sql" />
+		</exec>
+	</target>
+
+	<!-- export db oracle -->
+	<target name="-export-database">
+		<echo>Export database</echo>
+		<delete dir="${dir.backup.db}" />
+		<mkdir dir="${dir.backup.db}"/>
+		<exec dir="" executable="${oracle.backup}" inputstring="Y">
+		</exec>
+	</target>
+
+	<!-- import db mysql -->
+	<target name="-import-database-mysql" >
+		<echo>Import database</echo>
+		<exec executable="${mysql}" input="${dir.backup.db}/backup.sql">
+			<arg value="--host=${db.host}" />
+			<arg value="--port=${db.host.port}" />
+			<arg value="--user=${db.user}" />
+			<arg value="--password=${db.password}" />
+			<arg line="--database ${db.name}" />
+		</exec>
+	</target>
+
+	<!-- import oracle -->
+	<target name="-import-database" >
+		<echo>Import database</echo>
+		<exec executable="${oracle.restore}" inputstring="Y" >
+		</exec>
+	</target>
+
+	<target name="clean-tomcat-catalina-cache-alfresco">
+		<echo>Clean catalina cache for alfresco application</echo>
+		<delete dir="${dir.tomcat.work.alfresco}" failonerror="false" />
+	</target>
+
+	<target name="delete-alfresco-from-tomcat">
+		<echo>delete alfresco from tomcat application folder</echo>
+		<delete dir="${dir.webapp.alfresco}" failonerror="false" />
+	</target>
+
+	<target name="publish-makz-dev" depends="Publish">
+		<copy todir="${dir.webapp.alfresco}" verbose="true" overwrite="true">
+			<fileset dir="buildconfig/dia-makz-dev" includes="**/*" />
+		</copy>
+	</target>
+	
+	<target name="copy-math-dev">
+		<copy todir="${dir.webapp.alfresco}" verbose="true" overwrite="true">
+			<fileset dir="buildconfig/dia-math-dev" includes="**/*" />
+		</copy>
+		<delete file="${dir.webapp.alfresco}/WEB-INF/lib/log4j-1.2.15.jar" verbose="true" />
+	</target>	
+	
+	<target name="Publish-math-dev" depends="Publish, copy-math-dev">
+	</target>
+	
+	<target name="synchro-classes">
+		<echo>Synchronise (to temporary folder) Circabc classes</echo>
+		<mkdir dir="${dir.build.temp.webinf.classes}" />
+		<sync todir="${dir.build.temp.webinf.classes}" overwrite="false" verbose="true">
+			<fileset dir="${dir.build.classes}" excludes="**/*.svn"/>
+			<!--<fileset dir="${dir.build.business.classes}" excludes="**/*.svn"/>
+			<fileset dir="${dir.build.core.classes}" excludes="**/*.svn"/>-->
+			<fileset dir="${dir.build.migration}" excludes="**/*.svn"/>
+			<fileset dir="${dir.src.modulekake}" excludes="**/*.svn"/>
+			<fileset dir="${dir.build.module}" excludes="**/*.svn"/>
+		</sync>
+	</target>
+
+	<target name="publish-native-alfresco">
+		<delete failonerror="false" dir="${dir.tomcat.webapps}/alfresco" />
+		<mkdir dir="${dir.tomcat.webapps}/alfresco" />
+		<echo>copy original version of ${original.alfresco.war})</echo>
+		<unwar src="${alfresco.war}" dest="${dir.webapp.alfresco}" />
+
+		<delete failonerror="false" file="${dir.webapp.alfresco.classes}/log4j.properties" verbose="true"/>
+		<copy file="${dir.src.native_alfresco}/custom-repository-context.xml"
+			  tofile="${dir.webapp.alfresco.classes}/alfresco/extension/custom-repository-context.xml"
+			  overwrite="true"
+			  verbose="true"/>
+		<copy file="${dir.src.java}${repository.properties}"
+			  tofile="${dir.webapp.alfresco.classes}/${custom.repository.properties}"
+			  overwrite="true"
+			  verbose="true"/>
+		<copy file="${dir.src.java}${log4j.xml}"
+			  tofile="${dir.webapp.alfresco.classes}${log4j.xml}"
+			  overwrite="true"
+			  verbose="true"/>
+	</target>
+
+	<!-- Integrate the extension to the original alfresco webapp in tomcat -->
+	<target name="Publish" depends="synchro-classes">
+		<echo>Synchronise (to tomcat) original Alfresco files + Circabc Web + temp1 </echo>
+		<sync todir="${dir.webapp.alfresco}" overwrite="false" verbose="true">
+			<!-- Web part of SDK Project (JSP, ...) -->
+			<fileset dir="${dir.src.web}" excludes="**/*.svn"/>
+			<fileset dir="${dir.src.migration.web}" excludes="**/*.svn"/>
+			<fileset dir="${dir.build.temp}" excludes="**/*.svn
+													   **/naming-factory.jar
+													   **/naming-resources.jar" />
+			<!-- Original Alfresco files -->
+			<fileset dir="${dir.build.unwar}" excludes="**/*.svn
+														${dir.build.temp}/**/*.*
+														${dir.build.classes}/**/*.*
+				                                        ${dir.build.module}/**/*.*
+														${dir.src.web}/**/*.*
+														${dir.build.unwar}/WEB-INF/web.xml
+														**/naming-factory.jar
+														**/naming-resources.jar"/>
+		</sync>
+		<delete file="${dir.webapp.alfresco}/WEB-INF/classes/log4j.properties" verbose="true" />
+		<copy todir="${dir.webapp.alfresco}/WEB-INF/lib" verbose="true" overwrite="true">
+			<fileset dir="${dir.circabc3rdparty}/lib">
+				<filename name="p6spy.jar"/>
+			</fileset>
+			<fileset dir="${dir.circabc3rdparty}/lib">
+				<filename name="irontracksql.jar" />
+			</fileset>
+		</copy>
+		<!--
+		<copy todir="${dir.webapp.alfresco}/WEB-INF" verbose="true" overwrite="true">
+			<fileset dir="${dir.src.web}/WEB-INF" >
+				<include name="web.xml"/>
+			</fileset>
+		</copy>
+		-->
+	</target>
+
+	<!-- Create a WAR specific to a platform -->
+	<macrodef name="build-platform">
+		<attribute name="common" />
+		<attribute name="war" />
+		<attribute name="specific" default="@{common}" />
+		<element name="selectors" implicit="true" optional="true" />
+		<sequential>
+			<delete dir="${dir.build.dist}" />
+			<delete file="@{war}" />
+			<unjar src="${alfresco.war}" dest="${dir.build.dist}" />
+			<copy todir="${dir.build.dist}" overwrite="true">
+				<fileset dir="${dir.build.assemble}" excludes="**/*.svn" />
+			</copy>
+			<!-- Copy the common content -->
+			<copy todir="${dir.build.dist}" overwrite="true">
+				<fileset dir="@{common}" excludes="**/*.svn" />
+			</copy>
+			<!-- Copy the server specific content -->
+			<copy todir="${dir.build.dist}" overwrite="true">
+				<fileset dir="@{specific}" excludes="**/*.svn" />
+			</copy>
+			<jar basedir="${dir.build.dist}" destfile="@{war}" />
+		</sequential>
+	</macrodef>
+	<!-- Create the WAR file for taurus -->
+	<!--
+	<target name="build-taurus-tomcat" depends="assemble">
+		<build-platform common="${dir.buildconfig.taurus}/common" specific="${dir.buildconfig.taurus}/tomcat" war="${dir.buildconfig.taurus}/${circabc.war}" />
+	</target>
+	-->
+	<!-- Create the WAR file for leo -->
+	<!--
+	<target name="build-leo-tomcat" depends="assemble">
+		<build-platform common="${dir.buildconfig.leo}/common" specific="${dir.buildconfig.leo}/tomcat" war="${dir.buildconfig.leo}/${circabc.war}" />
+	</target>
+	-->
+	<!--
+	<target name="build-leo-weblogic" depends="assemble">
+		<build-platform common="${dir.buildconfig.leo}/common" specific="${dir.buildconfig.leo}/weblogic" war="${dir.buildconfig.leo}/${circabc.war}" />
+	</target>
+	-->
+	<!-- Create the WAR file for wlsdev3 -->
+	<!--
+	<target name="build-wlsdev3-weblogic" depends="assemble">
+		<build-platform common="${dir.buildconfig.wlsdev3}/common" specific="${dir.buildconfig.wlsdev3}/weblogic" war="${dir.buildconfig.wlsdev3}/${circabc.war}" />
+	</target>
+	-->
+	<!-- Create the WAR file for wlsacc -->
+	<!--
+	<target name="build-wlsacc-weblogic" depends="assemble">
+		<build-platform common="${dir.buildconfig.wlsacc}/common" specific="${dir.buildconfig.wlsacc}/weblogic" war="${dir.buildconfig.wlsacc}/${circabc.war}" />
+	</target>
+	-->
+	<!-- Create the WAR file for wlsload -->
+	<!--
+	<target name="build-wlsload-weblogic" depends="assemble">
+		<build-platform common="${dir.buildconfig.wlsload}/common" specific="${dir.buildconfig.wlsload}/weblogic" war="${dir.buildconfig.wlsload}/${circabc.war}" />
+	</target>
+	-->
+</project>

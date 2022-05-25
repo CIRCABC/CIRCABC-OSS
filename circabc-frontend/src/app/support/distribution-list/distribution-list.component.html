@@ -1,0 +1,93 @@
+<section class="right-actions">
+  <a (click)="downloadExport()">{{ 'label.download' | transloco }}</a>&nbsp;
+  <a class="cta" (click)="showModal = true"
+    >{{ 'label.add.email' | transloco }}</a
+  >
+</section>
+
+<p> {{ 'label.distribution.list.page.explanation' | transloco }} </p>
+
+<header class="header">
+  <cbc-pager
+    [length]="distributionEmails.total"
+    [pageSize]="listingOptions.limit"
+    [pageIndex]="listingOptions.page"
+    (pageChanged)="goToPage($event)"
+  ></cbc-pager>
+</header>
+<br />
+<section class="explorer-main box box--alternate-lines">
+  <div class="main main--listing">
+    <div style="margin-bottom: 15px">
+      <span style="margin-right: 35px; margin-left: 40px">
+        <input
+          type="checkbox"
+          (click)="selectAll()"
+          [checked]="allSelected"
+          style="margin-right: 10px"
+        />
+        {{ 'label.select.all' | transloco }}
+      </span>
+      <span class="selection-actions" *ngIf="hasSelectedDistribution()">
+        <cbc-number-badge
+          [number]="countSelectedDistribution()"
+        ></cbc-number-badge>
+        <cbc-inline-delete
+          (deletionConfirmed)="unsubscribeSelectedEmail()"
+          [useIcon]="true"
+          [useText]="true"
+        ></cbc-inline-delete>
+        <cbc-spinner *ngIf="deletingAll"></cbc-spinner>
+      </span>
+    </div>
+    <ul class="mail-list">
+      <li
+        class="row"
+        *ngFor="let distribEmail of distributionEmails.data; trackBy: trackById"
+      >
+        <input
+          type="checkbox"
+          (click)="tickDistributionMail(distribEmail)"
+          [checked]="distribEmail.selected"
+        />
+
+        <span class="distribution-mail">{{ distribEmail.emailAddress }}</span>
+
+        <cbc-inline-delete
+          (deletionConfirmed)="unsubscribeEmail(distribEmail)"
+          [useIcon]="true"
+          [useText]="false"
+        ></cbc-inline-delete>
+      </li>
+    </ul>
+    <div
+      class="selection-actions"
+      *ngIf="hasSelectedDistribution()"
+      style="margin-top: 15px; padding-left: 40px"
+    >
+      <cbc-number-badge
+        [number]="countSelectedDistribution()"
+      ></cbc-number-badge>
+      <cbc-inline-delete
+        (deletionConfirmed)="unsubscribeSelectedEmail()"
+        [useIcon]="true"
+        [useText]="true"
+      ></cbc-inline-delete>
+      <cbc-spinner *ngIf="deletingAll"></cbc-spinner>
+    </div>
+  </div>
+</section>
+<br />
+<div class="footer">
+  <cbc-pager
+    [length]="distributionEmails.total"
+    [pageSize]="listingOptions.limit"
+    [pageIndex]="listingOptions.page"
+    (pageChanged)="goToPage($event)"
+  ></cbc-pager>
+</div>
+
+<cbc-add-distribution-email
+  [(showModal)]="showModal"
+  (modalClosed)="loadDistributionEmails()"
+></cbc-add-distribution-email>

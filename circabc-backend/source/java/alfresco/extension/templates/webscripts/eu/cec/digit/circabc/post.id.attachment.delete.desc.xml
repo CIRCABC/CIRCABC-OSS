@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>post.id.attachment.delete</shortname>
+  <description>Deletes the attachment from the post given their ids (hidden content)</description>
+    <url>/circabc/posts/{id}/attachment/{attachmentId}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

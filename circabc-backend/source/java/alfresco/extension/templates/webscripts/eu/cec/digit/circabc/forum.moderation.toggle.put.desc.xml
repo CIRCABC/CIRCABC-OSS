@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>forum.moderation.toggle.put</shortname>
+  <description>toggle the moderation of a forum. acceptAll is only considered if moderation is being disabled and it concerns accepting of refusing all posts to be still checked</description>
+    <url>/circabc/forums/{id}/moderation</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

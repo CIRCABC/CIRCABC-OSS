@@ -1,0 +1,47 @@
+<cbc-modal
+  [title]="'label.checkin'"
+  (ok)="checkin()"
+  (cancel)="closePopupWindow()"
+  [okLabel]="'label.accept'"
+  [(executing)]="processing"
+  [executingLabel]="'label.checking.in'"
+  [(visible)]="showModal"
+  [contentClass]="'modal-content'"
+>
+  <form [formGroup]="form">
+    <div class="field">
+      <label for="comment">{{ 'label.comment' | transloco }}</label>
+      <textarea id="comment" formControlName="comment"></textarea>
+    </div>
+    <div class="field switch">
+      <div class="label">{{ 'label.minor.change' | transloco }}</div>
+      <input
+        id="minorChange"
+        name="minorChange"
+        class="cmn-toggle cmn-toggle-round"
+        type="checkbox"
+        formControlName="minorChange"
+      />
+      <label for="minorChange" class="nonBlockLabel"></label>
+      <span
+        >{{ (form.controls['minorChange'].value === true ? 'label.yes' :
+        'label.no') | transloco }}</span
+      >
+    </div>
+    <div class="field switch">
+      <div class="label">{{ 'label.keep.checked.out' | transloco }}</div>
+      <input
+        id="keepCheckedOut"
+        name="keepCheckedOut"
+        class="cmn-toggle cmn-toggle-round"
+        type="checkbox"
+        formControlName="keepCheckedOut"
+      />
+      <label for="keepCheckedOut" class="nonBlockLabel"></label>
+      <span
+        >{{ (form.controls['keepCheckedOut'].value === true ? 'label.yes' :
+        'label.no' ) | transloco }}</span
+      >
+    </div>
+  </form>
+</cbc-modal>

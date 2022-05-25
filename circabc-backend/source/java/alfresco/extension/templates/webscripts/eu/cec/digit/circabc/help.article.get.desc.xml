@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>get one of the help articles</shortname>
+  <description>get one of the help articles</description>
+  <url>/circabc/help/articles/{id}</url>
+  <format default="json"/>
+  <authentication>guest</authentication>
+  <transaction>required</transaction>
+</webscript>

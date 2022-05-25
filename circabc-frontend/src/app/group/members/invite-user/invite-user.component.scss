@@ -1,0 +1,126 @@
+.modal {
+  margin-top: 0;
+  width: auto;
+  max-width: 600px;
+  max-height: none;
+}
+
+input,
+.select--multiple,
+select {
+  width: 100%;
+  margin: 0;
+}
+
+li {
+  padding: 10px;
+  padding-bottom: 0;
+}
+
+li:hover {
+  background-color: #f7f7f7;
+}
+
+option:hover {
+  background-color: #eee;
+  cursor: pointer;
+}
+
+.flexModel {
+  display: flex;
+  flex-flow: row;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.flexFullRow {
+  flex: 1 1 100%;
+}
+
+.flexGap {
+  gap: 15px;
+}
+
+.flexForm {
+  display: flex;
+  flex-flow: row;
+  flex-wrap: wrap;
+  padding: 25px;
+  gap: 15px;
+  min-width: 300px;
+  max-height: calc(100vh - 200px);
+  overflow: auto;
+}
+
+.flexGroupField {
+  display: flex;
+  flex-flow: row;
+  flex-wrap: wrap;
+  gap: 5px;
+  width: 100%;
+  align-items: center;
+}
+
+.flexLabel {
+  flex: 1 1 100%;
+}
+
+.flexField {
+  flex: 1 1 300px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.labelToggle {
+  min-width: 100px;
+}
+
+.flex0 {
+  flex: 0;
+}
+
+.flex1 {
+  flex: 1;
+}
+
+.flexNoWrap {
+  flex-wrap: nowrap;
+}
+
+.col {
+  flex-wrap: wrap;
+  display: flex;
+}
+
+.containerScroller {
+  max-height: calc(100vh - 210px);
+  overflow-y: auto;
+}
+
+.a-link:hover {
+  border-bottom: 3px solid #035;
+  color: #035;
+}
+
+@media screen and (min-width: 620px) {
+  .col {
+    flex-wrap: nowrap;
+  }
+
+  .containerScroller {
+    max-height: auto;
+  }
+}
+
+::ng-deep .error-message {
+  margin-left: 0 !important;
+}
+
+.icon-small {
+  width: 16px;
+}
+
+.icon-xsmall {
+  width: 14px;
+}

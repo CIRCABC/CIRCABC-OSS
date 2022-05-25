@@ -1,0 +1,17 @@
+<alfresco-config area="mimetype-map">
+
+	<config evaluator="string-compare" condition="Mimetype Map">
+		<mimetypes>
+
+			<mimetype mimetype="application/vnd.ms-word.document.macroEnabled.12" display="Microsoft Word Macro enabled">
+				<extension default="true">docm</extension>
+			</mimetype>
+			<mimetype mimetype="application/iuclid" display="IUCLID">
+				<extension default="true">i5z</extension>
+			</mimetype>
+			<mimetype mimetype="application/vnd.ms-powerpoint.presentation.macroEnabled.12" display="Microsoft Power Point Macro enabled">
+				<extension default="true">pptm</extension>
+			</mimetype>
+		</mimetypes>
+	</config>
+</alfresco-config>

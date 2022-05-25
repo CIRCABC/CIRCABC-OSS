@@ -1,0 +1,63 @@
+/* VARIABLES */
+
+/* colors */
+
+$link: rgb(0 51 85 / 1);
+$button-filled: rgb(0 92 120 / 1);
+$button-disabled-filled: rgb(117 117 117 / 1);
+$button-border: rgb(118 163 173 / 1);
+
+$light-green: rgb(141 203 108 / 1);
+$dark-green: rgb(88 195 126 / 1);
+$fluo-green: rgb(141 255 162 / 1);
+
+$light-red: rgb(203 108 108 / 1);
+$dark-red: rgb(141 47 47 / 1);
+$fluo-red: rgb(231 81 61 / 1);
+
+$light-grey: rgb(204 204 204 / 1);
+$dark-grey: rgb(117 117 117 / 1);
+
+$textAAA: rgb(91 91 91 / 1); /* Color that have a AAA contrast ratio on white */
+$textAA: rgb(117 117 117 / 1); /* Color that have a AA contrast ratio on white */
+
+/* gradients */
+
+/* fonts */
+$titling: 'Ubuntu',
+  verdana,
+  helvetica,
+  sans-serif;
+$standardText: 'verdana',
+  helvetica,
+  sans-serif;
+
+$break-medium: 1023px;
+$break-small: 595px;
+$break-tiny: 437px;
+
+/*  MIXINS */
+
+@mixin background-cover {
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  background-size: cover;
+}
+
+@mixin responsive-break-medium {
+  @media screen and (max-width: $break-medium) {
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+  }
+}
+
+@mixin responsive-cancel-width {
+  @media screen and (max-width: $break-medium) {
+    width: auto;
+    min-width: auto;
+    max-width: auto;
+  }
+}
+
+/*  KEYFRAMES */

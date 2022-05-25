@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Create a new keyword definition in an IG</shortname>
+  <description>Create a new keywords definition in an IG</description>
+    <url>/circabc/groups/{igId}/keywords</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

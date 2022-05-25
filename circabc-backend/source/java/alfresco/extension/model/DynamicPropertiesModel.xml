@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Copyright 2006 European Community
+  
+   Licensed under the EUPL, Version 1.1 or – as soon they
+   will be approved by the European Commission - subsequent
+   versions of the EUPL (the "Licence");
+   You may not use this work except in compliance with the
+   Licence.
+   You may obtain a copy of the Licence at:
+  
+   https://joinup.ec.europa.eu/software/page/eupl
+  
+   Unless required by applicable law or agreed to in
+   writing, software distributed under the Licence is
+   distributed on an "AS IS" basis,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+   express or implied.
+   See the Licence for the specific language governing
+   permissions and limitations under the Licence.
+-->
+
+<!-- Definition of Dynamic Properties Model. It extends the cm:folder contentModel -->
+<model name="dz:dynamicpropertiesmodel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+   <!-- Optional meta-data about the model -->
+   <description>Dynamic Properties Model</description>
+   <author>Slobodan Filipovic</author>
+   <version>1.0</version>
+
+   <!-- Imports are required to allow references to definitions in other models -->
+   <imports>
+      	<!-- Import Alfresco Content Domain Model Definitions -->
+      	<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/system/1.0" prefix="sys" />
+   </imports>
+
+   <!-- Introduction of new namespaces defined by this model -->
+   <namespaces>
+      <namespace uri="http://www.cc.cec/circabc/model/dynamicproperties/1.0" prefix="dz"/>
+   </namespaces>
+
+   <constraints>
+	<constraint name="dz:DynamicTypeConstraint" type="LIST">
+     <parameter name="allowedValues">
+         <list>
+             <value>DATE_FIELD</value>
+             <value>TEXT_FIELD</value>
+             <value>TEXT_AREA</value>
+             <value>SELECTION</value>
+             <value>MULTI_SELECTION</value>
+         </list>
+     </parameter>
+     <parameter name="caseSensitive"><value>false</value></parameter>
+	 </constraint>
+   </constraints>
+
+   <types>
+	<type name="dz:Container">
+	      <title>Dynamic Properties Container</title>
+	      <parent>sys:container</parent>
+	      <associations>
+	         <child-association name="dz:DynPropAss">
+	            <source>
+	               <mandatory>false</mandatory>
+	               <many>false</many>
+	            </source>
+	            <target>
+	               <class>dz:DynProp</class>
+	               <mandatory>false</mandatory>
+	               <many>true</many>
+	            </target>
+	         </child-association>
+	      </associations>
+	   </type>
+
+	   <type name ="dz:DynProp" >
+	   <title>Dynamic Property</title>
+       <parent>cm:cmobject</parent>
+       <properties>
+			   <property name="dz:Label">
+			         <type>d:mltext</type>
+			         <mandatory>false</mandatory>
+			       </property>
+			   <property name="dz:Type">
+					<type>d:text</type>
+					<mandatory>false</mandatory>
+					<default>TextField</default>
+					<constraints>
+						<constraint ref="dz:DynamicTypeConstraint" />
+				    </constraints>
+				</property>
+				<property name="dz:ValidValues">
+					<type>d:text</type>
+					<mandatory>false</mandatory>
+				</property>
+		</properties>
+	   </type>
+	</types>
+
+
+</model>

@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>get the archived nodes / deleted nodes of an IG</shortname>
+  <description>get the archived nodes / deleted nodes of an IG</description>
+    <url>/circabc/groups/{igId}/documents/deleted</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

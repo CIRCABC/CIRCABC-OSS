@@ -1,0 +1,23 @@
+<section class="box box--alternate-lines box--button">
+  <header class="header">
+    <span class="title">{{ 'label.members' | transloco }}</span>
+  </header>
+  <cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+  <div class="main main--listing" *ngIf="!loading">
+    <p class="members--number" *ngIf="!restCallError">
+      <span>
+        <a [routerLink]="['members']">{{ nbMembers }}</a>
+      </span>
+      {{ 'members.count.in.group' | transloco }}
+    </p>
+    <p class="members--number" *ngIf="restCallError">
+      {{ 'members.count.in.group.not.available' | transloco }}
+    </p>
+    <p class="members--number" *ngIf="isDirAdmin() && !restCallError">
+      <span>
+        <a [routerLink]="['applicants']">{{ nbApplicants }}</a>
+      </span>
+      {{ 'members.applications.in.group' | transloco }}
+    </p>
+  </div>
+</section>

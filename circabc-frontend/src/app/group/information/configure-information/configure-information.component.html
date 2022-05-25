@@ -1,0 +1,29 @@
+<cbc-modal
+  [visible]="showModal"
+  [title]="'information.configure.title'"
+  [okLabel]="'label.save'"
+  [cancelLabel]="'label.cancel'"
+  [executing]="processing"
+  [executingLabel]="'label.saving'"
+  (cancel)="cancel()"
+  (ok)="save()"
+>
+  <form [formGroup]="configurationForm">
+    <div class="field switch">
+      <div class="label" style="width: 189px"
+        >{{ 'information.display.old.label' | transloco }}</div
+      >
+      <input
+        style="margin-left: 209px"
+        id="displayOldInformation"
+        class="cmn-toggle cmn-toggle-round"
+        type="checkbox"
+        formControlName="displayOldInformation"
+      />
+      <label for="displayOldInformation" class="nonBlockLabel"></label>
+      <span
+        >{{ (getDisplayValue() ? 'label.yes' : 'label.no') | transloco }}</span
+      >
+    </div>
+  </form>
+</cbc-modal>

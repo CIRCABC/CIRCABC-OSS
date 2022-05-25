@@ -1,0 +1,1386 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+	
+	<changeSet id="1" author="Slobodan Filipovic"  dbms="oracle" runOnChange="true">
+		<preConditions onFail="CONTINUE">
+            <sqlCheck expectedResult="1">select count(*) from user_tables where table_name = 'ALF_TRANSACTION'</sqlCheck>
+            <sqlCheck expectedResult="2">select count(*) from user_sequences where sequence_name  = 'ALF_TRANSACTION_SEQ'</sqlCheck>
+        </preConditions>
+        <comment>Check if table ALF_TRANSACTION exists and sequence ALF_TRANSACTION_SEQ does not exists than create sequence</comment>
+		<sql splitStatements="false">
+      	DECLARE
+		  table_name     VARCHAR2(30);
+		  column_name    VARCHAR2(30);
+		  sequence_start NUMBER;
+		  stmt VARCHAR2(2000);
+		BEGIN
+		  table_name :='alf_transaction';
+		  column_name  :='id';
+		  stmt := 'select nvl(max(' || column_name || '),0)+1 from ' || table_name;
+		  dbms_output.put_line('Executing ''' || stmt || '''');
+		  EXECUTE immediate stmt INTO sequence_start;
+		  stmt := 'create sequence ' || table_name || '_seq ' ||' start with '  || to_char(sequence_start) ;
+		  dbms_output.put_line('Executing ''' || stmt || '''');
+		  EXECUTE immediate stmt;
+		END;
+    	</sql>
+	</changeSet>
+	
+	<changeSet id="2" author="Slobodan Filipovic"  dbms="oracle" runOnChange="true">
+		<preConditions onFail="CONTINUE">
+            <sqlCheck expectedResult="4">select count(*) from user_sequences where sequence_name  LIKE  'ALF_%'</sqlCheck>
+        </preConditions>
+		<comment>Update values in alf_qname for eventAssociation </comment>
+		<sql splitStatements="false">
+			DECLARE
+			  ci_ns    NUMBER;
+			  var_rows NUMBER;
+			BEGIN
+			  SELECT id
+			  INTO ci_ns
+			  FROM alf_namespace
+			  WHERE uri ='http://www.cc.cec/circabc/model/content/1.0' ;
+			  dbms_output.put_line('ci namespace id is : ' || ci_ns );
+			  UPDATE ALF_QNAME SET ns_id = ci_ns WHERE local_name = 'eventAssociation';
+			  IF SQL%NOTFOUND THEN
+			    dbms_output.put_line('No records found probably error');
+			  ELSIF SQL%FOUND THEN
+			    var_rows := SQL%ROWCOUNT;
+			    dbms_output.put_line('Number of updated rows  ' || var_rows || ' are updated');
+			  END IF;
+			END;
+    	</sql>
+	</changeSet>
+	
+	<changeSet id="3" author="Slobodan Filipovic"  dbms="oracle" runOnChange="true">
+		<preConditions onFail="CONTINUE">
+            <sqlCheck expectedResult="4">select count(*) from user_sequences where sequence_name  LIKE  'ALF_%'</sqlCheck>
+        </preConditions>
+		<comment>Update values in alf_qname for igKwContainer </comment>
+		<sql splitStatements="false">
+			DECLARE
+			  ci_ns    NUMBER;
+			  var_rows NUMBER;
+			BEGIN
+			  SELECT id
+			  INTO ci_ns
+			  FROM alf_namespace
+			  WHERE uri ='http://www.cc.cec/circabc/model/content/1.0' ;
+			  dbms_output.put_line('ci namespace id is : ' || ci_ns );
+			  UPDATE ALF_QNAME SET ns_id = ci_ns WHERE local_name = 'igKwContainer';
+			  IF SQL%NOTFOUND THEN
+			    dbms_output.put_line('No records found probably error');
+			  ELSIF SQL%FOUND THEN
+			    var_rows := SQL%ROWCOUNT;
+			    dbms_output.put_line('Number of updated rows  ' || var_rows || ' are updated');
+			  END IF;
+			END;
+    	</sql>
+	</changeSet>
+	
+	<changeSet id="4" author="Slobodan Filipovic"  dbms="oracle" runOnChange="true">
+		<preConditions onFail="CONTINUE">
+            <sqlCheck expectedResult="4">select count(*) from user_sequences where sequence_name  LIKE  'ALF_%'</sqlCheck>
+        </preConditions>
+		<comment>Update values in alf_qname for igDpContainer </comment>
+		<sql splitStatements="false">
+			DECLARE
+			  ci_ns    NUMBER;
+			  var_rows NUMBER;
+			BEGIN
+			  SELECT id
+			  INTO ci_ns
+			  FROM alf_namespace
+			  WHERE uri ='http://www.cc.cec/circabc/model/content/1.0' ;
+			  dbms_output.put_line('ci namespace id is : ' || ci_ns );
+			  UPDATE ALF_QNAME SET ns_id = ci_ns WHERE local_name = 'igDpContainer';
+			  IF SQL%NOTFOUND THEN
+			    dbms_output.put_line('No records found probably error');
+			  ELSIF SQL%FOUND THEN
+			    var_rows := SQL%ROWCOUNT;
+			    dbms_output.put_line('Number of updated rows  ' || var_rows || ' are updated');
+			  END IF;
+			END;
+    	</sql>
+	</changeSet>
+	
+	<changeSet id="5" author="Slobodan Filipovic"  dbms="oracle" runOnChange="true">
+		<preConditions onFail="CONTINUE">
+            <sqlCheck expectedResult="4">select count(*) from user_sequences where sequence_name  LIKE  'ALF_%'</sqlCheck>
+        </preConditions>
+		<comment>Update values in alf_qname for shareSpaceContainer </comment>
+		<sql splitStatements="false">
+			DECLARE
+			  ci_ns    NUMBER;
+			  var_rows NUMBER;
+			BEGIN
+			  SELECT id
+			  INTO ci_ns
+			  FROM alf_namespace
+			  WHERE uri ='http://www.cc.cec/circabc/model/content/1.0' ;
+			  dbms_output.put_line('ci namespace id is : ' || ci_ns );
+			  UPDATE ALF_QNAME SET ns_id = ci_ns WHERE local_name = 'shareSpaceContainer';
+			  IF SQL%NOTFOUND THEN
+			    dbms_output.put_line('No records found probably error');
+			  ELSIF SQL%FOUND THEN
+			    var_rows := SQL%ROWCOUNT;
+			    dbms_output.put_line('Number of updated rows  ' || var_rows || ' are updated');
+			  END IF;
+			END;
+    	</sql>
+	</changeSet>
+	
+	<changeSet id="6" author="Slobodan Filipovic"  dbms="oracle" runOnChange="true">
+		<preConditions onFail="CONTINUE">
+            <sqlCheck expectedResult="4">select count(*) from user_sequences where sequence_name  LIKE  'ALF_%'</sqlCheck>
+        </preConditions>
+		<comment> cm:content become ci:content for nodes of type ci:customizationContent </comment>
+		<sql splitStatements="false">
+		DECLARE
+			  ci_ns        NUMBER;
+			  var_rows     NUMBER;
+			  cc_qname_id  NUMBER;
+			  old_qname_id NUMBER;
+			  new_qname_id NUMBER;
+			BEGIN
+			  BEGIN
+			    SELECT id
+			    INTO ci_ns
+			    FROM alf_namespace
+			    WHERE uri ='http://www.cc.cec/circabc/model/content/1.0' ;
+			    dbms_output.put_line('ci namespace id is : ' || ci_ns );
+			    SELECT alf_qname.id
+			    INTO cc_qname_id
+			    FROM alf_qname,
+			      alf_namespace
+			    WHERE alf_qname.ns_id = alf_namespace.id
+			    AND local_name        ='customizationContent'
+			    AND uri               = 'http://www.cc.cec/circabc/model/content/1.0';
+			    SELECT alf_qname.id
+			    INTO old_qname_id
+			    FROM alf_qname,
+			      alf_namespace
+			    WHERE alf_qname.ns_id = alf_namespace.id
+			    AND local_name        ='content'
+			    AND uri               = 'http://www.alfresco.org/model/content/1.0';
+			    SELECT MAX(id) + 1 INTO new_qname_id FROM alf_qname;
+			  EXCEPTION
+			  WHEN NO_DATA_FOUND THEN
+			    RETURN;
+			  END ;
+			  INSERT INTO alf_qname VALUES
+			    (new_qname_id,0,ci_ns,'content'
+			    );
+			  UPDATE alf_node_properties
+			  SET qname_id   = new_qname_id
+			  WHERE node_id IN
+			    ( SELECT id FROM alf_node WHERE type_qname_id = cc_qname_id
+			    )
+			  AND qname_id = old_qname_id ;
+			  IF SQL%NOTFOUND THEN
+			    dbms_output.put_line('No records found probably error');
+			  ELSIF SQL%FOUND THEN
+			    var_rows := SQL%ROWCOUNT;
+			    dbms_output.put_line('Number of updated rows  ' || var_rows || ' are updated');
+			  END IF;
+			END;
+    	</sql>
+	</changeSet>
+	
+	<changeSet id="7" author="Slobodan Filipovic"  dbms="oracle" runOnChange="true">
+		<preConditions onFail="CONTINUE">
+            <sqlCheck expectedResult="4">select count(*) from user_sequences where sequence_name  LIKE  'ALF_%'</sqlCheck>
+        </preConditions>
+		<comment> cm:content become cd:content for nodes of type cd:hiddenContent </comment>
+		<sql splitStatements="false">	
+			DECLARE
+			  cd_ns        NUMBER;
+			  var_rows     NUMBER;
+			  hc_qname_id  NUMBER;
+			  old_qname_id NUMBER;
+			  new_qname_id NUMBER;
+			BEGIN
+			  BEGIN
+			    SELECT id
+			    INTO cd_ns
+			    FROM alf_namespace
+			    WHERE uri ='http://www.cc.cec/circabc/model/document/1.0' ;
+			    dbms_output.put_line('cd namespace id is : ' || cd_ns );
+			    SELECT alf_qname.id
+			    INTO hc_qname_id
+			    FROM alf_qname,
+			      alf_namespace
+			    WHERE alf_qname.ns_id = alf_namespace.id
+			    AND local_name        ='hiddenContent'
+			    AND uri               = 'http://www.cc.cec/circabc/model/document/1.0';
+			    SELECT alf_qname.id
+			    INTO old_qname_id
+			    FROM alf_qname,
+			      alf_namespace
+			    WHERE alf_qname.ns_id = alf_namespace.id
+			    AND local_name        ='content'
+			    AND uri               = 'http://www.alfresco.org/model/content/1.0';
+			    SELECT MAX(id) + 1 INTO new_qname_id FROM alf_qname;
+			  EXCEPTION
+			  WHEN NO_DATA_FOUND THEN
+			    RETURN;
+			  END ;
+			  INSERT INTO alf_qname VALUES
+			    (new_qname_id,0,cd_ns,'content'
+			    );
+			  UPDATE alf_node_properties
+			  SET qname_id   = new_qname_id
+			  WHERE node_id IN
+			    ( SELECT id FROM alf_node WHERE type_qname_id = hc_qname_id
+			    )
+			  AND qname_id = old_qname_id ;
+			  IF SQL%NOTFOUND THEN
+			    dbms_output.put_line('No records found probably error');
+			  ELSIF SQL%FOUND THEN
+			    var_rows := SQL%ROWCOUNT;
+			    dbms_output.put_line('Number of updated rows  ' || var_rows || ' are updated');
+			  END IF;
+			END;
+    	</sql>
+	</changeSet>
+	
+	<changeSet id="8" author="Slobodan Filipovic"  dbms="oracle" runOnChange="true">
+		<preConditions onFail="CONTINUE">
+            <sqlCheck expectedResult="4">select count(*) from user_sequences where sequence_name  LIKE  'ALF_%'</sqlCheck>
+        </preConditions>
+		<comment> cm:title become ce:title for nodes of aspect ce:commonProperties </comment>
+		<sql splitStatements="false">	
+			DECLARE
+			  ce_ns        NUMBER;
+			  var_rows     NUMBER;
+			  cp_qname_id  NUMBER;
+			  old_qname_id NUMBER;
+			  new_qname_id NUMBER;
+			BEGIN
+			  BEGIN
+			    SELECT id
+			    INTO ce_ns
+			    FROM alf_namespace
+			    WHERE uri ='http://www.cc.cec/circabc/model/events/1.0' ;
+			    dbms_output.put_line('ce namespace id is : ' || ce_ns );
+			    SELECT alf_qname.id
+			    INTO cp_qname_id
+			    FROM alf_qname,
+			      alf_namespace
+			    WHERE alf_qname.ns_id = alf_namespace.id
+			    AND local_name        ='commonProperties'
+			    AND uri               = 'http://www.cc.cec/circabc/model/events/1.0';
+			    SELECT alf_qname.id
+			    INTO old_qname_id
+			    FROM alf_qname,
+			      alf_namespace
+			    WHERE alf_qname.ns_id = alf_namespace.id
+			    AND local_name        ='title'
+			    AND uri               = 'http://www.alfresco.org/model/content/1.0';
+			    SELECT MAX(id) + 1 INTO new_qname_id FROM alf_qname;
+			  EXCEPTION
+			  WHEN NO_DATA_FOUND THEN
+			    RETURN ;
+			  END ;
+			  INSERT INTO alf_qname VALUES
+			    (new_qname_id,0,ce_ns,'title'
+			    );
+			  UPDATE alf_node_properties
+			  SET qname_id   = new_qname_id
+			  WHERE node_id IN
+			    ( SELECT node_id FROM alf_node_aspects WHERE qname_id = cp_qname_id
+			    )
+			  AND qname_id = old_qname_id ;
+			  IF SQL%NOTFOUND THEN
+			    dbms_output.put_line('No records found probably error');
+			  ELSIF SQL%FOUND THEN
+			    var_rows := SQL%ROWCOUNT;
+			    dbms_output.put_line('Number of updated rows  ' || var_rows || ' are updated');
+			  END IF;
+			END;
+    	</sql>
+	</changeSet>
+	
+	<changeSet id="9" author="Slobodan Filipovic"  dbms="oracle" runOnChange="true">
+		<preConditions onFail="CONTINUE">
+            <sqlCheck expectedResult="4">select count(*) from user_sequences where sequence_name  LIKE  'ALF_%'</sqlCheck>
+        </preConditions>
+		<comment>ce:timezone become ci:timezone for nodes of aspect ci:circabcEventRoot </comment>
+		<sql splitStatements="false">
+			DECLARE
+			  ci_ns        NUMBER;
+			  ce_ns        NUMBER;
+			  var_rows     NUMBER;
+			  cer_qname_id NUMBER;
+			  old_qname_id NUMBER;
+			  new_qname_id NUMBER;
+			BEGIN
+			  BEGIN
+			    SELECT id
+			    INTO ce_ns
+			    FROM alf_namespace
+			    WHERE uri ='http://www.cc.cec/circabc/model/events/1.0' ;
+			    dbms_output.put_line('ce namespace id is : ' || ce_ns );
+			    SELECT id
+			    INTO ci_ns
+			    FROM alf_namespace
+			    WHERE uri ='http://www.cc.cec/circabc/model/content/1.0' ;
+			    dbms_output.put_line('ci namespace id is : ' || ci_ns );
+			    SELECT alf_qname.id
+			    INTO cer_qname_id
+			    FROM alf_qname,
+			      alf_namespace
+			    WHERE alf_qname.ns_id = alf_namespace.id
+			    AND local_name        ='circabcEventRoot'
+			    AND uri               = 'http://www.cc.cec/circabc/model/content/1.0';
+			    SELECT alf_qname.id
+			    INTO old_qname_id
+			    FROM alf_qname,
+			      alf_namespace
+			    WHERE alf_qname.ns_id = alf_namespace.id
+			    AND local_name        ='timezone'
+			    AND uri               = 'http://www.cc.cec/circabc/model/events/1.0';
+			    SELECT MAX(id) + 1 INTO new_qname_id FROM alf_qname;
+			  EXCEPTION
+			  WHEN NO_DATA_FOUND THEN
+			    RETURN ;
+			  END ;
+			  BEGIN
+			    INSERT INTO alf_qname VALUES
+			      (new_qname_id,0,ci_ns,'timezone'
+			      );
+			    UPDATE alf_node_properties
+			    SET qname_id   = new_qname_id
+			    WHERE node_id IN
+			      ( SELECT node_id FROM alf_node_aspects WHERE qname_id = cer_qname_id
+			      )
+			    AND qname_id = old_qname_id ;
+			    IF SQL%NOTFOUND THEN
+			      dbms_output.put_line('No records found probably error');
+			    ELSIF SQL%FOUND THEN
+			      var_rows := SQL%ROWCOUNT;
+			      dbms_output.put_line('Number of updated rows  ' || var_rows || ' are updated');
+			    END IF;
+			  EXCEPTION
+			  WHEN DUP_VAL_ON_INDEX THEN
+			    RETURN;
+			  END ;
+			END;
+    	</sql>
+	</changeSet>
+	
+	<changeSet id="10" author="Slobodan Filipovic"  dbms="oracle" runOnChange="true">
+		<preConditions onFail="CONTINUE">
+            <sqlCheck expectedResult="4">select count(*) from user_sequences where sequence_name  LIKE  'ALF_%'</sqlCheck>
+        </preConditions>
+		<comment>ce:weekStartDay become ci:weekStartDay for nodes of aspect ci:circabcEventRoot </comment>
+		<sql splitStatements="false">
+			DECLARE
+			  ci_ns        NUMBER;
+			  ce_ns        NUMBER;
+			  var_rows     NUMBER;
+			  cer_qname_id NUMBER;
+			  old_qname_id NUMBER;
+			  new_qname_id NUMBER;
+			BEGIN
+			  BEGIN
+			    SELECT id
+			    INTO ce_ns
+			    FROM alf_namespace
+			    WHERE uri ='http://www.cc.cec/circabc/model/events/1.0' ;
+			    dbms_output.put_line('ce namespace id is : ' || ce_ns );
+			    SELECT id
+			    INTO ci_ns
+			    FROM alf_namespace
+			    WHERE uri ='http://www.cc.cec/circabc/model/content/1.0' ;
+			    dbms_output.put_line('ci namespace id is : ' || ci_ns );
+			    SELECT alf_qname.id
+			    INTO cer_qname_id
+			    FROM alf_qname,
+			      alf_namespace
+			    WHERE alf_qname.ns_id = alf_namespace.id
+			    AND local_name        ='circabcEventRoot'
+			    AND uri               = 'http://www.cc.cec/circabc/model/content/1.0';
+			    SELECT alf_qname.id
+			    INTO old_qname_id
+			    FROM alf_qname,
+			      alf_namespace
+			    WHERE alf_qname.ns_id = alf_namespace.id
+			    AND local_name        ='weekStartDay'
+			    AND uri               = 'http://www.cc.cec/circabc/model/events/1.0';
+			    SELECT MAX(id) + 1 INTO new_qname_id FROM alf_qname;
+			  EXCEPTION
+			  WHEN NO_DATA_FOUND THEN
+			    RETURN ;
+			  END ;
+			  BEGIN
+			    INSERT INTO alf_qname VALUES
+			      (new_qname_id,0,ci_ns,'weekStartDay'
+			      );
+			    UPDATE alf_node_properties
+			    SET qname_id   = new_qname_id
+			    WHERE node_id IN
+			      ( SELECT node_id FROM alf_node_aspects WHERE qname_id = cer_qname_id
+			      )
+			    AND qname_id = old_qname_id ;
+			    IF SQL%NOTFOUND THEN
+			      dbms_output.put_line('No records found probably error');
+			    ELSIF SQL%FOUND THEN
+			      var_rows := SQL%ROWCOUNT;
+			      dbms_output.put_line('Number of updated rows  ' || var_rows || ' are updated');
+			    END IF;
+			  EXCEPTION
+			  WHEN DUP_VAL_ON_INDEX THEN
+			    RETURN;
+			  END ;
+			END;
+    	</sql>
+	</changeSet>
+	<changeSet id="11" author="Slobodan Filipovic"  dbms="oracle" runOnChange="true">
+		<preConditions onFail="CONTINUE">
+            <sqlCheck expectedResult="4">select count(*) from user_sequences where sequence_name  LIKE  'ALF_%'</sqlCheck>
+        </preConditions>
+		<comment>fix 100 characters local name  </comment>
+		<sql splitStatements="false">
+			DECLARE
+			BEGIN
+				UPDATE ALF_NODE_PROPERTIES 
+				SET STRING_VALUE = SUBSTR(REVERSE(STRING_VALUE),1,94) 
+				WHERE QNAME_ID IN
+				(
+				2013,
+				1905,
+				2019,
+				1899,
+				2016,
+				1902,
+				77081
+				) AND LENGTH(STRING_VALUE) >94;
+				
+				UPDATE ALF_NODE_PROPERTIES  
+				SET  STRING_VALUE = 'GROUP_' || SUBSTR(REVERSE(SUBSTR(STRING_VALUE,7,LENGTH(STRING_VALUE))),1,94)
+				WHERE QNAME_ID=44
+				AND LENGTH(STRING_VALUE) >100;
+			END;
+		</sql>
+	</changeSet>
+	<changeSet id="12" author="Slobodan Filipovic"  dbms="oracle" runOnChange="true">
+		<preConditions onFail="CONTINUE">
+            <sqlCheck expectedResult="4">select count(*) from user_sequences where sequence_name  LIKE  'ALF_%'</sqlCheck>
+        </preConditions>
+		<comment>delete null authority</comment>
+		<sql splitStatements="false">
+			DELETE FROM ALF_AUTHORITY WHERE AUTHORITY IS NULL
+		</sql>
+	</changeSet>
+	<changeSet id="13" author="Slobodan Filipovic"  dbms="oracle" runOnChange="true">
+		<preConditions onFail="CONTINUE">
+            <sqlCheck expectedResult="4">select count(*) from user_sequences where sequence_name  LIKE  'ALF_%'</sqlCheck>
+        </preConditions>
+		<comment>drop sequence ALF_TRANSACTION_SEQ alfresco will create it</comment>
+		<sql splitStatements="false">
+			DROP SEQUENCE ALF_TRANSACTION_SEQ
+		</sql>
+	</changeSet>
+	
+	<changeSet id="14" author="Slobodan Filipovic"  dbms="oracle" runOnChange="true">
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="1">select COUNT(*) from USER_TABLES where TABLE_NAME = 'ALF_CHILD_ASSOC'</sqlCheck>
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM USER_MVIEW_LOGS WHERE MASTER = 'ALF_CHILD_ASSOC'</sqlCheck>
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM DUAL</sqlCheck>
+        </preConditions>
+		<comment>create materiialzed view log on ALF_CHILD_ASSOC </comment>
+		<sql splitStatements="false">
+			CREATE MATERIALIZED VIEW LOG ON ALF_CHILD_ASSOC WITH PRIMARY KEY ( CHILD_NODE_ID, QNAME_LOCALNAME )
+		</sql>
+	</changeSet>
+	
+	<changeSet id="15" author="Slobodan Filipovic"  dbms="oracle" runOnChange="true">
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="1">select COUNT(*) from USER_TABLES where TABLE_NAME = 'ALF_NODE'</sqlCheck>
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM USER_MVIEW_LOGS WHERE MASTER = 'ALF_NODE'</sqlCheck>
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM DUAL</sqlCheck>
+        </preConditions>
+		<comment>create materiialzed view log on ALF_NODE </comment>
+		<sql splitStatements="false">
+			CREATE MATERIALIZED VIEW LOG ON ALF_NODE WITH PRIMARY KEY (NODE_DELETED, STORE_ID, TYPE_QNAME_ID)
+		</sql>
+	</changeSet>
+	
+	<changeSet id="16" author="Slobodan Filipovic"  dbms="oracle" runOnChange="true">
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="1">select COUNT(*) from USER_TABLES where TABLE_NAME = 'ALF_NODE_ASPECTS'</sqlCheck>
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM USER_MVIEW_LOGS WHERE MASTER = 'ALF_NODE_ASPECTS'</sqlCheck>
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM DUAL</sqlCheck>
+        </preConditions>
+		<comment>create materiialzed view log on ALF_NODE_ASPECTS </comment>
+		<sql splitStatements="false">
+			CREATE MATERIALIZED VIEW LOG ON ALF_NODE_ASPECTS WITH PRIMARY KEY 
+		</sql>
+	</changeSet>
+	
+	<changeSet id="17" author="Slobodan Filipovic"  dbms="oracle" runOnChange="true">
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="1">select COUNT(*) from USER_TABLES where TABLE_NAME = 'ALF_NODE_PROPERTIES'</sqlCheck>
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM USER_MVIEW_LOGS WHERE MASTER = 'ALF_NODE_PROPERTIES'</sqlCheck>
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM DUAL</sqlCheck>
+        </preConditions>
+		<comment>create materiialzed view log on ALF_NODE_PROPERTIES </comment>
+		<sql splitStatements="false">
+			CREATE MATERIALIZED VIEW LOG ON ALF_NODE_PROPERTIES WITH PRIMARY KEY 
+		</sql>
+	</changeSet>
+	
+	<changeSet id="18" author="Slobodan Filipovic"  dbms="oracle" runOnChange="true">
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="1">select COUNT(*) from USER_TABLES where TABLE_NAME = 'ALF_QNAME'</sqlCheck>
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM USER_MVIEWS WHERE MVIEW_NAME IN ( 'CBC_AN_CIRCABC','CBC_AN_CAT','CBC_AN_IG' )</sqlCheck>
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM DUAL</sqlCheck>
+        </preConditions>
+		<comment>create materiialzed view log on ALF_NODE_PROPERTIES </comment>
+		<sql splitStatements="false">
+			DECLARE
+			  MV_TEMPLATE        VARCHAR2(4000);
+			  SQL_TEMPLATE       VARCHAR2(4000);
+			  WORKSPACE_STORE_ID NUMBER;
+			  CIRCABC_ID NUMBER;
+			  CIRCA_CATEGORY_ID NUMBER;
+			  CIRCA_IG_ID NUMBER;
+			BEGIN
+			  MV_TEMPLATE  := q'[ create materialized view %s build immediate refresh fast on commit AS   
+			]';
+			  SQL_TEMPLATE := q'[SELECT AN.ID ID,  
+			AN.VERSION VERSION,  
+			AN.STORE_ID STORE_ID,  
+			AN.UUID UUID,  
+			AN.TRANSACTION_ID TRANSACTION_ID,  
+			AN.NODE_DELETED NODE_DELETED,  
+			AN.TYPE_QNAME_ID TYPE_QNAME_ID,  
+			AN.ACL_ID ACL_ID,  
+			AN.AUDIT_CREATOR AUDIT_CREATOR,  
+			AN.AUDIT_CREATED AUDIT_CREATED,  
+			AN.AUDIT_MODIFIER AUDIT_MODIFIER,  
+			AN.AUDIT_MODIFIED AUDIT_MODIFIED,  
+			AN.AUDIT_ACCESSED AUDIT_ACCESSED
+			FROM ALF_NODE AN
+			WHERE EXISTS  
+			(SELECT 0  
+			FROM ALF_NODE_ASPECTS ANA  
+			WHERE ANA.NODE_ID=AN.ID  
+			AND ANA.QNAME_ID = %d  
+			)
+			AND AN.NODE_DELETED=0 AND AN.STORE_ID    = %d ]';
+			
+			  select ALF_QNAME.id
+			  INTO CIRCABC_ID
+			  FROM ALF_QNAME
+			  INNER JOIN ALF_NAMESPACE
+			  on ALF_QNAME.NS_ID         = ALF_NAMESPACE.id
+			  where ALF_QNAME.LOCAL_NAME = 'circaBC'
+			  and ALF_NAMESPACE.URI      = 'http://www.cc.cec/circabc/model/content/1.0';
+			  
+			
+			  SELECT ALF_QNAME.id
+			  INTO CIRCA_CATEGORY_ID
+			  FROM ALF_QNAME
+			  INNER JOIN ALF_NAMESPACE
+			  ON ALF_QNAME.NS_ID         = ALF_NAMESPACE.ID
+			  WHERE ALF_QNAME.LOCAL_NAME = 'circaCategory'
+			  AND ALF_NAMESPACE.URI      = 'http://www.cc.cec/circabc/model/content/1.0';
+			  
+			  
+			  select ALF_QNAME.id
+			  INTO CIRCA_IG_ID
+			  FROM ALF_QNAME
+			  INNER JOIN ALF_NAMESPACE
+			  ON ALF_QNAME.NS_ID         = ALF_NAMESPACE.ID
+			  WHERE ALF_QNAME.LOCAL_NAME = 'circaIGRoot'
+			  and ALF_NAMESPACE.URI      = 'http://www.cc.cec/circabc/model/content/1.0';
+			  
+			  
+			  SELECT ALF_STORE.ID
+			  INTO WORKSPACE_STORE_ID
+			  FROM ALF_STORE
+			  WHERE ALF_STORE.PROTOCOL = 'workspace'
+			  AND ALF_STORE.identifier = 'SpacesStore';
+			  EXECUTE IMMEDIATE UTL_LMS.FORMAT_MESSAGE(MV_TEMPLATE, 'CBC_AN_CIRCABC' ) || UTL_LMS.FORMAT_MESSAGE(SQL_TEMPLATE, TO_CHAR( CIRCABC_ID), TO_CHAR(WORKSPACE_STORE_ID ));
+			  execute immediate UTL_LMS.FORMAT_MESSAGE(MV_TEMPLATE, 'CBC_AN_CAT' ) || UTL_LMS.FORMAT_MESSAGE(SQL_TEMPLATE, TO_CHAR( CIRCA_CATEGORY_ID), TO_CHAR(WORKSPACE_STORE_ID ));
+			  EXECUTE IMMEDIATE UTL_LMS.FORMAT_MESSAGE(MV_TEMPLATE, 'CBC_AN_IG' ) || UTL_LMS.FORMAT_MESSAGE(SQL_TEMPLATE, TO_CHAR( CIRCA_IG_ID), TO_CHAR(WORKSPACE_STORE_ID ));
+			EXCEPTION 
+      			when NO_DATA_FOUND then
+         		NULL;
+			END; 
+		</sql>
+	</changeSet>
+	
+	
+	<changeSet id="19" author="Slobodan Filipovic"  dbms="oracle" runOnChange="true">
+		<preConditions onFail="CONTINUE">
+			<sqlCheck expectedResult="1">select COUNT(*) from USER_TABLES where TABLE_NAME = 'ALF_QNAME'</sqlCheck>
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM USER_MVIEWS WHERE MVIEW_NAME IN ( 'CBC_ANP_CAT_TITLE','CBC_ANP_IG_TITLE','CBC_ANP_CAT_MASTER_GROUP', 'CBC_ANP_IG_MASTER_GROUP' )</sqlCheck>
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM DUAL</sqlCheck>
+        </preConditions>
+		<comment>create materiialzed view log on ALF_NODE_PROPERTIES </comment>
+		<sql splitStatements="false">
+			DECLARE
+			  MV_TEMPLATE                    VARCHAR2(4000);
+			  SQL_TEMPLATE                   VARCHAR2(4000);
+			  WORKSPACE_STORE_ID             NUMBER;
+			  CIRCA_CATEGORY_ID              NUMBER;
+			  CIRCA_IG_ID                    NUMBER;
+			  TITLE_ID                       NUMBER;
+			  CIRCA_IGROOT_MASTER_GROUP_ID   NUMBER;
+			  CIRCA_CATEGORY_MASTER_GROUP_ID NUMBER;
+			BEGIN
+			  MV_TEMPLATE  := q'[ create materialized view %s build immediate refresh fast on commit AS   
+			]';
+			  SQL_TEMPLATE := q'[ SELECT NODE_ID,    
+			QNAME_ID,    
+			LIST_INDEX,    
+			LOCALE_ID,    
+			STRING_VALUE  
+			FROM ALF_NODE_PROPERTIES ANP  
+			WHERE EXISTS    
+			(SELECT 0    
+			FROM ALF_NODE_ASPECTS ANA    
+			WHERE ANP.NODE_ID=ANA.NODE_ID    
+			AND ANA.QNAME_ID = %d    
+			)  
+			AND EXISTS    
+			(SELECT 0    
+			FROM ALF_NODE AN    
+			WHERE ANP.NODE_ID   =AN.ID    
+			AND AN.NODE_DELETED =0    
+			AND AN.STORE_ID     = %d    
+			)  
+			AND QNAME_ID = %d ]';
+			  SELECT ALF_QNAME.id
+			  INTO CIRCA_CATEGORY_ID
+			  FROM ALF_QNAME
+			  INNER JOIN ALF_NAMESPACE
+			  ON ALF_QNAME.NS_ID         = ALF_NAMESPACE.ID
+			  WHERE ALF_QNAME.LOCAL_NAME = 'circaCategory'
+			  AND ALF_NAMESPACE.URI      = 'http://www.cc.cec/circabc/model/content/1.0';
+			  SELECT ALF_QNAME.id
+			  INTO CIRCA_IG_ID
+			  FROM ALF_QNAME
+			  INNER JOIN ALF_NAMESPACE
+			  ON ALF_QNAME.NS_ID         = ALF_NAMESPACE.ID
+			  WHERE ALF_QNAME.LOCAL_NAME = 'circaIGRoot'
+			  AND ALF_NAMESPACE.URI      = 'http://www.cc.cec/circabc/model/content/1.0';
+			  SELECT ALF_QNAME.id
+			  INTO TITLE_ID
+			  FROM ALF_QNAME
+			  INNER JOIN ALF_NAMESPACE
+			  ON ALF_QNAME.NS_ID         = ALF_NAMESPACE.ID
+			  WHERE ALF_QNAME.LOCAL_NAME = 'title'
+			  AND ALF_NAMESPACE.URI      = 'http://www.alfresco.org/model/content/1.0';
+			  SELECT ALF_QNAME.id
+			  INTO CIRCA_CATEGORY_MASTER_GROUP_ID
+			  FROM ALF_QNAME
+			  INNER JOIN ALF_NAMESPACE
+			  ON ALF_QNAME.NS_ID         = ALF_NAMESPACE.ID
+			  WHERE ALF_QNAME.LOCAL_NAME = 'circaCategoryMasterGroup'
+			  AND ALF_NAMESPACE.URI      = 'http://www.cc.cec/circabc/model/content/1.0';
+			  SELECT ALF_QNAME.id
+			  INTO CIRCA_IGROOT_MASTER_GROUP_ID
+			  FROM ALF_QNAME
+			  INNER JOIN ALF_NAMESPACE
+			  ON ALF_QNAME.NS_ID         = ALF_NAMESPACE.ID
+			  WHERE ALF_QNAME.LOCAL_NAME = 'circaIGRootMasterGroup'
+			  AND ALF_NAMESPACE.URI      = 'http://www.cc.cec/circabc/model/content/1.0';
+			  SELECT ALF_STORE.ID
+			  INTO WORKSPACE_STORE_ID
+			  FROM ALF_STORE
+			  WHERE ALF_STORE.PROTOCOL = 'workspace'
+			  AND ALF_STORE.identifier = 'SpacesStore';
+			  EXECUTE IMMEDIATE UTL_LMS.FORMAT_MESSAGE(MV_TEMPLATE, 'CBC_ANP_CAT_TITLE' ) || UTL_LMS.FORMAT_MESSAGE(SQL_TEMPLATE, TO_CHAR( CIRCA_CATEGORY_ID), TO_CHAR(WORKSPACE_STORE_ID ) , TO_CHAR(TITLE_ID));
+			  EXECUTE IMMEDIATE UTL_LMS.FORMAT_MESSAGE(MV_TEMPLATE, 'CBC_ANP_IG_TITLE' ) || UTL_LMS.FORMAT_MESSAGE(SQL_TEMPLATE, TO_CHAR( CIRCA_IG_ID), TO_CHAR(WORKSPACE_STORE_ID ) , TO_CHAR(TITLE_ID));
+			  EXECUTE IMMEDIATE UTL_LMS.FORMAT_MESSAGE(MV_TEMPLATE, 'CBC_ANP_CAT_MASTER_GROUP' ) || UTL_LMS.FORMAT_MESSAGE(SQL_TEMPLATE, TO_CHAR( CIRCA_CATEGORY_ID), TO_CHAR(WORKSPACE_STORE_ID ) , TO_CHAR(CIRCA_CATEGORY_MASTER_GROUP_ID));
+			  EXECUTE IMMEDIATE UTL_LMS.FORMAT_MESSAGE(MV_TEMPLATE, 'CBC_ANP_IG_MASTER_GROUP' ) || UTL_LMS.FORMAT_MESSAGE(SQL_TEMPLATE, TO_CHAR( CIRCA_IG_ID), TO_CHAR(WORKSPACE_STORE_ID ) , TO_CHAR(CIRCA_IGROOT_MASTER_GROUP_ID));
+			EXCEPTION 
+      			when NO_DATA_FOUND then
+         		NULL;
+			END;
+ 
+		</sql>
+	</changeSet>
+	<changeSet id="21" author="Slobodan Filipovic"  dbms="oracle" runOnChange="true">
+		<preConditions onFail="CONTINUE">
+            <sqlCheck expectedResult="7">SELECT COUNT(*) FROM USER_MVIEWS</sqlCheck>
+        </preConditions>
+		<comment>drop  materiialzed views   </comment>
+		<sql splitStatements="true" endDelimiter=";" >
+			DROP MATERIALIZED VIEW CBC_AN_CIRCABC; 
+			DROP MATERIALIZED VIEW CBC_AN_CAT;
+			DROP MATERIALIZED VIEW CBC_AN_IG;
+			DROP MATERIALIZED VIEW CBC_ANP_CAT_TITLE;
+			DROP MATERIALIZED VIEW CBC_ANP_IG_TITLE;
+			DROP MATERIALIZED VIEW CBC_ANP_CAT_MASTER_GROUP;
+			DROP MATERIALIZED VIEW CBC_ANP_IG_MASTER_GROUP;
+		</sql>
+	</changeSet>
+	<changeSet id="22" author="Slobodan Filipovic"  dbms="oracle" runOnChange="true">
+		<preConditions onFail="CONTINUE">
+            <sqlCheck expectedResult="4">SELECT COUNT(*) FROM USER_MVIEW_LOGS</sqlCheck>
+        </preConditions>
+		<comment>drop  materiialzed view log </comment>
+		<sql splitStatements="true" endDelimiter=";">
+			DROP MATERIALIZED VIEW LOG ON ALF_CHILD_ASSOC; 
+			DROP MATERIALIZED VIEW LOG ON ALF_NODE; 
+			DROP MATERIALIZED VIEW LOG ON ALF_NODE_ASPECTS;
+			DROP MATERIALIZED VIEW LOG ON ALF_NODE_PROPERTIES;
+		</sql>
+	</changeSet>
+	<changeSet id="31" author="Slobodan Filipovic" dbms="oracle"   >
+        <createTable tableName="cbc_headers">
+            <column name="id" type="bigint"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="node_ref" type="varchar2(100)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+			<column name="name" type="varchar2(1024 char)">
+                <constraints nullable="false"/>
+            </column>
+			<column name="description" type="varchar2(1024 char)">
+				<constraints nullable="true"/>
+            </column>
+        </createTable>
+        <createTable tableName="cbc_categories">
+        	<column name="header_id" type="bigint"  >
+                <constraints nullable="false"/>
+            </column>
+            <column name="id" type="bigint"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="node_ref" type="varchar2(100)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+			<column name="name" type="varchar2(1024 char)">
+                <constraints nullable="false"/>
+            </column>
+			<column name="title" type="varchar2(1024 char)">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="header_id"
+                                 baseTableName="cbc_categories"
+                                 constraintName="cbc_categories_fk"
+                                 referencedColumnNames="id"
+                                 referencedTableName="cbc_headers"/>
+		<createIndex tableName="cbc_categories" indexName="idx_cbc_cat_header_id">
+		   <column name="header_id"/>
+		</createIndex>
+	                                 
+       
+       <createTable tableName="cbc_users">
+            <column name="id" type="bigint"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="node_ref" type="varchar2(100)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="user_name" type="varchar2(50 char)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+			<column name="first_name" type="varchar2(100 char)">
+            </column>
+			<column name="last_name" type="varchar2(100 char)">
+            </column>
+            <column name="email" type="varchar2(100 char)">
+            </column>
+            <column name="alf_locale_id" type="bigint">
+            </column>
+            <column name="domain"  type="varchar2(100 char)">
+            </column>
+            <column name="ecas_user_name" type="varchar2(50 char)">
+            </column>
+            <column name="visibility" type="boolean">
+            </column>
+            <column name="global_notification" type="boolean">
+            </column>
+        </createTable>
+
+
+        <createTable tableName="cbc_category_admins">
+            <column name="category_id" type="bigint"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="bigint"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="profile_name" type="varchar2(100 char)">
+            	<constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="category_id"
+                                 baseTableName="cbc_category_admins"
+                                 constraintName="cbc_cat_admin_cat_fk"
+                                 referencedColumnNames="id"
+                                 referencedTableName="cbc_categories"/>
+		<createIndex tableName="cbc_category_admins" indexName="idx_cbc_cat_admins_cat_id">
+		   <column name="category_id"/>
+		</createIndex>                                      
+                                 
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="cbc_category_admins"
+                                 constraintName="cbc_cat_admin_user_fk"
+                                 referencedColumnNames="id"
+                                 referencedTableName="cbc_users"/>
+        
+        <createIndex tableName="cbc_category_admins" indexName="idx_cbc_cat_admins_user_id">
+		   <column name="user_id"/>
+		</createIndex>
+        
+        
+        <createTable tableName="cbc_interest_groups">
+        	<column name="category_id" type="bigint"  >
+                <constraints nullable="false"/>
+            </column>
+            <column name="id" type="bigint"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="node_ref" type="varchar2(100)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar2(1024 char)">
+                <constraints nullable="false"/>
+            </column>
+			<column name="title" type="varchar2(1024 char)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="is_public" type="boolean">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="is_registered" type="boolean">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="is_apply_for_membership" type="boolean">
+            	<constraints nullable="false"/>
+            </column>
+        </createTable>
+        
+        <addForeignKeyConstraint baseColumnNames="category_id"
+                                 baseTableName="cbc_interest_groups"
+                                 constraintName="cbc_interest_groups_cat_fk"
+                                 referencedColumnNames="id"
+                                 referencedTableName="cbc_categories"/>
+        <createIndex tableName="cbc_interest_groups" indexName="idx_cbc_int_grp_cat_id">
+		   <column name="category_id"/>
+		</createIndex>                         
+                                 
+        
+        <createTable tableName="cbc_profiles">
+        	<column name="ig_id" type="bigint"  >
+                <constraints nullable="false"/>
+            </column>
+            <column name="id" type="bigint"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="alfresco_group" type="varchar2(200 char)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="node_ref" type="varchar2(100)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            
+            <column name="name" type="varchar2(1024 char)">
+                <constraints nullable="false"/>
+            </column>
+			<column name="title" type="varchar2(1024 char)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="dir_perm" type="varchar2(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="inf_perm" type="varchar2(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lib_perm" type="varchar2(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="nws_perm" type="varchar2(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="eve_perm" type="varchar2(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_visible" type="boolean">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="is_imported" type="boolean">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="is_exported" type="boolean">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="ig_from_node_ref" type="varchar2(100)">
+            	<constraints nullable="true"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="ig_id"
+                                 baseTableName="cbc_profiles"
+                                 constraintName="cbc_profiles_ig_fk"
+                                 referencedColumnNames="id"
+                                 referencedTableName="cbc_interest_groups"/>
+        
+        <createTable tableName="cbc_profile_users">
+        	<column name="user_id" type="bigint"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="alfresco_group" type="varchar2(200 char)"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+        </createTable>
+		
+		<createIndex tableName="cbc_profile_users" indexName="idx_cbc_prof_usr_alf_grp">
+		   <column name="alfresco_group"/>
+		</createIndex> 
+                                 
+         <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="cbc_profile_users"
+                                 constraintName="cbc_profile_users_user_fk"
+                                 referencedColumnNames="id"
+                                 referencedTableName="cbc_users"/>
+                                 
+           <createTable tableName="cbc_cat_title_trans">
+            <column name="cat_id" type="bigint"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="alf_locale_id" type="bigint">
+            	<constraints primaryKey="true"  nullable="false"/>
+            </column>
+			<column name="translation" type="varchar2(1024 char)">
+                <constraints nullable="true"/>
+            </column>
+            </createTable>
+            <addForeignKeyConstraint baseColumnNames="cat_id"
+                                 baseTableName="cbc_cat_title_trans"
+                                 constraintName="cbc_cat_title_trans_cat_fk"
+                                 referencedColumnNames="id"
+                                 referencedTableName="cbc_categories"/>
+           
+            <createTable tableName="cbc_ig_trans">
+            <column name="ig_id" type="bigint"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="alf_locale_id" type="bigint">
+            	<constraints primaryKey="true"  nullable="false"/>
+            </column>
+			<column name="title_translation" type="varchar2(1024 char)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="light_desc_translation" type="varchar2(1024 char)">
+                <constraints nullable="true"/>
+            </column>
+            </createTable>
+            
+            
+            <addForeignKeyConstraint baseColumnNames="ig_id"
+                                 baseTableName="cbc_ig_trans"
+                                 constraintName="cbc_ig_trans_ig_fk"
+                                 referencedColumnNames="id"
+                                 referencedTableName="cbc_interest_groups"/>
+            
+            <createTable tableName="cbc_profile_title_trans">
+            <column name="profile_id" type="bigint"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="alf_locale_id" type="bigint">
+            	<constraints primaryKey="true"  nullable="false"/>
+            </column>
+			<column name="translation" type="varchar2(1024 char)">
+                <constraints nullable="true"/>
+            </column>
+            </createTable>
+                        
+             <addForeignKeyConstraint baseColumnNames="profile_id"
+                                 baseTableName="cbc_profile_title_trans"
+                                 constraintName="cbc_prof_title_trans_pro_fk"
+                                 referencedColumnNames="id"
+                                 referencedTableName="cbc_profiles"/>
+            <createView viewName="v_cbc_ig_trans" replaceIfExists="true" >
+            	select cbc_ig_trans.ig_id, max(cbc_ig_trans.light_desc_translation) light_desc_translation,
+  				max(cbc_ig_trans.title_translation) title_translation
+				from cbc_ig_trans
+				group by cbc_ig_trans.ig_id
+            </createView>
+            
+    </changeSet>
+    <changeSet id="32" author="Slobodan Filipovic" dbms="oracle"   >
+		<modifyColumn tableName="cbc_users"> 
+	    	<column name="ecas_user_name" type="varchar2(100 char)">
+	    	</column>
+    	</modifyColumn>
+    </changeSet>
+    <changeSet id="33" author="Slobodan Filipovic" dbms="oracle"   >
+		<modifyColumn tableName="cbc_users"> 
+	    	<column name="user_name" type="varchar2(100 char)">
+	    	</column>
+    	</modifyColumn>
+    </changeSet>
+    
+    <changeSet id="34" author="Slobodan Filipovic" dbms="oracle"   >
+		<createIndex tableName="cbc_profiles" indexName="idx_cbc_prof_ig_id">
+		   <column name="ig_id"/>
+		</createIndex>
+    </changeSet>
+
+
+	<changeSet id="35" author="Slobodan Filipovic" dbms="oracle"   >
+		<createTable tableName="cbc_circabc_admins">
+			<column name="user_id" type="bigint"  >
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="profile_name" type="varchar2(100 char)">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+		<addForeignKeyConstraint baseColumnNames="user_id"
+								 baseTableName="cbc_circabc_admins"
+								 constraintName="cbc_circabc_admins_user_fk"
+								 referencedColumnNames="id"
+								 referencedTableName="cbc_users"/>
+	</changeSet>
+
+	<changeSet id="36" author="Pierre Beauregard" dbms="oracle">
+		<addColumn tableName="cbc_categories">
+			<column name="logo_ref" type="varchar2(255 char)"/>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="37" author="Pierre Beauregard" dbms="oracle">
+		<addColumn tableName="cbc_interest_groups">
+			<column name="logo_ref" type="varchar2(255 char)"/>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="10031" author="Slobodan Filipovic" dbms="mysql"   >
+        <createTable tableName="cbc_headers">
+            <column name="id" type="bigint"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="node_ref" type="varchar(100)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+			<column name="name" type="varchar(1024)">
+                <constraints nullable="false"/>
+            </column>
+			<column name="description" type="varchar(1024)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createTable tableName="cbc_categories">
+        	<column name="header_id" type="bigint"  >
+                <constraints nullable="false"/>
+            </column>
+            <column name="id" type="bigint"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="node_ref" type="varchar(100)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+			<column name="name" type="varchar(1024)">
+                <constraints nullable="false"/>
+            </column>
+			<column name="title" type="varchar(1024)">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="header_id"
+                                 baseTableName="cbc_categories"
+                                 constraintName="cbc_categories_fk"
+                                 referencedColumnNames="id"
+                                 referencedTableName="cbc_headers"/>
+		<createIndex tableName="cbc_categories" indexName="idx_cbc_cat_header_id">
+		   <column name="header_id"/>
+		</createIndex>
+	                                 
+       
+       <createTable tableName="cbc_users">
+            <column name="id" type="bigint"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="node_ref" type="varchar(100)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="user_name" type="varchar(50)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+			<column name="first_name" type="varchar(100)">
+            </column>
+			<column name="last_name" type="varchar(100)">
+            </column>
+            <column name="email" type="varchar(100)">
+            </column>
+            <column name="alf_locale_id" type="bigint">
+            </column>
+            <column name="domain"  type="varchar(100)">
+            </column>
+            <column name="ecas_user_name" type="varchar(50)">
+            </column>
+            <column name="visibility" type="boolean">
+            </column>
+            <column name="global_notification" type="boolean">
+            </column>
+        </createTable>
+
+
+        <createTable tableName="cbc_category_admins">
+            <column name="category_id" type="bigint"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="bigint"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="profile_name" type="varchar(100)">
+            	<constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="category_id"
+                                 baseTableName="cbc_category_admins"
+                                 constraintName="cbc_cat_admin_cat_fk"
+                                 referencedColumnNames="id"
+                                 referencedTableName="cbc_categories"/>
+		<createIndex tableName="cbc_category_admins" indexName="idx_cbc_cat_admins_cat_id">
+		   <column name="category_id"/>
+		</createIndex>                                      
+                                 
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="cbc_category_admins"
+                                 constraintName="cbc_cat_admin_user_fk"
+                                 referencedColumnNames="id"
+                                 referencedTableName="cbc_users"/>
+        
+        <createIndex tableName="cbc_category_admins" indexName="idx_cbc_cat_admins_user_id">
+		   <column name="user_id"/>
+		</createIndex>
+        
+        
+        <createTable tableName="cbc_interest_groups">
+        	<column name="category_id" type="bigint"  >
+                <constraints nullable="false"/>
+            </column>
+            <column name="id" type="bigint"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="node_ref" type="varchar(100)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(1024)">
+                <constraints nullable="false"/>
+            </column>
+			<column name="title" type="varchar(1024)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="is_public" type="boolean">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="is_registered" type="boolean">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="is_apply_for_membership" type="boolean">
+            	<constraints nullable="false"/>
+            </column>
+        </createTable>
+        
+        <addForeignKeyConstraint baseColumnNames="category_id"
+                                 baseTableName="cbc_interest_groups"
+                                 constraintName="cbc_interest_groups_cat_fk"
+                                 referencedColumnNames="id"
+                                 referencedTableName="cbc_categories"/>
+        <createIndex tableName="cbc_interest_groups" indexName="idx_cbc_int_grp_cat_id">
+		   <column name="category_id"/>
+		</createIndex>                         
+                                 
+        
+        <createTable tableName="cbc_profiles">
+        	<column name="ig_id" type="bigint"  >
+                <constraints nullable="false"/>
+            </column>
+            <column name="id" type="bigint"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="alfresco_group" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="node_ref" type="varchar(100)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            
+            <column name="name" type="varchar(1024)">
+                <constraints nullable="false"/>
+            </column>
+			<column name="title" type="varchar(1024)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="dir_perm" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="inf_perm" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lib_perm" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="nws_perm" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="eve_perm" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_visible" type="boolean">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="is_imported" type="boolean">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="is_exported" type="boolean">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="ig_from_node_ref" type="varchar(100)">
+            	<constraints nullable="true"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="ig_id"
+                                 baseTableName="cbc_profiles"
+                                 constraintName="cbc_profiles_ig_fk"
+                                 referencedColumnNames="id"
+                                 referencedTableName="cbc_interest_groups"/>
+        
+        <createTable tableName="cbc_profile_users">
+        	<column name="user_id" type="bigint"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="alfresco_group" type="varchar(200)"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+        </createTable>
+		
+		<createIndex tableName="cbc_profile_users" indexName="idx_cbc_prof_usr_alf_grp">
+		   <column name="alfresco_group"/>
+		</createIndex> 
+                                 
+         <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="cbc_profile_users"
+                                 constraintName="cbc_profile_users_user_fk"
+                                 referencedColumnNames="id"
+                                 referencedTableName="cbc_users"/>
+                                 
+           <createTable tableName="cbc_cat_title_trans">
+            <column name="cat_id" type="bigint"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="alf_locale_id" type="bigint">
+            	<constraints primaryKey="true"  nullable="false"/>
+            </column>
+			<column name="translation" type="varchar(1024)">
+                <constraints nullable="true"/>
+            </column>
+            </createTable>
+            <addForeignKeyConstraint baseColumnNames="cat_id"
+                                 baseTableName="cbc_cat_title_trans"
+                                 constraintName="cbc_cat_title_trans_cat_fk"
+                                 referencedColumnNames="id"
+                                 referencedTableName="cbc_categories"/>
+           
+            <createTable tableName="cbc_ig_trans">
+            <column name="ig_id" type="bigint"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="alf_locale_id" type="bigint">
+            	<constraints primaryKey="true"  nullable="false"/>
+            </column>
+			<column name="title_translation" type="varchar(1024)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="light_desc_translation" type="varchar(1024)">
+                <constraints nullable="true"/>
+            </column>
+            </createTable>
+            
+            
+            <addForeignKeyConstraint baseColumnNames="ig_id"
+                                 baseTableName="cbc_ig_trans"
+                                 constraintName="cbc_ig_trans_ig_fk"
+                                 referencedColumnNames="id"
+                                 referencedTableName="cbc_interest_groups"/>
+            
+            <createTable tableName="cbc_profile_title_trans">
+            <column name="profile_id" type="bigint"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="alf_locale_id" type="bigint">
+            	<constraints primaryKey="true"  nullable="false"/>
+            </column>
+			<column name="translation" type="varchar(1024)">
+                <constraints nullable="true"/>
+            </column>
+            </createTable>
+                        
+             <addForeignKeyConstraint baseColumnNames="profile_id"
+                                 baseTableName="cbc_profile_title_trans"
+                                 constraintName="cbc_prof_title_trans_pro_fk"
+                                 referencedColumnNames="id"
+                                 referencedTableName="cbc_profiles"/>
+            <createView viewName="v_cbc_ig_trans" replaceIfExists="true" >
+            	select cbc_ig_trans.ig_id, max(cbc_ig_trans.light_desc_translation) as 'light_desc_translation',
+  				max(cbc_ig_trans.title_translation) as 'title_translation'
+				from cbc_ig_trans
+				group by cbc_ig_trans.ig_id
+            </createView>
+    </changeSet>
+    <changeSet id="10032" author="Slobodan Filipovic" dbms="mysql"   >
+    	<modifyColumn tableName="cbc_users"> 
+	    	<column name="ecas_user_name" type="varchar(100)">
+	    	</column>
+    	</modifyColumn>
+    </changeSet>
+    <changeSet id="10033" author="Slobodan Filipovic" dbms="mysql"   >
+    	<modifyColumn tableName="cbc_users"> 
+	    	<column name="user_name" type="varchar(100)">
+	    	</column>
+    	</modifyColumn>
+    </changeSet>
+    
+    <changeSet id="10034" author="Slobodan Filipovic" dbms="mysql"   >
+    	<createIndex tableName="cbc_profiles" indexName="idx_cbc_prof_ig_id">
+		   <column name="ig_id"/>
+		</createIndex>
+    </changeSet>
+
+	<changeSet id="10035" author="Slobodan Filipovic" dbms="mysql"   >
+		<createTable tableName="cbc_circabc_admins">
+			<column name="user_id" type="bigint"  >
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="profile_name" type="varchar(100)">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+		<addForeignKeyConstraint baseColumnNames="user_id"
+								 baseTableName="cbc_circabc_admins"
+								 constraintName="cbc_circabc_admins_user_fk"
+								 referencedColumnNames="id"
+								 referencedTableName="cbc_users"/>
+	</changeSet>
+
+	<changeSet id="10036" author="Pierre Beauregard" dbms="mysql">
+		<addColumn tableName="cbc_categories">
+	        <column name="logo_ref" type="varchar(255)"/>
+	    </addColumn>
+	</changeSet>
+
+	<changeSet id="10037" author="Pierre Beauregard" dbms="mysql">
+		<addColumn tableName="cbc_interest_groups">
+	        <column name="logo_ref" type="varchar(255)"/>
+	    </addColumn>
+	</changeSet>
+            
+</databaseChangeLog>

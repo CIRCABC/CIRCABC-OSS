@@ -1,0 +1,1190 @@
+<!--+
+    |     Copyright European Community 2006 - Licensed under the EUPL V.1.0
+    |
+    |  		   http://ec.europa.eu/idabc/en/document/6523
+    |
+    +-->
+
+<!-- Here Only the new Circabc specific WAI (and not Alfresco native) actions and action groups -->
+
+<alfresco-config>
+	<config>
+		<actions>
+			<!-- Actions available in the wai web client -->
+
+			<!-- Download document -->
+			<action id="download_doc_wai">
+				<label-id>download_doc</label-id>
+				<image>/images/icons/download_doc.gif</image>
+				<href>#{actionContext.downloadUrl}</href>
+			</action>
+			
+			<!-- Alternative Download document -->
+         	<action id="alternative_download_doc">
+             	<label-id>alternative_download_doc</label-id>
+             	<image>/images/icons/download_doc.gif</image>
+             	<href>#{actionContext.alternativeDownloadUrl}</href>
+         	</action>
+			
+			<!-- Alternative Download document -->
+         	<action id="alternative_browse_doc">
+             	<label-id>alternative_browse_doc</label-id>
+             	<image>/images/icons/download_doc.gif</image>
+             	<href>#{actionContext.alternativeBrowseUrl}</href>
+         	</action>
+
+			<!-- View document details -->
+			<action id="details_doc_wai">
+				<label-id>view_details</label-id>
+				<image>/images/icons/View_details.gif</image>
+				<action-listener>
+					#{BrowseBean.clickWai}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">details_doc_wai_#{actionContext.name}</param>
+				</params>
+			</action>
+
+			<!-- edit document properties  -->
+			<action id="edit_details_doc_wai">
+				<permissions>
+					<permission allow="true">Write</permission>
+				</permissions>
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.NodeEditableEvaluator
+				</evaluator>
+				<label-id>modify_content_properties</label-id>
+				<tooltip-id>edit_content_description</tooltip-id>
+				<image>/images/icons/edit_properties.gif</image>
+				<action>wai:dialog:editNodePropertiesWai</action>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">edit_details_doc_wai_#{actionContext.name}</param>
+					<param name="service">Library</param>
+					<param name="activity">EditDocumentProperties</param>
+				</params>
+			</action>
+
+			<!-- document history  -->
+			<action id="history">
+				<permissions>
+					<permission allow="true">Write</permission>
+				</permissions>
+				<label-id>history</label-id>
+				<tooltip-id>history_description</tooltip-id>
+				<image>/images/icons/versionHistory_icon.gif</image>
+				<action>wai:dialog:documentHistoryDialogWai</action>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">history_#{actionContext.name}</param>
+				</params>
+			</action>
+
+			<!-- Delete document WAI Page -->
+			<action id="delete_doc_wai">
+				<permissions>
+					<permission allow="true">Delete</permission>
+				</permissions>
+				<evaluator>
+					org.alfresco.web.action.evaluator.DeleteDocEvaluator
+				</evaluator>
+				<label-id>delete</label-id>
+				<image>/images/icons/delete.gif</image>
+				<action>wai:dialog:deleteNodeWai</action>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">delete_doc_wai_#{actionContext.name}</param>
+					<param name="service">Library</param>
+					<param name="activity">DeleteDocument</param>
+				</params>
+			</action>
+
+			<!-- Add a translation WAI PAGE -->
+			<action id="add_translation_wai">
+				<evaluator>
+					org.alfresco.web.action.evaluator.AddTranslationEvaluator
+				</evaluator>
+				<label-id>add_translation_action_wai</label-id>
+				<tooltip-id>
+					add_translation_action_tooltip_wai
+				</tooltip-id>
+				<image>/images/icons/add_tranlsation.gif</image>
+				<action-listener>
+					#{CircabcAddTranslationBean.start}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">add_translation_wai_#{actionContext.name}</param>
+					<param name="service">Library</param>
+					<param name="activity">AddTranslation</param>
+				</params>
+			</action>
+
+			<action id="add_translation_without_content_wai">
+				<evaluator>
+					org.alfresco.web.action.evaluator.AddTranslationEvaluator
+				</evaluator>
+				<label-id>add_translation_without_content_action_wai</label-id>
+				<tooltip-id>
+					add_translation_without_content_action_tooltip_wai
+				</tooltip-id>
+				<image>/images/icons/add_tranlsation.gif</image>
+				<action>wai:dialog:addTranslationWithoutContentWai</action>
+				<action-listener>
+					#{WaiDialogManager.setupParameters}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">add_translation_without_content_wai_#{actionContext.name}</param>
+					<param name="service">Library</param>
+					<param name="activity">AddTranslationWithoutContent</param>
+				</params>
+			</action>
+
+			<!-- Manage ml container details WAI PAGE -->
+			<action id="change_ml_details_wai">
+				<permissions>
+					<permission allow="true">Write</permission>
+				</permissions>
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.ModifyMLDetailsEvaluator
+				</evaluator>
+				<label-id>edit_ml_container_action_wai</label-id>
+				<tooltip-id>
+					edit_ml_container_action_tooltip_wai
+				</tooltip-id>
+				<image>/images/icons/edit_properties.gif</image>
+				<action>wai:dialog:editNodePropertiesWai</action>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">change_ml_details_wai_#{actionContext.name}</param>
+					<param name="service">Library</param>
+					<param name="activity">EditMLDocumentProperties</param>
+				</params>
+			</action>
+			<!-- Change own password WAI PAGE -->
+			<action id="change_own_password_wai">
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.CircabcOSSEvaluator
+				</evaluator>
+				<label-id>change_own_password_action_wai</label-id>
+				<tooltip-id>
+					change_own_password_action_tooltip_wai
+				</tooltip-id>
+				<image>/images/icons/change_password.gif</image>
+				<action>wai:dialog:changeOwnPasswordWai</action>
+				<params>
+					<param name="imageName">change_own_password_wai_#{actionContext.userName}</param>
+				</params>
+			</action>
+
+			<!-- View user membership WAI PAGE -->
+			<action id="view_user_membership_wai">
+				<label-id>view_user_membership_action_wai</label-id>
+				<tooltip-id>
+					view_user_membership_action_tooltip_wai
+				</tooltip-id>
+				<image>/images/icons/change_password.gif</image>
+				<action>wai:dialog:viewUserMembershipWai</action>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+				<params>
+					<param name="profileUserName">#{actionContext.userName}</param>
+				</params>
+			</action>
+			
+			<!-- View user membership WAI PAGE for ADMIN-->
+			<action id="view_user_membership_wai_admin">
+				<label-id>view_user_membership_action_wai</label-id>
+				<tooltip-id>
+					view_user_membership_action_tooltip_wai
+				</tooltip-id>
+				<image>/images/icons/group.gif</image>
+				<action>wai:dialog:viewUserMembershipWai</action>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+				<params>
+					<param name="profileUserName">#{actionContext.userName}</param>
+				</params>
+			</action>
+			
+			<!-- View user calendar WAI PAGE -->
+			<action id="view_user_calendar_wai">
+				<label-id>view_user_calendar_action_wai</label-id>
+				<tooltip-id>
+					view_user_calendar_action_tooltip_wai
+				</tooltip-id>
+				<image>/images/extension/icons/events-16.gif</image>
+				<action>wai:dialog:viewEventsMeetingWai</action>
+				<action-listener>
+					#{WaiDialogManager.setupParameters}
+				</action-listener>
+				<params>
+					<param name="igSelection">all</param>
+					<param name="imageName">view_user_calendar_wai_#{actionContext.userName}</param>
+				</params>
+			</action>
+
+			<!-- View user saved search WAI PAGE -->
+			<action id="view_user_saved_serch_wai">
+				<label-id>view_user_saved_serch_wai</label-id>
+				<tooltip-id>
+					view_user_saved_serch_action_tooltip_wai
+				</tooltip-id>
+				<image>/images/icons/search_icon.gif</image>
+				<action>wai:dialog:viewUserSavedSearchWai</action>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+				<params>
+					<param name="mode">user</param>
+				</params>
+			</action>
+			
+			
+			<!-- View public user saved search WAI PAGE -->
+			<action id="view_global_saved_serch_wai">
+				<label-id>view_ig_saved_serch_wai</label-id>
+				<tooltip-id>
+					view_ig_saved_serch_action_tooltip_wai
+				</tooltip-id>
+				<image>/images/icons/search_icon.gif</image>
+				<action>wai:dialog:viewUserSavedSearchWai</action>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="mode">global</param>
+				</params>
+			</action>
+			<!-- Cancel checkout document WAI PAGE -->
+			<action id="cancelcheckout_doc_wai">
+				<evaluator>
+					org.alfresco.web.action.evaluator.CancelCheckoutDocEvaluator
+				</evaluator>
+				<label-id>undocheckout_action_wai</label-id>
+				<tooltip-id>undocheckout_action_tooltip_wai</tooltip-id>
+				<image>/images/icons/undo_checkout.gif</image>
+				<action>wai:dialog:undoCheckOutWai</action>
+				<action-listener>
+					#{WaiDialogManager.setupParameters}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">cancelcheckout_doc_wai_#{actionContext.name}</param>
+					<param name="service">Library</param>
+					<param name="activity">CancelCheckout</param>
+				</params>
+			</action>
+
+			<!-- Checkin document WAI PAGE -->
+			<action id="checkin_doc_wai">
+				<evaluator>
+					org.alfresco.web.action.evaluator.CheckinDocEvaluator
+				</evaluator>
+				<label-id>checkin_action_wai</label-id>
+				<tooltip-id>checkin_action_tooltip_wai</tooltip-id>
+				<image>/images/icons/CheckIn_icon.gif</image>
+				<action>wai:dialog:checkInContentWai</action>
+				<action-listener>
+					#{CircabcCCCheckinFileDialog.start}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">checkin_doc_wai_#{actionContext.name}</param>
+					<param name="service">Library</param>
+					<param name="activity">Checkin</param>
+				</params>
+			</action>
+
+			<!-- Checkout document WAI PAGE -->
+			<action id="checkout_doc_wai">
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.CheckoutDocUrlEvaluator
+				</evaluator>
+				<label-id>checkout_action_wai</label-id>
+				<tooltip-id>checkout_action_tooltip_wai</tooltip-id>
+				<image>/images/icons/CheckOut_icon.gif</image>
+				<action-listener>
+					#{CircabcCCCheckoutFileDialog.checkoutFileDirect}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">checkout_doc_wai_#{actionContext.name}</param>
+					<param name="service">Library</param>
+					<param name="activity">Checkout</param>
+				</params>
+			</action>
+
+			<!-- Update document WAI PAGE -->
+			<action id="update_doc_wai">
+				<permissions>
+					<permission allow="true">Write</permission>
+				</permissions>
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.UpdateDocUrlEvaluator
+				</evaluator>
+				<label-id>update_doc_action_wai</label-id>
+				<tooltip-id>update_doc_action_tooltip_wai</tooltip-id>
+				<image>/images/icons/update.gif</image>
+				<action>wai:dialog:updateContentWai</action>
+				<action-listener>
+					#{CircabcCCUpdateFileDialog.start}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">update_doc_wai_#{actionContext.name}</param>
+					<param name="service">Library</param>
+					<param name="activity">UpdateDocument</param>
+				</params>
+			</action>
+
+			<!-- Edit in Office WAI PAGE -->
+			<action id="edit_in_office_wai">
+				<permissions>
+					<permission allow="true">Write</permission>
+				</permissions>
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.EditInOfficeEvaluator
+				</evaluator>
+				<label-id>edit_in_office_action_wai</label-id>
+				<tooltip-id>edit_in_office_tooltip</tooltip-id>
+				<image>/images/extension/icons/edit-in-office-action.png</image>
+				<action>wai:dialog:editInOfficeWai</action>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">edit_in_office_wai_#{actionContext.name}</param>
+					<param name="service">Library</param>
+					<param name="activity">EditInOffice</param>
+				</params>
+			</action>
+
+			<!-- Delete user WAI PAGE - TODO -->
+			<action id="delete_user_wai">
+				<label-id>delete_user_action_wai</label-id>
+				<tooltip-id>delete_user_action_tooltip_wai</tooltip-id>
+				<image>/images/icons/delete_person.gif</image>
+				<action>wai:dialog:deleteUserWai</action>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">delete_user_wai_#{actionContext.userName}</param>
+					<param name="service">Directory</param>
+					<param name="activity">DeleteUser</param>
+				</params>
+			</action>
+
+			<!-- Edit user profile WAI PAGE - TODO-->
+			<action id="edit_user_profile_wai">
+				<label-id>edit_user_profile_action_wai</label-id>
+				<tooltip-id>
+					edit_user_profile_action_tooltip_wai
+				</tooltip-id>
+				<image>/images/icons/edituser.gif</image>
+				<action>wai:dialog:editUserProfileDialogWai</action>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">edit_user_profile_wai_#{actionContext.userName}</param>
+					<param name="service">Directory</param>
+					<param name="activity">EditUserProfile</param>
+				</params>
+			</action>
+
+			<!-- Make a document multilingual WAI PAGE -->
+			<action id="make_doc_multilingual_wai">
+				<permissions>
+					<permission allow="true">Write</permission>
+				</permissions>
+				<evaluator>
+					org.alfresco.web.action.evaluator.MakeMultilingualEvaluator
+				</evaluator>
+				<label-id>make_multilingual_action_wai</label-id>
+				<tooltip-id>
+					make_multilingual_action_tooltip_wai
+				</tooltip-id>
+				<image>/images/icons/make_ml.gif</image>
+				<action>wai:dialog:makeMultilingualWai</action>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">make_doc_multilingual_wai_#{actionContext.name}</param>
+					<param name="service">Library</param>
+					<param name="activity">MakeMultilingualDocument</param>
+				</params>
+			</action>
+
+			<!-- View document details -->
+			<action id="ml_details_wai">
+				<evaluator>
+					org.alfresco.web.action.evaluator.AddTranslationEvaluator
+				</evaluator>
+				<label-id>manage_multilingual_details_action_wai</label-id>
+				<tooltip-id>
+					manage_multilingual_details_tooltip_action_wai
+				</tooltip-id>
+				<image>/images/icons/multilingual_details.gif</image>
+				<action-listener>
+					#{BrowseBean.clickWaiMLContainer}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">ml_details_wai_#{actionContext.name}</param>
+				</params>
+			</action>
+
+			<!-- New edition WAI PAGE -->
+			<action id="new_edition_wai">
+				<permissions>
+					<permission allow="true">Write</permission>
+				</permissions>
+				<evaluator>
+					org.alfresco.web.action.evaluator.NewEditionEvaluator
+				</evaluator>
+				<label-id>new_edition_action_wai</label-id>
+				<tooltip-id>new_edition_action_tooltip_wai</tooltip-id>
+				<image>/images/icons/new_edition_icon.gif</image>
+				<action>wai:dialog:newEditionWai</action>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">new_edition_wai_#{actionContext.name}</param>
+					<param name="service">Library</param>
+					<param name="activity">CreateNewEdition</param>
+				</params>
+			</action>
+
+			<action id="mt_translate_doc_wai">
+				<permissions>
+					<permission allow="true">Write</permission>
+				</permissions>
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.MachineTranslationEvaluator
+				</evaluator>
+				<label-id>machine_translate_doc_action_wai</label-id>
+				<tooltip-id>mt_translate_doc_action_tooltip_wai</tooltip-id>
+				<image>/images/icons/new_edition_icon.gif</image>
+				<action>wai:dialog:machineTranslationContentWai</action>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">mt_translate_doc_wai_#{actionContext.name}</param>
+					<param name="service">Machine translation</param>
+					<param name="activity">Document translation</param>
+				</params>
+			</action>
+
+			<action id="mt_translate_prop_wai">
+				<permissions>
+					<permission allow="true">Write</permission>
+				</permissions>
+				<evaluator>
+					org.alfresco.web.action.evaluator.AddTranslationEvaluator
+				</evaluator>
+				<label-id>mt_translate_prop_action_wai</label-id>
+				<tooltip-id>mt_translate_prop_action_tooltip_wai</tooltip-id>
+				<image>/images/icons/new_edition_icon.gif</image>
+				<action>wai:dialog:machineTranslationPropertytWai</action>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">mt_translate_doc_wai_#{actionContext.name}</param>
+					<param name="service">Machine Translation</param>
+					<param name="activity">Property translation</param>
+				</params>
+			</action>
+
+			<!-- Reset user password WAI PAGE -->
+			<action id="reset_user_password_wai">
+				<label-id>reset_user_password_action_wai</label-id>
+				<tooltip-id>
+					reset_user_password_action_tooltip_wai
+				</tooltip-id>
+				<image>/images/icons/change_password.gif</image>
+				<action>wai:dialog:resetUserPasswordWai</action>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">reset_user_password_wai_#{actionContext.userName}</param>
+					<param name="service">Directory</param>
+					<param name="activity">ResetPassword</param>
+				</params>
+			</action>
+
+			<!-- View user detail WAI PAGE -->
+			<action id="view_user_details_wai">
+				<label-id>view_user_details_action_wai</label-id>
+				<tooltip-id>
+					view_user_details_action_tooltip_wai
+				</tooltip-id>
+				<image>/images/icons/user_console.gif</image>
+				<action>wai:dialog:viewUserDetailsWai</action>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">view_user_details_wai_#{actionContext.userName}</param>
+				</params>
+			</action>
+
+			<!-- View user detail WAI PAGE but without action panel -->
+			<action id="view_user_details_no_actions_wai">
+				<label-id>view_user_details_action_wai</label-id>
+				<tooltip-id>
+					view_user_details_action_tooltip_wai
+				</tooltip-id>
+				<image>/images/icons/user_console.gif</image>
+				<action>wai:dialog:viewUserDetailsNoActionsWai</action>
+				<action-listener>
+				    #{WaiDialogManager.setupParameters}
+				</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">view_user_details_wai_#{actionContext.userName}</param>
+				</params>
+			</action>
+
+			<!-- apply Versionable -->
+			<action id="apply_versionable">
+				<evaluator>
+					eu.cec.digit.circabc.action.evaluator.ApplyVersionableEvaluator
+				</evaluator>
+				<permissions>
+					<permission allow="true">Write</permission>
+				</permissions>
+				<label-id>allow_versioning</label-id>
+				<tooltip-id>allow_versioning</tooltip-id>
+				<image>/images/icons/make_versionable.gif</image>
+				<action-listener>#{ManageNodeDetailsDialog.applyVersionable}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">apply_versionable_#{actionContext.name}</param>
+					<param name="service">Library</param>
+					<param name="activity">Make versionable</param>
+				</params>
+			</action>
+
+			<action id="cut_node">
+			    <evaluator>eu.cec.digit.circabc.action.evaluator.DiscussionCutEvaluator</evaluator>
+			    <permissions>
+			       <permission allow="true">Delete</permission>
+			    </permissions>
+			    <label-id>cut</label-id>
+			    <image>/images/icons/cut.gif</image>
+			    <action-listener>#{ClipboardBean.cutNode}</action-listener>
+			    <params>
+					<param name="ref">#{actionContext.nodeRef}</param>
+					<param name="imageName">cut_node_#{actionContext.name}</param>
+			    </params>
+			 </action>
+
+			 <action id="copy_node">
+			    <evaluator>eu.cec.digit.circabc.action.evaluator.DiscussionCopyEvaluator</evaluator>
+			    <label-id>copy</label-id>
+			    <image>/images/icons/copy.gif</image>
+			    <action-listener>#{ClipboardBean.copyNode}</action-listener>
+			    <params>
+					<param name="ref">#{actionContext.nodeRef}</param>
+					<param name="imageName">copy_node_#{actionContext.name}</param>
+			    </params>
+			 </action>
+
+	         <!-- Take Ownership of document -->
+	         <action id="take_ownership_doc">
+	            <permissions>
+	               <permission allow="true">TakeOwnership</permission>
+	            </permissions>
+	            <evaluator>org.alfresco.web.action.evaluator.TakeOwnershipDocEvaluator</evaluator>
+	            <label-id>take_ownership</label-id>
+	            <image>/images/icons/take_ownership.gif</image>
+	            <action-listener>#{ManageNodeDetailsDialog.takeOwnership}</action-listener>
+			    <params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">take_ownership_doc_#{actionContext.name}</param>
+					<param name="service">Library</param>
+					<param name="activity">Take ownership document</param>
+			    </params>
+	         </action>
+
+	         <!-- Take Ownership of space -->
+	         <action id="take_ownership_space">
+	            <permissions>
+	               <permission allow="true">TakeOwnership</permission>
+	            </permissions>
+	            <label-id>take_ownership</label-id>
+	            <image>/images/icons/take_ownership.gif</image>
+	            <action-listener>#{ManageNodeDetailsDialog.takeOwnership}</action-listener>
+			    <params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">take_ownership_space_#{actionContext.name}</param>
+					<param name="service">Library</param>
+					<param name="activity">Take ownership space</param>
+			    </params>
+	         </action>
+
+			<!-- View space details -->
+			<action id="details_space_wai">
+				<permissions>
+					<permission allow="true">Read</permission>
+				</permissions>
+			   <label-id>view_details</label-id>
+			   <image>/images/icons/View_details.gif</image>
+			   <action>wai:dialog:manageNodeDetailsWai</action>
+			   <action-listener>#{WaiDialogManager.setupParameters}</action-listener>
+			   <params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="imageName">details_space_wai_#{actionContext.name}</param>
+			   </params>
+			</action>
+
+			<!-- edit space properties  -->
+			<action id="edit_space_properties_wai">
+				<permissions>
+					<permission allow="true">WriteProperties</permission>
+				</permissions>
+				<label>#{WaiLeftMenuBean.editPropertiesLabel}</label>
+				<tooltip-id>edit_space_action_description</tooltip-id>
+				<image>/images/icons/edit_properties.gif</image>
+				<action>wai:dialog:editNodePropertiesWai</action>
+			    <action-listener>
+					#{WaiDialogManager.setupParameters}
+			    </action-listener>
+			    <params>
+			        <param name="id">#{actionContext.id}</param>
+					<param name="imageName">edit_space_properties_wai_#{actionContext.name}</param>
+					<param name="service">Library</param>
+					<param name="activity">EditSpaceProperties</param>
+			    </params>
+			</action>
+
+			<!-- manage share space  -->
+			<action id="manage_share_space_wai">
+				<permissions>
+					<permission allow="true">Write</permission>
+				</permissions>
+				<label-id>manage_share_space_action_label</label-id>
+				<tooltip-id>manage_share_space_action_description</tooltip-id>
+				<image>/images/icons/import_website.gif</image>
+				<action>wai:dialog:manageShareSpaceDialog</action>
+			    <action-listener>
+					#{WaiDialogManager.setupParameters}
+			    </action-listener>
+			    <params>
+			        <param name="id">#{actionContext.id}</param>
+					<param name="imageName">manage_share_space_wai_#{actionContext.name}</param>
+			    </params>
+			</action>
+
+			<!-- Delete space -->
+			<action id="delete_space_wai">
+			   <permissions>
+			      <permission allow="true">Delete</permission>
+			   </permissions>
+			   <label-id>delete</label-id>
+			   <image>/images/icons/delete.gif</image>
+			   <action>wai:dialog:deleteNodeWai</action>
+			   <action-listener>
+				    #{WaiDialogManager.setupParameters}
+			   </action-listener>
+			   <params>
+			      <param name="id">#{actionContext.id}</param>
+				  <param name="imageName">delete_space_wai_#{actionContext.name}</param>
+				  <param name="service">Library</param>
+				  <param name="activity">Delete space</param>
+			   </params>
+			</action>
+
+			<!-- edit dossier properties  -->
+			<action id="edit_dossier_properties_wai">
+				<permissions>
+					<permission allow="true">Write</permission>
+				</permissions>
+				<label-id>edit_dossier_action_title</label-id>
+				<tooltip-id>edit_dossier_action_description</tooltip-id>
+				<image>/images/icons/edit_properties.gif</image>
+				<action>wai:dialog:editNodePropertiesWai</action>
+			    <action-listener>
+				    #{WaiDialogManager.setupParameters}
+			    </action-listener>
+			    <params>
+			        <param name="id">#{actionContext.id}</param>
+					<param name="imageName">edit_dossier_properties_wai_#{actionContext.name}</param>
+					<param name="service">Library</param>
+				  	<param name="activity">EditDossierProperties</param>
+			    </params>
+			</action>
+
+			<!-- Delete dossier -->
+			<action id="delete_dossier_wai">
+			   <permissions>
+			      <permission allow="true">Delete</permission>
+			   </permissions>
+			   <label-id>delete</label-id>
+			   <image>/images/icons/delete.gif</image>
+			   <action>wai:dialog:deleteNodeWai</action>
+			   <action-listener>
+				    #{WaiDialogManager.setupParameters}
+			   </action-listener>
+			   <params>
+			      <param name="id">#{actionContext.id}</param>
+    			  <param name="imageName">delete_dossier_wai_#{actionContext.name}</param>
+    			  <param name="service">Library</param>
+				  <param name="activity">DeleteDossier</param>
+			   </params>
+			</action>
+
+			<!-- save search -->
+			<action id="save_search_wai">
+			   <label-id>save_new_search</label-id>
+			   <tooltip-id>save_search_description</tooltip-id>
+			   <image>/images/icons/save_search.gif</image>
+			   <action>wai:dialog:saveSearchWai</action>
+			   <action-listener>
+				    #{WaiDialogManager.setupParameters}
+			   </action-listener>
+			   <params>
+			      <param name="id">#{actionContext.id}</param>
+    			  <param name="imageName">save_search_wai_#{actionContext.name}</param>
+    			  <param name="service">Search</param>
+				  <param name="activity">SaveSearch</param>
+			   </params>
+			</action>
+			
+			<!-- edit search -->
+			<action id="edit_search_wai">
+			   <label-id>save_edit_search</label-id>
+			   <tooltip-id>edit_search_description</tooltip-id>
+			   <image>/images/icons/edit_search.gif</image>
+			   <action>wai:dialog:editSearchWai</action>
+			   <action-listener>
+				    #{WaiDialogManager.setupParameters}
+			   </action-listener>
+			   <params>
+			      <param name="id">#{actionContext.id}</param>
+    			  <param name="imageName">edit_search_wai_#{actionContext.name}</param>
+    			  <param name="service">Search</param>
+				  <param name="activity">EditSearch</param>
+			   </params>
+			</action>
+
+			<action id="edit_document_inline_wai">
+			   <evaluator>eu.cec.digit.circabc.action.evaluator.EditInlineDocumentEvaluator</evaluator>
+			   <permissions>
+			      <permission allow="true">Write</permission>
+			   </permissions>
+			   <label-id>edit_inline_action_title</label-id>
+			   <tooltip-id>edit_inline_action_description</tooltip-id>
+			   <image>/images/icons/edit_online.gif</image>
+			   <action>wai:dialog:editDocumentInlineWai</action>
+			   <action-listener>
+				    #{WaiDialogManager.setupParameters}
+			   </action-listener>
+			   <params>
+			      <param name="id">#{actionContext.id}</param>
+			 	  <param name="imageName">edit_document_inline_wai_#{actionContext.name}</param>
+			 	  <param name="service">Library</param>
+				  <param name="activity">InlineEditDocument</param>
+			   </params>
+			</action>
+
+			<action id="configure_auto_upload_wai">
+			   <evaluator>eu.cec.digit.circabc.action.evaluator.ConfigureAutoUploadEvaluator</evaluator>
+			   <permissions>
+			      <permission allow="true">Write</permission>
+			   </permissions>
+			   <label-id>configure_auto_upload_action_title</label-id>
+			   <tooltip-id>configure_auto_upload_action_description</tooltip-id>
+			   <image>/images/icons/edit_properties.gif</image>
+			   <action>wai:dialog:configureAutoUploadWai</action>
+			   <action-listener>
+				    #{WaiDialogManager.setupParameters}
+			   </action-listener>
+			   <params>
+			      <param name="id">#{actionContext.id}</param>
+			 	  <param name="imageName">edit_document_inline_wai_#{actionContext.name}</param>
+			 	  <param name="service">Library</param>
+				  <param name="activity">configureAutoUpload</param>
+			   </params>
+			</action>
+			
+			<!-- External repositories actions -->
+			<action id="external_repositories_publish_in">
+			   <evaluator>eu.cec.digit.circabc.action.evaluator.ExternalRepositoryActionEvaluator</evaluator>
+			   <permissions>
+			      <permission allow="true">Write</permission>
+			   </permissions>
+			   <label-id>details_external_repositories_action_publish</label-id>
+			   <tooltip-id>details_external_repositories_action_publish_description</tooltip-id>
+			   <image>/images/extension/publish_in_external_repository_small.png</image>
+			   <action>wai:dialog:publishInExternalRepositoriesWai</action>
+			   <action-listener>
+				    #{WaiDialogManager.setupParameters}
+			   </action-listener>
+			   <params>
+			      <param name="id">#{actionContext.id}</param>
+			 	  <param name="imageName">edit_document_inline_wai_#{actionContext.name}</param>
+			 	  <param name="service">HRS</param>
+				  <param name="activity">Register - Workflow</param>
+			   </params>
+			</action>
+			
+			<!-- Action groups available in the wai web client -->
+			
+			<!-- Actions for delete user ( ~~ members) WAI Page -->
+			<action-group id="members_results_delete_wai">
+				<action idref="delete_user_wai" />
+			</action-group>
+
+			<!-- Actions for edit user profile ( ~~ members) WAI Page -->
+			<action-group id="members_results_edit_wai">
+				<action idref="edit_user_profile_wai" />
+			</action-group>
+
+			<!-- Actions for reset user password ( ~~ members) WAI Page -->
+			<action-group id="members_results_reset_wai">
+				<action idref="reset_user_password_wai" />
+			</action-group>
+
+			<!-- Actions for view user profile ( ~~ members) WAI Page -->
+			<action-group id="members_results_view_wai">
+				<action idref="view_user_details_wai" />
+			</action-group>
+
+			<!-- Actions for view user profile ( ~~ members) WAI Page but without action panel -->
+			<action-group id="members_results_view_no_actions_wai">
+				<action idref="view_user_details_no_actions_wai" />
+			</action-group>
+
+			<!-- Actions for manage my account WAI Page -->
+			<action-group id="user_account_actions_wai">
+				<action idref="view_user_membership_wai" />
+				<action idref="view_user_calendar_wai" />
+			</action-group>
+			
+			<!-- Actions for manage my account WAI Page -->
+			<action-group id="other_user_account_actions_wai">
+				<action idref="view_user_membership_wai" />
+			</action-group>	
+
+			<!-- Actions for manage my account WAI Page for ADMIN -->
+			<action-group id="other_user_account_actions_wai_admin">
+				<action idref="view_user_membership_wai_admin" />
+			</action-group>	
+
+			<!-- Actions for a container in the Library Browse WAI Page -->
+			<action-group id="space_browse_library_wai">
+				<show-link>false</show-link>
+				<action idref="details_space_wai" />
+				<action idref="copy_node" />
+			</action-group>
+
+			<!-- Actions for a container in the Search Results WAI Page -->
+			<action-group id="space_browse_search_library_wai">
+				<show-link>false</show-link>
+				<action idref="details_space_wai" />
+				<action idref="copy_node" />
+			</action-group>
+
+			<!-- Actions for a container in the View Space Details -->
+			<action-group id="space_details_actions_wai">
+				<action idref="edit_space_properties_wai" />
+				<action idref="delete_space_wai" />
+				<action idref="cut_node" />
+				<action idref="copy_node" />
+				<action idref="take_ownership_space" />
+				<action idref="edit_own_notification_status" />
+				<action idref="manage_share_space_wai" />
+				<action idref="history"/>
+			</action-group>
+
+			<!-- Actions for a container in the View Dossier Details -->
+			<action-group id="dossier_details_actions_wai">
+				<action idref="edit_dossier_properties_wai" />
+				<action idref="delete_dossier_wai" />
+				<action idref="cut_node" />
+				<action idref="copy_node" />
+				<action idref="take_ownership_space" />
+				<action idref="mail_me_dossier" />
+				<action idref="edit_own_notification_status" />
+				<action idref="history"/>
+			</action-group>
+
+			<!-- Actions for a content detail of a space link WAI Page -->
+			<action-group id="link_details_actions_wai">
+				<show-link>false</show-link>
+				<action idref="edit_details_doc_wai" />
+				<action idref="cut_node" />
+				<action idref="copy_node" />
+				<action idref="delete_doc_wai" />
+				<action idref="mailMe_node" />
+				<action idref="edit_own_notification_status" />
+			</action-group>
+
+			<!-- Actions for manage multilingual container WAI Page -->
+			<action-group id="manage_multilingual_container_wai">
+				<show-link>false</show-link>
+				<action idref="change_ml_details_wai" />
+				<action idref="cut_node" />
+				<action idref="copy_node" />
+				<action idref="take_ownership_ml_doc" />
+				<action idref="delete_doc_wai" />
+				<action idref="add_translation_wai" />
+				<action idref="add_translation_without_content_wai" />
+				<action idref="new_edition_wai" />
+				<action idref="mt_translate_doc_wai" />
+			</action-group>
+
+			<!-- Actions for a content in the Search Results WAI Page -->
+			<action-group id="document_browse_search_library_wai">
+				<show-link>false</show-link>
+				<action idref="details_doc_wai" />
+				<action idref="download_doc_wai" />
+				<action idref="checkout_doc_wai" />
+				<action idref="checkin_doc_wai" />
+				<action idref="cancelcheckout_doc_wai" />
+				<action idref="update_doc_wai" />
+				<action idref="copy_node" />
+				<action idref="mailMe_node" />
+			</action-group>
+
+			<!-- Actions for a content detail of a file link WAI Page -->
+			<action-group id="filelink_details_actions_wai">
+				<show-link>false</show-link>
+				<action idref="edit_details_doc_wai" />
+				<action idref="download_doc_wai" />
+				<action idref="cut_node" />
+				<action idref="copy_node" />
+				<action idref="delete_doc_wai" />
+				<action idref="mailMe_node" />
+				<action idref="edit_own_notification_status" />
+			</action-group>
+
+			<!-- Actions for a content in the Library Browse WAI Page -->
+			<action-group id="document_browse_library_wai">
+				<show-link>false</show-link>
+				<action idref="details_doc_wai" />
+				<action idref="download_doc_wai" />
+				<action idref="checkout_doc_wai" />
+				<action idref="checkin_doc_wai" />
+				<action idref="update_doc_wai" />
+				<action idref="copy_node" />
+				<action idref="mailMe_node" />
+				<action idref="history"/>
+			</action-group>
+
+			<!-- Actions for a links in the Dossier Browse WAI Page -->
+			<action-group id="link_browse_dossier_container_wai">
+				<show-link>false</show-link>
+				<action idref="details_space_wai" />
+				<action idref="delete_space_wai" />
+				<action idref="history"/>
+			</action-group>
+
+			<!-- Actions for a links in the Dossier Browse WAI Page -->
+			<action-group id="link_browse_dossier_content_wai">
+				<show-link>false</show-link>
+				<action idref="details_doc_wai" />
+				<action idref="download_doc_wai" />
+				<action idref="delete_doc_wai" />
+				<action idref="history"/>
+			</action-group>
+
+			<action-group id="doc_details_actions_wai">
+				<action idref="edit_details_doc_wai" />
+				<action idref="download_doc_wai" />
+				<action idref="alternative_download_doc" />
+				<action idref="alternative_browse_doc" />
+				<action idref="checkout_doc_wai" />
+				<action idref="checkin_doc_wai" />
+				<action idref="cancelcheckout_doc_wai" />
+				<action idref="take_ownership_doc" />
+				<action idref="update_doc_wai" />
+				<action idref="cut_node" />
+				<action idref="copy_node" />
+				<action idref="delete_doc_wai" />
+				<action idref="make_doc_multilingual_wai" />
+				<action idref="add_translation_wai" />
+				<action idref="add_translation_without_content_wai" />
+				<action idref="add_translation_wc" hide="true"/>
+				<action idref="ml_details_wai" />
+				<action idref="mailMe_node" />
+				<action idref="apply_versionable" />
+				<action idref="edit_own_notification_status" />
+				<action idref="edit_document_inline_wai" />
+				<action idref="history"/>
+				<action idref="configure_auto_upload_wai"/>
+				<action idref="external_repositories_publish_in" />
+			</action-group>
+			
+			<!-- Actions for a available actions for a given keyword-->
+			<action-group id="keyword_list_actions_wai">
+				<show-link>false</show-link>
+				<!--  action idref="edit_keyword_wai" />
+				<action idref="delete_keyword_wai" / -->
+			</action-group>
+
+			<!-- Action gourp for the serach result page -->
+			<action-group id="search_result_new_actions_wai">
+				<action idref="save_search_wai" />
+			</action-group>
+			
+			<!-- Action gourp for the serach result page -->
+			<action-group id="search_result_edit_actions_wai">
+				<action idref="edit_search_wai" />
+			</action-group>
+
+			<!-- Actions for a content in the Information Browse WAI Page -->
+			<action-group id="document_browse_information_wai">
+				<show-link>false</show-link>
+				<action idref="details_doc_wai" />
+				<action idref="download_doc_wai" />
+				<action idref="update_doc_wai" />
+				<action idref="copy_node" />
+				<action idref="history"/>
+			</action-group>
+
+			<!-- Actions for a container in the Information Browse WAI Page -->
+			<action-group id="space_browse_information_wai">
+				<show-link>false</show-link>
+				<action idref="details_space_wai" />
+				<action idref="copy_node" />
+			</action-group>
+
+			<action-group id="inf_doc_details_actions_wai">
+				<action idref="edit_details_doc_wai" />
+				<action idref="download_doc_wai" />
+				<action idref="checkout_doc_wai" />
+				<action idref="checkin_doc_wai" />
+				<action idref="cancelcheckout_doc_wai" />
+				<action idref="take_ownership_doc" />
+				<action idref="update_doc_wai" />
+				<action idref="cut_node" />
+				<action idref="copy_node" />
+				<action idref="delete_doc_wai" />
+				<action idref="make_doc_multilingual_wai" />
+				<action idref="add_translation_wai" />
+				<action idref="mailMe_node" />
+				<action idref="apply_versionable" />
+				<action idref="edit_document_inline_wai" />
+				<action idref="history"/>
+			</action-group>
+
+			<action-group id="inf_filelink_details_actions_wai">
+				<show-link>false</show-link>
+				<action idref="edit_details_doc_wai" />
+				<action idref="download_doc_wai" />
+				<action idref="cut_node" />
+				<action idref="copy_node" />
+				<action idref="delete_doc_wai" />
+				<action idref="mailMe_node" />
+				<action idref="history"/>
+			</action-group>
+
+			<action-group id="custom_action_list_library_content">
+				<show-link>false</show-link>
+				<action idref="details_doc_wai" />
+				<action idref="download_doc_wai" />
+				<action idref="edit_details_doc_wai" />
+				<action idref="checkout_doc_wai" />
+				<action idref="checkin_doc_wai" />
+				<action idref="cancelcheckout_doc_wai" />
+				<action idref="take_ownership_doc" />
+				<action idref="update_doc_wai" />
+				<action idref="cut_node" />
+				<action idref="copy_node" />
+				<action idref="delete_doc_wai" />
+				<action idref="make_doc_multilingual_wai" />
+				<action idref="add_translation_wai" />
+				<action idref="add_translation_without_content_wai" />
+				<action idref="add_translation_wc" hide="true"/>
+				<action idref="mailMe_node" />
+				<action idref="edit_own_notification_status" />
+				<action idref="edit_document_inline_wai" />
+				<action idref="history"/>
+				<action idref="start_workflow_wai" hide="true"/>
+				<action idref="edit_in_office_wai" />
+			</action-group>
+
+			<action-group id="custom-action-list-library-container">
+				<show-link>false</show-link>
+				<action idref="details_space_wai" />
+				<action idref="mail_me_dossier" />
+				<action idref="edit_space_properties_wai" />
+				<action idref="delete_space_wai" />
+				<action idref="cut_node" />
+				<action idref="copy_node" />
+				<action idref="take_ownership_space" />
+				<action idref="edit_own_notification_status" />
+				<action idref="manage_share_space_wai" />
+				<action idref="history"/>
+			</action-group>
+
+			<action-group id="custom-action-list-information-content">
+				<show-link>false</show-link>
+				<action idref="details_doc_wai" />
+				<action idref="download_doc_wai" />
+				<action idref="edit_details_doc_wai" />
+				<action idref="checkout_doc_wai" />
+				<action idref="checkin_doc_wai" />
+				<action idref="cancelcheckout_doc_wai" />
+				<action idref="update_doc_wai" />
+				<action idref="cut_node" />
+				<action idref="copy_node" />
+				<action idref="delete_doc_wai" />
+				<action idref="make_doc_multilingual_wai" />
+				<action idref="add_translation_wai" />
+				<action idref="add_translation_without_content_wai" />
+				<action idref="add_translation_wc" hide="true"/>
+				<action idref="mailMe_node" />
+				<action idref="take_ownership_doc" />
+				<action idref="edit_own_notification_status" />
+				<action idref="edit_document_inline_wai" />
+				<action idref="history"/>
+				<action idref="edit_in_office_wai" />
+			</action-group>
+
+			<action-group id="custom-action-list-information-container">
+				<show-link>false</show-link>
+				<action idref="details_space_wai" />
+				<action idref="mail_me_dossier" />
+				<action idref="edit_space_properties_wai" />
+				<action idref="delete_space_wai" />
+				<action idref="cut_node" />
+				<action idref="copy_node" />
+				<action idref="edit_own_notification_status" />
+				<action idref="history"/>
+			</action-group>
+		</actions>
+	</config>
+</alfresco-config>

@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>clean all the logs in the membership and property history == set state -2</shortname>
+  <description>clean all the logs in the membership and property history == set state -2</description>
+    <url>/circabc/history/memberships/groups/{groupId}/users/{userId}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

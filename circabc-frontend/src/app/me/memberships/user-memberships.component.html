@@ -1,0 +1,25 @@
+<section class="box box--alternate-lines box--button">
+  <header class="header">
+    <span class="title">{{ 'label.my.groups' | transloco }}</span>
+    <span class="icons">
+      <cbc-hint [text]="'memberships.yours.help.text' | transloco"></cbc-hint>
+    </span>
+  </header>
+  <cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+  <div class="main main--listing limit-height">
+    <ul *ngIf="memberships">
+      <li class="row" *ngFor="let member of memberships">
+        <span class="date">{{ getProfileDisplay(member.profile) }}</span>
+        {{ 'label.on' | transloco }}
+        <a [routerLink]="['/group', member.interestGroup?.id]"
+          >{{ getGroupDisplay(member.interestGroup) }}</a
+        >
+      </li>
+    </ul>
+  </div>
+  <div class="footer">
+    <a class="footer__button" [routerLink]="['/explore']"
+      >{{ 'label.browse.all.groups' | transloco }}</a
+    >
+  </div>
+</section>

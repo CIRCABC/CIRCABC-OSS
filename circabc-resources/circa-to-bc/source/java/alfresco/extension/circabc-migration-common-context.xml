@@ -1,0 +1,229 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+	<bean id="migration-common-properties"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="ignoreUnresolvablePlaceholders">
+            <value>true</value>
+        </property>
+        <property name="locations">
+            <list>
+                <value>classpath:alfresco/extension/migration/circabc-migration-common.properties</value>
+            </list>
+        </property>
+    </bean>
+
+
+	<!-- Take in charge the translation of custom NNTP resources -->
+    <bean id="nntpResourceHandler" class="eu.cec.digit.circabc.migration.processor.common.NNTPResourceHandler" init-method="init">
+    	<property name="resourceManager">
+			<ref bean="migration.resourceManager" />
+    	</property>
+    	<property name="connectiontimeout">
+			<value>${migration.nntp.connectiontimeout}</value>
+    	</property>
+    	<property name="timeout">
+			<value>${migration.nntp.timeout}</value>
+    	</property>
+	</bean>
+
+	<!-- Take in charge the translation of custom file NNTP resources -->
+    <bean id="fileNNTPResourceHandler" class="eu.cec.digit.circabc.migration.processor.common.FileNNTPResourceHandler" init-method="init">
+    	<property name="resourceManager">
+			<ref bean="migration.resourceManager" />
+    	</property>
+	</bean>
+
+	<!-- Take in charge the translation of custom file NNTP resources -->
+    <bean id="ftpResourceHandler" class="eu.cec.digit.circabc.migration.processor.common.FTPResourceHandler" init-method="init">
+    	<property name="resourceManager">
+			<ref bean="migration.resourceManager" />
+    	</property>
+		<property name="passiveMode">
+			<value>${migration.ftp.passivemode}</value>
+		</property>
+		<property name="systemEncoding">
+			<value>${export.ftp.system.encoding}</value>
+		</property>
+	</bean>
+
+	<bean id="ftp4jPropertySetter" class="org.alfresco.config.SystemPropertiesSetterBean" init-method="init">
+        <property name="propertyMap">
+            <map>
+                <entry key="ftp4j.activeDataTransfer.acceptTimeout">
+                    <value>${migration.ftp.timeout}</value>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+
+    <bean id="exportStatisticsService" class="eu.cec.digit.circabc.repo.migration.ExportStatisticsServiceImpl" init-method="init">
+	    <property name="transactionService">
+			<ref bean="transactionService" />
+    	</property>
+    	<property name="taskExecutor">
+			<ref bean="exportationStatTaskExecutor" />
+    	</property>
+    	<property name="serviceRegistry">
+			<ref bean="circabcServiceRegistry" />
+    	</property>
+    	<property name="nodeService">
+			<ref bean="dbNodeService" />
+    	</property>
+    	<property name="fileArchiver">
+			<ref bean="migration.fileArchiver" />
+    	</property>
+    	<property name="contentService">
+			<ref bean="contentService" />
+    	</property>
+    	<property name="fileFolderService">
+			<ref bean="fileFolderService" />
+    	</property>
+    	<property name="mimetypeService">
+			<ref bean="mimetypeService" />
+    	</property>
+    	<property name="processName">
+			<value>${stat.implementation.name}</value>
+    	</property>
+		<property name="statWriters">
+			<list >
+				<ref bean="stat.workbookWriter" />
+				<ref bean="stat.csvWriter" />
+				<ref bean="stat.xmlWriter" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="stat.workbookWriter" class="eu.cec.digit.circabc.repo.migration.WorkbookStatisticsWriter" >
+	    <property name="displayName">
+			<value>Excell Workbook</value>
+    	</property>
+	    <property name="extension">
+			<value>.xls</value>
+    	</property>
+	    <property name="needThreeFiles">
+			<value>false</value>
+    	</property>
+	</bean>
+
+	<bean id="stat.xmlWriter" class="eu.cec.digit.circabc.repo.migration.XMLStatisticsWriter" >
+	    <property name="displayName">
+			<value>XML</value>
+    	</property>
+	    <property name="extension">
+			<value>.xml</value>
+    	</property>
+	    <property name="needThreeFiles">
+			<value>false</value>
+    	</property>
+	</bean>
+
+	<bean id="stat.csvWriter" class="eu.cec.digit.circabc.repo.migration.CSVStatisticsWriter" >
+	    <property name="displayName">
+			<value>Comma Separated Value</value>
+    	</property>
+	    <property name="extension">
+			<value>.csv</value>
+    	</property>
+	    <property name="needThreeFiles">
+			<value>true</value>
+    	</property>
+	</bean>
+
+	<!-- Proxied Migration Service -->
+	<bean id="ExportStatisticsService"  class="org.springframework.aop.framework.ProxyFactoryBean">
+      <property name="proxyInterfaces">
+         <value>
+		      eu.cec.digit.circabc.service.migration.ExportStatisticsService
+   		</value>
+      </property>
+      <property name="target">
+            <ref bean="exportStatisticsService"/>
+      </property>
+      <property name="interceptorNames">
+         <list>
+		    <idref local="ExportStatisticsService_transaction"/>
+		    <idref bean="AuditMethodInterceptor"/>
+		    <idref local="ExportStatisticsService_security"/>
+         </list>
+      </property>
+    </bean>
+
+	<bean id="ExportStatisticsService_transaction" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+         <property name="transactionManager">
+            <ref bean="transactionManager"/>
+         </property>
+         <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+	</bean>
+
+	 <bean id="ExportStatisticsService_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
+        <property name="authenticationManager"><ref bean="authenticationManager"/></property>
+        <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
+        <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+        <property name="objectDefinitionSource">
+            <value>
+               	eu.cec.digit.circabc.service.migration.ExportStatisticsService.getAllStatistics=ACL_METHOD.ROLE_ADMINISTRATOR
+               	eu.cec.digit.circabc.service.migration.ExportStatisticsService.getStatistics=ACL_METHOD.ROLE_ADMINISTRATOR
+               	eu.cec.digit.circabc.service.migration.ExportStatisticsService.getExportFileLocation=ACL_METHOD.ROLE_ADMINISTRATOR
+               	eu.cec.digit.circabc.service.migration.ExportStatisticsService.asynchGetAllStatistics=ACL_METHOD.ROLE_ADMINISTRATOR
+               	eu.cec.digit.circabc.service.migration.ExportStatisticsService.asynchGetStatistics=ACL_METHOD.ROLE_ADMINISTRATOR
+               	eu.cec.digit.circabc.service.migration.ExportStatisticsService.getRunningStatistics=ACL_METHOD.ROLE_ADMINISTRATOR
+               	eu.cec.digit.circabc.service.migration.ExportStatisticsService.getRunningStatisticJournal=ACL_METHOD.ROLE_ADMINISTRATOR
+            </value>
+        </property>
+    </bean>
+<!-- 
+	<bean id="plannedMigrationTrigger" class="org.alfresco.util.TriggerBean">
+		<property name="jobDetail">
+			<bean id="plannedMigrationJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
+				<property name="jobClass">
+					<value>eu.cec.digit.circabc.service.migration.jobs.MigrationJobListener</value>
+				</property>
+				<property name="jobDataAsMap">
+					<map>
+						<entry key="plannedMigrationService">
+							<ref bean="PlannedMigrationService" />
+						</entry>
+						<entry key="lockService">
+							<ref bean="circabcLockService" />
+						</entry>
+						<entry key="importService">
+							<ref bean="importService" />
+						</entry>
+						<entry key="exportStatisticsService">
+							<ref bean="exportStatisticsService" />
+						</entry>
+						<entry key="serviceRegistry">
+							<ref bean="circabcServiceRegistry" />
+						</entry>
+						<entry key="betweenRunSleepTime" value="${migration.plannification.cron.sleep.afterrun}"/>
+						<entry key="exportServiceName" value="{http://eu.cec.digit}exportService"/>
+						<entry key="aidaMigrationServiceName" value="{http://eu.cec.digit}aidaService" />
+					</map>
+				</property>
+			</bean>
+		</property>
+		<property name="startDelay">
+			<value>${migration.plannification.cron.start.delay}</value>
+		</property>
+		<property name="repeatInterval">
+			<value>${migration.plannification.cron.repeat.interval}</value>
+		</property>
+		<property name="scheduler">
+			<ref bean="schedulerFactory" />
+		</property>
+	</bean>
+ -->
+
+	<bean id="exportationStatTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<property name="corePoolSize" value="${stat.mt.maxthread}" />
+	</bean>
+
+
+</beans>

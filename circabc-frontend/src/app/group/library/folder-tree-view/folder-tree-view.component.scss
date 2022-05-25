@@ -1,0 +1,137 @@
+@use '~css/global/variables-mixins-keyframes';
+
+/* The side navigation menu */
+.sidenav {
+  /* height: 100%;  100% Full-height */
+  width: 0;
+
+  /* 0 width - change this with JavaScript
+     position: fixed; Stay in place */
+  z-index: 25;
+
+  /* Stay on top */
+  top: 0;
+  left: 0;
+  background-color: #1f363e;
+
+  /* Black */
+  overflow-x: hidden;
+
+  /* Disable horizontal scroll */
+  padding: 30px 0;
+
+  /* Place content 30px from the top */
+  transition: 0.3s;
+
+  /* 0.3 second transition effect to slide in the sidenav */
+  color: #eee;
+  float: left;
+  margin: 30px 0;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+
+  .close-button {
+    color: #eee;
+    float: right;
+    padding-top: 5px;
+  }
+
+  h1 {
+    margin-top: 0;
+    margin-bottom: 30px;
+    font-weight: normal;
+
+    img {
+      vertical-align: initial;
+    }
+  }
+}
+
+/* On smaller screens, where height is less than 450px, change the style of the side
+nav (less padding and a smaller font size) */
+
+@media screen and (max-height: 450px) {
+  .sidenav {
+    padding-top: 15px;
+  }
+
+  .sidenav a {
+    font-size: 18px;
+  }
+}
+
+.open-sidenav {
+  width: 20% !important;
+  padding: 20px 15px;
+}
+
+@media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+  .sidenav {
+    width: 100% !important;
+    max-height: 200px;
+    overflow: auto;
+    margin-bottom: 0;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-left-radius: 0;
+  }
+}
+
+.close-sidenav {
+  width: 0 !important;
+  padding: 20px 0;
+}
+
+ul.treeView {
+  color: #eee;
+  font-size: 13px;
+
+  li a {
+    color: #eee;
+  }
+
+  li {
+    margin-top: 8px;
+    cursor: pointer;
+
+    &::hover {
+      color: rgb(105 105 105);
+    }
+  }
+
+  .subTree {
+    margin-left: 10px;
+
+    li.collapsed {
+      position: relative;
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: -8px;
+        top: 5px;
+        width: 4px;
+        height: 7px;
+        background-image: url(^img/small-arrow-right--white.png);
+      }
+
+      .subTree {
+        display: none;
+      }
+    }
+
+    li.expanded {
+      position: relative;
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: -10px;
+        top: 6px;
+        width: 7px;
+        height: 4px;
+        background-image: url(^img/small-arrow-down--white.png);
+      }
+    }
+  }
+}

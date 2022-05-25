@@ -1,0 +1,164 @@
+<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+<div class="wrap page-container">
+  <div class="page-header">
+    <span
+      class="page-header__title"
+      [innerHTML]="'profile.manage.page.title' | transloco"
+    ></span>
+    <div class="page-header__actions">
+      <ul class="links">
+        <cbc-reponsive-sub-menu>
+          <a
+            *ngIf="currentGroup && (isDirAdmin() || isDirManageMembers())"
+            [routerLink]="['../members/bulk-invite', currentGroup.id]"
+            >{{ 'label.bulk.invite' | transloco }}</a
+          >
+          <a
+            *ngIf="currentGroup && isMember()"
+            [routerLink]="['../members/contact']"
+            >{{ 'label.send.email' | transloco }}</a
+          >
+          <a
+            *ngIf="currentGroup && (isDirAdmin() || isDirManageMembers())"
+            [routerLink]="['../applicants']"
+            >{{ 'label.member.requests' | transloco }}</a
+          >
+          <a [routerLink]="['../members']">{{ 'label.members' | transloco }}</a>
+          <a [routerLink]="['.']" class="selected"
+            >{{ 'label.profiles' | transloco }}</a
+          >
+        </cbc-reponsive-sub-menu>
+
+        <li>
+          <a class="cta cta--plus" (click)="showAddProfile()"
+            >{{ 'label.add.profile' | transloco }}</a
+          >
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <section class="table-container">
+    <header class="header"> </header>
+
+    <table class="main">
+      <thead>
+        <tr>
+          <th></th>
+          <th></th>
+          <th class="header-profile">{{ 'label.name' | transloco }}</th>
+          <th class="header-profile th--fixed-width"
+            >{{ 'label.information' | transloco }}</th
+          >
+          <th class="header-profile th--fixed-width"
+            >{{ 'label.library' | transloco }}</th
+          >
+          <th class="header-profile th--fixed-width"
+            >{{ 'label.members' | transloco }}</th
+          >
+          <th class="header-profile th--fixed-width"
+            >{{ 'label.agenda' | transloco }}</th
+          >
+          <th class="header-profile th--fixed-width"
+            >{{ 'label.forums' | transloco }}</th
+          >
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr class="row empty-row" *ngIf="profiles !== undefined">
+          <td colspan="7" *ngIf="profiles.length === 0"
+            >{{ 'label.nothing.to.display' | transloco }}</td
+          >
+        </tr>
+
+        <tr class="row" *ngFor="let profile of profiles">
+          <td class="cell-left-border"></td>
+          <td class="cell-profile-icon">
+            <img
+              *ngIf="profile.imported"
+              src="img/download-to-storage-drive.png"
+              alt="imported"
+              title="imported"
+            />
+            <img
+              *ngIf="profile.exported"
+              src="img/rss-symbol.png"
+              alt="exported"
+              title="exported"
+            />
+          </td>
+          <td class="cell-name cell-profile-name">
+            <div class="file-name text-capitalize" *ngIf="profile.title">
+              {{ profile.title | cbcI18n }}
+            </div>
+            <div class="file-name text-capitalize" *ngIf="!profile.title">
+              {{ profile.name }}
+            </div>
+            <ul class="actions">
+              <li></li>
+              <li>
+                <a (click)="prepareEdit(profile)"
+                  >{{ 'label.edit' | transloco }}</a
+                >
+              </li>
+              <li *ngIf="isDeletable(profile)">
+                <a (click)="prepareDelete(profile)"
+                  >{{ 'label.delete' | transloco }}</a
+                >
+              </li>
+              <li *ngIf="isExportable(profile)">
+                <a (click)="export(profile)"
+                  >{{ 'label.export' | transloco }}</a
+                >
+              </li>
+              <li *ngIf="isUnexportable(profile)">
+                <a (click)="unexport(profile)"
+                  >{{ 'label.export.stop' | transloco }}</a
+                >
+              </li>
+            </ul>
+          </td>
+          <td
+            >{{ 'permissions.' + profile.permissions?.information | transloco
+            }}</td
+          >
+          <td
+            >{{ 'permissions.' + profile.permissions?.library | transloco }}</td
+          >
+          <td
+            >{{ 'permissions.' + profile.permissions?.members | transloco }}</td
+          >
+          <td
+            >{{ 'permissions.' + profile.permissions?.events | transloco }}</td
+          >
+          <td
+            >{{ 'permissions.' + profile.permissions?.newsgroups | transloco
+            }}</td
+          >
+        </tr>
+      </tbody>
+    </table>
+
+    <footer class="footer"> </footer>
+  </section>
+</div>
+
+<cbc-create-profile
+  [groupId]="nodeId"
+  [showDialog]="showModal"
+  [profileToEdit]="selectedProfile"
+  (profileCreated)="onProfileCreated($event)"
+  (profileUpdated)="onProfileEdited($event)"
+  (canceled)="onModalCancel()"
+></cbc-create-profile>
+<cbc-delete-profile
+  [profile]="selectedProfile"
+  [showModal]="showDeleteModal"
+  (profileDeleted)="onProfileDeleted($event)"
+></cbc-delete-profile>
+<cbc-import-profile
+  [igNodeId]="nodeId"
+  [showModal]="showImportModal"
+  (profileImported)="onProfileImport($event)"
+></cbc-import-profile>

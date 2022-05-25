@@ -1,0 +1,96 @@
+.help-article-container {
+  margin: 25px 100px;
+
+  .breadcrumb {
+    color: #757575;
+    width: 100%;
+    margin-left: 0 !important;
+
+    .home {
+      font-weight: bold;
+    }
+
+    img {
+      vertical-align: text-bottom;
+    }
+
+    .separator {
+      vertical-align: middle !important;
+    }
+
+    .crumb {
+      display: inline-block;
+      line-height: 40px;
+    }
+
+    .switch-to {
+      float: right;
+    }
+  }
+
+  .article {
+    background-color: #fff;
+    border-radius: 3px;
+    box-shadow: 0 3px 5px 0 rgb(160 159 159 / 0.432);
+    padding: 25px;
+    margin: 25px 0 25px 25px;
+    font-size: 12px;
+
+    h2 {
+      font-size: 150%;
+      color: #035;
+      margin-bottom: 0;
+    }
+
+    .metadata {
+      color: #757575;
+      padding: 15px;
+      margin: 0;
+    }
+
+    hr {
+      color: #f1f1f1;
+      border: 1px solid;
+      margin-bottom: 20px;
+    }
+
+    .content-container {
+      ::ng-deep img {
+        max-width: 100%;
+      }
+
+      ::ng-deep ul,
+      ::ng-deep ol {
+        padding-left: 40px;
+      }
+
+      ::ng-deep ul {
+        list-style-type: disc;
+      }
+
+      ::ng-deep ol {
+        list-style-type: decimal;
+      }
+    }
+
+    img.promoted {
+      float: right;
+      margin-top: -25px;
+      width: 48px;
+    }
+  }
+
+  .actions {
+    text-align: right;
+    font-size: 12px;
+
+    a {
+      margin: 5px;
+    }
+  }
+}
+
+.article-contained {
+  display: grid;
+  grid-template-columns: 25% 1fr;
+}

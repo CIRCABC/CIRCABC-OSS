@@ -1,0 +1,88 @@
+@use '~css/global/variables-mixins-keyframes';
+
+h2 {
+  color: #035;
+  font-size: 2.4em;
+}
+
+p {
+  font-size: 13px;
+}
+
+ul {
+  li {
+    margin-bottom: 15px;
+
+    .alink {
+      display: inline-block;
+      font-size: 13px;
+
+      &::before {
+        content: '';
+        width: 5px;
+        height: 7px;
+        display: inline-block;
+        margin-right: 15px;
+      }
+    }
+
+    .alink:hover {
+      &::before {
+        background-image: url(^img/small-arrow-right.png);
+        animation-name: link-icon-move;
+        animation-duration: 1s;
+        animation-iteration-count: infinite;
+        animation-timing-function: ease-out;
+      }
+    }
+
+    .actions {
+      text-align: right;
+
+      ::ng-deep a {
+        color: #757575;
+      }
+    }
+  }
+}
+
+@keyframes link-icon-move {
+  from {
+    width: 5px;
+    margin-right: 15px;
+  }
+
+  to {
+    width: 15px;
+    margin-right: 5px;
+  }
+}
+
+.contact-button {
+  text-align: center;
+  margin: 15px 0 35px;
+
+  a {
+    display: inline-block;
+    font-size: 14px;
+    padding: 15px 30px;
+    background-color: rgb(0 73 122);
+    color: #fff;
+    border-radius: 5px;
+
+    img {
+      vertical-align: middle;
+      margin-left: 15px;
+    }
+
+    &:hover {
+      background-color: #035;
+    }
+  }
+
+  @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+    & {
+      display: none;
+    }
+  }
+}

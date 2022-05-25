@@ -1,0 +1,44 @@
+<!--
+  Copyright 2006 European Community
+  
+   Licensed under the EUPL, Version 1.1 or \?as soon they
+   will be approved by the European Commission - subsequent
+   versions of the EUPL (the "Licence");
+   You may not use this work except in compliance with the
+   Licence.
+   You may obtain a copy of the Licence at:
+  
+   https://joinup.ec.europa.eu/software/page/eupl
+  
+   Unless required by applicable law or agreed to in
+   writing, software distributed under the Licence is
+   distributed on an "AS IS" basis,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+   express or implied.
+   See the Licence for the specific language governing
+   permissions and limitations under the Licence.
+-->
+<alfresco-config area="navigation-custom">
+
+    <!--
+        Define all default custom navigation options.
+    -->
+    <config evaluator="string-compare" condition="Custom Navigation Preference">
+       	<preference>
+	    	<rowView>30</rowView>
+	    	<displayActions>true</displayActions>
+	    	<linkDestination>download</linkDestination>
+	    	<viewMode>circa</viewMode>
+			<actionConfig>document_browse_information_wai</actionConfig>
+			<initialSortColumn>title</initialSortColumn>
+			<initialSortDescending>false</initialSortDescending>
+			<columns>
+				<column>title</column>
+				<column>size</column>
+				<column>modified</column>
+			</columns>
+    	</preference>
+	</config>
+</alfresco-config>
+
+

@@ -1,0 +1,65 @@
+table.verticlecalendarTableStyle {
+    border:    			#D66300 1px solid;
+}
+
+table.verticlecalendarTableStyle .verticlecalendarPreviousLinkStyle  {
+    font-size: 			15px;
+    text-align: 		left;
+}
+
+table.verticlecalendarTableStyle .verticlecalendarNextLinkStyle  {
+    font-size: 			15px;
+    text-align: 		right;
+}
+
+table.verticlecalendarTableStyle .verticlecalendarTitleStyle  {
+    text-align:         center;
+    font-size: 			20px;
+    letter-spacing: 	5px;
+    background-color:   #E77300;
+    color: 				#FFF;
+    border:    			#D66300 1px solid;
+}
+
+table.verticlecalendarTableStyle .verticlecalendarWeekdayStyle  {
+    text-align:         center;
+    font-size:          16px;
+}
+
+table.verticlecalendarTableStyle .verticlecalendarOddMonthStyle, .verticlecalendarEvenMonthStyle, .verticlecalendarActiveDayStyle, .verticlecalendarEvenMonthStyle, .verticlecalendarEmptyDayStyle {
+    font-size:          10px;
+    vertical-align:     top;
+    text-align:         left;
+    border:    			#ADADAD 1px solid;
+
+}
+
+table.verticlecalendarTableStyle .verticlecalendarEmptyDayStyle {
+    background-color:   #FFFFFF;
+}
+
+table.verticlecalendarTableStyle .verticlecalendarEvenMonthStyle  {
+    background-color:   #FF0000;
+}
+
+table.verticlecalendarTableStyle .verticlecalendarOddMonthStyle  {
+    background-color:   #DED6D6;
+}
+
+table.verticlecalendarTableStyle .verticlecalendarActiveDayStyle {
+    background-color:   #FFFFFF;
+    color:              black;
+    border:             #3F3030 1px solid;
+}
+
+table.verticlecalendarTableStyle a, a:visited .a:active {
+     text-decoration:   none;
+     color:             #5A4545;
+     font-weight:       bold;
+     padding-left:      10px;
+     padding-right:     10px;
+}
+
+.content {
+    color:              black;
+}

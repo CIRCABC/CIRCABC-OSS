@@ -1,0 +1,36 @@
+/* --- Central stylesheet - Commission templates v. 2.0 - Rules for print version --- */
+
+form, select, #LinkBox, #linkBoxTools, #langsSelector, #linkBoxLanguage, #linkBoxArrow, #fontSize img, .date { display: none; }
+
+#title-bg, #title-cs, #title-da, #title-de, #title-el, #title-en, #title-es, #title-et, 
+#title-fi, #title-ga, #title-hu, #title-it, #title-lt, #title-lv, #title-mt, #title-nl, 
+#title-pl, #title-pt, #title-ro, #title-sk, #title-sl, #title-sv { display: none; }
+
+#bannerBackground, #path { background: none; }
+
+#banner, #bannerBackground { height: 35px; }
+
+#path div ul, #path div ul li, #path div li a:link, #path div li a:visited { color: #000; }
+
+#top { border: none; }
+
+#imageBanner {
+	overflow: visible;
+	top: -200px;
+	left: 10px;
+	width: 100%;
+	height: 124px;
+	background: none;
+	text-align: left;
+	}
+
+#imageBanner h1 {
+	position: absolute;
+	top: 200px;
+	color: #006;
+	font-size: 18pt;
+	width: 100%;
+	height: 20pt;
+	}
+
+.container { background-color: #fff; }

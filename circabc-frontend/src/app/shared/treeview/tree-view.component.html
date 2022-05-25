@@ -1,0 +1,13 @@
+<cbc-tree-node
+  [disabled]="disabled"
+  [node]="root"
+  [searchedNodeId]="folderId"
+  (selectedNodeEmitter)="selectNode($event)"
+  [showSelector]="showSelector"
+  (clickedNodeEmitter)="clickNode($event)"
+  [displayedPath]="displayedPath"
+  [rootId]="root.nodeId"
+  [service]="service"
+  [showExpander]="false"
+  [flagNewDays]="flagNewDays"
+></cbc-tree-node>

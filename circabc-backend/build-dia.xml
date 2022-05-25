@@ -1,0 +1,134 @@
+<?xml version="1.0"?>
+
+<!--+
+    |     Copyright European Community 2011 - Licensed under the EUPL V.1.0
+    |
+    |  		   http://ec.europa.eu/idabc/en/document/6523
+    |
+    +-->
+
+<project name="Circabc Build File (DIaLOGIKa)" basedir="." default="AutoDeployWarMath">
+	<property file="build.properties" />
+
+	<target name="UnwarAlfresco">
+		<echo>Cleaning temp folder...</echo>
+		<delete failonerror="false" dir="${dir.build.temp}" />
+		<mkdir dir="${dir.build.temp}" />
+
+		<echo>Cleaning unwar folder...</echo>
+		<delete failonerror="false" dir="${dir.build.unwar}" />
+		<mkdir dir="${dir.build.unwar}" />
+		
+		<echo>Synchronizing language pack extension...</echo>
+		<mkdir dir="${dir.build.temp.webinf.classes.messages}" />
+		<copy todir="${dir.build.temp.webinf.classes.messages}" overwrite="false" verbose="true">
+			<fileset dir="${dir.lang-packs}" excludes="**/*.svn"/>
+		</copy>
+
+		<echo>Expanding the archive alfresco.war...</echo>
+		<unwar src="${alfresco.war}" dest="${dir.build.unwar}" />
+
+		<echo>Adding the language pack...</echo>
+		<copy todir="${dir.build.unwar}" verbose="true">
+			<fileset dir="${dir.build.temp}" />
+		</copy>
+		
+		<echo>Cleaning WEB-INF folder...</echo>
+		<delete failonerror="true" dir="${dir.build.temp.webinf}" />
+	</target>
+	
+	<target name="PublishBuild">
+		<echo>Synchronizing CIRCABC classes</echo>
+		<mkdir dir="${dir.build.temp.webinf.classes}" />
+		<sync todir="${dir.build.temp.webinf.classes}" overwrite="false" verbose="true">
+			<fileset dir="${dir.build.classes}" excludes="**/*.svn"/>
+			<fileset dir="${dir.build.business.classes}" excludes="**/*.svn"/>
+			<fileset dir="${dir.build.core.classes}" excludes="**/*.svn"/>
+			<fileset dir="${dir.build.migration}" excludes="**/*.svn"/>
+			<fileset dir="${dir.src.modulekake}" excludes="**/*.svn"/>
+			<fileset dir="${dir.build.module}" excludes="**/*.svn"/>
+		</sync>
+		
+		<echo>Distributing...</echo>
+		<sync todir="${dir.build.dist}" overwrite="false" verbose="true">
+			<fileset dir="${dir.src.web}" excludes="**/*.svn
+													${dir.build.dist}/WEB-INF/web.xml"/>
+			<fileset dir="${dir.src.migration.web}" excludes="**/*.svn"/>
+			<fileset dir="${dir.build.temp}" excludes="**/*.svn
+													   **/naming-factory.jar
+													   **/naming-resources.jar" />
+			<fileset dir="${dir.build.unwar}" excludes="**/*.svn
+														${dir.build.temp}/**/*.*
+														${dir.build.classes}/**/*.*
+				                                        ${dir.build.module}/**/*.*
+														${dir.src.web}/**/*.*
+														${dir.build.unwar}/WEB-INF/web.xml
+														**/naming-factory.jar
+														**/naming-resources.jar"/>
+		</sync>
+		<copy todir="${dir.build.dist}/WEB-INF/lib" verbose="true" overwrite="true">
+			<fileset dir="${dir.circabc3rdparty}/lib" includes="**/*" />
+		</copy>
+	</target>
+
+	<target name="DeployExplodedMakz" depends="PublishBuild">
+		<echo>Customizing distribution for makz...</echo>
+		<copy todir="${dir.build.dist}" verbose="true" overwrite="true">
+			<fileset dir="${dir.buildconfig}/dia-makz-dev" includes="**/*" />
+		</copy>
+		<echo>Publishing the distribution...</echo>
+		<sync todir="${dir.makz.wldeploy}" overwrite="false" verbose="true">
+			<fileset dir="${dir.build.dist}" includes="**/*" />
+		</sync>
+	</target>
+	
+	<target name="SafeDeployExplodedMakz" depends="PublishBuild">
+		<echo>Customizing distribution for makz...</echo>
+		<copy todir="${dir.build.dist}" verbose="true" overwrite="true">
+			<fileset dir="${dir.buildconfig}/dia-makz-dev" includes="**/*" />
+		</copy>
+		<echo>Publishing the distribution...</echo>
+		<sync todir="${dir.makz.wldeploy}" overwrite="false" verbose="true">
+			<fileset dir="${dir.build.dist}" includes="**/*" excludes="**/*web.xml" />
+		</sync>
+	</target>
+	
+	<target name="AutoDeployWarMath" depends="PublishBuild">
+		<echo>Customizing distribution for math...</echo>
+		<copy todir="${dir.build.dist}" verbose="true" overwrite="true">
+			<fileset dir="${dir.buildconfig}/dia-math-dev" includes="**/*" />
+		</copy>
+		<echo>Publishing the distribution...</echo>
+		<war destfile="C:/Oracle/Middleware/user_projects/domains/circabc_dev/circabc.war" update="true">
+			<fileset dir="${dir.build.dist}" includes="**/*" />
+		</war>	
+		<copy todir="C:/Oracle/Middleware/user_projects/domains/circabc_dev/autodeploy" verbose="true" overwrite="true">
+			<fileset dir="C:/Oracle/Middleware/user_projects/domains/circabc_dev/">
+				<filename name="circabc.war"/>
+			</fileset>
+		</copy>		
+	</target>
+	
+	<target name="DeployExplodedMath" depends="PublishBuild" >
+		<echo>Customizing distribution for math...</echo>
+		<copy todir="${dir.build.dist}" verbose="true" overwrite="true">
+			<fileset dir="${dir.buildconfig}/dia-math-dev" includes="**/*" />
+		</copy>
+		<echo>Publishing the distribution...</echo>
+		<sync todir="${dir.math.wldeploy}" overwrite="false" verbose="true">
+			<fileset dir="${dir.build.dist}" includes="**/*" />
+		</sync>
+	</target>	
+	
+	<target name="SafeDeployExplodedMath" depends="PublishBuild">
+		<echo>Customizing distribution for math...</echo>
+		<copy todir="${dir.build.dist}" verbose="true" overwrite="true">
+			<fileset dir="${dir.buildconfig}/dia-math-dev" includes="**/*" />
+		</copy>
+		<echo>Publishing the distribution...</echo>
+		<sync todir="${dir.math.wldeploy}" overwrite="false" verbose="true">
+			<fileset dir="${dir.build.dist}" includes="**/*" excludes="**/*web.xml" />
+		</sync>
+	</target>	
+	
+</project>

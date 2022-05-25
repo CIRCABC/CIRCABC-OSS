@@ -1,0 +1,79 @@
+{{ 'label.login' | transloco | cbcSetTitle }}
+<div class="home-logout" style="background: none !important">
+  <div class="footer-bottom-stucker">
+    <div class=""></div>
+    <header class="header fluid header-login">
+      <div class="ec-links"></div>
+      <img
+        class="eu-logo"
+        src="img/all-ec-logo-neg/flag_yellow_low.jpg"
+        alt="European Union"
+      />
+    </header>
+
+    <div class="main" style="background: none !important">
+      <div class="wrap login-form">
+        <img
+          class="illustration"
+          src="img/logo-circabc-big.png"
+          alt="CIRCABC"
+        />
+        <h1>{{ 'label.login' | transloco }}</h1>
+        <form [formGroup]="loginForm" (ngSubmit)="login()">
+          <div class="field">
+            <label for="username">{{ 'label.username' | transloco }}</label>
+            <input
+              data-cy="username"
+              [cbcFocus]="true"
+              id="username"
+              formControlName="username"
+              type="text"
+              autocorrect="off"
+              autocapitalize="none"
+              placeholder="{{ 'label.username' | transloco }}"
+            />
+            <cbc-control-message
+              [control]="userNameControl"
+              *ngIf="submitClicked"
+            ></cbc-control-message>
+          </div>
+          <div class="field">
+            <label for="password">{{ 'label.password' | transloco }}</label>
+            <input
+              data-cy="password"
+              id="password"
+              type="password"
+              formControlName="password"
+              placeholder="{{ 'label.password' | transloco }}"
+            />
+            <cbc-control-message
+              [control]="passwordControl"
+              *ngIf="submitClicked"
+            ></cbc-control-message>
+          </div>
+          <div id="idLoginInError" class="error-message" *ngIf="loginDenied">
+            {{ 'error.login.denied' | transloco }}
+          </div>
+          <div id="idLoginInError" class="error-message" *ngIf="loginError">
+            {{ 'error.login.impossible' | transloco }}
+          </div>
+          <button
+            data-cy="login"
+            type="submit"
+            class="cta cta--homepage"
+            *ngIf="!loggingIn"
+          >
+            {{ 'label.login' | transloco }}
+          </button>
+          <p *ngIf="loggingIn" class="loggin">
+            {{ 'label.logging.you.in' | transloco }}...
+            <cbc-spinner></cbc-spinner>
+          </p>
+          <a class="button" routerLink="/welcome"
+            >{{ 'label.cancel' | transloco }}</a
+          >
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

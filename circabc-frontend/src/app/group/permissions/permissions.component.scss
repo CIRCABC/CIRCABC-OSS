@@ -1,0 +1,49 @@
+@use '~css/global/variables-mixins-keyframes';
+
+.fix-margin-responsive {
+  @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+    margin: 0 10px;
+  }
+}
+
+.grid-container {
+  display: grid;
+  grid-gap: 25px;
+  grid-template-columns: auto auto;
+
+  @media screen and (max-width: variables-mixins-keyframes.$break-small) {
+    grid-template-columns: auto;
+  }
+}
+
+.permission-container {
+  margin-top: 0;
+  max-height: 600px;
+  overflow: auto;
+}
+
+.switch-container {
+  font-size: 13px;
+
+  h3 {
+    margin-top: 4px;
+    color: #757575;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+  }
+}
+
+.inheritance-box {
+  text-align: right;
+}
+
+.label {
+  width: 300px !important;
+}
+
+::ng-deep .hinttext {
+  width: 400px !important;
+  margin-left: -380px !important;
+  text-align: left;
+}

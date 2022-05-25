@@ -1,0 +1,118 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<!--+
+    |     Copyright European Community 2006 - Licensed under the EUPL V.1.0
+    |
+    |  		   http://ec.europa.eu/idabc/en/document/6523
+    |
+    +-->
+
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+
+<beans>
+    <!--
+        This bean defines the configuration order:
+    -->
+    <bean id="ConfigurationChain" class="eu.cec.digit.ecas.client.configuration.ConfigurationChain">
+        <constructor-arg value="mbean &lt;&lt; file &lt;&lt; descriptor &lt;&lt; dependencyInjection"/>
+    </bean>
+    <!--
+        This bean defines the HTTPS connection configuration:
+    -->
+    <bean id="SecureURLConfig" class="eu.cec.digit.ecas.util.SecureURLConfig">
+        <constructor-arg index="0" value="20"/>
+        <constructor-arg index="1" value="180000"/>
+        <constructor-arg index="2" value="true"/>
+    </bean>
+    <!--
+        This is the bean for the ProxyChainTrustHandler (if ECAS proxy)
+    -->
+    <bean id="ProxyChainTrustHandler" class="eu.cec.digit.ecas.client.validation.FirstParentProxyChainTrustHandler">
+        <constructor-arg index="0">
+            <list>
+                <value>https://d02di1637770dit.net1.cec.eu.int:7002/new/login/cas/proxyreceptor</value>
+            </list>
+        </constructor-arg>
+    </bean>
+    <bean id="ServiceResolver" class="eu.cec.digit.ecas.client.resolver.service.HttpHeaderServiceResolver"/>
+    <bean id="HttpRedirector" class="eu.cec.digit.ecas.client.http.BrowserPostRedirector"/>
+    <!--
+        This is a bean to be added in the authEventListeners List
+    -->
+    <bean id="StatsEventListener" class="eu.cec.digit.ecas.client.event.StatsEventListener"/>
+
+    <!--
+        This is the EcasConfiguration bean containing the whole ECAS client configuration
+    -->
+    <bean id="EcasConfiguration" class="eu.cec.digit.ecas.client.configuration.ChainableSpringConfiguration">
+        <property name="configurationId" value="eu.cec.digit.circabc.verifyProxyTicket"/>
+        <property name="serverName" value="d02di1637770dit.net1.cec.eu.int"/>
+        <property name="ecasBaseUrl" value="https://192.168.99.100:7002"/>
+        <property name="initLoginUrl" value="/cas/login/init"/>
+        <property name="loginUrl" value="https://192.168.99.100:7002/cas/login"/>
+        <property name="validateUrl" value="https://192.168.99.100:7002/cas/TicketValidationService"/>
+        <property name="proxyUrl" value="/cas/proxy"/>
+        <property name="forcingRenew" value="false"/>
+        <!-- for ECAS proxy clients only: -->
+        <property name="authorizedProxies">
+            <list>
+                <value>https://d02di1637770dit.net1.cec.eu.int:7002/new/login/cas/proxyreceptor</value>
+            </list>
+        </property>
+        <property name="proxyChainTrustHandler" ref="ProxyChainTrustHandler"/>
+        <property name="applicationServer" value="weblogic"/>
+        <property name="groups">
+            <list>
+            </list>
+        </property>
+        <property name="acceptStrengths">
+            <list>
+                <value>BASIC</value>
+                <value>CLIENT_CERT</value>
+                <value>PASSWORD_SMS</value>
+                <value>PASSWORD_TOKEN</value>
+                <value>PASSWORD_TOKEN_CRAM</value>
+            </list>
+        </property>
+        <property name="secureURLConfig" ref="SecureURLConfig"/>
+        <property name="maxConnections" value="20"/>
+        <property name="connectionTimeout" value="180000"/>
+        <property name="strictSSLHostnameVerification" value="true"/>
+        <property name="authEventListeners">
+            <list>
+                <ref bean="StatsEventListener"/>
+            </list>
+        </property>
+        <property name="configurationOrder" ref="ConfigurationChain"/>
+        <property name="initSignatureUrl" value="/cas/signature/init"/>
+        <property name="signatureUrl" value="https://www.cc.cec/cas/signature/sign.do"/>
+        <property name="retrieveSignatureUrl" value="/cas/signature/get"/>
+        <property name="transactionUrl" value="/cas/transaction/sign"/>
+        <property name="certificateRevocationUrl" value="/cas/signature/certValidate"/>
+        <property name="requestingUserDetails" value="true"/>
+        <property name="serviceResolver" ref="ServiceResolver"/>
+        <property name="reSubmitPosts" value="true"/>
+        <property name="httpRedirector" ref="HttpRedirector"/>
+        <property name="trustNonEcasJEESubject" value="true"/>
+
+        <property name="acceptedTicketTypes">
+            <set>
+                <bean id="eu.cec.digit.ecas.client.constants.TicketType.SERVICE_TICKET"
+                      class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean"/>
+                <bean id="eu.cec.digit.ecas.client.constants.TicketType.PROXY_TICKET"
+                      class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean"/>
+                <bean id="eu.cec.digit.ecas.client.constants.TicketType.DESKTOP_PROXY_TICKET"
+                      class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean"/>
+            </set>
+        </property>
+        <property name="assuranceLevel">
+            <bean id="eu.cec.digit.ecas.client.constants.AssuranceLevel.LOW"
+                  class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean"/>
+        </property>
+        <property name="proxyGrantingProtocol">
+            <bean id="eu.cec.digit.ecas.client.constants.ProxyGrantingProtocol.PGT_URL"
+                  class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean"/>
+        </property>
+    </bean>
+
+</beans>

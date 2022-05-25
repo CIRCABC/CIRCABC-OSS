@@ -1,0 +1,110 @@
+@use '~css/global/variables-mixins-keyframes';
+
+:host {
+  width: 33%;
+
+  @media all and (max-width: 1500px) {
+    width: 50%;
+  }
+
+  @media all and (max-width: 853px) {
+    width: 100%;
+  }
+}
+
+.group-card {
+  height: 123px;
+  background-color: #fff;
+  padding: 10px;
+  position: relative;
+  margin: 15px 25px;
+  box-shadow: 0 0 4px rgb(0 0 0 / 0.2);
+  border-radius: 5px;
+
+  @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+    margin: 10px 20px;
+  }
+
+  @media screen and (max-width: variables-mixins-keyframes.$break-small) {
+    margin: 5px 15px;
+  }
+
+  .id {
+    font-size: 24px;
+    font-weight: bold;
+    color: #1f313d;
+    float: left;
+    margin-right: 25px;
+  }
+
+  .group-description {
+    margin-top: 10px;
+    padding-right: 125px;
+    color: #757575;
+    max-height: 100px;
+    overflow: auto;
+  }
+
+  .group-title {
+    font-size: 20px;
+    padding-right: 125px;
+
+    @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+      font-size: 18px;
+      padding-right: 95px;
+    }
+
+    @media screen and (max-width: variables-mixins-keyframes.$break-small) {
+      font-size: 14px;
+      padding-right: 65px;
+    }
+  }
+
+  .logo-container {
+    position: absolute;
+    right: -10px;
+    top: 10px;
+    border-radius: 3px;
+    -webkit-box-shadow: 0 0 5px rgb(0 0 0 / 0.2);
+    box-shadow: 0 0 5px rgb(0 0 0 / 0.2);
+    overflow: hidden;
+    z-index: 2;
+    width: 121px;
+    height: 103px;
+
+    @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+      width: 91px;
+      height: 73px;
+    }
+
+    @media screen and (max-width: variables-mixins-keyframes.$break-small) {
+      width: 61px;
+      height: 43px;
+    }
+
+    img {
+      border-radius: 3px;
+      width: 121px;
+      height: 103px;
+      background-color: #fff;
+
+      @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+        width: 91px;
+        height: 73px;
+      }
+
+      @media screen and (max-width: variables-mixins-keyframes.$break-small) {
+        width: 61px;
+        height: 43px;
+      }
+    }
+  }
+
+  .actions {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 5px 10px;
+  }
+}

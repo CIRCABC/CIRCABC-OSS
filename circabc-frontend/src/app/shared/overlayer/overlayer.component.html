@@ -1,0 +1,32 @@
+<!-- MODAL BOX -->
+<div
+  class="black-overlayer"
+  *ngIf="visible"
+  [class.overlayer-shown]="visible"
+  [class.overlayer-hidden]="!visible"
+></div>
+<section
+  class="modal"
+  *ngIf="visible"
+  [class.modal-shown]="visible"
+  [class.modal-hidden]="!visible"
+>
+  <section class="modal-content">
+    <ng-content></ng-content>
+  </section>
+
+  <footer>
+    <form [formGroup]="form" *ngIf="enabledClose">
+      <input
+        type="checkbox"
+        formControlName="doNotShow"
+        name="doNotShow"
+        id="doNotShow"
+        *ngIf="useKeepDisplay"
+      /><label for="doNotShow"
+        >{{ 'label.do.not.show.anymore' | transloco }}</label
+      >
+      <a class="button" (click)="close()">{{ 'label.close' | transloco }}</a>
+    </form>
+  </footer>
+</section>

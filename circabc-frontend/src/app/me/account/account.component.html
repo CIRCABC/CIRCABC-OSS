@@ -1,0 +1,344 @@
+<div class="fluid page-container">
+  <div class="file-details">
+    <div class="wrap">
+      <a (click)="goBack()" class="page-header__backlink"
+        >{{ 'label.back' | transloco }}</a
+      >
+      <section class="box">
+        <header class="header">
+          <span *ngIf="viewing" class="title"
+            >{{ 'account.view.details' | transloco }}</span
+          >
+          <span *ngIf="!viewing" class="title"
+            >{{ 'account.edit.details' | transloco }}</span
+          >
+          <div class="field" style="float: right" *ngIf="processing">
+            <cbc-spinner></cbc-spinner>
+          </div>
+        </header>
+        <div class="main">
+          <section class="file-informations">
+            <form [formGroup]="updateUserForm">
+              <div class="field switch">
+                <!-- User details -->
+                <div class="cell-photo">
+                  <span class="photo" style="float: right">
+                    <img
+                      *ngIf="user.lastname && ready"
+                      class="img-border"
+                      [attr.src]="user.avatar | cbcDownload | cbcSecure"
+                      width="90"
+                      height="90"
+                    />
+                    <div
+                      *ngIf="user.lastname && !user.defaultAvatar"
+                      style="font-size: 12px; margin-top: 5px"
+                    >
+                      <cbc-inline-delete
+                        style="position: absolute"
+                        [image]="'img/rubbish-bin-blue-small.png'"
+                        [imageHeightWidth]="13"
+                        [deleteLabel]="'label.delete.logo'"
+                        [(deleting)]="processing"
+                        [(mustConfirm)]="mustConfirmAvatarDelete"
+                        (deletionConfirmed)="removeAvatar()"
+                      ></cbc-inline-delete
+                      ><br />
+                    </div>
+                    <div
+                      *ngIf="user.lastname"
+                      style="font-size: 12px; margin-top: 5px"
+                    >
+                      <a (click)="changeAvatar()"
+                        ><img
+                          src="img/bigicon-upload-53x53.png"
+                          width="13"
+                          height="13"
+                        />&nbsp;{{ 'label.update.logo' | transloco }}</a
+                      >
+                    </div>
+                  </span>
+                </div>
+                <span style="font-size: 16px"
+                  >{{ 'label.identity' | transloco }}</span
+                >
+                <br />
+                <br />
+                <br />
+                <div class="field">
+                  <label>{{ 'label.username' | transloco }}</label>
+                  <label>{{ user.userId }}</label>
+                </div>
+                <div class="field">
+                  <label for="firstname"
+                    >{{ 'label.firstname' | transloco }}</label
+                  >
+                  <input
+                    type="text"
+                    id="firstname"
+                    formControlName="firstname"
+                    #nameInputFieldElement
+                  />
+                </div>
+                <div class="field">
+                  <label for="lastname"
+                    >{{ 'label.lastname' | transloco }}</label
+                  >
+                  <input type="text" id="lastname" formControlName="lastname" />
+                </div>
+                <div class="field">
+                  <label for="email">{{ 'label.email' | transloco }}</label>
+                  <input type="text" id="email" formControlName="email" />
+                  <cbc-control-message
+                    [control]="emailControl"
+                  ></cbc-control-message>
+                </div>
+                <br />
+                <hr />
+                <br />
+                <span style="font-size: 16px"
+                  >{{ 'label.contact.information' | transloco }}</span
+                >
+                <br />
+                <br />
+                <br />
+                <div class="field">
+                  <label for="title">{{ 'label.title' | transloco }}</label>
+                  <input type="text" id="title" formControlName="title" />
+                </div>
+                <div class="field">
+                  <label for="organisation"
+                    >{{ 'label.organisation' | transloco }}</label
+                  >
+                  <input
+                    type="text"
+                    id="organisation"
+                    formControlName="organisation"
+                  />
+                </div>
+                <div class="field">
+                  <label for="phone">{{ 'label.phone' | transloco }}</label>
+                  <input type="text" id="phone" formControlName="phone" />
+                </div>
+                <div class="field">
+                  <label for="postalAddress"
+                    >{{ 'label.postal.address' | transloco }}</label
+                  >
+                  <input
+                    type="text"
+                    id="postalAddress"
+                    formControlName="postalAddress"
+                  />
+                </div>
+                <div class="field">
+                  <label for="description"
+                    >{{ 'label.description' | transloco }}</label
+                  >
+                  <input
+                    type="text"
+                    id="description"
+                    formControlName="description"
+                  />
+                </div>
+                <div class="field">
+                  <label for="fax">{{ 'label.fax' | transloco }}</label>
+                  <input type="text" id="fax" formControlName="fax" />
+                </div>
+                <div class="field">
+                  <label for="url">{{ 'label.url' | transloco }}</label>
+                  <input type="text" id="url" formControlName="urlAddress" />
+                  <cbc-control-message
+                    [control]="urlAddressControl"
+                  ></cbc-control-message>
+                </div>
+                <br />
+                <hr />
+                <br />
+                <span style="font-size: 16px"
+                  >{{ 'label.user.options' | transloco }}</span
+                >
+                <br />
+                <br />
+                <br />
+                <div class="field">
+                  <label for="uiLanguage"
+                    >{{ 'label.ui.language' | transloco }}</label
+                  >
+                  <div class="custom-select select--form reset-width">
+                    <cbc-lang-selector
+                      [disable]="viewing"
+                      formControlName="uiLanguage"
+                    ></cbc-lang-selector>
+                  </div>
+                </div>
+                <div class="field switch">
+                  <div class="label"
+                    >{{ 'label.global.notification' | transloco }}</div
+                  >
+                  <input
+                    id="globalNotificationEnabled"
+                    class="cmn-toggle cmn-toggle-round"
+                    type="checkbox"
+                    formControlName="globalNotificationEnabled"
+                  />
+                  <label
+                    for="globalNotificationEnabled"
+                    class="nonBlockLabel"
+                  ></label>
+                  <span
+                    >{{ (updateUserForm.value.globalNotificationEnabled === true
+                    ? 'label.yes' : 'label.no' ) | transloco }}</span
+                  >
+                  <cbc-hint
+                    [text]="'label.global.notification.hint' | transloco"
+                    [floatEnable]="false"
+                    style="margin-left: 25px"
+                  ></cbc-hint>
+                </div>
+                <div class="field switch">
+                  <div class="label">
+                    {{ 'label.global.distribution' | transloco }}
+                  </div>
+                  <input
+                    id="globalDistributionEnabled"
+                    class="cmn-toggle cmn-toggle-round"
+                    type="checkbox"
+                    formControlName="globalDistributionEnabled"
+                  />
+                  <label
+                    for="globalDistributionEnabled"
+                    class="nonBlockLabel"
+                  ></label>
+                  <span
+                    >{{ (updateUserForm.value.globalDistributionEnabled === true
+                    ? 'label.yes' : 'label.no' ) | transloco }}</span
+                  >
+                  <cbc-hint
+                    [text]="'label.global.distribution.hint' | transloco"
+                    [floatEnable]="false"
+                    style="margin-left: 25px"
+                  ></cbc-hint>
+                </div>
+                <div class="field switch">
+                  <div class="label">
+                    {{ 'label.personal.information.visibility' | transloco }}
+                  </div>
+                  <input
+                    id="personalInformationVisible"
+                    class="cmn-toggle cmn-toggle-round"
+                    type="checkbox"
+                    formControlName="personalInformationVisible"
+                  />
+                  <label
+                    for="personalInformationVisible"
+                    class="nonBlockLabel"
+                  ></label>
+                  <span
+                    >{{ (updateUserForm.value.personalInformationVisible ===
+                    true ? 'label.yes' : 'label.no' ) | transloco }}</span
+                  >
+                </div>
+                <div class="field switch">
+                  <div class="label">
+                    {{ 'label.allow.cookies' | transloco }}
+                  </div>
+                  <input
+                    id="agreeWithCookies"
+                    class="cmn-toggle cmn-toggle-round"
+                    type="checkbox"
+                    formControlName="agreeWithCookies"
+                  />
+                  <label for="agreeWithCookies" class="nonBlockLabel"></label>
+                  <span
+                    >{{ (updateUserForm.value.agreeWithCookies === true ?
+                    'label.yes' : 'label.no' ) | transloco }}</span
+                  >
+                </div>
+                <div class="field field--textarea">
+                  <label for="signature"
+                    >{{ 'label.signature' | transloco }}</label
+                  >
+                  <div class="editor-container">
+                    <p-editor
+                      formControlName="signature"
+                      [style]="{ height: '150px' }"
+                    >
+                      <p-header>
+                        <span class="ql-formats">
+                          <button class="ql-bold" aria-label="Bold"></button>
+                          <button
+                            class="ql-italic"
+                            aria-label="Italic"
+                          ></button>
+                          <button
+                            class="ql-underline"
+                            aria-label="Underline"
+                          ></button>
+                          <button
+                            class="ql-strike"
+                            aria-label="Strike"
+                          ></button>
+                        </span>
+                        <span class="ql-formats">
+                          <button
+                            class="ql-blockquote"
+                            aria-label="Strike"
+                          ></button>
+                          <button class="ql-link" aria-label="link"></button>
+                        </span>
+                      </p-header>
+                    </p-editor>
+                  </div>
+                </div>
+                <br />
+                <hr />
+                <br />
+                <span style="font-size: 16px"
+                  >{{ 'label.privacy.statement' | transloco }}</span
+                >
+                <br />
+                <br />
+                <a [routerLink]="['/help/legal-notice/terms']"
+                  >{{ 'label.privacy.statement.title' | transloco }}</a
+                >
+              </div>
+            </form>
+            <div class="field" *ngIf="processing">
+              <label
+                >{{ 'label.updating' | transloco }}...
+                <cbc-spinner></cbc-spinner>
+              </label>
+            </div>
+
+            <br />
+            <!-- Buttons -->
+            <div class="buttons-group center" *ngIf="!processing">
+              <a
+                class="cta"
+                [routerLink]="['.']"
+                *ngIf="updateUserForm.status === 'VALID'"
+                (click)="update()"
+                >{{ 'label.update' | transloco }}</a
+              >
+              <a class="button" [routerLink]="['.']" (click)="cancel()"
+                >{{ 'label.cancel' | transloco }}</a
+              >
+              <a
+                class="button"
+                style="float: right"
+                [routerLink]="['.']"
+                (click)="refreshFromCentralDB()"
+                >{{ 'label.refresh.central.db' | transloco }}</a
+              >
+            </div>
+          </section>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+<cbc-change-avatar
+  [showWizard]="launchChangeAvatar"
+  (modalHide)="changeAvatarClosed()"
+  (avatarUploaded)="avatarUploaded($event)"
+></cbc-change-avatar>

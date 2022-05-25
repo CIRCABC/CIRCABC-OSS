@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="CircabcEcorda">
+
+   <select id="select_ecorda_thema_ids_by_ig_node_ref"  parameterType="String"  resultType="String" >
+		 select ecorda_theme_id
+		 from cbc_ecorda_theme
+		 where ig_node_ref = #{value}
+   </select>
+
+</mapper>

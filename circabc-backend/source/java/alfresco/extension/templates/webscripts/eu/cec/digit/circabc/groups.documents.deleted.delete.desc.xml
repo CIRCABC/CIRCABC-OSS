@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>permanently purge the archived node / deleted node of an IG</shortname>
+  <description>permanently purge the archived node / deleted node of an IG</description>
+    <url>/circabc/groups/{igId}/documents/deleted/{nodeId}</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

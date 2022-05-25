@@ -1,0 +1,130 @@
+<cbc-modal
+  [title]="'admin.category.create'"
+  (cancel)="cancel()"
+  [okLabel]="'label.create'"
+  [(visible)]="showModal"
+  [showOkButton]="isWizardOk()"
+  (ok)="createCategory()"
+  [executing]="processing"
+  [executingLabel]="'label.creating'"
+>
+  <a
+    class="step-link"
+    [class.step-link-selected]="step === 'details'"
+    (click)="step = 'details'"
+    >{{ 'label.details' | transloco }}</a
+  >
+  <a
+    data-cy="admins"
+    class="step-link"
+    [class.step-link-selected]="step === 'admins'"
+    (click)="step = 'admins'"
+    >{{ 'label.administrators' | transloco }}</a
+  >
+
+  <div class="div-step" *ngIf="step === 'details'">
+    <form [formGroup]="categoryForm">
+      <div class="field">
+        <label for="name">{{ 'label.name' | transloco }}</label>
+        <input data-cy="name" type="text" id="name" formControlName="name" />
+        <cbc-control-message
+          *ngIf="categoryForm"
+          [control]="nameControl"
+        ></cbc-control-message>
+      </div>
+      <cbc-multilingual-input
+        data-cy="title"
+        formControlName="title"
+        [label]="'label.title' | transloco"
+        [lang]="'EN'"
+      ></cbc-multilingual-input>
+      <cbc-control-message
+        *ngIf="categoryForm"
+        [control]="titleControl"
+      ></cbc-control-message>
+
+      <div class="field">
+        <label for="header">{{ 'label.header' | transloco }}</label>
+        <div class="custom-select select--form">
+          <select data-cy="headers" id="sMultiple" formControlName="header">
+            <option *ngFor="let h of headers" value="{{ h.id }}"
+              >{{ h.name }}</option
+            >
+          </select>
+        </div>
+        <cbc-control-message
+          *ngIf="categoryForm"
+          [control]="headerControl"
+        ></cbc-control-message>
+      </div>
+    </form>
+  </div>
+
+  <div class="div-step" *ngIf="step === 'admins'">
+    <form [formGroup]="addUserForm">
+      <div class="field">
+        <label for="name">{{ 'label.search' | transloco }}</label>
+        <input
+          type="text"
+          id="name"
+          value=""
+          placeholder="User name / email / ..."
+          formControlName="name"
+        />
+        <button data-cy="search-button" class="button" (click)="searchUsers()"
+          >{{ 'label.search' | transloco }}</button
+        >
+        <a (click)="resetForm()">{{ 'label.clear' | transloco }}</a>
+        <cbc-spinner *ngIf="searchingUsers"></cbc-spinner>
+      </div>
+
+      <div class="field">
+        <label for="sMultiple">{{ 'label.results' | transloco }}</label>
+        <div
+          class="custom-select select--multiple"
+          style="width: 585px; height: 150px"
+        >
+          <select
+            data-cy="users"
+            multiple
+            id="sMultiple"
+            style="width: 585px; height: 150px"
+            formControlName="possibleUsers"
+          >
+            <option
+              *ngFor="let user of availableUsers"
+              value="{{ user.userId }}"
+              >{{ user.firstname + ' ' + user.lastname + ' (' + user.email + ')'
+              }}</option
+            >
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="sMultiple">{{ 'label.invitations' | transloco }}</label>
+        <input
+          data-cy="add-selection"
+          type="button"
+          value="{{ 'label.add.selection' | transloco }}"
+          (click)="selectUsers()"
+          *ngIf="hasSelectedUser()"
+        />
+        <br />
+        <br />
+        <ul>
+          <li *ngFor="let futureAdmin of futureAdmins">
+            {{ '[ Category Administrator ] ' + futureAdmin.firstname + ' ' +
+            futureAdmin.lastname + ' (' + futureAdmin.email + ')' }}
+            <a (click)="removeFromFutureAdmin(futureAdmin)">
+              <img
+                src="img/icon-close-20x20.png"
+                style="vertical-align: middle"
+              />
+            </a>
+          </li>
+        </ul>
+      </div>
+    </form>
+  </div>
+</cbc-modal>

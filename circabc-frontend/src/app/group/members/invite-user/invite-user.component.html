@@ -1,0 +1,260 @@
+<!-- MODAL BOX -->
+<div
+  class="black-overlayer"
+  *ngIf="showWizard"
+  [class.overlayer-shown]="showWizard"
+  [class.overlayer-hidden]="!showWizard"
+></div>
+
+<section class="flexModel modal modal--select-files" *ngIf="showWizard">
+  <a class="close-icon" (click)="cancelWizard('close')"></a>
+
+  <header class="flexFullRow">
+    <h2 class="title">{{ 'members.invite.select.user' | transloco }}</h2>
+  </header>
+
+  <section class="flexFullRow">
+    <form [formGroup]="addUserForm" class="flexForm">
+      <div class="flexNoWrap flexGroupField" *ngIf="!isOSS">
+        <div class="labelToggle">
+          <label for="filter">{{ 'label.search.type' | transloco }}</label>
+        </div>
+        <div>
+          <mat-slide-toggle
+            id="filter"
+            formControlName="filter"
+          ></mat-slide-toggle>
+        </div>
+        <div>
+          <span
+            >{{ (addUserForm.value.filter === true ? 'label.search.eulogin' :
+            'label.search.all.central.database' ) | transloco }}</span
+          >
+        </div>
+      </div>
+
+      <div class="flexGroupField">
+        <div class="flexLabel">
+          <label for="name">{{ 'label.search' | transloco }}</label>
+        </div>
+        <div class="flexField">
+          <div class="flex1">
+            <input
+              type="text"
+              id="name"
+              value=""
+              placeholder="User name / email / ..."
+              formControlName="name"
+            />
+          </div>
+          <div class="flex0">
+            <a
+              class="button"
+              value="Search"
+              (click)="searchUsers()"
+              [class.disabled]="isSearchEmpty()"
+              >{{ 'label.search' | transloco }}</a
+            >
+          </div>
+          <div class="flex0">
+            <a (click)="resetForm()">{{ 'label.clear' | transloco }}</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="flexFullRow" *ngIf="searchingUsers">
+        <cbc-spinner></cbc-spinner>
+      </div>
+
+      <div class="flexGroupField">
+        <div class="flexLabel">
+          <label for="sMultiple">{{ 'label.results' | transloco }}</label>
+        </div>
+
+        <!-- Select Multiple-->
+        <div class="flexField">
+          <div class="custom-select select--multiple">
+            <select multiple id="sMultiple" formControlName="possibleUsers">
+              <option
+                *ngFor="let user of availableUsers"
+                value="{{ user.userId }}"
+                [disabled]="isAlreadyMember(user)"
+              >
+                {{ user!.firstname! + ' ' + user!.lastname! + ' (' +
+                user!.email! + ')' }}
+                <span *ngIf="isAlreadyMember(user)"
+                  >[{{ 'label.already.member' | transloco }}]</span
+                >
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="flexGroupField">
+        <div class="flexLabel">
+          <label for="groupContact">{{ 'label.profile' | transloco }}</label>
+        </div>
+        <div class="flexField">
+          <div class="custom-select select--form flex1">
+            <select
+              name="profileName"
+              id="profileName"
+              formControlName="selectedProfile"
+            >
+              <option
+                *ngFor="let profile of availableProfiles"
+                value="{{ profile.id }}"
+              >
+                {{ profile.title | cbcI18n }}
+              </option>
+            </select>
+          </div>
+          <div flex0>
+            <a
+              class="button"
+              (click)="selectUsers()"
+              [class.disabled]="!hasSelectedUserAndProfile()"
+              >{{ 'label.add.selection' | transloco }}</a
+            >
+          </div>
+        </div>
+      </div>
+
+      <div class="flexGroupField" *ngIf="futureMembers.length > 0">
+        <div class="flexLabel">
+          <label>{{ 'label.invitations' | transloco }}</label>
+        </div>
+        <div style="width: 100%">
+          <ul>
+            <li *ngFor="let futureMember of futureMembers">
+              <div style="display: flex; flex-wrap: wrap">
+                <div style="flex: 0 1 100px">
+                  <span style="color: gray" *ngIf="futureMember.profile">
+                    {{(futureMember.profile.title! | cbcI18n)}}
+                  </span>
+                </div>
+                <div style="flex: 1">
+                  <span
+                    >{{futureMember!.user?.firstname! + ' ' +
+                    futureMember!.user?.lastname!}}</span
+                  >
+                  <span style="font-size: 0.8em"
+                    >{{futureMember!.user?.email!}}</span
+                  >
+                </div>
+
+                <div
+                  style="flex: 0; color: #0d3653"
+                  matTooltip="{{ 'label.remove' | transloco }}"
+                >
+                  <a (click)="removeFromFutureMember(futureMember)">
+                    <img
+                      class="icon-small"
+                      src="img/icon-garbage-blue.svg"
+                      alt="remove"
+                    />
+                  </a>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="width: 100%; display: flex">
+        <div class="flexNoWrap flexGroupField" style="flex: 0">
+          <div class="flex0">
+            <mat-slide-toggle
+              id="expiration"
+              formControlName="expiration"
+            ></mat-slide-toggle>
+          </div>
+
+          <div class="labelToggle">
+            <label for="expiration">
+              {{ 'label.memberships.expiry.date' | transloco }}
+            </label>
+          </div>
+        </div>
+
+        <div class="flexGroupField" *ngIf="addUserForm.value.expiration">
+          <div class="flexLabel">
+            <label for="date">{{ 'label.when' | transloco }}</label>
+          </div>
+          <div class="flexField">
+            <p-calendar
+              formControlName="expirationDateTime"
+              [showTime]="true"
+              [dateFormat]="'dd/mm/yy'"
+              [placeholder]="'dd/mm/yyyy'"
+              [showIcon]="true"
+            ></p-calendar>
+          </div>
+
+          <div class="flexFullRow">
+            <cbc-control-message
+              [control]="expirationDateTimeControl"
+            ></cbc-control-message>
+          </div>
+        </div>
+      </div>
+
+      <div class="flexNoWrap flexGroupField">
+        <div class="flex0">
+          <mat-slide-toggle
+            id="cmn-toggle-1"
+            formControlName="userNotifications"
+          ></mat-slide-toggle>
+        </div>
+        <div class="flex1">
+          <label for="cmn-toggle-1">
+            {{ 'label.user.notifications.invite' | transloco }}
+          </label>
+        </div>
+      </div>
+
+      <div
+        class="flexGroupField"
+        *ngIf="addUserForm.value.userNotifications === true"
+      >
+        <textarea formControlName="comment"></textarea>
+      </div>
+
+      <div class="flexNoWrap flexGroupField">
+        <div class="flex0">
+          <mat-slide-toggle
+            id="cmn-toggle-2"
+            formControlName="adminNotifications"
+          ></mat-slide-toggle>
+        </div>
+        <div class="flex1">
+          <label for="cmn-toggle-2">
+            {{ 'label.admin.notifications.invite' | transloco }}
+          </label>
+        </div>
+      </div>
+
+      <div *ngIf="inviting">
+        <label
+          >{{ 'label.inviting' | transloco }}... <cbc-spinner></cbc-spinner
+        ></label>
+      </div>
+    </form>
+  </section>
+
+  <section class="flexFullRow modal-footer">
+    <!-- Buttons -->
+    <div class="buttons-group" *ngIf="!inviting">
+      <a
+        class="cta"
+        (click)="hasUsersSelected() ? submitMembers() : ''"
+        [class.disabled]="!hasUsersSelected()"
+        >{{ 'label.invite' | transloco }}</a
+      >
+      <a class="button" (click)="cancelWizard('close')"
+        >{{ 'label.cancel' | transloco }}</a
+      >
+    </div>
+  </section>
+</section>

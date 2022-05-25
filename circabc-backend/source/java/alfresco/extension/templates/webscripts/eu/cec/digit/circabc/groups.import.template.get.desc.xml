@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>groups.import.template</shortname>
+  <description>Generate the index file template for the import operation</description>
+    <url>/circabc/groups/import/template</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

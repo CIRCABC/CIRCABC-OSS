@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>post.abuse.delete</shortname>
+  <description>remove signaled abuses</description>
+    <url>/circabc/posts/{id}/abuse</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

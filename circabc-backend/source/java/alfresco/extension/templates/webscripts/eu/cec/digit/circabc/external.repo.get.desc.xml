@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>external.repo.get</shortname>
+  <description>Get external ticket id</description>
+    <url>/circabc/repositories</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

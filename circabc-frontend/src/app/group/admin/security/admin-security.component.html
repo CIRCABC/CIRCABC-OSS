@@ -1,0 +1,82 @@
+{{ 'admin.tab.security.title' | transloco: { groupName: ig?.name } | cbcSetTitle
+}}
+<h2>{{ 'admin.security.page.title' | transloco }}</h2>
+<form [formGroup]="securityForm">
+  <div class="field">
+    <label for="name">{{ 'label.visibility' | transloco }}</label>
+    <input
+      type="range"
+      id="library"
+      formControlName="visibility"
+      min="0"
+      max="2"
+      step="1"
+    />
+    <span>
+      <img
+        class="hint-icon"
+        src="img/earth-medium-grey.png"
+        *ngIf="isGuestVisible()"
+      />
+      <img
+        class="hint-icon"
+        src="img/multiple-users-silhouette.png"
+        *ngIf="isRegisteredVisible()"
+      />
+      <img
+        class="hint-icon"
+        src="img/invisible-medium-grey.png"
+        *ngIf="isPrivateVisible()"
+      />
+      {{ getVisibilityLabel() | transloco }}
+    </span>
+    <p
+      class="field--hint"
+      [innerHtml]="'admin.security.visibility.guest.help.on' | transloco"
+      *ngIf="isGuestVisible()"
+    >
+    </p>
+    <p
+      class="field--hint"
+      [innerHtml]="'admin.security.visibility.registered.help.on' | transloco"
+      *ngIf="isRegisteredVisible()"
+    >
+    </p>
+    <p
+      class="field--hint"
+      [innerHtml]="'admin.security.visibility.private.help.on' | transloco"
+      *ngIf="isPrivateVisible()"
+    >
+    </p>
+  </div>
+  <div class="field--separator"></div>
+  <div class="field switch" *ngIf="isRegisteredVisible() || isGuestVisible()">
+    <div class="label">{{ 'admin.security.applicants' | transloco }}</div>
+    <input
+      id="cmn-toggle-3"
+      class="cmn-toggle cmn-toggle-round"
+      type="checkbox"
+      formControlName="applicants"
+    />
+    <label for="cmn-toggle-3" class="nonBlockLabel"></label>
+    <span *ngIf="ig">{{ getApplicantsYesNoLabel() | transloco }}</span>
+    <p
+      class="field--hint"
+      [innerHtml]="
+        'admin.security.applicants.help.' + getApplicantsYesNoLabel()
+          | transloco
+      "
+    >
+    </p>
+  </div>
+  <div class="field" *ngIf="saving">
+    <label
+      >{{ 'label.saving' | transloco }}...
+      <cbc-spinner></cbc-spinner>
+    </label>
+  </div>
+</form>
+<div class="buttons-group" *ngIf="!saving">
+  <a class="cta" (click)="save()">{{ 'label.save' | transloco }}</a>
+  <a class="button" (click)="cancel()">{{ 'label.cancel' | transloco }}</a>
+</div>

@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Post a new logo in the logos of an IG</shortname>
+  <description>Post a new logo in the logos of an IG</description>
+    <url>/circabc/groups/{id}/logos</url>
+  <format default="json"/>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

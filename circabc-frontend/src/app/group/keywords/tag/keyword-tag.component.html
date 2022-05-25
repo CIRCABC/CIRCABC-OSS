@@ -1,0 +1,13 @@
+<div class="keywordTag" *ngFor="let key of getTitleKeys(keyword)">
+  <span
+    class="keywordTagLang"
+    title="{{ getLanguageName(key) | cbcCapitalize }}"
+    *ngIf="showLang"
+    >{{ key }}</span
+  >
+  <span class="keywordTagValue">{{ keyword.title[key] }}</span>
+  <span class="removeAction" *ngIf="removable && !deleting"
+    >&nbsp;<a (click)="removeKeyword(keyword)" title="Delete">x</a></span
+  >
+  <span class="deleting" *ngIf="deleting"><cbc-spinner></cbc-spinner></span>
+</div>
