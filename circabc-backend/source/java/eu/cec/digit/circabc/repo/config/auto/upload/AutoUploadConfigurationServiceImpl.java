@@ -18,79 +18,87 @@
 package eu.cec.digit.circabc.repo.config.auto.upload;
 
 import eu.cec.digit.circabc.service.config.auto.upload.AutoUploadConfigurationService;
+import java.util.List;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.mybatis.spring.SqlSessionTemplate;
 
-import java.util.List;
-
 /** @author beaurpi */
-public class AutoUploadConfigurationServiceImpl implements AutoUploadConfigurationService {
+public class AutoUploadConfigurationServiceImpl
+  implements AutoUploadConfigurationService {
 
-    private SqlSessionTemplate sqlSessionTemplate = null;
+  private SqlSessionTemplate sqlSessionTemplate = null;
 
-    /* (non-Javadoc)
-     * @see eu.cec.digit.circabc.service.config.auto.upload.AutoUploadConfigurationService#registerConfiguration(eu.cec.digit.circabc.repo.config.auto.upload.Configuration)
-     */
-    @Override
-    public void registerConfiguration(Configuration config) {
-        sqlSessionTemplate.insert("AutoUploadConfiguration.insert_configuration", config);
-    }
+  /* (non-Javadoc)
+   * @see eu.cec.digit.circabc.service.config.auto.upload.AutoUploadConfigurationService#registerConfiguration(eu.cec.digit.circabc.repo.config.auto.upload.Configuration)
+   */
+  @Override
+  public void registerConfiguration(Configuration config) {
+    sqlSessionTemplate.insert(
+      "AutoUploadConfiguration.insert_configuration",
+      config
+    );
+  }
 
-    /* (non-Javadoc)
-     * @see eu.cec.digit.circabc.service.config.auto.upload.AutoUploadConfigurationService#listConfigurations(java.lang.String)
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<Configuration> listConfigurations(String igName) {
+  /* (non-Javadoc)
+   * @see eu.cec.digit.circabc.service.config.auto.upload.AutoUploadConfigurationService#listConfigurations(java.lang.String)
+   */
+  @SuppressWarnings("unchecked")
+  @Override
+  public List<Configuration> listConfigurations(String igName) {
+    return (List<Configuration>) sqlSessionTemplate.selectList(
+      "AutoUploadConfiguration.select_all_configurations",
+      igName
+    );
+  }
 
-        return (List<Configuration>)
-                sqlSessionTemplate.selectList("AutoUploadConfiguration.select_all_configurations", igName);
-    }
+  /* (non-Javadoc)
+   * @see eu.cec.digit.circabc.service.config.auto.upload.AutoUploadConfigurationService#deleteConfiguration(eu.cec.digit.circabc.repo.config.auto.upload.Configuration)
+   */
+  @Override
+  public void deleteConfiguration(Configuration config) {
+    sqlSessionTemplate.delete(
+      "AutoUploadConfiguration.delete_configuration",
+      config
+    );
+  }
 
-    /* (non-Javadoc)
-     * @see eu.cec.digit.circabc.service.config.auto.upload.AutoUploadConfigurationService#deleteConfiguration(eu.cec.digit.circabc.repo.config.auto.upload.Configuration)
-     */
-    @Override
-    public void deleteConfiguration(Configuration config) {
+  /* (non-Javadoc)
+   * @see eu.cec.digit.circabc.service.config.auto.upload.AutoUploadConfigurationService#updateConfiguration(eu.cec.digit.circabc.repo.config.auto.upload.Configuration)
+   */
+  @Override
+  public void updateConfiguration(Configuration config) {
+    sqlSessionTemplate.update(
+      "AutoUploadConfiguration.update_configuration",
+      config
+    );
+  }
 
-        sqlSessionTemplate.delete("AutoUploadConfiguration.delete_configuration", config);
-    }
+  @Override
+  public Configuration getConfigurationById(Integer idConfig) {
+    return (Configuration) sqlSessionTemplate.selectOne(
+      "AutoUploadConfiguration.select_configuration_by_id",
+      idConfig.toString()
+    );
+  }
 
-    /* (non-Javadoc)
-     * @see eu.cec.digit.circabc.service.config.auto.upload.AutoUploadConfigurationService#updateConfiguration(eu.cec.digit.circabc.repo.config.auto.upload.Configuration)
-     */
-    @Override
-    public void updateConfiguration(Configuration config) {
+  @Override
+  public Configuration getConfigurationByNodeRef(NodeRef nodeRef) {
+    return (Configuration) sqlSessionTemplate.selectOne(
+      "AutoUploadConfiguration.select_configuration_by_file_ref",
+      nodeRef.toString()
+    );
+  }
 
-        sqlSessionTemplate.update("AutoUploadConfiguration.update_configuration", config);
-    }
+  @SuppressWarnings("unchecked")
+  @Override
+  public List<Configuration> getAllConfigurations() {
+    return (List<Configuration>) sqlSessionTemplate.selectList(
+      "AutoUploadConfiguration.select_all_configurations_all"
+    );
+  }
 
-    @Override
-    public Configuration getConfigurationById(Integer idConfig) {
-
-        return (Configuration)
-                sqlSessionTemplate.selectOne(
-                        "AutoUploadConfiguration.select_configuration_by_id", idConfig.toString());
-    }
-
-    @Override
-    public Configuration getConfigurationByNodeRef(NodeRef nodeRef) {
-
-        return (Configuration)
-                sqlSessionTemplate.selectOne(
-                        "AutoUploadConfiguration.select_configuration_by_file_ref", nodeRef.toString());
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<Configuration> getAllConfigurations() {
-
-        return (List<Configuration>)
-                sqlSessionTemplate.selectList("AutoUploadConfiguration.select_all_configurations_all");
-    }
-
-    /** @param sqlSessionTemplate the sqlSessionTemplate to set */
-    public void setSqlSessionTemplate(SqlSessionTemplate sqlSessionTemplate) {
-        this.sqlSessionTemplate = sqlSessionTemplate;
-    }
+  /** @param sqlSessionTemplate the sqlSessionTemplate to set */
+  public void setSqlSessionTemplate(SqlSessionTemplate sqlSessionTemplate) {
+    this.sqlSessionTemplate = sqlSessionTemplate;
+  }
 }

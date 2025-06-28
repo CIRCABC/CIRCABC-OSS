@@ -11,8 +11,8 @@ import {
   HttpResponse,
 } from '@angular/common/http';
 import { Injectable, Injector } from '@angular/core';
-import { TranslocoService } from '@ngneat/transloco';
-import { ActionUrl } from 'app/action-result';
+import { TranslocoService } from '@jsverse/transloco';
+import { getActionType } from 'app/action-result';
 import { UiMessageService } from 'app/core/message/ui-message.service';
 import { getErrorTranslation, getSuccessTranslation } from 'app/core/util';
 import { environment } from 'environments/environment';
@@ -65,7 +65,7 @@ export class MessageInterceptor implements HttpInterceptor {
       req.method === 'PUT' ||
       req.method === 'DELETE'
     ) {
-      const actionType = ActionUrl.getActionType(req.urlWithParams, req.method);
+      const actionType = getActionType(req.urlWithParams, req.method);
       if (actionType === undefined) {
         return next.handle(req);
       }
@@ -110,9 +110,8 @@ export class MessageInterceptor implements HttpInterceptor {
             return throwError(() => response);
           })
         );
-    } else {
-      return next.handle(req);
     }
+    return next.handle(req);
   }
 
   private isAresBridgeRequest(req: HttpRequest<{}>): boolean {

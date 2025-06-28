@@ -31,13 +31,13 @@
 package eu.cec.digit.circabc.repo.hrs.ws;
 
 public interface UserWebService extends javax.xml.rpc.Service {
+  /** This web service exposes user related operations. */
+  public java.lang.String getUserServiceAddress();
 
-    /** This web service exposes user related operations. */
-    public java.lang.String getUserServiceAddress();
+  public eu.cec.digit.circabc.repo.hrs.ws.UserService_PortType getUserService()
+    throws javax.xml.rpc.ServiceException;
 
-    public eu.cec.digit.circabc.repo.hrs.ws.UserService_PortType getUserService()
-            throws javax.xml.rpc.ServiceException;
-
-    public eu.cec.digit.circabc.repo.hrs.ws.UserService_PortType getUserService(
-            java.net.URL portAddress) throws javax.xml.rpc.ServiceException;
+  public eu.cec.digit.circabc.repo.hrs.ws.UserService_PortType getUserService(
+    java.net.URL portAddress
+  ) throws javax.xml.rpc.ServiceException;
 }

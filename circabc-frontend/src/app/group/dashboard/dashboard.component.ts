@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoService } from '@jsverse/transloco';
 
 import {
   DashboardService,
@@ -10,17 +10,37 @@ import {
   InterestGroupService,
 } from 'app/core/generated/circabc';
 import { UiMessageService } from 'app/core/message/ui-message.service';
+import { ContactDescriptionComponent } from 'app/group/contact-description/contact-description.component';
+import { EventsDashletComponent } from 'app/group/dashboard/events/events-dashlet.component';
+import { MembersDashletComponent } from 'app/group/dashboard/members-dashlet/members-dashlet.component';
+import { TimelineComponent } from 'app/group/dashboard/timeline/timeline.component';
+import { DescriptorComponent } from 'app/group/descriptor/descriptor.component';
+import { GroupLocationComponent } from 'app/group/group-location/group-location.component';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
+import { SetTitlePipe } from 'app/shared/pipes/set-title.pipe';
 import { firstValueFrom } from 'rxjs';
+import { RecentDiscussionsComponent } from './recent-discussions/recent-discussions.component';
 
 @Component({
   selector: 'cbc-group-dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss'],
+  styleUrl: './dashboard.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    HorizontalLoaderComponent,
+    GroupLocationComponent,
+    DescriptorComponent,
+    ContactDescriptionComponent,
+    TimelineComponent,
+    MembersDashletComponent,
+    EventsDashletComponent,
+    RecentDiscussionsComponent,
+    SetTitlePipe,
+  ],
 })
 export class DashboardComponent implements OnInit {
   public timeline!: GroupDashboard;
-  public group!: InterestGroup;
+  public group?: InterestGroup;
   public igId!: string;
   public loading = false;
 
@@ -66,7 +86,7 @@ export class DashboardComponent implements OnInit {
       this.timeline = await firstValueFrom(
         this.dashboardService.getGroupDashboard(groupId)
       );
-    } catch (error) {
+    } catch (_error) {
       this.timeline = {};
       const res = this.translateService.translate('error.dashboard.read');
       this.uiMessageService.addErrorMessage(res);

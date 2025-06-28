@@ -21,84 +21,83 @@
 package eu.cec.digit.circabc.web.ui.common.component.data;
 
 import eu.cec.digit.circabc.service.customisation.nav.NavigationPreference;
-
-import javax.faces.context.FacesContext;
-import javax.faces.el.ValueBinding;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
+import javax.faces.context.FacesContext;
+import javax.faces.el.ValueBinding;
 
 /**
  * @author Pignot Yanick
  */
 public class UICustomList extends UIRichList {
-    // ------------------------------------------------------------------------------
-    // Construction
 
-    private NavigationPreference configuration = null;
+  // ------------------------------------------------------------------------------
+  // Construction
 
-    // ------------------------------------------------------------------------------
-    // Component implementation
+  private NavigationPreference configuration = null;
 
-    /**
-     * Default constructor
-     */
-    public UICustomList() {
-        super("eu.cec.digit.circabc.faces.CustomListRenderer");
+  // ------------------------------------------------------------------------------
+  // Component implementation
+
+  /**
+   * Default constructor
+   */
+  public UICustomList() {
+    super("eu.cec.digit.circabc.faces.CustomListRenderer");
+  }
+
+  /**
+   * @see javax.faces.component.UIComponent#getFamily()
+   */
+  public String getFamily() {
+    return "eu.cec.digit.circabc.faces.Data";
+  }
+
+  /**
+   * @see javax.faces.component.StateHolder#restoreState(javax.faces.context.FacesContext,
+   * java.lang.Object)
+   */
+  public void restoreState(FacesContext context, Object state) {
+    Object values[] = (Object[]) state;
+    super.restoreState(context, state);
+
+    this.configuration = (NavigationPreference) values[values.length - 1];
+  }
+
+  /**
+   * @see javax.faces.component.StateHolder#saveState(javax.faces.context.FacesContext)
+   */
+  public Object saveState(FacesContext context) {
+    final Object values[] = (Object[]) super.saveState(context);
+
+    final List<Object> list = new ArrayList<>(values.length + 1);
+    list.addAll(Arrays.asList(values));
+    list.add(this.configuration);
+
+    return list.toArray();
+  }
+
+  /**
+   * @return the configuration
+   */
+  public final NavigationPreference getConfiguration() {
+    if (this.configuration == null) {
+      ValueBinding vb = getValueBinding("configuration");
+      if (vb != null) {
+        this.configuration = (NavigationPreference) vb.getValue(
+          getFacesContext()
+        );
+      }
     }
 
-    /**
-     * @see javax.faces.component.UIComponent#getFamily()
-     */
-    public String getFamily() {
-        return "eu.cec.digit.circabc.faces.Data";
-    }
+    return configuration;
+  }
 
-    /**
-     * @see javax.faces.component.StateHolder#restoreState(javax.faces.context.FacesContext,
-     * java.lang.Object)
-     */
-    public void restoreState(FacesContext context, Object state) {
-        Object values[] = (Object[]) state;
-        super.restoreState(context, state);
-
-        this.configuration = (NavigationPreference) values[values.length - 1];
-    }
-
-    /**
-     * @see javax.faces.component.StateHolder#saveState(javax.faces.context.FacesContext)
-     */
-    public Object saveState(FacesContext context) {
-
-        final Object values[] = (Object[]) super.saveState(context);
-
-        final List<Object> list = new ArrayList<>(values.length + 1);
-        list.addAll(Arrays.asList(values));
-        list.add(this.configuration);
-
-        return list.toArray();
-    }
-
-    /**
-     * @return the configuration
-     */
-    public final NavigationPreference getConfiguration() {
-        if (this.configuration == null) {
-            ValueBinding vb = getValueBinding("configuration");
-            if (vb != null) {
-                this.configuration = (NavigationPreference) vb.getValue(getFacesContext());
-            }
-        }
-
-        return configuration;
-    }
-
-    /**
-     * @param configuration the configuration to set
-     */
-    public final void setConfiguration(NavigationPreference configuration) {
-        this.configuration = configuration;
-    }
-
+  /**
+   * @param configuration the configuration to set
+   */
+  public final void setConfiguration(NavigationPreference configuration) {
+    this.configuration = configuration;
+  }
 }

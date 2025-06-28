@@ -1,13 +1,15 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AdminGuard } from 'app/group/guards/admin-guard.service';
-import { PermissionsComponent } from 'app/group/permissions/permissions.component';
+import { canActivateAdmin } from 'app/group/guards/admin-guard.service';
 
-const permissionsRoutes: Routes = [
+export const permissionsRoutes: Routes = [
   {
     path: ':nodeId',
-    component: PermissionsComponent,
-    canActivate: [AdminGuard],
+    loadComponent: () =>
+      import('app/group/permissions/permissions.component').then(
+        (m) => m.PermissionsComponent
+      ),
+    canActivate: [canActivateAdmin],
   },
 ];
 

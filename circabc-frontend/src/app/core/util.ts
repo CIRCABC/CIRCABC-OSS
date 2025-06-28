@@ -28,9 +28,7 @@ export const removeNulls = (obj: any) => {
  */
 
 export function arrayDiff<T, K extends keyof T>(a: T[], b: T[], key: K): T[] {
-  let c: T[];
-  // eslint-disable-next-line prefer-const
-  c = a.filter((aitem: T) => {
+  const c: T[] = a.filter((aitem: T) => {
     return b.findIndex((bitem: T) => aitem[key] === bitem[key]) === -1;
   });
   return c;
@@ -116,7 +114,7 @@ export function padWithLeadingZero(value: number): string {
   const valueString: string = value.toString();
   // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
   // eslint-disable-next-line prefer-template
-  return valueString.length === 1 ? '0' + valueString : valueString;
+  return valueString.length === 1 ? `0${valueString}` : valueString;
 }
 
 export function getFormattedDate(date: Date) {
@@ -139,96 +137,7 @@ export function getErrorTranslation(actionType: ActionType): string {
   return `${actionType}.failed`;
 }
 
-/**
- * detect IE
- * returns the version of IE or 0, if the browser is not Internet Explorer
- */
-export function detectIEVersion(): number {
-  const userAgent: string = window.navigator.userAgent;
-
-  // Test values; Uncomment to check result …
-
-  // IE 10
-  // ua = 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0)';
-
-  // IE 11
-  // ua = 'Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko';
-
-  // IE 12 / Spartan
-  // ua = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36 Edge/12.0';
-
-  // Edge (IE 12+)
-  // ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2486.0 Safari/537.36 Edge/13.10586';
-
-  const msie: number = userAgent.indexOf('MSIE ');
-  if (msie > 0) {
-    // IE 10 or older => return version number
-    return parseInt(
-      userAgent.substring(msie + 5, userAgent.indexOf('.', msie)),
-      10
-    );
-  }
-
-  const trident: number = userAgent.indexOf('Trident/');
-  if (trident > 0) {
-    // IE 11 => return version number
-    const rv = userAgent.indexOf('rv:');
-    return parseInt(
-      userAgent.substring(rv + 3, userAgent.indexOf('.', rv)),
-      10
-    );
-  }
-
-  const edge: number = userAgent.indexOf('Edge/');
-  if (edge > 0) {
-    // Edge (IE 12+) => return version number
-    return parseInt(
-      userAgent.substring(edge + 5, userAgent.indexOf('.', edge)),
-      10
-    );
-  }
-
-  // other browser
-  return 0;
-}
-
-/**
- * Returns the OS name as follows:
- *
- * "Windows"    for all versions of Windows
- * "MacOS"      for all versions of Macintosh OS
- * "Linux"      for all versions of Linux
- * "Unix"       for all other UNIX flavors
- * ""           indicates failure to detect the OS
- */
-export interface OSInfo {
-  name: string;
-  version: number;
-}
-export function detectOS(): OSInfo {
-  if (navigator.appVersion.indexOf('Windows NT 6.1') !== -1) {
-    return { name: 'Windows', version: 7 };
-  }
-  if (navigator.appVersion.indexOf('Windows NT 6.2') !== -1) {
-    return { name: 'Windows', version: 8 };
-  }
-  if (navigator.appVersion.indexOf('Windows NT 10.0') !== -1) {
-    return { name: 'Windows', version: 10 };
-  }
-  if (navigator.appVersion.indexOf('Mac') !== -1) {
-    return { name: 'MacOS', version: 0 };
-  }
-  if (navigator.appVersion.indexOf('X11') !== -1) {
-    return { name: 'Unix', version: 0 };
-  }
-  if (navigator.appVersion.indexOf('Linux') !== -1) {
-    return { name: 'Linux', version: 0 };
-  }
-
-  return { name: '', version: -1 };
-}
-/*
-export function isContentPreviewable(content: ModelNode): boolean {
+export function isContentPreviewableFull(content: ModelNode): boolean {
   return (
     content !== undefined &&
     content.properties !== undefined &&
@@ -255,13 +164,10 @@ export function isContentPreviewable(content: ModelNode): boolean {
       'image/png',
     ].indexOf(content.properties.mimetype.toLowerCase()) !== -1
   );
-*/
-
+}
 export function isContentPreviewable(content: ModelNode): boolean {
   let result =
-    content !== undefined &&
-    content.properties !== undefined &&
-    content.properties.mimetype !== undefined &&
+    content?.properties?.mimetype !== undefined &&
     ['application/pdf', 'image/gif', 'image/jpeg', 'image/png'].indexOf(
       content.properties.mimetype.toLowerCase()
     ) !== -1;
@@ -271,9 +177,7 @@ export function isContentPreviewable(content: ModelNode): boolean {
 
 export function isContentImage(content: ModelNode): boolean {
   return (
-    content !== undefined &&
-    content.properties !== undefined &&
-    content.properties.mimetype !== undefined &&
+    content?.properties?.mimetype !== undefined &&
     ['image/gif', 'image/png', 'image/jpeg'].includes(
       content.properties.mimetype.toLowerCase()
     )
@@ -282,8 +186,7 @@ export function isContentImage(content: ModelNode): boolean {
 
 export function isContentVideo(content: ModelNode): boolean {
   return (
-    content !== undefined &&
-    content.name !== undefined &&
+    content?.name !== undefined &&
     content.properties !== undefined &&
     content.properties.mimetype !== undefined &&
     content.properties.mimetype.toLowerCase().indexOf('video') !== -1
@@ -292,11 +195,17 @@ export function isContentVideo(content: ModelNode): boolean {
 
 export function isContentAudio(content: ModelNode): boolean {
   return (
-    content !== undefined &&
-    content.name !== undefined &&
+    content?.name !== undefined &&
     content.properties !== undefined &&
     content.properties.mimetype !== undefined &&
     content.properties.mimetype.toLowerCase().indexOf('audio') !== -1
+  );
+}
+
+export function isContentPdf(content: ModelNode): boolean {
+  return (
+    content?.properties?.mimetype !== undefined &&
+    ['application/pdf'].includes(content.properties.mimetype.toLowerCase())
   );
 }
 
@@ -366,7 +275,8 @@ export function eventsStartTimeComparator(
 
   if (event1StartTime > event2StartTime) {
     return 1;
-  } else if (event1StartTime < event2StartTime) {
+  }
+  if (event1StartTime < event2StartTime) {
     return -1;
   }
   return 0;
@@ -375,9 +285,8 @@ export function eventsStartTimeComparator(
 export function truncate(text: string, length: number): string {
   if (text.length > length) {
     return `${text.substring(0, (length === undefined ? 10 : length) - 3)}...`;
-  } else {
-    return text;
   }
+  return text;
 }
 
 // check if an email address is well formed
@@ -478,4 +387,31 @@ export function convertDate(str: string): string {
   const date = str.split(' ');
 
   return [date[3], months[date[1]], date[2]].join('-');
+}
+export function compensateDST(dt: Date) {
+  const janOffset = new Date(dt.getFullYear(), 0, 1).getTimezoneOffset();
+  const julOffset = new Date(dt.getFullYear(), 6, 1).getTimezoneOffset();
+  const dstMinutes = dt.getTimezoneOffset() - Math.max(janOffset, julOffset);
+  dt.setMinutes(dt.getMinutes() + dstMinutes);
+
+  return dt;
+}
+
+/**
+ * Convert date string in format "DD/MM/YYYY" to "YYYY-MM-DD"
+ *
+ * @param {string} dateString - The date string in the format "DD/MM/YYYY"
+ * @return {string} The new date string in the format "YYYY-MM-DD"
+ */
+export function convertDateFormat(dateString: string | null) {
+  if (dateString === null) {
+    return null;
+  }
+  // Split the date string into day, month, and year parts
+  const parts = dateString.split('/');
+
+  // Re-arrange the parts to form a new date string in the format "YYYY-MM-DD"
+  const newDateString = `${parts[2]}-${parts[1]}-${parts[0]}`;
+
+  return newDateString;
 }

@@ -1,41 +1,42 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input, output, input } from '@angular/core';
+import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
   selector: 'cbc-inline-delete',
   templateUrl: './inline-delete.component.html',
-  styleUrls: ['./inline-delete.component.scss'],
+  styleUrl: './inline-delete.component.scss',
   preserveWhitespaces: true,
+  imports: [TranslocoModule],
 })
 export class InlineDeleteComponent {
-  @Output()
-  readonly deletionConfirmed = new EventEmitter();
+  readonly deletionConfirmed = output();
 
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   deleting = false;
-  @Output()
-  readonly deletingChange = new EventEmitter();
+  readonly deletingChange = output<boolean>();
 
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   mustConfirm = false;
-  @Output()
-  readonly mustConfirmChange = new EventEmitter();
+  readonly mustConfirmChange = output<boolean>();
 
-  @Input()
-  useIcon = false;
+  readonly useIcon = input(false);
 
-  @Input()
-  useText = true;
+  readonly useText = input(true);
 
+  // TODO: Skipped for migration because:
+  //  This input is used in a control flow expression (e.g. `@if` or `*ngIf`)
+  //  and migrating would break narrowing currently.
   @Input()
   image = '';
-  @Input()
-  imageHeightWidth = 12;
+  readonly imageHeightWidth = input(12);
 
-  @Input()
-  deleteInline = true;
+  readonly deleteInline = input(true);
 
-  @Input()
-  deleteLabel = 'label.delete';
+  readonly deleteLabel = input('label.delete');
 
   public deleteAskConfirmation() {
     this.mustConfirm = true;
@@ -43,7 +44,7 @@ export class InlineDeleteComponent {
   }
 
   public confirm() {
-    if (this.deleteInline) {
+    if (this.deleteInline()) {
       this.deleting = true;
     } else {
       this.mustConfirm = false;

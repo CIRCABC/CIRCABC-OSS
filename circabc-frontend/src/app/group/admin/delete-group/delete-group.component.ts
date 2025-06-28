@@ -1,20 +1,34 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, output, input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import {
-  ContentService,
-  GroupDeletionReport,
-  InterestGroupService,
-  ProfileService,
-  SpaceService,
-} from 'app/core/generated/circabc';
+import { TranslocoModule } from '@jsverse/transloco';
+import { ContentService } from 'app/core/generated/circabc';
+import { InterestGroupService } from 'app/core/generated/circabc';
+import { ProfileService } from 'app/core/generated/circabc';
+import { SpaceService } from 'app/core/generated/circabc';
+import { GroupDeletionReport } from 'app/core/generated/circabc';
+
+import { BreadcrumbComponent } from 'app/group/breadcrumb/breadcrumb.component';
+import { DataCyDirective } from 'app/shared/directives/data-cy.directive';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-delete-group',
   templateUrl: './delete-group.component.html',
-  styleUrls: ['./delete-group.component.scss'],
+  styleUrl: './delete-group.component.scss',
+  imports: [
+    DataCyDirective,
+    SpinnerComponent,
+    HorizontalLoaderComponent,
+    BreadcrumbComponent,
+    TranslocoModule,
+  ],
 })
 export class DeleteGroupComponent implements OnInit {
+  readonly groupId = input<string>();
+  readonly groupDeleted = output<boolean>();
+
   public igNode!: string;
   public conditions!: GroupDeletionReport;
   public verifying = false;
@@ -39,6 +53,10 @@ export class DeleteGroupComponent implements OnInit {
         this.igNode = params.id;
       }
     });
+    const groupId = this.groupId();
+    if (groupId) {
+      this.igNode = groupId;
+    }
   }
 
   public async verifyConditions() {
@@ -56,8 +74,7 @@ export class DeleteGroupComponent implements OnInit {
 
   public isReadyForDeletion() {
     if (
-      this.conditions &&
-      this.conditions.lockedNodes &&
+      this.conditions?.lockedNodes &&
       this.conditions.sharedNodes &&
       this.conditions.sharedProfiles
     ) {
@@ -74,7 +91,7 @@ export class DeleteGroupComponent implements OnInit {
   public async cleanLocks() {
     this.cleaningLocks = true;
     try {
-      if (this.conditions && this.conditions.lockedNodes) {
+      if (this.conditions?.lockedNodes) {
         for (const node of this.conditions.lockedNodes) {
           if (node.id) {
             await firstValueFrom(this.contentService.deleteCheckout(node.id));
@@ -91,7 +108,7 @@ export class DeleteGroupComponent implements OnInit {
   public async cleanSharedNodes() {
     this.cleaningSharedNodes = true;
     try {
-      if (this.conditions && this.conditions.sharedNodes) {
+      if (this.conditions?.sharedNodes) {
         for (const sharedNode of this.conditions.sharedNodes) {
           if (sharedNode.id) {
             const invitedIgs = await firstValueFrom(
@@ -118,7 +135,7 @@ export class DeleteGroupComponent implements OnInit {
   public async cleanSharedProfiles() {
     this.cleaningSharedProfiles = true;
     try {
-      if (this.conditions && this.conditions.sharedProfiles) {
+      if (this.conditions?.sharedProfiles) {
         for (const profile of this.conditions.sharedProfiles) {
           profile.exported = false;
           if (profile.id) {
@@ -137,14 +154,26 @@ export class DeleteGroupComponent implements OnInit {
 
   public async deleteGroup() {
     this.deleting = true;
+
     try {
-      await firstValueFrom(
-        this.groupService.deleteInterestGroup(this.igNode, true, true)
-      );
-      this.router.navigate(['/explore']);
+      if (this.groupId()) {
+        this.groupDeleted.emit(true);
+      } else {
+        await firstValueFrom(
+          this.groupService.deleteInterestGroup(this.igNode, true, true)
+        );
+        this.router.navigate(['/explore']);
+      }
     } catch (error) {
       console.error(error);
     }
     this.deleting = false;
+  }
+  onCancelClick(): void {
+    if (this.groupId()) {
+      this.groupDeleted.emit(false);
+    } else {
+      this.router.navigate(['..']);
+    }
   }
 }

@@ -1,21 +1,22 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input, output, input } from '@angular/core';
+import { TranslocoModule } from '@jsverse/transloco';
+import { ModalComponent } from 'app/shared/modal/modal.component';
 
 @Component({
   selector: 'cbc-modal-delete',
   templateUrl: './modal-delete.component.html',
-  styleUrls: ['./modal-delete.component.scss'],
+  styleUrl: './modal-delete.component.scss',
+  imports: [ModalComponent, TranslocoModule],
 })
 export class ModalDeleteComponent {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   public showModal = false;
-  @Input()
-  public title = '';
-  @Input()
-  public text = '';
-  @Output()
-  public readonly deletionCanceled = new EventEmitter();
-  @Output()
-  public readonly deletionConfirmed = new EventEmitter();
+  public readonly title = input('');
+  public readonly text = input('');
+  public readonly deletionCanceled = output();
+  public readonly deletionConfirmed = output();
 
   public closePopupWindow(): void {
     this.showModal = false;

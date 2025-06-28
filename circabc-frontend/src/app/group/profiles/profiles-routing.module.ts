@@ -1,9 +1,15 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { ProfilesComponent } from 'app/group/profiles/profiles.component';
-
-const profilesRoutes: Routes = [{ path: '', component: ProfilesComponent }];
+export const profilesRoutes: Routes = [
+  {
+    path: '',
+    loadComponent: () =>
+      import('app/group/profiles/profiles.component').then(
+        (m) => m.ProfilesComponent
+      ),
+  },
+];
 
 @NgModule({
   imports: [RouterModule.forChild(profilesRoutes)],

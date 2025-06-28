@@ -27,30 +27,31 @@ import javax.faces.el.ValueBinding;
  * @author Guillaume
  */
 public class UIDisplayer extends UIComponentBase {
-    // ------------------------------------------------------------------------------
-    // Component Impl
 
-    /**
-     * Default constructor
-     */
-    public UIDisplayer() {
-        setRendererType(null);
-    }
+  // ------------------------------------------------------------------------------
+  // Component Impl
 
-    /**
-     * @see javax.faces.component.UIComponent#getFamily()
-     */
-    public String getFamily() {
-        return "eu.cec.digit.circabc.faces.Controls";
-    }
+  /**
+   * Default constructor
+   */
+  public UIDisplayer() {
+    setRendererType(null);
+  }
 
-    /**
-     * Force the get of the value
-     */
-    @Override
-    public boolean isRendered() {
-        ValueBinding vb = getValueBinding("rendered");
-        Boolean v = vb != null ? (Boolean) vb.getValue(getFacesContext()) : null;
-        return v != null ? v : true;
-    }
+  /**
+   * @see javax.faces.component.UIComponent#getFamily()
+   */
+  public String getFamily() {
+    return "eu.cec.digit.circabc.faces.Controls";
+  }
+
+  /**
+   * Force the get of the value
+   */
+  @Override
+  public boolean isRendered() {
+    ValueBinding vb = getValueBinding("rendered");
+    Boolean v = vb != null ? (Boolean) vb.getValue(getFacesContext()) : null;
+    return v != null ? v : true;
+  }
 }

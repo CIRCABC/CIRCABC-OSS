@@ -1,15 +1,34 @@
-<strong *ngIf="isRoot">{{ tree.name }}</strong>
-<span *ngIf="!isRoot">{{ tree.name }}</span>
-<ul *ngIf="tree.children.length > 0">
-  <li *ngFor="let child of tree.children"
-    ><img src="img/bigicon-folder.png" height="15" width="15" />&nbsp;
+@if (isRoot()) {
+<strong
+  >{{ ((tree.name === 'Newsgroup')? 'label.forums': (tree.name === 'Library')?
+  'label.library':tree.name) | transloco }}</strong
+>
+} @if (!isRoot()) {
+<span
+  >{{ ((tree.name === 'Newsgroup')? 'label.forums': (tree.name === 'Library')?
+  'label.library':tree.name) | transloco }}</span
+>
+} @if (tree.children.length > 0) {
+<ul>
+  @for (child of tree.children; track child.name) {
+  <li>
+    <img
+      src="img/bigicon-folder.png"
+      height="15"
+      width="15"
+      alt="Folder icon"
+    />&nbsp;
     <cbc-structure-tree [tree]="child" [isRoot]="false"></cbc-structure-tree>
   </li>
+  }
 </ul>
-<span *ngIf="tree.children.length === 0 && isRoot"
+} @if (tree.children.length === 0 && isRoot()) {
+<span
   ><br /><img
     class="padd"
     src="img/rounded-block-sign.png"
     height="20"
-    width="20" /><br
+    width="20"
+    alt="Rounded block sign" /><br
 /></span>
+}

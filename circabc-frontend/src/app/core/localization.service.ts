@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Injectable({
   providedIn: 'root',
 })
 export class LocalizationService {
-  private cacheDayNames = new Map();
-  private cacheMonthNames = new Map();
+  private cacheDayNames = new Map<string, { [key: string]: string }>();
+  private cacheMonthNames = new Map<string, { [key: string]: string }>();
 
   constructor(private translateService: TranslocoService) {}
   getDayNames(
@@ -17,7 +17,7 @@ export class LocalizationService {
     const cacheKey = `${firstDay}-${name}-${numberOfDays}-${this.translateService.getActiveLang()}`;
 
     if (this.cacheDayNames.has(cacheKey)) {
-      return this.cacheDayNames.get(cacheKey);
+      return this.cacheDayNames.get(cacheKey) as { [key: string]: string };
     }
 
     const dayNamesArray = this.getDayNamesArray(name);
@@ -53,7 +53,7 @@ export class LocalizationService {
   getMonthsNames(): { [key: string]: string } {
     const cacheKey = `${this.translateService.getActiveLang()}`;
     if (this.cacheMonthNames.has(cacheKey)) {
-      return this.cacheMonthNames.get(cacheKey);
+      return this.cacheMonthNames.get(cacheKey) as { [key: string]: string };
     }
     const monthsNamesArray = this.getMonthsNamesArray();
     const monthNames = monthsNamesArray.data;
@@ -86,25 +86,24 @@ export class LocalizationService {
         : this.translateService.translateObject('primeng')['dayNamesShort'];
     if (result !== undefined) {
       return { data: result as string[], shouldCache: true };
-    } else {
-      return name === 'full'
-        ? {
-            data: [
-              'Sunday',
-              'Monday',
-              'Tuesday',
-              'Wednesday',
-              'Thursday',
-              'Friday',
-              'Saturday',
-            ],
-            shouldCache: false,
-          }
-        : {
-            data: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-            shouldCache: false,
-          };
     }
+    return name === 'full'
+      ? {
+          data: [
+            'Sunday',
+            'Monday',
+            'Tuesday',
+            'Wednesday',
+            'Thursday',
+            'Friday',
+            'Saturday',
+          ],
+          shouldCache: false,
+        }
+      : {
+          data: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+          shouldCache: false,
+        };
   }
   private getMonthsNamesArray(): {
     data: readonly string[];
@@ -115,31 +114,29 @@ export class LocalizationService {
 
     if (result !== undefined) {
       return { data: result as string[], shouldCache: true };
-    } else {
-      return {
-        data: [
-          'January',
-          'February',
-          'March',
-          'April',
-          'May',
-          'June',
-          'July',
-          'August',
-          'September',
-          'October',
-          'November',
-          'December',
-        ],
-        shouldCache: false,
-      };
     }
+    return {
+      data: [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December',
+      ],
+      shouldCache: false,
+    };
   }
   getFirstDayOfWeek(): number {
     if (this.translateService.getActiveLang() === 'pt') {
       return 0;
-    } else {
-      return 1;
     }
+    return 1;
   }
 }

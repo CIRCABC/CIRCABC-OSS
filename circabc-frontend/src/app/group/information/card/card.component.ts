@@ -1,32 +1,31 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, viewChild, input } from '@angular/core';
 
 import { LoginService } from 'app/core/login.service';
-import { CardEntry } from 'app/core/ui-model/card-entry';
+import { type CardEntry } from 'app/core/ui-model/card-entry';
+import { SafePipe } from 'app/shared/pipes/safe.pipe';
 
 @Component({
   selector: 'cbc-card',
   templateUrl: './card.component.html',
-  styleUrls: ['./card.component.scss'],
+  styleUrl: './card.component.scss',
   preserveWhitespaces: true,
+  imports: [SafePipe],
 })
 export class CardComponent implements OnInit {
-  @Input()
-  size!: number;
-  @Input()
-  height = 1;
-  @Input()
-  skin!: string;
+  readonly size = input.required<number>();
+  readonly height = input(1);
+  readonly skin = input.required<string>();
+  // TODO: Skipped for migration because:
+  //  This input is used in a control flow expression (e.g. `@if` or `*ngIf`)
+  //  and migrating would break narrowing currently.
   @Input()
   card!: CardEntry;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  @ViewChild('cardDiv', { static: true })
+  readonly cardDiv = viewChild<any>('cardDiv');
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  cardDiv: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  @ViewChild('cardHeader', { static: true })
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  cardHeader: any;
+  readonly cardHeader = viewChild<any>('cardHeader');
 
   public trustedwebdavUrl!: string;
 
@@ -34,17 +33,19 @@ export class CardComponent implements OnInit {
 
   public ngOnInit() {
     if (this.card.type === 'image') {
+      const cardDiv = this.cardDiv();
       if (this.card.properties) {
-        this.cardDiv.nativeElement.style.backgroundImage = `url(${this.card.properties.img})`;
+        cardDiv.nativeElement.style.backgroundImage = `url(${this.card.properties.img})`;
       }
-      this.cardDiv.nativeElement.style.backgroundSize = 'cover';
+      cardDiv.nativeElement.style.backgroundSize = 'cover';
     }
 
     if (this.card.type === 'text-image') {
+      const cardHeader = this.cardHeader();
       if (this.card.properties) {
-        this.cardHeader.nativeElement.style.backgroundImage = `url(${this.card.properties.img})`;
+        cardHeader.nativeElement.style.backgroundImage = `url(${this.card.properties.img})`;
       }
-      this.cardHeader.nativeElement.style.display = 'block';
+      cardHeader.nativeElement.style.display = 'block';
     }
 
     if (this.card.type === 'webdav') {
@@ -67,11 +68,10 @@ export class CardComponent implements OnInit {
   }
 
   public checkTicket(): string {
-    if (!this.loginService.isGuest()) {
-      return `?ticket=${this.loginService.getTicket()}`;
-    } else {
+    if (this.loginService.isGuest()) {
       return '';
     }
+    return `?ticket=${this.loginService.getTicket()}`;
   }
 
   public getWebdavUrl(): string {

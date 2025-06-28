@@ -3,11 +3,12 @@
     <cbc-notification-message
       [severity]="1"
       [message]="'library.folder.public.upload' | transloco"
-      [guestAllowed]="hasGuestAccess"
+      [guestAllowed]="hasGuestAccess()"
     ></cbc-notification-message>
   </div>
 
-  <div class="field field--file" *ngIf="!disable">
+  @if (!disable()) {
+  <div class="field field--file">
     <input
       data-cy="file-input"
       type="file"
@@ -20,25 +21,25 @@
       {{ 'label.add.files' | transloco }}
     </label>
   </div>
-
+  } @if (!disable()) {
   <div
     class="drop-zone"
     data-cy="drop-zone"
-    *ngIf="!disable"
     (dragenter)="dragenter($event)"
     (dragover)="dragover($event)"
     (drop)="drop($event)"
   >
     {{ 'label.upload.drag.help' | transloco }}
   </div>
-
-  <div class="" *ngIf="disable">
+  } @if (disable()) {
+  <div class="">
     {{ 'label.uploading' | transloco }} <cbc-spinner></cbc-spinner>
   </div>
+  }
 
   <div class="info">
     <img src="img/information-button.png" alt="/!\" />&nbsp; {{
-    'text.big.file.exception' | transloco: { maxFileUploadSize: maxFileUpload |
-    cbcSize: true } }}
+    'text.big.file.exception' | transloco: { maxFileUploadSize: maxFileUpload()
+    | cbcSize: true } }}
   </div>
 </div>

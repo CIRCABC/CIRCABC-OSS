@@ -29,10 +29,10 @@ import org.alfresco.web.ui.common.tag.debug.BaseDebugTag;
  */
 public class ConfigFileReaderTag extends BaseDebugTag {
 
-    /**
-     * @see javax.faces.webapp.UIComponentTag#getComponentType()
-     */
-    public String getComponentType() {
-        return "eu.cec.digit.circabc.faces.debug.ConfigFileReader";
-    }
+  /**
+   * @see javax.faces.webapp.UIComponentTag#getComponentType()
+   */
+  public String getComponentType() {
+    return "eu.cec.digit.circabc.faces.debug.ConfigFileReader";
+  }
 }

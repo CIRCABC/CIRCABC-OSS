@@ -1,5 +1,5 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { Component, Input, OnInit, output, input } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
 import {
   ActionEmitterResult,
@@ -7,24 +7,26 @@ import {
   ActionType,
 } from 'app/action-result/index';
 
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { InterestGroupService } from 'app/core/generated/circabc';
 import { UiMessageService } from 'app/core/message/ui-message.service';
 import { imageExtensionValid } from 'app/core/util';
+import { ModalComponent } from 'app/shared/modal/modal.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-add-group-logo',
   templateUrl: './add-group-logo.component.html',
   preserveWhitespaces: true,
+  imports: [ModalComponent, ReactiveFormsModule, TranslocoModule],
 })
 export class AddGroupLogoComponent implements OnInit {
-  @Input()
-  groupId: string | undefined;
+  readonly groupId = input<string>();
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   showModal = false;
-  @Output()
-  readonly modalHide = new EventEmitter<ActionEmitterResult>();
+  readonly modalHide = output<ActionEmitterResult>();
 
   public processing = false;
   public logoForm!: FormGroup;
@@ -51,7 +53,8 @@ export class AddGroupLogoComponent implements OnInit {
   }
 
   public async uploadLogo() {
-    if (this.groupId === undefined) {
+    const groupId = this.groupId();
+    if (groupId === undefined) {
       return;
     }
     this.processing = true;
@@ -60,13 +63,13 @@ export class AddGroupLogoComponent implements OnInit {
 
     try {
       await firstValueFrom(
-        this.groupService.postGroupNewLogo(this.groupId, this.filesToUpload[0])
+        this.groupService.postGroupNewLogo(groupId, this.filesToUpload[0])
       );
 
       res.result = ActionResult.SUCCEED;
       this.filesToUpload = [];
       this.showModal = false;
-    } catch (error) {
+    } catch (_error) {
       const result = this.translateService.translate('error.image.upload');
       this.uiMessageService.addInfoMessage(result);
       res.result = ActionResult.FAILED;
@@ -76,9 +79,9 @@ export class AddGroupLogoComponent implements OnInit {
     this.processing = false;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public fileChangeEvent(fileInput: any) {
-    const filesList = fileInput.target.files as FileList;
+  public fileChangeEvent(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const filesList = input.files as FileList;
     this.handleFiles(filesList);
   }
 
@@ -95,9 +98,8 @@ export class AddGroupLogoComponent implements OnInit {
   public getFileName() {
     if (this.filesToUpload && this.filesToUpload.length > 0) {
       return this.filesToUpload[0].name;
-    } else {
-      return '';
     }
+    return '';
   }
 
   public hasFile(): boolean {

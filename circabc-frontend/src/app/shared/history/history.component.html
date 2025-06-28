@@ -1,19 +1,26 @@
 <!-- MODAL BOX -->
+@if (showModal) {
 <div
   class="black-overlayer"
-  *ngIf="showModal"
   [class.overlayer-shown]="showModal"
   [class.overlayer-hidden]="!showModal"
 ></div>
+}
 <section
   class="modal"
   [class.modal-shown]="showModal"
   [class.modal-hidden]="!showModal"
   style="margin-top: 0"
 >
-  <a class="close-icon" (click)="close()"></a>
+  <a
+    tabindex="0"
+    role="button"
+    class="close-icon"
+    aria-label="Close"
+    (click)="close()"
+  ></a>
   <header>
-    <h2 class="title">{{ historyText }}</h2>
+    <h2 class="title">{{ historyText() }}</h2>
   </header>
   <section class="modal-content table-container">
     <div class="wrapping scroll-body">
@@ -38,21 +45,24 @@
           </tr>
         </thead>
         <tbody>
-          <tr class="row empty-row" *ngIf="historyEntries !== undefined">
-            <td colspan="5" *ngIf="historyEntries.length === 0"
-              >{{ 'label.no.history' | transloco }}</td
-            >
+          @if (historyEntries !== undefined) {
+          <tr class="row empty-row">
+            @if (historyEntries.length === 0) {
+            <td colspan="5">{{ 'label.no.history' | transloco }}</td>
+            }
           </tr>
-          <tr class="row left-text" *ngFor="let historyEntry of historyEntries">
+          } @for (historyEntry of historyEntries; track historyEntry) {
+          <tr class="row left-text">
             <td>{{ historyEntry.logDate }}</td>
             <td>{{ historyEntry.userId }}</td>
             <td>{{ historyEntry.serviceDescription }}</td>
             <td>{{ historyEntry.activityDescription }}</td>
-            <td
-              >{{ (historyEntry.success === true ? 'label.success' :
-              'label.failure') | transloco }}</td
-            >
+            <td>
+              {{ (historyEntry.success === true ? 'label.success' :
+              'label.failure') | transloco }}
+            </td>
           </tr>
+          }
         </tbody>
       </table>
     </div>

@@ -25,16 +25,19 @@ import org.alfresco.service.cmr.repository.NodeRef;
  */
 // @PublicService
 public interface NotificationManagerService {
+  @Auditable(/*key = Auditable.Key.ARG_0, */parameters = { "igNodeRef" })
+  boolean isPasteAllNotificationEnabled(NodeRef igNodeRef);
 
-    @Auditable(/*key = Auditable.Key.ARG_0, */ parameters = {"igNodeRef"})
-    boolean isPasteAllNotificationEnabled(NodeRef igNodeRef);
+  @Auditable(/*key = Auditable.Key.ARG_0, */parameters = { "igNodeRef" })
+  boolean isPasteNotificationEnabled(NodeRef ignodeRef);
 
-    @Auditable(/*key = Auditable.Key.ARG_0, */ parameters = {"igNodeRef"})
-    boolean isPasteNotificationEnabled(NodeRef ignodeRef);
+  @Auditable(
+    /*key = Auditable.Key.ARG_0, */parameters = { "igNodeRef", "value" }
+  )
+  void setPasteAllNotificationEnabled(NodeRef igNodeRef, boolean value);
 
-    @Auditable(/*key = Auditable.Key.ARG_0, */ parameters = {"igNodeRef", "value"})
-    void setPasteAllNotificationEnabled(NodeRef igNodeRef, boolean value);
-
-    @Auditable(/*key = Auditable.Key.ARG_0, */ parameters = {"igNodeRef", "value"})
-    void setPasteNotificationEnabled(NodeRef igNodeRef, boolean value);
+  @Auditable(
+    /*key = Auditable.Key.ARG_0, */parameters = { "igNodeRef", "value" }
+  )
+  void setPasteNotificationEnabled(NodeRef igNodeRef, boolean value);
 }

@@ -1,21 +1,23 @@
 <div
+  tabindex="0"
   class="cta cta--plus dropdown-trigger"
-  [class.disabled]="disabled"
+  [class.disabled]="disabled()"
   (click)="toggleAddDropdown($event)"
 >
-  {{ 'permissions.add.configuration' | transloco }}
-  <div class="dropdown dropdown--add-file adjust" *ngIf="showCreateDropdown">
+  {{ 'permissions.add.configuration' | transloco }} @if (showCreateDropdown) {
+  <div class="dropdown dropdown--add-file adjust">
     <ul>
       <li>
-        <a class="user" (click)="launchAddPermissionWizard()"
+        <a tabindex="0" class="user" (click)="launchAddPermissionWizard()"
           >{{ 'permissions.selection.label' | transloco }}</a
         >
       </li>
       <li>
-        <a class="users" (click)="launchAddShareWizard()"
+        <a tabindex="0" class="users" (click)="launchAddShareWizard()"
           >{{ 'label.interest.groups' | transloco }}</a
         >
       </li>
     </ul>
   </div>
+  }
 </div>

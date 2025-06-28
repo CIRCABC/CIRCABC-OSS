@@ -18,6 +18,8 @@ package eu.cec.digit.circabc.repo.external.repositories;
 
 import eu.cec.digit.ecas.client.proxy.ProxyTicketHelper;
 import eu.cec.digit.ecas.client.proxy.ProxyTicketHelperIntf;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.context.ServletContextAware;
@@ -25,74 +27,80 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-
 /**
  * A more intelligent implementation of the proxy ticket resolver that returns the ECAS proxy that
  * has to be validated for the production environment.
  *
  * @author schwerr
  */
-public class ProductionProxyTicketResolver implements ProxyTicketResolver, ServletContextAware {
+public class ProductionProxyTicketResolver
+  implements ProxyTicketResolver, ServletContextAware {
 
-    private static final Log logger = LogFactory.getLog(ProductionProxyTicketResolver.class);
+  private static final Log logger = LogFactory.getLog(
+    ProductionProxyTicketResolver.class
+  );
 
-    private ServletContext servletContext = null;
+  private ServletContext servletContext = null;
 
-    private String targetService = null;
+  private String targetService = null;
 
-    /**
-     * @see eu.cec.digit.circabc.repo.external.repositories.ProxyTicketResolver#getProxyTicket()
-     */
-    @Override
-    public String getProxyTicket() {
+  /**
+   * @see eu.cec.digit.circabc.repo.external.repositories.ProxyTicketResolver#getProxyTicket()
+   */
+  @Override
+  public String getProxyTicket() {
+    RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
 
-        RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
-
-        if (attributes == null) {
-            logger.error(
-                    "Request context attributes "
-                            + "not found. Did you add <listener><listener-class>"
-                            + "org.springframework.web.context.request."
-                            + "RequestContextListener</listener-class></listener> "
-                            + "to web.xml?");
-            return null;
-        }
-
-        return getProxyTicketIntern(
-                servletContext, ((ServletRequestAttributes) attributes).getRequest());
+    if (attributes == null) {
+      logger.error(
+        "Request context attributes " +
+        "not found. Did you add <listener><listener-class>" +
+        "org.springframework.web.context.request." +
+        "RequestContextListener</listener-class></listener> " +
+        "to web.xml?"
+      );
+      return null;
     }
 
-    /**
-     * Retrieves the actual proxy ticket.
-     */
-    private String getProxyTicketIntern(ServletContext context, HttpServletRequest request) {
+    return getProxyTicketIntern(
+      servletContext,
+      ((ServletRequestAttributes) attributes).getRequest()
+    );
+  }
 
-        try {
-            ProxyTicketHelperIntf proxyTicketHelper = ProxyTicketHelper.getInstance(context);
+  /**
+   * Retrieves the actual proxy ticket.
+   */
+  private String getProxyTicketIntern(
+    ServletContext context,
+    HttpServletRequest request
+  ) {
+    try {
+      ProxyTicketHelperIntf proxyTicketHelper = ProxyTicketHelper.getInstance(
+        context
+      );
 
-            return proxyTicketHelper.getProxyTicket(request, targetService);
-        } catch (Exception e) {
-            logger.error("Exception resolving ECAS proxy ticket.", e);
-            return null;
-        }
+      return proxyTicketHelper.getProxyTicket(request, targetService);
+    } catch (Exception e) {
+      logger.error("Exception resolving ECAS proxy ticket.", e);
+      return null;
     }
+  }
 
-    /**
-     * @see org.springframework.web.context.ServletContextAware#setServletContext(javax.servlet.ServletContext)
-     */
-    @Override
-    public void setServletContext(ServletContext servletContext) {
-        this.servletContext = servletContext;
-    }
+  /**
+   * @see org.springframework.web.context.ServletContextAware#setServletContext(javax.servlet.ServletContext)
+   */
+  @Override
+  public void setServletContext(ServletContext servletContext) {
+    this.servletContext = servletContext;
+  }
 
-    /**
-     * Sets the value of the targetService
-     *
-     * @param targetService the targetService to set.
-     */
-    public void setTargetService(String targetService) {
-        this.targetService = targetService;
-    }
+  /**
+   * Sets the value of the targetService
+   *
+   * @param targetService the targetService to set.
+   */
+  public void setTargetService(String targetService) {
+    this.targetService = targetService;
+  }
 }

@@ -1,7 +1,7 @@
 <cbc-modal
   [title]="'admin.group.add'"
   (ok)="okAction()"
-  (cancel)="cancel()"
+  (cancelModal)="cancel()"
   [okLabel]="getOkLabel()"
   [(visible)]="showModal"
   [showOkButton]="areFormsValid()"
@@ -9,18 +9,21 @@
   [executingLabel]="'label.creating'"
 >
   <a
+    tabindex="0"
     class="step-link"
     [class.step-link-selected]="showDetailsForm"
     (click)="setDetailsForm()"
     >{{ 'label.details' | transloco }}</a
   >
   <a
+    tabindex="0"
     class="step-link"
     [class.step-link-selected]="showLeadersForm"
     (click)="setLeadersForm()"
     >{{ 'label.group.leaders' | transloco }}</a
   >
   <a
+    tabindex="0"
     class="step-link"
     [class.step-link-selected]="showNotificationForm"
     (click)="setNotificationForm()"
@@ -28,7 +31,8 @@
   >
   <br />
   <br />
-  <div *ngIf="showDetailsForm">
+  @if (showDetailsForm) {
+  <div>
     <form [formGroup]="groupDetailsForm">
       <div class="field">
         <label for="name"
@@ -62,7 +66,8 @@
       ></cbc-multilingual-input>
     </form>
   </div>
-  <div *ngIf="showLeadersForm">
+  } @if (showLeadersForm) {
+  <div>
     <form [formGroup]="groupLeadersForm">
       <div class="field">
         <label for="search">{{ 'label.search' | transloco }}</label>
@@ -75,14 +80,19 @@
           formControlName="search"
         />
         <a
+          tabindex="0"
           data-cy="search-button"
           [class.disabled]="searchExpressionEmpty()"
           class="button"
           (click)="searchUsers()"
           >{{ 'label.search' | transloco }}</a
         >
-        <a (click)="resetSearchForm()">{{ 'label.clear' | transloco }}</a>
-        <cbc-spinner *ngIf="searchingUsers"></cbc-spinner>
+        <a tabindex="0" (click)="resetSearchForm()"
+          >{{ 'label.clear' | transloco }}</a
+        >
+        @if (searchingUsers) {
+        <cbc-spinner></cbc-spinner>
+        }
       </div>
 
       <!-- Select Multiple-->
@@ -99,15 +109,14 @@
             style="width: 585px; height: 150px"
             formControlName="possibleUsers"
           >
-            <option
-              *ngFor="let user of availableUsers"
-              value="{{ user.userId }}"
+            @for (user of availableUsers; track user.userId) {
+            <option value="{{ user.userId }}"
               >{{ user.firstname + ' ' + user.lastname + ' (' + user.email + ')'
               }}</option
             >
+            }
           </select>
         </div>
-        <label></label>
         <input
           data-cy="select"
           type="button"
@@ -121,21 +130,25 @@
         <br />
         <br />
         <ul>
-          <li *ngFor="let futureMember of futureMembers">
+          @for (futureMember of futureMembers; track futureMember.userId) {
+          <li>
             {{ futureMember.firstname + ' ' + futureMember.lastname + ' (' +
             futureMember.email + ')' }}
-            <a (click)="removeFromFutureMember(futureMember)">
+            <a tabindex="0" (click)="removeFromFutureMember(futureMember)">
               <img
                 src="img/icon-close-20x20.png"
                 style="vertical-align: middle"
+                alt="Remove"
               />
             </a>
           </li>
+          }
         </ul>
       </div>
     </form>
   </div>
-  <div *ngIf="showNotificationForm">
+  } @if (showNotificationForm) {
+  <div>
     <form [formGroup]="groupNotificationForm">
       <div class="field switch">
         <div class="label">{{ 'label.notify' | transloco }}</div>
@@ -151,14 +164,16 @@
           'No' }}</span
         >
       </div>
+      @if (groupNotificationForm.controls['notify'].value === true) {
       <cbc-multilingual-input
-        *ngIf="groupNotificationForm.controls['notify'].value === true"
         data-cy="notificationText"
         formControlName="notificationText"
         [label]="'label.notification' | transloco"
         [lang]="'EN'"
         [textarea]="true"
       ></cbc-multilingual-input>
+      }
     </form>
   </div>
+  }
 </cbc-modal>

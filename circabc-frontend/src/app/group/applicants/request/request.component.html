@@ -1,28 +1,32 @@
 <section class="request--card">
   <div class="request--date">
-    {{ applicant.submitted | date: 'y MMM d, H:mm' }}
+    {{ applicant().submitted | date: 'y MMM d, H:mm' }}
   </div>
-  <div class="request--user" *ngIf="applicant.user">
+  @if (applicant().user) {
+  <div class="request--user">
     {{ firstname }} {{ lastname }}
     <br />
     <span class="email--field">{{ email }}</span>
   </div>
+  }
   <div class="request--content">
     {{ 'applicants.justification' | transloco }}:
     <br />
     <br />
-    <div [innerHTML]="applicant.justification"> </div>
+    <div [innerHTML]="applicant().justification"> </div>
   </div>
   <div class="request--footer">
-    <div class="buttons-group" *ngIf="!showAcceptForm && !showDeclineForm">
-      <a class="cta" (click)="prepareAccept()"
+    @if (!showAcceptForm && !showDeclineForm) {
+    <div class="buttons-group">
+      <a tabindex="0" class="cta" (click)="prepareAccept()"
         >{{ 'label.accept' | transloco }}</a
       >
-      <a class="button" (click)="prepareDecline()"
+      <a tabindex="0" class="button" (click)="prepareDecline()"
         >{{ 'label.decline' | transloco }}</a
       >
     </div>
-    <div class="request--accept-form" *ngIf="showAcceptForm">
+    } @if (showAcceptForm) {
+    <div class="request--accept-form">
       <form [formGroup]="inviteForm">
         <div class="field">
           <label for="groupContact">{{ 'label.profile' | transloco }}</label>
@@ -32,34 +36,41 @@
               id="profileName"
               formControlName="selectedProfile"
             >
-              <option
-                *ngFor="let profile of availableProfiles"
-                value="{{ profile.id }}"
+              @for (profile of availableProfiles(); track profile.id) {
+              <option value="{{ profile.id }}"
                 >{{ profile.title | cbcI18n }}</option
               >
+              }
             </select>
           </div>
           <cbc-control-message
             [control]="selectedProfileControl"
           ></cbc-control-message>
         </div>
-        <div *ngIf="processing">
-          <label
+        @if (processing) {
+        <div>
+          <div
             >{{ 'label.inviting' | transloco }}...
             <cbc-spinner></cbc-spinner>
-          </label>
+          </div>
         </div>
+        }
       </form>
-      <div class="buttons-group" *ngIf="!processing">
-        <a class="cta" (click)="invite()" *ngIf="inviteForm.valid"
+      @if (!processing) {
+      <div class="buttons-group">
+        @if (inviteForm.valid) {
+        <a tabindex="0" class="cta" (click)="invite()"
           >{{ 'label.invite' | transloco }}</a
         >
-        <a class="button" (click)="cancel()"
+        }
+        <a tabindex="0" class="button" (click)="cancel()"
           >{{ 'label.cancel' | transloco }}</a
         >
       </div>
+      }
     </div>
-    <div class="request--decline-form" *ngIf="showDeclineForm">
+    } @if (showDeclineForm) {
+    <div class="request--decline-form">
       <form [formGroup]="declineForm">
         <div class="field">
           <label for="declineText">{{ 'label.message' | transloco }}</label>
@@ -67,11 +78,14 @@
         </div>
       </form>
       <div class="buttons-group">
-        <a class="cta" (click)="decline()">{{ 'label.decline' | transloco }}</a>
-        <a class="button" (click)="cancel()"
+        <a tabindex="0" class="cta" (click)="decline()"
+          >{{ 'label.decline' | transloco }}</a
+        >
+        <a tabindex="0" class="button" (click)="cancel()"
           >{{ 'label.cancel' | transloco }}</a
         >
       </div>
     </div>
+    }
   </div>
 </section>

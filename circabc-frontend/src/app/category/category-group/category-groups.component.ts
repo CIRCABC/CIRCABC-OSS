@@ -1,16 +1,18 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { TranslocoService } from '@ngneat/transloco';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { CategoryService, InterestGroup } from 'app/core/generated/circabc';
 import { UiMessageService } from 'app/core/message/ui-message.service';
 import { sortI18nProperty } from 'app/core/util';
+import { DataCyDirective } from 'app/shared/directives/data-cy.directive';
 import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-category-group',
   templateUrl: './category-groups.component.html',
-  styleUrls: ['./category-groups.component.scss'],
+  styleUrl: './category-groups.component.scss',
+  imports: [DataCyDirective, RouterLink, TranslocoModule],
 })
 export class CategoryGroupsComponent implements OnInit {
   public interestGroups: InterestGroup[] = [];

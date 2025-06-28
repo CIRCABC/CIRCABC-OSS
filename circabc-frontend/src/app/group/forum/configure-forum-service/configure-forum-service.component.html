@@ -1,7 +1,7 @@
 <cbc-modal
   [title]="'label.configuration'"
   (ok)="saveConfiguration()"
-  (cancel)="cancel()"
+  (cancelModal)="cancel()"
   [okLabel]="'label.save'"
   [(visible)]="showModal"
   [executing]="processing"
@@ -26,9 +26,11 @@
       <span class="complement">{{ 'label.withing.the' | transloco }}</span>
       <div class="custom-select select--form">
         <select formControlName="ageFlagNewForum">
-          <option *ngFor="let value of defaultValues" [value]="value">
+          @for (value of defaultValues; track value) {
+          <option [value]="value">
             {{ value }} {{ 'label.days' | transloco }}
           </option>
+          }
         </select>
       </div>
     </div>
@@ -51,9 +53,11 @@
       <span class="complement">{{ 'label.withing.the' | transloco }}</span>
       <div class="custom-select select--form">
         <select formControlName="ageFlagNewTopic">
-          <option *ngFor="let value of defaultValues" [value]="value">
+          @for (value of defaultValues; track value) {
+          <option [value]="value">
             {{ value }} {{ 'label.days' | transloco }}
           </option>
+          }
         </select>
       </div>
     </div>

@@ -5,6 +5,8 @@
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,
     "strict": true,
+    "esModuleInterop": true,
+    "isolatedModules":true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "baseUrl": "src",
@@ -13,10 +15,15 @@
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "target": "es5",
-    "typeRoots": ["node_modules/@types"],
-    "lib": ["es2020", "dom"],
-    "noUnusedLocals": false, // turn of because of generated files
+    "target": "ES2022",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "lib": [
+      "es2020",
+      "dom"
+    ],
+    "noUnusedLocals": false,
     "noUnusedParameters": true,
     "noUncheckedIndexedAccess": false,
     "diagnostics": true,
@@ -26,10 +33,12 @@
     "removeComments": true,
     "incremental": false,
     "skipLibCheck": true,
-    "useUnknownInCatchVariables":false,
+    "useUnknownInCatchVariables": false,
     "noPropertyAccessFromIndexSignature": false,
     "noImplicitOverride": true,
-    "explainFiles":false
+    "explainFiles": false,
+    "useDefineForClassFields": false,
+    "erasableSyntaxOnly": false
   },
   "angularCompilerOptions": {
     "strictInjectionParameters": true,

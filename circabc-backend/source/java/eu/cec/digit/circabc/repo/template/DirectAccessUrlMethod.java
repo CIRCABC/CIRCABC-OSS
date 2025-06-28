@@ -26,11 +26,15 @@ import org.alfresco.service.cmr.repository.NodeRef;
  *
  * @author Yanick Pignot
  */
-public class DirectAccessUrlMethod extends NodeRefBaseTemplateProcessorExtension
-        implements TemplateMethodModelEx {
+public class DirectAccessUrlMethod
+  extends NodeRefBaseTemplateProcessorExtension
+  implements TemplateMethodModelEx {
 
-    @Override
-    public String getResult(NodeRef nodeRef) {
-        return WebClientHelper.getGeneratedWaiFullUrl(nodeRef, ExtendedURLMode.HTTP_WAI_BROWSE);
-    }
+  @Override
+  public String getResult(NodeRef nodeRef) {
+    return WebClientHelper.getGeneratedWaiFullUrl(
+      nodeRef,
+      ExtendedURLMode.HTTP_WAI_BROWSE
+    );
+  }
 }

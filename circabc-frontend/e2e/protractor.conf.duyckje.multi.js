@@ -21,7 +21,7 @@ exports.config = {
     seleniumAddress: 'http://localhost:4444/wd/hub'
   }],
   directConnect: false,
-  baseUrl: 'http://d02di1335287dit.net1.cec.eu.int:49155/',
+  baseUrl: '',
   framework: 'jasmine',
   jasmineNodeOpts: {
     showColors: true,
@@ -39,8 +39,8 @@ exports.config = {
 
   params: {
     login: {
-      userLogin: 'duyckjeFromConf',
-      password: 'myPasswordFromConf'
+      userLogin: '',
+      password: ''
     }
   }
 };

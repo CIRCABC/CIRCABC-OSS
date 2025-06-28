@@ -31,30 +31,33 @@ import eu.cec.digit.circabc.web.wai.manager.ActionsListWrapper;
  */
 public class InfContentDetailsBean extends ContentDetailsBean {
 
-    public static final String BEAN_NAME = "InfContentDetailsBean";
-    /**
-     *
-     */
-    private static final long serialVersionUID = -1967666575499663894L;
+  public static final String BEAN_NAME = "InfContentDetailsBean";
+  /**
+   *
+   */
+  private static final long serialVersionUID = -1967666575499663894L;
 
-    public NavigableNodeType getManagedNodeType() {
-        return NavigableNodeType.INFORMATION_CONTENT;
-    }
+  public NavigableNodeType getManagedNodeType() {
+    return NavigableNodeType.INFORMATION_CONTENT;
+  }
 
-    public String getRelatedJsp() {
-        return NAVIGATION_JSP_FOLDER + "inf/" + JSP_NAME;
-    }
+  public String getRelatedJsp() {
+    return NAVIGATION_JSP_FOLDER + "inf/" + JSP_NAME;
+  }
 
-    public String getPageDescription() {
-        return translate(MSG_PAGE_DESCRIPTION, getCurrentNode().getName());
-    }
+  public String getPageDescription() {
+    return translate(MSG_PAGE_DESCRIPTION, getCurrentNode().getName());
+  }
 
-    @Override
-    public ActionsListWrapper getActionList() {
-        if (!getDocument().isLocked()) {
-            return new ActionsListWrapper(getDocument(), "inf_doc_details_actions_wai");
-        } else {
-            return null;
-        }
+  @Override
+  public ActionsListWrapper getActionList() {
+    if (!getDocument().isLocked()) {
+      return new ActionsListWrapper(
+        getDocument(),
+        "inf_doc_details_actions_wai"
+      );
+    } else {
+      return null;
     }
+  }
 }

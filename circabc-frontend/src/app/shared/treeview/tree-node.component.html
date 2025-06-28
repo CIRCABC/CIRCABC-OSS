@@ -1,59 +1,75 @@
 <ul>
-  <li *ngIf="loading">
+  @if (loading) {
+  <li>
     <cbc-spinner [white]="true"></cbc-spinner> {{ 'label.loading' | transloco }}
   </li>
+  }
   <li>
-    <span class="expander" *ngIf="!canBeExpanded()"></span>
+    @if (!canBeExpanded()) {
+    <span class="expander"></span>
+    } @if (node.expanded && canBeExpanded() && showExpander()) {
     <a
+      tabindex="0"
+      role="button"
       class="flaticon-chevron-arrow-down"
-      *ngIf="node.expanded && canBeExpanded() && showExpander"
+      aria-label="Toggle Expand"
       (click)="toggleExpand()"
     ></a>
+    } @if (!node.expanded && canBeExpanded() && showExpander()) {
     <a
+      tabindex="0"
+      role="button"
       class="flaticon-right-chevron"
-      *ngIf="!node.expanded && canBeExpanded() && showExpander"
+      aria-label="Toggle Expand"
       (click)="toggleExpand()"
     ></a>
-    <span *ngIf="showSelector">
+    } @if (showSelector()) {
+    <span>
       <input
         type="radio"
         name="tree"
         (click)="selectNode(node)"
         [checked]="markSelected()"
-        [disabled]="disabled"
+        [disabled]="disabled()"
       />
     </span>
+    }
     <a
+      tabindex="0"
       (click)="clickNode(node)"
-      [class.underlined]="markSelected() && !showSelector"
+      [class.underlined]="markSelected() && !showSelector()"
       pTooltip="{{ node.description }}"
       tooltipPosition="top"
       [escape]="false"
       >{{(node.name !== "Newsgroups")? node.name :'label.forums' |transloco}}</a
     >
 
+    @if (isNew()) {
     <span
-      *ngIf="isNew()"
       class="pennant--new"
-      pTooltip="{{ 'label.within.last' | transloco: { nbDays: flagNewDays } }}"
+      pTooltip="{{ 'label.within.last' | transloco: { nbDays: flagNewDays() } }}"
       tooltipPosition="top"
       >{{ 'label.new' | transloco }}</span
     >
-    <div *ngIf="node.expanded">
-      <div *ngFor="let child of node.children">
+    } @if (node.expanded) {
+    <div>
+      @for (child of node.children; track child.nodeId) {
+      <div>
         <cbc-tree-node
-          [disabled]="disabled"
-          [searchedNodeId]="searchedNodeId"
+          [disabled]="disabled()"
+          [searchedNodeId]="searchedNodeId()"
           [node]="child"
           (selectedNodeEmitter)="selectNode($event)"
-          [showSelector]="showSelector"
+          [showSelector]="showSelector()"
           (clickedNodeEmitter)="clickNode($event)"
-          [displayedPath]="displayedPath"
-          [rootId]="rootId"
-          [service]="service"
-          [flagNewDays]="flagNewDays"
+          [displayedPath]="displayedPath()"
+          [rootId]="rootId()"
+          [service]="service()"
+          [flagNewDays]="flagNewDays()"
         ></cbc-tree-node>
       </div>
+      }
     </div>
+    }
   </li>
 </ul>

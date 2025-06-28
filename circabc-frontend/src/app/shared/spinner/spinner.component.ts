@@ -1,12 +1,12 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'cbc-spinner',
   templateUrl: './spinner.component.html',
-  styleUrls: ['./spinner.component.scss'],
+  styleUrl: './spinner.component.scss',
   preserveWhitespaces: true,
 })
 export class SpinnerComponent {
-  @Input() white = false;
-  @Input() float: 'right' | 'left' = 'right';
+  readonly white = input(false);
+  readonly float = input<'right' | 'left'>('right');
 }

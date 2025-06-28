@@ -25,17 +25,21 @@ import org.alfresco.service.cmr.repository.NodeRef;
  *
  * @author Pierre Beauregard
  */
-public class GroupNodeLinkMethod extends NodeRefBaseTemplateProcessorExtension
-        implements TemplateMethodModelEx {
+public class GroupNodeLinkMethod
+  extends NodeRefBaseTemplateProcessorExtension
+  implements TemplateMethodModelEx {
 
-    @Override
-    public String getResult(NodeRef nodeRef) {
-
-        return CircabcConfiguration.getProperty(CircabcConfiguration.NEW_UI_URL)
-                + CircabcConfiguration.getProperty(CircabcConfiguration.NEW_UI_CONTEXT)
-                + (CircabcConfiguration.getProperty(CircabcConfiguration.NEW_UI_CONTEXT).endsWith("/")
-                ? "group/"
-                : "/group/")
-                + nodeRef.getId();
-    }
+  @Override
+  public String getResult(NodeRef nodeRef) {
+    return (
+      CircabcConfiguration.getProperty(CircabcConfiguration.NEW_UI_URL) +
+      CircabcConfiguration.getProperty(CircabcConfiguration.NEW_UI_CONTEXT) +
+      (CircabcConfiguration.getProperty(
+            CircabcConfiguration.NEW_UI_CONTEXT
+          ).endsWith("/")
+          ? "group/"
+          : "/group/") +
+      nodeRef.getId()
+    );
+  }
 }

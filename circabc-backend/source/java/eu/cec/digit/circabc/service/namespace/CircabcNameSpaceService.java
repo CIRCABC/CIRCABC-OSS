@@ -26,9 +26,8 @@ import org.alfresco.service.namespace.NamespacePrefixResolver;
  * @author Clinckart Stephane
  */
 public interface CircabcNameSpaceService extends NamespacePrefixResolver {
-
-    /**
-     * Default CEC DIGIT URI
-     */
-    String CEC_DIGIT_URI = "http://eu.cec.digit";
+  /**
+   * Default CEC DIGIT URI
+   */
+  String CEC_DIGIT_URI = "http://eu.cec.digit";
 }

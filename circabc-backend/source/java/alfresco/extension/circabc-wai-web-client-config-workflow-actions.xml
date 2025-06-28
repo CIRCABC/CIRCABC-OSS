@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version='1.0' encoding='UTF-8' ?>
 <!--
   Copyright 2006 European Community
   
@@ -105,7 +105,8 @@
 	            <label-id>start_workflow</label-id>
 	            <image>/images/icons/new_workflow.gif</image>
 	            <!-- evaluator>eu.cec.digit.circabc.action.evaluator.CircabcStartWorkflowEvaluator</evaluator -->
-	            <evaluator>eu.cec.digit.circabc.action.evaluator.HideEvaluator</evaluator>
+	            <evaluator
+        >eu.cec.digit.circabc.action.evaluator.HideEvaluator</evaluator>
 	            <action>wai:wizard:startWorkflow</action>
 	            <action-listener>#{WizardManager.setupParameters}</action-listener>
 	            <params>
@@ -117,7 +118,8 @@
 	            <label-id>manage_task</label-id>
 	            <image>/images/icons/manage_workflow_task.gif</image>
 	            <action>wai:dialog:circabcManageTask</action>
-	            <action-listener>#{CircabcWorkflowBean.setupTaskDialog}</action-listener>
+	            <action-listener
+        >#{CircabcWorkflowBean.setupTaskDialog}</action-listener>
 	            <params>
 	               <param name="id">#{actionContext.id}</param>
 	               <param name="type">#{actionContext.type}</param>
@@ -128,7 +130,8 @@
             <label-id>view_completed_task_title</label-id>
             <image>/images/icons/view_workflow_task.gif</image>
             <action>wai:dialog:circabcViewCompletedTask</action>
-            <action-listener>#{CircabcWorkflowBean.setupTaskDialog}</action-listener>
+            <action-listener
+        >#{CircabcWorkflowBean.setupTaskDialog}</action-listener>
             <params>
                <param name="id">#{actionContext.id}</param>
                <param name="type">#{actionContext.type}</param>
@@ -139,7 +142,8 @@
             <label-id>reassign</label-id>
             <image>/images/icons/reassign_task.gif</image>
             <action>wai:dialog:circabcReassignTask</action>
-            <action-listener>#{CircabcWorkflowBean.setupTaskDialog}</action-listener>
+            <action-listener
+        >#{CircabcWorkflowBean.setupTaskDialog}</action-listener>
             <params>
                <param name="id">#{actionContext.id}</param>
                <param name="type">#{actionContext.type}</param>
@@ -149,13 +153,19 @@
          <action id="cancel_workflow_wai">
             <label-id>cancel_workflow</label-id>
             <image>/images/icons/cancel_workflow.gif</image>
-            <evaluator>eu.cec.digit.circabc.action.evaluator.HideEvaluator</evaluator>
+            <evaluator
+        >eu.cec.digit.circabc.action.evaluator.HideEvaluator</evaluator>
             <!--  evaluator>eu.cec.digit.circabc.action.evaluator.CircabcCancelWorkflowEvaluator</evaluator-->
             <action>wai:dialog:circabcCancelWorkflow</action>
-            <action-listener> #{WaiDialogManager.setupParameters}</action-listener>
+            <action-listener
+        > #{WaiDialogManager.setupParameters}</action-listener>
             <params>
-               <param name="workflow-instance-id">#{actionContext.workflowInstanceId}</param>
-               <param name="workflow-instance-name">#{actionContext.workflowInstanceName}</param>
+               <param
+            name="workflow-instance-id"
+          >#{actionContext.workflowInstanceId}</param>
+               <param
+            name="workflow-instance-name"
+          >#{actionContext.workflowInstanceName}</param>
             </params>
          </action>
          
@@ -171,7 +181,7 @@
 
         
 		<action-group id="doc_details_actions_wai">
-				<action idref="start_workflow_wai"/>
+				<action idref="start_workflow_wai" />
 		</action-group>
          
          <!--  maybe not needed to check -->
@@ -227,7 +237,7 @@
          <action-group id="remove_package_item_actions">
             <action idref="details_doc_wai" />
             
-            <action idref="view_content_properties" hide="true"   />
+            <action idref="view_content_properties" hide="true" />
          </action-group>
          
          <action-group id="start_package_item_actions">
@@ -251,15 +261,15 @@
             <action idref="cancelcheckout_doc_wai" />
             
             
-            <action idref="view_content_properties" hide="true"  />
-            <action idref="edit_content_properties" hide="true"  />
-            <action idref="edit_doc_http" hide="true"  />
-            <action idref="edit_doc_webdav" hide="true"  />
-            <action idref="edit_doc_cifs" hide="true"  />
-            <action idref="update_doc" hide="true"  />
-            <action idref="workflow_checkout_doc" hide="true"  />
-            <action idref="workflow_checkin_doc" hide="true"  />
-            <action idref="workflow_cancelcheckout_doc" hide="true"  />
+            <action idref="view_content_properties" hide="true" />
+            <action idref="edit_content_properties" hide="true" />
+            <action idref="edit_doc_http" hide="true" />
+            <action idref="edit_doc_webdav" hide="true" />
+            <action idref="edit_doc_cifs" hide="true" />
+            <action idref="update_doc" hide="true" />
+            <action idref="workflow_checkout_doc" hide="true" />
+            <action idref="workflow_checkin_doc" hide="true" />
+            <action idref="workflow_cancelcheckout_doc" hide="true" />
             
          </action-group>
 

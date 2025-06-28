@@ -27,13 +27,12 @@ import eu.cec.digit.circabc.web.Beans;
 import eu.cec.digit.circabc.web.app.CircabcNavigationHandler;
 import eu.cec.digit.circabc.web.wai.bean.navigation.LibraryBean;
 import eu.cec.digit.circabc.web.wai.dialog.BaseWaiDialog;
-import org.alfresco.web.bean.search.SearchContext;
-import org.alfresco.web.bean.search.SearchContextDelegate;
-
-import javax.faces.context.FacesContext;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import javax.faces.context.FacesContext;
+import org.alfresco.web.bean.search.SearchContext;
+import org.alfresco.web.bean.search.SearchContextDelegate;
 
 /**
  * Dialog that displays the result of the Autonomy search.
@@ -42,130 +41,135 @@ import java.util.Map;
  */
 public class AutonomySearchResultDialog extends BaseWaiDialog {
 
-    public static final String BEAN_NAME = "AutonomySearchResultDialog";
-    public static final String DIALOG_NAME = "autonomySearchResultDialogWai";
-    public static final String WAI_DIALOG_CALL =
-            CircabcNavigationHandler.WAI_DIALOG_PREFIX + DIALOG_NAME;
-    private static final long serialVersionUID = 7975211112348148486L;
-    protected AutonomySearchService autonomySearchService = null;
+  public static final String BEAN_NAME = "AutonomySearchResultDialog";
+  public static final String DIALOG_NAME = "autonomySearchResultDialogWai";
+  public static final String WAI_DIALOG_CALL =
+    CircabcNavigationHandler.WAI_DIALOG_PREFIX + DIALOG_NAME;
+  private static final long serialVersionUID = 7975211112348148486L;
+  protected AutonomySearchService autonomySearchService = null;
 
-    protected SearchContext searchContext = null;
+  protected SearchContext searchContext = null;
 
-    private AutonomyResults autonomyResults = null;
+  private AutonomyResults autonomyResults = null;
 
-    private LibraryBean libraryBean = null;
+  private LibraryBean libraryBean = null;
 
-    /**
-     * @see eu.cec.digit.circabc.web.wai.dialog.BaseWaiDialog#init(java.util.Map)
-     */
-    @Override
-    public void init(Map<String, String> parameters) {
-        super.init(parameters);
+  /**
+   * @see eu.cec.digit.circabc.web.wai.dialog.BaseWaiDialog#init(java.util.Map)
+   */
+  @Override
+  public void init(Map<String, String> parameters) {
+    super.init(parameters);
+  }
+
+  public void reset() {
+    autonomyResults = null;
+    searchContext = null;
+  }
+
+  public List<AutonomyResultNode> getResults() {
+    if (autonomyResults == null) {
+      fillBrowseNodes(getSearchContext());
     }
 
-    public void reset() {
-        autonomyResults = null;
-        searchContext = null;
+    return autonomyResults.getError() == null
+      ? autonomyResults.getResults()
+      : Collections.<AutonomyResultNode>emptyList();
+  }
+
+  /**
+   * Query Autonomy for the specified Search Context.
+   *
+   * @param searchContext the search context
+   */
+  private void fillBrowseNodes(final SearchContext searchContext) {
+    autonomyResults = autonomySearchService.search(searchContext.getText());
+  }
+
+  public String getInformationMessage() {
+    getResults();
+
+    if (autonomyResults != null && autonomyResults.getError() == null) {
+      final String text = searchContext != null ? searchContext.getText() : "";
+      return translate(
+        "search_results_text",
+        text,
+        autonomyResults.getTotalHits()
+      );
+    } else if (autonomyResults != null) {
+      return (
+        translate("autonomy_search_results_error") +
+        ": " +
+        autonomyResults.getError()
+      );
+    } else {
+      return "Error during search. AutonomyResults is null.";
+    }
+  }
+
+  protected SearchContext getSearchContext() {
+    if (searchContext == null) {
+      searchContext = getNavigator().getSearchContext();
+
+      if (searchContext instanceof SearchContextDelegate) {
+        searchContext =
+          ((SearchContextDelegate) searchContext).getSearchContext();
+      }
     }
 
-    public List<AutonomyResultNode> getResults() {
+    return searchContext;
+  }
 
-        if (autonomyResults == null) {
-            fillBrowseNodes(getSearchContext());
-        }
+  /**
+   * @see eu.cec.digit.circabc.web.wai.bean.navigation.LibraryBean#getListPageSize();
+   */
+  public int getListPageSize() {
+    return getLibraryBean().getListPageSize();
+  }
 
-        return autonomyResults.getError() == null ? autonomyResults.getResults() :
-                Collections.<AutonomyResultNode>emptyList();
+  /**
+   * @return the libraryBean
+   */
+  protected final LibraryBean getLibraryBean() {
+    if (libraryBean == null) {
+      libraryBean = (LibraryBean) Beans.getBean(LibraryBean.BEAN_NAME);
     }
 
-    /**
-     * Query Autonomy for the specified Search Context.
-     *
-     * @param searchContext the search context
-     */
-    private void fillBrowseNodes(final SearchContext searchContext) {
-        autonomyResults = autonomySearchService.search(searchContext.getText());
-    }
+    return libraryBean;
+  }
 
-    public String getInformationMessage() {
+  /**
+   * @see org.alfresco.web.bean.dialog.BaseDialogBean#getCancelButtonLabel()
+   */
+  @Override
+  public String getCancelButtonLabel() {
+    return translate("close");
+  }
 
-        getResults();
+  @Override
+  public String getPageIconAltText() {
+    return translate("search_results_icon_tooltip");
+  }
 
-        if (autonomyResults != null && autonomyResults.getError() == null) {
-            final String text = searchContext != null ? searchContext.getText() : "";
-            return translate("search_results_text", text, autonomyResults.getTotalHits());
-        } else if (autonomyResults != null) {
-            return translate("autonomy_search_results_error") + ": " +
-                    autonomyResults.getError();
-        } else {
-            return "Error during search. AutonomyResults is null.";
-        }
-    }
+  @Override
+  public String getBrowserTitle() {
+    return translate("search_results_browser_title");
+  }
 
-    protected SearchContext getSearchContext() {
+  @Override
+  protected String finishImpl(FacesContext context, String outcome)
+    throws Throwable {
+    return CircabcNavigationHandler.WAI_DIALOG_CONTAINER_PAGE;
+  }
 
-        if (searchContext == null) {
-
-            searchContext = getNavigator().getSearchContext();
-
-            if (searchContext instanceof SearchContextDelegate) {
-                searchContext =
-                        ((SearchContextDelegate) searchContext).getSearchContext();
-            }
-        }
-
-        return searchContext;
-    }
-
-    /**
-     * @see eu.cec.digit.circabc.web.wai.bean.navigation.LibraryBean#getListPageSize();
-     */
-    public int getListPageSize() {
-        return getLibraryBean().getListPageSize();
-    }
-
-    /**
-     * @return the libraryBean
-     */
-    protected final LibraryBean getLibraryBean() {
-
-        if (libraryBean == null) {
-            libraryBean = (LibraryBean) Beans.getBean(LibraryBean.BEAN_NAME);
-        }
-
-        return libraryBean;
-    }
-
-    /**
-     * @see org.alfresco.web.bean.dialog.BaseDialogBean#getCancelButtonLabel()
-     */
-    @Override
-    public String getCancelButtonLabel() {
-        return translate("close");
-    }
-
-    @Override
-    public String getPageIconAltText() {
-        return translate("search_results_icon_tooltip");
-    }
-
-    @Override
-    public String getBrowserTitle() {
-        return translate("search_results_browser_title");
-    }
-
-    @Override
-    protected String finishImpl(FacesContext context, String outcome)
-            throws Throwable {
-        return CircabcNavigationHandler.WAI_DIALOG_CONTAINER_PAGE;
-    }
-
-    /**
-     * Sets the value of the autonomySearchService
-     *
-     * @param autonomySearchService the autonomySearchService to set.
-     */
-    public void setAutonomySearchService(AutonomySearchService autonomySearchService) {
-        this.autonomySearchService = autonomySearchService;
-    }
+  /**
+   * Sets the value of the autonomySearchService
+   *
+   * @param autonomySearchService the autonomySearchService to set.
+   */
+  public void setAutonomySearchService(
+    AutonomySearchService autonomySearchService
+  ) {
+    this.autonomySearchService = autonomySearchService;
+  }
 }

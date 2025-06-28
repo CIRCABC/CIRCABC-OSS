@@ -1,8 +1,13 @@
 <footer class="footer-main">
   <div style="display: flex; align-items: center; justify-content: center">
     <div>
-      <img src="img/logo-white.png" width="50" />
+      @if (circabcRelease !== 'echa') {
+      <img src="img/logo-white.png" width="50" alt="CIRCABC logo" />
+      } @if (circabcRelease === 'echa') {
+      <img src="img/s-circabcLogo-white.svg" width="80" alt="S-CIRCABC logo" />
+      }
     </div>
+    @if (circabcRelease !== 'echa') {
     <div style="padding-top: 10px; padding-left: 10px">
       {{'footer.title' | transloco }}
       <a
@@ -12,6 +17,17 @@
         >{{ 'footer.message' | transloco }}</a
       >
     </div>
+    } @if (circabcRelease === 'echa') {
+    <div style="padding-top: 10px; padding-left: 10px">
+      {{'footer.title.scircabc' | transloco }}
+      <a
+        href="https://github.com/CIRCABC/Circabc-OSS"
+        target="_blank"
+        rel="noopener noreferrer"
+        >{{ 'footer.message.scircabc' | transloco }}</a
+      >
+    </div>
+    }
   </div>
 
   <div
@@ -23,33 +39,38 @@
       padding-bottom: 10px;
     "
   >
-    <div
-      ><a [routerLink]="['/help/legal-notice']"
+    <div>
+      <a [routerLink]="['/help/legal-notice']"
         >{{'label.privacy.statement' | transloco }}</a
-      ></div
-    >
-    <div
-      ><a [routerLink]="['/help/legal-notice/terms']"
+      >
+    </div>
+    <div>
+      <a [routerLink]="['/help/legal-notice/accessibility']"
+        >{{'label.accessibility.statement' | transloco }}</a
+      >
+    </div>
+    <div>
+      <a [routerLink]="['/help/legal-notice/terms']"
         >{{'label.terms' | transloco }}</a
-      ></div
-    >
-    <div
-      ><a
+      >
+    </div>
+    <div>
+      <a
         href="https://ec.europa.eu/info/cookies_en"
         target="_blank"
         rel="noopener noreferrer"
         >{{'cookie.title' | transloco }}</a
-      ></div
-    >
-    <div
-      ><a
+      >
+    </div>
+    <div>
+      <a
         href="https://ec.europa.eu/info/privacy-policy/europa-analytics_en"
         target="_blank"
         rel="noopener noreferrer"
       >
         {{'label.europa-analytics' | transloco }}</a
-      ></div
-    >
+      >
+    </div>
   </div>
 
   V.{{ appVersion }} A.{{ appAlfVersion }} / {{ nodeName }} / {{ buildDate }}

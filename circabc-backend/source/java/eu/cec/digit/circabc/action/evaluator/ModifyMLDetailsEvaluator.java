@@ -21,16 +21,14 @@
 package eu.cec.digit.circabc.action.evaluator;
 
 import eu.cec.digit.circabc.web.Services;
+import java.util.Locale;
+import java.util.Map;
+import javax.faces.context.FacesContext;
 import org.alfresco.service.cmr.ml.MultilingualContentService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.PermissionService;
 import org.alfresco.web.action.evaluator.BaseActionEvaluator;
 import org.alfresco.web.bean.repository.Node;
-
-import javax.faces.context.FacesContext;
-import java.util.Locale;
-import java.util.Map;
-
 
 /**
  * Evaluates whether the Modify mlContainer details is visible.
@@ -38,32 +36,34 @@ import java.util.Map;
  * @author Yanick Pignot
  */
 
-
 public class ModifyMLDetailsEvaluator extends BaseActionEvaluator {
 
-    private static final long serialVersionUID = 2839741048206551370L;
+  private static final long serialVersionUID = 2839741048206551370L;
 
-    public boolean evaluate(final Node node) {
+  public boolean evaluate(final Node node) {
+    final MultilingualContentService mlService =
+      Services.getAlfrescoServiceRegistry(
+        FacesContext.getCurrentInstance()
+      ).getMultilingualContentService();
 
-        final MultilingualContentService mlService = Services
-                .getAlfrescoServiceRegistry(FacesContext.getCurrentInstance())
-                .getMultilingualContentService();
+    boolean allow = true;
 
-        boolean allow = true;
+    final Map<Locale, NodeRef> translations = mlService.getTranslations(
+      node.getNodeRef()
+    );
+    Node translation;
+    for (final Map.Entry<Locale, NodeRef> entry : translations.entrySet()) {
+      translation = new Node(entry.getValue());
 
-        final Map<Locale, NodeRef> translations = mlService.getTranslations(node.getNodeRef());
-        Node translation;
-        for (final Map.Entry<Locale, NodeRef> entry : translations.entrySet()) {
-            translation = new Node(entry.getValue());
-
-            if (translation.hasPermission(PermissionService.WRITE_PROPERTIES) == false) {
-                allow = false;
-                break;
-            }
-        }
-
-        // must be not already versionable.
-        return allow;
-
+      if (
+        translation.hasPermission(PermissionService.WRITE_PROPERTIES) == false
+      ) {
+        allow = false;
+        break;
+      }
     }
+
+    // must be not already versionable.
+    return allow;
+  }
 }

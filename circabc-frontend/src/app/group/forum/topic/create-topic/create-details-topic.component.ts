@@ -1,40 +1,50 @@
 import {
   Component,
-  EventEmitter,
   Input,
   OnChanges,
   OnInit,
-  Output,
   SimpleChanges,
+  output,
+  input,
 } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
   FormGroup,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
   ActionType,
 } from 'app/action-result';
 import { ContentService, Node as ModelNode } from 'app/core/generated/circabc';
-import { ValidationService } from 'app/core/validation.service';
+import { nameValidator } from 'app/core/validation.service';
+import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
+import { ModalComponent } from 'app/shared/modal/modal.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-create-details-topic',
   templateUrl: './create-details-topic.component.html',
   preserveWhitespaces: true,
+  imports: [
+    ModalComponent,
+    ReactiveFormsModule,
+    ControlMessageComponent,
+    TranslocoModule,
+  ],
 })
 export class CreateDetailsTopicComponent implements OnInit, OnChanges {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   showModal = false;
-  @Input()
-  forum!: ModelNode;
-  @Output()
-  readonly modalHide = new EventEmitter<ActionEmitterResult>();
+  readonly forum = input.required<ModelNode>();
+  readonly modalHide = output<ActionEmitterResult>();
 
   public creating = false;
   public createTopicForm!: FormGroup;
@@ -49,11 +59,7 @@ export class CreateDetailsTopicComponent implements OnInit, OnChanges {
       {
         name: [
           '',
-          [
-            Validators.required,
-            ValidationService.nameValidator,
-            Validators.maxLength(50),
-          ],
+          [Validators.required, nameValidator, Validators.maxLength(50)],
         ],
       },
       {
@@ -94,10 +100,10 @@ export class CreateDetailsTopicComponent implements OnInit, OnChanges {
 
     try {
       await firstValueFrom(
-        this.contentService.postTopic(this.forum.id as string, body)
+        this.contentService.postTopic(this.forum().id as string, body)
       );
       res.result = ActionResult.SUCCEED;
-    } catch (error) {
+    } catch (_error) {
       res.result = ActionResult.FAILED;
     }
 

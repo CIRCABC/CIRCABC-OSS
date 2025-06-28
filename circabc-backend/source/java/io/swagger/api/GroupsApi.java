@@ -4,155 +4,232 @@ import eu.cec.digit.circabc.repo.customisation.CustomizationException;
 import eu.cec.digit.circabc.repo.log.ActivityCountDAO;
 import eu.cec.digit.circabc.repo.statistics.ig.StatData;
 import io.swagger.model.*;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.springframework.extensions.webscripts.WebScriptResponse;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
+import org.alfresco.service.cmr.repository.NodeRef;
+import org.springframework.extensions.webscripts.WebScriptResponse;
 
 // the groups API
 public interface GroupsApi {
+  InterestGroup getInterestGroupDetails(final NodeRef igRef);
 
-    InterestGroup getInterestGroupDetails(final NodeRef igRef);
+  InterestGroup getInterestGroupDetails(final NodeRef igRef, boolean lightMode);
 
-    InterestGroup getInterestGroupDetails(final NodeRef igRef, boolean lightMode);
+  // get the definition and properties of one Interest group
+  // GET /groups/{id}
+  InterestGroup getInterestGroup(String id);
 
-    // get the definition and properties of one Interest group
-    // GET /groups/{id}
-    InterestGroup getInterestGroup(String id);
+  /**
+   * Retrieves the InterestGroup with the given ID if it meets accessibility criteria.
+   * The InterestGroup will be returned if:
+   * - The user is an admin, or
+   * - The InterestGroup is not marked as "toBeDeleted".
+   *
+   * @param id the unique identifier of the InterestGroup to retrieve.
+   * @return the InterestGroup if accessible, or null if the criteria are not met.
+   */
+  InterestGroup getAccessibleInterestGroup(String id);
 
-    InterestGroup getInterestGroup(String interestGroupNodeId, boolean lightMode);
+  InterestGroup getInterestGroup(String interestGroupNodeId, boolean lightMode);
 
-    // get the events and the calendar object of one Interest group if the
-    // parameter month is selected, then it return the calendar object for the
-    // specified month else it returns for the current month all items are
-    // filtered depending on the user's permissions
-    // !!! TODO !!! How to implement lazy loading with this object and the
-    // methods behind
-    // GET /groups/{id}/dashboard
-    GroupDashboard getGroupDashboard(String id);
+  // get the events and the calendar object of one Interest group if the
+  // parameter month is selected, then it return the calendar object for the
+  // specified month else it returns for the current month all items are
+  // filtered depending on the user's permissions
+  // !!! TODO !!! How to implement lazy loading with this object and the
+  // methods behind
+  // GET /groups/{id}/dashboard
+  GroupDashboard getGroupDashboard(String id);
 
-    List<RecentDiscussion> getGroupRecentDiscussions(String id);
+  List<RecentDiscussion> getGroupRecentDiscussions(String id);
 
-    // get the list of all Interest groups to see if it makes sense at all
-    // GET /groups",
-    List<InterestGroup> groupsGet(String language);
+  // get the list of all Interest groups to see if it makes sense at all
+  // GET /groups",
+  List<InterestGroup> groupsGet(String language);
 
-    // delete one Interest group
-    // DELETE /groups/{id}
-    void groupsIdDelete(String id, Boolean purgeData, Boolean purgeLogs);
+  // delete one Interest group
+  // DELETE /groups/{id}
+  void groupsIdDelete(String id, Boolean purgeData, Boolean purgeLogs);
 
-    // get the membership requests of an Interest
-    // GET /groups/{id}/members/applicants",
-    List<Applicant> groupsIdMembersApplicantsGet(String id);
+  // get the membership requests of an Interest
+  // GET /groups/{id}/members/applicants",
+  List<Applicant> groupsIdMembersApplicantsGet(String id);
 
-    // get the members of an Interest group with their respective profile
-    // GET /groups/{id}/members",
-    List<UserProfile> groupsIdMembersGet(
-            String id, List<String> profile, String language, String searchQuery);
+  // get the members of an Interest group with their respective profile
+  // GET /groups/{id}/members",
+  List<UserProfile> groupsIdMembersGet(
+    String id,
+    List<String> profile,
+    String language,
+    String searchQuery
+  );
 
-    PagedUserProfile groupsIdMembersGet(
-            String id,
-            List<String> profile,
-            String language,
-            Integer limit,
-            Integer page,
-            String order,
-            String searchQuery);
+  List<UserProfile> groupsIdMembersGet(
+    String id,
+    List<String> profile,
+    String language,
+    String firstName,
+    String lastName,
+    String email
+  );
 
-    // add a new member in the group
-    // POST /groups/{id}/members",
-    MembershipPostDefinition groupsIdMembersPost(NodeRef groupNodeRef, MembershipPostDefinition body);
+  PagedUserProfile groupsIdMembersGet(
+    String id,
+    List<String> profile,
+    String language,
+    Integer limit,
+    Integer page,
+    String order,
+    String searchQuery
+  );
 
-    // updates members in the group
-    // PUT /groups/{id}/members",
-    MembershipPostDefinition groupsIdMembersPut(NodeRef groupNodeRef, MembershipPostDefinition body);
+  PagedUserProfile groupsIdMembersGet(
+    String id,
+    List<String> profile,
+    String language,
+    Integer limit,
+    Integer page,
+    String order,
+    String firstName,
+    String lastName,
+    String email
+  );
 
-    // get the membership requests of an Interest the language parameter is used
-    // to filter the profile title, if needed
-    // ", response = Member.class, responseContainer = "List", authorizations =
-    // {
-    // GET/groups/{id}/members/search",
-    List<Member> groupsIdMembersSearchGet(String id, String query, String language);
+  // add a new member in the group
+  // POST /groups/{id}/members",
+  MembershipPostDefinition groupsIdMembersPost(
+    NodeRef groupNodeRef,
+    MembershipPostDefinition body
+  );
 
-    // remove one user from the members of one Interest group
-    // DELETE/groups/{id}/members/{userId}",
-    void groupsIdMembersUserIdDelete(String id, String userId);
+  // updates members in the group
+  // PUT /groups/{id}/members",
+  MembershipPostDefinition groupsIdMembersPut(
+    NodeRef groupNodeRef,
+    MembershipPostDefinition body
+  );
 
-    // Update the properties of an new Interest Group
-    // PUT /groups/{id}
-    void groupsIdPut(String id, InterestGroup body);
+  // get the membership requests of an Interest the language parameter is used
+  // to filter the profile title, if needed
+  // ", response = Member.class, responseContainer = "List", authorizations =
+  // {
+  // GET/groups/{id}/members/search",
+  List<Member> groupsIdMembersSearchGet(
+    String id,
+    String query,
+    String language
+  );
 
-    // Creates a new Interest Group
-    // POST /groups
-    void groupsPost(InterestGroup body);
+  // remove one user from the members of one Interest group
+  // DELETE/groups/{id}/members/{userId}",
+  void groupsIdMembersUserIdDelete(String id, String userId);
 
-    // used to remove a member applicant once it has been invited
-    // or decline its applcation
-    void groupsIdMembersApplicantsPut(String id, ApplicantAction body);
+  // Update the properties of an new Interest Group
+  // PUT /groups/{id}
+  void groupsIdPut(String id, InterestGroup body);
 
-    // used to add a member applicant request
-    void groupsIdMembersApplicantsPost(String id, ApplicantAction body);
+  // Creates a new Interest Group
+  // POST /groups
+  void groupsPost(InterestGroup body);
 
-    // get the statistics of the IG given its node id
-    // GET /groups/{id}/summary/statistics
-    List<StatData> getIGSummaryStatistics(String id, boolean calculate, boolean forExport);
+  // used to remove a member applicant once it has been invited
+  // or decline its applcation
+  void groupsIdMembersApplicantsPut(String id, ApplicantAction body);
 
-    // get the timeline of the IG given its node id
-    // GET /groups/{id}/summary/timeline
-    List<ActivityCountDAO> getIGSummaryTimeline(String id);
+  // used to add a member applicant request
+  void groupsIdMembersApplicantsPost(String id, ApplicantAction body);
 
-    // get the structure of the IG given its node id
-    // GET /groups/{id}/summary/structure
-    String getIGSummaryStructure(String id);
+  // get the statistics of the IG given its node id
+  // GET /groups/{id}/summary/statistics
+  List<StatData> getIGSummaryStatistics(
+    String id,
+    boolean calculate,
+    boolean forExport
+  );
 
-    // export the summary of an Interest group as XML, XLS or CSV
-    void exportSummary(String id, String format, String type, WebScriptResponse response);
+  // get the timeline of the IG given its node id
+  // GET /groups/{id}/summary/timeline
+  List<ActivityCountDAO> getIGSummaryTimeline(String id);
 
-    // generate the index file template for the import operation
-    void generateImportIndexFileTemplate(WebScriptResponse response) throws IOException;
+  // get the structure of the IG given its node id
+  // GET /groups/{id}/summary/structure
+  String getIGSummaryStructure(String id);
 
-    // imports a zip file given as an input stream
-    void importZipFile(
-            String folderId,
-            InputStream fileInputStream,
-            String fileName,
-            String mimeType,
-            boolean notifyUser,
-            boolean deleteFile,
-            boolean disableNotification,
-            String encoding);
+  // export the summary of an Interest group as XML, XLS or CSV
+  void exportSummary(
+    String id,
+    String format,
+    String type,
+    WebScriptResponse response
+  );
 
-    /**
-     * used during the IG creation for no sync with CBC tables
-     */
-    MembershipPostDefinition groupsIdMembersPostNoSync(
-            NodeRef groupNodeRef, MembershipPostDefinition body);
+  // generate the index file template for the import operation
+  void generateImportIndexFileTemplate(WebScriptResponse response)
+    throws IOException;
 
-    List<InterestGroup> getVisitedGroups(int amount);
+  // imports a zip file given as an input stream
+  void importZipFile(
+    String folderId,
+    InputStream fileInputStream,
+    String fileName,
+    String mimeType,
+    boolean notifyUser,
+    boolean deleteFile,
+    boolean disableNotification,
+    String encoding
+  );
 
-    List<InterestGroup> getVisitedGroups(String username, int amount);
+  /**
+   * used during the IG creation for no sync with CBC tables
+   */
+  MembershipPostDefinition groupsIdMembersPostNoSync(
+    NodeRef groupNodeRef,
+    MembershipPostDefinition body
+  );
 
-    GroupConfiguration getInterestGroupConfiguration(String groupIp);
+  List<InterestGroup> getVisitedGroups(int amount);
 
-    GroupConfiguration putInterestGroupConfiguration(String groupIp, GroupConfiguration body);
+  List<InterestGroup> getVisitedGroups(String username, int amount);
 
-    List<Node> getInterestGroupLogos(String groupId);
+  GroupConfiguration getInterestGroupConfiguration(String groupIp);
 
-    Node postGroupLogoByGroupId(String groupId, InputStream inputStream, String filename);
+  GroupConfiguration putInterestGroupConfiguration(
+    String groupIp,
+    GroupConfiguration body
+  );
 
-    void putSelectedLogo(String groupId, String logoId) throws CustomizationException;
+  List<Node> getInterestGroupLogos(String groupId);
 
-    void deleteLogo(String groupId, String logoId) throws CustomizationException;
+  Node postGroupLogoByGroupId(
+    String groupId,
+    InputStream inputStream,
+    String filename
+  );
 
-    int countMembersInIg(String igId);
+  void putSelectedLogo(String groupId, String logoId)
+    throws CustomizationException;
 
-    void groupsIdMembersUserIdExpirationDelete(String id, String userId);
+  void deleteLogo(String groupId, String logoId) throws CustomizationException;
 
-    void groupsIdMembersUserIdExpirationPut(String id, String userId, Date expirationDate);
+  int countMembersInIg(String igId);
 
-    void groupsIdMembersUserIdExpirationPost(
-            String id, String userId, Date expirationDate, String profileId, String alfrescoGroup);
+  void groupsIdMembersUserIdExpirationDelete(String id, String userId);
+
+  void groupsIdMembersUserIdExpirationPut(
+    String id,
+    String userId,
+    Date expirationDate
+  );
+
+  void groupsIdMembersUserIdExpirationPost(
+    String id,
+    String userId,
+    Date expirationDate,
+    String profileId,
+    String alfrescoGroup
+  );
+
+  public void updateIgToBeDeleted(Long igId, boolean isToBeDeleted);
 }

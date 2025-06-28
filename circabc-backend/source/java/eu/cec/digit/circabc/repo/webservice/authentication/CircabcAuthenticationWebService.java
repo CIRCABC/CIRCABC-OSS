@@ -17,6 +17,7 @@
 package eu.cec.digit.circabc.repo.webservice.authentication;
 
 import eu.cec.digit.circabc.repo.web.scripts.bean.TicketValidator;
+import java.rmi.RemoteException;
 import org.alfresco.repo.security.authentication.AuthenticationComponent;
 import org.alfresco.repo.security.authentication.AuthenticationException;
 import org.alfresco.repo.webservice.Utils;
@@ -24,103 +25,126 @@ import org.alfresco.service.cmr.security.AuthenticationService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.rmi.RemoteException;
+public class CircabcAuthenticationWebService
+  implements CircabcAuthenticationServiceSoapPort {
 
-public class CircabcAuthenticationWebService implements CircabcAuthenticationServiceSoapPort {
+  private static Log logger = LogFactory.getLog(
+    CircabcAuthenticationWebService.class
+  );
 
-    private static Log logger = LogFactory.getLog(CircabcAuthenticationWebService.class);
+  private AuthenticationService authenticationService;
 
-    private AuthenticationService authenticationService;
+  private AuthenticationComponent authenticationComponent;
+  private TicketValidator ticketValidator;
 
-    private AuthenticationComponent authenticationComponent;
-    private TicketValidator ticketValidator;
+  /**
+   * Sets the AuthenticationService instance to use
+   *
+   * @param authenticationSvc The AuthenticationService
+   */
+  public void setAuthenticationService(
+    AuthenticationService authenticationSvc
+  ) {
+    this.authenticationService = authenticationSvc;
+  }
 
-    /**
-     * Sets the AuthenticationService instance to use
-     *
-     * @param authenticationSvc The AuthenticationService
-     */
-    public void setAuthenticationService(AuthenticationService authenticationSvc) {
-        this.authenticationService = authenticationSvc;
-    }
+  /**
+   * Set the atuthentication component
+   */
+  public void setAuthenticationComponent(
+    AuthenticationComponent authenticationComponent
+  ) {
+    this.authenticationComponent = authenticationComponent;
+  }
 
-    /**
-     * Set the atuthentication component
-     */
-    public void setAuthenticationComponent(AuthenticationComponent authenticationComponent) {
-        this.authenticationComponent = authenticationComponent;
-    }
+  /**
+   * @see org.alfresco.repo.webservice.authentication.AuthenticationServiceSoapPort#startSession(java.lang.String,
+   * java.lang.String)
+   */
+  public AuthenticationResult startSession(
+    String username,
+    String ecasProxyTicket
+  ) throws RemoteException {
+    try {
+      String userName = ticketValidator.validateTicket(ecasProxyTicket);
 
-    /**
-     * @see org.alfresco.repo.webservice.authentication.AuthenticationServiceSoapPort#startSession(java.lang.String,
-     * java.lang.String)
-     */
-    public AuthenticationResult startSession(String username, String ecasProxyTicket)
-            throws RemoteException {
-        try {
-            String userName = ticketValidator.validateTicket(ecasProxyTicket);
+      if (userName != null) {
+        final String user = userName;
+        if (user.equalsIgnoreCase(username)) {
+          this.authenticationComponent.setCurrentUser(username);
+          String ticket = this.authenticationService.getCurrentTicket();
 
-            if (userName != null) {
-                final String user = userName;
-                if (user.equalsIgnoreCase(username)) {
-                    this.authenticationComponent.setCurrentUser(username);
-                    String ticket = this.authenticationService.getCurrentTicket();
+          if (logger.isDebugEnabled()) {
+            logger.debug(
+              "Issued ticket '" + ticket + "' for '" + username + "'"
+            );
+          }
 
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Issued ticket '" + ticket + "' for '" + username + "'");
-                    }
-
-                    return new AuthenticationResult(username, ticket, Utils.getSessionId());
-                } else {
-                    if (logger.isErrorEnabled()) {
-                        logger.error(
-                                "Can not start session: ecas proxy ticket '"
-                                        + ecasProxyTicket
-                                        + "' is valid but user is invalid");
-                    }
-                    throw new AuthenticationFault(100, "Invalid userName and ecasProxyTicket");
-                }
-            } else {
-                if (logger.isErrorEnabled()) {
-                    logger.error(
-                            "Can not start session ecas proxy ticket '"
-                                    + ecasProxyTicket
-                                    + "' for '"
-                                    + username
-                                    + "'");
-                }
-                throw new AuthenticationFault(100, "Invalid userName and ecasProxyTicket");
-            }
-        } catch (AuthenticationException ae) {
-            if (logger.isErrorEnabled()) {
-                logger.error(
-                        "Can not start session ecas proxy ticket '"
-                                + ecasProxyTicket
-                                + "' for '"
-                                + username
-                                + "'",
-                        ae);
-            }
-            throw new AuthenticationFault(100, ae.getMessage());
-        } catch (Throwable e) {
-            if (logger.isErrorEnabled()) {
-                logger.error(
-                        "Can not start session ecas proxy ticket '"
-                                + ecasProxyTicket
-                                + "' for '"
-                                + username
-                                + "'",
-                        e);
-            }
-            throw new AuthenticationFault(0, e.getMessage());
+          return new AuthenticationResult(
+            username,
+            ticket,
+            Utils.getSessionId()
+          );
+        } else {
+          if (logger.isErrorEnabled()) {
+            logger.error(
+              "Can not start session: ecas proxy ticket '" +
+              ecasProxyTicket +
+              "' is valid but user is invalid"
+            );
+          }
+          throw new AuthenticationFault(
+            100,
+            "Invalid userName and ecasProxyTicket"
+          );
         }
+      } else {
+        if (logger.isErrorEnabled()) {
+          logger.error(
+            "Can not start session ecas proxy ticket '" +
+            ecasProxyTicket +
+            "' for '" +
+            username +
+            "'"
+          );
+        }
+        throw new AuthenticationFault(
+          100,
+          "Invalid userName and ecasProxyTicket"
+        );
+      }
+    } catch (AuthenticationException ae) {
+      if (logger.isErrorEnabled()) {
+        logger.error(
+          "Can not start session ecas proxy ticket '" +
+          ecasProxyTicket +
+          "' for '" +
+          username +
+          "'",
+          ae
+        );
+      }
+      throw new AuthenticationFault(100, ae.getMessage());
+    } catch (Throwable e) {
+      if (logger.isErrorEnabled()) {
+        logger.error(
+          "Can not start session ecas proxy ticket '" +
+          ecasProxyTicket +
+          "' for '" +
+          username +
+          "'",
+          e
+        );
+      }
+      throw new AuthenticationFault(0, e.getMessage());
     }
+  }
 
-    public TicketValidator getTicketValidator() {
-        return ticketValidator;
-    }
+  public TicketValidator getTicketValidator() {
+    return ticketValidator;
+  }
 
-    public void setTicketValidator(TicketValidator ticketValidator) {
-        this.ticketValidator = ticketValidator;
-    }
+  public void setTicketValidator(TicketValidator ticketValidator) {
+    this.ticketValidator = ticketValidator;
+  }
 }

@@ -16,39 +16,43 @@
  */
 package eu.cec.digit.circabc.service.customisation.nav;
 
-import org.alfresco.service.cmr.repository.NodeRef;
-
 import java.util.Collection;
+import org.alfresco.service.cmr.repository.NodeRef;
 
 /**
  * @author Yanick Pignot
  */
 public interface NavigationConfigService {
+  /**
+   * @return
+   */
+  Collection<ServiceConfig> getAllServiceConfig();
 
-    /**
-     * @return
-     */
-    Collection<ServiceConfig> getAllServiceConfig();
+  /**
+   * @param serviceName
+   * @param nodeType
+   * @return
+   */
+  ServiceConfig getServiceConfig(
+    final String serviceName,
+    final String nodeType
+  );
 
-    /**
-     * @param serviceName
-     * @param nodeType
-     * @return
-     */
-    ServiceConfig getServiceConfig(final String serviceName, final String nodeType);
+  /**
+   * @param serviceName
+   * @param serviceType
+   * @param ref
+   * @return
+   */
+  NavigationPreference buildPreference(
+    final String serviceName,
+    final String serviceType,
+    final NodeRef ref
+  );
 
-    /**
-     * @param serviceName
-     * @param serviceType
-     * @param ref
-     * @return
-     */
-    NavigationPreference buildPreference(
-            final String serviceName, final String serviceType, final NodeRef ref);
-
-    /**
-     * @param navigationPreference
-     * @return
-     */
-    String buildPreferenceXML(NavigationPreference navigationPreference);
+  /**
+   * @param navigationPreference
+   * @return
+   */
+  String buildPreferenceXML(NavigationPreference navigationPreference);
 }

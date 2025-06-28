@@ -28,20 +28,21 @@ import org.alfresco.service.namespace.QName;
  * @author yanick pignot
  */
 public interface SurveyModel extends BaseCircabcModel {
+  /**
+   * Circabc Survey namespace
+   */
+  String CIRCABC_SURVEY_MODEL_1_0_URI = CIRCABC_NAMESPACE + "/model/survey/1.0";
 
-    /**
-     * Circabc Survey namespace
-     */
-    String CIRCABC_SURVEY_MODEL_1_0_URI = CIRCABC_NAMESPACE + "/model/survey/1.0";
+  /**
+   * Circabc Model Prefix
+   */
+  String CIRCABC_SURVEY_MODEL_PREFIX = "su";
 
-    /**
-     * Circabc Model Prefix
-     */
-    String CIRCABC_SURVEY_MODEL_PREFIX = "su";
-
-    /**
-     * Survey Type name
-     */
-    QName TYPE_SURVEY_SPACE = QName.createQName(CIRCABC_SURVEY_MODEL_1_0_URI, "surveys");
-
+  /**
+   * Survey Type name
+   */
+  QName TYPE_SURVEY_SPACE = QName.createQName(
+    CIRCABC_SURVEY_MODEL_1_0_URI,
+    "surveys"
+  );
 }

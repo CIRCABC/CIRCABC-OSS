@@ -25,97 +25,116 @@ import eu.cec.digit.circabc.web.WebClientHelper.ExtendedURLMode;
 import eu.cec.digit.circabc.web.bean.navigation.NavigableNode;
 import eu.cec.digit.circabc.web.bean.override.CircabcNavigationBean;
 import eu.cec.digit.circabc.web.wai.dialog.content.edit.CreateContentBaseDialog.AttachementWrapper;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.util.Pair;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.util.Pair;
 
 /**
  * @author Yanick Pignot
  */
 public abstract class OnlineEditingHelper {
 
-    private OnlineEditingHelper() {
+  private OnlineEditingHelper() {}
+
+  /**
+   * Generate a list of well know urls to be used in a WYSIWYG
+   */
+  public static List<Pair<String, String>> generateLinks(
+    final CreateContentBaseDialog dialog,
+    final CircabcNavigationBean navigator
+  ) {
+    final List<Pair<String, String>> links = new ArrayList<>(5);
+
+    links.add(new Pair<>("Europa", "http://www.europa.eu"));
+
+    addLink(links, navigator.getCircabcHomeNode());
+    addLink(links, navigator.getCurrentCategory());
+    addLink(links, navigator.getCurrentIGRoot());
+    addLink(links, navigator.getCurrentIGService());
+
+    if (navigator.isGuest() == false && navigator.getCurrentUser() != null) {
+      links.add(
+        new Pair<>(
+          "My Profile",
+          WebClientHelper.getGeneratedWaiFullUrl(
+            navigator.getCurrentUser().getPerson(),
+            ExtendedURLMode.HTTP_USERDETAILS
+          )
+        )
+      );
     }
 
+    addAttachements(dialog, links);
 
-    /**
-     * Generate a list of well know urls to be used in a WYSIWYG
-     */
-    public static List<Pair<String, String>> generateLinks(final CreateContentBaseDialog dialog,
-                                                           final CircabcNavigationBean navigator) {
-        final List<Pair<String, String>> links = new ArrayList<>(5);
+    return links;
+  }
 
-        links.add(new Pair<>("Europa", "http://www.europa.eu"));
+  /**
+   * Generate a list of well know urls to be used in a WYSIWYG
+   */
+  public static List<Pair<String, String>> generateMediafiles(
+    final CreateContentBaseDialog dialog
+  ) {
+    final List<Pair<String, String>> links = new ArrayList<>(5);
 
-        addLink(links, navigator.getCircabcHomeNode());
-        addLink(links, navigator.getCurrentCategory());
-        addLink(links, navigator.getCurrentIGRoot());
-        addLink(links, navigator.getCurrentIGService());
+    addAttachements(dialog, links);
 
-        if (navigator.isGuest() == false && navigator.getCurrentUser() != null) {
-            links.add(new Pair<>("My Profile", WebClientHelper
-                    .getGeneratedWaiFullUrl(navigator.getCurrentUser().getPerson(),
-                            ExtendedURLMode.HTTP_USERDETAILS)));
-        }
+    return links;
+  }
 
-        addAttachements(dialog, links);
+  private static void addAttachements(
+    final CreateContentBaseDialog dialog,
+    final List<Pair<String, String>> links
+  ) {
+    final List<AttachementWrapper> wrappers = dialog.getAttachementWrappers();
 
-        return links;
+    if (wrappers != null) {
+      for (final AttachementWrapper wrapper : wrappers) {
+        addLink(links, wrapper);
+      }
     }
+  }
 
-    /**
-     * Generate a list of well know urls to be used in a WYSIWYG
-     */
-    public static List<Pair<String, String>> generateMediafiles(
-            final CreateContentBaseDialog dialog) {
-        final List<Pair<String, String>> links = new ArrayList<>(5);
+  private static void addLink(
+    final List<Pair<String, String>> links,
+    final AttachementWrapper wrapper
+  ) {
+    if (wrapper != null) {
+      final NodeRef attachRef;
 
-        addAttachements(dialog, links);
+      if (wrapper.isCreated()) {
+        attachRef = wrapper.getAttachement().getNodeRef();
+      } else {
+        attachRef = wrapper.getAttachRef();
+      }
 
-        return links;
+      links.add(
+        new Pair<>(
+          wrapper.getName(),
+          WebClientHelper.getGeneratedWaiFullUrl(
+            attachRef,
+            ExtendedURLMode.HTTP_DOWNLOAD
+          )
+        )
+      );
     }
+  }
 
-
-    private static void addAttachements(final CreateContentBaseDialog dialog,
-                                        final List<Pair<String, String>> links) {
-        final List<AttachementWrapper> wrappers = dialog.getAttachementWrappers();
-
-        if (wrappers != null) {
-            for (final AttachementWrapper wrapper : wrappers) {
-                addLink(links, wrapper);
-            }
-        }
+  private static void addLink(
+    final List<Pair<String, String>> links,
+    final NavigableNode node
+  ) {
+    if (node != null) {
+      links.add(
+        new Pair<>(
+          (String) node.get(NavigableNode.BEST_TITLE_RESOLVER_NAME),
+          WebClientHelper.getGeneratedWaiFullUrl(
+            node,
+            ExtendedURLMode.HTTP_WAI_BROWSE
+          )
+        )
+      );
     }
-
-    private static void addLink(final List<Pair<String, String>> links,
-                                final AttachementWrapper wrapper) {
-        if (wrapper != null) {
-            final NodeRef attachRef;
-
-            if (wrapper.isCreated()) {
-                attachRef = wrapper.getAttachement().getNodeRef();
-            } else {
-                attachRef = wrapper.getAttachRef();
-            }
-
-            links.add(
-                    new Pair<>(
-                            wrapper.getName(),
-                            WebClientHelper.getGeneratedWaiFullUrl(attachRef, ExtendedURLMode.HTTP_DOWNLOAD))
-            );
-        }
-    }
-
-    private static void addLink(final List<Pair<String, String>> links, final NavigableNode node) {
-        if (node != null) {
-            links.add(
-                    new Pair<>(
-                            (String) node.get(NavigableNode.BEST_TITLE_RESOLVER_NAME),
-                            WebClientHelper.getGeneratedWaiFullUrl(node, ExtendedURLMode.HTTP_WAI_BROWSE))
-            );
-        }
-    }
-
+  }
 }

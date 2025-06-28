@@ -1,46 +1,49 @@
+import { DOCUMENT } from '@angular/common';
 import {
   Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
   Inject,
+  OnChanges,
+  output,
+  input,
+  model,
 } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
 import { FormControl } from '@angular/forms';
-import { ContentService, PreviewResult } from 'app/core/generated/circabc';
-import { SelectableNode } from 'app/core/ui-model/index';
-import { isContentAudio, isContentImage, isContentVideo } from 'app/core/util';
-import { firstValueFrom } from 'rxjs';
-import { environment } from 'environments/environment';
+import { TranslocoModule } from '@jsverse/transloco';
+import { AlfrescoService } from 'app/core/alfresco.service';
 import { LoginService } from 'app/core/login.service';
+import { type SelectableNode } from 'app/core/ui-model/index';
+import {
+  isContentAudio,
+  isContentImage,
+  isContentPdf,
+  isContentVideo,
+} from 'app/core/util';
+import { PreviewComponent } from 'app/shared/preview/preview.component';
+import { environment } from 'environments/environment';
+import {
+  NgxExtendedPdfViewerModule,
+  ProgressBarEvent,
+} from 'ngx-extended-pdf-viewer';
 
 @Component({
   selector: 'cbc-content-preview-ext',
   templateUrl: './content-preview-ext.component.html',
   preserveWhitespaces: true,
+  imports: [PreviewComponent, NgxExtendedPdfViewerModule, TranslocoModule],
 })
 export class ContentPreviewExtendedComponent implements OnChanges {
-  @Input()
-  public showModal = false;
-  @Input()
-  public documentId!: string;
-  @Input()
-  public contentURL!: string;
-  @Input()
-  public content!: SelectableNode;
+  public showModal = model.required<boolean>();
+  public documentId = input.required<string>();
+  public contentURL = input.required<string>();
+  public readonly content = input.required<SelectableNode>();
 
-  @Output()
-  public readonly contentPreviewed = new EventEmitter();
+  public readonly contentPreviewed = output();
 
   public progressing = false;
-  // use any instead of PDFProgressData
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public progress: any | undefined;
+  public progress: ProgressBarEvent | undefined;
   public error = false;
-  public previewResult!: PreviewResult;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public theError: any;
+  public previewReady = false;
+  public theError: Error | undefined;
   public searchTerm = new FormControl();
   public isDocumentPreview = false;
   public isImagePreview = false;
@@ -51,16 +54,37 @@ export class ContentPreviewExtendedComponent implements OnChanges {
   public isSpinner = false;
 
   public constructor(
-    private contentService: ContentService,
     private loginService: LoginService,
+    private alfrescoService: AlfrescoService,
     @Inject(DOCUMENT) private document: Document
   ) {}
 
   async ngOnChanges() {
-    if (this.documentId !== undefined && !this.progressing) {
-      this.previewResult = await firstValueFrom(
-        this.contentService.getCheckPreview(this.documentId)
-      );
+    const documentId = this.documentId();
+    if (documentId !== undefined && !this.progressing) {
+      if (
+        environment.useAlfrescoAPI &&
+        !this.isImage() &&
+        !this.isVideo() &&
+        !this.isAudio() &&
+        !this.isPdf()
+      ) {
+        try {
+          const rendition = await this.alfrescoService.getRendition(
+            documentId,
+            'pdf'
+          );
+          if (rendition.entry.status === 'CREATED') {
+            this.previewReady = true;
+          } else {
+            this.previewReady = false;
+          }
+        } catch {
+          this.previewReady = false;
+        }
+      } else {
+        this.previewReady = true;
+      }
     }
     this.progressing = false;
     this.error = false;
@@ -70,23 +94,22 @@ export class ContentPreviewExtendedComponent implements OnChanges {
     this.isVideoPreview = this.showVideoPreview();
     this.isAudioPreview = this.showAudioPreview();
     this.progressPercent = 0;
-    this.isErrorMessage = this.showErrorMessage();
     this.isSpinner = this.showSpinner();
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public onError(event: any) {
+  public onError(event: Error) {
     this.theError = event;
     this.error = true;
-    this.isErrorMessage = this.showErrorMessage();
+    this.progressing = false;
     this.isSpinner = this.showSpinner();
   }
-  // use any instead of PDFDocumentProxy
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public onProgress(event: any) {
-    this.progressing = true;
-    this.progress = event;
-    this.progressPercent = this.calculatePercentage();
+
+  public onProgress(event: ProgressBarEvent) {
+    if (event.type === 'load') {
+      this.progressing = true;
+      this.progress = event;
+      this.progressPercent = event.percent;
+    }
   }
 
   public visibleChange(isVisible: boolean) {
@@ -98,57 +121,42 @@ export class ContentPreviewExtendedComponent implements OnChanges {
   }
 
   private isImage(): boolean {
-    return isContentImage(this.content);
+    return isContentImage(this.content());
   }
   private isVideo(): boolean {
-    return isContentVideo(this.content);
+    return isContentVideo(this.content());
   }
   private isAudio(): boolean {
-    return isContentAudio(this.content);
+    return isContentAudio(this.content());
   }
-
-  private showErrorMessage(): boolean {
-    if (this.previewResult) {
-      return (
-        !this.previewResult.ready &&
-        !this.isImage() &&
-        !this.isVideo() &&
-        !this.isAudio()
-      );
-    } else {
-      return false;
-    }
+  private isPdf(): boolean {
+    return isContentPdf(this.content());
   }
 
   private showSpinner(): boolean {
-    return (
-      (this.showErrorMessage() &&
-        this.previewResult.messageCode !== 'not.available') ||
-      this.progressing
-    );
+    return this.progressing;
   }
 
   private showDocumentPreview(): boolean {
     return (
-      this.contentURL !== '' &&
+      this.contentURL() !== '' &&
       !this.isImage() &&
       !this.isVideo() &&
       !this.isAudio() &&
-      this.previewResult &&
-      this.previewResult.ready
+      this.previewReady
     );
   }
 
   private showImagePreview(): boolean {
-    return this.contentURL !== '' && this.isImage();
+    return this.contentURL() !== '' && this.isImage();
   }
 
   private showVideoPreview(): boolean {
-    return this.contentURL !== '' && this.isVideo();
+    return this.contentURL() !== '' && this.isVideo();
   }
 
   private showAudioPreview(): boolean {
-    return this.contentURL !== '' && this.isAudio();
+    return this.contentURL() !== '' && this.isAudio();
   }
 
   private requestFullscreen() {
@@ -163,35 +171,19 @@ export class ContentPreviewExtendedComponent implements OnChanges {
     }
   }
 
-  public calculatePercentage(): number {
-    if (
-      this.progress.loaded &&
-      this.previewResult &&
-      this.previewResult.contentLength
-    ) {
-      return Math.round(
-        (this.progress.loaded / this.previewResult.contentLength) * 100
-      );
-    } else {
-      return 0;
-    }
-  }
-
   public mediaContentURL(): string {
     if (this.loginService.isGuest()) {
-      return `${environment.serverURL}d/d/workspace/SpacesStore/${this.content.id}/file.bin?property=%7Bhttp://www.alfresco.org/model/content/1.0%7Dcontent&guest=true`;
-    } else {
-      return `${environment.serverURL}d/d/workspace/SpacesStore/${
-        this.content.id
-      }/file.bin?property=%7Bhttp://www.alfresco.org/model/content/1.0%7Dcontent&ticket=${this.loginService.getTicket()}`;
+      return `${environment.serverURL}d/d/workspace/SpacesStore/${this.content().id}/file.bin?property=%7Bhttp://www.alfresco.org/model/content/1.0%7Dcontent&guest=true`;
     }
+    return `${environment.serverURL}d/d/workspace/SpacesStore/${
+      this.content().id
+    }/file.bin?property=%7Bhttp://www.alfresco.org/model/content/1.0%7Dcontent&ticket=${this.loginService.getTicket()}`;
   }
 
   public close(): void {
-    this.showModal = false;
     this.contentPreviewed.emit();
-    this.contentURL = '';
     this.error = false;
+    this.previewReady = false;
     this.exitFullscreen();
   }
 }

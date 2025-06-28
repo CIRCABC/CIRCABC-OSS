@@ -1,18 +1,43 @@
+import { NgClass } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import {
   FileService,
-  TranslationsService,
   Node as ModelNode,
   NodesService,
+  PermissionDefinition,
+  PermissionService,
+  TranslationsService,
 } from 'app/core/generated/circabc';
+import { FileInputComponent } from 'app/group/library/upload-form/file-input/file-input.component';
+import { FileListComponent } from 'app/group/library/upload-form/file-list/file-list.component';
+import { FileMetadataComponent } from 'app/group/library/upload-form/file-metadata/file-metadata.component';
 import { FileUploadItem } from 'app/group/library/upload-form/file-upload-item';
+import { ConfirmDialogComponent } from 'app/shared/confirm-dialog/confirm-dialog.component';
+import { DataCyDirective } from 'app/shared/directives/data-cy.directive';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
+import { environment } from 'environments/environment';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-upload-form',
   templateUrl: './upload-form.component.html',
-  styleUrls: ['./upload-form.component.scss'],
+  styleUrl: './upload-form.component.scss',
+  imports: [
+    FileInputComponent,
+    NgClass,
+    FileListComponent,
+    FileMetadataComponent,
+    MatSlideToggleModule,
+    ReactiveFormsModule,
+    DataCyDirective,
+    SpinnerComponent,
+    TranslocoModule,
+  ],
 })
 export class UploadFormComponent implements OnInit {
   public filesToUpload: FileUploadItem[] = [];
@@ -28,17 +53,24 @@ export class UploadFormComponent implements OnInit {
   public canceled = false;
   public maxFileSize = 1024 * 1024 * 300; // 300MB
 
+  public notify = new FormControl(true);
+
+  public perms!: PermissionDefinition;
+
   constructor(
+    private permissionService: PermissionService,
     private fileService: FileService,
     private route: ActivatedRoute,
     private router: Router,
     private translationsService: TranslationsService,
-    private nodesService: NodesService
+    private nodesService: NodesService,
+    private dialog: MatDialog,
+    private translateService: TranslocoService
   ) {}
 
   async ngOnInit() {
     this.route.params.subscribe((params) => {
-      if (params && params.nodeId) {
+      if (params?.nodeId) {
         this.targetNodeId = params.nodeId;
       }
     });
@@ -53,6 +85,9 @@ export class UploadFormComponent implements OnInit {
         this.filesToUpload.push(file);
         this.fileSelected = file;
       }
+    }
+    if (environment.circabcRelease === 'echa') {
+      this.showDialogSimpleMsg();
     }
   }
 
@@ -142,6 +177,16 @@ export class UploadFormComponent implements OnInit {
         } catch (error) {
           this.onError(error, fileUpload);
         }
+
+        if (
+          (fileUpload.securityRanking === 'SENSITIVE' ||
+            fileUpload.securityRanking === 'SPECIAL_HANDLING') &&
+          environment.circabcRelease === 'echa'
+        ) {
+          if (fileUpload.nodeRef) {
+            await this.cutInheritance(fileUpload.nodeRef);
+          }
+        }
       } else if (
         fileUpload.file.size > this.maxFileSize &&
         !fileUpload.isTranslation
@@ -153,7 +198,7 @@ export class UploadFormComponent implements OnInit {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private onError(error: any, fileUpload: FileUploadItem) {
+  private onError(error: unknown, fileUpload: FileUploadItem) {
     console.error(error);
     fileUpload.uploadStatus = 'error';
     this.uploadingProgress = this.uploadingProgress + 1;
@@ -164,8 +209,9 @@ export class UploadFormComponent implements OnInit {
     if (this.uploadingProgress === this.filesToUpload.length) {
       this.uploadFinished = true;
       this.uploading = false;
-
-      this.fireNotifications();
+      if (this.notify.value) {
+        this.fireNotifications();
+      }
     }
   }
 
@@ -256,11 +302,10 @@ export class UploadFormComponent implements OnInit {
       return file.id === pivotId;
     });
 
-    if (res && res.nodeRef) {
+    if (res?.nodeRef) {
       return res.nodeRef;
-    } else {
-      return '';
     }
+    return '';
   }
 
   private async fireNotifications() {
@@ -293,5 +338,30 @@ export class UploadFormComponent implements OnInit {
   public cancelOrClose() {
     this.canceled = true;
     this.router.navigate(['..'], { relativeTo: this.route });
+  }
+
+  private showDialogSimpleMsg() {
+    this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        messageTranslated: this.translateService.translate(
+          'label.dialog.alert.snc.upload',
+          {
+            link: `<a href="https://ec.europa.eu/transparency/documents-register/detail?ref=C(2019)1904&lang=en" target="_blank">C(2019)1904</a>`,
+          }
+        ),
+        labelOK: 'label.confirm',
+        title: 'label.dialog.alert.snc.upload.title',
+        layoutStyle: 'SNCNotification',
+      },
+    });
+  }
+
+  private async cutInheritance(nodeRef: string) {
+    const body: PermissionDefinition = {
+      inherited: false,
+      permissions: {},
+    };
+
+    await firstValueFrom(this.permissionService.putPermission(nodeRef, body));
   }
 }

@@ -20,15 +20,13 @@
  ******************************************************************************/
 package eu.cec.digit.circabc.web.wai.generator;
 
-
 import eu.cec.digit.circabc.web.ui.repo.RepoConstants;
-import org.alfresco.web.bean.generator.TextFieldGenerator;
-import org.alfresco.web.ui.repo.component.property.PropertySheetItem;
-import org.alfresco.web.ui.repo.component.property.UIPropertySheet;
-
 import javax.faces.component.UIComponent;
 import javax.faces.component.UISelectOne;
 import javax.faces.context.FacesContext;
+import org.alfresco.web.bean.generator.TextFieldGenerator;
+import org.alfresco.web.ui.repo.component.property.PropertySheetItem;
+import org.alfresco.web.ui.repo.component.property.UIPropertySheet;
 
 /**
  * WAI Generates a multilingual text field component.
@@ -39,17 +37,21 @@ import javax.faces.context.FacesContext;
 @Deprecated
 public class MultilingualTextFieldGenerator extends TextFieldGenerator {
 
-    public static final String BEAN_NAME = "CircabcMultilingualTextFieldGenerator";
+  public static final String BEAN_NAME =
+    "CircabcMultilingualTextFieldGenerator";
 
-    @Override
-    public UIComponent generateAndAdd(FacesContext context, UIPropertySheet propertySheet,
-                                      PropertySheetItem item) {
-        UIComponent component = super.generateAndAdd(context, propertySheet, item);
+  @Override
+  public UIComponent generateAndAdd(
+    FacesContext context,
+    UIPropertySheet propertySheet,
+    PropertySheetItem item
+  ) {
+    UIComponent component = super.generateAndAdd(context, propertySheet, item);
 
-        if (!(component instanceof UISelectOne)) {
-            component.setRendererType(RepoConstants.CIRCABC_FACES_MLTEXT_RENDERER);
-        }
-
-        return component;
+    if (!(component instanceof UISelectOne)) {
+      component.setRendererType(RepoConstants.CIRCABC_FACES_MLTEXT_RENDERER);
     }
+
+    return component;
+  }
 }

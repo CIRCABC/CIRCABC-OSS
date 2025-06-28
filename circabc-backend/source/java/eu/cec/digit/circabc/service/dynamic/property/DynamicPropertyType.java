@@ -20,35 +20,35 @@ package eu.cec.digit.circabc.service.dynamic.property;
  * @author Yanick Pignot
  */
 public enum DynamicPropertyType {
-    DATE_FIELD {
-        public String getModelDataDefinition() {
-            return this.name();
-        }
-    },
+  DATE_FIELD {
+    public String getModelDataDefinition() {
+      return this.name();
+    }
+  },
 
-    TEXT_FIELD {
-        public String getModelDataDefinition() {
-            return this.name();
-        }
-    },
+  TEXT_FIELD {
+    public String getModelDataDefinition() {
+      return this.name();
+    }
+  },
 
-    TEXT_AREA {
-        public String getModelDataDefinition() {
-            return this.name();
-        }
-    },
+  TEXT_AREA {
+    public String getModelDataDefinition() {
+      return this.name();
+    }
+  },
 
-    SELECTION {
-        public String getModelDataDefinition() {
-            return this.name();
-        }
-    },
+  SELECTION {
+    public String getModelDataDefinition() {
+      return this.name();
+    }
+  },
 
-    MULTI_SELECTION {
-        public String getModelDataDefinition() {
-            return this.name();
-        }
-    };
+  MULTI_SELECTION {
+    public String getModelDataDefinition() {
+      return this.name();
+    }
+  };
 
-    public abstract String getModelDataDefinition();
+  public abstract String getModelDataDefinition();
 }

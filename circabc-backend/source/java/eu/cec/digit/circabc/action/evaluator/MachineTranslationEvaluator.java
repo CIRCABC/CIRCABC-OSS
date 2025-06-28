@@ -22,35 +22,34 @@ package eu.cec.digit.circabc.action.evaluator;
 
 import eu.cec.digit.circabc.CircabcConfig;
 import eu.cec.digit.circabc.service.translation.TranslationService;
+import javax.faces.context.FacesContext;
 import org.alfresco.web.action.evaluator.AddTranslationEvaluator;
 import org.alfresco.web.app.servlet.FacesHelper;
 import org.alfresco.web.bean.repository.Node;
 
-import javax.faces.context.FacesContext;
-
 public class MachineTranslationEvaluator extends AddTranslationEvaluator {
 
+  /**
+   *
+   */
+  private static final long serialVersionUID = 5373329645825367946L;
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 5373329645825367946L;
-
-    @Override
-    public boolean evaluate(Node node) {
-        if (CircabcConfig.OSS) {
-            return false;
-        }
-
-        if (super.evaluate(node)) {
-            FacesContext fc = FacesContext.getCurrentInstance();
-            TranslationService translationService = (TranslationService) FacesHelper
-                    .getManagedBean(fc, "TranslationService");
-            return translationService.canBeTranslated(node.getName());
-        } else {
-            return false;
-        }
-
+  @Override
+  public boolean evaluate(Node node) {
+    if (CircabcConfig.OSS) {
+      return false;
     }
 
+    if (super.evaluate(node)) {
+      FacesContext fc = FacesContext.getCurrentInstance();
+      TranslationService translationService =
+        (TranslationService) FacesHelper.getManagedBean(
+          fc,
+          "TranslationService"
+        );
+      return translationService.canBeTranslated(node.getName());
+    } else {
+      return false;
+    }
+  }
 }

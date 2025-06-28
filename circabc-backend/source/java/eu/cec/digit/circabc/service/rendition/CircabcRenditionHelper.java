@@ -16,6 +16,8 @@
  */
 package eu.cec.digit.circabc.service.rendition;
 
+import java.util.Collection;
+import java.util.Map;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
@@ -29,9 +31,6 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.Collection;
-import java.util.Map;
-
 /**
  * Calculates the renditions of documents as necessary.
  *
@@ -39,151 +38,169 @@ import java.util.Map;
  */
 public class CircabcRenditionHelper {
 
-    public static final String PDF_RENDITION_DEFINITION = "PDFRenditionDefinition";
-    public static final QName RENDITION_NAME =
-            QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, PDF_RENDITION_DEFINITION);
+  public static final String PDF_RENDITION_DEFINITION =
+    "PDFRenditionDefinition";
+  public static final QName RENDITION_NAME = QName.createQName(
+    NamespaceService.CONTENT_MODEL_1_0_URI,
+    PDF_RENDITION_DEFINITION
+  );
 
-    public static final String PDF_PREVIEW_RENDITION_SUFFIX = "_PDFRendition";
+  public static final String PDF_PREVIEW_RENDITION_SUFFIX = "_PDFRendition";
 
-    private static final Log logger = LogFactory.getLog(CircabcRenditionHelper.class);
+  private static final Log logger = LogFactory.getLog(
+    CircabcRenditionHelper.class
+  );
 
-    private RenditionService renditionService = null;
-    private NodeService nodeService = null;
-    private DictionaryService dictionaryService = null;
-    private ContentService contentService = null;
+  private RenditionService renditionService = null;
+  private NodeService nodeService = null;
+  private DictionaryService dictionaryService = null;
+  private ContentService contentService = null;
 
-    private CircabcRenditionService circabcRenditionService = null;
+  private CircabcRenditionService circabcRenditionService = null;
 
-    /**
-     * Does the PDF rendition managing for the view.
-     */
-    public NodeRef getRenditionNodeRef(NodeRef nodeRef) {
+  /**
+   * Does the PDF rendition managing for the view.
+   */
+  public NodeRef getRenditionNodeRef(NodeRef nodeRef) {
+    try {
+      NodeRef renditionNodeRef = checkAndGetIfPDFRenditionExists(nodeRef);
 
-        try {
+      if (renditionNodeRef != null) {
+        return renditionNodeRef;
+      }
 
-            NodeRef renditionNodeRef = checkAndGetIfPDFRenditionExists(nodeRef);
+      // Post this document to render
+      circabcRenditionService.addRequest(nodeRef);
 
-            if (renditionNodeRef != null) {
-                return renditionNodeRef;
-            }
+      return null;
+    } catch (Exception e) {
+      logger.warn(
+        "Node could not be converted. Can these types be " +
+        "converted? " +
+        e.getLocalizedMessage()
+      );
+      return null;
+    }
+  }
 
-            // Post this document to render
-            circabcRenditionService.addRequest(nodeRef);
+  public NodeRef checkAndGetIfPDFRenditionExists(NodeRef nodeRef) {
+    // Get all content definitions
+    Collection<QName> contentQNames = dictionaryService.getAllProperties(
+      DataTypeDefinition.CONTENT
+    );
 
-            return null;
-        } catch (Exception e) {
-            logger.warn(
-                    "Node could not be converted. Can these types be "
-                            + "converted? "
-                            + e.getLocalizedMessage());
-            return null;
+    QName nodeType = nodeService.getType(nodeRef);
+
+    TypeDefinition typeDefinition = dictionaryService.getType(nodeType);
+
+    Map<QName, PropertyDefinition> propertyDefinitions =
+      typeDefinition.getProperties();
+    QName sourceContentQName = null;
+
+    // Iterate through all content definitions until we find the actual
+    // content property to extract. This step is necessary because
+    // CIRCABC uses default and custom content properties, which
+    // means that the actual content could be in a different property
+    // than cm:content (example: newsgroup attachments)
+    for (QName contentQName : contentQNames) {
+      // Check if the property exists for the nodeRef's type
+      if (propertyDefinitions.containsKey(contentQName)) {
+        // Check if the document is already a PDF
+        ContentReader reader = contentService.getReader(nodeRef, contentQName);
+        if (
+          reader != null &&
+          MimetypeMap.MIMETYPE_PDF.equals(reader.getMimetype())
+        ) {
+          // If PDF, return its URL
+          return nodeRef;
+        } else if (
+          reader != null &&
+          !MimetypeMap.MIMETYPE_PDF.equals(reader.getMimetype())
+        ) {
+          // If not PDF but exists as content, exit and proceed to
+          // calculate its rendition
+          sourceContentQName = contentQName;
+          break;
         }
+      }
     }
 
-    public NodeRef checkAndGetIfPDFRenditionExists(NodeRef nodeRef) {
-
-        // Get all content definitions
-        Collection<QName> contentQNames =
-                dictionaryService.getAllProperties(DataTypeDefinition.CONTENT);
-
-        QName nodeType = nodeService.getType(nodeRef);
-
-        TypeDefinition typeDefinition = dictionaryService.getType(nodeType);
-
-        Map<QName, PropertyDefinition> propertyDefinitions = typeDefinition.getProperties();
-        QName sourceContentQName = null;
-
-        // Iterate through all content definitions until we find the actual
-        // content property to extract. This step is necessary because
-        // CIRCABC uses default and custom content properties, which
-        // means that the actual content could be in a different property
-        // than cm:content (example: newsgroup attachments)
-        for (QName contentQName : contentQNames) {
-
-            // Check if the property exists for the nodeRef's type
-            if (propertyDefinitions.containsKey(contentQName)) {
-
-                // Check if the document is already a PDF
-                ContentReader reader = contentService.getReader(nodeRef, contentQName);
-                if (reader != null && MimetypeMap.MIMETYPE_PDF.equals(reader.getMimetype())) {
-                    // If PDF, return its URL
-                    return nodeRef;
-                } else if (reader != null && !MimetypeMap.MIMETYPE_PDF.equals(reader.getMimetype())) {
-                    // If not PDF but exists as content, exit and proceed to
-                    // calculate its rendition
-                    sourceContentQName = contentQName;
-                    break;
-                }
-            }
-        }
-
-        if (sourceContentQName == null) {
-            // If the loop exited and no content property was found, return
-            // with error (unexpected)
-            logger.error(
-                    "Reader is null attempting to calculate the "
-                            + "rendition! Is this node a content item?");
-            return null;
-        }
-
-        String renditionName =
-                (String) nodeService.getProperty(nodeRef, ContentModel.PROP_NAME)
-                        + PDF_PREVIEW_RENDITION_SUFFIX;
-
-        QName renditionQName = QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, renditionName);
-
-        // Check if there is already a PDF rendition for this document
-        ChildAssociationRef pdfRendition = renditionService.getRenditionByName(nodeRef, renditionQName);
-
-        if (pdfRendition != null) {
-            return pdfRendition.getChildRef();
-        }
-
-        return null;
+    if (sourceContentQName == null) {
+      // If the loop exited and no content property was found, return
+      // with error (unexpected)
+      logger.error(
+        "Reader is null attempting to calculate the " +
+        "rendition! Is this node a content item?"
+      );
+      return null;
     }
 
-    /**
-     * Sets the value of the renditionService
-     *
-     * @param renditionService the renditionService to set.
-     */
-    public void setRenditionService(RenditionService renditionService) {
-        this.renditionService = renditionService;
+    String renditionName =
+      (String) nodeService.getProperty(nodeRef, ContentModel.PROP_NAME) +
+      PDF_PREVIEW_RENDITION_SUFFIX;
+
+    QName renditionQName = QName.createQName(
+      NamespaceService.CONTENT_MODEL_1_0_URI,
+      renditionName
+    );
+
+    // Check if there is already a PDF rendition for this document
+    ChildAssociationRef pdfRendition = renditionService.getRenditionByName(
+      nodeRef,
+      renditionQName
+    );
+
+    if (pdfRendition != null) {
+      return pdfRendition.getChildRef();
     }
 
-    /**
-     * Sets the value of the nodeService
-     *
-     * @param nodeService the nodeService to set.
-     */
-    public void setNodeService(NodeService nodeService) {
-        this.nodeService = nodeService;
-    }
+    return null;
+  }
 
-    /**
-     * Sets the value of the dictionaryService
-     *
-     * @param dictionaryService the dictionaryService to set.
-     */
-    public void setDictionaryService(DictionaryService dictionaryService) {
-        this.dictionaryService = dictionaryService;
-    }
+  /**
+   * Sets the value of the renditionService
+   *
+   * @param renditionService the renditionService to set.
+   */
+  public void setRenditionService(RenditionService renditionService) {
+    this.renditionService = renditionService;
+  }
 
-    /**
-     * Sets the value of the contentService
-     *
-     * @param contentService the contentService to set.
-     */
-    public void setContentService(ContentService contentService) {
-        this.contentService = contentService;
-    }
+  /**
+   * Sets the value of the nodeService
+   *
+   * @param nodeService the nodeService to set.
+   */
+  public void setNodeService(NodeService nodeService) {
+    this.nodeService = nodeService;
+  }
 
-    /**
-     * Sets the value of the circabcRenditionService
-     *
-     * @param circabcRenditionService the circabcRenditionService to set.
-     */
-    public void setCircabcRenditionService(CircabcRenditionService circabcRenditionService) {
-        this.circabcRenditionService = circabcRenditionService;
-    }
+  /**
+   * Sets the value of the dictionaryService
+   *
+   * @param dictionaryService the dictionaryService to set.
+   */
+  public void setDictionaryService(DictionaryService dictionaryService) {
+    this.dictionaryService = dictionaryService;
+  }
+
+  /**
+   * Sets the value of the contentService
+   *
+   * @param contentService the contentService to set.
+   */
+  public void setContentService(ContentService contentService) {
+    this.contentService = contentService;
+  }
+
+  /**
+   * Sets the value of the circabcRenditionService
+   *
+   * @param circabcRenditionService the circabcRenditionService to set.
+   */
+  public void setCircabcRenditionService(
+    CircabcRenditionService circabcRenditionService
+  ) {
+    this.circabcRenditionService = circabcRenditionService;
+  }
 }

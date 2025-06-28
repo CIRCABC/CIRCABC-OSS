@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   NotificationService,
   PasteNotificationsState,
@@ -11,6 +12,7 @@ import { firstValueFrom } from 'rxjs';
   selector: 'cbc-paste-notifications',
   templateUrl: './paste-notifications.component.html',
   preserveWhitespaces: true,
+  imports: [ReactiveFormsModule, TranslocoModule],
 })
 export class PasteNotificationsComponent implements OnInit {
   public igId!: string;

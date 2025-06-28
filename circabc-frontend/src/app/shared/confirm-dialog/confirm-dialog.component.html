@@ -1,121 +1,159 @@
-<mat-card fxLayoutGap *ngIf="data.layoutStyle.includes('Ares')">
+<mat-card>
+  @if (data.layoutStyle.includes('Ares')) {
+
   <p mat-dialog-title>{{data.title | transloco}}</p>
 
-  <div *ngIf="data.layoutStyle === 'sendOneToAres'  &&  data.nodeLog ">
-    <div *ngIf="data.nodeLog.length > 0">
+  @if (data.layoutStyle === 'sendOneToAres' && data.nodeLog ) {
+  <div class="dialogContent">
+    @if (data.nodeLog.length > 0) {
+    <div>
       <p class="message">{{ 'label.dialog.text.following' | transloco }}</p>
-      <div *ngFor="let log of data.nodeLog">
-        <div *ngIf="log.saveNumber && !log.registrationNumber">
+      @for (log of data.nodeLog; track log) {
+      <div>
+        @if (log.saveNumber && !log.registrationNumber) {
+        <div>
           <span
             >V{{log.versionLabel}} {{ 'label.dialog.text.saved.number' |
             transloco }} {{log.saveNumber}}</span
           >
         </div>
-        <div *ngIf="log.registrationNumber">
+        } @if (log.registrationNumber) {
+        <div>
           <span
             >V{{log.versionLabel}} {{ 'label.dialog.text.registered.number' |
             transloco }} {{log.registrationNumber}}</span
           >
         </div>
+        }
         <br />
       </div>
+      }
       <p class="message">{{ 'label.dialog.text.wanttosend' | transloco }}</p>
     </div>
+    }
   </div>
-
-  <div *ngIf="data.layoutStyle === 'sendDuplicatesManyToAres' ">
+  } @if (data.layoutStyle === 'sendDuplicatesManyToAres' ) {
+  <div class="dialogContent">
     <p class="message">{{ 'label.dialog.text.following' | transloco }}</p>
-    <div *ngFor="let log of data.nodeLog">
-      <div *ngIf="log.saveNumber && !log.registrationNumber">
+    @for (log of data.nodeLog; track log) {
+    <div>
+      @if (log.saveNumber && !log.registrationNumber) {
+      <div>
         <span
           >V{{log.versionLabel}} {{ 'label.dialog.text.saved.number' | transloco
           }} {{log.saveNumber}}</span
         >
       </div>
-      <div *ngIf="log.registrationNumber">
+      } @if (log.registrationNumber) {
+      <div>
         <span
           >V{{log.versionLabel}} {{ 'label.dialog.text.registered.number' |
           transloco }} {{log.registrationNumber}}</span
         >
       </div>
+      }
       <br />
     </div>
+    }
     <p class="message">
       {{ 'label.dialog.text.alreadysentsameversion' | transloco }}
     </p>
   </div>
-
-  <div *ngIf="data.layoutStyle === 'sendManyToAres' ">
-    <div *ngIf="data.nodeLog.length > 0">
+  } @if (data.layoutStyle === 'sendManyToAres' ) {
+  <div class="dialogContent">
+    @if (data.nodeLog.length > 0) {
+    <div>
       <p class="message">{{ 'label.dialog.text.following' | transloco }}</p>
-      <div *ngFor="let log of data.nodeLog, index as i">
-        <div *ngIf="log.nodeName && (i===0)">
+      @for (log of data.nodeLog; track log; let i = $index) {
+      <div>
+        @if (log.nodeName && (i===0)) {
+        <div>
           <span><strong>{{log.nodeName}}</strong></span>
         </div>
-
-        <div
-          *ngIf="log.nodeName && (i>0) && (log.nodeName !== data.nodeLog[i-1].nodeName)"
-        >
+        } @if (log.nodeName && (i>0) && (log.nodeName !==
+        data.nodeLog[i-1].nodeName)) {
+        <div>
           <br />
           <span><strong>{{log.nodeName}}</strong></span>
         </div>
-
-        <div *ngIf="log.saveNumber && !log.registrationNumber">
+        } @if (log.saveNumber && !log.registrationNumber) {
+        <div>
           <span
             >V{{log.versionLabel}} {{ 'label.dialog.text.saved.number' |
             transloco }} {{log.saveNumber}}</span
           >
         </div>
-
-        <div *ngIf="log.registrationNumber">
+        } @if (log.registrationNumber) {
+        <div>
           <span
             >V{{log.versionLabel}} {{ 'label.dialog.text.registered.number' |
             transloco }} {{log.registrationNumber}}</span
           >
         </div>
+        }
       </div>
+      }
 
       <p class="message">{{ 'label.dialog.text.wanttosend' | transloco }}</p>
     </div>
+    }
   </div>
-
-  <div mat-dialog-actions class="buttons-group">
-    <a
-      class="cta"
-      (click)="onOk()"
-      *ngIf="data.layoutStyle !== 'sendDuplicatesManyToAres' "
-    >
+  }
+  <div mat-dialog-actions class="buttons-group dialogContent">
+    @if (data.layoutStyle !== 'sendDuplicatesManyToAres' ) {
+    <a tabindex="0" class="cta" (click)="onOk()">
       {{ 'label.ok' | transloco }}
     </a>
+    }
 
-    <a class="button" (click)="onCancel()">{{ 'label.cancel' | transloco }} </a>
+    <a tabindex="0" class="button" (click)="onCancel()"
+      >{{ 'label.cancel' | transloco }}
+    </a>
   </div>
-</mat-card>
-
-<mat-card fxLayoutGap *ngIf="data.layoutStyle === 'alert'">
+  } @if (data.layoutStyle === 'alert') { @if (data.title) {
   <p mat-dialog-title>{{data.title | transloco}}</p>
+  }
 
-  <div class="alert">
+  <div class="alert dialogContent">
     <div class="alert-icon">
-      <img src="img/exclamation.png" class="img--exclamation--size" />
+      <img
+        src="img/exclamation.png"
+        class="img--exclamation--size"
+        alt="Exclamation mark"
+      />
     </div>
     <div>
       <p class="message">{{ data.message | transloco }}</p>
       <strong><p class="message">{{ data.message2 | transloco }}</p></strong>
+
+      @if (data.messageTranslated !== undefined ) {
+      <p [innerHTML]="data.messageTranslated" class="message"></p>
+      }
     </div>
   </div>
 
-  <div mat-dialog-actions class="buttons-group">
-    <a class="button" (click)="onCancel()">{{ 'label.close' | transloco }} </a>
+  <div mat-dialog-actions class="buttons-group dialogContent">
+    @if (data.labelOK !== undefined) {
+    <a tabindex="0" class="cta inviteUserButton" (click)="onOk()"
+      >{{ data.labelOK | transloco }}
+    </a>
+    }
+    <a tabindex="0" class="button" (click)="onCancel()"
+      >{{ 'label.close' | transloco }}
+    </a>
   </div>
-</mat-card>
 
-<mat-card fxLayoutGap *ngIf="data.layoutStyle === 'inviteUsers'">
+  } @if (data.layoutStyle === 'inviteUsers') {
+
   <p mat-dialog-title>{{data.title | transloco}}</p>
 
-  <div class="alert">
+  <div class="alert dialogContent">
     <div class="alert-icon">
-      <img src="img/exclamation.png" class="img--exclamation--size" />
+      <img
+        src="img/exclamation.png"
+        class="img--exclamation--size"
+        alt="Exclamation mark"
+      />
     </div>
     <div>
       <p class="message">{{ data.message }}</p>
@@ -123,15 +161,110 @@
     </div>
   </div>
 
-  <div mat-dialog-actions class="buttons-group">
-    <a class="cta inviteUserButton" (click)="onOk()"
+  <div mat-dialog-actions class="buttons-group dialogContent">
+    <a tabindex="0" class="cta inviteUserButton" (click)="onOk()"
       >{{"label.dialog.text.restore" | transloco}} {{ data.labelOK }}
     </a>
-    <a
-      class="cta inviteUserButton"
-      *ngIf="data.labelOK !==data.labelCancel"
-      (click)="onCancel()"
+    @if (data.labelOK !==data.labelCancel) {
+    <a tabindex="0" class="cta inviteUserButton" (click)="onCancel()"
       >{{"label.dialog.text.invite" | transloco}} {{ data.labelCancel }}
     </a>
+    }
   </div>
+
+  } @if (data.layoutStyle === 'setNotification') {
+  <form class="notification dialogContent" [formGroup]="notifyFormGroup">
+    <div style="text-align: right">
+      <a tabindex="0" class="close" (click)="closeNotification()"
+        >{{"label.close" | transloco}} {{ data.labelOK }}
+      </a>
+    </div>
+    <div>
+      <p mat-dialog-title>{{"label.notifications" | transloco}}</p>
+    </div>
+    <div class="toggle-group">
+      <label class="label">{{"label.notifications.dialog" | transloco}}</label>
+      <mat-slide-toggle formControlName="notify"></mat-slide-toggle>
+      <span
+        >{{(notifyFormGroup.controls.notify.value)?("label.yes" |
+        transloco):"label.no" | transloco}}</span
+      >
+    </div>
+    <div>
+      <p class="message">
+        ({{(notifyFormGroup.controls.notify.value)?("label.notifications.send" |
+        transloco): "label.notifications.no-send" | transloco }})
+      </p>
+    </div>
+  </form>
+
+  } @if (data.layoutStyle === 'SNCNotification') { @if (data.title) {
+  <div class="title">
+    <p mat-dialog-title>{{data.title | transloco}}</p>
+  </div>
+  }
+
+  <div class="dialogContent alert">
+    <div class="alert-icon">
+      <img
+        src="img/exclamation.png"
+        class="img--exclamation--size"
+        alt="Exclamation mark"
+      />
+    </div>
+    <div>
+      <p class="message">{{ data.message | transloco }}</p>
+      <strong><p class="message">{{ data.message2 | transloco }}</p></strong>
+
+      @if (data.messageTranslated !== undefined ) {
+      <p [innerHTML]="data.messageTranslated" class="message"></p>
+      }
+    </div>
+  </div>
+
+  <div mat-dialog-actions class="buttons-group">
+    @if (data.labelOK !== undefined) {
+    <a tabindex="0" class="cta" (click)="onOk()"
+      >{{ data.labelOK | transloco }}
+    </a>
+    }
+    <a tabindex="0" class="button" (click)="onCancel()"
+      >{{ 'label.cancel' | transloco }}
+    </a>
+  </div>
+
+  } @if (data.layoutStyle === 'requestPending') { @if (data.title) {
+  <div>
+    <p class="flex-center">
+      <img
+        src="img/info-signs.png"
+        height="28"
+        width="28"
+        alt="Information sign"
+      />
+      <span mat-dialog-title class="ml-3"
+        ><b>{{data.title | transloco}}</b></span
+      >
+    </p>
+  </div>
+
+  }
+
+  <div class="alert dialogContent">
+    <div>
+      <p class="message" style="font-size: 16px"
+        >{{ data.message | transloco }}</p
+      >
+    </div>
+  </div>
+
+  <div mat-dialog-actions class="buttons-group dialog-actions">
+    @if (data.labelOK !== undefined) {
+    <a tabindex="0" class="cta okButton" (click)="onOk()"
+      >{{ data.labelOK | transloco }}
+    </a>
+    }
+  </div>
+
+  }
 </mat-card>

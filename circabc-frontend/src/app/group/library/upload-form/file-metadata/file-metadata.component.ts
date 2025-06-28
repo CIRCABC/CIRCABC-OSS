@@ -1,14 +1,15 @@
 import {
   Component,
-  EventEmitter,
   Input,
   OnChanges,
   OnInit,
-  Output,
   SimpleChanges,
+  output,
+  input,
 } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+
 import { ActivatedRoute } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   DynamicPropertiesService,
   DynamicPropertyDefinition,
@@ -16,20 +17,50 @@ import {
   KeywordsService,
 } from 'app/core/generated/circabc';
 import { LoginService } from 'app/core/login.service';
+import { KeywordTagComponent } from 'app/group/keywords/tag/keyword-tag.component';
 import { FileUploadItem } from 'app/group/library/upload-form/file-upload-item';
+import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
+import { MultilingualInputComponent } from 'app/shared/input/multilingual-input.component';
+import { LangSelectorComponent } from 'app/shared/lang/lang-selector.component';
+import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
+import { SharedModule } from 'primeng/api';
+import { DatePicker } from 'primeng/datepicker';
+import { EditorModule } from 'primeng/editor';
 import { firstValueFrom } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { environment } from 'environments/environment';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+} from '@angular/forms';
 
 @Component({
   selector: 'cbc-file-metadata',
   templateUrl: './file-metadata.component.html',
-  styleUrls: ['./file-metadata.component.scss'],
+  styleUrl: './file-metadata.component.scss',
+  imports: [
+    ReactiveFormsModule,
+    ControlMessageComponent,
+    MultilingualInputComponent,
+    DatePicker,
+    KeywordTagComponent,
+    LangSelectorComponent,
+    EditorModule,
+    SharedModule,
+    I18nPipe,
+    TranslocoModule,
+  ],
 })
 export class FileMetadataComponent implements OnInit, OnChanges {
+  // TODO: Skipped for migration because:
+  //  This input is used in a control flow expression (e.g. `@if` or `*ngIf`)
+  //  and migrating would break narrowing currently.
   @Input() file: FileUploadItem | undefined;
-  @Input() pivots: FileUploadItem[] = [];
-  @Input() translations: FileUploadItem[] = [];
-  @Output() readonly fileChange = new EventEmitter<FileUploadItem>();
+  readonly pivots = input<FileUploadItem[]>([]);
+  readonly translations = input<FileUploadItem[]>([]);
+  readonly fileChange = output<FileUploadItem>();
 
   public fileForm!: FormGroup;
   public filterForm!: FormGroup;
@@ -41,6 +72,8 @@ export class FileMetadataComponent implements OnInit, OnChanges {
   public selectedKeywords: KeywordDefinition[] = [];
   public disabledLangs: string[] = [];
   public dynamicProperties: DynamicPropertyDefinition[] = [];
+  public minDate = new Date();
+  public expirationDateOlaf: Date = new Date();
 
   constructor(
     private fb: FormBuilder,
@@ -52,7 +85,7 @@ export class FileMetadataComponent implements OnInit, OnChanges {
 
   async ngOnInit() {
     this.route.params.subscribe((params) => {
-      if (params && params.id) {
+      if (params?.id) {
         this.groupNodeId = params.id;
       }
     });
@@ -66,10 +99,20 @@ export class FileMetadataComponent implements OnInit, OnChanges {
       author: [],
       reference: [],
       expirationDate: [],
-      securityRanking: [],
-      status: [],
+      securityRanking: ['NORMAL'],
+      status: ['DRAFT'],
       keywords: [],
     });
+
+    if (environment.circabcRelease === 'olaf') {
+      this.expirationDateOlaf.setMonth(this.expirationDateOlaf.getMonth() + 1);
+      this.expirationDateOlaf.setHours(23);
+      this.expirationDateOlaf.setMinutes(59);
+      this.expirationDateOlaf.setSeconds(59);
+      this.fileForm.controls.securityRanking.setValue('SENSITIVE');
+      this.fileForm.controls.expirationDate.setValue(this.expirationDateOlaf);
+      this.fileForm.controls.expirationDate.disable();
+    }
 
     this.dynamicProperties = await firstValueFrom(
       this.dynamicPropertiesService.getDynamicPropertyDefinitions(
@@ -116,11 +159,7 @@ export class FileMetadataComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (
-      changes.file &&
-      changes.file.currentValue &&
-      changes.file.previousValue
-    ) {
+    if (changes.file?.currentValue && changes.file.previousValue) {
       this.step = 'main';
       this.patchForm(changes.file.currentValue);
       this.selectedKeywords = [];
@@ -166,8 +205,7 @@ export class FileMetadataComponent implements OnInit, OnChanges {
       this.translationForm.reset({ translationLang: '', pivotId: '' });
       this.getDisabledLang(undefined);
     } else if (
-      changes.file &&
-      changes.file.currentValue !== undefined &&
+      changes.file?.currentValue !== undefined &&
       changes.file.previousValue === undefined
     ) {
       this.step = 'main';
@@ -196,10 +234,20 @@ export class FileMetadataComponent implements OnInit, OnChanges {
       this.fileForm.controls.author.patchValue(file.author);
       this.fileForm.controls.reference.patchValue(file.reference);
       this.fileForm.controls.securityRanking.patchValue(file.securityRanking);
+      if (
+        environment.circabcRelease === 'olaf' &&
+        file.securityRanking === undefined
+      ) {
+        this.fileForm.controls.securityRanking.patchValue('SENSITIVE');
+      }
       this.fileForm.controls.status.patchValue(file.status);
       this.fileForm.controls.keywords.patchValue(file.keywords);
       this.fileForm.controls.expirationDate.patchValue(file.expirationDate);
-
+      if (environment.circabcRelease === 'olaf') {
+        this.fileForm.controls.expirationDate.patchValue(
+          this.expirationDateOlaf
+        );
+      }
       const keys = Object.keys(file);
       for (const dynProp of this.dynamicProperties) {
         const key = this.getName(dynProp);
@@ -273,6 +321,9 @@ export class FileMetadataComponent implements OnInit, OnChanges {
       }) as string[];
     }
     this.file.expirationDate = this.fileForm.value.expirationDate;
+    if (environment.circabcRelease === 'olaf') {
+      this.file.expirationDate = this.expirationDateOlaf.toISOString();
+    }
     this.file.status = this.fileForm.value.status;
 
     for (const dynProp of this.dynamicProperties) {
@@ -298,7 +349,7 @@ export class FileMetadataComponent implements OnInit, OnChanges {
   }
 
   public toggleKeyword(keyword: KeywordDefinition) {
-    if (this.file && this.file.keywords && keyword.id) {
+    if (this.file?.keywords && keyword.id) {
       if (this.file.keywords.indexOf(keyword.id) === -1) {
         this.selectedKeywords.push(keyword);
       } else {
@@ -312,11 +363,10 @@ export class FileMetadataComponent implements OnInit, OnChanges {
   }
 
   public isSelectedKeyword(keyword: KeywordDefinition) {
-    if (this.file && this.file.keywords && keyword.id) {
+    if (this.file?.keywords && keyword.id) {
       return this.file.keywords.indexOf(keyword.id) !== -1;
-    } else {
-      return false;
     }
+    return false;
   }
 
   get filteredKeywords() {
@@ -336,9 +386,8 @@ export class FileMetadataComponent implements OnInit, OnChanges {
         }
         return foundInTitle > 0;
       });
-    } else {
-      return [];
     }
+    return [];
   }
 
   public resetKeywordSearch() {
@@ -369,13 +418,13 @@ export class FileMetadataComponent implements OnInit, OnChanges {
     this.disabledLangs = [];
 
     if (pivotId) {
-      this.pivots.forEach((pivot) => {
+      this.pivots().forEach((pivot) => {
         if (pivot.id === pivotId && pivot.lang) {
           this.disabledLangs.push(pivot.lang);
         }
       });
 
-      this.translations.forEach((translation) => {
+      this.translations().forEach((translation) => {
         if (translation.translationOf === pivotId && translation.lang) {
           if (this.disabledLangs.indexOf(translation.lang)) {
             this.disabledLangs.push(translation.lang);
@@ -442,8 +491,7 @@ export class FileMetadataComponent implements OnInit, OnChanges {
   public compareFn(optionOne?: string, optionTwo?: string): boolean {
     if (optionOne && optionTwo) {
       return optionOne === optionTwo;
-    } else {
-      return false;
     }
+    return false;
   }
 }

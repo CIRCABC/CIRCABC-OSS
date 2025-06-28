@@ -26,72 +26,73 @@ import java.util.HashSet;
  * @author Yanick Pignot
  */
 public enum SurveyPermissions {
-    SURADMIN("SurAdmin"),
-    SURENCODE("SurEncode"),
-    SURACCESS("SurAccess"),
-    SURNOACCESS("SurNoAccess");
+  SURADMIN("SurAdmin"),
+  SURENCODE("SurEncode"),
+  SURACCESS("SurAccess"),
+  SURNOACCESS("SurNoAccess");
 
-    static HashSet<SurveyPermissions> surveyPermissions = null;
-    protected String surveyPermissionString;
+  static HashSet<SurveyPermissions> surveyPermissions = null;
+  protected String surveyPermissionString;
 
-    /**
-     * Constructor initialising the string value of the permission. The String values will be defined
-     * in the file permissionDefinitions.xml
-     *
-     * @param value string value associated to the enumeration value.
-     */
-    SurveyPermissions(String value) {
-        surveyPermissionString = value;
+  /**
+   * Constructor initialising the string value of the permission. The String values will be defined
+   * in the file permissionDefinitions.xml
+   *
+   * @param value string value associated to the enumeration value.
+   */
+  SurveyPermissions(String value) {
+    surveyPermissionString = value;
+  }
+
+  /**
+   * initialise the list of permissions
+   */
+  protected static void init() {
+    surveyPermissions = new HashSet<>();
+    Collections.addAll(surveyPermissions, SurveyPermissions.values());
+  }
+
+  public static SurveyPermissions withPermissionString(String permiString) {
+    SurveyPermissions match = null;
+
+    for (SurveyPermissions permission : getPermissions()) {
+      if (permission.surveyPermissionString.equals(permiString)) {
+        match = permission;
+        break;
+      }
     }
-
-    /**
-     * initialise the list of permissions
-     */
-    protected static void init() {
-        surveyPermissions = new HashSet<>();
-        Collections.addAll(surveyPermissions, SurveyPermissions.values());
+    if (match == null) {
+      throw new IllegalArgumentException(
+        "No enum const class with permission string " + permiString
+      );
+    } else {
+      return match;
     }
+  }
 
-    public static SurveyPermissions withPermissionString(String permiString) {
-        SurveyPermissions match = null;
-
-        for (SurveyPermissions permission : getPermissions()) {
-            if (permission.surveyPermissionString.equals(permiString)) {
-                match = permission;
-                break;
-            }
-        }
-        if (match == null) {
-            throw new IllegalArgumentException(
-                    "No enum const class with permission string " + permiString);
-        } else {
-            return match;
-        }
+  /**
+   * return an List representing the permission list.
+   *
+   * @return List of LibraryPermissions
+   */
+  public static HashSet<SurveyPermissions> getPermissions() {
+    if (surveyPermissions == null) {
+      init();
     }
+    return (HashSet<SurveyPermissions>) surveyPermissions.clone();
+  }
 
-    /**
-     * return an List representing the permission list.
-     *
-     * @return List of LibraryPermissions
-     */
-    public static HashSet<SurveyPermissions> getPermissions() {
-        if (surveyPermissions == null) {
-            init();
-        }
-        return (HashSet<SurveyPermissions>) surveyPermissions.clone();
-    }
+  public static SurveyPermissions[] minimalValues() {
+    return new SurveyPermissions[] { SURACCESS, SURNOACCESS };
+  }
 
-    public static SurveyPermissions[] minimalValues() {
-        return new SurveyPermissions[]{SURACCESS, SURNOACCESS};
+  /**
+   * Return the string value associated to the permission
+   */
+  public String toString() {
+    if (surveyPermissions == null) {
+      init();
     }
-
-    /**
-     * Return the string value associated to the permission
-     */
-    public String toString() {
-        if (surveyPermissions == null) {
-            init();
-        }
-        return surveyPermissionString;
-    }
+    return surveyPermissionString;
+  }
 }

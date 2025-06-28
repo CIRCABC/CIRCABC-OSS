@@ -1,11 +1,36 @@
-:host {
-  font-size: 12px;
+@use '_global';
+@use '_forms';
+@use '_boxes';
+
+.filterActionColumn {
+  width: 150px;
 }
 
-h2,
-h3 {
-  color: #757575;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 100%;
+.subtitle-box {
+  display: flex;
+  align-items: center;
+}
+
+.icons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.actions {
+  text-align: center;
+
+  div {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+::ng-deep cbc-hint {
+  .hint .hinttext {
+    width: 300px !important;
+    margin-left: -290px !important;
+  }
 }

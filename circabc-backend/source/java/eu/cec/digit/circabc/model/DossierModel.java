@@ -28,20 +28,22 @@ import org.alfresco.service.namespace.QName;
  * @author Slobodan Filipovic
  */
 public interface DossierModel extends BaseCircabcModel {
+  /**
+   * Circabc Dossier namespace
+   */
+  String CIRCABC_DOSSIER_MODEL_1_0_URI =
+    CIRCABC_NAMESPACE + "/model/dossier/1.0";
 
-    /**
-     * Circabc Dossier namespace
-     */
-    String CIRCABC_DOSSIER_MODEL_1_0_URI = CIRCABC_NAMESPACE + "/model/dossier/1.0";
+  /**
+   * Circabc Model Prefix
+   */
+  String CIRCABC_DOSSIER_MODEL_PREFIX = "do";
 
-    /**
-     * Circabc Model Prefix
-     */
-    String CIRCABC_DOSSIER_MODEL_PREFIX = "do";
-
-    /**
-     * Dossier Type name
-     */
-    QName TYPE_DOSSIER_SPACE = QName.createQName(CIRCABC_DOSSIER_MODEL_1_0_URI, "dossier");
-
+  /**
+   * Dossier Type name
+   */
+  QName TYPE_DOSSIER_SPACE = QName.createQName(
+    CIRCABC_DOSSIER_MODEL_1_0_URI,
+    "dossier"
+  );
 }

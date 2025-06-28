@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version='1.0' encoding='UTF-8' ?>
 <!--
   Copyright 2006 European Community
   
@@ -19,8 +19,8 @@
    See the Licence for the specific language governing
    permissions and limitations under the Licence.
 -->
-<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
-
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN'
+  'http://www.springframework.org/dtd/spring-beans.dtd'>
 <beans>
 
 	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
@@ -30,31 +30,35 @@
 	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
 
 	<!-- Acl entry voter that check permissions on AclAwareWrapper objects -->
-	<bean id="business.aclEntryVoter" class="eu.cec.digit.circabc.business.acl.ACLEntryVoter" parent="aclEntryVoter" >
+	<bean
+    id="business.aclEntryVoter"
+    class="eu.cec.digit.circabc.business.acl.ACLEntryVoter"
+    parent="aclEntryVoter"
+  >
 	</bean>
 
 	<!-- Add AclAwareWrapper voter support -->
-	<bean id="business.accessDecisionManager" parent="accessDecisionManager" >
-		<property name="decisionVoters" >
+	<bean id="business.accessDecisionManager" parent="accessDecisionManager">
+		<property name="decisionVoters">
 			<list>
-                <ref bean="roleVoter"/>
-                <ref bean="groupVoter"/>
-                <ref bean="aclEntryVoter"/>
+                <ref bean="roleVoter" />
+                <ref bean="groupVoter" />
+                <ref bean="aclEntryVoter" />
 		        <ref bean="business.aclEntryVoter" />
 			</list>
 		</property>
 	</bean>
 
 	<!-- Post method Acl entry voter that check permissions on AclAwareWrapper objects -->
-    <bean id="business.afterAcl" parent="afterAcl" >
+    <bean id="business.afterAcl" parent="afterAcl">
 	</bean>
 
 	<!-- Add AclAwareWrapper voter support -->
     <bean id="business.afterInvocationManager" parent="afterInvocationManager">
-    <property name="providers" >
+    <property name="providers">
       <list>
-            <ref bean="afterAcl"/>
-			<ref bean="business.afterAcl"/>
+            <ref bean="afterAcl" />
+			<ref bean="business.afterAcl" />
       </list>
     </property>
   </bean>
@@ -64,10 +68,19 @@
   <!-- Business layer permissions support -->
   <!-- ================================== -->
 
-	<bean id="MailMeContentBusinessSrv_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="business.accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="business.afterInvocationManager"/></property>
+	<bean
+    id="MailMeContentBusinessSrv_security"
+    class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="business.accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="business.afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
 			eu.cec.digit.circabc.business.api.mail.MailMeContentBusinessSrv.send=ACL_NODE.0.sys:base.Read
@@ -75,10 +88,19 @@
       </property>
 	</bean>
 
-	<bean id="ContentBusinessSrv_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="business.accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="business.afterInvocationManager"/></property>
+	<bean
+    id="ContentBusinessSrv_security"
+    class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="business.accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="business.afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
 			eu.cec.digit.circabc.business.api.content.ContentBusinessSrv.addContent=ACL_NODE.0.sys:base.CreateChildren
@@ -86,10 +108,19 @@
       </property>
 	</bean>
 
-	<bean id="CociContentBusinessSrv_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="business.accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="business.afterInvocationManager"/></property>
+	<bean
+    id="CociContentBusinessSrv_security"
+    class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="business.accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="business.afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
 			eu.cec.digit.circabc.business.api.content.CociContentBusinessSrv.checkOut=ACL_NODE.0.cm:lockable.CheckOut
@@ -105,10 +136,19 @@
       </property>
 	</bean>
 
-	<bean id="NavigationBusinessSrv_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="business.accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="business.afterInvocationManager"/></property>
+	<bean
+    id="NavigationBusinessSrv_security"
+    class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="business.accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="business.afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
 		eu.cec.digit.circabc.business.api.nav.NavigationBusinessSrv.getCategory=ACL_ALLOW
@@ -135,10 +175,19 @@
       </property>
 	</bean>
 
-	<bean id="SpaceBusinessSrv_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="business.accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="business.afterInvocationManager"/></property>
+	<bean
+    id="SpaceBusinessSrv_security"
+    class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="business.accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="business.afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
 			eu.cec.digit.circabc.business.api.space.SpaceBusinessSrv.createSpace=ACL_NODE.0.sys:base.CreateChildren
@@ -147,10 +196,19 @@
       </property>
 	</bean>
 
-	<bean id="PropertiesBusinessSrv_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="business.accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="business.afterInvocationManager"/></property>
+	<bean
+    id="PropertiesBusinessSrv_security"
+    class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="business.accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="business.afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
 			eu.cec.digit.circabc.business.api.props.PropertiesBusinessSrv.computeLanguageTranslation=ACL_ALLOW
@@ -161,10 +219,19 @@
       </property>
 	</bean>
 
-	<bean id="DossierBusinessSrv_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="business.accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="business.afterInvocationManager"/></property>
+	<bean
+    id="DossierBusinessSrv_security"
+    class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="business.accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="business.afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
 			eu.cec.digit.circabc.business.api.space.DossierBusinessSrv.createDossier=ACL_NODE.0.sys:base.CreateChildren
@@ -173,10 +240,19 @@
       </property>
 	</bean>
 
-	<bean id="LinksBusinessSrv_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="business.accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="business.afterInvocationManager"/></property>
+	<bean
+    id="LinksBusinessSrv_security"
+    class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="business.accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="business.afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
 			eu.cec.digit.circabc.business.api.link.LinksBusinessSrv.applySharing=ACL_NODE.0.sys:base.WriteContent
@@ -192,20 +268,38 @@
       </property>
 	</bean>
 
-	<bean id="ProfileBusinessSrv_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="business.accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="business.afterInvocationManager"/></property>
+	<bean
+    id="ProfileBusinessSrv_security"
+    class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="business.accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="business.afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
          </value>
       </property>
 	</bean>
 
-	<bean id="PermissionsBusinessSrv_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="business.accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="business.afterInvocationManager"/></property>
+	<bean
+    id="PermissionsBusinessSrv_security"
+    class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="business.accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="business.afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
 
@@ -213,10 +307,19 @@
       </property>
 	</bean>
 
-	<bean id="UserDetailsBusinessSrv_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="business.accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="business.afterInvocationManager"/></property>
+	<bean
+    id="UserDetailsBusinessSrv_security"
+    class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="business.accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="business.afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
 			eu.cec.digit.circabc.business.api.user.UserDetailsBusinessSrv.getAvatar=ACL_ALLOW
@@ -230,10 +333,19 @@
       </property>
 	</bean>
 
-	<bean id="RemoteUserBusinessSrv_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="business.accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="business.afterInvocationManager"/></property>
+	<bean
+    id="RemoteUserBusinessSrv_security"
+    class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="business.accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="business.afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
 			eu.cec.digit.circabc.business.api.user.RemoteUserBusinessSrv.isRemoteManagementAvailable=ACL_ALLOW
@@ -243,10 +355,19 @@
       </property>
 	</bean>
 
-	<bean id="AttachementBusinessSrv_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="business.accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="business.afterInvocationManager"/></property>
+	<bean
+    id="AttachementBusinessSrv_security"
+    class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="business.accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="business.afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
         	eu.cec.digit.circabc.business.api.content.AttachementBusinessSrv.addAttachement=ACL_NODE.0.sys:base.CreateChildren

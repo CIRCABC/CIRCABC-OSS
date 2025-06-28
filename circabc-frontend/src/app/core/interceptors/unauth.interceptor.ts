@@ -8,7 +8,7 @@ import {
 } from '@angular/common/http';
 import { Injectable, Injector } from '@angular/core';
 import { Router } from '@angular/router';
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoService } from '@jsverse/transloco';
 import { LoginService } from 'app/core/login.service';
 import { UiMessageService } from 'app/core/message/ui-message.service';
 import { environment } from 'environments/environment';
@@ -47,6 +47,7 @@ export class UnauthInterceptor implements HttpInterceptor {
         (err: any) => {
           if (err instanceof HttpErrorResponse) {
             if (err.status === 401 && !loginService.isGuest()) {
+              console.error(err);
               loginService.cleanAuthentication();
               // eslint-disable-next-line @typescript-eslint/no-floating-promises
               router.navigate(['welcome']);

@@ -21,10 +21,9 @@
 package eu.cec.digit.circabc.web;
 
 import eu.cec.digit.circabc.business.api.space.ContainerIcon;
-import org.alfresco.web.ui.common.component.UIListItem;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.alfresco.web.ui.common.component.UIListItem;
 
 /**
  * Contains Common jsf convertion methds
@@ -33,22 +32,22 @@ import java.util.List;
  */
 public abstract class JSFUtils {
 
-    private JSFUtils() {
-    }
+  private JSFUtils() {}
 
-
-    /**
-     * Convert a list of logo to JSF selectable items
-     */
-    public static List<UIListItem> convertLogos(final List<ContainerIcon> containerIcons) {
-        final List<UIListItem> icons = new ArrayList<>(containerIcons.size());
-        UIListItem item;
-        for (final ContainerIcon containerIcon : containerIcons) {
-            item = new UIListItem();
-            item.setValue(containerIcon.getIconName());
-            item.setImage(containerIcon.getIconPath());
-            icons.add(item);
-        }
-        return icons;
+  /**
+   * Convert a list of logo to JSF selectable items
+   */
+  public static List<UIListItem> convertLogos(
+    final List<ContainerIcon> containerIcons
+  ) {
+    final List<UIListItem> icons = new ArrayList<>(containerIcons.size());
+    UIListItem item;
+    for (final ContainerIcon containerIcon : containerIcons) {
+      item = new UIListItem();
+      item.setValue(containerIcon.getIconName());
+      item.setImage(containerIcon.getIconPath());
+      icons.add(item);
     }
+    return icons;
+  }
 }

@@ -23,6 +23,4 @@ package eu.cec.digit.circabc.web.ui.repo.renderer.property;
 /**
  * @author patrice.coppens@trasys.lu
  */
-public class PropertyRenderer extends PropertySheetItemRenderer {
-
-}
+public class PropertyRenderer extends PropertySheetItemRenderer {}

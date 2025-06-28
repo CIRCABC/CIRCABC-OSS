@@ -7,154 +7,178 @@ import io.swagger.model.Node;
 import io.swagger.model.Profile;
 import io.swagger.util.ApiToolBox;
 import io.swagger.util.Converter;
+import java.util.ArrayList;
+import java.util.List;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.search.ResultSet;
 import org.alfresco.service.cmr.search.SearchParameters;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.web.bean.repository.Repository;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /** @author beaurpi */
 public class LibraryApiImpl implements LibraryApi {
 
-    private NodeService nodeService;
-    private SearchService searchService;
-    private ApiToolBox apiToolBox;
-    private NodesApi nodesApi;
-    private ProfilesApi profilesApi;
+  static final Log logger = LogFactory.getLog(LibraryApiImpl.class);
 
-    private String AND = " AND ";
+  private NodeService nodeService;
+  private SearchService searchService;
+  private ApiToolBox apiToolBox;
+  private NodesApi nodesApi;
+  private ProfilesApi profilesApi;
 
-    /* (non-Javadoc)
-     * @see io.swagger.api.LibraryApi#getLockedNodes()
-     */
-    @Override
-    public List<Node> getLockedNodes(String nodeId) {
-        NodeRef nodeRef = Converter.createNodeRefFromId(nodeId);
-        StringBuilder queryBuilder = new StringBuilder();
-        List<Node> result;
-        if (nodeId != null) {
-            String path = "(PATH:\"" + apiToolBox.getPathFromSpaceRef(nodeRef, true) + "\")";
-            queryBuilder.append(path);
-            queryBuilder.append(AND);
-            queryBuilder.append("ASPECT:\"cm:checkedOut\"");
+  private String AND = " AND ";
+
+  /* (non-Javadoc)
+   * @see io.swagger.api.LibraryApi#getLockedNodes()
+   */
+  @Override
+  public List<Node> getLockedNodes(String nodeId) {
+    NodeRef nodeRef = Converter.createNodeRefFromId(nodeId);
+    StringBuilder queryBuilder = new StringBuilder();
+    List<Node> result;
+    if (nodeId != null) {
+      String path =
+        "(PATH:\"" + apiToolBox.getPathFromSpaceRef(nodeRef, true) + "\")";
+      queryBuilder.append(path);
+      queryBuilder.append(AND);
+      queryBuilder.append("ASPECT:\"cm:checkedOut\"");
+    }
+
+    result = new ArrayList<>();
+
+    ResultSet rs = executeSearch(queryBuilder);
+
+    for (NodeRef ref : rs.getNodeRefs()) {
+      if (nodeService.exists(ref)) {
+        result.add(nodesApi.getNode(ref));
+      } else {
+        if (logger.isErrorEnabled()) {
+          logger.error(
+            "getLockedNodes-node does not exists: " + ref.toString()
+          );
         }
+      }
+    }
 
-        result = new ArrayList<>();
+    return result;
+  }
 
-        ResultSet rs = executeSearch(queryBuilder);
+  private ResultSet executeSearch(StringBuilder queryBuilder) {
+    SearchParameters searchParameters = new SearchParameters();
+    searchParameters.setMaxItems(-1);
+    searchParameters.setQuery(queryBuilder.toString());
+    searchParameters.setLanguage(SearchService.LANGUAGE_LUCENE);
+    searchParameters.addStore(Repository.getStoreRef());
+    ResultSet rs = searchService.query(searchParameters);
+    return rs;
+  }
 
-        for (NodeRef ref : rs.getNodeRefs()) {
-            result.add(nodesApi.getNode(ref));
+  /* (non-Javadoc)
+   * @see io.swagger.api.LibraryApi#getSharedNodes()
+   */
+  @Override
+  public List<Node> getSharedNodes(String nodeId) {
+    NodeRef nodeRef = Converter.createNodeRefFromId(nodeId);
+    StringBuilder queryBuilder = new StringBuilder();
+    List<Node> result;
+    if (nodeId != null) {
+      String path =
+        "(PATH:\"" + apiToolBox.getPathFromSpaceRef(nodeRef, true) + "\")";
+      queryBuilder.append(path);
+      queryBuilder.append(AND);
+      queryBuilder.append("TYPE:\"ss:Container\"");
+    }
+
+    result = new ArrayList<>();
+
+    ResultSet rs = executeSearch(queryBuilder);
+
+    for (NodeRef ref : rs.getNodeRefs()) {
+      if (nodeService.exists(ref)) {
+        NodeRef parentRef = nodeService.getPrimaryParent(ref).getParentRef();
+        result.add(nodesApi.getNode(parentRef));
+      } else {
+        if (logger.isErrorEnabled()) {
+          logger.error(
+            "getSharedNodes-node does not exists: " + ref.toString()
+          );
         }
-
-        return result;
+      }
     }
 
-    private ResultSet executeSearch(StringBuilder queryBuilder) {
-        SearchParameters searchParameters = new SearchParameters();
-        searchParameters.setMaxItems(-1);
-        searchParameters.setQuery(queryBuilder.toString());
-        searchParameters.setLanguage(SearchService.LANGUAGE_LUCENE);
-        searchParameters.addStore(Repository.getStoreRef());
-        ResultSet rs = searchService.query(searchParameters);
-        return rs;
+    return result;
+  }
+
+  /* (non-Javadoc)
+   * @see io.swagger.api.LibraryApi#getSharedProfiles()
+   */
+  @Override
+  public List<Profile> getSharedProfiles(String nodeId) {
+    List<Profile> profiles = profilesApi.groupsIdProfilesGet(
+      nodeId,
+      null,
+      false
+    );
+    List<Profile> result = new ArrayList<>();
+    for (Profile profile : profiles) {
+      if (profile.getExported()) {
+        result.add(profile);
+      }
     }
 
-    /* (non-Javadoc)
-     * @see io.swagger.api.LibraryApi#getSharedNodes()
-     */
-    @Override
-    public List<Node> getSharedNodes(String nodeId) {
-        NodeRef nodeRef = Converter.createNodeRefFromId(nodeId);
-        StringBuilder queryBuilder = new StringBuilder();
-        List<Node> result;
-        if (nodeId != null) {
-            String path = "(PATH:\"" + apiToolBox.getPathFromSpaceRef(nodeRef, true) + "\")";
-            queryBuilder.append(path);
-            queryBuilder.append(AND);
-            queryBuilder.append("TYPE:\"ss:Container\"");
-        }
+    return result;
+  }
 
-        result = new ArrayList<>();
+  /** @return the nodeService */
+  public NodeService getNodeService() {
+    return nodeService;
+  }
 
-        ResultSet rs = executeSearch(queryBuilder);
+  /** @param nodeService the nodeService to set */
+  public void setNodeService(NodeService nodeService) {
+    this.nodeService = nodeService;
+  }
 
-        for (NodeRef ref : rs.getNodeRefs()) {
-            NodeRef parentRef = nodeService.getPrimaryParent(ref).getParentRef();
-            result.add(nodesApi.getNode(parentRef));
-        }
+  /** @return the searchService */
+  public SearchService getSearchService() {
+    return searchService;
+  }
 
-        return result;
-    }
+  /** @param searchService the searchService to set */
+  public void setSearchService(SearchService searchService) {
+    this.searchService = searchService;
+  }
 
-    /* (non-Javadoc)
-     * @see io.swagger.api.LibraryApi#getSharedProfiles()
-     */
-    @Override
-    public List<Profile> getSharedProfiles(String nodeId) {
+  /** @return the apiToolBox */
+  public ApiToolBox getApiToolBox() {
+    return apiToolBox;
+  }
 
-        List<Profile> profiles = profilesApi.groupsIdProfilesGet(nodeId, null, false);
-        List<Profile> result = new ArrayList<>();
-        for (Profile profile : profiles) {
-            if (profile.getExported()) {
-                result.add(profile);
-            }
-        }
+  /** @param apiToolBox the apiToolBox to set */
+  public void setApiToolBox(ApiToolBox apiToolBox) {
+    this.apiToolBox = apiToolBox;
+  }
 
-        return result;
-    }
+  /** @return the nodesApi */
+  public NodesApi getNodesApi() {
+    return nodesApi;
+  }
 
-    /** @return the nodeService */
-    public NodeService getNodeService() {
-        return nodeService;
-    }
+  /** @param nodesApi the nodesApi to set */
+  public void setNodesApi(NodesApi nodesApi) {
+    this.nodesApi = nodesApi;
+  }
 
-    /** @param nodeService the nodeService to set */
-    public void setNodeService(NodeService nodeService) {
-        this.nodeService = nodeService;
-    }
+  /** @return the profilesApi */
+  public ProfilesApi getProfilesApi() {
+    return profilesApi;
+  }
 
-    /** @return the searchService */
-    public SearchService getSearchService() {
-        return searchService;
-    }
-
-    /** @param searchService the searchService to set */
-    public void setSearchService(SearchService searchService) {
-        this.searchService = searchService;
-    }
-
-    /** @return the apiToolBox */
-    public ApiToolBox getApiToolBox() {
-        return apiToolBox;
-    }
-
-    /** @param apiToolBox the apiToolBox to set */
-    public void setApiToolBox(ApiToolBox apiToolBox) {
-        this.apiToolBox = apiToolBox;
-    }
-
-    /** @return the nodesApi */
-    public NodesApi getNodesApi() {
-        return nodesApi;
-    }
-
-    /** @param nodesApi the nodesApi to set */
-    public void setNodesApi(NodesApi nodesApi) {
-        this.nodesApi = nodesApi;
-    }
-
-    /** @return the profilesApi */
-    public ProfilesApi getProfilesApi() {
-        return profilesApi;
-    }
-
-    /** @param profilesApi the profilesApi to set */
-    public void setProfilesApi(ProfilesApi profilesApi) {
-        this.profilesApi = profilesApi;
-    }
+  /** @param profilesApi the profilesApi to set */
+  public void setProfilesApi(ProfilesApi profilesApi) {
+    this.profilesApi = profilesApi;
+  }
 }

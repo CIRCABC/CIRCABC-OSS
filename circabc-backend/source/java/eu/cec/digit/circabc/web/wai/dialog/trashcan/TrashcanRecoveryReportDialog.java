@@ -44,32 +44,30 @@
  */
 package eu.cec.digit.circabc.web.wai.dialog.trashcan;
 
-import org.alfresco.web.app.Application;
-
 import javax.faces.context.FacesContext;
+import org.alfresco.web.app.Application;
 
 public class TrashcanRecoveryReportDialog extends TrashcanDialog {
 
+  /**
+   *
+   */
+  private static final long serialVersionUID = -2438835650724269393L;
+  private static final String MSG_CLOSE = "close";
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = -2438835650724269393L;
-    private static final String MSG_CLOSE = "close";
+  @Override
+  protected String finishImpl(FacesContext context, String outcome)
+    throws Exception {
+    return outcome;
+  }
 
-    @Override
-    protected String finishImpl(FacesContext context, String outcome) throws Exception {
-        return outcome;
-    }
+  @Override
+  public String getCancelButtonLabel() {
+    return Application.getMessage(FacesContext.getCurrentInstance(), MSG_CLOSE);
+  }
 
-    @Override
-    public String getCancelButtonLabel() {
-        return Application.getMessage(FacesContext.getCurrentInstance(), MSG_CLOSE);
-    }
-
-    @Override
-    protected String getDefaultCancelOutcome() {
-        return "wai:dialog:close[2]";
-    }
-
+  @Override
+  protected String getDefaultCancelOutcome() {
+    return "wai:dialog:close[2]";
+  }
 }

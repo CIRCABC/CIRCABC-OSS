@@ -1,32 +1,33 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, Input, OnInit, output, input } from '@angular/core';
 
+import { DatePipe } from '@angular/common';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   Node as ModelNode,
   NodesService,
   PagedNodes,
   SpaceService,
 } from 'app/core/generated/circabc';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-file-picker',
   templateUrl: './file-picker.component.html',
-  styleUrls: ['./file-picker.component.scss'],
+  styleUrl: './file-picker.component.scss',
   preserveWhitespaces: true,
+  imports: [SpinnerComponent, DatePipe, TranslocoModule],
 })
 export class FilePickerComponent implements OnInit {
-  @Input()
-  nodeId: string | undefined;
+  readonly nodeId = input<string>();
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   selection!: string[];
-  @Output()
-  readonly selectionChange = new EventEmitter<string[]>();
-  @Input()
-  targetFolderMode = false;
-  @Input()
-  canSelectFolders = false;
-  @Output()
-  readonly pickerLoaded = new EventEmitter();
+  readonly selectionChange = output<string[]>();
+  readonly targetFolderMode = input(false);
+  readonly canSelectFolders = input(false);
+  readonly pickerLoaded = output();
 
   public content!: PagedNodes;
   public currentNode!: ModelNode;
@@ -38,11 +39,12 @@ export class FilePickerComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    if (this.nodeId) {
+    const nodeId = this.nodeId();
+    if (nodeId) {
       this.currentNode = await firstValueFrom(
-        this.nodesService.getNode(this.nodeId)
+        this.nodesService.getNode(nodeId)
       );
-      await this.getContent(this.nodeId);
+      await this.getContent(nodeId);
     }
   }
 
@@ -62,7 +64,7 @@ export class FilePickerComponent implements OnInit {
           -1,
           -1,
           'modified_DESC',
-          this.targetFolderMode,
+          this.targetFolderMode(),
           false
         )
       );
@@ -72,10 +74,10 @@ export class FilePickerComponent implements OnInit {
   }
 
   public isLibrary(): boolean {
-    if (this.nodeId && this.currentNode) {
+    const nodeId = this.nodeId();
+    if (nodeId && this.currentNode) {
       return (
-        this.nodeId === this.currentNode.id &&
-        this.currentNode.name === 'Library'
+        nodeId === this.currentNode.id && this.currentNode.name === 'Library'
       );
     }
 
@@ -85,9 +87,8 @@ export class FilePickerComponent implements OnInit {
   public isFolder(node: ModelNode): boolean {
     if (node.type) {
       return node.type.indexOf('folder') !== -1;
-    } else {
-      return false;
     }
+    return false;
   }
 
   public isEmpty(): boolean {
@@ -109,7 +110,7 @@ export class FilePickerComponent implements OnInit {
       return;
     }
     // if in targetFolderMode, it means that we only select one folder, not many
-    if (this.selection === undefined || this.targetFolderMode) {
+    if (this.selection === undefined || this.targetFolderMode()) {
       this.selection = [];
     }
 
@@ -125,8 +126,7 @@ export class FilePickerComponent implements OnInit {
   public getModified(node: ModelNode): string | null {
     if (node.properties) {
       return node.properties.modified;
-    } else {
-      return null;
     }
+    return null;
   }
 }

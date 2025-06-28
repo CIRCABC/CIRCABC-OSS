@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
+<?xml version="1.0" encoding="UTF-8" ?>
 <!--
   Copyright 2006 European Community
   
@@ -20,9 +19,11 @@
    See the Licence for the specific language governing
    permissions and limitations under the Licence.
 -->
-
 <!-- Definition of Circabc User Model. It extends the cm:person contentModel -->
-<model name="cu:circausermodel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+<model
+  name="cu:circausermodel"
+  xmlns="http://www.alfresco.org/model/dictionary/1.0"
+>
 
    <!-- Optional meta-data about the model -->
    <description>CircaUsersModel Model</description>
@@ -32,14 +33,14 @@
    <!-- Imports are required to allow references to definitions in other models -->
    <imports>
    	  <!-- Import Alfresco Dictionary Definitions -->
-      <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+      <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
       <!-- Import Alfresco Content Domain Model Definitions -->
-      <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+      <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
    </imports>
 
    <!-- Introduction of new namespaces defined by this model -->
    <namespaces>
-      <namespace uri="http://www.cc.cec/circabc/model/user/1.0" prefix="cu"/>
+      <namespace uri="http://www.cc.cec/circabc/model/user/1.0" prefix="cu" />
    </namespaces>
 
    <aspects>

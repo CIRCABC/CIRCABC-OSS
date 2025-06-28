@@ -18,6 +18,9 @@ package eu.cec.digit.circabc.repo.version;
 
 import eu.cec.digit.circabc.model.CircabcModel;
 import eu.cec.digit.circabc.service.rendition.CircabcRenditionHelper;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 import org.alfresco.model.ContentModel;
 import org.alfresco.model.RenditionModel;
 import org.alfresco.repo.version.Version2ServiceImpl;
@@ -30,10 +33,6 @@ import org.alfresco.service.cmr.version.Version;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.util.VersionNumber;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
-
 /**
  * Override the default version label calculation behaviour.
  *
@@ -41,106 +40,142 @@ import java.util.Map;
  */
 public class CustomLabelAwareVersionServiceImpl extends Version2ServiceImpl {
 
-    public static final String PROP_CUSTOM_VERSION_LABEL = "customVersionLabel";
-    private static final String LABEL_REGEX = "[0-9]+[\\.[0-9]+]+";
-    private RenditionService renditionService = null;
+  public static final String PROP_CUSTOM_VERSION_LABEL = "customVersionLabel";
+  private static final String LABEL_REGEX = "[0-9]+[\\.[0-9]+]+";
+  private RenditionService renditionService = null;
 
-    public static boolean isValidVersionLabel(final String value) {
-        return value != null && value.matches(LABEL_REGEX);
+  public static boolean isValidVersionLabel(final String value) {
+    return value != null && value.matches(LABEL_REGEX);
+  }
+
+  @Override
+  protected String invokeCalculateVersionLabel(
+    QName classRef,
+    Version preceedingVersion,
+    int versionNumber,
+    Map<String, Serializable> versionProperties
+  ) {
+    final String customLabel = (String) versionProperties.get(
+      PROP_CUSTOM_VERSION_LABEL
+    );
+    versionProperties.remove(PROP_CUSTOM_VERSION_LABEL);
+
+    if (customLabel == null || customLabel.trim().length() < 1) {
+      return super.invokeCalculateVersionLabel(
+        classRef,
+        preceedingVersion,
+        versionNumber,
+        versionProperties
+      );
+    } else if (isValidVersionLabel(customLabel) == false) {
+      throw new IllegalArgumentException(
+        "Invalid value for version label: " +
+        customLabel +
+        ". It must matches " +
+        LABEL_REGEX
+      );
+    } else if (
+      preceedingVersion != null &&
+      isNewLabelValid(preceedingVersion.getVersionLabel(), customLabel) == false
+    ) {
+      throw new IllegalArgumentException(
+        "Invalid value for version label: " +
+        customLabel +
+        ". It must be greather than the previous one: " +
+        preceedingVersion.getVersionLabel()
+      );
+    } else {
+      return customLabel;
+    }
+  }
+
+  private boolean isNewLabelValid(
+    final String preceedinLabel,
+    final String customLabel
+  ) {
+    final VersionNumber oldLabel = new VersionNumber(preceedinLabel);
+    final VersionNumber newLabel = new VersionNumber(customLabel);
+
+    return oldLabel.compareTo(newLabel) < 1;
+  }
+
+  /**
+   * Removes the publish information when versioning the document. This has to be done because each
+   * time we create a new version of a document, only the current could have been published. New
+   * versions have to be republished since they might represent a new document.
+   *
+   * @see org.alfresco.repo.version.Version2ServiceImpl#createVersion(org.alfresco.service.cmr.repository.NodeRef,
+   * java.util.Map)
+   */
+  @Override
+  public Version createVersion(
+    NodeRef nodeRef,
+    Map<String, Serializable> versionProperties
+  ) throws ReservedVersionNameException, AspectMissingException {
+    Version version = super.createVersion(nodeRef, versionProperties);
+
+    NodeRef versionedNodeRef = version.getVersionedNodeRef();
+
+    // Remove aspect and associated properties
+    if (
+      nodeService.hasAspect(
+        versionedNodeRef,
+        CircabcModel.ASPECT_EXTERNALLY_PUBLISHED
+      )
+    ) {
+      nodeService.removeProperty(
+        versionedNodeRef,
+        CircabcModel.PROP_REPOSITORIES_INFO
+      );
+      nodeService.removeAspect(
+        versionedNodeRef,
+        CircabcModel.ASPECT_EXTERNALLY_PUBLISHED
+      );
     }
 
-    @Override
-    protected String invokeCalculateVersionLabel(
-            QName classRef,
-            Version preceedingVersion,
-            int versionNumber,
-            Map<String, Serializable> versionProperties) {
+    // Check if there is a preview rendition, and delete it to renew it
+    // the next time
+    if (
+      nodeService.hasAspect(versionedNodeRef, RenditionModel.ASPECT_RENDITIONED)
+    ) {
+      List<ChildAssociationRef> children = renditionService.getRenditions(
+        versionedNodeRef
+      );
 
-        final String customLabel = (String) versionProperties.get(PROP_CUSTOM_VERSION_LABEL);
-        versionProperties.remove(PROP_CUSTOM_VERSION_LABEL);
+      boolean allDeleted = true;
 
-        if (customLabel == null || customLabel.trim().length() < 1) {
-            return super.invokeCalculateVersionLabel(
-                    classRef, preceedingVersion, versionNumber, versionProperties);
-        } else if (isValidVersionLabel(customLabel) == false) {
-            throw new IllegalArgumentException(
-                    "Invalid value for version label: " + customLabel + ". It must matches " + LABEL_REGEX);
-        } else if (preceedingVersion != null
-                && isNewLabelValid(preceedingVersion.getVersionLabel(), customLabel) == false) {
-            throw new IllegalArgumentException(
-                    "Invalid value for version label: "
-                            + customLabel
-                            + ". It must be greather than the previous one: "
-                            + preceedingVersion.getVersionLabel());
+      for (ChildAssociationRef childAssocRef : children) {
+        NodeRef childRef = childAssocRef.getChildRef();
+
+        if (
+          ((String) nodeService.getProperty(
+              childRef,
+              ContentModel.PROP_NAME
+            )).endsWith(CircabcRenditionHelper.PDF_PREVIEW_RENDITION_SUFFIX)
+        ) {
+          nodeService.deleteNode(childRef);
         } else {
-            return customLabel;
+          allDeleted = false;
         }
+      }
+
+      if (allDeleted) {
+        nodeService.removeAspect(
+          versionedNodeRef,
+          RenditionModel.ASPECT_RENDITIONED
+        );
+      }
     }
 
-    private boolean isNewLabelValid(final String preceedinLabel, final String customLabel) {
+    return version;
+  }
 
-        final VersionNumber oldLabel = new VersionNumber(preceedinLabel);
-        final VersionNumber newLabel = new VersionNumber(customLabel);
-
-        return oldLabel.compareTo(newLabel) < 1;
-    }
-
-    /**
-     * Removes the publish information when versioning the document. This has to be done because each
-     * time we create a new version of a document, only the current could have been published. New
-     * versions have to be republished since they might represent a new document.
-     *
-     * @see org.alfresco.repo.version.Version2ServiceImpl#createVersion(org.alfresco.service.cmr.repository.NodeRef,
-     * java.util.Map)
-     */
-    @Override
-    public Version createVersion(NodeRef nodeRef, Map<String, Serializable> versionProperties)
-            throws ReservedVersionNameException, AspectMissingException {
-
-        Version version = super.createVersion(nodeRef, versionProperties);
-
-        NodeRef versionedNodeRef = version.getVersionedNodeRef();
-
-        // Remove aspect and associated properties
-        if (nodeService.hasAspect(versionedNodeRef, CircabcModel.ASPECT_EXTERNALLY_PUBLISHED)) {
-            nodeService.removeProperty(versionedNodeRef, CircabcModel.PROP_REPOSITORIES_INFO);
-            nodeService.removeAspect(versionedNodeRef, CircabcModel.ASPECT_EXTERNALLY_PUBLISHED);
-        }
-
-        // Check if there is a preview rendition, and delete it to renew it
-        // the next time
-        if (nodeService.hasAspect(versionedNodeRef, RenditionModel.ASPECT_RENDITIONED)) {
-
-            List<ChildAssociationRef> children = renditionService.getRenditions(versionedNodeRef);
-
-            boolean allDeleted = true;
-
-            for (ChildAssociationRef childAssocRef : children) {
-
-                NodeRef childRef = childAssocRef.getChildRef();
-
-                if (((String) nodeService.getProperty(childRef, ContentModel.PROP_NAME))
-                        .endsWith(CircabcRenditionHelper.PDF_PREVIEW_RENDITION_SUFFIX)) {
-                    nodeService.deleteNode(childRef);
-                } else {
-                    allDeleted = false;
-                }
-            }
-
-            if (allDeleted) {
-                nodeService.removeAspect(versionedNodeRef, RenditionModel.ASPECT_RENDITIONED);
-            }
-        }
-
-        return version;
-    }
-
-    /**
-     * Sets the value of the renditionService
-     *
-     * @param renditionService the renditionService to set.
-     */
-    public void setRenditionService(RenditionService renditionService) {
-        this.renditionService = renditionService;
-    }
+  /**
+   * Sets the value of the renditionService
+   *
+   * @param renditionService the renditionService to set.
+   */
+  public void setRenditionService(RenditionService renditionService) {
+    this.renditionService = renditionService;
+  }
 }

@@ -1,6 +1,7 @@
 <webscript>
   <shortname>CIRCABC headers</shortname>
-  <description>Get all CIRCABC headers, get categories for one header</description>
+  <description
+  >Get all CIRCABC headers, get categories for one header</description>
   <url>/circabc/headers</url>
   <url>/circabc/headers/{id}</url>
   <url>/circabc/headers/{id}/categories</url>
@@ -10,7 +11,7 @@
         <description>two letters language code</description>
     </arg>
    </args>
-  <format default="json"/>
+  <format default="json" />
   <authentication>guest</authentication>
   <transaction>required</transaction>
 </webscript>

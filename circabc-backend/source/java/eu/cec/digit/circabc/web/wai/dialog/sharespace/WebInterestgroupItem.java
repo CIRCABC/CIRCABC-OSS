@@ -22,9 +22,8 @@ package eu.cec.digit.circabc.web.wai.dialog.sharespace;
 
 import eu.cec.digit.circabc.business.api.link.InterestGroupItem;
 import eu.cec.digit.circabc.web.PermissionUtils;
-import org.alfresco.service.cmr.repository.NodeRef;
-
 import java.io.Serializable;
+import org.alfresco.service.cmr.repository.NodeRef;
 
 /**
  * Web side wrapper for Applicant object encapsulation
@@ -36,57 +35,61 @@ import java.io.Serializable;
  */
 public class WebInterestgroupItem implements Serializable {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = -2395746635023897818L;
-    final InterestGroupItem interestGroupItem;
-    final String igTitle;
-    final String permissionTitle;
+  /**
+   *
+   */
+  private static final long serialVersionUID = -2395746635023897818L;
+  final InterestGroupItem interestGroupItem;
+  final String igTitle;
+  final String permissionTitle;
 
-    /**
-     * @param interestGroupItem
-     */
-    /*package*/ WebInterestgroupItem(final InterestGroupItem item, final String igTitle) {
-        super();
-        this.interestGroupItem = item;
-        this.igTitle = igTitle;
-        this.permissionTitle = PermissionUtils.getPermissionLabel(item.getPermission());
-    }
+  /**
+   * @param interestGroupItem
+   */
+  /*package*/WebInterestgroupItem(
+    final InterestGroupItem item,
+    final String igTitle
+  ) {
+    super();
+    this.interestGroupItem = item;
+    this.igTitle = igTitle;
+    this.permissionTitle = PermissionUtils.getPermissionLabel(
+      item.getPermission()
+    );
+  }
 
-    /**
-     * @return the igTitle
-     */
-    public final String getIgTitle() {
-        return igTitle;
-    }
+  /**
+   * @return the igTitle
+   */
+  public final String getIgTitle() {
+    return igTitle;
+  }
 
-    /**
-     * @return the permissionTitle
-     */
-    public final String getPermissionTitle() {
-        return permissionTitle;
-    }
+  /**
+   * @return the permissionTitle
+   */
+  public final String getPermissionTitle() {
+    return permissionTitle;
+  }
 
-    /**
-     * @see eu.cec.digit.circabc.service.sharespace.InterestGroupItem#getId()
-     */
-    public NodeRef getId() {
-        return interestGroupItem.getNodeRef();
-    }
+  /**
+   * @see eu.cec.digit.circabc.service.sharespace.InterestGroupItem#getId()
+   */
+  public NodeRef getId() {
+    return interestGroupItem.getNodeRef();
+  }
 
-    /**
-     * @see eu.cec.digit.circabc.service.sharespace.InterestGroupItem#getName()
-     */
-    public String getName() {
-        return interestGroupItem.getName();
-    }
+  /**
+   * @see eu.cec.digit.circabc.service.sharespace.InterestGroupItem#getName()
+   */
+  public String getName() {
+    return interestGroupItem.getName();
+  }
 
-    /**
-     * @see eu.cec.digit.circabc.service.sharespace.InterestGroupItem#getPermission()
-     */
-    public String getPermission() {
-        return interestGroupItem.getPermission();
-    }
-
+  /**
+   * @see eu.cec.digit.circabc.service.sharespace.InterestGroupItem#getPermission()
+   */
+  public String getPermission() {
+    return interestGroupItem.getPermission();
+  }
 }

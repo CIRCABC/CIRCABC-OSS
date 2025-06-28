@@ -24,6 +24,10 @@ import eu.cec.digit.circabc.service.profile.Profile;
 import eu.cec.digit.circabc.service.profile.ProfileManagerService;
 import eu.cec.digit.circabc.web.ProfileUtils;
 import eu.cec.digit.circabc.web.wai.dialog.BaseWaiDialog;
+import java.text.MessageFormat;
+import java.util.List;
+import java.util.Map;
+import javax.faces.context.FacesContext;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.web.bean.repository.Node;
 import org.alfresco.web.bean.repository.Repository;
@@ -32,11 +36,6 @@ import org.alfresco.web.ui.common.Utils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.faces.context.FacesContext;
-import java.text.MessageFormat;
-import java.util.List;
-import java.util.Map;
-
 /**
  * Bean that backs edit user profile dialog (for ig root only).
  *
@@ -44,125 +43,148 @@ import java.util.Map;
  */
 public class EditUserProfileDialog extends BaseWaiDialog {
 
-    public static final String BEAN_NAME = "EditUserProfileDialog";
-    private static final long serialVersionUID = 444440868117140631L;
-    @SuppressWarnings("unused")
-    private static final Log logger = LogFactory.getLog(EditUserProfileDialog.class);
-    private String userName;
-    private String userProfileGroup;
-    private String fullName;
-    private Node currentNode;
-    private String oldUserProfile;
+  public static final String BEAN_NAME = "EditUserProfileDialog";
+  private static final long serialVersionUID = 444440868117140631L;
 
-    @Override
-    public void init(Map<String, String> parameters) {
-        super.init(parameters);
+  @SuppressWarnings("unused")
+  private static final Log logger = LogFactory.getLog(
+    EditUserProfileDialog.class
+  );
 
-        if (parameters != null) {
-            if (getActionNode() == null) {
-                // ensure that the node Id is passed as parameter.
-                throw new IllegalArgumentException("The node id is a mandatory parameter");
-            }
+  private String userName;
+  private String userProfileGroup;
+  private String fullName;
+  private Node currentNode;
+  private String oldUserProfile;
 
-            if (parameters.get("userName") != null) {
-                // the node passed as parameter is the current node.
-                currentNode = getActionNode();
+  @Override
+  public void init(Map<String, String> parameters) {
+    super.init(parameters);
 
-                userName = parameters.get("userName");
+    if (parameters != null) {
+      if (getActionNode() == null) {
+        // ensure that the node Id is passed as parameter.
+        throw new IllegalArgumentException(
+          "The node id is a mandatory parameter"
+        );
+      }
 
-                fullName = getUserService().getUserFullName(userName);
+      if (parameters.get("userName") != null) {
+        // the node passed as parameter is the current node.
+        currentNode = getActionNode();
 
-                if (userName == null) {
-                    throw new IllegalArgumentException(
-                            "The user name and its full name are mandatory parameter ");
-                }
-            } else {
-                // the node passed as parameter is the user.
-                currentNode = getNavigator().getCurrentIGRoot();
+        userName = parameters.get("userName");
 
-                Map<String, Object> properties = getActionNode().getProperties();
-                String firstName = (String) properties.get("firstName");
-                String lastName = (String) properties.get("lastName");
-                userName = (String) properties.get("userName");
-                fullName = firstName + " " + lastName;
-            }
+        fullName = getUserService().getUserFullName(userName);
 
-            final ProfileManagerService profileManagerService = getProfileService();
-            oldUserProfile = profileManagerService.getPersonProfile(currentNode.getNodeRef(), userName);
-            Profile profile = profileManagerService.getProfile(currentNode.getNodeRef(), oldUserProfile);
-            userProfileGroup = profile.getPrefixedAlfrescoGroupName();
+        if (userName == null) {
+          throw new IllegalArgumentException(
+            "The user name and its full name are mandatory parameter "
+          );
         }
+      } else {
+        // the node passed as parameter is the user.
+        currentNode = getNavigator().getCurrentIGRoot();
 
+        Map<String, Object> properties = getActionNode().getProperties();
+        String firstName = (String) properties.get("firstName");
+        String lastName = (String) properties.get("lastName");
+        userName = (String) properties.get("userName");
+        fullName = firstName + " " + lastName;
+      }
+
+      final ProfileManagerService profileManagerService = getProfileService();
+      oldUserProfile = profileManagerService.getPersonProfile(
+        currentNode.getNodeRef(),
+        userName
+      );
+      Profile profile = profileManagerService.getProfile(
+        currentNode.getNodeRef(),
+        oldUserProfile
+      );
+      userProfileGroup = profile.getPrefixedAlfrescoGroupName();
+    }
+  }
+
+  /**
+   * @return
+   */
+  private ProfileManagerService getProfileService() {
+    return getProfileManagerServiceFactory()
+      .getProfileManagerService(currentNode.getNodeRef());
+  }
+
+  @Override
+  protected String finishImpl(final FacesContext context, String outcome)
+    throws Exception {
+    try {
+      final NodeRef nodeRef = getActionNode().getNodeRef();
+      final ProfileManagerService profileManagerService =
+        getProfileManagerServiceFactory().getProfileManagerService(nodeRef);
+      final Profile profile = profileManagerService.getProfileFromGroup(
+        currentNode.getNodeRef(),
+        userProfileGroup
+      );
+      final String profileName = profile.getProfileName();
+      final String info = MessageFormat.format(
+        "Changed profile of user {0} from {1} to {2}",
+        fullName,
+        oldUserProfile,
+        profileName
+      );
+      logRecord.setInfo(info);
+      profileManagerService.changePersonProfile(
+        currentNode.getNodeRef(),
+        userName,
+        profileName
+      );
+    } catch (Throwable err) {
+      if (logger.isErrorEnabled()) {
+        logger.error("Unexpected error:" + err.getMessage(), err);
+      }
+
+      Utils.addErrorMessage(
+        translate(Repository.ERROR_GENERIC, err.getMessage()),
+        err
+      );
+
+      outcome = null;
     }
 
-    /**
-     * @return
-     */
-    private ProfileManagerService getProfileService() {
-        return getProfileManagerServiceFactory().getProfileManagerService(currentNode.getNodeRef());
-    }
+    return outcome;
+  }
 
-    @Override
-    protected String finishImpl(final FacesContext context, String outcome) throws Exception {
-        try {
-            final NodeRef nodeRef = getActionNode().getNodeRef();
-            final ProfileManagerService profileManagerService = getProfileManagerServiceFactory()
-                    .getProfileManagerService(nodeRef);
-            final Profile profile = profileManagerService
-                    .getProfileFromGroup(currentNode.getNodeRef(), userProfileGroup);
-            final String profileName = profile.getProfileName();
-            final String info = MessageFormat
-                    .format("Changed profile of user {0} from {1} to {2}", fullName, oldUserProfile,
-                            profileName);
-            logRecord.setInfo(info);
-            profileManagerService.changePersonProfile(currentNode.getNodeRef(), userName, profileName);
-        } catch (Throwable err) {
-            if (logger.isErrorEnabled()) {
-                logger.error("Unexpected error:" + err.getMessage(), err);
-            }
+  public List<SortableSelectItem> getProfiles() {
+    return ProfileUtils.buildAssignableProfileItems(currentNode, logger);
+  }
 
-            Utils.addErrorMessage(translate(Repository.ERROR_GENERIC, err.getMessage()), err);
+  public String getBrowserTitle() {
+    return translate("edit_user_profile_browser_title");
+  }
 
-            outcome = null;
-        }
+  public String getPageIconAltText() {
+    return translate("edit_user_profile_icon_tooltip");
+  }
 
-        return outcome;
-    }
+  /**
+   * @return the userName
+   */
+  public final String getUserName() {
+    return userName;
+  }
 
-    public List<SortableSelectItem> getProfiles() {
-        return ProfileUtils.buildAssignableProfileItems(currentNode, logger);
-    }
+  /**
+   * @return the fullName
+   */
+  public final String getFullName() {
+    return fullName;
+  }
 
+  public String getUserProfileGroup() {
+    return userProfileGroup;
+  }
 
-    public String getBrowserTitle() {
-        return translate("edit_user_profile_browser_title");
-    }
-
-    public String getPageIconAltText() {
-        return translate("edit_user_profile_icon_tooltip");
-    }
-
-    /**
-     * @return the userName
-     */
-    public final String getUserName() {
-        return userName;
-    }
-
-
-    /**
-     * @return the fullName
-     */
-    public final String getFullName() {
-        return fullName;
-    }
-
-    public String getUserProfileGroup() {
-        return userProfileGroup;
-    }
-
-    public void setUserProfileGroup(String userProfileGroup) {
-        this.userProfileGroup = userProfileGroup;
-    }
-
+  public void setUserProfileGroup(String userProfileGroup) {
+    this.userProfileGroup = userProfileGroup;
+  }
 }

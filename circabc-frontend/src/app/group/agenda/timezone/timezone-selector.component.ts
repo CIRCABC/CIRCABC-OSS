@@ -1,23 +1,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Component,
-  EventEmitter,
-  forwardRef,
   Input,
   OnInit,
-  Output,
+  forwardRef,
+  output,
+  input,
 } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import {
+  ControlValueAccessor,
+  NG_VALUE_ACCESSOR,
+  ReactiveFormsModule,
+} from '@angular/forms';
 
 import {
-  SupportedTimezones,
   TimezoneEntry,
+  availableTimezones,
+  defaultTimezone,
 } from 'app/group/agenda/timezones/supported-timezones';
 
 @Component({
   selector: 'cbc-timezone-selector',
   templateUrl: './timezone-selector.component.html',
-  styleUrls: ['./timezone-selector.component.scss'],
+  styleUrl: './timezone-selector.component.scss',
   preserveWhitespaces: true,
   providers: [
     {
@@ -27,16 +32,17 @@ import {
       useExisting: forwardRef(() => TimezoneSelectorComponent),
     },
   ],
+  imports: [ReactiveFormsModule],
 })
 export class TimezoneSelectorComponent implements OnInit, ControlValueAccessor {
   public availableTimezones!: TimezoneEntry[];
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   public selectedTimezone!: string;
-  @Output()
-  public readonly changedTimezone: EventEmitter<string> = new EventEmitter();
+  public readonly changedTimezone = output<string>();
 
-  @Input()
-  public disable = false;
+  public readonly disable = input(false);
 
   // implement ControlValueAccessor interface instance fields
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -50,7 +56,7 @@ export class TimezoneSelectorComponent implements OnInit, ControlValueAccessor {
     if (value) {
       this.selectedTimezone = value;
     } else {
-      this.selectedTimezone = SupportedTimezones.defaultTimezone.value;
+      this.selectedTimezone = defaultTimezone.value;
     }
   }
 
@@ -64,7 +70,7 @@ export class TimezoneSelectorComponent implements OnInit, ControlValueAccessor {
   }
 
   public ngOnInit(): void {
-    this.availableTimezones = SupportedTimezones.availableTimezones;
+    this.availableTimezones = availableTimezones;
   }
 
   public onTimezoneChange(value: string) {

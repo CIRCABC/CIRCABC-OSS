@@ -1,14 +1,15 @@
 import {
   Component,
   ElementRef,
-  EventEmitter,
   HostListener,
   Input,
   OnInit,
-  Output,
+  output,
+  input,
 } from '@angular/core';
 
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ActionEmitterResult } from 'app/action-result';
 import { PermissionEvaluatorService } from 'app/core/evaluator/permission-evaluator.service';
 import {
@@ -16,30 +17,45 @@ import {
   ShareSpaceItem,
   SpaceService,
 } from 'app/core/generated/circabc';
+import { LoginService } from 'app/core/login.service';
+import { AddContentComponent } from 'app/group/library/add-content/add-content.component';
+import { AddSharedSpaceLinkComponent } from 'app/group/library/add-shared-space-link/add-shared-space-link.component';
+import { AddSpaceComponent } from 'app/group/library/add-space/add-space.component';
+import { AddUrlComponent } from 'app/group/library/add-url/add-url.component';
+import { ImportComponent } from 'app/group/library/import/import.component';
+import { DataCyDirective } from 'app/shared/directives/data-cy.directive';
+import { IfOrRolesPipe } from 'app/shared/pipes/if-or-roles.pipe';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-add-dropdown',
   templateUrl: './add-dropdown.component.html',
   preserveWhitespaces: true,
+  imports: [
+    DataCyDirective,
+    RouterLink,
+    AddSpaceComponent,
+    AddContentComponent,
+    AddUrlComponent,
+    AddSharedSpaceLinkComponent,
+    ImportComponent,
+    IfOrRolesPipe,
+    TranslocoModule,
+  ],
 })
 export class AddDropdownComponent implements OnInit {
-  @Input()
-  public enableAddFile = true;
-  @Input()
-  public enableAddFolder = true;
-  @Input()
-  public enableAddUrl = true;
-  @Input()
-  public enableAddSharedSpaceLink = true;
-  @Input()
-  public enableAddImport = true;
+  public readonly enableAddFile = input(true);
+  public readonly enableAddFolder = input(true);
+  public readonly enableAddUrl = input(true);
+  public readonly enableAddSharedSpaceLink = input(true);
+  public readonly enableAddImport = input(true);
+  // TODO: Skipped for migration because:
+  //  This input is used in a control flow expression (e.g. `@if` or `*ngIf`)
+  //  and migrating would break narrowing currently.
   @Input()
   public currentNode!: ModelNode;
-  @Output()
-  public readonly actionFinished = new EventEmitter();
-  @Output()
-  public readonly clickOutside = new EventEmitter<MouseEvent>();
+  public readonly actionFinished = output<ActionEmitterResult>();
+  public readonly clickOutside = output<MouseEvent>();
 
   public showAddDropdown = false;
   public launchCreateSpace = false;
@@ -50,12 +66,14 @@ export class AddDropdownComponent implements OnInit {
   public spaceId!: string;
   private elementRef: ElementRef;
   public showModalImport = false;
+  public isGuest = false;
 
   public constructor(
     myElement: ElementRef,
     private route: ActivatedRoute,
     private spaceService: SpaceService,
-    private permEvalService: PermissionEvaluatorService
+    private permEvalService: PermissionEvaluatorService,
+    private loginService: LoginService
   ) {
     this.elementRef = myElement;
   }
@@ -74,6 +92,8 @@ export class AddDropdownComponent implements OnInit {
   }
 
   async ngOnInit() {
+    this.isGuest = this.loginService.isGuest();
+
     this.route.params.subscribe(
       async (params) => await this.loadShares(params)
     );

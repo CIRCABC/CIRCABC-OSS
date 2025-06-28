@@ -1,21 +1,43 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { TranslocoService } from '@ngneat/transloco';
+import {
+  ActivatedRoute,
+  Router,
+  RouterLink,
+  RouterOutlet,
+} from '@angular/router';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
   ActionType,
 } from 'app/action-result/index';
+import { CategoryDescriptorComponent } from 'app/category/category-descriptor/category-descriptor.component';
+import { CreateGroupComponent } from 'app/category/create-group/create-group.component';
 import { CategoryService, User } from 'app/core/generated/circabc';
 import { LoginService } from 'app/core/login.service';
 import { UiMessageService } from 'app/core/message/ui-message.service';
 import { getErrorTranslation, getSuccessTranslation } from 'app/core/util';
+import { DataCyDirective } from 'app/shared/directives/data-cy.directive';
+import { HeaderComponent } from 'app/shared/header/header.component';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
+import { NavigatorComponent } from 'app/shared/navigator/navigator.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-category',
   templateUrl: './category.component.html',
   preserveWhitespaces: true,
+  imports: [
+    HeaderComponent,
+    NavigatorComponent,
+    HorizontalLoaderComponent,
+    DataCyDirective,
+    CategoryDescriptorComponent,
+    RouterLink,
+    RouterOutlet,
+    CreateGroupComponent,
+    TranslocoModule,
+  ],
 })
 export class CategoryComponent implements OnInit {
   public showModalCreate = false;
@@ -34,7 +56,7 @@ export class CategoryComponent implements OnInit {
 
   async ngOnInit() {
     this.route.params.subscribe(async (params) => {
-      if (params && params.id) {
+      if (params?.id) {
         this.categoryId = params.id;
         await this.loadAdmins();
       }
@@ -76,7 +98,7 @@ export class CategoryComponent implements OnInit {
   }
 
   public isGroupRequestsRoute(): boolean {
-    return this.checkCurrentRouteActive('group-request');
+    return this.checkCurrentRouteActive('group-requests');
   }
 
   public isInterestGroupsRoute(): boolean {

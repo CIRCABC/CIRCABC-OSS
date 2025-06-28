@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "format": "npm run format-java && npm run format-xml",
+    "format-java": "prettier --plugin=prettier-plugin-java --write **/*.java",
+    "format-xml": "prettier --plugin=@prettier/plugin-xml --write **/*.xml"
+  },
+  "devDependencies": {
+    "@prettier/plugin-xml": "3.4.1",
+    "prettier": "3.5.3",
+    "prettier-plugin-java": "2.6.7"
+  }
+}

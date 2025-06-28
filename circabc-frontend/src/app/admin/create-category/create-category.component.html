@@ -1,6 +1,6 @@
 <cbc-modal
   [title]="'admin.category.create'"
-  (cancel)="cancel()"
+  (cancelModal)="cancel()"
   [okLabel]="'label.create'"
   [(visible)]="showModal"
   [showOkButton]="isWizardOk()"
@@ -9,12 +9,14 @@
   [executingLabel]="'label.creating'"
 >
   <a
+    tabindex="0"
     class="step-link"
     [class.step-link-selected]="step === 'details'"
     (click)="step = 'details'"
     >{{ 'label.details' | transloco }}</a
   >
   <a
+    tabindex="0"
     data-cy="admins"
     class="step-link"
     [class.step-link-selected]="step === 'admins'"
@@ -22,15 +24,15 @@
     >{{ 'label.administrators' | transloco }}</a
   >
 
-  <div class="div-step" *ngIf="step === 'details'">
+  @if (step === 'details') {
+  <div class="div-step">
     <form [formGroup]="categoryForm">
       <div class="field">
         <label for="name">{{ 'label.name' | transloco }}</label>
         <input data-cy="name" type="text" id="name" formControlName="name" />
-        <cbc-control-message
-          *ngIf="categoryForm"
-          [control]="nameControl"
-        ></cbc-control-message>
+        @if (categoryForm) {
+        <cbc-control-message [control]="nameControl"></cbc-control-message>
+        }
       </div>
       <cbc-multilingual-input
         data-cy="title"
@@ -38,29 +40,27 @@
         [label]="'label.title' | transloco"
         [lang]="'EN'"
       ></cbc-multilingual-input>
-      <cbc-control-message
-        *ngIf="categoryForm"
-        [control]="titleControl"
-      ></cbc-control-message>
+      @if (categoryForm) {
+      <cbc-control-message [control]="titleControl"></cbc-control-message>
+      }
 
       <div class="field">
         <label for="header">{{ 'label.header' | transloco }}</label>
         <div class="custom-select select--form">
           <select data-cy="headers" id="sMultiple" formControlName="header">
-            <option *ngFor="let h of headers" value="{{ h.id }}"
-              >{{ h.name }}</option
-            >
+            @for (h of headers; track h.id) {
+            <option value="{{ h.id }}">{{ h.name }}</option>
+            }
           </select>
         </div>
-        <cbc-control-message
-          *ngIf="categoryForm"
-          [control]="headerControl"
-        ></cbc-control-message>
+        @if (categoryForm) {
+        <cbc-control-message [control]="headerControl"></cbc-control-message>
+        }
       </div>
     </form>
   </div>
-
-  <div class="div-step" *ngIf="step === 'admins'">
+  } @if (step === 'admins') {
+  <div class="div-step">
     <form [formGroup]="addUserForm">
       <div class="field">
         <label for="name">{{ 'label.search' | transloco }}</label>
@@ -74,8 +74,12 @@
         <button data-cy="search-button" class="button" (click)="searchUsers()"
           >{{ 'label.search' | transloco }}</button
         >
-        <a (click)="resetForm()">{{ 'label.clear' | transloco }}</a>
-        <cbc-spinner *ngIf="searchingUsers"></cbc-spinner>
+        <a tabindex="0" (click)="resetForm()"
+          >{{ 'label.clear' | transloco }}</a
+        >
+        @if (searchingUsers) {
+        <cbc-spinner></cbc-spinner>
+        }
       </div>
 
       <div class="field">
@@ -91,40 +95,45 @@
             style="width: 585px; height: 150px"
             formControlName="possibleUsers"
           >
-            <option
-              *ngFor="let user of availableUsers"
-              value="{{ user.userId }}"
+            @for (user of availableUsers; track user.userId) {
+            <option value="{{ user.userId }}"
               >{{ user.firstname + ' ' + user.lastname + ' (' + user.email + ')'
               }}</option
             >
+            }
           </select>
         </div>
       </div>
 
       <div class="field">
         <label for="sMultiple">{{ 'label.invitations' | transloco }}</label>
+        @if (hasSelectedUser()) {
         <input
           data-cy="add-selection"
           type="button"
           value="{{ 'label.add.selection' | transloco }}"
           (click)="selectUsers()"
-          *ngIf="hasSelectedUser()"
         />
+        }
         <br />
         <br />
         <ul>
-          <li *ngFor="let futureAdmin of futureAdmins">
+          @for (futureAdmin of futureAdmins; track futureAdmin.userId) {
+          <li>
             {{ '[ Category Administrator ] ' + futureAdmin.firstname + ' ' +
             futureAdmin.lastname + ' (' + futureAdmin.email + ')' }}
-            <a (click)="removeFromFutureAdmin(futureAdmin)">
+            <a tabindex="0" (click)="removeFromFutureAdmin(futureAdmin)">
               <img
                 src="img/icon-close-20x20.png"
                 style="vertical-align: middle"
+                alt="Close icon"
               />
             </a>
           </li>
+          }
         </ul>
       </div>
     </form>
   </div>
+  }
 </cbc-modal>

@@ -1,4 +1,4 @@
-::ng-deep .mat-dialog-container {
+::ng-deep .mat-mdc-dialog-container {
   padding: unset;
 }
 
@@ -21,4 +21,73 @@ span {
 
 .inviteUserButton {
   width: 250px;
+}
+
+.okButton {
+  width: 50px;
+  margin-right: auto;
+  text-align: center;
+  padding: 10px;
+  display: inline-block;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-start;
+  padding: 8px;
+}
+
+.close {
+  text-align: right;
+}
+
+.notification {
+  width: 300px;
+
+  .toggle-group {
+    display: flex;
+    align-items: center;
+  }
+
+  span {
+    margin-left: 10px;
+  }
+
+  .label {
+    font-size: 16px;
+    margin-right: 20px;
+  }
+
+  .message {
+    text-align: center;
+    font-style: italic;
+  }
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+}
+
+.ml-3 {
+  margin-left: 3px;
+}
+
+.dialogContent {
+  padding: 10px;
+}
+
+.title {
+  background-color: #eef5f4;
+  text-align: center;
+  text-transform: uppercase;
+  padding: 5px;
+  border-bottom: 1.5px #e2e5e4 solid;
+}
+
+.buttons-group {
+  justify-content: center;
+  border-top: 1.5px #e2e5e4 solid;
+  padding: 20px;
 }

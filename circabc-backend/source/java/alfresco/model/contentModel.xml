@@ -1,8 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!-- xsi:schemaLocation="http://www.alfresco.org/model/dictionary/1.0 modelSchema.xsd" -->
-<model name="cm:contentmodel" 
-       xmlns="http://www.alfresco.org/model/dictionary/1.0" 
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<model
+  name="cm:contentmodel"
+  xmlns="http://www.alfresco.org/model/dictionary/1.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+>
 
 	<!--
 		Original Alfresco Content Model with the modification of 
@@ -15,27 +17,41 @@
    <version>1.1</version>
 
    <imports>
-      <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
-      <import uri="http://www.alfresco.org/model/system/1.0" prefix="sys"/>
+      <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+      <import uri="http://www.alfresco.org/model/system/1.0" prefix="sys" />
    </imports>
    
    <namespaces>
-      <namespace uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
-      <namespace uri="http://www.alfresco.org/model/rendition/1.0" prefix="rn"/>
-      <namespace uri="http://www.alfresco.org/model/exif/1.0" prefix="exif"/>
-      <namespace uri="http://www.alfresco.org/model/audio/1.0" prefix="audio"/>
-      <namespace uri="http://www.alfresco.org/model/webdav/1.0" prefix="webdav"/>
+      <namespace uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+      <namespace
+      uri="http://www.alfresco.org/model/rendition/1.0"
+      prefix="rn"
+    />
+      <namespace uri="http://www.alfresco.org/model/exif/1.0" prefix="exif" />
+      <namespace uri="http://www.alfresco.org/model/audio/1.0" prefix="audio" />
+      <namespace
+      uri="http://www.alfresco.org/model/webdav/1.0"
+      prefix="webdav"
+    />
    </namespaces>
 
    <constraints>
       <constraint name="cm:filename" type="REGEX">
-         <parameter name="expression"><value><![CDATA[(.*[\"\*\\\>\<\?\/\:\|]+.*)|(.*[\.]?.*[\.]+$)|(.*[ ]+$)]]></value></parameter>
+         <parameter name="expression"><value
+        ><![CDATA[(.*[\"\*\\\>\<\?\/\:\|]+.*)|(.*[\.]?.*[\.]+$)|(.*[ ]+$)]]></value></parameter>
          <parameter name="requiresMatch"><value>false</value></parameter>
       </constraint>
-      <constraint name="cm:userNameConstraint" type="org.alfresco.repo.dictionary.constraint.UserNameConstraint" />
-      <constraint name="cm:authorityNameConstraint" type="org.alfresco.repo.dictionary.constraint.AuthorityNameConstraint" />
+      <constraint
+      name="cm:userNameConstraint"
+      type="org.alfresco.repo.dictionary.constraint.UserNameConstraint"
+    />
+      <constraint
+      name="cm:authorityNameConstraint"
+      type="org.alfresco.repo.dictionary.constraint.AuthorityNameConstraint"
+    />
       <constraint name="cm:storeSelectorConstraint" type="REGISTERED">
-         <parameter name="registeredName"><value>defaultStoreSelector</value></parameter>
+         <parameter name="registeredName"><value
+        >defaultStoreSelector</value></parameter>
       </constraint>
    </constraints>
    
@@ -618,12 +634,14 @@
 
       <aspect name="cm:personDisabled">
          <title>Person Disabled</title>
-         <description>Indicates that a cm:person type has been disabled.</description>
+         <description
+      >Indicates that a cm:person type has been disabled.</description>
       </aspect>
 
       <aspect name="cm:annullable">
          <title>Annullable</title>
-         <description>Indicates that a node can be deleted if a pending activity is cancelled</description>
+         <description
+      >Indicates that a node can be deleted if a pending activity is cancelled</description>
       </aspect>
 
       <aspect name="cm:transformable">
@@ -1354,7 +1372,8 @@
       </aspect>
       
       <aspect name="rn:preventRenditions">
-         <title>Marker aspect to prevent the creation of renditions for a node.</title>
+         <title
+      >Marker aspect to prevent the creation of renditions for a node.</title>
       </aspect>
       
       <aspect name="cm:failedThumbnailSource">
@@ -1498,17 +1517,20 @@
             </property>
             <property name="audio:sampleType">
                <title>Sample Type</title>
-               <description>Audio Sample Type, typically one of 8Int, 16Int, 32Int or 32Float</description>
+               <description
+          >Audio Sample Type, typically one of 8Int, 16Int, 32Int or 32Float</description>
                <type>d:text</type>
             </property>
             <property name="audio:channelType">
                <title>Channel Type</title>
-               <description>Audio Channel Type, typically one of Mono, Stereo, 5.1 or 7.1</description>
+               <description
+          >Audio Channel Type, typically one of Mono, Stereo, 5.1 or 7.1</description>
                <type>d:text</type>
             </property>
             <property name="audio:compressor">
                <title>Compressor</title>
-               <description>Audio Compressor Used, such as MP3 or FLAC</description>
+               <description
+          >Audio Compressor Used, such as MP3 or FLAC</description>
                <type>d:text</type>
             </property>
          </properties>

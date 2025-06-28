@@ -1,38 +1,39 @@
 <span class="share">
-  <a class="share-link" (click)="toggle()" *ngIf="showLabel"
+  @if (showLabel()) {
+  <a tabindex="0" class="share-link" (click)="toggle()"
     >{{ 'descriptor.share' | transloco }}</a
   >
-  <a (click)="toggle()" *ngIf="!showLabel"
+  } @if (!showLabel()) {
+  <a tabindex="0" (click)="toggle()"
     ><img src="{{ imageLink }}" alt="Share"
   /></a>
-  <span class="share-box" *ngIf="showBox" [class.left]="!orientationRight">
-    <input type="text" value="{{ getLink() }}" #copyTarget />
+  } @if (showBox) {
+  <span class="share-box" [class.left]="!orientationRight()">
+    <input type="text" value="{{ getLink() }}" />
     <br />
+
     <a
       class="action"
-      [ngxClipboard]="copyTarget"
-      (cbOnSuccess)="showSnackBar()"
-      *ngIf="isCopyAvailable()"
+      [cdkCopyToClipboard]="getLink()"
+      (cdkCopyToClipboardCopied)="showDialogModel('copyTarget')"
       >{{ 'label.copy' | transloco }}</a
     >
-    <a
-      class="action"
-      href="mailto:?Subject=Link to CIRCABC&Body={{ getLink() }}"
+
+    <a tabindex="0" class="action" (click)="showDialogModel('emailMe')"
       >{{ 'label.email.me.link' | transloco }}</a
     >
-    <a (click)="hide()" class="close">{{ 'label.close' | transloco }}</a>
-    <br />
-    <form
-      [formGroup]="customisationForm"
-      *ngIf="enableDirectDownload"
-      class="parameters"
+    <a tabindex="0" (click)="hide()" class="close"
+      >{{ 'label.close' | transloco }}</a
     >
+    <br />
+    @if (enableDirectDownload()) {
+    <form [formGroup]="customisationForm" class="parameters">
       <br />
       <h3>{{ 'descriptor.share.link.parameter' | transloco }}</h3>
       <div class="field switch">
-        <div class="label"
-          >{{ 'descriptor.share.direct.download' | transloco }}</div
-        >
+        <div class="label">
+          {{ 'descriptor.share.direct.download' | transloco }}
+        </div>
         <input
           id="notifyUser"
           class="cmn-toggle cmn-toggle-round"
@@ -46,8 +47,21 @@
         >
       </div>
     </form>
+    }
   </span>
+  }
 </span>
-<div id="snackbar" [class.show]="copied"
-  >{{ 'label.copied.to.clipboard' | transloco }}</div
+<div id="snackbar" [class.show]="copied">
+  {{ 'label.copied.to.clipboard' | transloco }}
+</div>
+
+<cbc-modal
+  [title]="'label.dialog.alert.snc.share.title'"
+  (ok)="dialogAccepted()"
+  (cancelModal)="dialogRefused()"
+  [(visible)]="acceptSncShowModal"
+  [okLabel]="'label.confirm'"
+  [contentClass]="'modal-content'"
 >
+  <p [innerHTML]="message" class="message"></p>
+</cbc-modal>

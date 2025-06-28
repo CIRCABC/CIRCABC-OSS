@@ -14,7 +14,7 @@ export class UrlHelperService {
       let objectUrl: string | null = null;
       if (this.cacheUrls.has(url)) {
         objectUrl = this.cacheUrls.get(url) ?? null;
-        observer.next(objectUrl ?? undefined);
+        observer.next(objectUrl ?? '');
       } else {
         this.http.get(url, { responseType: 'blob' }).subscribe((m) => {
           objectUrl = URL.createObjectURL(m);
@@ -31,9 +31,8 @@ export class UrlHelperService {
             objectUrl = null;
           }
         };
-      } else {
-        return;
       }
+      return;
     });
   }
 }

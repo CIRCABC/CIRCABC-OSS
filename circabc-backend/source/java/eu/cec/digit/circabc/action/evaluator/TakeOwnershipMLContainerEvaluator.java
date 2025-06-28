@@ -21,15 +21,14 @@
 package eu.cec.digit.circabc.action.evaluator;
 
 import eu.cec.digit.circabc.web.Services;
+import java.util.Locale;
+import java.util.Map;
+import javax.faces.context.FacesContext;
 import org.alfresco.service.cmr.ml.MultilingualContentService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.PermissionService;
 import org.alfresco.web.action.evaluator.BaseActionEvaluator;
 import org.alfresco.web.bean.repository.Node;
-
-import javax.faces.context.FacesContext;
-import java.util.Locale;
-import java.util.Map;
 
 /**
  * To take the ownership on a logical document, the current user must have the right to take
@@ -39,28 +38,31 @@ import java.util.Map;
  */
 public class TakeOwnershipMLContainerEvaluator extends BaseActionEvaluator {
 
-    private static final long serialVersionUID = 2164368522290163419L;
+  private static final long serialVersionUID = 2164368522290163419L;
 
-    public boolean evaluate(final Node node) {
-        final MultilingualContentService mlService = Services
-                .getAlfrescoServiceRegistry(FacesContext.getCurrentInstance())
-                .getMultilingualContentService();
+  public boolean evaluate(final Node node) {
+    final MultilingualContentService mlService =
+      Services.getAlfrescoServiceRegistry(
+        FacesContext.getCurrentInstance()
+      ).getMultilingualContentService();
 
-        boolean allow = true;
+    boolean allow = true;
 
-        final Map<Locale, NodeRef> translations = mlService.getTranslations(node.getNodeRef());
-        Node translation;
-        for (final Map.Entry<Locale, NodeRef> entry : translations.entrySet()) {
-            translation = new Node(entry.getValue());
+    final Map<Locale, NodeRef> translations = mlService.getTranslations(
+      node.getNodeRef()
+    );
+    Node translation;
+    for (final Map.Entry<Locale, NodeRef> entry : translations.entrySet()) {
+      translation = new Node(entry.getValue());
 
-            if (translation.hasPermission(PermissionService.TAKE_OWNERSHIP) == false) {
-                allow = false;
-                break;
-            }
-        }
-
-        return allow;
-
+      if (
+        translation.hasPermission(PermissionService.TAKE_OWNERSHIP) == false
+      ) {
+        allow = false;
+        break;
+      }
     }
 
+    return allow;
+  }
 }

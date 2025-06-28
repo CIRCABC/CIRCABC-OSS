@@ -23,7 +23,6 @@ package eu.cec.digit.circabc.action.evaluator;
 import org.alfresco.web.action.evaluator.BaseActionEvaluator;
 import org.alfresco.web.bean.repository.Node;
 
-
 /**
  * @author filipsl
  * <p>
@@ -31,16 +30,16 @@ import org.alfresco.web.bean.repository.Node;
  */
 public class HideEvaluator extends BaseActionEvaluator {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 8843659207331234527L;
+  /**
+   *
+   */
+  private static final long serialVersionUID = 8843659207331234527L;
 
-    /**
-     * @see org.alfresco.web.action.evaluator.BaseActionEvaluator#evaluate(org.alfresco.web.bean.repository.Node)
-     */
-    @Override
-    public boolean evaluate(Node node) {
-        return false;
-    }
+  /**
+   * @see org.alfresco.web.action.evaluator.BaseActionEvaluator#evaluate(org.alfresco.web.bean.repository.Node)
+   */
+  @Override
+  public boolean evaluate(Node node) {
+    return false;
+  }
 }

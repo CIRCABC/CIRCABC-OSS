@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
+import { AnalyticsService } from 'app/core/analytics.service';
 import {
   Category,
   CategoryService,
@@ -18,15 +19,36 @@ import { LoginService } from 'app/core/login.service';
 import { UiMessageService } from 'app/core/message/ui-message.service';
 import { IndexedInterestGroup } from 'app/core/ui-model/index';
 import { sortI18nProperty } from 'app/core/util';
+import { HeaderComponent } from 'app/shared/header/header.component';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
+import { NavigatorComponent } from 'app/shared/navigator/navigator.component';
+import { DownloadPipe } from 'app/shared/pipes/download.pipe';
 import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
-import { AnalyticsService } from 'app/core//analytics.service';
+import { SecurePipe } from 'app/shared/pipes/secure.pipe';
+import { SetTitlePipe } from 'app/shared/pipes/set-title.pipe';
+import { ReponsiveSubMenuComponent } from 'app/shared/reponsive-sub-menu/reponsive-sub-menu.component';
 import { firstValueFrom } from 'rxjs';
+import { ExplorerDropdownComponent } from './explorer-dropdown/explorer-dropdown.component';
+import { GroupCardComponent } from './group-card/group-card.component';
 
 @Component({
   selector: 'cbc-explorer',
   templateUrl: './explorer.component.html',
-  styleUrls: ['./explorer.component.scss'],
+  styleUrl: './explorer.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    HeaderComponent,
+    NavigatorComponent,
+    HorizontalLoaderComponent,
+    ReponsiveSubMenuComponent,
+    RouterLink,
+    ExplorerDropdownComponent,
+    GroupCardComponent,
+    DownloadPipe,
+    SecurePipe,
+    SetTitlePipe,
+    TranslocoModule,
+  ],
 })
 export class ExplorerComponent implements OnInit {
   public headers: Header[] = [];
@@ -82,8 +104,10 @@ export class ExplorerComponent implements OnInit {
       this.headers = unsortedHeaders;
 
       const headerFromSession = sessionStorage.getItem('currentHeader');
-      let headerFromQuery;
-      let categoryFromQuery;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let headerFromQuery: any;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let categoryFromQuery: any;
       let reset = false;
 
       this.route.queryParamMap.subscribe((queryParams) => {
@@ -111,7 +135,7 @@ export class ExplorerComponent implements OnInit {
         headerFromSession !== null &&
         !reset
       ) {
-        this.currentHeader = JSON.parse(headerFromSession);
+        this.currentHeader = JSON.parse(headerFromSession) as Header;
         this.step = 'categories';
       }
 
@@ -127,7 +151,7 @@ export class ExplorerComponent implements OnInit {
         categoryFromSession !== null &&
         !reset
       ) {
-        this.currentCategory = JSON.parse(categoryFromSession);
+        this.currentCategory = JSON.parse(categoryFromSession) as Category;
         this.step = 'groups';
       }
 
@@ -193,17 +217,15 @@ export class ExplorerComponent implements OnInit {
   public getKeysOfGroups(): string[] {
     if (this.groupsWithIndex) {
       return Object.keys(this.groupsWithIndex).sort();
-    } else {
-      return [];
     }
+    return [];
   }
 
   public getGroupInIndex(letterKey: string): IndexedInterestGroup[] {
     if (this.groupsWithIndex) {
       return this.groupsWithIndex[letterKey];
-    } else {
-      return [];
     }
+    return [];
   }
 
   private containsValueInMap(
@@ -383,8 +405,7 @@ export class ExplorerComponent implements OnInit {
 
   isCategoryAdmin(): boolean {
     if (
-      this.currentCategory &&
-      this.currentCategory.permissions &&
+      this.currentCategory?.permissions &&
       this.currentCategory.permissions.CircaCategoryAdmin === 'ALLOWED'
     ) {
       return true;
@@ -422,17 +443,20 @@ export class ExplorerComponent implements OnInit {
       header.name.indexOf('European') !== -1
     ) {
       return 'img/court-of-justice-128.png';
-    } else if (
+    }
+    if (
       header.name.indexOf('Commission') !== -1 &&
       header.name.indexOf('European') !== -1
     ) {
       return 'img/LOGO-CE_Vertical_EN_128.png';
-    } else if (
+    }
+    if (
       header.name.indexOf('Parliament') !== -1 &&
       header.name.indexOf('European') !== -1
     ) {
       return 'img/EP-logo-128.png';
-    } else if (
+    }
+    if (
       header.name.indexOf('Programmes') !== -1 &&
       header.name.indexOf('European') !== -1
     ) {
@@ -447,7 +471,7 @@ export class ExplorerComponent implements OnInit {
   }
 
   public hasModelNodeLogo(category: ModelNode): boolean {
-    if (category && category.properties) {
+    if (category?.properties) {
       return !(
         category.properties.logoRef === undefined ||
         category.properties.logoRef === ''
@@ -457,7 +481,7 @@ export class ExplorerComponent implements OnInit {
   }
 
   public getLogoRef(category: ModelNode): string {
-    if (category && category.properties) {
+    if (category?.properties) {
       const parts = category.properties.logoRef.split('/');
       return parts[parts.length - 1];
     }
@@ -467,9 +491,8 @@ export class ExplorerComponent implements OnInit {
   getGroupFirstLetter(group: InterestGroup | IndexedInterestGroup): string {
     if (group.title && Object.keys(group.title).length > 0) {
       return this.i18nPipe.transform(group.title).substring(0, 1);
-    } else {
-      return group.name.substring(0, 1);
     }
+    return group.name.substring(0, 1);
   }
 
   public shouldDisplayMenu() {

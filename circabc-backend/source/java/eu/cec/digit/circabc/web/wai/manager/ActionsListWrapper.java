@@ -20,10 +20,8 @@
  ******************************************************************************/
 package eu.cec.digit.circabc.web.wai.manager;
 
-import org.alfresco.web.bean.repository.Node;
-
 import java.io.Serializable;
-
+import org.alfresco.web.bean.repository.Node;
 
 /**
  * Wrap a simple Action list for any container for the right menu.
@@ -32,45 +30,42 @@ import java.io.Serializable;
  */
 public class ActionsListWrapper implements Serializable {
 
-    private static final long serialVersionUID = -3257773143591523891L;
+  private static final long serialVersionUID = -3257773143591523891L;
 
+  private Object context;
+  private String actions;
 
-    private Object context;
-    private String actions;
+  /**
+   * @param context
+   * @param actions
+   */
+  public ActionsListWrapper(Node context, String actions) {
+    super();
+    this.context = context;
+    this.actions = actions;
+  }
 
-    /**
-     * @param context
-     * @param actions
-     */
-    public ActionsListWrapper(Node context, String actions) {
-        super();
-        this.context = context;
-        this.actions = actions;
-    }
+  /**
+   * @param context
+   * @param actions
+   */
+  public ActionsListWrapper(Object context, String actions) {
+    super();
+    this.context = context;
+    this.actions = actions;
+  }
 
-    /**
-     * @param context
-     * @param actions
-     */
-    public ActionsListWrapper(Object context, String actions) {
-        super();
-        this.context = context;
-        this.actions = actions;
-    }
+  /**
+   * @return the actions
+   */
+  public String getActions() {
+    return actions;
+  }
 
-    /**
-     * @return the actions
-     */
-    public String getActions() {
-        return actions;
-    }
-
-    /**
-     * @return the context
-     */
-    public Object getContext() {
-        return context;
-    }
-
-
+  /**
+   * @return the context
+   */
+  public Object getContext() {
+    return context;
+  }
 }

@@ -15,10 +15,10 @@ exports.config = {
       'args': ['--start-maximized'],
     },
 
-    seleniumAddress: 'http://d02di1335287dit.net1.cec.eu.int:4444/wd/hub'
+    seleniumAddress: ''
   },
   directConnect: false,
-  baseUrl: 'http://d02di1335287dit.net1.cec.eu.int:4200/',
+  baseUrl: '',
   framework: 'jasmine',
   jasmineNodeOpts: {
     showColors: true,

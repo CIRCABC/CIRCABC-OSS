@@ -1,27 +1,49 @@
 import { Component, Input, OnInit } from '@angular/core';
 
-import { TranslocoService } from '@ngneat/transloco';
+import { I18nSelectPipe } from '@angular/common';
+import { MatMenuModule } from '@angular/material/menu';
+import { RouterLink } from '@angular/router';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
   ActionType,
 } from 'app/action-result';
 import { EULoginService } from 'app/core/eulogin.service';
-import { InterestGroup, UserService } from 'app/core/generated/circabc';
+import { type InterestGroup, UserService } from 'app/core/generated/circabc';
 import { LoginService } from 'app/core/login.service';
 import { UiMessageService } from 'app/core/message/ui-message.service';
 import { RedirectionService } from 'app/core/redirection.service';
 import { getSuccessTranslation } from 'app/core/util';
+import { LeaderContactComponent } from 'app/group/leader-contact/leader-contact.component';
+import { MembershipApplicationComponent } from 'app/group/membership-application/membership-application.component';
+import { DownloadPipe } from 'app/shared/pipes/download.pipe';
+import { SecurePipe } from 'app/shared/pipes/secure.pipe';
+import { ShareComponent } from 'app/shared/share/share.component';
 import { environment } from 'environments/environment';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-group-desciptor',
   templateUrl: './descriptor.component.html',
-  styleUrls: ['./descriptor.component.scss'],
+  styleUrl: './descriptor.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    MatMenuModule,
+    RouterLink,
+    ShareComponent,
+    MembershipApplicationComponent,
+    LeaderContactComponent,
+    I18nSelectPipe,
+    DownloadPipe,
+    SecurePipe,
+    TranslocoModule,
+  ],
 })
 export class DescriptorComponent implements OnInit {
+  // TODO: Skipped for migration because:
+  //  This input is used in a control flow expression (e.g. `@if` or `*ngIf`)
+  //  and migrating would break narrowing currently.
   @Input()
   public group!: InterestGroup;
 
@@ -39,7 +61,9 @@ export class DescriptorComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    if (!this.loginService.isGuest()) {
+    if (this.loginService.isGuest()) {
+      this.redirectionService.mustRedirect();
+    } else {
       const userId =
         this.loginService.getUser().userId !== undefined
           ? this.loginService.getUser().userId
@@ -50,16 +74,13 @@ export class DescriptorComponent implements OnInit {
         );
         for (const profile of memberships) {
           if (
-            profile &&
-            profile.interestGroup &&
+            profile?.interestGroup &&
             profile.interestGroup.id === this.group.id
           ) {
             this.alreadyMember = true;
           }
         }
       }
-    } else {
-      this.redirectionService.mustRedirect();
     }
   }
 
@@ -69,24 +90,21 @@ export class DescriptorComponent implements OnInit {
 
   getLang(): string {
     if (
-      this.group &&
-      this.group.description &&
+      this.group?.description &&
       Object.keys(this.group.description).indexOf(
         this.translateService.getActiveLang()
       ) !== -1
     ) {
       return this.translateService.getActiveLang();
-    } else {
-      return this.translateService.getDefaultLang();
     }
+    return this.translateService.getDefaultLang();
   }
 
   private getLogo(item: 0 | 1): string {
-    if (this.group && this.group.logoUrl) {
+    if (this.group?.logoUrl) {
       return this.group.logoUrl.split('/')[item];
-    } else {
-      return '';
     }
+    return '';
   }
 
   getLogoRef(): string {
@@ -129,7 +147,7 @@ export class DescriptorComponent implements OnInit {
   }
 
   hasDescription(): boolean {
-    if (this.group && this.group.description) {
+    if (this.group?.description) {
       return this.hasMLValue(this.group.description);
     }
     return false;
@@ -164,6 +182,6 @@ export class DescriptorComponent implements OnInit {
 
   public euLoginCreate() {
     window.location.href =
-      'https://ecas.cc.cec.eu.int:7002/cas/eim/external/register.cgi';
+      '';
   }
 }

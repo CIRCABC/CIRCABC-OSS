@@ -25,16 +25,15 @@ package eu.cec.digit.circabc.business.api;
  */
 public class BusinessValidationError extends BusinessRuntimeExpection {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 3241154549694518785L;
+  /**
+   *
+   */
+  private static final long serialVersionUID = 3241154549694518785L;
 
-    /**
-     * @param messageKey key of the message
-     */
-    public BusinessValidationError(String messageKey) {
-        super(messageKey);
-    }
-
+  /**
+   * @param messageKey key of the message
+   */
+  public BusinessValidationError(String messageKey) {
+    super(messageKey);
+  }
 }

@@ -1,17 +1,30 @@
 import { Component, OnInit } from '@angular/core';
-import { ActionEmitterResult } from 'app/action-result';
+import { RouterLink } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   AppMessageService,
   PagedAppMessages,
 } from 'app/core/generated/circabc';
 import { ListingOptions } from 'app/group/listing-options/listing-options';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
+import { PagerComponent } from 'app/shared/pager/pager.component';
 import { firstValueFrom } from 'rxjs';
+import { OldUiConfigurationComponent } from './old-ui-configuration/old-ui-configuration.component';
+import { TemplateRendererComponent } from './template-renderer/template-renderer.component';
 
 @Component({
   selector: 'cbc-system-message',
   templateUrl: './system-message.component.html',
-  styleUrls: ['./system-message.component.scss'],
+  styleUrl: './system-message.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    HorizontalLoaderComponent,
+    RouterLink,
+    PagerComponent,
+    OldUiConfigurationComponent,
+    TemplateRendererComponent,
+    TranslocoModule,
+  ],
 })
 export class SystemMessageComponent implements OnInit {
   public templates!: PagedAppMessages;
@@ -40,7 +53,7 @@ export class SystemMessageComponent implements OnInit {
         )
       );
       this.totalItems = this.templates.total;
-    } catch (error) {
+    } catch (_error) {
       console.error('problem getting the list of templates');
     }
 
@@ -57,11 +70,8 @@ export class SystemMessageComponent implements OnInit {
     await this.loadTemplates();
   }
 
-  public async refresh(_result: ActionEmitterResult) {
+  public async refresh() {
     this.showDeleteModal = false;
     await this.loadTemplates();
-  }
-  public trackById(_index: number, item: { id?: string | number }) {
-    return item.id;
   }
 }

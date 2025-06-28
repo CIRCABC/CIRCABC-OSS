@@ -60,3 +60,9 @@ input::-webkit-calendar-picker-indicator {
   background-repeat: no-repeat;
   background-position: 95% 50%;
 }
+
+.label-calendar-container label,
+.label-calendar-container p-calendar {
+  display: inline-block; /* or inline-flex */
+  vertical-align: middle; /* Optional: align vertically in the middle */
+}

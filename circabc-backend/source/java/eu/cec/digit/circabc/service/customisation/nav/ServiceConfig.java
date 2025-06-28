@@ -24,74 +24,73 @@ import java.util.List;
  * @author Yanick Pignot
  */
 public interface ServiceConfig {
+  /**
+   * @return the name
+   */
+  String getName();
 
-    /**
-     * @return the name
-     */
-    String getName();
+  /**
+   * @return the type
+   */
+  String getType();
 
-    /**
-     * @return the type
-     */
-    String getType();
+  /**
+   * @return the actions
+   */
+  List<String> getActions();
 
-    /**
-     * @return the actions
-     */
-    List<String> getActions();
+  /**
+   * @return the columns
+   */
+  List<ColumnConfig> getColumns();
 
-    /**
-     * @return the columns
-     */
-    List<ColumnConfig> getColumns();
+  /**
+   * @return the columns
+   */
+  List<ColumnConfig> getKeyColumns();
 
-    /**
-     * @return the columns
-     */
-    List<ColumnConfig> getKeyColumns();
+  /**
+   * @return the displayActionMax
+   */
+  int getDisplayActionMax();
 
-    /**
-     * @return the displayActionMax
-     */
-    int getDisplayActionMax();
+  /**
+   * @return the displayActionMin
+   */
+  int getDisplayActionMin();
 
-    /**
-     * @return the displayActionMin
-     */
-    int getDisplayActionMin();
+  /**
+   * @return the displayColMax
+   */
+  int getDisplayColMax();
 
-    /**
-     * @return the displayColMax
-     */
-    int getDisplayColMax();
+  /**
+   * @return the displayColMin
+   */
+  int getDisplayColMin();
 
-    /**
-     * @return the displayColMin
-     */
-    int getDisplayColMin();
+  /**
+   * @return the displayRowMax
+   */
+  int getDisplayRowMax();
 
-    /**
-     * @return the displayRowMax
-     */
-    int getDisplayRowMax();
+  /**
+   * @return the displayRowMin
+   */
+  int getDisplayRowMin();
 
-    /**
-     * @return the displayRowMin
-     */
-    int getDisplayRowMin();
+  /**
+   * @return the actionConfigName
+   */
+  String getActionConfigName();
 
-    /**
-     * @return the actionConfigName
-     */
-    String getActionConfigName();
+  /**
+   * @return the mandatory action
+   */
+  String getMandatoryAction();
 
-    /**
-     * @return the mandatory action
-     */
-    String getMandatoryAction();
-
-    /**
-     * @return is Bulk Operation Allowed
-     */
-    boolean isBulkOperationAllowed();
+  /**
+   * @return is Bulk Operation Allowed
+   */
+  boolean isBulkOperationAllowed();
 }

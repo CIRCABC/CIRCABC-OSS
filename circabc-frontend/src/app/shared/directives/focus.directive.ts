@@ -1,11 +1,10 @@
-import { AfterContentInit, Directive, ElementRef, Input } from '@angular/core';
+import { AfterContentInit, Directive, ElementRef, input } from '@angular/core';
 
 @Directive({
   selector: '[cbcFocus]',
 })
 export class FocusDirective implements AfterContentInit {
-  @Input()
-  cbcFocus!: boolean;
+  readonly cbcFocus = input.required<boolean>();
 
   public constructor(private el: ElementRef) {}
 

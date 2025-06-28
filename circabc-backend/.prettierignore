@@ -1,0 +1,4 @@
+**/org/alfresco/**/*.java
+target
+source/module/alfresco/module/circabcAmp/context/db-changelog.xml
+source/module/alfresco/module/circabcAmp/context/db-changelog-alfresco-patch.xml

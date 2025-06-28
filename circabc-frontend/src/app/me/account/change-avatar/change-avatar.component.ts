@@ -1,13 +1,12 @@
 import {
   Component,
-  EventEmitter,
   Input,
   OnChanges,
   OnInit,
-  Output,
   SimpleChanges,
+  output,
 } from '@angular/core';
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
@@ -18,20 +17,23 @@ import { LoginService } from 'app/core/login.service';
 import { UiMessageService } from 'app/core/message/ui-message.service';
 import { UploadService } from 'app/core/upload.service';
 import { imageExtensionValid } from 'app/core/util';
+import { SizePipe } from 'app/shared/pipes/size.pipe';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 
 @Component({
   selector: 'cbc-change-avatar',
   templateUrl: './change-avatar.component.html',
-  styleUrls: ['./change-avatar.component.scss'],
+  styleUrl: './change-avatar.component.scss',
   preserveWhitespaces: true,
+  imports: [SpinnerComponent, SizePipe, TranslocoModule],
 })
 export class ChangeAvatarComponent implements OnInit, OnChanges {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   public showWizard = false;
-  @Output()
-  public readonly modalHide = new EventEmitter<ActionEmitterResult>();
-  @Output()
-  public readonly avatarUploaded = new EventEmitter<ActionEmitterResult>();
+  public readonly modalHide = output<ActionEmitterResult>();
+  public readonly avatarUploaded = output<ActionEmitterResult>();
 
   public showAddWizardStep1 = false;
   public showAddWizardStep2 = false;
@@ -82,9 +84,10 @@ export class ChangeAvatarComponent implements OnInit, OnChanges {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public fileChangeEvent(fileInput: any) {
-    const filesList = fileInput.target.files as FileList;
+  public fileChangeEvent(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const filesList = input.files as FileList;
+
     this.fileToUpload = filesList[0];
   }
 
@@ -112,8 +115,8 @@ export class ChangeAvatarComponent implements OnInit, OnChanges {
         this.user.userId as string,
         this.fileToUpload
       );
-      this.avatarUploaded.emit();
-    } catch (error) {
+      this.avatarUploaded.emit({ result: ActionResult.SUCCEED });
+    } catch (_error) {
       const res = this.translateService.translate('error.image.upload');
       this.uiMessageService.addErrorMessage(res);
       this.cancelWizard('close');

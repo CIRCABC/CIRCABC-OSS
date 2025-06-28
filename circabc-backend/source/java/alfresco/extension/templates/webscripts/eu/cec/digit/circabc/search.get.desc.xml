@@ -2,7 +2,7 @@
   <shortname>Browse library space</shortname>
   <description>Browse library space </description>
     <url>/circabc/search</url>
-  <format default="json"/>
+  <format default="json" />
   <authentication>guest</authentication>
   <transaction>required</transaction>
 </webscript>

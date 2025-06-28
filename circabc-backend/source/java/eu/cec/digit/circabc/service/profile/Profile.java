@@ -16,82 +16,86 @@
  */
 package eu.cec.digit.circabc.service.profile;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.MLText;
 import org.alfresco.service.cmr.repository.NodeRef;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 public interface Profile {
+  /**
+   * @return the profileName
+   */
+  String getProfileName();
 
-    /**
-     * @return the profileName
-     */
-    String getProfileName();
+  /**
+   * set the profileName
+   */
+  void setProfileName(final String profileName);
 
-    /**
-     * set the profileName
-     */
-    void setProfileName(final String profileName);
+  /**
+   * @return the alfrescoGroupName
+   */
+  String getAlfrescoGroupName();
 
-    /**
-     * @return the alfrescoGroupName
-     */
-    String getAlfrescoGroupName();
+  void setAlfrescoGroupName(final String alfrescoGroupName);
 
-    void setAlfrescoGroupName(final String alfrescoGroupName);
+  String getPrefixedAlfrescoGroupName();
 
-    String getPrefixedAlfrescoGroupName();
+  void setPrefixedAlfrescoGroupName(final String prefixedAlfrescoGroupName);
 
-    void setPrefixedAlfrescoGroupName(final String prefixedAlfrescoGroupName);
+  void clearNodeServicesPermissions(
+    final NodeRef noderef,
+    Set<String> services,
+    final ServiceRegistry serviceRegistry
+  );
 
-    void clearNodeServicesPermissions(
-            final NodeRef noderef, Set<String> services, final ServiceRegistry serviceRegistry);
+  void setNodeServicesPermissions(
+    final NodeRef nodeRef,
+    final Map<String, Set<String>> servicesPermissions,
+    final ServiceRegistry serviceRegistry
+  );
 
-    void setNodeServicesPermissions(
-            final NodeRef nodeRef,
-            final Map<String, Set<String>> servicesPermissions,
-            final ServiceRegistry serviceRegistry);
+  Set<String> getServicePermissions(final String serviceName);
 
-    Set<String> getServicePermissions(final String serviceName);
+  HashMap<String, Set<String>> getServicesPermissions();
 
-    HashMap<String, Set<String>> getServicesPermissions();
+  void setServicesPermissions(
+    final Map<String, Set<String>> servicesPermissions
+  );
 
-    void setServicesPermissions(final Map<String, Set<String>> servicesPermissions);
+  MLText getTitle();
 
-    MLText getTitle();
+  void setTitles(final MLText titles);
 
-    void setTitles(final MLText titles);
+  MLText getDescription();
 
-    MLText getDescription();
+  void setDescriptions(final MLText descriptions);
 
-    void setDescriptions(final MLText descriptions);
+  boolean isExported();
 
-    boolean isExported();
+  void setExported(final boolean isExported);
 
-    void setExported(final boolean isExported);
+  boolean isImported();
 
-    boolean isImported();
+  void setImported(final boolean isImported);
 
-    void setImported(final boolean isImported);
+  NodeRef getImportedNodeRef();
 
-    NodeRef getImportedNodeRef();
+  void setImportedNodeRef(final NodeRef importedNodeRef);
 
-    void setImportedNodeRef(final NodeRef importedNodeRef);
+  String getImportedNodeName();
 
-    String getImportedNodeName();
+  void setImportedNodeName(final String property);
 
-    void setImportedNodeName(final String property);
+  String getProfileDisplayName();
 
-    String getProfileDisplayName();
+  String getProfileDescription();
 
-    String getProfileDescription();
+  boolean isAdmin();
 
-    boolean isAdmin();
+  NodeRef getNodeRef();
 
-    NodeRef getNodeRef();
-
-    void setNodeRef(NodeRef value);
+  void setNodeRef(NodeRef value);
 }

@@ -18,38 +18,42 @@
        
         <plugins>            
             <plugin>
-                <groupId>com.github.eirslett</groupId>
-                <artifactId>frontend-maven-plugin</artifactId>
+            <groupId>com.github.eirslett</groupId>
+            <artifactId>frontend-maven-plugin</artifactId>
+            <version>1.15.1</version>
+            <executions>
+                <execution>
+                <id>install node and npm</id>
+                <goals>
+                    <goal>install-node-and-npm</goal>
+                </goals>
                 <configuration>
-                    <nodeVersion>v12.20.2</nodeVersion>
-                    <npmVersion>6.14.11</npmVersion>
-                    <workingDirectory>.</workingDirectory>
+                    <nodeVersion>v20.12.2</nodeVersion>
+                    <npmVersion>10.2.4</npmVersion>
                 </configuration>
-                <executions>
-                    <execution>
-                        <id>install node and npm</id>
-                        <goals>
-                            <goal>install-node-and-npm</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>npm install</id>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>run ${frontend-target.env}</id>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                        <configuration>
-                            <arguments>run ${frontend-target.env}</arguments>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            
+                </execution>
+
+                <execution>
+                <id>npm install</id>
+                <goals>
+                    <goal>npm</goal>
+                </goals>
+                <configuration>
+                    <arguments>ci</arguments>
+                </configuration>
+                </execution>
+
+                <execution>
+                <id>run docker</id>
+                <goals>
+                    <goal>npm</goal>
+                </goals>
+                <configuration>
+                    <arguments>run docker</arguments>
+                </configuration>
+                </execution>
+            </executions>
+            </plugin>   
         </plugins>
     </build>
 </project>

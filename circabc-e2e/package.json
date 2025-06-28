@@ -5,17 +5,29 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "cy:run": "cypress run",
+    "cy:run": "cross-env CYPRESS_INTERNAL_BROWSER_CONNECT_TIMEOUT=60000 cypress run",
+    "cy:run:chrome": "cross-env CYPRESS_INTERNAL_BROWSER_CONNECT_TIMEOUT=60000 cypress run --browser chrome",
+    "cy:run:firefox": "cross-env CYPRESS_INTERNAL_BROWSER_CONNECT_TIMEOUT=60000 cypress run --browser firefox",
+    "cy:run-oss": "cross-env CYPRESS_INTERNAL_BROWSER_CONNECT_TIMEOUT=60000 cypress run --config-file cypress.config.oss.ts",
+    "cy:run-oss:chrome": "cross-env CYPRESS_INTERNAL_BROWSER_CONNECT_TIMEOUT=60000 cypress run --config-file cypress.config.oss.ts --browser chrome",
+    "cy:run-oss:firefox": "cross-env CYPRESS_INTERNAL_BROWSER_CONNECT_TIMEOUT=60000 cypress run --config-file cypress.config.oss.ts --browser firefox",
+    "cy:run:a11y": "cross-env CYPRESS_INTERNAL_BROWSER_CONNECT_TIMEOUT=60000 cypress run --spec cypress/e2e/circabc/accessibility/accessibility.spec.js",
     "cy:run-ent": "cypress run --config-file cypress-ent.json",
     "cy:open": "cypress open",
+    "cy:open-oss": "cypress open --config-file cypress.config.oss.ts",
     "cy:open-ent": "cypress open --config-file cypress-ent.json",
-    "tsc": "tsc  --project tsconfig.json --pretty"
+    "tsc": "tsc  --project tsconfig.json --pretty",
+    "format-fix": "prettier --write --single-quote --list-different  \"cypress/e2e/**/*.js\" "
   },
   "devDependencies": {
-    "cypress": "9.5.4",
-    "cypress-file-upload": "5.0.8"
+    "axe-core": "4.10.2",
+    "cypress": "^13.17.0",
+    "cypress-axe": "1.5.0",
+    "cypress-file-upload": "5.0.8",
+    "prettier": "3.4.2"
   },
   "dependencies": {
-    "typescript": "4.6.3"
+    "cross-env": "7.0.3",
+    "typescript": "5.7.3"
   }
 }

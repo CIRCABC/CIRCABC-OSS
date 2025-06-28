@@ -16,12 +16,10 @@
  */
 package eu.cec.digit.circabc.service.filefolder;
 
+import java.util.List;
 import org.alfresco.service.cmr.model.FileInfo;
 import org.alfresco.service.cmr.repository.NodeRef;
 
-import java.util.List;
-
 public interface CircabcFileFolderService {
-
-    List<FileInfo> list(NodeRef contextNodeRef);
+  List<FileInfo> list(NodeRef contextNodeRef);
 }

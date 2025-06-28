@@ -4,9 +4,7 @@
     |  		   http://ec.europa.eu/idabc/en/document/6523
     |
     +-->
-
 <!-- Here Only the new Circabc specific WAI (and not Alfresco native) actions and action groups -->
-
 <alfresco-config>
 	<config>
 		<actions>
@@ -145,7 +143,9 @@
 				</action-listener>
 				<params>
 					<param name="id">#{actionContext.id}</param>
-					<param name="imageName">add_translation_without_content_wai_#{actionContext.name}</param>
+					<param
+            name="imageName"
+          >add_translation_without_content_wai_#{actionContext.name}</param>
 					<param name="service">Library</param>
 					<param name="activity">AddTranslationWithoutContent</param>
 				</params>
@@ -187,7 +187,9 @@
 				<image>/images/icons/change_password.gif</image>
 				<action>wai:dialog:changeOwnPasswordWai</action>
 				<params>
-					<param name="imageName">change_own_password_wai_#{actionContext.userName}</param>
+					<param
+            name="imageName"
+          >change_own_password_wai_#{actionContext.userName}</param>
 				</params>
 			</action>
 
@@ -535,7 +537,9 @@
 				</action-listener>
 				<params>
 					<param name="id">#{actionContext.id}</param>
-					<param name="imageName">reset_user_password_wai_#{actionContext.userName}</param>
+					<param
+            name="imageName"
+          >reset_user_password_wai_#{actionContext.userName}</param>
 					<param name="service">Directory</param>
 					<param name="activity">ResetPassword</param>
 				</params>
@@ -596,7 +600,8 @@
 			</action>
 
 			<action id="cut_node">
-			    <evaluator>eu.cec.digit.circabc.action.evaluator.DiscussionCutEvaluator</evaluator>
+			    <evaluator
+        >eu.cec.digit.circabc.action.evaluator.DiscussionCutEvaluator</evaluator>
 			    <permissions>
 			       <permission allow="true">Delete</permission>
 			    </permissions>
@@ -610,7 +615,8 @@
 			 </action>
 
 			 <action id="copy_node">
-			    <evaluator>eu.cec.digit.circabc.action.evaluator.DiscussionCopyEvaluator</evaluator>
+			    <evaluator
+        >eu.cec.digit.circabc.action.evaluator.DiscussionCopyEvaluator</evaluator>
 			    <label-id>copy</label-id>
 			    <image>/images/icons/copy.gif</image>
 			    <action-listener>#{ClipboardBean.copyNode}</action-listener>
@@ -625,10 +631,12 @@
 	            <permissions>
 	               <permission allow="true">TakeOwnership</permission>
 	            </permissions>
-	            <evaluator>org.alfresco.web.action.evaluator.TakeOwnershipDocEvaluator</evaluator>
+	            <evaluator
+        >org.alfresco.web.action.evaluator.TakeOwnershipDocEvaluator</evaluator>
 	            <label-id>take_ownership</label-id>
 	            <image>/images/icons/take_ownership.gif</image>
-	            <action-listener>#{ManageNodeDetailsDialog.takeOwnership}</action-listener>
+	            <action-listener
+        >#{ManageNodeDetailsDialog.takeOwnership}</action-listener>
 			    <params>
 					<param name="id">#{actionContext.id}</param>
 					<param name="imageName">take_ownership_doc_#{actionContext.name}</param>
@@ -644,7 +652,8 @@
 	            </permissions>
 	            <label-id>take_ownership</label-id>
 	            <image>/images/icons/take_ownership.gif</image>
-	            <action-listener>#{ManageNodeDetailsDialog.takeOwnership}</action-listener>
+	            <action-listener
+        >#{ManageNodeDetailsDialog.takeOwnership}</action-listener>
 			    <params>
 					<param name="id">#{actionContext.id}</param>
 					<param name="imageName">take_ownership_space_#{actionContext.name}</param>
@@ -739,7 +748,9 @@
 			    </action-listener>
 			    <params>
 			        <param name="id">#{actionContext.id}</param>
-					<param name="imageName">edit_dossier_properties_wai_#{actionContext.name}</param>
+					<param
+            name="imageName"
+          >edit_dossier_properties_wai_#{actionContext.name}</param>
 					<param name="service">Library</param>
 				  	<param name="activity">EditDossierProperties</param>
 			    </params>
@@ -799,7 +810,8 @@
 			</action>
 
 			<action id="edit_document_inline_wai">
-			   <evaluator>eu.cec.digit.circabc.action.evaluator.EditInlineDocumentEvaluator</evaluator>
+			   <evaluator
+        >eu.cec.digit.circabc.action.evaluator.EditInlineDocumentEvaluator</evaluator>
 			   <permissions>
 			      <permission allow="true">Write</permission>
 			   </permissions>
@@ -812,14 +824,17 @@
 			   </action-listener>
 			   <params>
 			      <param name="id">#{actionContext.id}</param>
-			 	  <param name="imageName">edit_document_inline_wai_#{actionContext.name}</param>
+			 	  <param
+            name="imageName"
+          >edit_document_inline_wai_#{actionContext.name}</param>
 			 	  <param name="service">Library</param>
 				  <param name="activity">InlineEditDocument</param>
 			   </params>
 			</action>
 
 			<action id="configure_auto_upload_wai">
-			   <evaluator>eu.cec.digit.circabc.action.evaluator.ConfigureAutoUploadEvaluator</evaluator>
+			   <evaluator
+        >eu.cec.digit.circabc.action.evaluator.ConfigureAutoUploadEvaluator</evaluator>
 			   <permissions>
 			      <permission allow="true">Write</permission>
 			   </permissions>
@@ -832,7 +847,9 @@
 			   </action-listener>
 			   <params>
 			      <param name="id">#{actionContext.id}</param>
-			 	  <param name="imageName">edit_document_inline_wai_#{actionContext.name}</param>
+			 	  <param
+            name="imageName"
+          >edit_document_inline_wai_#{actionContext.name}</param>
 			 	  <param name="service">Library</param>
 				  <param name="activity">configureAutoUpload</param>
 			   </params>
@@ -840,12 +857,14 @@
 			
 			<!-- External repositories actions -->
 			<action id="external_repositories_publish_in">
-			   <evaluator>eu.cec.digit.circabc.action.evaluator.ExternalRepositoryActionEvaluator</evaluator>
+			   <evaluator
+        >eu.cec.digit.circabc.action.evaluator.ExternalRepositoryActionEvaluator</evaluator>
 			   <permissions>
 			      <permission allow="true">Write</permission>
 			   </permissions>
 			   <label-id>details_external_repositories_action_publish</label-id>
-			   <tooltip-id>details_external_repositories_action_publish_description</tooltip-id>
+			   <tooltip-id
+        >details_external_repositories_action_publish_description</tooltip-id>
 			   <image>/images/extension/publish_in_external_repository_small.png</image>
 			   <action>wai:dialog:publishInExternalRepositoriesWai</action>
 			   <action-listener>
@@ -853,7 +872,9 @@
 			   </action-listener>
 			   <params>
 			      <param name="id">#{actionContext.id}</param>
-			 	  <param name="imageName">edit_document_inline_wai_#{actionContext.name}</param>
+			 	  <param
+            name="imageName"
+          >edit_document_inline_wai_#{actionContext.name}</param>
 			 	  <param name="service">HRS</param>
 				  <param name="activity">Register - Workflow</param>
 			   </params>
@@ -925,7 +946,7 @@
 				<action idref="take_ownership_space" />
 				<action idref="edit_own_notification_status" />
 				<action idref="manage_share_space_wai" />
-				<action idref="history"/>
+				<action idref="history" />
 			</action-group>
 
 			<!-- Actions for a container in the View Dossier Details -->
@@ -937,7 +958,7 @@
 				<action idref="take_ownership_space" />
 				<action idref="mail_me_dossier" />
 				<action idref="edit_own_notification_status" />
-				<action idref="history"/>
+				<action idref="history" />
 			</action-group>
 
 			<!-- Actions for a content detail of a space link WAI Page -->
@@ -1000,7 +1021,7 @@
 				<action idref="update_doc_wai" />
 				<action idref="copy_node" />
 				<action idref="mailMe_node" />
-				<action idref="history"/>
+				<action idref="history" />
 			</action-group>
 
 			<!-- Actions for a links in the Dossier Browse WAI Page -->
@@ -1008,7 +1029,7 @@
 				<show-link>false</show-link>
 				<action idref="details_space_wai" />
 				<action idref="delete_space_wai" />
-				<action idref="history"/>
+				<action idref="history" />
 			</action-group>
 
 			<!-- Actions for a links in the Dossier Browse WAI Page -->
@@ -1017,7 +1038,7 @@
 				<action idref="details_doc_wai" />
 				<action idref="download_doc_wai" />
 				<action idref="delete_doc_wai" />
-				<action idref="history"/>
+				<action idref="history" />
 			</action-group>
 
 			<action-group id="doc_details_actions_wai">
@@ -1036,14 +1057,14 @@
 				<action idref="make_doc_multilingual_wai" />
 				<action idref="add_translation_wai" />
 				<action idref="add_translation_without_content_wai" />
-				<action idref="add_translation_wc" hide="true"/>
+				<action idref="add_translation_wc" hide="true" />
 				<action idref="ml_details_wai" />
 				<action idref="mailMe_node" />
 				<action idref="apply_versionable" />
 				<action idref="edit_own_notification_status" />
 				<action idref="edit_document_inline_wai" />
-				<action idref="history"/>
-				<action idref="configure_auto_upload_wai"/>
+				<action idref="history" />
+				<action idref="configure_auto_upload_wai" />
 				<action idref="external_repositories_publish_in" />
 			</action-group>
 			
@@ -1071,7 +1092,7 @@
 				<action idref="download_doc_wai" />
 				<action idref="update_doc_wai" />
 				<action idref="copy_node" />
-				<action idref="history"/>
+				<action idref="history" />
 			</action-group>
 
 			<!-- Actions for a container in the Information Browse WAI Page -->
@@ -1097,7 +1118,7 @@
 				<action idref="mailMe_node" />
 				<action idref="apply_versionable" />
 				<action idref="edit_document_inline_wai" />
-				<action idref="history"/>
+				<action idref="history" />
 			</action-group>
 
 			<action-group id="inf_filelink_details_actions_wai">
@@ -1108,7 +1129,7 @@
 				<action idref="copy_node" />
 				<action idref="delete_doc_wai" />
 				<action idref="mailMe_node" />
-				<action idref="history"/>
+				<action idref="history" />
 			</action-group>
 
 			<action-group id="custom_action_list_library_content">
@@ -1127,12 +1148,12 @@
 				<action idref="make_doc_multilingual_wai" />
 				<action idref="add_translation_wai" />
 				<action idref="add_translation_without_content_wai" />
-				<action idref="add_translation_wc" hide="true"/>
+				<action idref="add_translation_wc" hide="true" />
 				<action idref="mailMe_node" />
 				<action idref="edit_own_notification_status" />
 				<action idref="edit_document_inline_wai" />
-				<action idref="history"/>
-				<action idref="start_workflow_wai" hide="true"/>
+				<action idref="history" />
+				<action idref="start_workflow_wai" hide="true" />
 				<action idref="edit_in_office_wai" />
 			</action-group>
 
@@ -1147,7 +1168,7 @@
 				<action idref="take_ownership_space" />
 				<action idref="edit_own_notification_status" />
 				<action idref="manage_share_space_wai" />
-				<action idref="history"/>
+				<action idref="history" />
 			</action-group>
 
 			<action-group id="custom-action-list-information-content">
@@ -1165,12 +1186,12 @@
 				<action idref="make_doc_multilingual_wai" />
 				<action idref="add_translation_wai" />
 				<action idref="add_translation_without_content_wai" />
-				<action idref="add_translation_wc" hide="true"/>
+				<action idref="add_translation_wc" hide="true" />
 				<action idref="mailMe_node" />
 				<action idref="take_ownership_doc" />
 				<action idref="edit_own_notification_status" />
 				<action idref="edit_document_inline_wai" />
-				<action idref="history"/>
+				<action idref="history" />
 				<action idref="edit_in_office_wai" />
 			</action-group>
 
@@ -1183,7 +1204,7 @@
 				<action idref="cut_node" />
 				<action idref="copy_node" />
 				<action idref="edit_own_notification_status" />
-				<action idref="history"/>
+				<action idref="history" />
 			</action-group>
 		</actions>
 	</config>

@@ -1,26 +1,31 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input, output } from '@angular/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
   ActionType,
 } from 'app/action-result';
 import { HelpService } from 'app/core/generated/circabc';
+import { ModalComponent } from 'app/shared/modal/modal.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-delete-help-category',
   templateUrl: './delete-help-category.component.html',
   preserveWhitespaces: true,
+  imports: [ModalComponent, TranslocoModule],
 })
 export class DeleteHelpCategoryComponent {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   showModal = false;
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   categoryId: string | undefined;
-  @Output()
-  readonly showModalChange = new EventEmitter();
-  @Output()
-  readonly categoryDeleted = new EventEmitter<ActionEmitterResult>();
+  readonly showModalChange = output<boolean>();
+  readonly categoryDeleted = output<ActionEmitterResult>();
 
   public deleting = false;
 
@@ -35,7 +40,7 @@ export class DeleteHelpCategoryComponent {
   public async delete() {
     this.deleting = true;
     const res: ActionEmitterResult = {};
-    res.type = ActionType.DELETE_HELP_CATEGORY;
+    res.type = ActionType.DELETE_HELP_SECTION;
 
     try {
       if (this.categoryId) {

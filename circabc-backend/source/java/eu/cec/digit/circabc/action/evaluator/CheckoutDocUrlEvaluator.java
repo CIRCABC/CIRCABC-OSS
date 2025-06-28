@@ -31,16 +31,16 @@ import org.alfresco.web.bean.repository.Node;
  */
 public class CheckoutDocUrlEvaluator extends CheckoutDocEvaluator {
 
-    private static final long serialVersionUID = 6050963610213633893L;
+  private static final long serialVersionUID = 6050963610213633893L;
 
-    /**
-     * @see org.alfresco.web.action.ActionEvaluator#evaluate(org.alfresco.web.bean.repository.Node)
-     */
-    public boolean evaluate(Node node) {
-        if (super.evaluate(node)) {
-            return !node.hasAspect(DocumentModel.ASPECT_URLABLE);
-        } else {
-            return false;
-        }
+  /**
+   * @see org.alfresco.web.action.ActionEvaluator#evaluate(org.alfresco.web.bean.repository.Node)
+   */
+  public boolean evaluate(Node node) {
+    if (super.evaluate(node)) {
+      return !node.hasAspect(DocumentModel.ASPECT_URLABLE);
+    } else {
+      return false;
     }
+  }
 }

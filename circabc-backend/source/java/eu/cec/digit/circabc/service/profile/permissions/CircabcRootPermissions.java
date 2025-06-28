@@ -26,69 +26,72 @@ import java.util.HashSet;
  * @author Clinckart Stephane
  */
 public enum CircabcRootPermissions {
-    CIRCABCADMIN("CircaBCAdmin"),
-    CIRCABCMANAGEMEMBERS("CircaBCManageMembers"),
-    CIRCABCACCESS("CircaBCAccess"),
-    CIRCABCNOACCESS("CircaBCNoAccess");
+  CIRCABCADMIN("CircaBCAdmin"),
+  CIRCABCMANAGEMEMBERS("CircaBCManageMembers"),
+  CIRCABCACCESS("CircaBCAccess"),
+  CIRCABCNOACCESS("CircaBCNoAccess");
 
-    static HashSet<CircabcRootPermissions> circaBCPermissions = null;
-    protected String permissionString;
+  static HashSet<CircabcRootPermissions> circaBCPermissions = null;
+  protected String permissionString;
 
-    /**
-     * Constructor initialising the string value of the permission. The String values will be defined
-     * in the file permissionDefinitions.xml
-     *
-     * @param value string value associated to the enumeration value.
-     */
-    CircabcRootPermissions(String value) {
-        permissionString = value;
+  /**
+   * Constructor initialising the string value of the permission. The String values will be defined
+   * in the file permissionDefinitions.xml
+   *
+   * @param value string value associated to the enumeration value.
+   */
+  CircabcRootPermissions(String value) {
+    permissionString = value;
+  }
+
+  public static CircabcRootPermissions withPermissionString(
+    String permiString
+  ) {
+    CircabcRootPermissions match = null;
+
+    for (CircabcRootPermissions permission : getPermissions()) {
+      if (permission.permissionString.equals(permiString)) {
+        match = permission;
+        break;
+      }
     }
-
-    public static CircabcRootPermissions withPermissionString(String permiString) {
-        CircabcRootPermissions match = null;
-
-        for (CircabcRootPermissions permission : getPermissions()) {
-            if (permission.permissionString.equals(permiString)) {
-                match = permission;
-                break;
-            }
-        }
-        if (match == null) {
-            throw new IllegalArgumentException(
-                    "No enum const class with permission string " + permiString);
-        } else {
-            return match;
-        }
+    if (match == null) {
+      throw new IllegalArgumentException(
+        "No enum const class with permission string " + permiString
+      );
+    } else {
+      return match;
     }
+  }
 
-    /**
-     * initialise the list of permissions
-     */
-    protected static void init() {
-        circaBCPermissions = new HashSet<>();
-        Collections.addAll(circaBCPermissions, CircabcRootPermissions.values());
-    }
+  /**
+   * initialise the list of permissions
+   */
+  protected static void init() {
+    circaBCPermissions = new HashSet<>();
+    Collections.addAll(circaBCPermissions, CircabcRootPermissions.values());
+  }
 
-    /**
-     * return an Set representing the permission list.
-     *
-     * @return Set of CircabcPermissions
-     */
-    @SuppressWarnings("unchecked")
-    public static HashSet<CircabcRootPermissions> getPermissions() {
-        if (circaBCPermissions == null) {
-            init();
-        }
-        return (HashSet<CircabcRootPermissions>) circaBCPermissions.clone();
+  /**
+   * return an Set representing the permission list.
+   *
+   * @return Set of CircabcPermissions
+   */
+  @SuppressWarnings("unchecked")
+  public static HashSet<CircabcRootPermissions> getPermissions() {
+    if (circaBCPermissions == null) {
+      init();
     }
+    return (HashSet<CircabcRootPermissions>) circaBCPermissions.clone();
+  }
 
-    /**
-     * Return the string value associated to the permission
-     */
-    public String toString() {
-        if (circaBCPermissions == null) {
-            init();
-        }
-        return permissionString;
+  /**
+   * Return the string value associated to the permission
+   */
+  public String toString() {
+    if (circaBCPermissions == null) {
+      init();
     }
+    return permissionString;
+  }
 }

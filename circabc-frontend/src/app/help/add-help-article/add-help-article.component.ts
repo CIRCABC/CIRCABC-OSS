@@ -1,45 +1,55 @@
 import {
   Component,
-  EventEmitter,
   Input,
   OnChanges,
   OnInit,
-  Output,
   SimpleChanges,
+  output,
+  input,
 } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
   ActionType,
 } from 'app/action-result';
+import { assertDefined } from 'app/core/asserts';
 import { HelpArticle, HelpService } from 'app/core/generated/circabc';
-import { ValidationService } from 'app/core/validation.service';
+import { nonEmptyTitle } from 'app/core/validation.service';
+import { MultilingualInputComponent } from 'app/shared/input/multilingual-input.component';
 import {
   LanguageCodeName,
-  SupportedLangs,
+  supportedLanguages,
 } from 'app/shared/langs/supported-langs';
-import { assertDefined } from 'app/core/asserts';
+import { ModalComponent } from 'app/shared/modal/modal.component';
+import { SharedModule } from 'primeng/api';
+import { EditorModule } from 'primeng/editor';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-add-help-article',
   templateUrl: './add-help-article.component.html',
-  styleUrls: ['./add-help-article.component.scss'],
+  styleUrl: './add-help-article.component.scss',
+  imports: [
+    ModalComponent,
+    ReactiveFormsModule,
+    MultilingualInputComponent,
+    EditorModule,
+    SharedModule,
+    TranslocoModule,
+  ],
 })
 export class AddHelpArticleComponent implements OnInit, OnChanges {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   showModal = false;
-  @Input()
-  categoryId: string | undefined;
-  @Input()
-  articleId: string | undefined;
-  @Output()
-  readonly showModalChange = new EventEmitter();
-  @Output()
-  readonly articleCreated = new EventEmitter<ActionEmitterResult>();
-  @Output()
-  readonly articleUpdated = new EventEmitter<ActionEmitterResult>();
+  readonly categoryId = input<string>();
+  readonly articleId = input<string>();
+  readonly showModalChange = output<boolean>();
+  readonly articleCreated = output<ActionEmitterResult>();
+  readonly articleUpdated = output<ActionEmitterResult>();
 
   public creating = false;
   public newArticlForm!: FormGroup;
@@ -49,7 +59,10 @@ export class AddHelpArticleComponent implements OnInit, OnChanges {
   public editMode = false;
   public articleToEdit!: HelpArticle;
 
-  constructor(private fb: FormBuilder, private helpService: HelpService) {}
+  constructor(
+    private fb: FormBuilder,
+    private helpService: HelpService
+  ) {}
 
   async ngOnChanges(changes: SimpleChanges) {
     if (changes.articleId) {
@@ -61,7 +74,7 @@ export class AddHelpArticleComponent implements OnInit, OnChanges {
   async ngOnInit() {
     this.newArticlForm = this.fb.group(
       {
-        title: ['', ValidationService.nonEmptyTitle],
+        title: ['', nonEmptyTitle],
         currentLang: '',
         content: [''],
       },
@@ -80,18 +93,19 @@ export class AddHelpArticleComponent implements OnInit, OnChanges {
 
     this.model = {};
 
-    this.availableLangs = SupportedLangs.availableLangs;
+    this.availableLangs = supportedLanguages;
 
-    if (this.articleId) {
+    if (this.articleId()) {
       await this.prepareForm();
     }
   }
 
   public async prepareForm() {
-    assertDefined(this.articleId);
+    const articleId = this.articleId();
+    assertDefined(articleId);
     this.editMode = true;
     this.articleToEdit = await firstValueFrom(
-      this.helpService.getHelpArticle(this.articleId)
+      this.helpService.getHelpArticle(articleId)
     );
     this.newArticlForm.controls.title.patchValue(this.articleToEdit.title);
     if (this.articleToEdit.content) {
@@ -100,7 +114,8 @@ export class AddHelpArticleComponent implements OnInit, OnChanges {
   }
 
   public async createArticle() {
-    if (this.categoryId === undefined) {
+    const categoryId = this.categoryId();
+    if (categoryId === undefined) {
       return;
     }
     this.creating = true;
@@ -114,7 +129,7 @@ export class AddHelpArticleComponent implements OnInit, OnChanges {
         content: this.model,
       };
       await firstValueFrom(
-        this.helpService.createCategoryArticle(this.categoryId, body)
+        this.helpService.createCategoryArticle(categoryId, body)
       );
       result.result = ActionResult.SUCCEED;
       this.showModal = false;
@@ -141,9 +156,10 @@ export class AddHelpArticleComponent implements OnInit, OnChanges {
         content: this.model,
       };
 
-      if (this.articleId) {
+      const articleId = this.articleId();
+      if (articleId) {
         await firstValueFrom(
-          this.helpService.updateHelpArticle(this.articleId, body)
+          this.helpService.updateHelpArticle(articleId, body)
         );
         result.result = ActionResult.SUCCEED;
         this.newArticlForm.reset();

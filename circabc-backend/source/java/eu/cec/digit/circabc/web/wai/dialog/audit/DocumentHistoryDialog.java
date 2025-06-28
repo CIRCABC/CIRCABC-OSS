@@ -22,70 +22,70 @@ package eu.cec.digit.circabc.web.wai.dialog.audit;
 
 import eu.cec.digit.circabc.repo.log.LogSearchResultDAO;
 import eu.cec.digit.circabc.web.wai.dialog.BaseWaiDialog;
-import org.alfresco.model.ContentModel;
-
-import javax.faces.context.FacesContext;
 import java.util.List;
 import java.util.Map;
+import javax.faces.context.FacesContext;
+import org.alfresco.model.ContentModel;
 
 public class DocumentHistoryDialog extends BaseWaiDialog {
 
-    private static final String CONTAINER_TITLE = "history_dialog_title";
-    private static final String CONTAINER_DESC = "history_dialog_description";
-    private static final long serialVersionUID = 6196990576366355844L;
-    private List<LogSearchResultDAO> auditList;
+  private static final String CONTAINER_TITLE = "history_dialog_title";
+  private static final String CONTAINER_DESC = "history_dialog_description";
+  private static final long serialVersionUID = 6196990576366355844L;
+  private List<LogSearchResultDAO> auditList;
 
-    @Override
-    public void init(Map<String, String> parameters) {
-        super.init(parameters);
-        Long documentID = (Long) getNodeService()
-                .getProperty(getActionNode().getNodeRef(), ContentModel.PROP_NODE_DBID);
-        setAuditList(getLogService().getHistory(documentID,getActionNode().getNodeRef().getId()));
+  @Override
+  public void init(Map<String, String> parameters) {
+    super.init(parameters);
+    Long documentID = (Long) getNodeService()
+      .getProperty(getActionNode().getNodeRef(), ContentModel.PROP_NODE_DBID);
+    setAuditList(
+      getLogService()
+        .getHistory(documentID, getActionNode().getNodeRef().getId())
+    );
+  }
 
-    }
+  @Override
+  protected String finishImpl(FacesContext context, String outcome)
+    throws Throwable {
+    // nothing to do
+    return null;
+  }
 
-    @Override
-    protected String finishImpl(FacesContext context, String outcome) throws Throwable {
-        // nothing to do
-        return null;
-    }
+  public String getBrowserTitle() {
+    return translate("history_dialog_browser_title");
+  }
 
-    public String getBrowserTitle() {
-        return translate("history_dialog_browser_title");
-    }
+  public String getPageIconAltText() {
+    return translate("history_dialog_icon_tooltip");
+  }
 
-    public String getPageIconAltText() {
-        return translate("history_dialog_icon_tooltip");
-    }
+  @Override
+  public String getCancelButtonLabel() {
+    return translate("close");
+  }
 
-    @Override
-    public String getCancelButtonLabel() {
-        return translate("close");
-    }
+  @Override
+  public String getContainerDescription() {
+    return translate(CONTAINER_DESC, getActionNode().getName());
+  }
 
-    @Override
-    public String getContainerDescription() {
-        return translate(CONTAINER_DESC, getActionNode().getName());
-    }
+  @Override
+  public String getContainerTitle() {
+    return translate(CONTAINER_TITLE);
+  }
 
-    @Override
-    public String getContainerTitle() {
-        return translate(CONTAINER_TITLE);
-    }
+  /**
+   * @return the auditList
+   */
+  public List<LogSearchResultDAO> getAuditList() {
+    return auditList;
+  }
 
-    /**
-     * @return the auditList
-     */
-    public List<LogSearchResultDAO> getAuditList() {
-        return auditList;
-    }
-
-    /**
-     * @param auditList the auditList to set
-     */
-    public void setAuditList(List<LogSearchResultDAO> auditList) {
-        this.auditList = auditList;
-    }
-
-
+  /**
+   * @param auditList the auditList to set
+   */
+  public void setAuditList(List<LogSearchResultDAO> auditList) {
+    this.auditList = auditList;
+  }
 }

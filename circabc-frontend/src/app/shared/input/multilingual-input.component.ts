@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Component,
-  forwardRef,
   Input,
   OnChanges,
   OnInit,
   SimpleChanges,
+  forwardRef,
+  input,
 } from '@angular/core';
 import {
   ControlValueAccessor,
@@ -13,18 +14,22 @@ import {
   FormControl,
   FormGroup,
   NG_VALUE_ACCESSOR,
+  ReactiveFormsModule,
 } from '@angular/forms';
 
-import { ValidationService } from 'app/core/validation.service';
+import { nonEmptyTitle } from 'app/core/validation.service';
+import { DataCyDirective } from 'app/shared/directives/data-cy.directive';
 import {
   LanguageCodeName,
-  SupportedLangs,
+  supportedLanguages,
 } from 'app/shared/langs/supported-langs';
+import { SharedModule } from 'primeng/api';
+import { EditorModule } from 'primeng/editor';
 
 @Component({
   selector: 'cbc-multilingual-input',
   templateUrl: './multilingual-input.component.html',
-  styleUrls: ['./multilingual-input.component.scss'],
+  styleUrl: './multilingual-input.component.scss',
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -34,6 +39,7 @@ import {
     },
   ],
   preserveWhitespaces: false,
+  imports: [ReactiveFormsModule, DataCyDirective, EditorModule, SharedModule],
 })
 export class MultilingualInputComponent
   implements OnInit, ControlValueAccessor, OnChanges
@@ -41,22 +47,20 @@ export class MultilingualInputComponent
   form!: FormGroup;
   formSelector!: FormGroup;
 
-  @Input()
-  value!: string;
-  @Input()
-  placeholder!: string;
+  readonly value = input<string>();
+  readonly placeholder = input<string>();
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   lang = 'en';
-  @Input()
-  label!: string;
-  @Input()
-  textarea = false;
-  @Input()
-  enabled = true;
+  readonly label = input.required<string>();
+  readonly textarea = input(false);
+  readonly enabled = input(true);
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   showTranslationPanel = false;
-  @Input()
-  required = false;
+  readonly required = input(false);
 
   public defaultLang = 'en';
   public availableLangs!: LanguageCodeName[];
@@ -134,12 +138,12 @@ export class MultilingualInputComponent
 
   private initForm() {
     this.lang = this.lang.toLowerCase();
-    this.availableLangs = SupportedLangs.availableLangs;
+    this.availableLangs = supportedLanguages;
 
     this.form = new FormGroup({});
 
-    if (this.required) {
-      this.form.setValidators([ValidationService.nonEmptyTitle]);
+    if (this.required()) {
+      this.form.setValidators([nonEmptyTitle]);
     }
 
     for (const lang of this.availableLangs) {
@@ -159,7 +163,7 @@ export class MultilingualInputComponent
       text: [],
     });
 
-    if (!this.enabled) {
+    if (!this.enabled()) {
       this.disableForm();
     }
 

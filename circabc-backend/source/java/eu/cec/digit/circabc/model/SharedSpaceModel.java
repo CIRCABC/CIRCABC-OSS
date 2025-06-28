@@ -29,38 +29,46 @@ import org.alfresco.service.namespace.QName;
  * @author Slobodan Filipovic
  */
 public interface SharedSpaceModel extends BaseCircabcModel {
+  /**
+   * Circabc Shared Space namespace
+   */
+  String CIRCABC_SHARED_SPACE_MODEL_1_0_URI =
+    CIRCABC_NAMESPACE + "/model/sharespace/1.0";
 
-    /**
-     * Circabc Shared Space namespace
-     */
-    String CIRCABC_SHARED_SPACE_MODEL_1_0_URI = CIRCABC_NAMESPACE + "/model/sharespace/1.0";
+  /**
+   * Circabc Shared Space prefix
+   */
+  String CIRCABC_SHARED_SPACE_MODEL_PREFIX = "ss";
 
+  QName ASSOC_SHARE_SPACE_CONTAINER = QName.createQName(
+    CircabcModel.CIRCABC_CONTENT_MODEL_1_0_URI,
+    "shareSpaceContainer"
+  );
 
-    /**
-     * Circabc Shared Space prefix
-     */
-    String CIRCABC_SHARED_SPACE_MODEL_PREFIX = "ss";
+  QName TYPE_CONTAINER = QName.createQName(
+    CIRCABC_SHARED_SPACE_MODEL_1_0_URI,
+    "Container"
+  );
 
-    QName ASSOC_SHARE_SPACE_CONTAINER = QName.createQName(
-            CircabcModel.CIRCABC_CONTENT_MODEL_1_0_URI, "shareSpaceContainer");
+  /**
+   * Circabc
+   */
+  QName ASSOC_ITEREST_GROUP = QName.createQName(
+    CIRCABC_SHARED_SPACE_MODEL_1_0_URI,
+    "InterestGroupAss"
+  );
 
+  QName TYPE_INVITED_INTEREST_GROUP = QName.createQName(
+    CIRCABC_SHARED_SPACE_MODEL_1_0_URI,
+    "invitedInterestGroup"
+  );
+  QName PROP_INTEREST_GROUP_NODE_REF = QName.createQName(
+    CIRCABC_SHARED_SPACE_MODEL_1_0_URI,
+    "ignoderef"
+  );
 
-    QName TYPE_CONTAINER = QName.createQName(
-            CIRCABC_SHARED_SPACE_MODEL_1_0_URI, "Container");
-
-    /**
-     * Circabc
-     */
-    QName ASSOC_ITEREST_GROUP = QName.createQName(
-            CIRCABC_SHARED_SPACE_MODEL_1_0_URI, "InterestGroupAss");
-
-    QName TYPE_INVITED_INTEREST_GROUP = QName.createQName(
-            CIRCABC_SHARED_SPACE_MODEL_1_0_URI, "invitedInterestGroup");
-    QName PROP_INTEREST_GROUP_NODE_REF = QName.createQName(
-            CIRCABC_SHARED_SPACE_MODEL_1_0_URI, "ignoderef");
-
-    QName PROP_PERMISSION = QName.createQName(
-            CIRCABC_SHARED_SPACE_MODEL_1_0_URI, "permission");
-
-
+  QName PROP_PERMISSION = QName.createQName(
+    CIRCABC_SHARED_SPACE_MODEL_1_0_URI,
+    "permission"
+  );
 }

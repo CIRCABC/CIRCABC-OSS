@@ -5,168 +5,224 @@ import eu.cec.digit.circabc.service.profile.Profile;
 import eu.cec.digit.circabc.service.user.UserCategoryMembershipRecord;
 import eu.cec.digit.circabc.service.user.UserIGMembershipRecord;
 import eu.cec.digit.circabc.web.wai.bean.navigation.CategoryHeader;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.NodeService;
 
 public interface CircabcService {
+  void loadModel();
 
-    void loadModel();
+  void addCategoryAdmin(NodeRef categoryNodeRef, String userName);
 
-    void addCategoryAdmin(NodeRef categoryNodeRef, String userName);
+  void removeCategoryAdmin(NodeRef categoryNodeRef, String userName);
 
-    void removeCategoryAdmin(NodeRef categoryNodeRef, String userName);
+  void addPersonToProfile(
+    NodeRef igNodeRef,
+    String userName,
+    String profileName
+  );
 
-    void addPersonToProfile(NodeRef igNodeRef, String userName, String profileName);
+  void uninvitePerson(NodeRef igNodeRef, String userName);
 
-    void uninvitePerson(NodeRef igNodeRef, String userName);
+  void changePersonProfile(
+    NodeRef igNodeRef,
+    String userName,
+    String profileName
+  );
 
-    void changePersonProfile(NodeRef igNodeRef, String userName, String profileName);
+  void exportProfile(NodeRef igNodeRef, String profileName, boolean export);
 
-    void exportProfile(NodeRef igNodeRef, String profileName, boolean export);
+  void importProfile(
+    NodeRef toIgNoderef,
+    NodeRef fromIgNoderef,
+    String fromProfileName,
+    Map<String, Set<String>> servicesPermissions
+  );
 
-    void importProfile(
-            NodeRef toIgNoderef,
-            NodeRef fromIgNoderef,
-            String fromProfileName,
-            Map<String, Set<String>> servicesPermissions);
+  void deleteProfile(NodeRef igNodeRef, String profileName);
 
-    void deleteProfile(NodeRef igNodeRef, String profileName);
+  void updateCanApplyForMemberhip(NodeRef igNodeRef);
 
-    void updateCanApplyForMemberhip(NodeRef igNodeRef);
+  void updateProfile(
+    NodeRef igNodeRef,
+    String profileName,
+    Map<String, Set<String>> servicesPermissions,
+    Profile profile
+  );
 
-    void updateProfile(
-            NodeRef igNodeRef,
-            String profileName,
-            Map<String, Set<String>> servicesPermissions,
-            Profile profile);
+  void updateProfileTitles(long igID, String profileName);
 
-    void updateProfileTitles(long igID, String profileName);
+  void setUILangauge(String currentUser, String language);
 
-    void setUILangauge(String currentUser, String language);
+  void addCategoryNode(NodeRef headerNodeRef, NodeRef categoryNodeRef);
 
-    void addCategoryNode(NodeRef headerNodeRef, NodeRef categoryNodeRef);
+  void addInterestGroupNode(NodeRef catNodeRef, NodeRef igRootNodeRef);
 
-    void addInterestGroupNode(NodeRef catNodeRef, NodeRef igRootNodeRef);
+  void addUser(NodeRef userNodeRef);
 
-    void addUser(NodeRef userNodeRef);
+  void updateIntestGroupProperties(NodeRef igNodeRef);
 
-    void updateIntestGroupProperties(NodeRef igNodeRef);
+  void updateCategoryProperties(NodeRef catNodeRef);
 
-    void updateCategoryProperties(NodeRef catNodeRef);
+  void deleteCategory(NodeRef catNodeRef);
 
-    void deleteCategory(NodeRef catNodeRef);
+  void deleteIntestGroup(NodeRef igNodeRef);
 
-    void deleteIntestGroup(NodeRef igNodeRef);
+  void deleteIntestGroupByID(Long interestGroupID);
 
-    void deleteIntestGroupByID(Long interestGroupID);
+  void moveIG(NodeRef oldCategoryRef, NodeRef newCategoryRef, NodeRef igRef);
 
-    void moveIG(NodeRef oldCategoryRef, NodeRef newCategoryRef, NodeRef igRef);
+  void addHeaderNode(NodeRef headerNodeRef);
 
-    void addHeaderNode(NodeRef headerNodeRef);
+  void deleteHeader(NodeRef nodeRef);
 
-    void deleteHeader(NodeRef nodeRef);
+  List<InterestGroupItem> getInterestGroupByCategoryUser(
+    NodeRef categoryRef,
+    String userName
+  );
 
-    List<InterestGroupItem> getInterestGroupByCategoryUser(NodeRef categoryRef, String userName);
+  /**
+   * @return list of profile that could be imported in interest group
+   */
+  List<ExportedProfileItem> getExportedProfiles(
+    NodeRef categoryRef,
+    NodeRef igRef
+  );
 
-    /**
-     * @return list of profile that could be imported in interest group
-     */
-    List<ExportedProfileItem> getExportedProfiles(NodeRef categoryRef, NodeRef igRef);
+  Set<String> getCategoryAlfrescoGroupsExceptCurrentIG(
+    NodeRef category,
+    NodeRef igNodeRef
+  );
 
-    Set<String> getCategoryAlfrescoGroupsExceptCurrentIG(NodeRef category, NodeRef igNodeRef);
+  List<UserIGMembershipRecord> getInterestGroups(String userName);
 
-    List<UserIGMembershipRecord> getInterestGroups(String userName);
+  List<UserCategoryMembershipRecord> getCategories(String userName);
 
-    List<UserCategoryMembershipRecord> getCategories(String userName);
+  void updateUser(NodeRef userNodeRef);
 
-    void updateUser(NodeRef userNodeRef);
+  boolean syncEnabled();
 
-    boolean syncEnabled();
+  boolean readFromDatabase();
 
-    boolean readFromDatabase();
+  void updateHeader(NodeRef headerNodeRef, String name, String description);
 
-    void updateHeader(NodeRef headerNodeRef, String name, String description);
+  void resyncInterestGroup(NodeRef nodeRef);
 
-    void resyncInterestGroup(NodeRef nodeRef);
+  void resyncCategory(NodeRef nodeRef);
 
-    void resyncCategory(NodeRef nodeRef);
+  void resyncUsers();
 
-    void resyncUsers();
+  List<CategoryHeader> getHeadersAndCategories();
 
-    List<CategoryHeader> getHeadersAndCategories();
+  List<ProfileWithUsersCount> getProfiles(NodeRef nodeRef, long localeID);
 
-    List<ProfileWithUsersCount> getProfiles(NodeRef nodeRef, long localeID);
+  Long getUserLocaleID(String userName);
 
-    Long getUserLocaleID(String userName);
+  List<UserWithProfile> getFilteredUsers(
+    NodeRef igNodeRef,
+    long localeID,
+    String alfrescoGroup,
+    String searchText
+  );
 
-    List<UserWithProfile> getFilteredUsers(
-            NodeRef igNodeRef, long localeID, String alfrescoGroup, String searchText);
+  List<UserWithProfile> getFilteredUsers(
+    NodeRef igNodeRef,
+    long localeID,
+    String alfrescoGroup,
+    String searchText,
+    String order
+  );
 
-    List<UserWithProfile> getFilteredUsers(
-            NodeRef igNodeRef, long localeID, String alfrescoGroup, String searchText, String order);
+  List<UserWithProfile> getFilteredUsers(
+    NodeRef igNodeRef,
+    long localeID,
+    String alfrescoGroup,
+    String firstName,
+    String lastName,
+    String email
+  );
 
-    List<eu.cec.digit.circabc.repo.app.model.Profile> getProfilesForIg(
-            NodeRef igNodeRef, long localeID, String searchQuery);
+  List<UserWithProfile> getFilteredUsers(
+    NodeRef igNodeRef,
+    long localeID,
+    String alfrescoGroup,
+    String firstName,
+    String lastName,
+    String email,
+    String order
+  );
 
-    Integer getNumberOfAdmintrators(NodeRef igNodeRef);
+  List<eu.cec.digit.circabc.repo.app.model.Profile> getProfilesForIg(
+    NodeRef igNodeRef,
+    long localeID,
+    String searchQuery
+  );
 
-    void postOrUpdateProfile(io.swagger.model.Profile profile);
+  Integer getNumberOfAdmintrators(NodeRef igNodeRef);
 
-    NodeService getNodeService();
+  void postOrUpdateProfile(io.swagger.model.Profile profile);
 
-    boolean isUserMember(NodeRef igNodeRef, String userName);
+  NodeService getNodeService();
 
-    boolean isCategoryAdmin(NodeRef categoryNodeRef, String userName);
+  boolean isUserMember(NodeRef igNodeRef, String userName);
 
-    boolean isCategoryAdminOfInterestGroup(NodeRef interestGroupNodeRef, String userName);
+  boolean isCategoryAdmin(NodeRef categoryNodeRef, String userName);
 
-    boolean isCircabcAdmin(String userName);
+  boolean isCategoryAdminOfInterestGroup(
+    NodeRef interestGroupNodeRef,
+    String userName
+  );
 
-    void addCircabcAdmin(String userName);
+  boolean isCircabcAdmin(String userName);
 
-    void removeCircabcAdmin(String userName);
+  void addCircabcAdmin(String userName);
 
-    void resyncCircabcAdmins();
+  void removeCircabcAdmin(String userName);
 
-    InterestGroupResult getInterestGroup(NodeRef interestGroupNodeRef);
+  void resyncCircabcAdmins();
 
-    List<String> getCategoryAdmins(NodeRef categoryNodeRef);
+  InterestGroupResult getInterestGroup(NodeRef interestGroupNodeRef);
 
-    void deletePersonFromGroup(NodeRef igNodeRef, String userName);
+  boolean isIgToBeDeleted(NodeRef interestGroupNodeRef);
 
-    void updateLogoRefProperty(NodeRef categoryNodeRef);
+  List<String> getCategoryAdmins(NodeRef categoryNodeRef);
 
-    void setGroupLogoNode(NodeRef igNodeRef, NodeRef logoNodeRef);
+  void deletePersonFromGroup(NodeRef igNodeRef, String userName);
 
-    Map<String, String> getInterestGroupTitle(NodeRef igRef);
+  void updateLogoRefProperty(NodeRef categoryNodeRef);
 
-    Map<String, String> getProfileTitle(NodeRef profileId);
+  void setGroupLogoNode(NodeRef igNodeRef, NodeRef logoNodeRef);
 
-    Map<String, String> getCategoryTitle(NodeRef categRef);
+  Map<String, String> getInterestGroupTitle(NodeRef igRef);
 
-    boolean isUserExists(String userName);
+  Map<String, String> getProfileTitle(NodeRef profileId);
 
-    void updateInterestGroupPublic(NodeRef igRef, Boolean isGuest);
+  Map<String, String> getCategoryTitle(NodeRef categRef);
 
-    void updateInterestGroupRegistered(NodeRef igRef, Boolean isRegistered);
+  boolean isUserExists(String userName);
 
-    void updateInterestGroupApplication(NodeRef igRef, Boolean applicationAllowed);
+  void updateInterestGroupPublic(NodeRef igRef, Boolean isGuest);
 
-    void deleteAll();
+  void updateInterestGroupRegistered(NodeRef igRef, Boolean isRegistered);
 
-    void resyncAll();
+  void updateInterestGroupApplication(
+    NodeRef igRef,
+    Boolean applicationAllowed
+  );
 
-    int countMembersInIg(String id);
+  void deleteAll();
 
-    Set<String> getUserIds(String interestGroupId);
+  void resyncAll();
 
-    void addUser(String userName);
+  int countMembersInIg(String id);
 
-    void syncGroupLogos();
+  Set<String> getUserIds(String interestGroupId);
 
-    boolean isUserDirAdminOrCategoryAdminOrCircabcAdmin(String userName);
+  void addUser(String userName);
+
+  void syncGroupLogos();
+
+  boolean isUserDirAdminOrCategoryAdminOrCircabcAdmin(String userName);
 }

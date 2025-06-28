@@ -1,18 +1,20 @@
 <section class="right-actions">
-  <a (click)="downloadExport()">{{ 'label.download' | transloco }}</a>&nbsp;
-  <a class="cta" (click)="showModal = true"
+  <a tabindex="0" (click)="downloadExport()"
+    >{{ 'label.download' | transloco }}</a
+  >&nbsp;
+  <a tabindex="0" class="cta" (click)="showModal = true"
     >{{ 'label.add.email' | transloco }}</a
   >
 </section>
 
-<p> {{ 'label.distribution.list.page.explanation' | transloco }} </p>
+<p>{{ 'label.distribution.list.page.explanation' | transloco }}</p>
 
 <header class="header">
   <cbc-pager
     [length]="distributionEmails.total"
     [pageSize]="listingOptions.limit"
-    [pageIndex]="listingOptions.page"
-    (pageChanged)="goToPage($event)"
+    [page]="listingOptions.page"
+    (pageChange)="goToPage($event)"
   ></cbc-pager>
 </header>
 <br />
@@ -28,7 +30,8 @@
         />
         {{ 'label.select.all' | transloco }}
       </span>
-      <span class="selection-actions" *ngIf="hasSelectedDistribution()">
+      @if (hasSelectedDistribution()) {
+      <span class="selection-actions">
         <cbc-number-badge
           [number]="countSelectedDistribution()"
         ></cbc-number-badge>
@@ -37,14 +40,15 @@
           [useIcon]="true"
           [useText]="true"
         ></cbc-inline-delete>
-        <cbc-spinner *ngIf="deletingAll"></cbc-spinner>
+        @if (deletingAll) {
+        <cbc-spinner></cbc-spinner>
+        }
       </span>
+      }
     </div>
     <ul class="mail-list">
-      <li
-        class="row"
-        *ngFor="let distribEmail of distributionEmails.data; trackBy: trackById"
-      >
+      @for (distribEmail of distributionEmails.data; track distribEmail.id) {
+      <li class="row">
         <input
           type="checkbox"
           (click)="tickDistributionMail(distribEmail)"
@@ -59,12 +63,10 @@
           [useText]="false"
         ></cbc-inline-delete>
       </li>
+      }
     </ul>
-    <div
-      class="selection-actions"
-      *ngIf="hasSelectedDistribution()"
-      style="margin-top: 15px; padding-left: 40px"
-    >
+    @if (hasSelectedDistribution()) {
+    <div class="selection-actions" style="margin-top: 15px; padding-left: 40px">
       <cbc-number-badge
         [number]="countSelectedDistribution()"
       ></cbc-number-badge>
@@ -73,8 +75,11 @@
         [useIcon]="true"
         [useText]="true"
       ></cbc-inline-delete>
-      <cbc-spinner *ngIf="deletingAll"></cbc-spinner>
+      @if (deletingAll) {
+      <cbc-spinner></cbc-spinner>
+      }
     </div>
+    }
   </div>
 </section>
 <br />
@@ -82,12 +87,12 @@
   <cbc-pager
     [length]="distributionEmails.total"
     [pageSize]="listingOptions.limit"
-    [pageIndex]="listingOptions.page"
-    (pageChanged)="goToPage($event)"
+    [page]="listingOptions.page"
+    (pageChange)="goToPage($event)"
   ></cbc-pager>
 </div>
 
 <cbc-add-distribution-email
   [(showModal)]="showModal"
   (modalClosed)="loadDistributionEmails()"
-></cbc-add-distribution-email>
+/>

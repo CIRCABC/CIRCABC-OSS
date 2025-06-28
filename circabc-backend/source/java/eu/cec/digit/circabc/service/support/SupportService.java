@@ -18,10 +18,9 @@ package eu.cec.digit.circabc.service.support;
 
 import eu.cec.digit.circabc.repo.support.SupportContact;
 import eu.cec.digit.circabc.repo.support.SupportTypes;
+import java.util.List;
 import org.alfresco.service.NotAuditable;
 import org.alfresco.service.cmr.repository.NodeRef;
-
-import java.util.List;
 
 /**
  * Interface to manage support capabilities
@@ -30,33 +29,34 @@ import java.util.List;
  * @author Pierre Beauregard
  */
 public interface SupportService {
+  /**
+   * check if the user is from the support
+   */
+  @NotAuditable
+  boolean isUserFromSupport(final String user);
 
-    /**
-     * check if the user is from the support
-     */
-    @NotAuditable
-    boolean isUserFromSupport(final String user);
+  @NotAuditable
+  void setSupportGroupName(final String supportGroupName);
 
-    @NotAuditable
-    void setSupportGroupName(final String supportGroupName);
+  List<SupportContact> getAllSupportContacts();
 
-    List<SupportContact> getAllSupportContacts();
+  SupportContact getContactById(String id);
 
-    SupportContact getContactById(String id);
+  Boolean sendSupportRequest(
+    String subject,
+    String description,
+    SupportTypes byId,
+    String currentUserName,
+    SupportContact contact,
+    NodeRef actionNodeRef
+  );
 
-    Boolean sendSupportRequest(
-            String subject,
-            String description,
-            SupportTypes byId,
-            String currentUserName,
-            SupportContact contact,
-            NodeRef actionNodeRef);
-
-    Boolean sendSupportRequestAsGuest(
-            String subject,
-            String description,
-            SupportTypes byId,
-            String mailAddress,
-            SupportContact contact,
-            NodeRef actionNodeRef);
+  Boolean sendSupportRequestAsGuest(
+    String subject,
+    String description,
+    SupportTypes byId,
+    String mailAddress,
+    SupportContact contact,
+    NodeRef actionNodeRef
+  );
 }

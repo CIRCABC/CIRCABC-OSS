@@ -1,7 +1,8 @@
 <cbc-modal
-  [title]="editMode ? 'help.update.category' : 'help.add.category'"
+  data-cy="section"
+  [title]="editMode ? 'help.update.section' : 'help.add.section'"
   (ok)="editMode ? updateCategory() : createCategory()"
-  (cancel)="cancel()"
+  (cancelModal)="cancel()"
   [okLabel]="editMode ? 'label.update' : 'label.create'"
   [(visible)]="showModal"
   [executing]="creating"

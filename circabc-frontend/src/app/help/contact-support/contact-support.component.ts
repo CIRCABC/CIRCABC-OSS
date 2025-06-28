@@ -1,38 +1,74 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { AfterViewInit, Component, OnInit, viewChild } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { HelpService, UserService } from 'app/core/generated/circabc';
 import { LoginService } from 'app/core/login.service';
-import { ValidationService } from 'app/core/validation.service';
+import { emailValidator } from 'app/core/validation.service';
 import { ContactReasons } from 'app/help/contact-support/reasons-enum';
+import { CaptchaComponent } from 'app/shared/captcha/captcha.component';
+import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
+import { SetTitlePipe } from 'app/shared/pipes/set-title.pipe';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
+import { SharedModule } from 'primeng/api';
+import { EditorModule } from 'primeng/editor';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-contact-support',
   templateUrl: './contact-support.component.html',
-  styleUrls: ['./contact-support.component.scss'],
+  styleUrl: './contact-support.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    ReactiveFormsModule,
+    ControlMessageComponent,
+    EditorModule,
+    SharedModule,
+    CaptchaComponent,
+    SpinnerComponent,
+    RouterLink,
+    SetTitlePipe,
+    TranslocoModule,
+  ],
 })
-export class ContactSupportComponent implements OnInit {
+export class ContactSupportComponent implements OnInit, AfterViewInit {
   public contactForm!: FormGroup;
   public reasons: string[] = [];
   public processing = false;
+  public isWrongCaptcha = false;
   private fileToUpload: File | undefined;
+  readonly captchaComponent = viewChild(CaptchaComponent);
 
   constructor(
     private fb: FormBuilder,
     private helpService: HelpService,
     private loginService: LoginService,
     private userService: UserService,
-    private router: Router
+    private router: Router,
+    private translateService: TranslocoService
   ) {}
+  ngAfterViewInit(): void {
+    const activeLang = this.translateService.getActiveLang();
+    const captchaComponent = this.captchaComponent();
+    if (captchaComponent !== undefined) {
+      captchaComponent.answer.setValue('');
+      if (activeLang !== captchaComponent.languageCode()) {
+        captchaComponent.languageCode.set(activeLang);
+      }
+    }
+  }
 
   ngOnInit() {
     this.contactForm = this.fb.group({
       reason: ['', Validators.required],
       name: ['', Validators.required],
       subject: [''],
-      email: ['', [Validators.required, ValidationService.emailValidator]],
+      email: ['', [Validators.required, emailValidator]],
       content: ['', Validators.required],
       file: [],
     });
@@ -50,6 +86,14 @@ export class ContactSupportComponent implements OnInit {
           );
           this.contactForm.controls.email.setValue(data.email);
         });
+    }
+    if (this.isGuest()) {
+      this.translateService.langChanges$.subscribe((event: string) => {
+        const captchaComponent = this.captchaComponent();
+        if (captchaComponent) {
+          captchaComponent.languageCode.set(event);
+        }
+      });
     }
   }
 
@@ -94,28 +138,53 @@ export class ContactSupportComponent implements OnInit {
 
   public async contact() {
     this.processing = true;
+    this.isWrongCaptcha = false;
     try {
-      await firstValueFrom(
-        this.helpService.contactSupport(
-          this.contactForm.value.reason,
-          this.contactForm.value.name,
-          this.contactForm.value.email,
-          this.contactForm.value.content,
-          this.contactForm.value.subject,
-          this.fileToUpload
-        )
-      );
+      const captchaComponent = this.captchaComponent();
+      if (captchaComponent !== undefined) {
+        await firstValueFrom(
+          this.helpService.contactSupport(
+            this.contactForm.value.reason,
+            this.contactForm.value.name,
+            this.contactForm.value.email,
+            this.contactForm.value.content,
+            captchaComponent.captchaId,
+            captchaComponent.captchaToken,
+            captchaComponent.answer.value as string,
+            this.contactForm.value.subject,
+            this.fileToUpload
+          )
+        );
+      } else {
+        await firstValueFrom(
+          this.helpService.contactSupport(
+            this.contactForm.value.reason,
+            this.contactForm.value.name,
+            this.contactForm.value.email,
+            this.contactForm.value.content,
+            undefined,
+            undefined,
+            undefined,
+            this.contactForm.value.subject,
+            this.fileToUpload
+          )
+        );
+      }
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.router.navigate(['/help']);
     } catch (error) {
-      console.error(error);
+      if (error.error?.message?.includes('invalid captcha answer')) {
+        this.isWrongCaptcha = true;
+        this.processing = false;
+      }
     }
     this.processing = false;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public fileChangeEvent(fileInput: any) {
-    const filesList = fileInput.target.files as FileList;
+  public fileChangeEvent(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const filesList = input.files as FileList;
+
     this.handleFiles(filesList);
   }
 
@@ -132,5 +201,13 @@ export class ContactSupportComponent implements OnInit {
 
   public isGuest(): boolean {
     return this.loginService.isGuest();
+  }
+
+  public isDisabled(): boolean {
+    const component = this.captchaComponent();
+    if (this.isGuest() && component) {
+      return !this.contactForm.valid || component.answer.invalid;
+    }
+    return !this.contactForm.valid;
   }
 }

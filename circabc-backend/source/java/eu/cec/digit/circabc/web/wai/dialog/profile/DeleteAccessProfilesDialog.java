@@ -24,11 +24,10 @@ import eu.cec.digit.circabc.service.profile.IGRootProfileManagerService;
 import eu.cec.digit.circabc.service.profile.permissions.DirectoryPermissions;
 import eu.cec.digit.circabc.web.bean.navigation.NavigableNodeType;
 import eu.cec.digit.circabc.web.wai.dialog.BaseWaiDialog;
+import java.util.Map;
+import javax.faces.context.FacesContext;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.web.ui.common.Utils;
-
-import javax.faces.context.FacesContext;
-import java.util.Map;
 
 /**
  * Baked bean for access profiles deletion
@@ -37,108 +36,137 @@ import java.util.Map;
  */
 public class DeleteAccessProfilesDialog extends BaseWaiDialog {
 
-    private static final long serialVersionUID = -4578936397847959999L;
+  private static final long serialVersionUID = -4578936397847959999L;
 
-    //private static final Log logger = LogFactory.getLog(ManageAccessProfilesDialog.class);
+  //private static final Log logger = LogFactory.getLog(ManageAccessProfilesDialog.class);
 
-    private static final String MSG_CONFIRMATION = "remove_access_profile_dialog_page_confirmation";
-    private static final String MSG_IMPORTED_CONFIRMATION = "remove_access_profile_dialog_page_imported_confirmation";
-    private static final String MSG_PAGE_TITLE = "remove_access_profile_dialog_page_title";
-    private static final String MSG_ERROR = "remove_access_profile_dialog_error";
+  private static final String MSG_CONFIRMATION =
+    "remove_access_profile_dialog_page_confirmation";
+  private static final String MSG_IMPORTED_CONFIRMATION =
+    "remove_access_profile_dialog_page_imported_confirmation";
+  private static final String MSG_PAGE_TITLE =
+    "remove_access_profile_dialog_page_title";
+  private static final String MSG_ERROR = "remove_access_profile_dialog_error";
 
-    private static final String PARAM_PROFILE_NAME = "profileName";
-    private static final String PARAM_USED_TITLE = "profileDisplayTitle";
-    private static final String PARAM_IMPORTED = "profileImported";
+  private static final String PARAM_PROFILE_NAME = "profileName";
+  private static final String PARAM_USED_TITLE = "profileDisplayTitle";
+  private static final String PARAM_IMPORTED = "profileImported";
 
-    private String profileDisplayTitle;
-    private String profileName;
-    private String imported;
+  private String profileDisplayTitle;
+  private String profileName;
+  private String imported;
 
-    private Boolean clearPermission;
+  private Boolean clearPermission;
 
-    @Override
-    public void init(Map<String, String> arg0) {
-        super.init(arg0);
+  @Override
+  public void init(Map<String, String> arg0) {
+    super.init(arg0);
 
-        if (arg0 != null) {
-            profileName = arg0.get(PARAM_PROFILE_NAME);
-            profileDisplayTitle = arg0.get(PARAM_USED_TITLE);
-            imported = arg0.get(PARAM_IMPORTED);
-        }
-
-        if (getActionNode() == null) {
-            throw new IllegalArgumentException("The node id is a mandatory parameter");
-        } else if (profileDisplayTitle == null || profileName == null) {
-            profileDisplayTitle = null;
-            profileName = null;
-            imported = null;
-            throw new IllegalArgumentException(
-                    "Missing arguments: " + PARAM_PROFILE_NAME + " and " + PARAM_USED_TITLE
-                            + " are required!");
-        } else if (NavigableNodeType.IG_ROOT.isNodeFromType(getActionNode()) == false) {
-            throw new IllegalArgumentException("This page is accessible only for an interest group");
-        }
-
-        if (getActionNode().hasPermission(DirectoryPermissions.DIRADMIN.toString()) == false) {
-            Utils.addErrorMessage(translate(ManageAccessProfilesDialog.MSG_NO_LONGER_PERM));
-        }
+    if (arg0 != null) {
+      profileName = arg0.get(PARAM_PROFILE_NAME);
+      profileDisplayTitle = arg0.get(PARAM_USED_TITLE);
+      imported = arg0.get(PARAM_IMPORTED);
     }
 
-    @Override
-    public void restored() {
-        this.init(null);
+    if (getActionNode() == null) {
+      throw new IllegalArgumentException(
+        "The node id is a mandatory parameter"
+      );
+    } else if (profileDisplayTitle == null || profileName == null) {
+      profileDisplayTitle = null;
+      profileName = null;
+      imported = null;
+      throw new IllegalArgumentException(
+        "Missing arguments: " +
+        PARAM_PROFILE_NAME +
+        " and " +
+        PARAM_USED_TITLE +
+        " are required!"
+      );
+    } else if (
+      NavigableNodeType.IG_ROOT.isNodeFromType(getActionNode()) == false
+    ) {
+      throw new IllegalArgumentException(
+        "This page is accessible only for an interest group"
+      );
     }
 
-    public String getConfirmMessage() {
-        if (imported != null && imported.equals("true")) {
-            return translate(MSG_IMPORTED_CONFIRMATION, profileDisplayTitle);
-        } else {
-            return translate(MSG_CONFIRMATION, profileDisplayTitle, getActionNode().getName());
-        }
+    if (
+      getActionNode().hasPermission(DirectoryPermissions.DIRADMIN.toString()) ==
+      false
+    ) {
+      Utils.addErrorMessage(
+        translate(ManageAccessProfilesDialog.MSG_NO_LONGER_PERM)
+      );
     }
+  }
 
-    @Override
-    protected String finishImpl(FacesContext context, String outcome) throws Throwable {
-        try {
-            final IGRootProfileManagerService profileManagerService = getProfileManagerServiceFactory()
-                    .getIGRootProfileManagerService();
-            final NodeRef nodeRef = getActionNode().getNodeRef();
+  @Override
+  public void restored() {
+    this.init(null);
+  }
 
-            logRecord.setInfo("deleted profile " + profileName);
-            profileManagerService.deleteProfile(nodeRef, profileName, clearPermission);
-
-            // reset permission cache on the action node
-            getActionNode().reset();
-            // reset permission cache on all navigation node
-            getNavigator().updateCircabcNavigationContext();
-
-            return outcome;
-        } catch (Exception e) {
-            Utils.addErrorMessage(translate(MSG_ERROR, profileDisplayTitle, e.getMessage()));
-
-            isFinished = false;
-
-            return null;
-        }
+  public String getConfirmMessage() {
+    if (imported != null && imported.equals("true")) {
+      return translate(MSG_IMPORTED_CONFIRMATION, profileDisplayTitle);
+    } else {
+      return translate(
+        MSG_CONFIRMATION,
+        profileDisplayTitle,
+        getActionNode().getName()
+      );
     }
+  }
 
-    public String getContainerTitle() {
-        return translate(MSG_PAGE_TITLE, profileDisplayTitle);
-    }
+  @Override
+  protected String finishImpl(FacesContext context, String outcome)
+    throws Throwable {
+    try {
+      final IGRootProfileManagerService profileManagerService =
+        getProfileManagerServiceFactory().getIGRootProfileManagerService();
+      final NodeRef nodeRef = getActionNode().getNodeRef();
 
-    public String getBrowserTitle() {
-        return translate("remove_access_profile_dialog_browser_title");
-    }
+      logRecord.setInfo("deleted profile " + profileName);
+      profileManagerService.deleteProfile(
+        nodeRef,
+        profileName,
+        clearPermission
+      );
 
-    public String getPageIconAltText() {
-        return translate("remove_access_profile_dialog_icon_tooltip");
-    }
+      // reset permission cache on the action node
+      getActionNode().reset();
+      // reset permission cache on all navigation node
+      getNavigator().updateCircabcNavigationContext();
 
-    public Boolean getClearPermission() {
-        return clearPermission;
-    }
+      return outcome;
+    } catch (Exception e) {
+      Utils.addErrorMessage(
+        translate(MSG_ERROR, profileDisplayTitle, e.getMessage())
+      );
 
-    public void setClearPermission(Boolean clearPermission) {
-        this.clearPermission = clearPermission;
+      isFinished = false;
+
+      return null;
     }
+  }
+
+  public String getContainerTitle() {
+    return translate(MSG_PAGE_TITLE, profileDisplayTitle);
+  }
+
+  public String getBrowserTitle() {
+    return translate("remove_access_profile_dialog_browser_title");
+  }
+
+  public String getPageIconAltText() {
+    return translate("remove_access_profile_dialog_icon_tooltip");
+  }
+
+  public Boolean getClearPermission() {
+    return clearPermission;
+  }
+
+  public void setClearPermission(Boolean clearPermission) {
+    this.clearPermission = clearPermission;
+  }
 }

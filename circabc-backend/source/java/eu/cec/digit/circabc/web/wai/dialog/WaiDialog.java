@@ -21,10 +21,8 @@
 package eu.cec.digit.circabc.web.wai.dialog;
 
 import eu.cec.digit.circabc.web.wai.manager.ActionsListWrapper;
-import org.alfresco.web.bean.dialog.IDialogBean;
-
 import java.io.Serializable;
-
+import org.alfresco.web.bean.dialog.IDialogBean;
 
 /**
  * Base interface of each bean that want to back a dialog of the Circabc WAI webclient
@@ -32,29 +30,25 @@ import java.io.Serializable;
  * @author yanick pignot
  */
 public interface WaiDialog extends IDialogBean, Serializable {
+  /**
+   * @return the alt text attribute of the icon
+   */
+  String getPageIconAltText();
 
-    /**
-     * @return the alt text attribute of the icon
-     */
-    String getPageIconAltText();
+  /**
+   * @return the main title that should be displayed in the top of the browser.
+   */
+  String getBrowserTitle();
 
-    /**
-     * @return the main title that should be displayed in the top of the browser.
-     */
-    String getBrowserTitle();
+  /**
+   * @return an object that wrap an action list for the right menu
+   */
+  ActionsListWrapper getActionList();
 
-    /**
-     * @return an object that wrap an action list for the right menu
-     */
-    ActionsListWrapper getActionList();
+  /**
+   * @return true if the cancel button must be displayed
+   */
+  boolean isCancelButtonVisible();
 
-
-    /**
-     * @return true if the cancel button must be displayed
-     */
-    boolean isCancelButtonVisible();
-
-
-    boolean isFormProvided();
-
+  boolean isFormProvided();
 }

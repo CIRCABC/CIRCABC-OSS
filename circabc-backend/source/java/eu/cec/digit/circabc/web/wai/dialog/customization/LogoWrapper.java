@@ -20,103 +20,116 @@
  ******************************************************************************/
 package eu.cec.digit.circabc.web.wai.dialog.customization;
 
+import static eu.cec.digit.circabc.web.wai.dialog.customization.NavigationPrefWrapper.MSG_CURRENT_NODE;
+import static eu.cec.digit.circabc.web.wai.dialog.customization.NavigationPrefWrapper.MSG_UNDEFINED;
+
 import eu.cec.digit.circabc.repo.struct.SimplePath;
 import eu.cec.digit.circabc.service.customisation.logo.LogoDefinition;
 import eu.cec.digit.circabc.web.WebClientHelper;
 import eu.cec.digit.circabc.web.WebClientHelper.ExtendedURLMode;
+import java.io.Serializable;
+import javax.jcr.PathNotFoundException;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.util.ParameterCheck;
 import org.alfresco.web.bean.repository.Node;
-
-import javax.jcr.PathNotFoundException;
-import java.io.Serializable;
-
-import static eu.cec.digit.circabc.web.wai.dialog.customization.NavigationPrefWrapper.MSG_CURRENT_NODE;
-import static eu.cec.digit.circabc.web.wai.dialog.customization.NavigationPrefWrapper.MSG_UNDEFINED;
 
 /**
  * @author Yanick Pignot
  */
 public class LogoWrapper implements Serializable {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 8468335099265140975L;
+  /**
+   *
+   */
+  private static final long serialVersionUID = 8468335099265140975L;
 
-    private final LogoDefinition definition;
-    private final NodeService nodeService;
-    private final Node currentNode;
-    private final String selectedLogid;
+  private final LogoDefinition definition;
+  private final NodeService nodeService;
+  private final Node currentNode;
+  private final String selectedLogid;
 
-    /*package*/ LogoWrapper(final LogoDefinition definition, final Node currentNode,
-                            final NodeService nodeService, final String selectedLogid) {
-        super();
+  /*package*/LogoWrapper(
+    final LogoDefinition definition,
+    final Node currentNode,
+    final NodeService nodeService,
+    final String selectedLogid
+  ) {
+    super();
+    ParameterCheck.mandatory("A logo definition", definition);
+    ParameterCheck.mandatory("The current node", currentNode);
+    ParameterCheck.mandatory("The node service", nodeService);
 
-        ParameterCheck.mandatory("A logo definition", definition);
-        ParameterCheck.mandatory("The current node", currentNode);
-        ParameterCheck.mandatory("The node service", nodeService);
+    this.definition = definition;
+    this.currentNode = currentNode;
+    this.nodeService = nodeService;
+    this.selectedLogid = selectedLogid;
+  }
 
-        this.definition = definition;
-        this.currentNode = currentNode;
-        this.nodeService = nodeService;
-        this.selectedLogid = selectedLogid;
+  public NodeRef getDefinedOn() {
+    return definition.getDefinedOn();
+  }
+
+  public String getDefinedOnPath() {
+    final NodeRef customizedOn = getDefinedOn();
+
+    if (customizedOn.equals(currentNode.getNodeRef())) {
+      return translate(MSG_CURRENT_NODE);
+    } else {
+      SimplePath path;
+      try {
+        path = new SimplePath(nodeService, customizedOn);
+        return path.toString();
+      } catch (PathNotFoundException e) {
+        return "<i>" + translate(MSG_UNDEFINED) + "</i>";
+      }
     }
+  }
 
-    public NodeRef getDefinedOn() {
-        return definition.getDefinedOn();
-    }
+  public String getDownloadPath() {
+    return WebClientHelper.getGeneratedWaiUrl(
+      getReference(),
+      ExtendedURLMode.HTTP_DOWNLOAD,
+      true
+    );
+  }
 
-    public String getDefinedOnPath() {
-        final NodeRef customizedOn = getDefinedOn();
+  public String getDescription() {
+    return definition.getDescription();
+  }
 
-        if (customizedOn.equals(currentNode.getNodeRef())) {
-            return translate(MSG_CURRENT_NODE);
-        } else {
-            SimplePath path;
-            try {
-                path = new SimplePath(nodeService, customizedOn);
-                return path.toString();
-            } catch (PathNotFoundException e) {
-                return "<i>" + translate(MSG_UNDEFINED) + "</i>";
-            }
-        }
-    }
+  public String getName() {
+    return definition.getName();
+  }
 
-    public String getDownloadPath() {
-        return WebClientHelper.getGeneratedWaiUrl(getReference(), ExtendedURLMode.HTTP_DOWNLOAD, true);
-    }
+  public NodeRef getReference() {
+    return definition.getReference();
+  }
 
-    public String getDescription() {
-        return definition.getDescription();
-    }
+  public String getTitle() {
+    return definition.getTitle();
+  }
 
-    public String getName() {
-        return definition.getName();
-    }
+  public boolean isSelected() {
+    return (
+      selectedLogid != null && selectedLogid.equals(getReference().getId())
+    );
+  }
 
-    public NodeRef getReference() {
-        return definition.getReference();
-    }
+  public boolean isSelectable() {
+    return (
+      selectedLogid == null ||
+      selectedLogid.equals(getReference().getId()) == false
+    );
+  }
 
-    public String getTitle() {
-        return definition.getTitle();
-    }
+  public boolean isRemovable() {
+    return (
+      isSelected() == false && getDefinedOn().equals(currentNode.getNodeRef())
+    );
+  }
 
-    public boolean isSelected() {
-        return selectedLogid != null && selectedLogid.equals(getReference().getId());
-    }
-
-    public boolean isSelectable() {
-        return selectedLogid == null || selectedLogid.equals(getReference().getId()) == false;
-    }
-
-    public boolean isRemovable() {
-        return isSelected() == false && getDefinedOn().equals(currentNode.getNodeRef());
-    }
-
-    private String translate(final String message) {
-        return WebClientHelper.translate(message);
-    }
+  private String translate(final String message) {
+    return WebClientHelper.translate(message);
+  }
 }

@@ -23,22 +23,22 @@ package eu.cec.digit.circabc.repo.external.repositories;
  */
 public class StaticUserNameResolver implements UserNameResolver {
 
-    private String userName = null;
+  private String userName = null;
 
-    /**
-     * @see eu.cec.digit.circabc.repo.external.repositories.UserNameResolver#getUserName()
-     */
-    @Override
-    public String getUserName() {
-        return userName;
-    }
+  /**
+   * @see eu.cec.digit.circabc.repo.external.repositories.UserNameResolver#getUserName()
+   */
+  @Override
+  public String getUserName() {
+    return userName;
+  }
 
-    /**
-     * Sets the value of the userName
-     *
-     * @param userName the userName to set.
-     */
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
+  /**
+   * Sets the value of the userName
+   *
+   * @param userName the userName to set.
+   */
+  public void setUserName(String userName) {
+    this.userName = userName;
+  }
 }

@@ -20,10 +20,10 @@
  ******************************************************************************/
 package eu.cec.digit.circabc.web.servlet;
 
+import java.io.IOException;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 /**
  * @author Slobodan Filipovic
@@ -41,40 +41,45 @@ import java.io.IOException;
  */
 public class OfficeLinkFilter implements Filter {
 
-    @Override
-    public void doFilter(ServletRequest req, ServletResponse resp,
-                         FilterChain chain) throws IOException, ServletException {
+  @Override
+  public void doFilter(
+    ServletRequest req,
+    ServletResponse resp,
+    FilterChain chain
+  ) throws IOException, ServletException {
+    HttpServletRequest httpRequset = (HttpServletRequest) req;
+    HttpServletResponse httpResponse = (HttpServletResponse) resp;
 
-        HttpServletRequest httpRequset = (HttpServletRequest) req;
-        HttpServletResponse httpResponse = (HttpServletResponse) resp;
-
-        String userAgent = httpRequset.getHeader("User-Agent");
-        if (userAgent != null
-                && (userAgent.contains("Word") || userAgent.contains("Excel")
-                || userAgent.contains("PowerPoint") || userAgent
-                .contains("ms-office"))
-                && !userAgent.contains("Microsoft Outlook")) {
-            httpResponse.setContentType("text/html");
-            httpResponse
-                    .getOutputStream()
-                    .println(
-                            "<html><head><meta http-equiv='refresh' content='0'/></head><body></body></html>");
-            httpResponse.setStatus(HttpServletResponse.SC_OK);
-        } else {
-            chain.doFilter(req, resp);
-        }
+    String userAgent = httpRequset.getHeader("User-Agent");
+    if (
+      userAgent != null &&
+      (userAgent.contains("Word") ||
+        userAgent.contains("Excel") ||
+        userAgent.contains("PowerPoint") ||
+        userAgent.contains("ms-office")) &&
+      !userAgent.contains("Microsoft Outlook")
+    ) {
+      httpResponse.setContentType("text/html");
+      httpResponse
+        .getOutputStream()
+        .println(
+          "<html><head><meta http-equiv='refresh' content='0'/></head><body></body></html>"
+        );
+      httpResponse.setStatus(HttpServletResponse.SC_OK);
+    } else {
+      chain.doFilter(req, resp);
     }
+  }
 
-    @Override
-    public void init(FilterConfig conf) throws ServletException {
-        // TODO Auto-generated method stub
+  @Override
+  public void init(FilterConfig conf) throws ServletException {
+    // TODO Auto-generated method stub
 
-    }
+  }
 
-    @Override
-    public void destroy() {
-        // TODO Auto-generated method stub
+  @Override
+  public void destroy() {
+    // TODO Auto-generated method stub
 
-    }
-
+  }
 }

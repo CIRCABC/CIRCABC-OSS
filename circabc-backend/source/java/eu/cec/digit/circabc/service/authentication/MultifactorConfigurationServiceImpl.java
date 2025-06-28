@@ -21,23 +21,24 @@ package eu.cec.digit.circabc.service.authentication;
  *
  * @author schwerr
  */
-public class MultifactorConfigurationServiceImpl implements MultifactorConfigurationService {
+public class MultifactorConfigurationServiceImpl
+  implements MultifactorConfigurationService {
 
-    private boolean multifactorEnabled = false;
+  private boolean multifactorEnabled = false;
 
-    /**
-     * @see eu.cec.digit.circabc.service.authentication.MultifactorConfigurationService#isMultifactorEnabled()
-     */
-    @Override
-    public boolean isMultifactorEnabled() {
-        return multifactorEnabled;
-    }
+  /**
+   * @see eu.cec.digit.circabc.service.authentication.MultifactorConfigurationService#isMultifactorEnabled()
+   */
+  @Override
+  public boolean isMultifactorEnabled() {
+    return multifactorEnabled;
+  }
 
-    /**
-     * @see eu.cec.digit.circabc.service.authentication.MultifactorConfigurationService#setMultifactorEnabled(boolean)
-     */
-    @Override
-    public void setMultifactorEnabled(boolean enabled) {
-        this.multifactorEnabled = enabled;
-    }
+  /**
+   * @see eu.cec.digit.circabc.service.authentication.MultifactorConfigurationService#setMultifactorEnabled(boolean)
+   */
+  @Override
+  public void setMultifactorEnabled(boolean enabled) {
+    this.multifactorEnabled = enabled;
+  }
 }

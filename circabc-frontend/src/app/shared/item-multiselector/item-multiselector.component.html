@@ -7,17 +7,17 @@
         class="select-style"
         formControlName="availableSelectedItems"
       >
-        <option *ngFor="let item of availableItems" value="{{ item.value }}"
-          >{{ item.name }}</option
-        >
+        @for (item of availableItems(); track item.value) {
+        <option value="{{ item.value }}">{{ item.name }}</option>
+        }
       </select>
     </div>
     <div style="display: inline-block">
-      <a (click)="selectItems()">
+      <a tabindex="0" (click)="selectItems()">
         <span style="font-size: 20px">&#9658;</span>
       </a>
       <br />
-      <a (click)="unselectItems()">
+      <a tabindex="0" (click)="unselectItems()">
         <span style="font-size: 20px">&#9668;</span>
       </a>
     </div>
@@ -28,9 +28,9 @@
         class="select-style"
         formControlName="selectedSelectedItems"
       >
-        <option *ngFor="let item of selectedItems" value="{{ item.value }}"
-          >{{ item.name }}</option
-        >
+        @for (item of selectedItems; track item.value) {
+        <option value="{{ item.value }}">{{ item.name }}</option>
+        }
       </select>
     </div>
   </form>

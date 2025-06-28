@@ -1,6 +1,6 @@
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
 import {
@@ -11,15 +11,25 @@ import {
   TranslationsService,
 } from 'app/core/generated/circabc';
 
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { UiMessageService } from 'app/core/message/ui-message.service';
+import { LangSelectorComponent } from 'app/shared/lang/lang-selector.component';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-add-translation',
   templateUrl: './add-translation.component.html',
-  styleUrls: ['./add-translation.component.scss'],
+  styleUrl: './add-translation.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    HorizontalLoaderComponent,
+    ReactiveFormsModule,
+    LangSelectorComponent,
+    SpinnerComponent,
+    TranslocoModule,
+  ],
 })
 export class AddTranslationComponent implements OnInit {
   public addTranslationForm!: FormGroup;
@@ -77,16 +87,17 @@ export class AddTranslationComponent implements OnInit {
   }
 
   getNbTranslations(): number {
-    if (this.translations && this.translations.translations) {
+    if (this.translations?.translations) {
       return this.translations.translations.length - 1;
     }
 
     return 0;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  fileChangeEvent(fileInput: any) {
-    this.myfile = fileInput.target.files[0];
+  fileChangeEvent(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const filesList = input.files as FileList;
+    this.myfile = filesList[0];
   }
 
   setModeFileUpload() {
@@ -153,9 +164,9 @@ export class AddTranslationComponent implements OnInit {
   public prepareDisabledLang() {
     this.disabledLangs = [];
 
-    if (this.translations && this.translations.translations) {
+    if (this.translations?.translations) {
       for (const tr of this.translations.translations) {
-        if (tr.properties && tr.properties.locale) {
+        if (tr.properties?.locale) {
           this.disabledLangs.push(tr.properties.locale);
         }
       }
@@ -173,11 +184,10 @@ export class AddTranslationComponent implements OnInit {
   }
 
   get pivotLocale(): string {
-    if (this.translations.pivot && this.translations.pivot.properties) {
+    if (this.translations.pivot?.properties) {
       return this.translations.pivot.properties.locale;
-    } else {
-      return '';
     }
+    return '';
   }
 
   private async isLanguageSelected() {
@@ -185,9 +195,8 @@ export class AddTranslationComponent implements OnInit {
       const txt = this.translateService.translate('validation.selectLanguage');
       this.uiMessageService.addErrorMessage(txt);
       return false;
-    } else {
-      return true;
     }
+    return true;
   }
 
   public hasLanguageSelected() {
@@ -196,26 +205,23 @@ export class AddTranslationComponent implements OnInit {
       this.addTranslationForm.value.lang === ''
     ) {
       return false;
-    } else {
-      return true;
     }
+    return true;
   }
   private async isFileSelected() {
     if (this.myfile === undefined || this.myfile === null) {
       const txt = this.translateService.translate('validation.selectFile');
       this.uiMessageService.addErrorMessage(txt);
       return false;
-    } else {
-      return true;
     }
+    return true;
   }
 
   public hasFileSelected() {
     if (this.myfile === undefined || this.myfile === null) {
       return false;
-    } else {
-      return true;
     }
+    return true;
   }
 
   private async isValidExtension() {
@@ -226,16 +232,15 @@ export class AddTranslationComponent implements OnInit {
         const extension = fileName.substring(lastIndex + 1);
         if (this.validExtensions.includes(extension.toLowerCase())) {
           return true;
-        } else {
-          const txt = this.translateService.translate(
-            'validation.invalidFileType',
-            {
-              validFileExtensions: this.validExtensions.toString(),
-            }
-          );
-          this.uiMessageService.addErrorMessage(txt);
-          return false;
         }
+        const txt = this.translateService.translate(
+          'validation.invalidFileType',
+          {
+            validFileExtensions: this.validExtensions.toString(),
+          }
+        );
+        this.uiMessageService.addErrorMessage(txt);
+        return false;
       }
     }
     return true;

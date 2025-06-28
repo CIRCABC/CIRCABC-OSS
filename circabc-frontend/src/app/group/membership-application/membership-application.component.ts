@@ -1,6 +1,12 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, Input, OnInit, output, input } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
@@ -8,22 +14,31 @@ import {
 } from 'app/action-result';
 import { MembersService } from 'app/core/generated/circabc';
 import { LoginService } from 'app/core/login.service';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
+import { SharedModule } from 'primeng/api';
+import { EditorModule } from 'primeng/editor';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-membership-application',
   templateUrl: './membership-application.component.html',
   preserveWhitespaces: true,
+  imports: [
+    ReactiveFormsModule,
+    EditorModule,
+    SharedModule,
+    SpinnerComponent,
+    TranslocoModule,
+  ],
 })
 export class MembershipApplicationComponent implements OnInit {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   showModal = false;
-  @Input()
-  groupId: string | undefined;
-  @Output()
-  readonly canceled = new EventEmitter<ActionEmitterResult>();
-  @Output()
-  readonly finished = new EventEmitter<ActionEmitterResult>();
+  readonly groupId = input<string>();
+  readonly canceled = output<ActionEmitterResult>();
+  readonly finished = output<ActionEmitterResult>();
 
   public processing = false;
   public applicationForm!: FormGroup;
@@ -48,7 +63,8 @@ export class MembershipApplicationComponent implements OnInit {
   }
 
   async submitApplication() {
-    if (this.groupId === undefined) {
+    const groupId = this.groupId();
+    if (groupId === undefined) {
       return;
     }
     this.processing = true;
@@ -57,14 +73,11 @@ export class MembershipApplicationComponent implements OnInit {
 
     try {
       await firstValueFrom(
-        this.membersService.postApplicant(
-          this.groupId,
-          this.applicationForm.value
-        )
+        this.membersService.postApplicant(groupId, this.applicationForm.value)
       );
       res.result = ActionResult.SUCCEED;
       this.applicationForm.reset();
-    } catch (error) {
+    } catch (_error) {
       res.result = ActionResult.FAILED;
     }
 

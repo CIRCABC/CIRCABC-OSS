@@ -1,4 +1,6 @@
-<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+@if (loading) {
+<cbc-horizontal-loader />
+}
 <div class="wrap page-container">
   <div class="page-header">
     <span
@@ -6,42 +8,46 @@
       [innerHTML]="'keywords.manage.page.title' | transloco"
     ></span>
     <div class="page-header__actions">
-      <cbc-reponsive-sub-menu *ngIf="currentLibrary">
+      @if (currentLibrary) {
+      <cbc-reponsive-sub-menu>
         <a [routerLink]="['../library', currentLibrary.id]"
           >{{ 'label.library' | transloco }}</a
         >
         <a [routerLink]="['.']" class="selected"
           >{{ 'label.keywords' | transloco }}</a
         >
-        <a *ngIf="isLibAdmin()" [routerLink]="['../dynamic-properties']"
+        @if (isLibAdmin()) {
+        <a [routerLink]="['../dynamic-properties']"
           >{{ 'label.dynamic.properties' | transloco }}</a
         >
-        <a
-          *ngIf="isLibAdmin()"
-          [routerLink]="['../admin/documents']"
-          [queryParams]="{ expired: 1 }"
+        } @if (isLibAdmin()) {
+        <a [routerLink]="['../admin/documents']" [queryParams]="{ expired: 1 }"
           >{{ 'label.expired.items' | transloco }}</a
         >
+        }
       </cbc-reponsive-sub-menu>
+      }
       <div
+        tabindex="0"
         class="cta cta--plus dropdown-trigger"
         (click)="showAddDropdown = !showAddDropdown"
       >
-        {{ 'keywords.add' | transloco }}
-        <div class="dropdown dropdown--add-file" *ngIf="showAddDropdown">
+        {{ 'keywords.add' | transloco }} @if (showAddDropdown) {
+        <div class="dropdown dropdown--add-file">
           <ul>
             <li>
-              <a class="keyword" (click)="showCreateModal = true">
+              <a tabindex="0" class="keyword" (click)="showCreateModal = true">
                 {{ 'label.keyword' | transloco }}
               </a>
             </li>
             <li>
-              <a class="import" (click)="showImportModal = true">
+              <a tabindex="0" class="import" (click)="showImportModal = true">
                 {{ 'label.import' | transloco }}
               </a>
             </li>
           </ul>
         </div>
+        }
       </div>
     </div>
   </div>
@@ -54,7 +60,8 @@
     </header>
     <table class="main">
       <thead>
-        <tr *ngIf="keywords.length > 0">
+        @if (keywords.length > 0) {
+        <tr>
           <td></td>
           <td class="cell-checkbox">
             <input
@@ -62,18 +69,17 @@
               name=""
               value=""
               (click)="toggleSelect()"
-              [checked]="allSelected"
+              [checked]="allSelected()"
             />
           </td>
           <td> {{ 'label.keyword' | transloco }} </td>
         </tr>
+        }
       </thead>
       <tbody>
         <tr>
-          <td
-            colspan="3"
-            *ngIf="selection !== undefined && selection.length > 0"
-          >
+          @if (selection !== undefined && selection.length > 0) {
+          <td colspan="3">
             <ul class="bulk-actions">
               <li>
                 <cbc-number-badge
@@ -81,14 +87,16 @@
                 ></cbc-number-badge>
               </li>
               <li>
-                <a (click)="showDeleteAllModal()"
+                <a tabindex="0" (click)="showDeleteAllModal()"
                   >{{ 'label.delete' | transloco }}</a
                 >
               </li>
             </ul>
           </td>
+          }
         </tr>
-        <tr class="row" *ngFor="let keyword of keywords">
+        @for (keyword of keywords; track keyword.id) {
+        <tr class="row">
           <td class="cell-left-border"></td>
           <td class="cell-checkbox">
             <input
@@ -111,15 +119,17 @@
                 ></cbc-delete-keyword>
               </li>
               <li>
-                <a (click)="showUpdateKeyword(keyword)"
+                <a tabindex="0" (click)="showUpdateKeyword(keyword)"
                   >{{ 'label.edit' | transloco }}</a
                 >
               </li>
             </ul>
           </td>
         </tr>
+        }
       </tbody>
     </table>
+    @if (keywords.length === 0) {
     <div
       style="
         color: #ccc;
@@ -129,34 +139,37 @@
         background-color: #fff;
         line-height: 64px;
       "
-      *ngIf="keywords.length === 0"
     >
       {{ 'keywords.empty.list' | transloco }}
       <img
         src="img/rounded-block-sign.png"
+        alt="No keywords available"
         style="vertical-align: middle; margin: 0 25px"
       />
     </div>
-    <ul
-      class="bulk-actions"
-      *ngIf="selection !== undefined && selection.length > 0"
-    >
+    } @if (selection !== undefined && selection.length > 0) {
+    <ul class="bulk-actions">
       <li>
         <cbc-number-badge [number]="selection.length"></cbc-number-badge>
       </li>
       <li>
-        <a (click)="showDeleteAllModal()">{{ 'label.delete' | transloco }}</a>
+        <a tabindex="0" (click)="showDeleteAllModal()"
+          >{{ 'label.delete' | transloco }}</a
+        >
       </li>
     </ul>
+    }
     <div class="footer">
       <div class="float-left">
         <div class="nav-pages"> </div>
       </div>
-      <div *ngIf="keywords.length !== 0" class="right-actions">
-        <a (click)="bulkDownload()"
+      @if (keywords.length !== 0) {
+      <div class="right-actions">
+        <a tabindex="0" (click)="bulkDownload()"
           >{{ 'label.download.all.keywords' | transloco }}</a
         >
       </div>
+      }
     </div>
   </section>
 </div>
@@ -164,15 +177,15 @@
   [keywords]="selection"
   [showModal]="showMultipleDeleteWizard"
   (modalHide)="refreshAfterAllDeletion($event)"
-></cbc-delete-multi-keywords>
+/>
 <cbc-create-keyword
   [showModal]="showCreateModal"
   [keyword]="selectedKeyword"
   [parentIgId]="nodeId"
   (modalHide)="refreshAfterCreation($event)"
-></cbc-create-keyword>
+/>
 <cbc-import-keyword
   [showModal]="showImportModal"
   [parentIgId]="nodeId"
   (modalHide)="refreshAfterCreation($event)"
-></cbc-import-keyword>
+/>

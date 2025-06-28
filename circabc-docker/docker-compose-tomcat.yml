@@ -10,22 +10,12 @@ services:
     volumes:
         - ./mysql/init:/docker-entrypoint-initdb.d/:ro
     command: --lower_case_table_names=1 --transaction-isolation=READ-COMMITTED
-  db_admin:
-    container_name: db_admin
-    image: phpmyadmin/phpmyadmin
-    depends_on:
-      - db
-    environment: 
-      PMA_HOST: db
-      PMA_PORT: 3306
-      PMA_ARBITRARY: 1
-    ports:
-      - "83:80"
   tomcat:
     build: tomcat
     image: tomcat-circabc
     ports:
       - "81:8080"
+      - "8889:8889"
     container_name: tomcat
     depends_on:
       - db
@@ -46,4 +36,4 @@ services:
       - ./proxy/conf:/etc/nginx
     ports:
       - 80:80
-      - 443:443
+      - 8443:443

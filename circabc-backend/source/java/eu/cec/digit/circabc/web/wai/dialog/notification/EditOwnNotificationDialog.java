@@ -21,11 +21,9 @@
 package eu.cec.digit.circabc.web.wai.dialog.notification;
 
 import eu.cec.digit.circabc.model.UserModel;
-import org.alfresco.service.cmr.repository.NodeRef;
-
-import javax.faces.context.FacesContext;
 import java.util.Map;
-
+import javax.faces.context.FacesContext;
+import org.alfresco.service.cmr.repository.NodeRef;
 
 /**
  * Bean that backs the "Edit Own Notification" WAI page.
@@ -34,75 +32,82 @@ import java.util.Map;
  */
 public class EditOwnNotificationDialog extends EditAuthorityNotificationDialog {
 
-    public static final String BEAN_NAME = "EditOwnNotificationDialog";
+  public static final String BEAN_NAME = "EditOwnNotificationDialog";
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = -298735948907020207L;
+  /**
+   *
+   */
+  private static final long serialVersionUID = -298735948907020207L;
 
-    private String globalStatus;
+  private String globalStatus;
 
-    @Override
-    public void init(Map<String, String> parameters) {
+  @Override
+  public void init(Map<String, String> parameters) {
+    //prevent null pointer in restaure time
+    if (parameters != null) {
+      parameters.put(
+        PARAM_AUTHORITY,
+        getNavigator().getCurrentUser().getUserName()
+      );
+      parameters.put(PARAM_STATUS, "");
 
-        //prevent null pointer in restaure time
-        if (parameters != null) {
-
-            parameters.put(PARAM_AUTHORITY, getNavigator().getCurrentUser().getUserName());
-            parameters.put(PARAM_STATUS, "");
-
-            super.init(parameters);
-        }
-
-        // init the panel.
-        getNotificationStatusPanel().isPanelDisplayed();
-        this.globalStatus = null;
-        notificationStatus = getNotificationStatusPanel().getUserNotificationStatus();
+      super.init(parameters);
     }
 
-    @Override
-    public String getContainerTitle() {
-        return translate("notification_edit_own_dialog_title", getActionNode().getName());
+    // init the panel.
+    getNotificationStatusPanel().isPanelDisplayed();
+    this.globalStatus = null;
+    notificationStatus = getNotificationStatusPanel()
+      .getUserNotificationStatus();
+  }
+
+  @Override
+  public String getContainerTitle() {
+    return translate(
+      "notification_edit_own_dialog_title",
+      getActionNode().getName()
+    );
+  }
+
+  public String getBrowserTitle() {
+    return translate("notification_edit_own_dialog_browser_title");
+  }
+
+  public String getPageIconAltText() {
+    return translate("notification_edit_own_dialog_icon_tooltip");
+  }
+
+  @Override
+  protected String finishImpl(FacesContext context, String outcome)
+    throws Exception {
+    if (this.globalStatus != null && this.globalStatus.length() > 0) {
+      final Boolean statusBool = Boolean.valueOf(this.globalStatus);
+
+      if (statusBool.equals(getCurrentGlobalStatus()) == false) {
+        final NodeRef person = getNavigator().getCurrentUser().getPerson();
+        getNodeService()
+          .setProperty(person, UserModel.PROP_GLOBAL_NOTIFICATION, statusBool);
+      }
     }
 
-    public String getBrowserTitle() {
-        return translate("notification_edit_own_dialog_browser_title");
+    return super.finishImpl(context, outcome);
+  }
+
+  public String getGlobalNotificationStatus() {
+    if (globalStatus == null) {
+      this.globalStatus = getCurrentGlobalStatus().toString();
     }
+    return globalStatus;
+  }
 
-    public String getPageIconAltText() {
-        return translate("notification_edit_own_dialog_icon_tooltip");
-    }
+  public void setGlobalNotificationStatus(final String status) {
+    this.globalStatus = status;
+  }
 
-
-    @Override
-    protected String finishImpl(FacesContext context, String outcome) throws Exception {
-        if (this.globalStatus != null && this.globalStatus.length() > 0) {
-            final Boolean statusBool = Boolean.valueOf(this.globalStatus);
-
-            if (statusBool.equals(getCurrentGlobalStatus()) == false) {
-                final NodeRef person = getNavigator().getCurrentUser().getPerson();
-                getNodeService().setProperty(person, UserModel.PROP_GLOBAL_NOTIFICATION, statusBool);
-            }
-        }
-
-        return super.finishImpl(context, outcome);
-    }
-
-    public String getGlobalNotificationStatus() {
-        if (globalStatus == null) {
-            this.globalStatus = getCurrentGlobalStatus().toString();
-        }
-        return globalStatus;
-    }
-
-    public void setGlobalNotificationStatus(final String status) {
-        this.globalStatus = status;
-    }
-
-    private Boolean getCurrentGlobalStatus() {
-        return getNotificationStatusPanel().getNotificationReport().getGlobalNotificationStatus()
-                .toBoolean();
-    }
-
+  private Boolean getCurrentGlobalStatus() {
+    return getNotificationStatusPanel()
+      .getNotificationReport()
+      .getGlobalNotificationStatus()
+      .toBoolean();
+  }
 }

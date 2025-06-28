@@ -1,59 +1,39 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { NgClass, NgStyle } from '@angular/common';
+import { Component, output, input, model } from '@angular/core';
+import { TranslocoModule } from '@jsverse/transloco';
+import { DataCyDirective } from 'app/shared/directives/data-cy.directive';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 
 @Component({
   selector: 'cbc-modal',
   templateUrl: './modal.component.html',
   preserveWhitespaces: true,
+  imports: [
+    NgStyle,
+    NgClass,
+    SpinnerComponent,
+    DataCyDirective,
+    TranslocoModule,
+  ],
 })
 export class ModalComponent {
-  @Input()
-  title = '';
-  @Input()
-  okLabel = 'label.ok';
-  @Input()
-  cancelLabel = 'label.cancel';
-  @Input()
-  executingLabel = '';
-  @Input()
-  showOkButton = true;
-  @Input()
-  displayCloseButton = true;
-  @Input()
-  contentClass = 'modal-content';
+  readonly title = input('');
+  readonly okLabel = input('label.ok');
+  readonly cancelLabel = input('label.cancel');
+  readonly executingLabel = input('');
+  readonly showOkButton = input(true);
+  readonly displayCloseButton = input(true);
+  readonly contentClass = input('modal-content');
 
-  @Output()
-  readonly ok: EventEmitter<void> = new EventEmitter<void>();
-  @Output()
-  readonly cancel: EventEmitter<void> = new EventEmitter<void>();
+  readonly ok = output<void>();
+  readonly cancelModal = output<void>();
 
-  private visibleValue = false;
-  @Output()
-  readonly visibleChange = new EventEmitter();
-  @Input()
-  get visible() {
-    return this.visibleValue;
-  }
-  set visible(value: boolean) {
-    this.visibleValue = value;
-    this.visibleChange.emit(this.visibleValue);
-  }
+  public visible = model.required<boolean>();
 
-  // eslint-disable-next-line @typescript-eslint/member-ordering
-  private executingValue = false;
-  // eslint-disable-next-line @typescript-eslint/member-ordering
-  @Output()
-  readonly executingChange = new EventEmitter();
-  @Input()
-  get executing() {
-    return this.executingValue;
-  }
-  set executing(value: boolean) {
-    this.executingValue = value;
-    this.executingChange.emit(this.executingValue);
-  }
+  public executing = model<boolean>(false);
 
   onCancel() {
-    this.cancel.emit();
+    this.cancelModal.emit();
   }
 
   onOk() {

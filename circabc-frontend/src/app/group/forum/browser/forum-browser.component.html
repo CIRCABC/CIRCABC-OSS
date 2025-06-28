@@ -1,16 +1,12 @@
 <article class="explorer-component" #browserComponentArea>
-  <aside
-    class="explorer-menu-left"
-    #menuLeft
-    [style.height]="heightMenu"
-    *ngIf="forums"
-  >
+  @if (forums) {
+  <aside class="explorer-menu-left" #menuLeft [style.height]="heightMenu">
     <div class="explorer-menu-title">
       {{ 'label.forum.structure' | transloco }}
     </div>
 
+    @if (root && path && groupConfiguration) {
     <cbc-tree-view
-      *ngIf="root && path && groupConfiguration"
       [disabled]="false"
       [folderId]="getSearchedNodeId()"
       [root]="root"
@@ -25,73 +21,92 @@
       "
     >
     </cbc-tree-view>
+    }
   </aside>
-
+  } @if (topics) {
   <div
     class="explorer-main box box--alternate-lines"
     #mainContent
     [style.height]="heightMain"
-    *ngIf="topics"
   >
     <header class="header">
+      @if (forum) {
       <cbc-group-breadcrumb
         [node]="forum.id"
         [displayName]="false"
-        *ngIf="forum"
       ></cbc-group-breadcrumb>
+      }
 
       <div class="float-right">
-        <ul *ngIf="!isNwsRoot(forum) && group" class="forum-actions">
-          <li class="action-layout" *ngIf="isNewsgroupAdminModerate()">
+        @if (!isNwsRoot(forum) && group()) {
+        <ul class="forum-actions">
+          @if (isNewsgroupAdminModerate()) {
+          <li class="action-layout">
             <a [routerLink]="['..', forum?.id, 'details']"
               >{{ 'label.edit' | transloco }}</a
             >
           </li>
-          <li class="action-layout" *ngIf="isNewsgroupAdminModerate()">
-            <a (click)="prepareForumDeletion(forum)" title="delete"
+          } @if (isNewsgroupAdminModerate()) {
+          <li class="action-layout">
+            <a tabindex="0" (click)="prepareForumDeletion(forum)" title="delete"
               >{{ 'label.delete' | transloco }}</a
             >
           </li>
-          <li class="action-layout" *ngIf="isNewsgroupAdminModerate()">
-            <a (click)="prepareForumModeration(forum)" title="moderation"
+          } @if (isNewsgroupAdminModerate()) {
+          <li class="action-layout">
+            <a
+              tabindex="0"
+              (click)="prepareForumModeration(forum)"
+              title="moderation"
               >{{ 'label.moderation' | transloco }}</a
             >
           </li>
+          }
           <li class="action-layout">|</li>
         </ul>
+        }
         <span class="icons">
           <cbc-share [showLabel]="false" [orientationRight]="false"></cbc-share>
+          @if (!isGuest()) {
           <div
             class="dropdown-trigger dropdown-trigger--with-icons force-inline"
-            *ngIf="!isGuest()"
           >
-            <img
-              src="img/visibility.png"
-              *ngIf="isSubscribedToNotifications()"
-              alt="Notifications"
-            />
-            <img
-              src="img/no-visibility.png"
-              *ngIf="!isSubscribedToNotifications()"
-              alt="Notifications"
-            />
+            @if (isSubscribedToNotifications()) {
+            <img src="img/visibility.png" alt="Notifications" />
+            } @if (!isSubscribedToNotifications()) {
+            <img src="img/no-visibility.png" alt="Notifications" />
+            }
             <div class="dropdown dropdown--library-settings">
               <div class="number-of-items">
                 {{ 'label.notifications' | transloco }}:
                 <br />
                 <br />
-                <a
-                  (click)="changeNotificationSubscription('on')"
-                  *ngIf="!isSubscribedToNotifications()"
+                @if (!isSubscribedToNotifications()) {
+                <a tabindex="0" (click)="changeNotificationSubscription('on')"
                   >{{ 'label.subscribe' | transloco }}
                   <img src="img/visibility.png" alt="Notifications" />
                 </a>
-                <a
-                  (click)="changeNotificationSubscription('off')"
-                  *ngIf="isSubscribedToNotifications()"
+                } @if (isSubscribedToNotifications()) {
+                <a tabindex="0" (click)="changeNotificationSubscription('off')"
                   >{{ 'label.unsubscribe' | transloco }}
                   <img src="img/no-visibility.png" alt="Notifications" />
                 </a>
+                }
+              </div>
+            </div>
+          </div>
+          }
+          <div
+            class="dropdown-trigger dropdown-trigger--with-icons force-inline"
+          >
+            <img src="img/icon-admin-blue.png" alt="Settings" />
+            <div class="dropdown dropdown--library-settings">
+              <div class="number-of-items">
+                {{ 'label.show' | transloco }}:
+                <a tabindex="0" (click)="changeLimit(10)">10</a>
+                <a tabindex="0" (click)="changeLimit(25)">25</a>
+                <a tabindex="0" (click)="changeLimit(50)">50</a>
+                <a tabindex="0" (click)="changeLimit(-1)">All</a>
               </div>
             </div>
           </div>
@@ -114,12 +129,25 @@
 
     <br />
 
+    <div class="header">
+      <cbc-pager
+        [length]="totalItems"
+        [pageSize]="listingOptions.limit"
+        [page]="listingOptions.page"
+        (pageChange)="changePage($event)"
+      ></cbc-pager>
+    </div>
+    <br />
+    <br />
+    <br />
+
     <div class="main main--listing">
       <ul>
-        <li class="row" *ngFor="let item of topics">
+        @for (item of topics; track item.id) {
+        <li class="row">
           <div class="name-and-actions fix-line">
+            @if (isNewTopic(item)) {
             <span
-              *ngIf="isNewTopic(item)"
               class="pennant--new"
               pTooltip="{{
                 'label.within.last'
@@ -129,6 +157,7 @@
               tooltipPosition="top"
               >{{ 'label.new' | transloco }}</span
             >
+            }
 
             <a
               class="subcategory-name"
@@ -139,16 +168,14 @@
               [tooltipDisabled]="item.description === {}"
               [tooltipPosition]="'top'"
             >
-              <span
-                *ngIf="
-                  item.title !== undefined && (item.title | cbcI18n) !== ''
-                "
-                >{{ item.title | cbcI18n }}</span
-              >
-              <span *ngIf="(item.title | cbcI18n) === ''">{{ item.name }}</span>
-              <span *ngIf="(item.title | cbcI18n) === '' && !nameExists(item)"
-                >{{ 'label.no.name' | transloco }}</span
-              >
+              @if ( item.title !== undefined && (item.title | cbcI18n) !== '' )
+              {
+              <span>{{ item.title | cbcI18n }}</span>
+              } @if ((item.title | cbcI18n) === '') {
+              <span>{{ item.name }}</span>
+              } @if ((item.title | cbcI18n) === '' && !nameExists(item)) {
+              <span>{{ 'label.no.name' | transloco }}</span>
+              }
             </a>
 
             <ul class="actions">
@@ -161,6 +188,7 @@
               </li>
               <li>
                 <a
+                  tabindex="0"
                   *cbcIfRoleGE="[item, 'NwsPost', ['NwsPost']]"
                   (click)="prepareTopicDeletion(item)"
                   title="delete"
@@ -180,33 +208,43 @@
             </span>
           </div>
         </li>
-        <li class="row" *ngIf="topics.length === 0">
+        } @if (topics.length === 0) {
+        <li class="row">
           <div class="description">
             <p>{{ 'label.nothing.to.display' | transloco }}</p>
           </div>
         </li>
+        }
       </ul>
     </div>
+    <div class="footer">
+      <cbc-pager
+        [length]="totalItems"
+        [pageSize]="listingOptions.limit"
+        [page]="listingOptions.page"
+        (pageChange)="changePage($event)"
+      ></cbc-pager>
+    </div>
   </div>
+  }
 </article>
 
+@if (currentDeletedTopic) {
 <cbc-delete-topic
   [showModal]="showDeleteTopic"
   [topic]="currentDeletedTopic"
-  *ngIf="currentDeletedTopic"
   (modalHide)="refreshDeleteTopic($event)"
-></cbc-delete-topic>
-
+/>
+} @if (currentDeletedForum) {
 <cbc-delete-forum
   [showModal]="showDeleteForum"
   [forum]="currentDeletedForum"
-  *ngIf="currentDeletedForum"
   (modalHide)="refreshDeleteForum($event)"
-></cbc-delete-forum>
-
+/>
+} @if (currentModerateForum) {
 <cbc-moderate-forum
   [showModal]="showModerateForum"
   [forum]="currentModerateForum"
-  *ngIf="currentModerateForum"
   (modalHide)="refreshModerateForum($event)"
-></cbc-moderate-forum>
+/>
+}

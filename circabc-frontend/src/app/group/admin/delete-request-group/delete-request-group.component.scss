@@ -1,0 +1,61 @@
+@use 'css/global/variables-mixins-keyframes';
+
+mat-card {
+  border-radius: 4px 4px 0 0;
+}
+
+.heather {
+  background-color: #eef5f4;
+  text-align: center;
+  text-transform: uppercase;
+  height: 88px;
+  padding: 35px 0;
+  border-bottom: 1px solid #dedede;
+
+  .title {
+    font-weight: 500;
+    font-size: 16px;
+    color: #757575;
+    font-family: Ubuntu, Verdana, Helvetica, sans-serif;
+    text-transform: uppercase;
+  }
+}
+
+.dialogContent {
+  padding: 10px;
+  min-width: 300px;
+}
+
+.buttons-group {
+  text-align: center;
+  justify-content: center;
+  border-top: 1.5px #e2e5e4 solid;
+  padding: 20px;
+}
+
+.alert {
+  display: flex;
+  background-color: white;
+  align-items: center;
+  padding: 15px;
+  max-width: 800px;
+  justify-content: center;
+
+  .alert-icon {
+    flex: 0;
+  }
+
+  .message {
+    font-size: 16px;
+    flex: 1;
+  }
+
+  .alertButtonBox {
+    flex: 0;
+
+    .button {
+      width: 175px;
+      margin: 10px;
+    }
+  }
+}

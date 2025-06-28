@@ -27,7 +27,8 @@
     	<columns>
 	   		<column name="author">
 	   			<label>author</label>
-	   			<converter>eu.cec.digit.circabc.faces.EncodeHtmlTextFieldConverter</converter>
+	   			<converter
+        >eu.cec.digit.circabc.faces.EncodeHtmlTextFieldConverter</converter>
 	   			<resolver>properties['cm:author']</resolver>
 	   		</column>
 			<column name="auto_version">
@@ -47,7 +48,8 @@
 	   		</column>
 			<column name="description">
 	   			<label>description</label>
-	   			<converter>eu.cec.digit.circabc.faces.EncodeHtmlTextFieldConverter</converter>
+	   			<converter
+        >eu.cec.digit.circabc.faces.EncodeHtmlTextFieldConverter</converter>
 	   			<resolver>properties['cm:description']</resolver>
 	   		</column>
 			<column name="edit_inline">
@@ -97,7 +99,8 @@
 	   		</column>
 			<column name="reference">
 	   			<label>reference</label>
-	   			<converter>eu.cec.digit.circabc.faces.EncodeHtmlTextFieldConverter</converter>
+	   			<converter
+        >eu.cec.digit.circabc.faces.EncodeHtmlTextFieldConverter</converter>
 	   			<resolver>properties['cd:reference']</resolver>
 	   		</column>
 			<column name="replies_number">
@@ -122,12 +125,14 @@
 	   		</column>
 			<column name="title">
 	   			<label>title</label>
-	   			<converter>eu.cec.digit.circabc.faces.EncodeHtmlTextFieldConverter</converter>
+	   			<converter
+        >eu.cec.digit.circabc.faces.EncodeHtmlTextFieldConverter</converter>
 	   			<resolver>bestTitle</resolver>
 	   		</column>
 			<column name="titleOrName">
 	   			<label>title</label>
-	   			<converter>eu.cec.digit.circabc.faces.EncodeHtmlTextFieldConverter</converter>
+	   			<converter
+        >eu.cec.digit.circabc.faces.EncodeHtmlTextFieldConverter</converter>
 	   			<resolver>bestTitle</resolver>
 	   		</column>
 			<column name="url">
@@ -301,7 +306,7 @@
 					<column name="description" />
 					<column name="creator" />
 					<column name="created" />
-					<column name="modifier"/>
+					<column name="modifier" />
 					<column name="modified" />
 					<column name="expiration_date" />
 					<column name="path" />
@@ -400,7 +405,7 @@
 					<column name="description" />
 					<column name="creator" />
 					<column name="created" />
-					<column name="modifier"/>
+					<column name="modifier" />
 					<column name="modified" />
 					<column name="path" />
 					<column name="docNumber" />
@@ -486,5 +491,3 @@
     	</services>
     </config>
 </alfresco-config>
-
-

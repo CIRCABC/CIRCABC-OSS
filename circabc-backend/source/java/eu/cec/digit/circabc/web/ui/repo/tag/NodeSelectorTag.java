@@ -20,9 +20,8 @@
  ******************************************************************************/
 package eu.cec.digit.circabc.web.ui.repo.tag;
 
-import org.alfresco.web.ui.repo.tag.ItemSelectorTag;
-
 import javax.faces.component.UIComponent;
+import org.alfresco.web.ui.repo.tag.ItemSelectorTag;
 
 /**
  * @author Slobodan Filipovic
@@ -31,98 +30,97 @@ import javax.faces.component.UIComponent;
  */
 public class NodeSelectorTag extends ItemSelectorTag {
 
+  /**
+   * Root node for selection
+   */
+  private String rootNode;
+  private String showContents;
+  private String pathLabel;
+  private String pathErrorMessage;
 
-    /**
-     * Root node for selection
-     */
-    private String rootNode;
-    private String showContents;
-    private String pathLabel;
-    private String pathErrorMessage;
+  /**
+   * @see javax.faces.webapp.UIComponentTag#getRendererType()
+   */
+  public String getRendererType() {
+    return null;
+  }
 
+  /**
+   * @see javax.faces.webapp.UIComponentTag#setProperties(javax.faces.component.UIComponent)
+   */
+  protected void setProperties(UIComponent component) {
+    super.setProperties(component);
+    setStringBindingProperty(component, "rootNode", this.rootNode);
+    setBooleanProperty(component, "showContents", this.showContents);
+    setStringBindingProperty(component, "pathLabel", this.pathLabel);
+    setStringBindingProperty(
+      component,
+      "pathErrorMessage",
+      this.pathErrorMessage
+    );
+  }
 
-    /**
-     * @see javax.faces.webapp.UIComponentTag#getRendererType()
-     */
-    public String getRendererType() {
-        return null;
-    }
+  /**
+   * @see org.alfresco.web.ui.common.tag.HtmlComponentTag#release()
+   */
+  public void release() {
+    super.release();
 
-    /**
-     * @see javax.faces.webapp.UIComponentTag#setProperties(javax.faces.component.UIComponent)
-     */
-    protected void setProperties(UIComponent component) {
-        super.setProperties(component);
-        setStringBindingProperty(component, "rootNode", this.rootNode);
-        setBooleanProperty(component, "showContents", this.showContents);
-        setStringBindingProperty(component, "pathLabel", this.pathLabel);
-        setStringBindingProperty(component, "pathErrorMessage", this.pathErrorMessage);
+    this.rootNode = null;
+    this.showContents = null;
+    this.pathLabel = null;
+    this.pathErrorMessage = null;
+  }
 
-    }
+  /**
+   * Sets the root node of so user cqn not brozse above root node
+   *
+   * @param rootNode The id of the root node item
+   */
+  public void setRootNode(String rootNode) {
+    this.rootNode = rootNode;
+  }
 
-    /**
-     * @see org.alfresco.web.ui.common.tag.HtmlComponentTag#release()
-     */
-    public void release() {
-        super.release();
+  /**
+   * Sets if the contents must be displayed or not
+   */
+  public void setShowContents(String showContents) {
+    this.showContents = showContents;
+  }
 
-        this.rootNode = null;
-        this.showContents = null;
-        this.pathLabel = null;
-        this.pathErrorMessage = null;
-    }
+  /**
+   * @see javax.faces.webapp.UIComponentTag#getComponentType()
+   */
+  @Override
+  public String getComponentType() {
+    return "eu.cec.digit.circabc.faces.NodeSelector";
+  }
 
-    /**
-     * Sets the root node of so user cqn not brozse above root node
-     *
-     * @param rootNode The id of the root node item
-     */
-    public void setRootNode(String rootNode) {
-        this.rootNode = rootNode;
-    }
+  /**
+   * @return the pathLabel
+   */
+  public String getPathLabel() {
+    return pathLabel;
+  }
 
-    /**
-     * Sets if the contents must be displayed or not
-     */
-    public void setShowContents(String showContents) {
-        this.showContents = showContents;
-    }
+  /**
+   * @param pathLabel the pathLabel to set
+   */
+  public void setPathLabel(String pathLabel) {
+    this.pathLabel = pathLabel;
+  }
 
-    /**
-     * @see javax.faces.webapp.UIComponentTag#getComponentType()
-     */
-    @Override
-    public String getComponentType() {
-        return "eu.cec.digit.circabc.faces.NodeSelector";
-    }
+  /**
+   * @return the pathErrorMessage
+   */
+  public String getPathErrorMessage() {
+    return pathErrorMessage;
+  }
 
-    /**
-     * @return the pathLabel
-     */
-    public String getPathLabel() {
-        return pathLabel;
-    }
-
-    /**
-     * @param pathLabel the pathLabel to set
-     */
-    public void setPathLabel(String pathLabel) {
-        this.pathLabel = pathLabel;
-    }
-
-    /**
-     * @return the pathErrorMessage
-     */
-    public String getPathErrorMessage() {
-        return pathErrorMessage;
-    }
-
-    /**
-     * @param pathErrorMessage the pathErrorMessage to set
-     */
-    public void setPathErrorMessage(String pathErrorMessage) {
-        this.pathErrorMessage = pathErrorMessage;
-    }
-
-
+  /**
+   * @param pathErrorMessage the pathErrorMessage to set
+   */
+  public void setPathErrorMessage(String pathErrorMessage) {
+    this.pathErrorMessage = pathErrorMessage;
+  }
 }

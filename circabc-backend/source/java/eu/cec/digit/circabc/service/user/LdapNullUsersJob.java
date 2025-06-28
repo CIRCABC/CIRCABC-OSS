@@ -31,48 +31,51 @@ import org.quartz.JobExecutionException;
  */
 public class LdapNullUsersJob implements Job {
 
-    private static final String LDAP_NULL_USERS_JOB = "LdapNullUsersJob";
-    private static final String ADMIN_USER = "admin";
-    private static boolean isInitialized = false;
-    private static CircabcServiceRegistry circabcServiceRegistry;
-    private static Log logger = LogFactory.getLog(LdapNullUsersJob.class);
-    private static UserService userService;
-    private static LockService lockService;
+  private static final String LDAP_NULL_USERS_JOB = "LdapNullUsersJob";
+  private static final String ADMIN_USER = "admin";
+  private static boolean isInitialized = false;
+  private static CircabcServiceRegistry circabcServiceRegistry;
+  private static Log logger = LogFactory.getLog(LdapNullUsersJob.class);
+  private static UserService userService;
+  private static LockService lockService;
 
-    public void execute(final JobExecutionContext context) throws JobExecutionException {
-        try {
-            initialize(context);
-            AuthenticationUtil.setRunAsUser(ADMIN_USER);
-            if (!lockService.isLocked(LDAP_NULL_USERS_JOB)) {
-                lockService.lock(LDAP_NULL_USERS_JOB);
-                userService.updateMissingLastNamePersons();
-            }
-        } catch (final Exception e) {
-            logger.error("Can not run job LdapNullUsersJob", e);
-        } finally {
-            AuthenticationUtil.clearCurrentSecurityContext();
-            lockService.unlock(LDAP_NULL_USERS_JOB);
-        }
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("finished...");
-        }
+  public void execute(final JobExecutionContext context)
+    throws JobExecutionException {
+    try {
+      initialize(context);
+      AuthenticationUtil.setRunAsUser(ADMIN_USER);
+      if (!lockService.isLocked(LDAP_NULL_USERS_JOB)) {
+        lockService.lock(LDAP_NULL_USERS_JOB);
+        userService.updateMissingLastNamePersons();
+      }
+    } catch (final Exception e) {
+      logger.error("Can not run job LdapNullUsersJob", e);
+    } finally {
+      AuthenticationUtil.clearCurrentSecurityContext();
+      lockService.unlock(LDAP_NULL_USERS_JOB);
     }
 
-    private void initialize(final JobExecutionContext context) {
-        if (!isInitialized) {
-
-            try {
-                AuthenticationUtil.setRunAsUser(ADMIN_USER);
-                final JobDataMap jobData = context.getJobDetail().getJobDataMap();
-                final Object circabcServiceRegistryObj = jobData.get("circabcServiceRegistry");
-                circabcServiceRegistry = (CircabcServiceRegistry) circabcServiceRegistryObj;
-                userService = circabcServiceRegistry.getUserService();
-                lockService = circabcServiceRegistry.getLockService();
-                isInitialized = true;
-            } finally {
-                AuthenticationUtil.clearCurrentSecurityContext();
-            }
-        }
+    if (logger.isDebugEnabled()) {
+      logger.debug("finished...");
     }
+  }
+
+  private void initialize(final JobExecutionContext context) {
+    if (!isInitialized) {
+      try {
+        AuthenticationUtil.setRunAsUser(ADMIN_USER);
+        final JobDataMap jobData = context.getJobDetail().getJobDataMap();
+        final Object circabcServiceRegistryObj = jobData.get(
+          "circabcServiceRegistry"
+        );
+        circabcServiceRegistry =
+          (CircabcServiceRegistry) circabcServiceRegistryObj;
+        userService = circabcServiceRegistry.getUserService();
+        lockService = circabcServiceRegistry.getLockService();
+        isInitialized = true;
+      } finally {
+        AuthenticationUtil.clearCurrentSecurityContext();
+      }
+    }
+  }
 }

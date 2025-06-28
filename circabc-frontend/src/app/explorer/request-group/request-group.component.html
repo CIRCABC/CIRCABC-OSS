@@ -1,5 +1,5 @@
-<cbc-header></cbc-header>
-<cbc-navigator></cbc-navigator>
+<cbc-header />
+<cbc-navigator />
 <div class="wrap page-container my-account">
   <section class="box">
     <header class="header">
@@ -8,7 +8,8 @@
       >
     </header>
     <div class="main">
-      <div *ngIf="step1">
+      @if (step1) {
+      <div>
         <form [formGroup]="form">
           <p style="font-weight: bold">
             {{ 'group.request.category.selection.title' | transloco }}
@@ -18,9 +19,9 @@
               <label for="header">{{ 'label.header' | transloco }}</label>
               <div class="custom-select select--form">
                 <select name="" id="header" formControlName="header">
-                  <option *ngFor="let header of headers" [value]="header.id"
-                    >{{ header.name }}</option
-                  >
+                  @for (header of headers; track header.id) {
+                  <option [value]="header.id">{{ header.name }}</option>
+                  }
                 </select>
                 <cbc-control-message
                   [control]="headerControl"
@@ -31,11 +32,11 @@
               <label for="category">{{ 'label.category' | transloco }}</label>
               <div class="custom-select select--form">
                 <select name="" id="category" formControlName="category">
-                  <option
-                    *ngFor="let category of categories"
-                    [value]="category.id"
+                  @for (category of categories; track category.id) {
+                  <option [value]="category.id"
                     >{{ getNameOrTitle(category) }}</option
                   >
+                  }
                 </select>
                 <cbc-control-message
                   [control]="categoryControl"
@@ -95,8 +96,12 @@
               <button class="button" (click)="searchUsers()"
                 >{{ 'label.search' | transloco }}</button
               >
-              <a (click)="resetSearchForm()">{{ 'label.clear' | transloco }}</a>
-              <cbc-spinner *ngIf="searchingUsers"></cbc-spinner>
+              <a tabindex="0" (click)="resetSearchForm()"
+                >{{ 'label.clear' | transloco }}</a
+              >
+              @if (searchingUsers) {
+              <cbc-spinner></cbc-spinner>
+              }
             </div>
             <!-- Select Multiple-->
             <div class="field">
@@ -111,15 +116,14 @@
                   style="width: 585px; height: 150px"
                   formControlName="possibleUsers"
                 >
-                  <option
-                    *ngFor="let user of availableUsers"
-                    value="{{ user.userId }}"
+                  @for (user of availableUsers; track user.userId) {
+                  <option value="{{ user.userId }}"
                     >{{ user.firstname + ' ' + user.lastname + ' (' + user.email
                     + ')' }}</option
                   >
+                  }
                 </select>
               </div>
-              <label></label>
               <input
                 type="button"
                 value="{{ 'label.select' | transloco }}"
@@ -128,16 +132,18 @@
             </div>
             <div class="field">
               <label for="sMultiple">{{ 'label.leaders' | transloco }}</label>
+              @for (futureMember of futureMembers; track futureMember.userId) {
               <cbc-leader-card
-                *ngFor="let futureMember of futureMembers"
                 [user]="futureMember"
                 (removeClicked)="removeFromFutureMember(futureMember)"
               ></cbc-leader-card>
+              }
             </div>
           </div>
         </form>
       </div>
-      <div *ngIf="step2">
+      } @if (step2) {
+      <div>
         <p style="font-weight: bold"
           >{{ 'group.request.verify.title' | transloco }}</p
         >
@@ -170,44 +176,53 @@
             <tr>
               <td class="reviewLabel"> {{ 'label.leaders' | transloco }} </td>
               <td>
+                @for (futureMember of futureMembers; track futureMember.userId)
+                {
                 <cbc-leader-card
-                  *ngFor="let futureMember of futureMembers"
                   [user]="futureMember"
                   [showDelete]="false"
                 ></cbc-leader-card>
+                }
               </td>
             </tr>
           </tbody>
         </table>
       </div>
-      <div class="actions" *ngIf="processing">
+      } @if (processing) {
+      <div class="actions">
         <p
           >{{ 'label.processing' | transloco }}...
           <cbc-spinner></cbc-spinner>
         </p>
       </div>
-      <div class="actions buttons-group" *ngIf="!processing">
+      } @if (!processing) {
+      <div class="actions buttons-group">
+        @if (step1) {
         <a
+          tabindex="0"
           class="cta"
-          *ngIf="step1"
           (click)="!form.valid ? '' : confirm()"
           [class.disabled]="!form.valid"
           >{{ 'label.next' | transloco }}</a
         >
-        <a class="button" *ngIf="step2" (click)="revert()"
+        } @if (step2) {
+        <a tabindex="0" class="button" (click)="revert()"
           >{{ 'label.previous' | transloco }}</a
         >
+        } @if (step2) {
         <a
+          tabindex="0"
           class="cta"
-          *ngIf="step2"
           (click)="!form.valid ? '' : requestGroup()"
           [class.disabled]="!form.valid"
           >{{ 'label.submit' | transloco }}</a
         >
+        }
         <a class="button" [routerLink]="['..']"
           >{{ 'label.cancel' | transloco }}</a
         >
       </div>
+      }
     </div>
   </section>
 </div>

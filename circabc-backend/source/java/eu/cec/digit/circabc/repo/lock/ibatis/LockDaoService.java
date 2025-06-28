@@ -20,14 +20,13 @@ package eu.cec.digit.circabc.repo.lock.ibatis;
  * @author Slobodan Filipovic
  */
 public interface LockDaoService {
+  void insertLock(String item);
 
-    void insertLock(String item);
+  void insertLockNulls(String item);
 
-    void insertLockNulls(String item);
+  void deleteLock(String item);
 
-    void deleteLock(String item);
+  int getLockCount(String item);
 
-    int getLockCount(String item);
-
-    void deleteLocks(int hours);
+  void deleteLocks(int hours);
 }

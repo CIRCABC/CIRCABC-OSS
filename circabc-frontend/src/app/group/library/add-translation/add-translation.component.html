@@ -1,4 +1,6 @@
-<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+@if (loading) {
+<cbc-horizontal-loader />
+}
 <div class="wrap page-container file-details">
   <div class="page-header">
     <span class="page-header__title"
@@ -10,7 +12,8 @@
     <header class="header">
       <span class="title"></span>
     </header>
-    <div class="main" *ngIf="currentNode && translations">
+    @if (currentNode && translations) {
+    <div class="main">
       <div class="file-metadata">
         <img src="img/text-file.png" alt="document" />
         <p class="file-title">
@@ -27,7 +30,8 @@
           <section class="step">
             <div class="section-number"> 1 </div>
 
-            <div class="field" *ngIf="translations">
+            @if (translations) {
+            <div class="field">
               <label for="lang" style="width: 200px"
                 >{{ 'translations.add.translation.select.language' | transloco
                 }}</label
@@ -40,12 +44,11 @@
                 ></cbc-lang-selector>
               </div>
             </div>
-            <div
-              class="step-action"
-              *ngIf="!processing && hasLanguageSelected()"
-            >
+            } @if (!processing && hasLanguageSelected()) {
+            <div class="step-action">
               {{ 'label.by' | transloco }}
               <a
+                tabindex="0"
                 class="button"
                 [class.selected]="isModeFileUpload()"
                 (click)="setModeFileUpload()"
@@ -53,18 +56,23 @@
               >
               {{ 'label.or' | transloco }}
               <a
+                tabindex="0"
                 class="button"
                 [class.selected]="isModeMachineTranslation()"
                 (click)="setModeMachineTranslation()"
                 >{{ 'label.machine.translation' | transloco }}</a
               >
-              <a class="button" *ngIf="!isModeSet()" (click)="cancel()"
+              @if (!isModeSet()) {
+              <a tabindex="0" class="button" (click)="cancel()"
                 >{{ 'label.cancel' | transloco }}</a
               >
+              }
             </div>
+            }
           </section>
 
-          <section class="step" *ngIf="isModeFileUpload()">
+          @if (isModeFileUpload()) {
+          <section class="step">
             <div class="section-number"> 2 </div>
 
             <div class="field field--file">
@@ -88,33 +96,44 @@
               >
               <br />
             </div>
-            <div class="step-action" *ngIf="!processing && hasFileSelected()">
-              <a (click)="submit()" class="cta"
+            @if (!processing && hasFileSelected()) {
+            <div class="step-action">
+              <a tabindex="0" (click)="submit()" class="cta"
                 >{{ 'label.upload' | transloco }}</a
               >
-              <a class="button" (click)="cancel()"
+              <a tabindex="0" class="button" (click)="cancel()"
                 >{{ 'label.cancel' | transloco }}</a
               >
             </div>
+            }
           </section>
-          <section class="step" *ngIf="isModeMachineTranslation()">
+          } @if (isModeMachineTranslation()) {
+          <section class="step">
             <div class="section-number"> 2 </div>
-            <div class="step-action" *ngIf="!processing">
-              <a (click)="submitMachineTranlationRequest()" class="cta"
+            @if (!processing) {
+            <div class="step-action">
+              <a
+                tabindex="0"
+                (click)="submitMachineTranlationRequest()"
+                class="cta"
                 >{{ 'label.machine.translation' | transloco }}</a
               >
-              <a class="button" (click)="cancel()"
+              <a tabindex="0" class="button" (click)="cancel()"
                 >{{ 'label.cancel' | transloco }}</a
               >
             </div>
+            }
           </section>
-          <div class="field" *ngIf="processing">
+          } @if (processing) {
+          <div class="field">
             <label
               >{{ labelProcessing | transloco }}... <cbc-spinner></cbc-spinner
             ></label>
           </div>
+          }
         </form>
       </div>
     </div>
+    }
   </section>
 </div>

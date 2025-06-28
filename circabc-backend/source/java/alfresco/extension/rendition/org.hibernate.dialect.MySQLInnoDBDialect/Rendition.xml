@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-
 <!-- Copyright 2006 European Community Licensed under the EUPL, Version 1.1 
 	or – as soon they will be approved by the European Commission - subsequent 
 	versions of the EUPL (the "Licence"); You may not use this work except in 
@@ -8,12 +7,15 @@
 	under the Licence is distributed on an "AS IS" basis, WITHOUT WARRANTIES 
 	OR CONDITIONS OF ANY KIND, either express or implied. See the Licence for 
 	the specific language governing permissions and limitations under the Licence. -->
-	
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="Rendition">
 	
-	<select id="select_request_exists" parameterType="String" resultType="RenditionRequest">
+	<select
+    id="select_request_exists"
+    parameterType="String"
+    resultType="RenditionRequest"
+  >
 		SELECT request_id as requestId
 		FROM cbc_rendition_requests
 		WHERE noderef_uuid = #{value, jdbcType=VARCHAR} AND (success = 1 OR (success = 0 AND remaining_render_retries > 0))
@@ -45,7 +47,11 @@
 		ORDER BY request_date LIMIT 10
 	</select>
 	
-	<select id="get_requests_for_document" parameterType="String" resultType="RenditionRequest">
+	<select
+    id="get_requests_for_document"
+    parameterType="String"
+    resultType="RenditionRequest"
+  >
 		SELECT request_id as requestId, machine_id as machineId, noderef_uuid as nodeRefUUID, 
 				request_date as requestDate, fetch_date as fetchDate, start_processing_date as startProcessingDate, 
 				end_processing_date as endProcessingDate, error_message as errorMessage, 

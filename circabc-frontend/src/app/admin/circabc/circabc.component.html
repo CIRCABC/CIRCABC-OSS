@@ -1,0 +1,51 @@
+@if (isAdmin()) {
+<div class="wrap page-container">
+  <section class="table-container">
+    <header class="header">
+      <div style="float: right; font-size: 14px">
+        <a tabindex="0" (click)="loadAdministrators()">
+          <img src="img/icon-autoupload-20x20.png" alt="Refresh icon" />&nbsp;{{
+          'label.refresh' | transloco }}&nbsp;&nbsp;
+        </a>
+      </div>
+    </header>
+
+    <table class="main">
+      <thead>
+        <tr>
+          <th></th>
+          <th style="width: 22px"> </th>
+          <th> {{ 'label.username' | transloco }} </th>
+          <th> {{ 'label.full.name' | transloco }} </th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @if (administrators !== undefined) {
+        <tr class="row empty-row">
+          @if (administrators.length === 0) {
+          <td style="padding-left: 22px" colspan="4"
+            >{{ 'label.circabc.admins.display.none' | transloco }}</td
+          >
+          }
+        </tr>
+        } @for (administrator of administrators; track administrator.userId) {
+        <tr class="row">
+          <td class="cell-left-border"></td>
+          <td class="cell-checkbox"></td>
+          <td class="cell-file-name" style="width: 80px">
+            {{ administrator.userId }}
+            <ul class="actions" style="width: 300px">
+              <cbc-inline-delete
+                (deletionConfirmed)="deleteAdministrator(administrator)"
+              ></cbc-inline-delete>
+            </ul>
+          </td>
+          <td>{{ administrator.firstname + ' ' + administrator.lastname }} </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+</div>
+}

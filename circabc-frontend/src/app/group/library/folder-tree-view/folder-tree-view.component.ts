@@ -1,51 +1,51 @@
 import {
   Component,
-  EventEmitter,
   Input,
   OnChanges,
   OnDestroy,
   OnInit,
-  Output,
   SimpleChanges,
-  ViewChild,
+  viewChild,
+  output,
+  input,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ActionEmitterResult } from 'app/action-result';
 import { ActionResult } from 'app/action-result/action-result';
 import { ActionType } from 'app/action-result/action-type';
 import { ActionService } from 'app/action-result/action.service';
 import {
-  InterestGroup,
+  type InterestGroup,
   Node as ModelNode,
   NodesService,
 } from 'app/core/generated/circabc';
 import { TreeNode } from 'app/shared/treeview/tree-node';
 import { TreeViewComponent } from 'app/shared/treeview/tree-view.component';
-import { firstValueFrom, Subscription } from 'rxjs';
+import { Subscription, firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-folder-tree-view',
   templateUrl: './folder-tree-view.component.html',
-  styleUrls: ['./folder-tree-view.component.scss'],
+  styleUrl: './folder-tree-view.component.scss',
   preserveWhitespaces: true,
+  imports: [TreeViewComponent, TranslocoModule],
 })
 export class FolderTreeViewComponent implements OnInit, OnChanges, OnDestroy {
-  @Input()
-  group!: InterestGroup;
-  @Input()
-  currentNode!: ModelNode;
+  readonly group = input<InterestGroup>();
+  readonly currentNode = input.required<ModelNode>();
 
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   shown = false;
-  @Output()
-  readonly shownChange = new EventEmitter();
+  readonly shownChange = output<boolean>();
 
   public root!: TreeNode;
   public searchedNodeId!: string;
   public path: ModelNode[] = [];
   private actionFinishedSubscription$!: Subscription;
-  @ViewChild(TreeViewComponent)
-  treeViewComponent!: TreeViewComponent;
+  readonly treeViewComponent = viewChild.required(TreeViewComponent);
 
   constructor(
     private router: Router,
@@ -68,7 +68,7 @@ export class FolderTreeViewComponent implements OnInit, OnChanges, OnDestroy {
               action.type === ActionType.DELETE_SPACE) &&
             action.result === ActionResult.SUCCEED
           ) {
-            await this.treeViewComponent.reload();
+            await this.treeViewComponent().reload();
           }
         }
       );
@@ -86,13 +86,15 @@ export class FolderTreeViewComponent implements OnInit, OnChanges, OnDestroy {
 
   private async init() {
     this.shown = this.shouldShow();
-    if (this.currentNode && this.currentNode.id) {
+    const currentNode = this.currentNode();
+    if (currentNode?.id) {
       this.path = await firstValueFrom(
-        this.nodesService.getPath(this.currentNode.id)
+        this.nodesService.getPath(currentNode.id)
       );
     }
-    if (this.group && this.group.libraryId) {
-      this.root = new TreeNode('Library', this.group.libraryId);
+    const group = this.group();
+    if (group?.libraryId) {
+      this.root = new TreeNode('Library', group.libraryId);
     }
   }
 
@@ -105,7 +107,7 @@ export class FolderTreeViewComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private async onChange(changes: SimpleChanges) {
-    if (changes.currentNode && changes.currentNode.currentValue.id) {
+    if (changes.currentNode?.currentValue.id) {
       await this.reload(changes.currentNode.currentValue.id);
     }
   }
@@ -138,10 +140,10 @@ export class FolderTreeViewComponent implements OnInit, OnChanges, OnDestroy {
   public getSearchedNodeId() {
     if (this.searchedNodeId) {
       return this.searchedNodeId;
-    } else if (this.path && this.path.length > 0) {
-      return this.path[this.path.length - 1].id;
-    } else {
-      return undefined;
     }
+    if (this.path && this.path.length > 0) {
+      return this.path[this.path.length - 1].id;
+    }
+    return undefined;
   }
 }

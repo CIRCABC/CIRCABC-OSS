@@ -1,28 +1,32 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit, input } from '@angular/core';
 
+import { I18nSelectPipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import {
   GroupPath,
-  InterestGroup,
+  type InterestGroup,
   InterestGroupService,
 } from 'app/core/generated/circabc';
+import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-group-location',
   templateUrl: './group-location.component.html',
-  styleUrls: ['./group-location.component.scss'],
+  styleUrl: './group-location.component.scss',
+  imports: [RouterLink, I18nSelectPipe, I18nPipe],
 })
 export class GroupLocationComponent implements OnInit {
-  @Input()
-  group!: InterestGroup;
+  readonly group = input.required<InterestGroup>();
   groupPath!: GroupPath;
 
   constructor(private groupService: InterestGroupService) {}
 
   async ngOnInit() {
-    if (this.group && this.group.id) {
+    const group = this.group();
+    if (group?.id) {
       this.groupPath = await firstValueFrom(
-        this.groupService.getGroupPath(this.group.id)
+        this.groupService.getGroupPath(group.id)
       );
     }
   }

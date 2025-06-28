@@ -1,13 +1,16 @@
 <div class="home-logout">
   <div class="footer-bottom-stucker">
     <div class=""></div>
-    <header class="header fluid">
-      <div class="ec-links" *ngIf="!waitingAfterLogin">
-        <cbc-system-message-indicator
-          [useBlueIcon]="true"
-          style="position: relative; top: 8px"
-        ></cbc-system-message-indicator>
-        <ul>
+    <header class="header fluid" role="none">
+      @if (!waitingAfterLogin) {
+      <div class="ec-links">
+        <ul class="menu">
+          <li>
+            <cbc-system-message-indicator
+              [useBlueIcon]="true"
+              style="position: relative; top: 8px"
+            ></cbc-system-message-indicator>
+          </li>
           <li>
             <a [routerLink]="['/explore']"
               >{{ 'welcome.discover' | transloco }}</a
@@ -21,12 +24,18 @@
               >{{ 'welcome.contact' | transloco }}</a
             >
           </li>
+          <li>
+            <cbc-lang-selector
+              [currentLang]="currentLang"
+              (changedLang)="refreshUILang($event)"
+              [compactMode]="true"
+              [iconColorOnlyBlue]="true"
+              style="position: relative; top: 6px"
+            ></cbc-lang-selector>
+          </li>
         </ul>
-        <cbc-lang-selector
-          [currentLang]="currentLang"
-          (changedLang)="refreshUILang($event)"
-        ></cbc-lang-selector>
       </div>
+      }
       <img
         class="eu-logo"
         src="img/all-ec-logo-neg/flag_yellow_low.jpg"
@@ -35,12 +44,22 @@
     </header>
 
     <div class="main">
-      <div class="wrap" *ngIf="!waitingAfterLogin">
+      @if (!waitingAfterLogin) {
+      <div class="wrap">
+        @if (circabcRelease !== 'echa') {
         <img
           class="logo-circabc"
           src="img/logo-circabc-big.png"
           alt="CIRCABC"
         />
+        } @if (circabcRelease === 'echa') {
+        <img
+          class="logo-circabc"
+          src="img/s-circabcLogo-white.svg"
+          alt="CIRCABC"
+          width="200px"
+        />
+        }
 
         <img class="illustration" src="img/illu-icons.png" alt="" />
         <h1>{{ 'welcome.title' | transloco }}</h1>
@@ -49,19 +68,19 @@
           {{ 'welcome.description' | transloco }} {{ 'welcome.description.link'
           | transloco }}.
         </h2>
-        <a *ngIf="!isOSS" class="cta cta--homepage" (click)="euLogin()"
+        @if (!isOSS) {
+        <a tabindex="0" class="cta cta--homepage" (click)="euLogin()"
           >{{ 'welcome.euLogin' | transloco }}
         </a>
-        <a
-          data-cy="connect"
-          *ngIf="isOSS"
-          class="cta cta--homepage"
-          [routerLink]="['/login']"
+        } @if (isOSS) {
+        <a data-cy="connect" class="cta cta--homepage" [routerLink]="['/login']"
           >{{ 'welcome.connect' | transloco }}</a
         >
-        <a *ngIf="!isOSS" class="button" (click)="euLoginCreate()"
+        } @if (!isOSS) {
+        <a tabindex="0" class="button" (click)="euLoginCreate()"
           >{{ 'welcome.euLogin.create' | transloco }}
         </a>
+        }
         <br />
         <span class="spacing">{{ 'label.or' | transloco }}</span>
         <br />
@@ -69,10 +88,12 @@
           >{{ 'welcome.continue.visitor' | transloco }}
         </a>
       </div>
-      <div class="wrap login-loader" *ngIf="waitingAfterLogin">
+      } @if (waitingAfterLogin) {
+      <div class="wrap login-loader">
         <h1>{{ 'label.logging.you.in' | transloco }}</h1>
         <div class="loader"></div>
       </div>
+      }
     </div>
     <section class="features wrap">
       <ul>

@@ -1,5 +1,5 @@
 <section class="timeline-step">
-  <header> {{ 'dashboard.' + when + '.highlights' | transloco }} </header>
+  <header> {{ 'dashboard.' + when() + '.highlights' | transloco }} </header>
   <section class="summary">
     <cbc-summary-box
       [number]="userFeed && userFeed.uploads ? userFeed.uploads : 0"
@@ -14,17 +14,16 @@
       [label]="'comments'"
     ></cbc-summary-box>
   </section>
-  <section class="groups" *ngIf="userFeed">
+  @if (userFeed) {
+  <section class="groups">
+    @for (groupFeed of userFeed.groupFeeds; track groupFeed.id) {
     <cbc-group-step
-      *ngFor="let groupFeed of userFeed.groupFeeds"
       [groupFeed]="groupFeed"
       [type]="userFeed.when"
     ></cbc-group-step>
-    <p
-      *ngIf="userFeed.groupFeeds && userFeed.groupFeeds.length === 0"
-      class="empty"
-    >
-      {{ 'label.nothing.to.display' | transloco }}
-    </p>
+    } @if (userFeed.groupFeeds && userFeed.groupFeeds.length === 0) {
+    <p class="empty"> {{ 'label.nothing.to.display' | transloco }} </p>
+    }
   </section>
+  }
 </section>

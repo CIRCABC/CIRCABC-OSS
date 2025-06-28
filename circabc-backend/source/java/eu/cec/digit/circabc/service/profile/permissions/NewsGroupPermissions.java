@@ -26,73 +26,74 @@ import java.util.HashSet;
  * @author Clinckart Stephane
  */
 public enum NewsGroupPermissions {
-    NWSADMIN("NwsAdmin"),
-    NWSMODERATE("NwsModerate"),
-    NWSPOST("NwsPost"),
-    NWSACCESS("NwsAccess"),
-    NWSNOACCESS("NwsNoAccess");
+  NWSADMIN("NwsAdmin"),
+  NWSMODERATE("NwsModerate"),
+  NWSPOST("NwsPost"),
+  NWSACCESS("NwsAccess"),
+  NWSNOACCESS("NwsNoAccess");
 
-    static HashSet<NewsGroupPermissions> newsgroupPermissions = null;
-    protected String newsgroupPermissionString;
+  static HashSet<NewsGroupPermissions> newsgroupPermissions = null;
+  protected String newsgroupPermissionString;
 
-    /**
-     * Constructor initialising the string value of the permission. The String values will be defined
-     * in the file permissionDefinitions.xml
-     *
-     * @param value string value associated to the enumeration value.
-     */
-    NewsGroupPermissions(String value) {
-        newsgroupPermissionString = value;
+  /**
+   * Constructor initialising the string value of the permission. The String values will be defined
+   * in the file permissionDefinitions.xml
+   *
+   * @param value string value associated to the enumeration value.
+   */
+  NewsGroupPermissions(String value) {
+    newsgroupPermissionString = value;
+  }
+
+  public static NewsGroupPermissions withPermissionString(String permiString) {
+    NewsGroupPermissions match = null;
+
+    for (NewsGroupPermissions permission : getPermissions()) {
+      if (permission.newsgroupPermissionString.equals(permiString)) {
+        match = permission;
+        break;
+      }
     }
-
-    public static NewsGroupPermissions withPermissionString(String permiString) {
-        NewsGroupPermissions match = null;
-
-        for (NewsGroupPermissions permission : getPermissions()) {
-            if (permission.newsgroupPermissionString.equals(permiString)) {
-                match = permission;
-                break;
-            }
-        }
-        if (match == null) {
-            throw new IllegalArgumentException(
-                    "No enum const class with permission string " + permiString);
-        } else {
-            return match;
-        }
+    if (match == null) {
+      throw new IllegalArgumentException(
+        "No enum const class with permission string " + permiString
+      );
+    } else {
+      return match;
     }
+  }
 
-    /**
-     * initialise the list of permissions
-     */
-    protected static void init() {
-        newsgroupPermissions = new HashSet<>();
-        Collections.addAll(newsgroupPermissions, NewsGroupPermissions.values());
-    }
+  /**
+   * initialise the list of permissions
+   */
+  protected static void init() {
+    newsgroupPermissions = new HashSet<>();
+    Collections.addAll(newsgroupPermissions, NewsGroupPermissions.values());
+  }
 
-    /**
-     * return an List representing the permission list.
-     *
-     * @return List of LibraryPermissions
-     */
-    public static HashSet<NewsGroupPermissions> getPermissions() {
-        if (newsgroupPermissions == null) {
-            init();
-        }
-        return (HashSet<NewsGroupPermissions>) newsgroupPermissions.clone();
+  /**
+   * return an List representing the permission list.
+   *
+   * @return List of LibraryPermissions
+   */
+  public static HashSet<NewsGroupPermissions> getPermissions() {
+    if (newsgroupPermissions == null) {
+      init();
     }
+    return (HashSet<NewsGroupPermissions>) newsgroupPermissions.clone();
+  }
 
-    public static NewsGroupPermissions[] minimalValues() {
-        return new NewsGroupPermissions[]{NWSPOST, NWSACCESS, NWSNOACCESS};
-    }
+  public static NewsGroupPermissions[] minimalValues() {
+    return new NewsGroupPermissions[] { NWSPOST, NWSACCESS, NWSNOACCESS };
+  }
 
-    /**
-     * Return the string value associated to the permission
-     */
-    public String toString() {
-        if (newsgroupPermissions == null) {
-            init();
-        }
-        return newsgroupPermissionString;
+  /**
+   * Return the string value associated to the permission
+   */
+  public String toString() {
+    if (newsgroupPermissions == null) {
+      init();
     }
+    return newsgroupPermissionString;
+  }
 }

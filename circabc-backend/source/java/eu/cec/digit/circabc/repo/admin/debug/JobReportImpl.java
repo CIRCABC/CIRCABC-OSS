@@ -26,33 +26,36 @@ import org.quartz.JobDetail;
  */
 public class JobReportImpl implements JobReport {
 
-    private JobDetail jobDetail;
+  private JobDetail jobDetail;
 
-    /**
-     * @param jobDetal
-     */
-    public JobReportImpl(JobDetail jobDetal) {
-        super();
-        this.jobDetail = jobDetal;
-    }
+  /**
+   * @param jobDetal
+   */
+  public JobReportImpl(JobDetail jobDetal) {
+    super();
+    this.jobDetail = jobDetal;
+  }
 
-    public String getDescrition() {
-        return ReportUtils.getSecuredString(jobDetail.getDescription());
-    }
+  public String getDescrition() {
+    return ReportUtils.getSecuredString(jobDetail.getDescription());
+  }
 
-    public String getFullname() {
-        return jobDetail.getFullName();
-    }
+  public String getFullname() {
+    return jobDetail.getFullName();
+  }
 
-    public String getSimpleName() {
-        return ReportUtils.getDisplayName(jobDetail.getGroup(), jobDetail.getName());
-    }
+  public String getSimpleName() {
+    return ReportUtils.getDisplayName(
+      jobDetail.getGroup(),
+      jobDetail.getName()
+    );
+  }
 
-    public String getJobClass() {
-        return jobDetail.getJobClass().getName();
-    }
+  public String getJobClass() {
+    return jobDetail.getJobClass().getName();
+  }
 
-    public boolean isStatefull() {
-        return jobDetail.isStateful();
-    }
+  public boolean isStatefull() {
+    return jobDetail.isStateful();
+  }
 }

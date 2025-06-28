@@ -21,6 +21,12 @@
 package eu.cec.digit.circabc.web.wai.dialog.forums;
 
 import eu.cec.digit.circabc.error.CircabcRuntimeException;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ApplicationModel;
 import org.alfresco.model.ContentModel;
@@ -39,13 +45,6 @@ import org.alfresco.web.ui.common.Utils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * Bean implementation of the "Create Discussion Dialog".
  *
@@ -53,179 +52,208 @@ import java.util.Map;
  */
 public class CreateDiscussionDialog extends CreateTopicDialog {
 
-    public static final String BEAN_NAME = "CreateDiscussionDialog";
-    private static final long serialVersionUID = -4943386423005547018L;
-    private static final Log logger = LogFactory.getLog(CreateDiscussionDialog.class);
-    private static final String MSG_SAVED = "create_topic_successfullysaved";
-    private static final String DIALOG_NAME = "createDiscussionWai";
+  public static final String BEAN_NAME = "CreateDiscussionDialog";
+  private static final long serialVersionUID = -4943386423005547018L;
+  private static final Log logger = LogFactory.getLog(
+    CreateDiscussionDialog.class
+  );
+  private static final String MSG_SAVED = "create_topic_successfullysaved";
+  private static final String DIALOG_NAME = "createDiscussionWai";
 
-    private boolean moderated;
+  private boolean moderated;
 
-    // ------------------------------------------------------------------------------
-    // Wizard implementation
+  // ------------------------------------------------------------------------------
+  // Wizard implementation
 
-    @Override
-    public void init(final Map<String, String> parameters) {
-        super.init(parameters);
+  @Override
+  public void init(final Map<String, String> parameters) {
+    super.init(parameters);
 
-        logRecord.setService("Library");
-        logRecord.setActivity("Create discusion");
+    logRecord.setService("Library");
+    logRecord.setActivity("Create discusion");
 
-        if (parameters != null) {
-            this.moderated = false;
-        }
+    if (parameters != null) {
+      this.moderated = false;
     }
+  }
 
-    @Override
-    protected String finishImpl(final FacesContext context, String outcome) throws Exception {
-        if (!isValid()) {
-            this.isFinished = false;
-            return null;
-        } else {
-            String content = getSelectedContent();
-            if (MODE_TEXT.equals(getEditMode())) {
-                // remove link breaks and replace with <br>
-                content = Utils.replaceLineBreaks(content, false);
-            }
+  @Override
+  protected String finishImpl(final FacesContext context, String outcome)
+    throws Exception {
+    if (!isValid()) {
+      this.isFinished = false;
+      return null;
+    } else {
+      String content = getSelectedContent();
+      if (MODE_TEXT.equals(getEditMode())) {
+        // remove link breaks and replace with <br>
+        content = Utils.replaceLineBreaks(content, false);
+      }
 
-            if (!isAlreadySaved()) {
-                //	**  First part - Creation of the forum
+      if (!isAlreadySaved()) {
+        //	**  First part - Creation of the forum
 
-                final NodeRef forumNodeRef = createForumNode();
+        final NodeRef forumNodeRef = createForumNode();
 
-                if (moderated) {
-                    getModerationService().applyModeration(forumNodeRef, false);
+        if (moderated) {
+          getModerationService().applyModeration(forumNodeRef, false);
 
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Moderation activated on forum and futur topics.");
-                    }
-                }
-
-                // **  Second part - Create topic
-
-                final NodeRef topicNodeRef = createTopicNode(forumNodeRef);
-
-                if (getModerationService().isContainerModerated(topicNodeRef)) {
-                    Utils.addStatusMessage(FacesMessage.SEVERITY_WARN, translate(MSG_WARN_MODERATION));
-                }
-
-                // **  Third Part - Create Post
-
-                super.postRef = createPost(context, topicNodeRef, content);
-
-                if (reopen()) {
-                    Utils.addStatusMessage(FacesMessage.SEVERITY_INFO, translate(MSG_SAVED));
-                }
-
-                // Ensure that the node used by the previsous dialog is correctly rested.
-                if (getBrowseBean().getActionSpace() != null) {
-                    // should not longer be used !!!
-                    getBrowseBean().getActionSpace().reset();
-                }
-                if (getBrowseBean().getDocument() != null) {
-                    // should not longer be used !!!
-                    getBrowseBean().getDocument().reset();
-                }
-                if (getNavigator().getCurrentNode() != null) {
-                    // ONLY That should be used, all the dialogs must use ans set if needed this central node.
-                    // But Alfresco dialogs use sometimes the previous ones.
-                    getNavigator().getCurrentNode().reset();
-                }
-            } else {
-                final ContentWriter writer = getContentService()
-                        .getWriter(this.postRef, ContentModel.PROP_CONTENT, true);
-                if (writer != null) {
-                    writer.putContent(content);
-                }
-            }
-
-            attachFiles(this.postRef);
-
-            return outcome;
-        }
-    }
-
-    @Override
-    protected String getDialogName() {
-        return DIALOG_NAME;
-    }
-
-    /**
-     * @return
-     * @throws InvalidNodeRefException
-     * @throws InvalidAspectException
-     * @throws AlfrescoRuntimeException
-     * @throws InvalidTypeException
-     * @throws InvalidQNameException
-     */
-    private NodeRef createForumNode()
-            throws InvalidNodeRefException, AlfrescoRuntimeException, InvalidQNameException {
-        NodeRef forumNodeRef;
-        final NodeRef discussingNodeRef = getActionNode().getNodeRef();
-
-        if (getNodeService().hasAspect(discussingNodeRef, ForumModel.ASPECT_DISCUSSABLE)) {
-            logger.error("createDiscussion called for an object that already has a discussion!"
-                    + discussingNodeRef);
-            throw new AlfrescoRuntimeException(
-                    "createDiscussion called for an object that already has a discussion!");
+          if (logger.isDebugEnabled()) {
+            logger.debug("Moderation activated on forum and futur topics.");
+          }
         }
 
-        // add the discussable aspect
-        getNodeService().addAspect(discussingNodeRef, ForumModel.ASPECT_DISCUSSABLE, null);
+        // **  Second part - Create topic
 
-        // alfresco version 3.4.6 changed when adding aspect we do not need to create node
-        List<ChildAssociationRef> destChildren = getNodeService().getChildAssocs(
-                discussingNodeRef,
-                ForumModel.ASSOC_DISCUSSION,
-                RegexQNamePattern.MATCH_ALL);
-        if (destChildren.size() == 0) {
-            throw new CircabcRuntimeException("The discussable aspect behaviour is not creating a topic");
-        } else {
-            ChildAssociationRef discussionAssoc = destChildren.get(0);
-            forumNodeRef = discussionAssoc.getChildRef();
+        final NodeRef topicNodeRef = createTopicNode(forumNodeRef);
+
+        if (getModerationService().isContainerModerated(topicNodeRef)) {
+          Utils.addStatusMessage(
+            FacesMessage.SEVERITY_WARN,
+            translate(MSG_WARN_MODERATION)
+          );
         }
 
-        // apply the uifacets aspect
-        final Map<QName, Serializable> uiFacetsPropForums = new HashMap<>(5);
-        uiFacetsPropForums.put(ApplicationModel.PROP_ICON, "forum");
-        getNodeService().addAspect(forumNodeRef, ApplicationModel.ASPECT_UIFACETS, uiFacetsPropForums);
+        // **  Third Part - Create Post
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("created forum " + forumNodeRef.toString() + " for content: " + discussingNodeRef
-                    .toString());
+        super.postRef = createPost(context, topicNodeRef, content);
+
+        if (reopen()) {
+          Utils.addStatusMessage(
+            FacesMessage.SEVERITY_INFO,
+            translate(MSG_SAVED)
+          );
         }
-        return forumNodeRef;
+
+        // Ensure that the node used by the previsous dialog is correctly rested.
+        if (getBrowseBean().getActionSpace() != null) {
+          // should not longer be used !!!
+          getBrowseBean().getActionSpace().reset();
+        }
+        if (getBrowseBean().getDocument() != null) {
+          // should not longer be used !!!
+          getBrowseBean().getDocument().reset();
+        }
+        if (getNavigator().getCurrentNode() != null) {
+          // ONLY That should be used, all the dialogs must use ans set if needed this central node.
+          // But Alfresco dialogs use sometimes the previous ones.
+          getNavigator().getCurrentNode().reset();
+        }
+      } else {
+        final ContentWriter writer = getContentService()
+          .getWriter(this.postRef, ContentModel.PROP_CONTENT, true);
+        if (writer != null) {
+          writer.putContent(content);
+        }
+      }
+
+      attachFiles(this.postRef);
+
+      return outcome;
+    }
+  }
+
+  @Override
+  protected String getDialogName() {
+    return DIALOG_NAME;
+  }
+
+  /**
+   * @return
+   * @throws InvalidNodeRefException
+   * @throws InvalidAspectException
+   * @throws AlfrescoRuntimeException
+   * @throws InvalidTypeException
+   * @throws InvalidQNameException
+   */
+  private NodeRef createForumNode()
+    throws InvalidNodeRefException, AlfrescoRuntimeException, InvalidQNameException {
+    NodeRef forumNodeRef;
+    final NodeRef discussingNodeRef = getActionNode().getNodeRef();
+
+    if (
+      getNodeService()
+        .hasAspect(discussingNodeRef, ForumModel.ASPECT_DISCUSSABLE)
+    ) {
+      logger.error(
+        "createDiscussion called for an object that already has a discussion!" +
+        discussingNodeRef
+      );
+      throw new AlfrescoRuntimeException(
+        "createDiscussion called for an object that already has a discussion!"
+      );
     }
 
-    @Override
-    public String cancel() {
-        // as we are cancelling the creation of a discussion we know we need to go back
-        // to the browse screen, this also makes sure we don't end up in the forum that
-        // just got deleted!
-        return AlfrescoNavigationHandler.CLOSE_DIALOG_OUTCOME;
+    // add the discussable aspect
+    getNodeService()
+      .addAspect(discussingNodeRef, ForumModel.ASPECT_DISCUSSABLE, null);
+
+    // alfresco version 3.4.6 changed when adding aspect we do not need to create node
+    List<ChildAssociationRef> destChildren = getNodeService()
+      .getChildAssocs(
+        discussingNodeRef,
+        ForumModel.ASSOC_DISCUSSION,
+        RegexQNamePattern.MATCH_ALL
+      );
+    if (destChildren.size() == 0) {
+      throw new CircabcRuntimeException(
+        "The discussable aspect behaviour is not creating a topic"
+      );
+    } else {
+      ChildAssociationRef discussionAssoc = destChildren.get(0);
+      forumNodeRef = discussionAssoc.getChildRef();
     }
 
-    // ------------------------------------------------------------------------------
-    // Service and Bean Injection
+    // apply the uifacets aspect
+    final Map<QName, Serializable> uiFacetsPropForums = new HashMap<>(5);
+    uiFacetsPropForums.put(ApplicationModel.PROP_ICON, "forum");
+    getNodeService()
+      .addAspect(
+        forumNodeRef,
+        ApplicationModel.ASPECT_UIFACETS,
+        uiFacetsPropForums
+      );
 
-    public String getBrowserTitle() {
-        return translate("create_discussion_title_wai");
+    if (logger.isDebugEnabled()) {
+      logger.debug(
+        "created forum " +
+        forumNodeRef.toString() +
+        " for content: " +
+        discussingNodeRef.toString()
+      );
     }
+    return forumNodeRef;
+  }
 
-    public String getPageIconAltText() {
-        return translate("create_discussion_icon_tooltip");
-    }
+  @Override
+  public String cancel() {
+    // as we are cancelling the creation of a discussion we know we need to go back
+    // to the browse screen, this also makes sure we don't end up in the forum that
+    // just got deleted!
+    return AlfrescoNavigationHandler.CLOSE_DIALOG_OUTCOME;
+  }
 
-    @Override
-    public boolean getFinishButtonDisabled() {
-        return false;
-    }
+  // ------------------------------------------------------------------------------
+  // Service and Bean Injection
 
-    public final boolean isModerated() {
-        return moderated;
-    }
+  public String getBrowserTitle() {
+    return translate("create_discussion_title_wai");
+  }
 
-    public final void setModerated(boolean moderated) {
-        this.moderated = moderated;
-    }
+  public String getPageIconAltText() {
+    return translate("create_discussion_icon_tooltip");
+  }
+
+  @Override
+  public boolean getFinishButtonDisabled() {
+    return false;
+  }
+
+  public final boolean isModerated() {
+    return moderated;
+  }
+
+  public final void setModerated(boolean moderated) {
+    this.moderated = moderated;
+  }
 }

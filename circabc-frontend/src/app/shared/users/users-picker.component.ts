@@ -1,17 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Component,
-  EventEmitter,
-  forwardRef,
   Input,
   OnInit,
-  Output,
+  forwardRef,
+  output,
+  input,
 } from '@angular/core';
 import {
   ControlValueAccessor,
   FormControl,
   FormGroup,
   NG_VALUE_ACCESSOR,
+  ReactiveFormsModule,
 } from '@angular/forms';
 
 import {
@@ -25,6 +26,7 @@ import {
   UserProfile,
 } from 'app/core/generated/circabc';
 
+import { TranslocoModule } from '@jsverse/transloco';
 import { PermissionEvaluatorService } from 'app/core/evaluator/permission-evaluator.service';
 import { UiMessageService } from 'app/core/message/ui-message.service';
 import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
@@ -46,7 +48,7 @@ interface Types {
 @Component({
   selector: 'cbc-users-picker',
   templateUrl: './users-picker.component.html',
-  styleUrls: ['./users-picker.component.scss'],
+  styleUrl: './users-picker.component.scss',
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -56,22 +58,24 @@ interface Types {
     },
   ],
   preserveWhitespaces: true,
+  imports: [ReactiveFormsModule, TranslocoModule],
 })
 export class UsersPickerComponent implements OnInit, ControlValueAccessor {
-  @Input()
-  public displayGuestRegistered = false;
-  @Input()
-  public igId: string | undefined;
+  public readonly displayGuestRegistered = input(false);
+  public readonly igId = input<string>();
+  // TODO: Skipped for migration because:
+  //  This input is used in a control flow expression (e.g. `@if` or `*ngIf`)
+  //  and migrating would break narrowing currently.
   @Input()
   public profilesTip!: string;
+  // TODO: Skipped for migration because:
+  //  This input is used in a control flow expression (e.g. `@if` or `*ngIf`)
+  //  and migrating would break narrowing currently.
   @Input()
   public usersTip!: string;
-  @Input()
-  public showSelectedList = true;
-  @Output()
-  public readonly afterSelectionMade = new EventEmitter();
-  @Output()
-  public readonly userOrProfileQueryError = new EventEmitter();
+  public readonly showSelectedList = input(true);
+  public readonly afterSelectionMade = output();
+  public readonly userOrProfileQueryError = output();
 
   public availableTypes: Types[] = [
     { value: 0, text: 'label.user' },
@@ -97,14 +101,14 @@ export class UsersPickerComponent implements OnInit, ControlValueAccessor {
   private static areEquals(a: UserOrProfile, b: UserOrProfile): boolean {
     if (UsersPickerComponent.isUser(a) && UsersPickerComponent.isUser(b)) {
       return a.userId === b.userId;
-    } else if (
+    }
+    if (
       UsersPickerComponent.isProfile(a) &&
       UsersPickerComponent.isProfile(b)
     ) {
       return a.name === b.name;
-    } else {
-      return false;
     }
+    return false;
   }
 
   // impement ControlValueAccessor interface
@@ -142,7 +146,7 @@ export class UsersPickerComponent implements OnInit, ControlValueAccessor {
         result = `${userOrProfile.firstname} ${userOrProfile.lastname} (${userOrProfile.email})`;
       } else {
         result = `${userOrProfile.firstname} ${userOrProfile.lastname}`;
-        if (userOrProfile.properties && userOrProfile.properties.ecMoniker) {
+        if (userOrProfile.properties?.ecMoniker) {
           result = `${result} (${userOrProfile.properties.ecMoniker})`;
         }
       }
@@ -192,9 +196,12 @@ export class UsersPickerComponent implements OnInit, ControlValueAccessor {
     this.selectedUsersOrProfiles = [];
 
     const selectedUsersOrProfilesFormControl = new FormControl(
-      this.selectedUsersOrProfiles
+      this.selectedUsersOrProfiles,
+      { nonNullable: true }
     );
-    const searchTextFormControl = new FormControl(this.searchText);
+    const searchTextFormControl = new FormControl(this.searchText, {
+      nonNullable: true,
+    });
     this.form = new FormGroup(
       {
         selectedUsersOrProfiles: selectedUsersOrProfilesFormControl,
@@ -218,9 +225,10 @@ export class UsersPickerComponent implements OnInit, ControlValueAccessor {
   }
 
   private async loadGroup() {
-    if (this.igId !== undefined) {
+    const igId = this.igId();
+    if (igId !== undefined) {
       this.currentGroup = await firstValueFrom(
-        this.groupService.getInterestGroup(this.igId)
+        this.groupService.getInterestGroup(igId)
       );
     }
   }
@@ -236,14 +244,15 @@ export class UsersPickerComponent implements OnInit, ControlValueAccessor {
   private async buildCompleteUsersArray(
     usersOrProfilesArray: (User | Profile | string)[]
   ) {
-    if (this.igId === undefined) {
+    const igId = this.igId();
+    if (igId === undefined) {
       return;
     }
 
     try {
       const pagedUserProfile: PagedUserProfile = await firstValueFrom(
         this.membersService.getMembers(
-          this.igId,
+          igId,
           undefined,
           undefined,
           undefined,
@@ -282,7 +291,7 @@ export class UsersPickerComponent implements OnInit, ControlValueAccessor {
         // in case the user is already complete (add new users) or it is a profile
         this.selectedUsersOrProfiles.push(userOrProfile);
       }
-    } catch (error) {
+    } catch (_error) {
       this.userOrProfileQueryError.emit();
     }
   }
@@ -294,7 +303,8 @@ export class UsersPickerComponent implements OnInit, ControlValueAccessor {
   // searches for the users/profiles to display
   public async doSearch() {
     try {
-      if (this.igId) {
+      const igId = this.igId();
+      if (igId) {
         this.searchText =
           this.searchText === undefined || this.searchText === null
             ? ''
@@ -304,7 +314,7 @@ export class UsersPickerComponent implements OnInit, ControlValueAccessor {
 
           const pagedUserProfile: PagedUserProfile = await firstValueFrom(
             this.membersService.getMembers(
-              this.igId,
+              igId,
               undefined,
               undefined,
               undefined,
@@ -333,14 +343,14 @@ export class UsersPickerComponent implements OnInit, ControlValueAccessor {
 
           let profiles: Profile[] = await firstValueFrom(
             this.profileService.getProfiles(
-              this.igId,
+              igId,
               undefined,
               this.searchText,
               false
             )
           );
 
-          if (!this.displayGuestRegistered) {
+          if (!this.displayGuestRegistered()) {
             profiles = profiles.filter(
               (profile: Profile) =>
                 profile.name !== 'guest' && profile.name !== 'EVERYONE'
@@ -359,8 +369,8 @@ export class UsersPickerComponent implements OnInit, ControlValueAccessor {
       }
     } catch (error) {
       this.userOrProfileQueryError.emit();
-      const jsonError = JSON.parse(error._body);
-      if (jsonError) {
+      const jsonError = JSON.parse(error._body) as Record<string, string>;
+      if (jsonError && 'message' in jsonError) {
         this.uiMessageService.addErrorMessage(jsonError.message);
       }
     }

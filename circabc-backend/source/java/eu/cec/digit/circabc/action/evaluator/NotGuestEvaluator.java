@@ -31,10 +31,9 @@ import org.alfresco.web.bean.repository.Node;
  */
 public class NotGuestEvaluator extends BaseActionEvaluator {
 
-    private static final long serialVersionUID = 2164369999290163419L;
+  private static final long serialVersionUID = 2164369999290163419L;
 
-    public boolean evaluate(final Node node) {
-        return !Beans.getWaiNavigator().getIsGuest();
-    }
-
+  public boolean evaluate(final Node node) {
+    return !Beans.getWaiNavigator().getIsGuest();
+  }
 }

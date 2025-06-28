@@ -1,6 +1,9 @@
 import { Component, OnChanges, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
+import { DatePipe, I18nSelectPipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import { AgendaHelperService } from 'app/core/agenda-helper.service';
 import { PermissionEvaluatorService } from 'app/core/evaluator/permission-evaluator.service';
 import {
@@ -17,13 +20,30 @@ import {
   getFullDate,
 } from 'app/core/util';
 import { CalendarComponent } from 'app/group/agenda/calendar/calendar.component';
+import { DayComponent } from 'app/group/agenda/day/day.component';
+import { WeekComponent } from 'app/group/agenda/week/week.component';
+import { SetTitlePipe } from 'app/shared/pipes/set-title.pipe';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
+import { DatePicker } from 'primeng/datepicker';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-my-calendar',
   templateUrl: './my-calendar.component.html',
-  styleUrls: ['./my-calendar.component.scss'],
+  styleUrl: './my-calendar.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    ReactiveFormsModule,
+    DatePicker,
+    SpinnerComponent,
+    RouterLink,
+    DayComponent,
+    WeekComponent,
+    DatePipe,
+    I18nSelectPipe,
+    SetTitlePipe,
+    TranslocoModule,
+  ],
 })
 export class MyCalendarComponent
   extends CalendarComponent

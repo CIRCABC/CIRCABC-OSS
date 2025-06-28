@@ -1,22 +1,20 @@
-import { Component, Input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 
 @Component({
   selector: 'cbc-number-badge',
   templateUrl: './number-badge.component.html',
-  styleUrls: ['./number-badge.component.scss'],
+  styleUrl: './number-badge.component.scss',
   preserveWhitespaces: true,
 })
 export class NumberBadgeComponent {
-  @Input()
-  number!: number;
+  readonly number = input.required<number>();
+  readonly limit = input<number>();
 
-  getNumberDisplay() {
-    if (this.number && this.number < 100) {
-      return this.number;
-    } else if (this.number && this.number > 100) {
-      return '99+';
-    } else {
-      return 0;
+  readonly backgroundColor = computed(() => {
+    const limitValue = this.limit(); // Capture the value of the signal
+    if (limitValue !== undefined && this.number() > limitValue) {
+      return 'red';
     }
-  }
+    return '#58c37e';
+  });
 }

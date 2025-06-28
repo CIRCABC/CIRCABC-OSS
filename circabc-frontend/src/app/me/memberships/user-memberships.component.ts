@@ -1,25 +1,36 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, input } from '@angular/core';
 
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
+import { RouterLink } from '@angular/router';
 import {
   InterestGroup,
   InterestGroupProfile,
   Profile,
 } from 'app/core/generated/circabc';
+import { HintComponent } from 'app/shared/hint/hint.component';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
 import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
 
 @Component({
   selector: 'cbc-user-memberships',
   templateUrl: './user-memberships.component.html',
-  styleUrls: ['./user-memberships.component.scss'],
+  styleUrl: './user-memberships.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    HintComponent,
+    HorizontalLoaderComponent,
+    RouterLink,
+    TranslocoModule,
+  ],
 })
 export class UserMembershipsComponent {
+  // TODO: Skipped for migration because:
+  //  This input is used in a control flow expression (e.g. `@if` or `*ngIf`)
+  //  and migrating would break narrowing currently.
   @Input()
   memberships!: InterestGroupProfile[];
-  @Input()
-  loading = false;
+  readonly loading = input(false);
 
   constructor(
     private translateService: TranslocoService,

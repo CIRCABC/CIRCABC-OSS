@@ -1,6 +1,6 @@
 import { Injectable, Pipe, PipeTransform } from '@angular/core';
 
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Pipe({
   name: 'cbcI18n',
@@ -47,9 +47,8 @@ export class I18nPipe implements PipeTransform {
     // fix, we search for 'xx-', because some old values from CIRCABC has title saved like { en-US: 'eeeee', fr-FR: 'ffff', es: 'erjlkg'}
     if (!firstLook && locale.indexOf('-') === -1) {
       return keys.includes(`${locale}-`);
-    } else {
-      return keys.includes(locale);
     }
+    return keys.includes(locale);
   }
 
   private countNonEmptyValues(mltext: { [key: string]: string }): number {
@@ -95,7 +94,8 @@ export class I18nPipe implements PipeTransform {
   private getValue(mltext: { [key: string]: string }, locale: string): string {
     const keys = Object.keys(mltext);
     const firstLook = keys.includes(locale);
-    let resultKey;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let resultKey: any;
 
     // fix, we search for 'xx-', because some old values from CIRCABC has title saved like { en-US: 'eeeee', fr-FR: 'ffff', es: 'erjlkg'}
     if (!firstLook && locale.indexOf('-') === -1) {
@@ -106,8 +106,7 @@ export class I18nPipe implements PipeTransform {
 
     if (resultKey !== undefined) {
       return mltext[resultKey] !== undefined ? mltext[resultKey] : '';
-    } else {
-      return '';
     }
+    return '';
   }
 }

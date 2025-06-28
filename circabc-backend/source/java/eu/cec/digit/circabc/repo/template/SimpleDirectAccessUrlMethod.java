@@ -26,11 +26,14 @@ import org.alfresco.service.cmr.repository.NodeRef;
  *
  * @author Pierre Beauregard
  */
-public class SimpleDirectAccessUrlMethod extends NodeRefBaseTemplateProcessorExtension
-        implements TemplateMethodModelEx {
+public class SimpleDirectAccessUrlMethod
+  extends NodeRefBaseTemplateProcessorExtension
+  implements TemplateMethodModelEx {
 
-    @Override
-    public String getResult(NodeRef nodeRef) {
-        return ExternalAccessServlet.getServerContext() + "/w/browse/" + nodeRef.getId();
-    }
+  @Override
+  public String getResult(NodeRef nodeRef) {
+    return (
+      ExternalAccessServlet.getServerContext() + "/w/browse/" + nodeRef.getId()
+    );
+  }
 }

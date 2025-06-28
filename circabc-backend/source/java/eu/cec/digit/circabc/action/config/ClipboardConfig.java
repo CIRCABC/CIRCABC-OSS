@@ -27,23 +27,23 @@ package eu.cec.digit.circabc.action.config;
  */
 public class ClipboardConfig {
 
-    private long downloadLimitMB = 50;
+  private long downloadLimitMB = 50;
 
-    /**
-     * Gets the value of the downloadLimitMB
-     *
-     * @return the downloadLimitMB
-     */
-    public long getDownloadLimitMB() {
-        return downloadLimitMB;
-    }
+  /**
+   * Gets the value of the downloadLimitMB
+   *
+   * @return the downloadLimitMB
+   */
+  public long getDownloadLimitMB() {
+    return downloadLimitMB;
+  }
 
-    /**
-     * Sets the value of the downloadLimitMB
-     *
-     * @param downloadLimitMB the downloadLimitMB to set.
-     */
-    public void setDownloadLimitMB(long downloadLimitMB) {
-        this.downloadLimitMB = downloadLimitMB;
-    }
+  /**
+   * Sets the value of the downloadLimitMB
+   *
+   * @param downloadLimitMB the downloadLimitMB to set.
+   */
+  public void setDownloadLimitMB(long downloadLimitMB) {
+    this.downloadLimitMB = downloadLimitMB;
+  }
 }

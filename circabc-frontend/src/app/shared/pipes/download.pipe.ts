@@ -17,11 +17,11 @@ export class DownloadPipe implements PipeTransform {
     }
   }
 
-  public transform(id: string | undefined): string {
+  public transform(id?: string): string {
+    const url = `${this.serverURL}rest/download/${id}`;
     if (id) {
-      return `${this.serverURL}rest/download/${id}`;
-    } else {
-      throw new Error('id should be provided');
+      return url;
     }
+    throw new Error('id should be provided');
   }
 }

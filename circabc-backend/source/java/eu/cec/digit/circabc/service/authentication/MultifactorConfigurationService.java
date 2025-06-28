@@ -22,8 +22,7 @@ package eu.cec.digit.circabc.service.authentication;
  * @author schwerr
  */
 public interface MultifactorConfigurationService {
+  boolean isMultifactorEnabled();
 
-    boolean isMultifactorEnabled();
-
-    void setMultifactorEnabled(boolean enabled);
+  void setMultifactorEnabled(boolean enabled);
 }

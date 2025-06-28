@@ -16,7 +16,7 @@
 		"service": "${t.service}",
 		"activity": "${t.activity}",
 		<#if (t.actionId)??>"actionId": ${t.actionId},</#if>
-		"actionNumber": ${t.actionNumber}
+		"actionNumber": ${t.actionNumber?c}
 	}<#if (t_has_next)>,</#if>
 	</#list>
 ] 

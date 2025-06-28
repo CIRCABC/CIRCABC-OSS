@@ -4,7 +4,7 @@
   	Update existing new header  
   </description>
   <url>/circabc/headers/{id}</url>
-  <format default="json"/>
+  <format default="json" />
   <authentication>user</authentication>
   <transaction>required</transaction>
 </webscript>

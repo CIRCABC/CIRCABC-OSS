@@ -2,7 +2,7 @@
   <shortname>Removes a Favourite for a user</shortname>
   <description>Delete a noderef from the user's favourites</description>
   <url>/circabc/users/{userId}/favourites/{nodeId}</url>
-  <format default="json"/>
+  <format default="json" />
   <authentication>user</authentication>
   <transaction>required</transaction>
 </webscript>

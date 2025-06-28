@@ -1,25 +1,33 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input, output } from '@angular/core';
 
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
   ActionType,
 } from 'app/action-result';
-import { KeywordDefinition, KeywordsService } from 'app/core/generated/circabc';
+import {
+  type KeywordDefinition,
+  KeywordsService,
+} from 'app/core/generated/circabc';
 import { UiMessageService } from 'app/core/message/ui-message.service';
+import { KeywordTagComponent } from 'app/group/keywords/tag/keyword-tag.component';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-delete-keyword',
   templateUrl: './delete-keyword.component.html',
   preserveWhitespaces: true,
+  imports: [KeywordTagComponent, SpinnerComponent, TranslocoModule],
 })
 export class DeleteKeywordComponent {
+  // TODO: Skipped for migration because:
+  //  This input is used in a control flow expression (e.g. `@if` or `*ngIf`)
+  //  and migrating would break narrowing currently.
   @Input()
   keyword!: KeywordDefinition;
-  @Output()
-  public readonly modalHide = new EventEmitter<ActionEmitterResult>();
+  public readonly modalHide = output<ActionEmitterResult>();
 
   public deleting = false;
   public showModal = false;

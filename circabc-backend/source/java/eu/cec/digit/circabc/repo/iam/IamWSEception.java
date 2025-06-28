@@ -21,16 +21,16 @@ package eu.cec.digit.circabc.repo.iam;
  */
 public class IamWSEception extends RuntimeException {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 6313277738682278125L;
+  /**
+   *
+   */
+  private static final long serialVersionUID = 6313277738682278125L;
 
-    public IamWSEception(String message) {
-        super(message);
-    }
+  public IamWSEception(String message) {
+    super(message);
+  }
 
-    public IamWSEception(String message, Throwable cause) {
-        super(message, cause);
-    }
+  public IamWSEception(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

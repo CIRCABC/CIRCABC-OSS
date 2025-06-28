@@ -1,21 +1,24 @@
 import {
   Component,
   ElementRef,
-  EventEmitter,
   Input,
   OnInit,
-  Output,
-  ViewChild,
+  viewChild,
+  output,
+  input,
+  OnDestroy,
 } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
   FormGroup,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { TranslocoService } from '@ngneat/transloco';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
@@ -25,36 +28,57 @@ import { ActionService } from 'app/action-result/action.service';
 import {
   Node as ModelNode,
   PagedNodes,
-  SpaceService,
   PermissionDefinition,
   PermissionService,
+  SpaceService,
 } from 'app/core/generated/circabc';
-import { UiMessageService } from 'app/core/message/ui-message.service';
-import { getSuccessTranslation, removeNulls } from 'app/core/util';
-import { ValidationService } from 'app/core/validation.service';
-import { firstValueFrom } from 'rxjs';
+import { removeNulls } from 'app/core/util';
+import {
+  fileFolderExistsValidator,
+  nameValidator,
+} from 'app/core/validation.service';
+import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
+import { HintComponent } from 'app/shared/hint/hint.component';
+import { MultilingualInputComponent } from 'app/shared/input/multilingual-input.component';
+import { ModalComponent } from 'app/shared/modal/modal.component';
+import { firstValueFrom, Subscription } from 'rxjs';
+import { DatePicker } from 'primeng/datepicker';
+import { setupCalendarDateHandling } from 'app/core/util/date-calendar-util';
 
 @Component({
   selector: 'cbc-add-space',
   templateUrl: './add-space.component.html',
-  styleUrls: ['./add-space.component.scss'],
+  styleUrl: './add-space.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    ModalComponent,
+    ReactiveFormsModule,
+    ControlMessageComponent,
+    MultilingualInputComponent,
+    HintComponent,
+    MatSlideToggleModule,
+    TranslocoModule,
+    DatePicker,
+  ],
 })
-export class AddSpaceComponent implements OnInit {
-  @ViewChild('permitedToogle') permitedToogle!: ElementRef;
+export class AddSpaceComponent implements OnInit, OnDestroy {
+  readonly permitedToogle = viewChild.required<ElementRef>('permitedToogle');
 
   public checked = false;
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   public showWizard!: boolean;
-  @Input()
-  public parentNode!: ModelNode;
-  @Output()
-  public readonly modalHide = new EventEmitter<ActionEmitterResult>();
+  public readonly parentNode = input.required<ModelNode>();
+  public readonly modalHide = output<ActionEmitterResult>();
 
   public contents!: PagedNodes;
   public createSpaceForm!: FormGroup;
   public creating = false;
   public perms!: PermissionDefinition;
+  public dateRequired = false;
+
+  private dateSubscription!: Subscription;
 
   public constructor(
     private fb: FormBuilder,
@@ -63,14 +87,13 @@ export class AddSpaceComponent implements OnInit {
     private actionService: ActionService,
     private router: Router,
     private route: ActivatedRoute,
-    private permissionService: PermissionService,
-    private uiMessageService: UiMessageService
+    private permissionService: PermissionService
   ) {}
 
   public async ngOnInit() {
     this.contents = await firstValueFrom(
       this.spaceService.getChildren(
-        this.parentNode.id as string,
+        this.parentNode().id as string,
         this.translateService.getActiveLang(),
         false,
         -1,
@@ -93,14 +116,11 @@ export class AddSpaceComponent implements OnInit {
           '',
           [
             Validators.required,
-            ValidationService.nameValidator,
+            nameValidator,
             (control: AbstractControl) =>
-              ValidationService.fileFolderExistsValidator(
-                control,
-                this.contents.data
-              ),
+              fileFolderExistsValidator(control, this.contents.data),
             // more or less equivalent to:
-            // function funcValidator(control: AbstractControl) { ValidationService.fileFolderExistsValidator(control, this.contents) }
+            // function funcValidator(control: AbstractControl) { fileFolderExistsValidator(control, this.contents) }
             // the executor runs every validator of the array passing the control only,
             // so I encapsulate the control passing in a function to add the additional parameter (this.contents) as I need it
           ],
@@ -108,11 +128,29 @@ export class AddSpaceComponent implements OnInit {
         description: [''],
         title: [''],
         managePermited: [true],
+        expirationDate: [],
+        expirationDateActived: [false],
       },
       {
         updateOn: 'change',
       }
     );
+
+    this.dateSubscription = setupCalendarDateHandling(
+      this.createSpaceForm.controls.expirationDate
+    );
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    this.createSpaceForm.valueChanges.subscribe((value: any) => {
+      if (
+        value.expirationDateActived &&
+        this.createSpaceForm.controls.expirationDate.value === null
+      ) {
+        this.dateRequired = true;
+      } else {
+        this.dateRequired = false;
+      }
+    });
   }
 
   public cancelWizard(_action: string): void {
@@ -129,7 +167,8 @@ export class AddSpaceComponent implements OnInit {
 
   public async createSpace() {
     this.creating = true;
-    if (this.parentNode.id !== undefined) {
+    const parentNode = this.parentNode();
+    if (parentNode.id !== undefined) {
       if (this.createSpaceForm.valid) {
         const result: ActionEmitterResult = {};
         result.type = ActionType.CREATE_SPACE;
@@ -139,19 +178,24 @@ export class AddSpaceComponent implements OnInit {
             name: this.createSpaceForm.value.name,
             description: removeNulls(this.createSpaceForm.value.description),
             title: removeNulls(this.createSpaceForm.value.title),
+            properties: {
+              expiration_date: this.createSpaceForm.value.expirationDateActived
+                ? this.createSpaceForm.value.expirationDate
+                : '',
+            },
           };
           const response = await firstValueFrom(
-            this.spaceService.postSubspace(this.parentNode.id, spaceNode)
+            this.spaceService.postSubspace(parentNode.id, spaceNode)
           );
 
-          if (!this.createSpaceForm.value.managePermited) {
-            this.managerPermission(response);
-          } else {
+          if (this.createSpaceForm.value.managePermited) {
             result.node = response;
             result.result = ActionResult.SUCCEED;
+          } else {
+            this.managerPermission(response);
           }
           this.showWizard = false;
-        } catch (error) {
+        } catch (_error) {
           result.result = ActionResult.FAILED;
         }
         this.modalHide.emit(result);
@@ -163,15 +207,6 @@ export class AddSpaceComponent implements OnInit {
     this.createSpaceForm.controls.managePermited.setValue(true);
   }
 
-  public setPermissionMsg() {
-    const text = this.translateService.translate(
-      getSuccessTranslation(ActionType.SET_PERMISSION)
-    );
-    if (text) {
-      this.uiMessageService.addSuccessMessage(text, true);
-    }
-  }
-
   public async managerPermission(newFolderNode: ModelNode) {
     const body: PermissionDefinition = {
       inherited: false,
@@ -181,19 +216,29 @@ export class AddSpaceComponent implements OnInit {
       },
     };
 
-    if (this.parentNode && this.parentNode.id) {
+    if (this.parentNode()?.id) {
       this.perms = await firstValueFrom(
         this.permissionService.putPermission(newFolderNode.id as string, body)
       );
     }
 
     this.router.navigate(['../../permissions', newFolderNode.id], {
-      queryParams: { from: 'newFolder' },
+      queryParams: { from: 'library' },
       relativeTo: this.route,
     });
   }
 
   get nameControl(): AbstractControl {
     return this.createSpaceForm.controls.name;
+  }
+
+  public isExpired() {
+    return this.createSpaceForm.value.expirationDate < Date.now();
+  }
+
+  ngOnDestroy() {
+    if (this.dateSubscription) {
+      this.dateSubscription.unsubscribe();
+    }
   }
 }

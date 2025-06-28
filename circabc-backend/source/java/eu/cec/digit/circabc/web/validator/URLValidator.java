@@ -20,12 +20,10 @@
  ******************************************************************************/
 package eu.cec.digit.circabc.web.validator;
 
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import javax.faces.application.FacesMessage;
 import javax.faces.validator.ValidatorException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Validator for the URL property
@@ -35,32 +33,35 @@ import javax.faces.validator.ValidatorException;
  */
 public class URLValidator {
 
-    /**
-     * Logger
-     */
-    @SuppressWarnings("unused")
-    private static Log logger = LogFactory.getLog(URLValidator.class);
+  /**
+   * Logger
+   */
+  @SuppressWarnings("unused")
+  private static Log logger = LogFactory.getLog(URLValidator.class);
 
-
-    /**
-     * Check if the object contains a valid URL
-     *
-     * @param url The string to test
-     * @throws Exception Launch an exception with the corresponding message
-     */
-    public static void evaluate(String url) throws ValidatorException {
-
-        url = url.trim();
-        if (url == null || url.length() < 1) {
-            throw new ValidatorException(new FacesMessage("library_add_url_url_empty"));
-        }
-
-        org.apache.commons.validator.routines.UrlValidator validator = new org.apache.commons.validator.routines.UrlValidator();
-        if (!validator.isValid(url)) {
-            if (logger.isErrorEnabled()) {
-                logger.error("Error validationg: " + url);
-            }
-            throw new ValidatorException(new FacesMessage("library_add_url_url_invalid"));
-        }
+  /**
+   * Check if the object contains a valid URL
+   *
+   * @param url The string to test
+   * @throws Exception Launch an exception with the corresponding message
+   */
+  public static void evaluate(String url) throws ValidatorException {
+    url = url.trim();
+    if (url == null || url.length() < 1) {
+      throw new ValidatorException(
+        new FacesMessage("library_add_url_url_empty")
+      );
     }
+
+    org.apache.commons.validator.routines.UrlValidator validator =
+      new org.apache.commons.validator.routines.UrlValidator();
+    if (!validator.isValid(url)) {
+      if (logger.isErrorEnabled()) {
+        logger.error("Error validationg: " + url);
+      }
+      throw new ValidatorException(
+        new FacesMessage("library_add_url_url_invalid")
+      );
+    }
+  }
 }

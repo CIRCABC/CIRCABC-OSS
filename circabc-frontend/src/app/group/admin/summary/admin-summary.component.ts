@@ -1,7 +1,8 @@
 import { Component, Inject, OnInit, Optional } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   BASE_PATH,
   IGStructure,
@@ -11,7 +12,10 @@ import {
 } from 'app/core/generated/circabc';
 import { SaveAsService } from 'app/core/save-as.service';
 import { StructureNode } from 'app/group/admin/summary/structure-tree/structure-node';
+import { SetTitlePipe } from 'app/shared/pipes/set-title.pipe';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { firstValueFrom } from 'rxjs';
+import { StructureTreeComponent } from './structure-tree/structure-tree.component';
 interface PrettyProperty {
   name: string;
   value: string;
@@ -24,8 +28,15 @@ interface PrettyProperties {
 @Component({
   selector: 'cbc-admin-ig-summary',
   templateUrl: './admin-summary.component.html',
-  styleUrls: ['./admin-summary.component.scss'],
+  styleUrl: './admin-summary.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    ReactiveFormsModule,
+    SpinnerComponent,
+    StructureTreeComponent,
+    SetTitlePipe,
+    TranslocoModule,
+  ],
 })
 export class AdminSummaryComponent implements OnInit {
   public summaryForm!: FormGroup;
@@ -284,9 +295,9 @@ export class AdminSummaryComponent implements OnInit {
   }
 
   public getStructure(index: number) {
-    const root: StructureNode = JSON.parse(
+    const root = JSON.parse(
       this.structureHolder.structure as string
-    );
+    ) as StructureNode;
     return root.children[index];
   }
 

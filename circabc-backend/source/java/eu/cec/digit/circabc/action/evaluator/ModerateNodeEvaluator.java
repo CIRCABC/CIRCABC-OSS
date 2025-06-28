@@ -25,14 +25,13 @@ import eu.cec.digit.circabc.model.ModerationModel;
 import eu.cec.digit.circabc.service.profile.permissions.LibraryPermissions;
 import eu.cec.digit.circabc.service.profile.permissions.NewsGroupPermissions;
 import eu.cec.digit.circabc.web.Services;
+import javax.faces.context.FacesContext;
 import org.alfresco.repo.security.authentication.AuthenticationException;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.security.OwnableService;
 import org.alfresco.web.action.evaluator.BaseActionEvaluator;
 import org.alfresco.web.bean.repository.Node;
-
-import javax.faces.context.FacesContext;
 
 /**
  * Evaluates whether the current user can approve/reject the given node in the moderation process
@@ -41,35 +40,38 @@ import javax.faces.context.FacesContext;
  */
 public class ModerateNodeEvaluator extends BaseActionEvaluator {
 
-    private static final long serialVersionUID = 6112283424092389996L;
+  private static final long serialVersionUID = 6112283424092389996L;
 
-    public boolean evaluate(final Node node) {
-        if (node.hasAspect(ModerationModel.ASPECT_WAITING_APPROVAL)) {
-            if (node.hasAspect(CircabcModel.ASPECT_LIBRARY)) {
-                return node.hasPermission(LibraryPermissions.LIBADMIN.toString()) && isOwner(node) == false;
-            } else {
-                return node.hasPermission(NewsGroupPermissions.NWSMODERATE.toString())
-                        && isOwner(node) == false;
-
-            }
-        } else {
-            return false;
-        }
+  public boolean evaluate(final Node node) {
+    if (node.hasAspect(ModerationModel.ASPECT_WAITING_APPROVAL)) {
+      if (node.hasAspect(CircabcModel.ASPECT_LIBRARY)) {
+        return (
+          node.hasPermission(LibraryPermissions.LIBADMIN.toString()) &&
+          isOwner(node) == false
+        );
+      } else {
+        return (
+          node.hasPermission(NewsGroupPermissions.NWSMODERATE.toString()) &&
+          isOwner(node) == false
+        );
+      }
+    } else {
+      return false;
     }
+  }
 
-    /**
-     * @param node
-     * @throws AuthenticationException
-     */
-    private boolean isOwner(final Node node) throws AuthenticationException {
-        final FacesContext fc = FacesContext.getCurrentInstance();
-        final ServiceRegistry registry = Services.getAlfrescoServiceRegistry(fc);
-        final OwnableService ownableService = registry.getOwnableService();
+  /**
+   * @param node
+   * @throws AuthenticationException
+   */
+  private boolean isOwner(final Node node) throws AuthenticationException {
+    final FacesContext fc = FacesContext.getCurrentInstance();
+    final ServiceRegistry registry = Services.getAlfrescoServiceRegistry(fc);
+    final OwnableService ownableService = registry.getOwnableService();
 
-        final String currentUser = AuthenticationUtil.getFullyAuthenticatedUser();
-        final String owner = ownableService.getOwner(node.getNodeRef());
+    final String currentUser = AuthenticationUtil.getFullyAuthenticatedUser();
+    final String owner = ownableService.getOwner(node.getNodeRef());
 
-        return owner != null && owner.equals(currentUser);
-    }
-
+    return owner != null && owner.equals(currentUser);
+  }
 }

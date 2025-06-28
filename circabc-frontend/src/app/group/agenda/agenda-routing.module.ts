@@ -1,13 +1,28 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AgendaComponent } from 'app/group/agenda/agenda.component';
-import { ListComponent } from 'app/group/agenda/list/list.component';
-import { ViewEditDetailsEventComponent } from 'app/group/agenda/view-edit-details-event/view-edit-details-event.component';
 
-const agendaRoutes: Routes = [
-  { path: '', component: AgendaComponent },
-  { path: ':eventId/details', component: ViewEditDetailsEventComponent },
-  { path: 'list', component: ListComponent },
+export const agendaRoutes: Routes = [
+  {
+    path: '',
+    loadComponent: () =>
+      import('app/group/agenda/agenda.component').then(
+        (m) => m.AgendaComponent
+      ),
+  },
+  {
+    path: ':eventId/details',
+    loadComponent: () =>
+      import(
+        'app/group/agenda/view-edit-details-event/view-edit-details-event.component'
+      ).then((m) => m.ViewEditDetailsEventComponent),
+  },
+  {
+    path: 'list',
+    loadComponent: () =>
+      import('app/group/agenda/list/list.component').then(
+        (m) => m.ListComponent
+      ),
+  },
 ];
 
 @NgModule({

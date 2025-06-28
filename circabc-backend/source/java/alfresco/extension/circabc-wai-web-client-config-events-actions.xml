@@ -4,9 +4,7 @@
     |  		   http://ec.europa.eu/idabc/en/document/6523
     |
     +-->
-
 <!-- Here Only the new Circabc specific WAI (and not Alfresco native) actions and action groups -->
-
 <alfresco-config>
 
 	<config>
@@ -23,7 +21,9 @@
 				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
 				<params>
 					<param name="id">#{actionContext.id}</param>
-					<param name="imageName">modify_meeting_general_info_#{actionContext.title}</param>
+					<param
+            name="imageName"
+          >modify_meeting_general_info_#{actionContext.title}</param>
 					<param name="service">Events</param>
 				  	<param name="activity">EditMeetingGeneralInfo</param>
 				</params>
@@ -75,7 +75,9 @@
 				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
 				<params>
 					<param name="id">#{actionContext.id}</param>
-					<param name="imageName">modify_appointment_contact_info_#{actionContext.title}</param>
+					<param
+            name="imageName"
+          >modify_appointment_contact_info_#{actionContext.title}</param>
 					<param name="service">Events</param>
 				  	<param name="activity">EditAppointmentContactInfo</param>
 				</params>
@@ -92,7 +94,9 @@
 				<action-listener>#{WaiDialogManager.setupParameters}</action-listener>
 				<params>
 					<param name="id">#{actionContext.id}</param>
-					<param name="imageName">modify_appointment_audience_#{actionContext.title}</param>
+					<param
+            name="imageName"
+          >modify_appointment_audience_#{actionContext.title}</param>
 					<param name="service">Events</param>
 				  	<param name="activity">EditAppointmentAudience</param>
 				</params>
@@ -126,7 +130,8 @@
 				<tooltip-id>event_accept_meeting_action_tooltip</tooltip-id>
 				<image>/images/icons/blog_post.png</image>
 				<action>#{AcceptMeetingRequestDialog.getOutcome}</action>
-				<action-listener>#{AcceptMeetingRequestDialog.acceptMeetingPreTreatment}</action-listener>
+				<action-listener
+        >#{AcceptMeetingRequestDialog.acceptMeetingPreTreatment}</action-listener>
 				<params>
 					<param name="id">#{actionContext.id}</param>
 					<param name="imageName">accpect_meeting_request_#{actionContext.title}</param>
@@ -146,7 +151,8 @@
 				<tooltip-id>event_decline_meeting_action_tooltip</tooltip-id>
 				<image>/images/icons/blog_remove.png</image>
 				<action>#{DeclineMeetingRequestDialog.getOutcome}</action>
-				<action-listener>#{DeclineMeetingRequestDialog.declineMeetingPreTreatment}</action-listener>
+				<action-listener
+        >#{DeclineMeetingRequestDialog.declineMeetingPreTreatment}</action-listener>
 				<params>
 					<param name="id">#{actionContext.id}</param>
 					<param name="imageName">decline_meeting_request_#{actionContext.title}</param>
@@ -183,7 +189,7 @@
 				<action idref="accept_meeting_request" />
 				<action idref="decline_meeting_request" />
 				<action idref="delete_appointment" />
-				<action idref="history"/>
+				<action idref="history" />
 			</action-group>
 
 			<!-- Actions for content in Event detail view WAI -->
@@ -192,7 +198,7 @@
 				<action idref="modify_appointment_contact_info" />
 				<action idref="modify_appointment_audience" />
 				<action idref="delete_appointment" />
-				<action idref="history"/>
+				<action idref="history" />
 			</action-group>
 
 		</actions>

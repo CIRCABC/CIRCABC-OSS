@@ -1,10 +1,12 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, model, OnInit } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
   FormGroup,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   CategoryService,
   Header,
@@ -12,19 +14,30 @@ import {
   User,
   UserService,
 } from 'app/core/generated/circabc';
+import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
+import { DataCyDirective } from 'app/shared/directives/data-cy.directive';
+import { MultilingualInputComponent } from 'app/shared/input/multilingual-input.component';
+import { ModalComponent } from 'app/shared/modal/modal.component';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-create-category',
   templateUrl: './create-category.component.html',
-  styleUrls: ['./create-category.component.scss'],
+  styleUrl: './create-category.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    ModalComponent,
+    DataCyDirective,
+    ReactiveFormsModule,
+    ControlMessageComponent,
+    MultilingualInputComponent,
+    SpinnerComponent,
+    TranslocoModule,
+  ],
 })
 export class CreateCategoryComponent implements OnInit {
-  @Input()
-  public showModal = false;
-  @Output()
-  public readonly showModalChange = new EventEmitter();
+  public showModal = model<boolean>(false);
 
   public addUserForm!: FormGroup;
   public categoryForm!: FormGroup;
@@ -68,8 +81,7 @@ export class CreateCategoryComponent implements OnInit {
     this.availableUsers = [];
     this.futureAdmins = [];
 
-    this.showModal = false;
-    this.showModalChange.emit();
+    this.showModal.set(false);
   }
 
   get nameControl(): AbstractControl {
@@ -93,7 +105,7 @@ export class CreateCategoryComponent implements OnInit {
 
   public async populateUsers(query: string) {
     this.searchingUsers = true;
-    const res = await firstValueFrom(this.userService.getUsers(query));
+    const res = await firstValueFrom(this.userService.getUsers(query, false));
     this.availableUsers = [];
     for (const user of res) {
       this.availableUsers.push(user);
@@ -125,9 +137,8 @@ export class CreateCategoryComponent implements OnInit {
           this.futureAdmins.find((member) => {
             if (member && memberTmp) {
               return member.userId === memberTmp.userId;
-            } else {
-              return true;
             }
+            return true;
           }) === undefined
         );
       })
@@ -162,7 +173,7 @@ export class CreateCategoryComponent implements OnInit {
         )
       );
 
-      if (newCategory && newCategory.id) {
+      if (newCategory?.id) {
         const userIds: string[] = [];
         this.futureAdmins.forEach((user: User) => {
           if (user.userId) {
@@ -178,7 +189,7 @@ export class CreateCategoryComponent implements OnInit {
 
         this.cancel();
       }
-    } catch (error) {
+    } catch (_error) {
       console.error('Error during the creation of the category');
     }
     this.processing = false;

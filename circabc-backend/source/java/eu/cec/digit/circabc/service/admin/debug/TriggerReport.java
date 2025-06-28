@@ -34,120 +34,119 @@ import java.util.Date;
  * @see org.quartz.Trigger
  */
 public interface TriggerReport {
+  /**
+   * @return the job report associated to the current Trigger
+   */
+  JobReport getJobReport();
 
-    /**
-     * @return the job report associated to the current Trigger
-     */
-    JobReport getJobReport();
+  /**
+   * The Full name of a Trigger is the result of the concatenation of its group and its name.
+   *
+   * @return the full name of the trigger.
+   */
+  String getFullname();
 
-    /**
-     * The Full name of a Trigger is the result of the concatenation of its group and its name.
-     *
-     * @return the full name of the trigger.
-     */
-    String getFullname();
+  /**
+   * Since the most of triggers are in located in the group called <i><b>DEFAULT</b></i>, this
+   * method return a user friendly unique name whitout the group if this last is named
+   * <i>DEFAULT</i>
+   */
+  String getSimpleName();
 
-    /**
-     * Since the most of triggers are in located in the group called <i><b>DEFAULT</b></i>, this
-     * method return a user friendly unique name whitout the group if this last is named
-     * <i>DEFAULT</i>
-     */
-    String getSimpleName();
+  /**
+   * @return the description of the tigger (if setted)
+   */
+  String getDescrition();
 
-    /**
-     * @return the description of the tigger (if setted)
-     */
-    String getDescrition();
+  /**
+   * @return the formated end date
+   * @see TriggerReport#getEndTime()
+   */
+  String getDisplayEndTime();
 
-    /**
-     * @return the formated end date
-     * @see TriggerReport#getEndTime()
-     */
-    String getDisplayEndTime();
+  /**
+   * @return the formated final fire time
+   * @see TriggerReport#getFinalFireTime()
+   */
+  String getDisplayFinalFireTime();
 
-    /**
-     * @return the formated final fire time
-     * @see TriggerReport#getFinalFireTime()
-     */
-    String getDisplayFinalFireTime();
+  /**
+   * @return the formated next time
+   * @see TriggerReport#getNexTime()
+   */
+  String getDisplayNexTime();
 
-    /**
-     * @return the formated next time
-     * @see TriggerReport#getNexTime()
-     */
-    String getDisplayNexTime();
+  /**
+   * @return the formated previous fire time
+   * @see TriggerReport#getPreviousFire()
+   */
+  String getDisplayPreviousFire();
 
-    /**
-     * @return the formated previous fire time
-     * @see TriggerReport#getPreviousFire()
-     */
-    String getDisplayPreviousFire();
+  /**
+   * @return the formated start time
+   * @see TriggerReport#getStartTime()
+   */
+  String getDisplayStartTime();
 
-    /**
-     * @return the formated start time
-     * @see TriggerReport#getStartTime()
-     */
-    String getDisplayStartTime();
+  /**
+   * The time at which the Trigger should quit repeating - even if an assigned 'repeatCount' isn't
+   * yet satisfied
+   *
+   * @return the end fire time
+   */
+  Date getEndTime();
 
-    /**
-     * The time at which the Trigger should quit repeating - even if an assigned 'repeatCount' isn't
-     * yet satisfied
-     *
-     * @return the end fire time
-     */
-    Date getEndTime();
+  /**
+   * The last time at which the Trigger will fire, if the Trigger will repeat indefinitely, null
+   * will be returned
+   *
+   * @return final fire time
+   */
+  Date getFinalFireTime();
 
-    /**
-     * The last time at which the Trigger will fire, if the Trigger will repeat indefinitely, null
-     * will be returned
-     *
-     * @return final fire time
-     */
-    Date getFinalFireTime();
+  /**
+   * The next time at which the Trigger is scheduled to fire
+   *
+   * @return next execution time
+   */
+  Date getNexTime();
 
-    /**
-     * The next time at which the Trigger is scheduled to fire
-     *
-     * @return next execution time
-     */
-    Date getNexTime();
+  /**
+   * The previous time at which the Trigger fired
+   *
+   * @return the previsous fire time
+   */
+  Date getPreviousFire();
 
-    /**
-     * The previous time at which the Trigger fired
-     *
-     * @return the previsous fire time
-     */
-    Date getPreviousFire();
+  /**
+   * The time at which the Trigger should occur
+   *
+   * @return the start time
+   */
+  Date getStartTime();
 
-    /**
-     * The time at which the Trigger should occur
-     *
-     * @return the start time
-     */
-    Date getStartTime();
+  /**
+   * Whether or not the Trigger should be persisted in the JobStore for re-use after program
+   * restarts
+   *
+   * @return if the trigger is volatile
+   */
+  boolean isVolatile();
 
-    /**
-     * Whether or not the Trigger should be persisted in the JobStore for re-use after program
-     * restarts
-     *
-     * @return if the trigger is volatile
-     */
-    boolean isVolatile();
+  /**
+   * Whether or not it is possible for this Trigger to fire again
+   *
+   * @return if the trigger may fire again
+   */
+  boolean mayFireAgain();
 
-    /**
-     * Whether or not it is possible for this Trigger to fire again
-     *
-     * @return if the trigger may fire again
-     */
-    boolean mayFireAgain();
+  /**
+   * @return a String representation of the misFireInstruction
+   */
+  String getMisFireInstruction();
 
-    /**
-     * @return a String representation of the misFireInstruction
-     */
-    String getMisFireInstruction();
-
-    /**
-     * @return a String representation of the priority of the trigger
-     */
-    String getPriority();
+  /**
+   * @return a String representation of the priority of the trigger
+   */
+  String getPriority();
 }

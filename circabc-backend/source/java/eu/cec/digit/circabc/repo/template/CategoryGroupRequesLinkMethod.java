@@ -25,21 +25,23 @@ import org.alfresco.service.cmr.repository.NodeRef;
  *
  * @author Pierre Beauregard
  */
-public class CategoryGroupRequesLinkMethod extends NodeRefBaseTemplateProcessorExtension
-        implements TemplateMethodModelEx {
+public class CategoryGroupRequesLinkMethod
+  extends NodeRefBaseTemplateProcessorExtension
+  implements TemplateMethodModelEx {
 
-    @Override
-    public String getResult(NodeRef nodeRef) {
+  @Override
+  public String getResult(NodeRef nodeRef) {
+    String url =
+      CircabcConfiguration.getProperty(CircabcConfiguration.NEW_UI_URL) +
+      CircabcConfiguration.getProperty(CircabcConfiguration.NEW_UI_CONTEXT) +
+      (CircabcConfiguration.getProperty(
+            CircabcConfiguration.NEW_UI_CONTEXT
+          ).endsWith("/")
+          ? "category/"
+          : "/category/") +
+      (nodeRef != null ? nodeRef.getId() : "") +
+      "/group-requests";
 
-        String url =
-                CircabcConfiguration.getProperty(CircabcConfiguration.NEW_UI_URL)
-                        + CircabcConfiguration.getProperty(CircabcConfiguration.NEW_UI_CONTEXT)
-                        + (CircabcConfiguration.getProperty(CircabcConfiguration.NEW_UI_CONTEXT).endsWith("/")
-                        ? "category/"
-                        : "/category/")
-                        + (nodeRef != null ? nodeRef.getId() : "")
-                        + "/group-requests";
-
-        return url;
-    }
+    return url;
+  }
 }

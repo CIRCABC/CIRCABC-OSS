@@ -5,12 +5,12 @@ package io.swagger.exception;
  */
 public class NonExistingNodeException extends Exception {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1L;
 
-    public NonExistingNodeException(String message) {
-        super(message);
-    }
+  public NonExistingNodeException(String message) {
+    super(message);
+  }
 }

@@ -1,23 +1,39 @@
+import { I18nSelectPipe, NgClass } from '@angular/common';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd, Router, RouterLink } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
+import { AnalyticsService } from 'app/core/analytics.service';
 import {
-  InterestGroup,
+  type InterestGroup,
   InterestGroupService,
   User,
 } from 'app/core/generated/circabc';
 import { GroupReloadListenerService } from 'app/core/group-reload-listener.service';
 import { LoginService } from 'app/core/login.service';
+import { DataCyDirective } from 'app/shared/directives/data-cy.directive';
+import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
 import { environment } from 'environments/environment';
-import { firstValueFrom, Subscription } from 'rxjs';
+import { Subscription, firstValueFrom } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'cbc-navigator',
   templateUrl: './navigator.component.html',
-  styleUrls: ['./navigator.component.scss'],
+  styleUrl: './navigator.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    NgClass,
+    DataCyDirective,
+    RouterLink,
+    I18nSelectPipe,
+    TranslocoModule,
+    I18nPipe,
+  ],
 })
 export class NavigatorComponent implements OnInit, OnDestroy {
+  public circabcRelease = environment.circabcRelease;
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   public currentIg!: InterestGroup;
 
@@ -45,6 +61,7 @@ export class NavigatorComponent implements OnInit, OnDestroy {
   public isInsideLibrary = false;
   public isInsideMembers = false;
   public subMenu = false;
+  public sidebarActive = false;
 
   private routerEventsSubscription$!: Subscription;
   private interestGroupReloadsubscription$!: Subscription;
@@ -53,7 +70,8 @@ export class NavigatorComponent implements OnInit, OnDestroy {
     private router: Router,
     private loginService: LoginService,
     private interestGroupService: InterestGroupService,
-    private groupReloadListenerService: GroupReloadListenerService
+    private groupReloadListenerService: GroupReloadListenerService,
+    private analytics: AnalyticsService
   ) {
     this.listenGroupRefresh();
     this.listenToRouterEvents();
@@ -70,7 +88,7 @@ export class NavigatorComponent implements OnInit, OnDestroy {
     }
     this.isGuest = this.loginService.isGuest();
 
-    if (this.currentIg && this.currentIg.permissions) {
+    if (this.currentIg?.permissions) {
       this.setGroupAdmin();
       this.setPermissions();
       this.setGroupDashboard();
@@ -80,6 +98,11 @@ export class NavigatorComponent implements OnInit, OnDestroy {
       this.setAgenda();
       this.setForum();
       this.setAdmin();
+
+      if (this.analytics.IGname !== this.currentIg.name) {
+        this.analytics.trackCustomEvent('IG', this.currentIg.name);
+        this.analytics.IGname = this.currentIg.name;
+      }
     } else {
       this.setMe();
       this.setCalendar();
@@ -87,6 +110,13 @@ export class NavigatorComponent implements OnInit, OnDestroy {
       this.setExplore();
       this.setHelp();
     }
+  }
+
+  public helpLink() {
+    if (environment.environmentType === 'prod') {
+      return 'https://circabc.europa.eu/ui/help/category/42bab9f5-6f98-4612-a957-677eb6967de6';
+    }
+    return 'https://circabc.acceptance.europa.eu/ui/help/category/81f68d80-9b69-4adc-9416-4c6c6b7d4ff7';
   }
 
   private listenGroupRefresh() {
@@ -234,7 +264,7 @@ export class NavigatorComponent implements OnInit, OnDestroy {
   }
 
   private setGroupAdmin() {
-    if (this.currentIg && this.currentIg.permissions) {
+    if (this.currentIg?.permissions) {
       const perms = this.currentIg.permissions;
 
       if (
@@ -257,8 +287,10 @@ export class NavigatorComponent implements OnInit, OnDestroy {
     return environment.shareURL !== '';
   }
 
-  public environmentShareURL() {
-    return environment.shareURL;
+  public loadShareURL() {
+    if (this.isShareEnabled()) {
+      window.location.href = environment.shareURL;
+    }
   }
 
   public uiSwitchEnabled() {

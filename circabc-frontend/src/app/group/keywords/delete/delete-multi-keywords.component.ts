@@ -1,13 +1,13 @@
 import {
   Component,
-  EventEmitter,
   Input,
   OnChanges,
-  Output,
   SimpleChanges,
+  output,
+  input,
 } from '@angular/core';
 
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
@@ -15,21 +15,24 @@ import {
 } from 'app/action-result';
 import { KeywordDefinition, KeywordsService } from 'app/core/generated/circabc';
 import { UiMessageService } from 'app/core/message/ui-message.service';
+import { KeywordTagComponent } from 'app/group/keywords/tag/keyword-tag.component';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-delete-multi-keywords',
   templateUrl: './delete-multi-keywords.component.html',
-  styleUrls: ['./delete-multi-keywords.component.scss'],
+  styleUrl: './delete-multi-keywords.component.scss',
   preserveWhitespaces: true,
+  imports: [KeywordTagComponent, SpinnerComponent, TranslocoModule],
 })
 export class DeleteMultiKeywordsComponent implements OnChanges {
-  @Input()
-  keywords!: KeywordDefinition[];
+  readonly keywords = input.required<KeywordDefinition[]>();
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   showModal = false;
-  @Output()
-  public readonly modalHide = new EventEmitter<ActionEmitterResult>();
+  public readonly modalHide = output<ActionEmitterResult>();
 
   public deleting = false;
   public progressValue = 0;
@@ -57,7 +60,7 @@ export class DeleteMultiKeywordsComponent implements OnChanges {
 
   public async deleteAll() {
     this.deleting = true;
-    for (const keyword of this.keywords) {
+    for (const keyword of this.keywords()) {
       if (keyword.id) {
         try {
           await firstValueFrom(

@@ -19,12 +19,10 @@
  *  permissions and limitations under the Licence.
  ******************************************************************************/
 
-
 package eu.cec.digit.circabc.web.wai.dialog.signup;
 
 import eu.cec.digit.circabc.web.app.CircabcNavigationHandler;
 import eu.cec.digit.circabc.web.wai.dialog.BaseWaiDialog;
-
 import javax.faces.context.FacesContext;
 
 /**
@@ -32,36 +30,35 @@ import javax.faces.context.FacesContext;
  */
 public class SignupCongratulationDialog extends BaseWaiDialog {
 
-    private static final long serialVersionUID = -685695045385990649L;
+  private static final long serialVersionUID = -685695045385990649L;
 
-    public static String BEAN_NAME = "SignupCongratulationDialog";
+  public static String BEAN_NAME = "SignupCongratulationDialog";
 
-    public SignupCongratulationDialog() {
-        super();
-    }
+  public SignupCongratulationDialog() {
+    super();
+  }
 
-    @Override
-    protected String finishImpl(FacesContext context, String outcome) throws Exception {
-        return CircabcNavigationHandler.CLOSE_WAI_DIALOG_OUTCOME;
-    }
+  @Override
+  protected String finishImpl(FacesContext context, String outcome)
+    throws Exception {
+    return CircabcNavigationHandler.CLOSE_WAI_DIALOG_OUTCOME;
+  }
 
-    public String getBrowserTitle() {
-        return translate("self_registration_congratulation_page_title");
-    }
+  public String getBrowserTitle() {
+    return translate("self_registration_congratulation_page_title");
+  }
 
-    public String getPageIconAltText() {
-        return translate("resend_congratulation_page_title");
-    }
+  public String getPageIconAltText() {
+    return translate("resend_congratulation_page_title");
+  }
 
-    @Override
-    public boolean isCancelButtonVisible() {
-        return false;
-    }
+  @Override
+  public boolean isCancelButtonVisible() {
+    return false;
+  }
 
-    @Override
-    public String getFinishButtonLabel() {
-        return translate("ok");
-    }
-
-
+  @Override
+  public String getFinishButtonLabel() {
+    return translate("ok");
+  }
 }

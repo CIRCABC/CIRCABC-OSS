@@ -1,16 +1,19 @@
-<div class="wrap admin page-container" *ngIf="node">
+@if (node) {
+<div class="wrap admin page-container">
   <form [formGroup]="editNodeForm">
     <section class="box">
       <header class="header">
-        <span *ngIf="isFile() && !isLink()" class="title"
+        @if (isFile() && !isLink()) {
+        <span class="title"
           >{{ 'label.edit.content.properties' | transloco }}</span
         >
-        <span *ngIf="!isFile() && !isLink()" class="title"
+        } @if (!isFile() && !isLink()) {
+        <span class="title"
           >{{ 'label.edit.folder.properties' | transloco }}</span
         >
-        <span *ngIf="isLink()" class="title"
-          >{{ 'label.edit.url.properties' | transloco }}</span
-        >
+        } @if (isLink()) {
+        <span class="title">{{ 'label.edit.url.properties' | transloco }}</span>
+        }
       </header>
     </section>
 
@@ -18,43 +21,65 @@
       <ul class="header">
         <li>
           <a
+            tabindex="0"
             class="tab"
             [class.tab--current]="isGeneralTab()"
             (click)="setTab('GeneralInformation')"
           >
-            <img src="img/newspaper-818181.png" width="20" height="20" />
+            <img
+              src="img/newspaper-818181.png"
+              width="20"
+              height="20"
+              alt="Newspaper icon"
+            />
             <span class="tab-text"
               >{{ 'label.general.information' | transloco }}</span
             >
           </a>
         </li>
-        <li *ngIf="isFile()">
+        @if (isFile()) {
+        <li>
           <a
+            tabindex="0"
             class="tab"
             [class.tab--current]="isDetailsTab()"
             (click)="setTab('Details')"
           >
-            <img src="img/details-818181.png" width="20" height="20" />
+            <img
+              src="img/details-818181.png"
+              width="20"
+              height="20"
+              alt="Details icon"
+            />
             <span class="tab-text">{{ 'label.details' | transloco }}</span>
           </a>
         </li>
-        <li *ngIf="isFile()">
+        } @if (isFile()) {
+        <li>
           <a
+            tabindex="0"
             class="tab"
             [class.tab--current]="isDynamicPropertiesTab()"
             (click)="setTab('DynamicProperties')"
           >
-            <img src="img/dynamic-prop-818181.png" width="20" height="20" />
+            <img
+              src="img/dynamic-prop-818181.png"
+              width="20"
+              height="20"
+              alt="Dynamic properties icon"
+            />
             <span class="tab-text"
               >{{ 'label.dynamic.properties' | transloco }}</span
             >
           </a>
         </li>
+        }
       </ul>
 
       <div class="main">
         <section class="file-informations">
-          <div *ngIf="isGeneralTab()">
+          @if (isGeneralTab()) {
+          <div>
             <div class="field">
               <label for="name" style="padding-bottom: 5px"
                 >{{ 'label.name' | transloco }}</label
@@ -88,7 +113,8 @@
             ></cbc-multilingual-input>
             <br />
 
-            <div *ngIf="isFile()" class="field">
+            @if (isFile()) {
+            <div class="field">
               <label for="author" style="padding-bottom: 5px"
                 >{{ 'label.author' | transloco }}</label
               >
@@ -103,44 +129,70 @@
                 [control]="authorControl"
               ></cbc-control-message>
             </div>
-
+            } @if (!isLink()) {
             <div
-              *ngIf="isFile()"
               class="field field--with-icon field--date"
-              style="line-height: 40px"
+              style="line-height: 40px; display: flex"
             >
               <mat-slide-toggle
+                style="width: 50px"
                 formControlName="expirationDateActived"
               ></mat-slide-toggle>
               <label for="expirationDate" style="padding-right: 10px"
                 >{{ 'label.expiration.date' | transloco }}</label
               >
 
-              <p-calendar
+              @if (editNodeForm.value.expirationDateActived) {
+              <p-datepicker
                 formControlName="expirationDate"
                 [dateFormat]="'dd/mm/yy'"
                 [placeholder]="'dd/mm/yyyy, HH:mm'"
                 [showIcon]="true"
                 [showTime]="true"
-                *ngIf="editNodeForm.value.expirationDateActived"
                 [class.expired]="isExpired()"
-              ></p-calendar>
-              <label
-                *ngIf="isExpired() && editNodeForm.value.expirationDateActived"
-                style="color: red"
-                >{{ 'label.expiration.date.alert' | transloco }}</label
-              >
+              ></p-datepicker>
+              }
+            </div>
+            @if (isExpired() && editNodeForm.value.expirationDateActived) {
+            <label style="color: red; padding-bottom: 5px"
+              >{{ 'label.expiration.date.alert' | transloco }}</label
+            >
+            } }
+
+            <div class="notification-box">
+              <div>
+                <label>
+                  {{ 'label.send.email.notification' | transloco }}</label
+                >
+              </div>
+
+              <div style="padding: 0 10px">
+                <mat-slide-toggle [formControl]="notify"></mat-slide-toggle>
+              </div>
+              <div>
+                <span>{{ notify.value ? 'Yes' : 'No' }}</span>
+              </div>
+
+              <div>
+                <span>
+                  <i>
+                    ({{ notify.value ? ("label.notifications.send" | transloco):
+                    "label.notifications.no-send" | transloco }})</i
+                  >
+                </span>
+              </div>
             </div>
           </div>
-
-          <div *ngIf="isDetailsTab()">
-            <div class="field" *ngIf="isLink()">
+          } @if (isDetailsTab()) {
+          <div>
+            @if (isLink()) {
+            <div class="field">
               <label for="url">{{ 'label.url' | transloco }}</label>
               <input type="text" id="url" value="" formControlName="url" />
               <cbc-control-message [control]="urlControl"></cbc-control-message>
             </div>
-
-            <div class="field" *ngIf="isFile()">
+            } @if (isFile()) {
+            <div class="field">
               <label for="reference">{{ 'label.reference' | transloco }}</label>
               <input
                 type="text"
@@ -149,20 +201,18 @@
                 formControlName="reference"
               />
             </div>
-
+            } @if (isFile()) {
             <cbc-mimetype-input
               [disabled]="isLink()"
-              *ngIf="isFile()"
               formControlName="mimetype"
             ></cbc-mimetype-input>
-
+            } @if (isFile()) {
             <cbc-encoding-input
               [disabled]="isLink()"
-              *ngIf="isFile()"
               formControlName="encoding"
             ></cbc-encoding-input>
-
-            <div class="field" *ngIf="isFile()">
+            } @if (isFile()) {
+            <div class="field">
               <label for="status">{{ 'label.status' | transloco }}</label>
               <div class="custom-select select--form">
                 <select name="" id="status" formControlName="status">
@@ -174,8 +224,8 @@
                 </select>
               </div>
             </div>
-
-            <div class="field" *ngIf="isFile()">
+            } @if (isFile()) {
+            <div class="field">
               <label for="security"
                 >{{ 'label.security.marking' | transloco }}</label
               >
@@ -202,22 +252,26 @@
                 </select>
               </div>
             </div>
-
-            <div class="field field--with-icon field--date" *ngIf="isFile()">
+            } @if (isFile()) {
+            <div
+              class="field field--with-icon field--date label-calendar-container"
+            >
               <label for="issueDate"
                 >{{ 'label.issue.date' | transloco }}</label
               >
-              <p-calendar
+              <p-datepicker
                 formControlName="issueDate"
                 [dateFormat]="'dd/mm/yy'"
                 [placeholder]="'dd/mm/yyyy'"
                 [showIcon]="true"
-              ></p-calendar>
+              ></p-datepicker>
             </div>
+            }
           </div>
-
-          <div *ngIf="isDynamicPropertiesTab()">
-            <div *ngIf="dynamicPropertiesModel.length === 0">
+          } @if (isDynamicPropertiesTab()) {
+          <div>
+            @if (dynamicPropertiesModel.length === 0) {
+            <div>
               <div
                 style="
                   color: #ccc;
@@ -234,13 +288,13 @@
                   width="45"
                   height="45"
                   style="vertical-align: middle; margin: 0 25px"
+                  alt="Dynamic property icon"
                 />
               </div>
             </div>
-
+            } @for (dynprop of dynamicPropertiesModel; track dynprop.id) {
             <div
               class="field field--textarea"
-              *ngFor="let dynprop of dynamicPropertiesModel"
               [class.field--with-icon]="isDateField(dynprop)"
               [class.field--date]="isDateField(dynprop)"
             >
@@ -248,21 +302,20 @@
                 >{{ dynprop.title | cbcI18n }}</label
               >
 
+              @if (isTextField(dynprop)) {
               <input
-                *ngIf="isTextField(dynprop)"
                 type="text"
                 id="{{ 'dynAttr' + getIndex(dynprop) }}"
                 formControlName="{{ 'dynAttr' + getIndex(dynprop) }}"
               />
-
-              <p-calendar
-                *ngIf="isDateField(dynprop)"
+              } @if (isDateField(dynprop)) {
+              <p-datepicker
                 formControlName="{{ 'dynAttr' + getIndex(dynprop) }}"
                 [dateFormat]="'dd/mm/yy'"
                 [placeholder]="'dd/mm/yyyy'"
-              ></p-calendar>
-
-              <div *ngIf="isTextArea(dynprop)" class="editor-container">
+              ></p-datepicker>
+              } @if (isTextArea(dynprop)) {
+              <div class="editor-container">
                 <p-editor
                   id="{{ 'dynAttr' + getIndex(dynprop) }}"
                   formControlName="{{ 'dynAttr' + getIndex(dynprop) }}"
@@ -279,50 +332,52 @@
                   </p-header>
                 </p-editor>
               </div>
-
+              } @if (isSelectionOrMultiSelection(dynprop)) {
               <div
                 class="custom-select"
                 [class.select--form]="!isMultiSelection(dynprop)"
                 [class.select--multiple]="isMultiSelection(dynprop)"
-                *ngIf="isSelectionOrMultiSelection(dynprop)"
               >
+                @if (isMultiSelection(dynprop)) {
                 <select
-                  *ngIf="isMultiSelection(dynprop)"
                   formControlName="{{ 'dynAttr' + getIndex(dynprop) }}"
                   multiple
                   [compareWith]="compareFn"
                 >
-                  <option value="" *ngIf="!isMultiSelection(dynprop)"></option>
-                  <option
-                    *ngFor="let opt of dynprop.possibleValues"
-                    [ngValue]="opt"
-                  >
-                    {{ opt }}
-                  </option>
+                  @if (!isMultiSelection(dynprop)) {
+                  <option value=""></option>
+                  } @for (opt of dynprop.possibleValues; track opt) {
+                  <option [ngValue]="opt">{{ opt }}</option>
+                  }
                 </select>
-                <select
-                  *ngIf="isSelection(dynprop)"
-                  formControlName="{{ 'dynAttr' + getIndex(dynprop) }}"
-                >
-                  <option value="" *ngIf="!isMultiSelection(dynprop)"></option>
-                  <option
-                    *ngFor="let opt of dynprop.possibleValues"
-                    [value]="opt"
-                  >
-                    {{ opt }}
-                  </option>
+                } @if (isSelection(dynprop)) {
+                <select formControlName="{{ 'dynAttr' + getIndex(dynprop) }}">
+                  @if (!isMultiSelection(dynprop)) {
+                  <option value=""></option>
+                  } @for (opt of dynprop.possibleValues; track opt) {
+                  <option [value]="opt">{{ opt }}</option>
+                  }
                 </select>
+                }
               </div>
-
-              <span class="icon" *ngIf="isDateField(dynprop)"></span>
+              } @if (isDateField(dynprop)) {
+              <span class="icon"></span>
+              }
             </div>
+            }
           </div>
+          }
 
           <!-- Buttons -->
           <div class="buttons-group">
-            <a class="cta" (click)="updateProperties()"
-              >{{ 'label.save.all' | transloco }}</a
+            <button
+              tabindex="0"
+              class="cta"
+              (click)="updateProperties()"
+              [disabled]="(isExpired() || expirationDateRequired()) ? true : false"
             >
+              {{ 'label.save.all' | transloco }}
+            </button>
             <a class="button" [routerLink]="['../details']"
               >{{ 'label.cancel' | transloco }}</a
             >
@@ -332,3 +387,4 @@
     </section>
   </form>
 </div>
+}

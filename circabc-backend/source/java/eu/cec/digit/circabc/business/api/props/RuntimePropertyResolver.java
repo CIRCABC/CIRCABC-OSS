@@ -21,7 +21,6 @@
 package eu.cec.digit.circabc.business.api.props;
 
 import eu.cec.digit.circabc.business.api.nav.NavNode;
-
 import java.io.Serializable;
 
 /**
@@ -42,13 +41,11 @@ import java.io.Serializable;
  * </p>
  */
 public interface RuntimePropertyResolver {
-
-    /**
-     * Get the property value for this resolver
-     *
-     * @param node Node this property is for
-     * @return property value
-     */
-    Serializable get(NavNode node);
-
+  /**
+   * Get the property value for this resolver
+   *
+   * @param node Node this property is for
+   * @return property value
+   */
+  Serializable get(NavNode node);
 }

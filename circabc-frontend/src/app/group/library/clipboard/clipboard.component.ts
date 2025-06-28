@@ -1,17 +1,19 @@
 import {
   Component,
-  EventEmitter,
   HostListener,
   Input,
   OnChanges,
   OnDestroy,
   OnInit,
-  Output,
+  output,
+  input,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { firstValueFrom, Subscription } from 'rxjs';
+import { Subscription, firstValueFrom } from 'rxjs';
 
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
@@ -24,37 +26,35 @@ import { SaveAsService } from 'app/core/save-as.service';
 import { SelectableNode } from 'app/core/ui-model/index';
 import { ClipboardService } from 'app/group/library/clipboard/clipboard.service';
 import { BulkDownloadPipe } from 'app/group/library/pipes/bulk-download.pipe';
+import { ConfirmDialogComponent } from 'app/shared/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'cbc-clipboard',
   templateUrl: './clipboard.component.html',
-  styleUrls: ['./clipboard.component.scss'],
+  styleUrl: './clipboard.component.scss',
   preserveWhitespaces: true,
+  imports: [TranslocoModule, MatDialogModule],
 })
 export class ClipboardComponent implements OnInit, OnChanges, OnDestroy {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   public opened = false;
-  @Input()
-  public currentStandingNode!: Node;
+  public readonly currentStandingNode = input.required<Node>();
   // current Library folder/subfolder contents
   // current Library folder/subfolder contents
-  @Input()
-  public contents!: SelectableNode[];
-  @Input()
-  public currentStandingNodeIsFolder!: boolean;
-  @Output()
-  public readonly closeEmitter: EventEmitter<MouseEvent | void> = new EventEmitter<MouseEvent | void>();
-  @Output()
-  public readonly actionFinished: EventEmitter<ActionEmitterResult> = new EventEmitter<ActionEmitterResult>();
-  @Output()
-  public readonly itemsAmount: EventEmitter<number> = new EventEmitter<number>();
+  public readonly contents = input.required<SelectableNode[]>();
+  public readonly currentStandingNodeIsFolder = input.required<boolean>();
+  public readonly closeEmitter = output<void>();
+  public readonly actionFinished = output<ActionEmitterResult>();
+  public readonly itemsAmount = output<number>();
   // clipboard contents
   public nodes: Node[] = [];
   private igId!: string;
   private user!: User;
   private itemsAddedSubscription$!: Subscription;
   private itemsRemovedSubscription$!: Subscription;
-
+  private notify = true;
   public processing = false;
   public visible = false;
 
@@ -65,7 +65,8 @@ export class ClipboardComponent implements OnInit, OnChanges, OnDestroy {
     private route: ActivatedRoute,
     private loginService: LoginService,
     private bulkDownloadPipe: BulkDownloadPipe,
-    private saveAsService: SaveAsService
+    private saveAsService: SaveAsService,
+    private dialog: MatDialog
   ) {}
   ngOnInit(): void {
     this.subscribe();
@@ -105,7 +106,7 @@ export class ClipboardComponent implements OnInit, OnChanges, OnDestroy {
       const json = sessionStorage.getItem(`cbc-clipboard${this.igId}`);
 
       if (json !== null) {
-        this.nodes = JSON.parse(json);
+        this.nodes = JSON.parse(json) as Node[];
       } else {
         this.nodes = [];
       }
@@ -138,14 +139,15 @@ export class ClipboardComponent implements OnInit, OnChanges, OnDestroy {
   // 2. if the current user has permission to paste according to the desired operation
   // 3. if the current user has permission to remove the node from its parent when moved
   public isAuthorized(node: Node, action: string) {
-    if (!this.currentStandingNodeIsFolder) {
+    if (!this.currentStandingNodeIsFolder()) {
       // if it is not a folder, cannot paste
       return false;
     }
 
+    const currentStandingNode = this.currentStandingNode();
     if (
-      this.currentStandingNode === undefined ||
-      !this.hasPasteLibraryPermission(this.currentStandingNode)
+      currentStandingNode === undefined ||
+      !this.hasPasteLibraryPermission(currentStandingNode)
     ) {
       // current user does not have permission to paste
       return false;
@@ -207,11 +209,12 @@ export class ClipboardComponent implements OnInit, OnChanges, OnDestroy {
 
   public async copyPasteItem(node: Node) {
     this.processing = true;
-    if (node.id !== undefined && this.currentStandingNode.id !== undefined) {
+    const currentStandingNode = this.currentStandingNode();
+    if (node.id !== undefined && currentStandingNode.id !== undefined) {
       const nodeIds: string[] = [];
       nodeIds.push(node.id);
       await firstValueFrom(
-        this.nodesService.postPaste(this.currentStandingNode.id, nodeIds)
+        this.nodesService.postPaste(currentStandingNode.id, nodeIds)
       );
       this.actionFinished.emit(
         this.buildSuccessResult(ActionType.CLIPBOARD_COPY_NODE)
@@ -221,14 +224,16 @@ export class ClipboardComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public async cutPasteItem(node: Node) {
+    await this.showConfirmationDialog();
     this.processing = true;
-    if (node.id !== undefined && this.currentStandingNode.id !== undefined) {
+    const currentStandingNode = this.currentStandingNode();
+    if (node.id !== undefined && currentStandingNode.id !== undefined) {
       const nodeIds: string[] = [];
       nodeIds.push(node.id);
       // move node and remove from clipboard if success
 
       await firstValueFrom(
-        this.nodesService.putPaste(this.currentStandingNode.id, nodeIds)
+        this.nodesService.putPaste(currentStandingNode.id, nodeIds, this.notify)
       );
       this.removeItem(node);
       this.actionFinished.emit(
@@ -240,11 +245,12 @@ export class ClipboardComponent implements OnInit, OnChanges, OnDestroy {
 
   public async linkPasteItem(node: Node) {
     this.processing = true;
-    if (node.id !== undefined && this.currentStandingNode.id !== undefined) {
+    const currentStandingNode = this.currentStandingNode();
+    if (node.id !== undefined && currentStandingNode.id !== undefined) {
       const nodeIds: string[] = [];
       nodeIds.push(node.id);
       await firstValueFrom(
-        this.nodesService.postLink(this.currentStandingNode.id, nodeIds)
+        this.nodesService.postLink(currentStandingNode.id, nodeIds)
       );
       this.removeItem(node);
       this.actionFinished.emit(
@@ -269,13 +275,11 @@ export class ClipboardComponent implements OnInit, OnChanges, OnDestroy {
 
   public async copyPasteAll() {
     this.processing = true;
-    if (this.currentStandingNode.id !== undefined) {
+    const currentStandingNode = this.currentStandingNode();
+    if (currentStandingNode.id !== undefined) {
       const nodeIds = this.nodes.map((localNode) => localNode.id);
       await firstValueFrom(
-        this.nodesService.postPaste(
-          this.currentStandingNode.id,
-          nodeIds as string[]
-        )
+        this.nodesService.postPaste(currentStandingNode.id, nodeIds as string[])
       );
       this.actionFinished.emit(
         this.buildSuccessResult(ActionType.CLIPBOARD_COPY_NODE)
@@ -285,13 +289,16 @@ export class ClipboardComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public async cutPasteAll() {
+    await this.showConfirmationDialog();
     this.processing = true;
-    if (this.currentStandingNode.id !== undefined) {
+    const currentStandingNode = this.currentStandingNode();
+    if (currentStandingNode.id !== undefined) {
       const nodeIds = this.nodes.map((localNode) => localNode.id);
       await firstValueFrom(
         this.nodesService.putPaste(
-          this.currentStandingNode.id,
-          nodeIds as string[]
+          currentStandingNode.id,
+          nodeIds as string[],
+          this.notify
         )
       );
       this.removeAll();
@@ -304,13 +311,11 @@ export class ClipboardComponent implements OnInit, OnChanges, OnDestroy {
 
   public async linkPasteAll() {
     this.processing = true;
-    if (this.currentStandingNode.id !== undefined) {
+    const currentStandingNode = this.currentStandingNode();
+    if (currentStandingNode.id !== undefined) {
       const nodeIds = this.nodes.map((localNode) => localNode.id);
       await firstValueFrom(
-        this.nodesService.postLink(
-          this.currentStandingNode.id,
-          nodeIds as string[]
-        )
+        this.nodesService.postLink(currentStandingNode.id, nodeIds as string[])
       );
       this.removeAll();
       this.actionFinished.emit(
@@ -360,9 +365,20 @@ export class ClipboardComponent implements OnInit, OnChanges, OnDestroy {
     this.opened = false;
     this.visible = false;
     if (event) {
-      this.closeEmitter.emit(event);
+      this.closeEmitter.emit();
     } else {
       this.closeEmitter.emit();
     }
+  }
+
+  public async showConfirmationDialog() {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'label.title.set-notification',
+        layoutStyle: 'setNotification',
+      },
+    });
+    // listen to response
+    this.notify = await firstValueFrom(dialogRef.afterClosed());
   }
 }

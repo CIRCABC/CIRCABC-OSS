@@ -1,43 +1,44 @@
-<span [formGroup]="form">
+<div [formGroup]="form" style="display: flex">
+  @if (!compactMode()) {
   <select
     #languages
     (change)="onLanguageChange(languages.value)"
-    *ngIf="!compactMode"
     [value]="currentLang"
     formControlName="lang"
   >
-    <option *ngFor="let lang of availableLang" value="{{ lang.code }}">
-      {{ lang.name }} ({{ lang.code }})
-    </option>
+    @if(noSelectLangOption()){
+    <option value=""></option>
+    } @for (lang of availableLang; track lang.code) {
+    <option value="{{ lang.code }}">{{ lang.name }} ({{ lang.code }})</option>
+    }
   </select>
-  <div *ngIf="compactMode" class="selector-compact">
-    <div class="selector-icon" [class.expanded]="expanded">
-      <a
-        *ngIf="!expanded"
-        title="{{ 'label.language' | transloco }}-{{ currentLang }}"
-        ><img class="iconWorldToggle" src="img/earth-white.png"
-      /></a>
-      <a
-        *ngIf="expanded"
-        title="{{ 'label.language' | transloco }}-{{ currentLang }}"
-        ><img class="iconWorldToggle" src="img/earth-blue.png"
-      /></a>
-      <span class="lang-indicator" [class.bluecolor]="expanded"
-        >{{ currentLang }}</span
-      >
-    </div>
-    <div *ngIf="expanded" class="hinttextlang"
-      >{{ 'lang.disclaimer' | transloco }}</div
+  } @if (compactMode()) {
+
+  <div
+    class="selector-compact"
+    [class.expanded]="expanded"
+    [class.iconColorOnlyBlue]="iconColorOnlyBlue()"
+  >
+    <a
+      [matMenuTriggerFor]="menu"
+      (menuOpened)="expand()"
+      (menuClosed)="collapse()"
+      title="{{ 'label.language' | transloco }}-{{ currentLang }}"
+      role="button"
     >
-    <div *ngIf="expanded" class="selector-list">
-      <ul>
-        <li *ngFor="let lang of availableLang">
-          <a (click)="onLanguageChange(lang.code)"
-            ><span class="languageName">{{ lang.name }}</span>
-            <span class="languageCode">({{ lang.code }})</span></a
-          >
-        </li>
-      </ul>
-    </div>
+      <img class="iconWorldToggle" alt="" />
+      <span class="lang-indicator">{{ currentLang }}</span>
+      <img class="iconArrow" alt="" />
+    </a>
   </div>
-</span>
+
+  <mat-menu #menu="matMenu">
+    @for (lang of availableLang; track lang.code) {
+    <menu tabindex="0" mat-menu-item (click)="onLanguageChange(lang.code)">
+      <span class="languageName">{{ lang.name }}</span>
+      <span class="languageCode">({{ lang.code }})</span>
+    </menu>
+    }
+  </mat-menu>
+  }
+</div>

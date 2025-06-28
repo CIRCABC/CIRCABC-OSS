@@ -10,11 +10,9 @@ export class NodeIdPipe implements PipeTransform {
       const result = nodeRef.replace('workspace://SpacesStore/', '');
       if (result.length === nodeRef.length) {
         throw new Error(`nodeRef is invalid:${nodeRef}`);
-      } else {
-        return result;
       }
-    } else {
-      throw new Error('nodeRef should be provided');
+      return result;
     }
+    throw new Error('nodeRef should be provided');
   }
 }

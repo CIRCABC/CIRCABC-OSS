@@ -16,6 +16,9 @@
  */
 package eu.cec.digit.circabc.repo.filefolder;
 
+import java.io.Serializable;
+import java.util.Date;
+import java.util.Map;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.model.FileInfo;
 import org.alfresco.service.cmr.repository.ContentData;
@@ -23,134 +26,143 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.datatype.DefaultTypeConverter;
 import org.alfresco.service.namespace.QName;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.Map;
-
 public class FileInfoImpl implements FileInfo {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = -1025981884046770512L;
+  /**
+   *
+   */
+  private static final long serialVersionUID = -1025981884046770512L;
 
-    private NodeRef nodeRef;
-    private NodeRef linkNodeRef;
-    private boolean isFolder;
-    private boolean isLink;
-    private Map<QName, Serializable> properties;
+  private NodeRef nodeRef;
+  private NodeRef linkNodeRef;
+  private boolean isFolder;
+  private boolean isLink;
+  private Map<QName, Serializable> properties;
 
-    /**
-     * Package-level constructor
-     */
-    public FileInfoImpl(NodeRef nodeRef, boolean isFolder, Map<QName, Serializable> properties) {
-        this.nodeRef = nodeRef;
-        this.isFolder = isFolder;
-        this.properties = properties;
+  /**
+   * Package-level constructor
+   */
+  public FileInfoImpl(
+    NodeRef nodeRef,
+    boolean isFolder,
+    Map<QName, Serializable> properties
+  ) {
+    this.nodeRef = nodeRef;
+    this.isFolder = isFolder;
+    this.properties = properties;
 
-        // Check if this is a link node
-        if (properties.containsKey(ContentModel.PROP_LINK_DESTINATION)) {
-            isLink = true;
-            linkNodeRef = (NodeRef) properties.get(ContentModel.PROP_LINK_DESTINATION);
-        }
+    // Check if this is a link node
+    if (properties.containsKey(ContentModel.PROP_LINK_DESTINATION)) {
+      isLink = true;
+      linkNodeRef = (NodeRef) properties.get(
+        ContentModel.PROP_LINK_DESTINATION
+      );
+    }
+  }
+
+  /* (non-Javadoc)
+   * @see org.alfresco.service.cmr.model.FileInfo#isHidden()
+   */
+
+  public boolean isHidden() {
+    return false;
+  }
+
+  /**
+   * @see #getNodeRef()
+   * @see NodeRef#equals(Object)
+   */
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    } else if (this == obj) {
+      return true;
+    } else if (obj instanceof FileInfoImpl == false) {
+      return false;
+    }
+    FileInfoImpl that = (FileInfoImpl) obj;
+    return (this.getNodeRef().equals(that.getNodeRef()));
+  }
+
+  /**
+   * @see #getNodeRef()
+   * @see NodeRef#hashCode()
+   */
+  @Override
+  public int hashCode() {
+    return getNodeRef().hashCode();
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder(80);
+    sb
+      .append("FileInfo")
+      .append("[name=")
+      .append(getName())
+      .append(", isFolder=")
+      .append(isFolder)
+      .append(", nodeRef=")
+      .append(nodeRef);
+
+    if (isLink()) {
+      sb.append(", linkref=");
+      sb.append(linkNodeRef);
     }
 
-    /* (non-Javadoc)
-     * @see org.alfresco.service.cmr.model.FileInfo#isHidden()
-     */
+    sb.append("]");
+    return sb.toString();
+  }
 
-    public boolean isHidden() {
-        return false;
-    }
+  public NodeRef getNodeRef() {
+    return nodeRef;
+  }
 
-    /**
-     * @see #getNodeRef()
-     * @see NodeRef#equals(Object)
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        } else if (this == obj) {
-            return true;
-        } else if (obj instanceof FileInfoImpl == false) {
-            return false;
-        }
-        FileInfoImpl that = (FileInfoImpl) obj;
-        return (this.getNodeRef().equals(that.getNodeRef()));
-    }
+  public boolean isFolder() {
+    return isFolder;
+  }
 
-    /**
-     * @see #getNodeRef()
-     * @see NodeRef#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        return getNodeRef().hashCode();
-    }
+  public boolean isLink() {
+    return isLink;
+  }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder(80);
-        sb.append("FileInfo")
-                .append("[name=")
-                .append(getName())
-                .append(", isFolder=")
-                .append(isFolder)
-                .append(", nodeRef=")
-                .append(nodeRef);
+  public NodeRef getLinkNodeRef() {
+    return linkNodeRef;
+  }
 
-        if (isLink()) {
-            sb.append(", linkref=");
-            sb.append(linkNodeRef);
-        }
+  public String getName() {
+    return (String) properties.get(ContentModel.PROP_NAME);
+  }
 
-        sb.append("]");
-        return sb.toString();
-    }
+  public Date getCreatedDate() {
+    return DefaultTypeConverter.INSTANCE.convert(
+      Date.class,
+      properties.get(ContentModel.PROP_CREATED)
+    );
+  }
 
-    public NodeRef getNodeRef() {
-        return nodeRef;
-    }
+  public Date getModifiedDate() {
+    return DefaultTypeConverter.INSTANCE.convert(
+      Date.class,
+      properties.get(ContentModel.PROP_MODIFIED)
+    );
+  }
 
-    public boolean isFolder() {
-        return isFolder;
-    }
+  public ContentData getContentData() {
+    return DefaultTypeConverter.INSTANCE.convert(
+      ContentData.class,
+      properties.get(ContentModel.PROP_CONTENT)
+    );
+  }
 
-    public boolean isLink() {
-        return isLink;
-    }
+  public Map<QName, Serializable> getProperties() {
+    return properties;
+  }
 
-    public NodeRef getLinkNodeRef() {
-        return linkNodeRef;
-    }
-
-    public String getName() {
-        return (String) properties.get(ContentModel.PROP_NAME);
-    }
-
-    public Date getCreatedDate() {
-        return DefaultTypeConverter.INSTANCE.convert(
-                Date.class, properties.get(ContentModel.PROP_CREATED));
-    }
-
-    public Date getModifiedDate() {
-        return DefaultTypeConverter.INSTANCE.convert(
-                Date.class, properties.get(ContentModel.PROP_MODIFIED));
-    }
-
-    public ContentData getContentData() {
-        return DefaultTypeConverter.INSTANCE.convert(
-                ContentData.class, properties.get(ContentModel.PROP_CONTENT));
-    }
-
-    public Map<QName, Serializable> getProperties() {
-        return properties;
-    }
-
-    @Override
-    public QName getType() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+  @Override
+  public QName getType() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }

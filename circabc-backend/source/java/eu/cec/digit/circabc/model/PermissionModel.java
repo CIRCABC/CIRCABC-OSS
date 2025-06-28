@@ -23,59 +23,75 @@ import org.alfresco.service.namespace.QName;
  * @author yanick pignot
  */
 public interface PermissionModel extends CircabcModel {
+  /**
+   * Qualified name of the property of type ci:profile containing the
+   * circaBC permission
+   */
+  QName CIRCABC_PERMISSION = QName.createQName(
+    CIRCABC_CONTENT_MODEL_1_0_URI,
+    "circaBCPermission"
+  );
 
-    /**
-     * Qualified name of the property of type ci:profile containing the
-     * circaBC permission
-     */
-    QName CIRCABC_PERMISSION = QName.createQName(CIRCABC_CONTENT_MODEL_1_0_URI, "circaBCPermission");
+  /**
+   * Qualified name of the property of type ci:profile containing the
+   * category permission
+   */
+  QName CATEGORY_PERMISSION = QName.createQName(
+    CIRCABC_CONTENT_MODEL_1_0_URI,
+    "circaCategoryPermission"
+  );
 
-    /**
-     * Qualified name of the property of type ci:profile containing the
-     * category permission
-     */
-    QName CATEGORY_PERMISSION = QName
-            .createQName(CIRCABC_CONTENT_MODEL_1_0_URI, "circaCategoryPermission");
+  /**
+   * Qualified name of the property of type ci:profile containing the
+   * directory permission
+   */
+  QName DIRECTORY_PERMISSION = QName.createQName(
+    CIRCABC_CONTENT_MODEL_1_0_URI,
+    "circaIGRootDirectoryPermission"
+  );
 
-    /**
-     * Qualified name of the property of type ci:profile containing the
-     * directory permission
-     */
-    QName DIRECTORY_PERMISSION = QName
-            .createQName(CIRCABC_CONTENT_MODEL_1_0_URI, "circaIGRootDirectoryPermission");
+  /**
+   * Qualified name of the property of type ci:profile containing the
+   * library permission
+   */
+  QName LIBRARY_PERMISSION = QName.createQName(
+    CIRCABC_CONTENT_MODEL_1_0_URI,
+    "circaLibraryPermission"
+  );
 
-    /**
-     * Qualified name of the property of type ci:profile containing the
-     * library permission
-     */
-    QName LIBRARY_PERMISSION = QName
-            .createQName(CIRCABC_CONTENT_MODEL_1_0_URI, "circaLibraryPermission");
+  /**
+   * Qualified name of the property of type ci:profile containing the
+   * directory permission
+   */
+  QName NEWSGROUP_PERMISSION = QName.createQName(
+    CIRCABC_CONTENT_MODEL_1_0_URI,
+    "circaNewsGroupPermission"
+  );
 
-    /**
-     * Qualified name of the property of type ci:profile containing the
-     * directory permission
-     */
-    QName NEWSGROUP_PERMISSION = QName
-            .createQName(CIRCABC_CONTENT_MODEL_1_0_URI, "circaNewsGroupPermission");
+  /**
+   * Qualified name of the property of type ci:profile containing the
+   * survey permission
+   */
+  QName SURVEY_PERMISSION = QName.createQName(
+    CIRCABC_CONTENT_MODEL_1_0_URI,
+    "circaSurveyPermission"
+  );
 
-    /**
-     * Qualified name of the property of type ci:profile containing the
-     * survey permission
-     */
-    QName SURVEY_PERMISSION = QName
-            .createQName(CIRCABC_CONTENT_MODEL_1_0_URI, "circaSurveyPermission");
+  /**
+   * Qualified name of the property of type ci:profile containing the
+   * information permission
+   */
+  QName INFORMATION_PERMISSION = QName.createQName(
+    CIRCABC_CONTENT_MODEL_1_0_URI,
+    "circabcInformationPermission"
+  );
 
-    /**
-     * Qualified name of the property of type ci:profile containing the
-     * information permission
-     */
-    QName INFORMATION_PERMISSION = QName
-            .createQName(CIRCABC_CONTENT_MODEL_1_0_URI, "circabcInformationPermission");
-
-    /**
-     * Qualified name of the property of type ci:profile containing the
-     * event permission
-     */
-    QName EVENT_PERMISSION = QName
-            .createQName(CIRCABC_CONTENT_MODEL_1_0_URI, "circabcEventPermission");
+  /**
+   * Qualified name of the property of type ci:profile containing the
+   * event permission
+   */
+  QName EVENT_PERMISSION = QName.createQName(
+    CIRCABC_CONTENT_MODEL_1_0_URI,
+    "circabcEventPermission"
+  );
 }

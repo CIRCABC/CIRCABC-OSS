@@ -20,8 +20,7 @@ export class OldDownloadPipe implements PipeTransform {
   public transform(id: string | undefined, name: string | undefined): string {
     if (id && name) {
       return `${this.serverURL}d/a/workspace/SpacesStore/${id}/${name}`;
-    } else {
-      throw new Error('id and name should be provided');
     }
+    throw new Error('id and name should be provided');
   }
 }

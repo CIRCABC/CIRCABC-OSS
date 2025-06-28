@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { Component, Input, OnInit, output, input } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
@@ -14,28 +15,37 @@ import {
   NotificationService,
   Profile,
   User,
-} from 'app/core/generated/circabc';
+} from 'app/core/generated/circabc/';
 import {
   AuthConfig,
   NotifDef,
 } from 'app/shared/add-notifications/notification-definition-model';
+import { InlineSelectComponent } from 'app/shared/inline-select/inline-select.component';
+import { ModalComponent } from 'app/shared/modal/modal.component';
+import { UsersPickerComponent } from 'app/shared/users/users-picker.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-add-notifications',
   templateUrl: './add-notifications.component.html',
-  styleUrls: ['./add-notifications.component.scss'],
+  styleUrl: './add-notifications.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    ModalComponent,
+    ReactiveFormsModule,
+    UsersPickerComponent,
+    InlineSelectComponent,
+    TranslocoModule,
+  ],
 })
 export class AddNotificationsComponent implements OnInit {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   public showModal = false;
-  @Input()
-  node!: ModelNode;
-  @Input()
-  ig!: string;
-  @Output()
-  readonly finished = new EventEmitter<ActionEmitterResult>();
+  readonly node = input.required<ModelNode>();
+  readonly ig = input.required<string>();
+  readonly finished = output<ActionEmitterResult>();
 
   public adding = false;
   public newNotifModel: { [authority: string]: NotifDef } = {};
@@ -87,26 +97,27 @@ export class AddNotificationsComponent implements OnInit {
           const ndu: NotificationDefinitionUsers = {};
           ndu.notifications = this.newNotifModel[newPermKey].notifications;
           ndu.user = authTmp as User;
-          if (body && body.users) {
+          if (body?.users) {
             body.users.push(ndu);
           }
         } else {
           const ndp: NotificationDefinitionProfiles = {};
           ndp.notifications = this.newNotifModel[newPermKey].notifications;
           ndp.profile = authTmp as Profile;
-          if (body && body.profiles) {
+          if (body?.profiles) {
             body.profiles.push(ndp);
           }
         }
       }
-      if (this.node.id) {
+      const node = this.node();
+      if (node.id) {
         await firstValueFrom(
-          this.notificationService.postNotification(this.node.id, body)
+          this.notificationService.postNotification(node.id, body)
         );
         this.newNotifModel = {};
         res.result = ActionResult.SUCCEED;
       }
-    } catch (error) {
+    } catch (_error) {
       res.result = ActionResult.FAILED;
     }
     this.adding = false;
@@ -130,9 +141,8 @@ export class AddNotificationsComponent implements OnInit {
   getAuthorityDisplay(authority: User | Profile): string {
     if ((authority as User).userId) {
       return `${(authority as User).firstname} ${(authority as User).lastname}`;
-    } else {
-      return (authority as Profile).name as string;
     }
+    return (authority as Profile).name as string;
   }
 
   public removeNotification(authorityKey: string) {

@@ -1,12 +1,14 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
+import { TranslocoModule } from '@jsverse/transloco';
+import { SizePipe } from 'app/shared/pipes/size.pipe';
 
 @Component({
   selector: 'cbc-file-details',
   templateUrl: './file-details.component.html',
-  styleUrls: ['./file-details.component.scss'],
+  styleUrl: './file-details.component.scss',
   preserveWhitespaces: true,
+  imports: [SizePipe, TranslocoModule],
 })
 export class FileDetailsComponent {
-  @Input()
-  public file!: File;
+  public readonly file = input.required<File>();
 }

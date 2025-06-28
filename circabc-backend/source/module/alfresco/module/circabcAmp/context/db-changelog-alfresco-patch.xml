@@ -1061,6 +1061,12 @@
 		</addColumn>
 	</changeSet>
 
+	<changeSet id="38" author="Eduardo Costa" dbms="oracle">
+		<addColumn tableName="cbc_interest_groups">
+	        <column name="to_be_deleted" type="boolean"/>
+	    </addColumn>
+	</changeSet>
+
 	<changeSet id="10031" author="Slobodan Filipovic" dbms="mysql"   >
         <createTable tableName="cbc_headers">
             <column name="id" type="bigint"  >
@@ -1381,6 +1387,343 @@
 		<addColumn tableName="cbc_interest_groups">
 	        <column name="logo_ref" type="varchar(255)"/>
 	    </addColumn>
+	</changeSet>
+
+	<changeSet id="10038" author="Eduardo Costa" dbms="mysql">
+		<addColumn tableName="cbc_interest_groups">
+	        <column name="to_be_deleted" type="boolean"/>
+	    </addColumn>
+	</changeSet>
+
+
+	<changeSet id="20031" author="Slobodan Filipovic" dbms="postgresql"   >
+        <createTable tableName="cbc_headers">
+            <column name="id" type="bigint"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="node_ref" type="varchar(100)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+			<column name="name" type="varchar(1024)">
+                <constraints nullable="false"/>
+            </column>
+			<column name="description" type="varchar(1024)">
+				<constraints nullable="true"/>
+            </column>
+        </createTable>
+        <createTable tableName="cbc_categories">
+        	<column name="header_id" type="bigint"  >
+                <constraints nullable="false"/>
+            </column>
+            <column name="id" type="bigint"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="node_ref" type="varchar(100)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+			<column name="name" type="varchar(1024)">
+                <constraints nullable="false"/>
+            </column>
+			<column name="title" type="varchar(1024)">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="header_id"
+                                 baseTableName="cbc_categories"
+                                 constraintName="cbc_categories_fk"
+                                 referencedColumnNames="id"
+                                 referencedTableName="cbc_headers"/>
+		<createIndex tableName="cbc_categories" indexName="idx_cbc_cat_header_id">
+		   <column name="header_id"/>
+		</createIndex>
+	                                 
+       
+       <createTable tableName="cbc_users">
+            <column name="id" type="bigint"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="node_ref" type="varchar(100)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="user_name" type="varchar(50)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+			<column name="first_name" type="varchar(100)">
+            </column>
+			<column name="last_name" type="varchar(100)">
+            </column>
+            <column name="email" type="varchar(100)">
+            </column>
+            <column name="alf_locale_id" type="bigint">
+            </column>
+            <column name="domain"  type="varchar(100)">
+            </column>
+            <column name="ecas_user_name" type="varchar(50)">
+            </column>
+            <column name="visibility" type="boolean">
+            </column>
+            <column name="global_notification" type="boolean">
+            </column>
+        </createTable>
+
+
+        <createTable tableName="cbc_category_admins">
+            <column name="category_id" type="bigint"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="bigint"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="profile_name" type="varchar(100)">
+            	<constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="category_id"
+                                 baseTableName="cbc_category_admins"
+                                 constraintName="cbc_cat_admin_cat_fk"
+                                 referencedColumnNames="id"
+                                 referencedTableName="cbc_categories"/>
+		<createIndex tableName="cbc_category_admins" indexName="idx_cbc_cat_admins_cat_id">
+		   <column name="category_id"/>
+		</createIndex>                                      
+                                 
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="cbc_category_admins"
+                                 constraintName="cbc_cat_admin_user_fk"
+                                 referencedColumnNames="id"
+                                 referencedTableName="cbc_users"/>
+        
+        <createIndex tableName="cbc_category_admins" indexName="idx_cbc_cat_admins_user_id">
+		   <column name="user_id"/>
+		</createIndex>
+        
+        
+        <createTable tableName="cbc_interest_groups">
+        	<column name="category_id" type="bigint"  >
+                <constraints nullable="false"/>
+            </column>
+            <column name="id" type="bigint"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="node_ref" type="varchar(100)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(1024)">
+                <constraints nullable="false"/>
+            </column>
+			<column name="title" type="varchar(1024)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="is_public" type="boolean">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="is_registered" type="boolean">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="is_apply_for_membership" type="boolean">
+            	<constraints nullable="false"/>
+            </column>
+        </createTable>
+        
+        <addForeignKeyConstraint baseColumnNames="category_id"
+                                 baseTableName="cbc_interest_groups"
+                                 constraintName="cbc_interest_groups_cat_fk"
+                                 referencedColumnNames="id"
+                                 referencedTableName="cbc_categories"/>
+        <createIndex tableName="cbc_interest_groups" indexName="idx_cbc_int_grp_cat_id">
+		   <column name="category_id"/>
+		</createIndex>                         
+                                 
+        
+        <createTable tableName="cbc_profiles">
+        	<column name="ig_id" type="bigint"  >
+                <constraints nullable="false"/>
+            </column>
+            <column name="id" type="bigint"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="alfresco_group" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="node_ref" type="varchar(100)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            
+            <column name="name" type="varchar(1024)">
+                <constraints nullable="false"/>
+            </column>
+			<column name="title" type="varchar(1024)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="dir_perm" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="inf_perm" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lib_perm" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="nws_perm" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="eve_perm" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_visible" type="boolean">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="is_imported" type="boolean">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="is_exported" type="boolean">
+            	<constraints nullable="false"/>
+            </column>
+            <column name="ig_from_node_ref" type="varchar(100)">
+            	<constraints nullable="true"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="ig_id"
+                                 baseTableName="cbc_profiles"
+                                 constraintName="cbc_profiles_ig_fk"
+                                 referencedColumnNames="id"
+                                 referencedTableName="cbc_interest_groups"/>
+        
+        <createTable tableName="cbc_profile_users">
+        	<column name="user_id" type="bigint"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="alfresco_group" type="varchar(200)"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+        </createTable>
+		
+		<createIndex tableName="cbc_profile_users" indexName="idx_cbc_prof_usr_alf_grp">
+		   <column name="alfresco_group"/>
+		</createIndex> 
+                                 
+         <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="cbc_profile_users"
+                                 constraintName="cbc_profile_users_user_fk"
+                                 referencedColumnNames="id"
+                                 referencedTableName="cbc_users"/>
+                                 
+           <createTable tableName="cbc_cat_title_trans">
+            <column name="cat_id" type="bigint"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="alf_locale_id" type="bigint">
+            	<constraints primaryKey="true"  nullable="false"/>
+            </column>
+			<column name="translation" type="varchar(1024)">
+                <constraints nullable="true"/>
+            </column>
+            </createTable>
+            <addForeignKeyConstraint baseColumnNames="cat_id"
+                                 baseTableName="cbc_cat_title_trans"
+                                 constraintName="cbc_cat_title_trans_cat_fk"
+                                 referencedColumnNames="id"
+                                 referencedTableName="cbc_categories"/>
+           
+            <createTable tableName="cbc_ig_trans">
+            <column name="ig_id" type="bigint"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="alf_locale_id" type="bigint">
+            	<constraints primaryKey="true"  nullable="false"/>
+            </column>
+			<column name="title_translation" type="varchar(1024)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="light_desc_translation" type="varchar(1024)">
+                <constraints nullable="true"/>
+            </column>
+            </createTable>
+            
+            
+            <addForeignKeyConstraint baseColumnNames="ig_id"
+                                 baseTableName="cbc_ig_trans"
+                                 constraintName="cbc_ig_trans_ig_fk"
+                                 referencedColumnNames="id"
+                                 referencedTableName="cbc_interest_groups"/>
+            
+            <createTable tableName="cbc_profile_title_trans">
+            <column name="profile_id" type="bigint"  >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="alf_locale_id" type="bigint">
+            	<constraints primaryKey="true"  nullable="false"/>
+            </column>
+			<column name="translation" type="varchar(1024)">
+                <constraints nullable="true"/>
+            </column>
+            </createTable>
+                        
+             <addForeignKeyConstraint baseColumnNames="profile_id"
+                                 baseTableName="cbc_profile_title_trans"
+                                 constraintName="cbc_prof_title_trans_pro_fk"
+                                 referencedColumnNames="id"
+                                 referencedTableName="cbc_profiles"/>
+            <createView viewName="v_cbc_ig_trans" replaceIfExists="true" >
+            	select cbc_ig_trans.ig_id, max(cbc_ig_trans.light_desc_translation) light_desc_translation,
+  				max(cbc_ig_trans.title_translation) title_translation
+				from cbc_ig_trans
+				group by cbc_ig_trans.ig_id
+            </createView>
+            
+    </changeSet>
+    <changeSet id="20032" author="Slobodan Filipovic" dbms="postgresql"   >
+		<modifyColumn tableName="cbc_users"> 
+	    	<column name="ecas_user_name" type="varchar(100)">
+	    	</column>
+    	</modifyColumn>
+    </changeSet>
+    <changeSet id="20033" author="Slobodan Filipovic" dbms="postgresql"   >
+		<modifyColumn tableName="cbc_users"> 
+	    	<column name="user_name" type="varchar(100)">
+	    	</column>
+    	</modifyColumn>
+    </changeSet>
+    
+    <changeSet id="20034" author="Slobodan Filipovic" dbms="postgresql"   >
+		<createIndex tableName="cbc_profiles" indexName="idx_cbc_prof_ig_id">
+		   <column name="ig_id"/>
+		</createIndex>
+    </changeSet>
+
+
+	<changeSet id="20035" author="Slobodan Filipovic" dbms="postgresql"   >
+		<createTable tableName="cbc_circabc_admins">
+			<column name="user_id" type="bigint"  >
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="profile_name" type="varchar(100)">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+		<addForeignKeyConstraint baseColumnNames="user_id"
+								 baseTableName="cbc_circabc_admins"
+								 constraintName="cbc_circabc_admins_user_fk"
+								 referencedColumnNames="id"
+								 referencedTableName="cbc_users"/>
+	</changeSet>
+
+	<changeSet id="20036" author="Pierre Beauregard" dbms="postgresql">
+		<addColumn tableName="cbc_categories">
+			<column name="logo_ref" type="varchar(255)"/>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="20037" author="Pierre Beauregard" dbms="postgresql">
+		<addColumn tableName="cbc_interest_groups">
+			<column name="logo_ref" type="varchar(255)"/>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="20038" author="Eduardo Costa" dbms="postgresql">
+		<addColumn tableName="cbc_interest_groups">
+			<column name="to_be_deleted" type="boolean"/>
+		</addColumn>
 	</changeSet>
             
 </databaseChangeLog>

@@ -1,0 +1,19 @@
+<div class="field">
+  <label for="searchText">{{ label() | transloco }}</label>
+  <ul class="availableKeywords">
+    @for (keyword of availableKeywords; track keyword.id) {
+    <li>
+      <input
+        type="checkbox"
+        [checked]="keyword.selected"
+        (click)="toggleSelected(keyword)"
+      />
+      <cbc-keyword-tag [keyword]="keyword"></cbc-keyword-tag>
+    </li>
+    } @if (availableKeywords.length === 0) {
+    <li>
+      <span class="nothing">{{ 'label.nothing.to.select' | transloco }}</span>
+    </li>
+    }
+  </ul>
+</div>

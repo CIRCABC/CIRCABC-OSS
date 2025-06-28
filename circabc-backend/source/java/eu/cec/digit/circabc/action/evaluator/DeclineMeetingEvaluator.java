@@ -23,7 +23,6 @@ package eu.cec.digit.circabc.action.evaluator;
 import eu.cec.digit.circabc.service.event.MeetingRequestStatus;
 import org.alfresco.web.bean.repository.Node;
 
-
 /**
  * Evaluate if the current user can reject a meeting. It means check if it is not already done.
  *
@@ -31,17 +30,15 @@ import org.alfresco.web.bean.repository.Node;
  */
 public class DeclineMeetingEvaluator extends AcceptMeetingEvaluator {
 
-    private static final long serialVersionUID = -216436852785621419L;
+  private static final long serialVersionUID = -216436852785621419L;
 
-    public boolean evaluate(final Node node) {
-        final MeetingRequestStatus userStatus = getCurrentUserStatusOnMeeting(node);
+  public boolean evaluate(final Node node) {
+    final MeetingRequestStatus userStatus = getCurrentUserStatusOnMeeting(node);
 
-        if (userStatus == null) {
-            return false;
-        } else {
-            return !userStatus.equals(MeetingRequestStatus.Rejected);
-        }
-
+    if (userStatus == null) {
+      return false;
+    } else {
+      return !userStatus.equals(MeetingRequestStatus.Rejected);
     }
-
+  }
 }

@@ -31,90 +31,97 @@ import java.util.List;
  */
 public class Survey implements Serializable {
 
-    /**
-     * The serial UID
-     */
-    private static final long serialVersionUID = 6406690407022902856L;
+  /**
+   * The serial UID
+   */
+  private static final long serialVersionUID = 6406690407022902856L;
 
-    private String name;
+  private String name;
 
-    private String subject;
+  private String subject;
 
-    private String status;
+  private String status;
 
-    private Date startDate;
+  private Date startDate;
 
-    private Date closeDate;
+  private Date closeDate;
 
-    private List<String> translations;
+  private List<String> translations;
 
-    private String pivotLang;
+  private String pivotLang;
 
-    public Survey(String name, String subject, String status, Date startDate,
-                  Date endDate, List<String> translations, String pivotLang) {
-        super();
-        this.name = name;
-        this.subject = subject;
-        this.status = status;
-        this.startDate = startDate;
-        this.closeDate = endDate;
-        this.translations = translations;
-        this.pivotLang = pivotLang;
-    }
+  public Survey(
+    String name,
+    String subject,
+    String status,
+    Date startDate,
+    Date endDate,
+    List<String> translations,
+    String pivotLang
+  ) {
+    super();
+    this.name = name;
+    this.subject = subject;
+    this.status = status;
+    this.startDate = startDate;
+    this.closeDate = endDate;
+    this.translations = translations;
+    this.pivotLang = pivotLang;
+  }
 
-    public Date getCloseDate() {
-        return closeDate;
-    }
+  public Date getCloseDate() {
+    return closeDate;
+  }
 
-    public void setCloseDate(Date endDate) {
-        this.closeDate = endDate;
-    }
+  public void setCloseDate(Date endDate) {
+    this.closeDate = endDate;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public String getPivotLang() {
-        return pivotLang;
-    }
+  public String getPivotLang() {
+    return pivotLang;
+  }
 
-    public void setPivotLang(String pivotLang) {
-        this.pivotLang = pivotLang;
-    }
+  public void setPivotLang(String pivotLang) {
+    this.pivotLang = pivotLang;
+  }
 
-    public Date getStartDate() {
-        return startDate;
-    }
+  public Date getStartDate() {
+    return startDate;
+  }
 
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
+  public void setStartDate(Date startDate) {
+    this.startDate = startDate;
+  }
 
-    public String getStatus() {
-        return status;
-    }
+  public String getStatus() {
+    return status;
+  }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+  public void setStatus(String status) {
+    this.status = status;
+  }
 
-    public String getSubject() {
-        return subject;
-    }
+  public String getSubject() {
+    return subject;
+  }
 
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
+  public void setSubject(String subject) {
+    this.subject = subject;
+  }
 
-    public List<String> getTranslations() {
-        return translations;
-    }
+  public List<String> getTranslations() {
+    return translations;
+  }
 
-    public void setTranslations(List<String> translations) {
-        this.translations = translations;
-    }
+  public void setTranslations(List<String> translations) {
+    this.translations = translations;
+  }
 }

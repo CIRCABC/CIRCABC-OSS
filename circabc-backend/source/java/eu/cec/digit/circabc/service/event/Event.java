@@ -17,12 +17,11 @@
 package eu.cec.digit.circabc.service.event;
 
 public interface Event extends Appointment {
+  EventType getEventType();
 
-    EventType getEventType();
+  void setEventType(EventType value);
 
-    void setEventType(EventType value);
+  EventPriority getPriority();
 
-    EventPriority getPriority();
-
-    void setPriority(EventPriority value);
+  void setPriority(EventPriority value);
 }

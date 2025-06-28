@@ -22,16 +22,14 @@ package eu.cec.digit.circabc.web.wai.bean;
 
 import eu.cec.digit.circabc.error.CircabcRuntimeException;
 import eu.cec.digit.circabc.service.customisation.ApplicationCustomisationService;
-import org.alfresco.repo.security.authentication.AuthenticationUtil;
-import org.alfresco.web.bean.ErrorBean;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import javax.faces.event.ActionEvent;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
+import org.alfresco.web.bean.ErrorBean;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Bean extends the not management error management.
@@ -40,121 +38,129 @@ import javax.servlet.http.HttpSession;
  */
 public class CircabcErrorBean extends ErrorBean {
 
-    public static final String BEAN_NAME = "ErrorBean";
-    public static final String LAST_ERROR_TIMESTAMP = "LastErrorTimeStamp";
-    public static final long MIN_MILLISEC_BETWEEN_TWO_ERRORS = 15000;
-    public static final String MAIN_PAGE = "/jsp/extension/wai/error/error-wai.jsp";
-    public static final String ERROR_REDIRECT_LOGOUT_PAGE = "/jsp/extension/wai/error/error-redirect-logout-wai.jsp";
-    private static final long serialVersionUID = 68736574648784143L;
-    private static final Log logger = LogFactory.getLog(CircabcErrorBean.class);
-    private String errorMessageContent;
-    private ApplicationCustomisationService applicationCustomisationService;
+  public static final String BEAN_NAME = "ErrorBean";
+  public static final String LAST_ERROR_TIMESTAMP = "LastErrorTimeStamp";
+  public static final long MIN_MILLISEC_BETWEEN_TWO_ERRORS = 15000;
+  public static final String MAIN_PAGE =
+    "/jsp/extension/wai/error/error-wai.jsp";
+  public static final String ERROR_REDIRECT_LOGOUT_PAGE =
+    "/jsp/extension/wai/error/error-redirect-logout-wai.jsp";
+  private static final long serialVersionUID = 68736574648784143L;
+  private static final Log logger = LogFactory.getLog(CircabcErrorBean.class);
+  private String errorMessageContent;
+  private ApplicationCustomisationService applicationCustomisationService;
 
-    private boolean expanded;
+  private boolean expanded;
 
-    public void initError(ServletRequest request) {
-
-        Throwable lastError = (Throwable) request.getAttribute("javax.servlet.error.exception");
-        if (lastError == null) {
-            HttpServletRequest httpRequest = (HttpServletRequest) request;
-            HttpSession session = httpRequest.getSession();
-            ErrorBean errorBean = (ErrorBean) session.getAttribute(ErrorBean.ERROR_BEAN_NAME);
-            lastError = errorBean.getLastError();
-        }
-        setLastError(lastError);
-
-        final String returnPage = (String) request.getAttribute("javax.servlet.error.request_uri");
-        setReturnPage(returnPage);
-
-        logger.error("Unexpected and not managed error for user " + AuthenticationUtil
-                .getFullyAuthenticatedUser(), getLastError());
-
-        expanded = false;
+  public void initError(ServletRequest request) {
+    Throwable lastError = (Throwable) request.getAttribute(
+      "javax.servlet.error.exception"
+    );
+    if (lastError == null) {
+      HttpServletRequest httpRequest = (HttpServletRequest) request;
+      HttpSession session = httpRequest.getSession();
+      ErrorBean errorBean = (ErrorBean) session.getAttribute(
+        ErrorBean.ERROR_BEAN_NAME
+      );
+      lastError = errorBean.getLastError();
     }
+    setLastError(lastError);
 
-    public String getExceptionClass() {
-        if (getLastError() == null) {
-            return "Internal Error";
-        } else {
-            return getLastError().getClass().getName();
-        }
+    final String returnPage = (String) request.getAttribute(
+      "javax.servlet.error.request_uri"
+    );
+    setReturnPage(returnPage);
+
+    logger.error(
+      "Unexpected and not managed error for user " +
+      AuthenticationUtil.getFullyAuthenticatedUser(),
+      getLastError()
+    );
+
+    expanded = false;
+  }
+
+  public String getExceptionClass() {
+    if (getLastError() == null) {
+      return "Internal Error";
+    } else {
+      return getLastError().getClass().getName();
     }
+  }
 
-    /**
-     * @return the expanded
-     */
-    public boolean isExpanded() {
-        return expanded;
+  /**
+   * @return the expanded
+   */
+  public boolean isExpanded() {
+    return expanded;
+  }
+
+  /**
+   * @param expanded the expanded to set
+   */
+  public void setExpanded(boolean expanded) {
+    this.expanded = expanded;
+  }
+
+  /**
+   * @param event to perform to see the details
+   */
+  public void expandDetails(ActionEvent event) {
+    this.expanded = true;
+  }
+
+  /**
+   * @param event to perform to hide the details
+   */
+  public void hideDetails(ActionEvent event) {
+    this.expanded = false;
+  }
+
+  public boolean isCircabcRuntimeException() {
+    return getLastError() instanceof CircabcRuntimeException;
+  }
+
+  public String getLastCircabcErrorMessage() {
+    if (getLastError() instanceof CircabcRuntimeException) {
+      return getLastError().getMessage();
+    } else {
+      return "";
     }
+  }
 
-    /**
-     * @param expanded the expanded to set
-     */
-    public void setExpanded(boolean expanded) {
-        this.expanded = expanded;
+  /**
+   * @return the errorMessageContent
+   */
+  public String getErrorMessageContent() {
+    if (applicationCustomisationService != null) {
+      errorMessageContent =
+        applicationCustomisationService.getErrorMessageContent();
+    } else {
+      errorMessageContent = null;
     }
+    return errorMessageContent;
+  }
 
+  /**
+   * @param errorMessageContent the errorMessageContent to set
+   */
+  public void setErrorMessageContent(String errorMessageContent) {
+    this.errorMessageContent = errorMessageContent;
+  }
 
-    /**
-     * @param event to perform to see the details
-     */
-    public void expandDetails(ActionEvent event) {
-        this.expanded = true;
-    }
+  /**
+   * @return the applicationCustomisationService
+   */
+  public ApplicationCustomisationService getApplicationCustomisationService() {
+    return applicationCustomisationService;
+  }
 
-    /**
-     * @param event to perform to hide the details
-     */
-    public void hideDetails(ActionEvent event) {
-        this.expanded = false;
-    }
-
-    public boolean isCircabcRuntimeException() {
-        return getLastError() instanceof CircabcRuntimeException;
-    }
-
-
-    public String getLastCircabcErrorMessage() {
-        if (getLastError() instanceof CircabcRuntimeException) {
-            return getLastError().getMessage();
-        } else {
-            return "";
-        }
-    }
-
-    /**
-     * @return the errorMessageContent
-     */
-    public String getErrorMessageContent() {
-
-        if (applicationCustomisationService != null) {
-            errorMessageContent = applicationCustomisationService.getErrorMessageContent();
-        } else {
-            errorMessageContent = null;
-        }
-        return errorMessageContent;
-    }
-
-    /**
-     * @param errorMessageContent the errorMessageContent to set
-     */
-    public void setErrorMessageContent(String errorMessageContent) {
-        this.errorMessageContent = errorMessageContent;
-    }
-
-    /**
-     * @return the applicationCustomisationService
-     */
-    public ApplicationCustomisationService getApplicationCustomisationService() {
-        return applicationCustomisationService;
-    }
-
-    /**
-     * @param applicationCustomisationService the applicationCustomisationService to set
-     */
-    public void setApplicationCustomisationService(
-            ApplicationCustomisationService applicationCustomisationService) {
-        this.applicationCustomisationService = applicationCustomisationService;
-    }
-
+  /**
+   * @param applicationCustomisationService the applicationCustomisationService to set
+   */
+  public void setApplicationCustomisationService(
+    ApplicationCustomisationService applicationCustomisationService
+  ) {
+    this.applicationCustomisationService = applicationCustomisationService;
+  }
 }

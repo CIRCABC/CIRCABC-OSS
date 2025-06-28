@@ -27,66 +27,98 @@ import org.alfresco.service.cmr.repository.NodeRef;
  *
  * @author Pierre Beauregard
  */
-public class ForumNodeLinkMethod extends NodeRefBaseTemplateProcessorExtension
-        implements TemplateMethodModelEx {
+public class ForumNodeLinkMethod
+  extends NodeRefBaseTemplateProcessorExtension
+  implements TemplateMethodModelEx {
 
-    @Override
-    public String getResult(NodeRef nodeRef) {
+  @Override
+  public String getResult(NodeRef nodeRef) {
+    NodeRef groupRef = findInterestGroupRoot(nodeRef);
+    String url =
+      CircabcConfiguration.getProperty(CircabcConfiguration.NEW_UI_URL) +
+      CircabcConfiguration.getProperty(CircabcConfiguration.NEW_UI_CONTEXT) +
+      (CircabcConfiguration.getProperty(
+            CircabcConfiguration.NEW_UI_CONTEXT
+          ).endsWith("/")
+          ? "group/"
+          : "/group/") +
+      (groupRef != null ? groupRef.getId() : "") +
+      (getNodeService().hasAspect(nodeRef, CircabcModel.ASPECT_NEWSGROUP)
+          ? "/forum"
+          : "/library");
 
-        NodeRef groupRef = findInterestGroupRoot(nodeRef);
-        String url =
-                CircabcConfiguration.getProperty(CircabcConfiguration.NEW_UI_URL)
-                        + CircabcConfiguration.getProperty(CircabcConfiguration.NEW_UI_CONTEXT)
-                        + (CircabcConfiguration.getProperty(CircabcConfiguration.NEW_UI_CONTEXT).endsWith("/")
-                        ? "group/"
-                        : "/group/")
-                        + (groupRef != null ? groupRef.getId() : "")
-                        + (getNodeService().hasAspect(nodeRef, CircabcModel.ASPECT_NEWSGROUP)
-                        ? "/forum"
-                        : "/library");
-
-        if (getNodeService().getType(nodeRef).equals(ForumModel.TYPE_POST)
-                && getNodeService().hasAspect(nodeRef, CircabcModel.ASPECT_NEWSGROUP)) {
-            url = url + "/topic/" + getNodeService().getPrimaryParent(nodeRef).getParentRef().getId();
-        } else if (getNodeService().getType(nodeRef).equals(ForumModel.TYPE_TOPIC)
-                && getNodeService().hasAspect(nodeRef, CircabcModel.ASPECT_NEWSGROUP)) {
-            url = url + "/" + getNodeService().getPrimaryParent(nodeRef).getParentRef().getId();
-        } else if (getNodeService().getType(nodeRef).equals(ForumModel.TYPE_FORUM)
-                && getNodeService().hasAspect(nodeRef, CircabcModel.ASPECT_NEWSGROUP)) {
-            url = url + "/" + nodeRef.getId();
-        } else if (getNodeService().getType(nodeRef).equals(ForumModel.TYPE_POST)
-                && getNodeService().hasAspect(nodeRef, CircabcModel.ASPECT_LIBRARY)) {
-            NodeRef topicRef = getNodeService().getPrimaryParent(nodeRef).getParentRef();
-            NodeRef discussionRef = getNodeService().getPrimaryParent(topicRef).getParentRef();
-            url =
-                    url
-                            + "/"
-                            + getNodeService().getPrimaryParent(discussionRef).getParentRef().getId()
-                            + "/details";
-        } else if (getNodeService().getType(nodeRef).equals(ForumModel.TYPE_TOPIC)
-                && getNodeService().hasAspect(nodeRef, CircabcModel.ASPECT_LIBRARY)) {
-            NodeRef discussionRef = getNodeService().getPrimaryParent(nodeRef).getParentRef();
-            url =
-                    url
-                            + "/"
-                            + getNodeService().getPrimaryParent(discussionRef).getParentRef().getId()
-                            + "/details";
-        }
-
-        return url;
+    if (
+      getNodeService().getType(nodeRef).equals(ForumModel.TYPE_POST) &&
+      getNodeService().hasAspect(nodeRef, CircabcModel.ASPECT_NEWSGROUP)
+    ) {
+      url =
+        url +
+        "/topic/" +
+        getNodeService().getPrimaryParent(nodeRef).getParentRef().getId();
+    } else if (
+      getNodeService().getType(nodeRef).equals(ForumModel.TYPE_TOPIC) &&
+      getNodeService().hasAspect(nodeRef, CircabcModel.ASPECT_NEWSGROUP)
+    ) {
+      url =
+        url +
+        "/" +
+        getNodeService().getPrimaryParent(nodeRef).getParentRef().getId();
+    } else if (
+      getNodeService().getType(nodeRef).equals(ForumModel.TYPE_FORUM) &&
+      getNodeService().hasAspect(nodeRef, CircabcModel.ASPECT_NEWSGROUP)
+    ) {
+      url = url + "/" + nodeRef.getId();
+    } else if (
+      getNodeService().getType(nodeRef).equals(ForumModel.TYPE_POST) &&
+      getNodeService().hasAspect(nodeRef, CircabcModel.ASPECT_LIBRARY)
+    ) {
+      NodeRef topicRef = getNodeService()
+        .getPrimaryParent(nodeRef)
+        .getParentRef();
+      NodeRef discussionRef = getNodeService()
+        .getPrimaryParent(topicRef)
+        .getParentRef();
+      url =
+        url +
+        "/" +
+        getNodeService()
+          .getPrimaryParent(discussionRef)
+          .getParentRef()
+          .getId() +
+        "/details";
+    } else if (
+      getNodeService().getType(nodeRef).equals(ForumModel.TYPE_TOPIC) &&
+      getNodeService().hasAspect(nodeRef, CircabcModel.ASPECT_LIBRARY)
+    ) {
+      NodeRef discussionRef = getNodeService()
+        .getPrimaryParent(nodeRef)
+        .getParentRef();
+      url =
+        url +
+        "/" +
+        getNodeService()
+          .getPrimaryParent(discussionRef)
+          .getParentRef()
+          .getId() +
+        "/details";
     }
 
-    private NodeRef findInterestGroupRoot(NodeRef nodeRef) {
-        NodeRef parent = null;
+    return url;
+  }
 
-        if (getNodeService().hasAspect(nodeRef, CircabcModel.ASPECT_NEWSGROUP)
-                || getNodeService().hasAspect(nodeRef, CircabcModel.ASPECT_LIBRARY)) {
-            parent = getNodeService().getPrimaryParent(nodeRef).getParentRef();
-            while (!getNodeService().hasAspect(parent, CircabcModel.ASPECT_IGROOT)) {
-                parent = getNodeService().getPrimaryParent(parent).getParentRef();
-            }
-        }
+  private NodeRef findInterestGroupRoot(NodeRef nodeRef) {
+    NodeRef parent = null;
 
-        return parent;
+    if (
+      getNodeService().hasAspect(nodeRef, CircabcModel.ASPECT_NEWSGROUP) ||
+      getNodeService().hasAspect(nodeRef, CircabcModel.ASPECT_LIBRARY)
+    ) {
+      parent = getNodeService().getPrimaryParent(nodeRef).getParentRef();
+      while (!getNodeService().hasAspect(parent, CircabcModel.ASPECT_IGROOT)) {
+        parent = getNodeService().getPrimaryParent(parent).getParentRef();
+      }
     }
+
+    return parent;
+  }
 }

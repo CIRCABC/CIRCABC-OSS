@@ -25,21 +25,19 @@ import org.alfresco.web.bean.repository.Node;
 
 public class CircabcStartWorkflowEvaluator extends StartWorkflowEvaluator {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 5179990104679111774L;
+  /**
+   *
+   */
+  private static final long serialVersionUID = 5179990104679111774L;
 
-
-    public boolean evaluate(Node node) {
-
-        boolean result = super.evaluate(node);
-        if (result) {
-            IgServicesAdminEvaluator igServicesAdminEvaluator = new IgServicesAdminEvaluator();
-            result = igServicesAdminEvaluator.evaluate(node);
-        }
-
-        return result;
+  public boolean evaluate(Node node) {
+    boolean result = super.evaluate(node);
+    if (result) {
+      IgServicesAdminEvaluator igServicesAdminEvaluator =
+        new IgServicesAdminEvaluator();
+      result = igServicesAdminEvaluator.evaluate(node);
     }
 
+    return result;
+  }
 }

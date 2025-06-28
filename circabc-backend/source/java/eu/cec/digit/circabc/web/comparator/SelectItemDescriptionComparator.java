@@ -20,29 +20,36 @@
  ******************************************************************************/
 package eu.cec.digit.circabc.web.comparator;
 
-import javax.faces.model.SelectItem;
 import java.io.Serializable;
 import java.util.Comparator;
+import javax.faces.model.SelectItem;
 
-public class SelectItemDescriptionComparator implements Comparator<SelectItem>, Serializable {
+public class SelectItemDescriptionComparator
+  implements Comparator<SelectItem>, Serializable {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = -4086294908149657622L;
+  /**
+   *
+   */
+  private static final long serialVersionUID = -4086294908149657622L;
 
-    @Override
-    public int compare(SelectItem selectItem1, SelectItem selectItem2) {
-
-        if ((selectItem1.getDescription() != null) && selectItem2.getDescription() != null) {
-            return selectItem1.getDescription().compareTo(selectItem2.getDescription());
-        } else if ((selectItem1.getDescription() == null) && selectItem2.getDescription() == null) {
-            return 0;
-        } else if ((selectItem1.getDescription() == null)) {
-            return -1;
-        } else {
-            return 1;
-        }
+  @Override
+  public int compare(SelectItem selectItem1, SelectItem selectItem2) {
+    if (
+      (selectItem1.getDescription() != null) &&
+      selectItem2.getDescription() != null
+    ) {
+      return selectItem1
+        .getDescription()
+        .compareTo(selectItem2.getDescription());
+    } else if (
+      (selectItem1.getDescription() == null) &&
+      selectItem2.getDescription() == null
+    ) {
+      return 0;
+    } else if ((selectItem1.getDescription() == null)) {
+      return -1;
+    } else {
+      return 1;
     }
-
+  }
 }

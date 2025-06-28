@@ -18,48 +18,60 @@ package eu.cec.digit.circabc.service.compress;
 
 import eu.cec.digit.circabc.service.bulk.indexes.IndexRecord;
 import eu.cec.digit.circabc.service.bulk.indexes.message.ValidationMessage;
-import org.alfresco.service.cmr.repository.NodeRef;
-
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import org.alfresco.service.cmr.repository.NodeRef;
 
 public interface ZipService {
+  boolean extract(
+    final File compressedFile,
+    final String fileName,
+    final File outputFile,
+    final List<ValidationMessage> messages
+  );
 
-    boolean extract(
-            final File compressedFile,
-            final String fileName,
-            final File outputFile,
-            final List<ValidationMessage> messages);
+  Map<String, NodeRef> extract(
+    final NodeRef libraryNodeRef,
+    final NodeRef destinationNodeRef,
+    final File compressedFile,
+    final List<IndexRecord> indexRecords,
+    final List<ValidationMessage> messages
+  );
 
-    Map<String, NodeRef> extract(
-            final NodeRef libraryNodeRef,
-            final NodeRef destinationNodeRef,
-            final File compressedFile,
-            final List<IndexRecord> indexRecords,
-            final List<ValidationMessage> messages);
+  Map<String, NodeRef> extract(
+    final NodeRef libraryNodeRef,
+    final NodeRef destinationNodeRef,
+    final File compressedFile,
+    final List<String> excludedFileName,
+    final List<IndexRecord> indexRecords,
+    final List<ValidationMessage> messages
+  );
 
-    Map<String, NodeRef> extract(
-            final NodeRef libraryNodeRef,
-            final NodeRef destinationNodeRef,
-            final File compressedFile,
-            final List<String> excludedFileName,
-            final List<IndexRecord> indexRecords,
-            final List<ValidationMessage> messages);
+  List<CompressedEntry> getCompressedEntries(
+    final File compressedFile,
+    final List<ValidationMessage> messages
+  );
 
-    List<CompressedEntry> getCompressedEntries(
-            final File compressedFile, final List<ValidationMessage> messages);
+  void addingFileIntoArchive(final File newFile, final File compressedFile);
 
-    void addingFileIntoArchive(final File newFile, final File compressedFile);
+  void addingFilesIntoArchive(
+    final List<File> newFiles,
+    final File compressedFile
+  );
 
-    void addingFilesIntoArchive(final List<File> newFiles, final File compressedFile);
+  void addingFileIntoArchive(final NodeRef nodeRef, final File compressedFile);
 
-    void addingFileIntoArchive(final NodeRef nodeRef, final File compressedFile);
+  void addingFileIntoArchive(
+    final List<NodeRef> nodeRefs,
+    final File compressedFile
+  );
 
-    void addingFileIntoArchive(final List<NodeRef> nodeRefs, final File compressedFile);
+  void addingFileIntoArchive(
+    final List<NodeRef> nodeRefs,
+    final File compressedFile,
+    final File indexFile
+  );
 
-    void addingFileIntoArchive(
-            final List<NodeRef> nodeRefs, final File compressedFile, final File indexFile);
-
-    String getRelativeLibraryPath(final NodeRef nodeRef);
+  String getRelativeLibraryPath(final NodeRef nodeRef);
 }

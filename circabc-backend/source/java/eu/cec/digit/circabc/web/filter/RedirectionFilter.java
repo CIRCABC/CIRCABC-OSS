@@ -20,14 +20,12 @@
  ******************************************************************************/
 package eu.cec.digit.circabc.web.filter;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.io.IOException;
-
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Handle redirection to the correct url for the current context.
@@ -36,54 +34,66 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class RedirectionFilter implements Filter {
 
-    private static final Log logger = LogFactory.getLog(RedirectionFilter.class);
+  private static final Log logger = LogFactory.getLog(RedirectionFilter.class);
 
-    @Override
-    public void destroy() {
-        if (logger.isInfoEnabled()) {
-            logger.info("destroy");
-        }
+  private boolean enabled = true;
+
+  @Override
+  public void destroy() {
+    if (logger.isInfoEnabled()) {
+      logger.info("destroy");
+    }
+  }
+
+  @Override
+  public void doFilter(
+    ServletRequest req,
+    ServletResponse res,
+    FilterChain chain
+  ) throws IOException, ServletException {
+    HttpServletRequest httpReq = (HttpServletRequest) req;
+    HttpServletResponse httpRes = (HttpServletResponse) res;
+    String requestURI = httpReq.getRequestURI();
+
+    if (logger.isInfoEnabled()) {
+      logger.info("filtering " + requestURI);
     }
 
-    @Override
-    public void doFilter(ServletRequest req, ServletResponse res,
-            FilterChain chain)
-            throws IOException, ServletException {
-
-        HttpServletRequest httpReq = (HttpServletRequest) req;
-        HttpServletResponse httpRes = (HttpServletResponse) res;
-
-        if (logger.isInfoEnabled()) {
-            logger.info("filtering " + httpReq.getRequestURI());
-        }
-        String requestURI = httpReq.getRequestURI();
-
-        if (requestURI.startsWith("/faces/jsp/extension/session_expired.jsp")
-                || requestURI.startsWith("/faces/jsp/extension/wai/ecas/ecaslogin.jsp")) {
-            chain.doFilter(req, res);
-        } else if (requestURI.startsWith("/faces/jsp/extension/")) {
-            httpRes.sendRedirect(httpReq.getContextPath() + "/ui/index.html");
-        } else if (requestURI.startsWith("/w/browse/")) {
-            httpRes.sendRedirect(
-                    httpReq.getContextPath() + "/ui/w/browse/" + requestURI.replaceFirst("/w/browse/", ""));
-        } else if (requestURI.startsWith("/d/a/") || requestURI.startsWith("/d/d/")) {
-            String[] path = requestURI.split("/");
-            if (path.length > 5) {
-                httpRes.sendRedirect(httpReq.getContextPath() + "/ui/w/browse/" + path[5]
-                        + (requestURI.startsWith("/d/d/") ? "?download=true" : ""));
-            }
-        } else {
-            chain.doFilter(req, res);
-        }
-
+    if (!this.enabled) {
+      chain.doFilter(req, res);
+      return;
     }
 
-    @Override
-    public void init(FilterConfig config) throws ServletException {
-        if (logger.isInfoEnabled()) {
-            logger.info("init");
-        }
-
+    if (
+      requestURI.startsWith("/faces/jsp/extension/session_expired.jsp") ||
+      requestURI.startsWith("/faces/jsp/extension/wai/ecas/ecaslogin.jsp") ||
+      requestURI.startsWith("/faces/jsp/extension/wai/login.jsp") ||
+      requestURI.startsWith("/faces/jsp/extension/wai/error/error-wai.jsp")
+    ) {
+      chain.doFilter(req, res);
+    } else if (requestURI.startsWith("/faces/jsp/extension/")) {
+      httpRes.sendRedirect(httpReq.getContextPath() + "/ui/index.html");
+    } else if (requestURI.startsWith("/w/browse/")) {
+      httpRes.sendRedirect(
+        httpReq.getContextPath() +
+        "/ui/w/browse/" +
+        requestURI.replaceFirst("/w/browse/", "")
+      );
+    } else {
+      chain.doFilter(req, res);
     }
+  }
 
+  @Override
+  public void init(FilterConfig config) throws ServletException {
+    if (logger.isInfoEnabled()) {
+      logger.info("init");
+    }
+    String enabledParameter = config.getInitParameter("enabled");
+    if (enabledParameter != null) {
+      if (enabledParameter.equals("false")) {
+        this.enabled = false;
+      }
+    }
+  }
 }

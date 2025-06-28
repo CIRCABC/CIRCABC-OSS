@@ -1,56 +1,65 @@
 import {
   Component,
-  EventEmitter,
   Input,
   OnChanges,
   OnInit,
-  Output,
   SimpleChanges,
+  output,
+  input,
 } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
   FormGroup,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
   ActionType,
 } from 'app/action-result';
 import { Node as ModelNode, TopicService } from 'app/core/generated/circabc';
-import { ValidationService } from 'app/core/validation.service';
+import { nameValidator } from 'app/core/validation.service';
+import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
+import { ModalComponent } from 'app/shared/modal/modal.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-edit-topic',
   templateUrl: './edit-topic.component.html',
   preserveWhitespaces: true,
+  imports: [
+    ModalComponent,
+    ReactiveFormsModule,
+    ControlMessageComponent,
+    TranslocoModule,
+  ],
 })
 export class EditTopicComponent implements OnInit, OnChanges {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   showModal = false;
-  @Input()
-  topic: ModelNode | undefined;
-  @Output()
-  readonly modalHide = new EventEmitter<ActionEmitterResult>();
+  readonly topic = input<ModelNode>();
+  readonly modalHide = output<ActionEmitterResult>();
 
   public updating = false;
   public editTopicForm!: FormGroup;
 
-  constructor(private fb: FormBuilder, private topicService: TopicService) {}
+  constructor(
+    private fb: FormBuilder,
+    private topicService: TopicService
+  ) {}
 
   ngOnInit(): void {
     this.editTopicForm = this.fb.group(
       {
         name: [
           '',
-          [
-            Validators.required,
-            ValidationService.nameValidator,
-            Validators.maxLength(50),
-          ],
+          [Validators.required, nameValidator, Validators.maxLength(50)],
         ],
       },
       {
@@ -85,14 +94,13 @@ export class EditTopicComponent implements OnInit, OnChanges {
     res.type = ActionType.EDIT_TOPIC;
 
     try {
-      if (this.topic && this.topic.id) {
-        this.topic.name = this.editTopicForm.value.name;
-        await firstValueFrom(
-          this.topicService.putTopic(this.topic.id, this.topic)
-        );
+      const topic = this.topic();
+      if (topic?.id) {
+        topic.name = this.editTopicForm.value.name;
+        await firstValueFrom(this.topicService.putTopic(topic.id, topic));
         res.result = ActionResult.SUCCEED;
       }
-    } catch (error) {
+    } catch (_error) {
       res.result = ActionResult.FAILED;
     }
 

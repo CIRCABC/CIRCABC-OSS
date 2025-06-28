@@ -16,7 +16,7 @@
         <description>Alfresco group name</description>
       </arg>
     </args>
-  <format default="json"/>
+  <format default="json" />
   <authentication>user</authentication>
   <transaction>required</transaction>
 </webscript>

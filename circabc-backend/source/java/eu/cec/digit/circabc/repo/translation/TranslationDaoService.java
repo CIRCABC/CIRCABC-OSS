@@ -20,22 +20,29 @@ import java.util.Date;
 import java.util.List;
 
 public interface TranslationDaoService {
+  void saveSuccessResponse(
+    String requestId,
+    String targetLanguage,
+    String deliveryUrl,
+    String translatedText
+  );
 
-    void saveSuccessResponse(
-            String requestId, String targetLanguage, String deliveryUrl, String translatedText);
+  void saveErrorResponse(
+    String requestId,
+    String targetLanguage,
+    String errorCode,
+    String errorMessage
+  );
 
-    void saveErrorResponse(
-            String requestId, String targetLanguage, String errorCode, String errorMessage);
+  void saveRequest(Request request);
 
-    void saveRequest(Request request);
+  void markAsProccesed(String requestId, String targetLanguage);
 
-    void markAsProccesed(String requestId, String targetLanguage);
+  void markAsNotified(String requestId);
 
-    void markAsNotified(String requestId);
+  int getCountOfErrorTranslation(String requestId);
 
-    int getCountOfErrorTranslation(String requestId);
+  List<SearchResult> getTranslationsToProcess(Date from);
 
-    List<SearchResult> getTranslationsToProcess(Date from);
-
-    List<SearchResultNotify> getUserToNotify(Date from);
+  List<SearchResultNotify> getUserToNotify(Date from);
 }

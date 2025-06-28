@@ -1,8 +1,9 @@
 <webscript>
   <shortname>GROUP directory admin SERVICE GUARD</shortname>
-  <description>return if the access is granted to the current authority user</description>
+  <description
+  >return if the access is granted to the current authority user</description>
   <url>/circabc/guards/group/{id}/service/members/admin</url>
-  <format default="json"/>
+  <format default="json" />
   <authentication>user</authentication>
   <transaction>required</transaction>
 </webscript>

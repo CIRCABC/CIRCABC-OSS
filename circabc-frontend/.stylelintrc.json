@@ -1,6 +1,8 @@
 {
   "extends": "stylelint-config-standard",
   "rules": {
+    "media-query-no-invalid": null,
+    "comment-empty-line-before":null,
     "color-function-notation": "modern",
     "alpha-value-notation": "number",
     "shorthand-property-no-redundant-values": true,
@@ -14,9 +16,9 @@
     "selector-class-pattern": null,
     "property-no-vendor-prefix": null,
     "declaration-block-no-redundant-longhand-properties": null,
-    "string-quotes": "single",
+    "declaration-property-value-no-unknown": null,
+    "media-feature-range-notation": null,
     "no-descending-specificity": null,
-    "declaration-colon-newline-after": null,
     "function-name-case": [
       "lower",
       { "ignoreFunctions": ["DXImageTransform.Microsoft.gradient"] }

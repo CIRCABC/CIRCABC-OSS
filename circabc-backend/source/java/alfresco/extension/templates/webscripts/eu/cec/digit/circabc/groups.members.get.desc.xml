@@ -2,7 +2,7 @@
   <shortname>Get the members of a IG</shortname>
   <description>Get the members of a IG</description>
     <url>/circabc/groups/{igId}/members</url>
-  <format default="json"/>
+  <format default="json" />
   <authentication>guest</authentication>
   <transaction>required</transaction>
 </webscript>

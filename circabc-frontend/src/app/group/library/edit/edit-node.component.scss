@@ -6,7 +6,7 @@
   min-height: 39px;
 }
 
-::ng-deep mat-slide-toggle .mat-slide-toggle-label {
+::ng-deep mat-slide-toggle .mat-mdc-slide-toggle-label {
   width: auto;
   padding: 0 10px;
 }
@@ -15,4 +15,14 @@
   ::ng-deep .p-calendar-w-btn .p-inputtext {
     border-block-color: red;
   }
+}
+
+.notification-box {
+  display: flex;
+  align-items: center;
+}
+
+.label-calendar-container label,
+.label-calendar-container p-calendar {
+  display: inline-block;
 }

@@ -1,5 +1,6 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input, output, input, computed } from '@angular/core';
 
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
@@ -10,36 +11,45 @@ import {
   DynamicPropertyDefinition,
 } from 'app/core/generated/circabc';
 import { TitleTag } from 'app/group/dynamic-properties/title/title';
+import { TitleTagComponent } from 'app/group/dynamic-properties/title/title-tag.component';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-dynamic-property-delete',
   templateUrl: './dynamic-property-delete.component.html',
   preserveWhitespaces: true,
+  imports: [TitleTagComponent, SpinnerComponent, TranslocoModule],
 })
 export class DynamicPropertyDeleteComponent {
-  @Input()
-  property: DynamicPropertyDefinition | undefined;
-  @Output()
-  readonly modalHide = new EventEmitter<ActionEmitterResult>();
+  readonly property = input<DynamicPropertyDefinition>();
+  readonly modalHide = output<ActionEmitterResult>();
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   showModal = false;
   public deleting = false;
 
   constructor(private dynamicPropertiesService: DynamicPropertiesService) {}
 
-  public getTitleAsArray(): TitleTag[] {
+  // Use computed signal to memoize the title array
+  readonly titleAsArray = computed(() => {
     const result: TitleTag[] = [];
+    const property = this.property();
 
-    if (this.property) {
-      for (const key of Object.keys(this.property.title)) {
-        if (this.property.title) {
-          const tag: TitleTag = { lang: key, value: this.property.title[key] };
+    if (property) {
+      for (const key of Object.keys(property.title)) {
+        if (property.title) {
+          const tag: TitleTag = { lang: key, value: property.title[key] };
           result.push(tag);
         }
       }
     }
     return result;
+  });
+
+  public getTitleAsArray(): TitleTag[] {
+    return this.titleAsArray();
   }
 
   public async delete() {
@@ -49,10 +59,11 @@ export class DynamicPropertyDeleteComponent {
     result.type = ActionType.DELETE_DYNAMIC_PROPERTY;
     result.result = ActionResult.FAILED;
 
-    if (this?.property?.id) {
+    const property = this?.property();
+    if (property?.id) {
       await firstValueFrom(
         this.dynamicPropertiesService.deleteDynamicPropertyDefinition(
-          this.property.id
+          property.id
         )
       );
       result.result = ActionResult.SUCCEED;

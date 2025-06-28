@@ -1,0 +1,18 @@
+.request-container {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin: 10px 0;
+}
+
+cbc-group-request-delete-element {
+  width: 500px;
+}
+
+.dropdown-trigger {
+  padding-top: 15px;
+}
+
+mat-tab-group {
+  flex: 1;
+}

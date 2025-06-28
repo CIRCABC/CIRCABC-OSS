@@ -1,11 +1,12 @@
 import {
   Component,
-  EventEmitter,
-  Input,
   OnChanges,
-  Output,
   SimpleChange,
+  output,
+  input,
 } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   EventItemDefinition,
   EventsService,
@@ -15,11 +16,11 @@ import { LocalizationService } from 'app/core/localization.service';
 import { LoginService } from 'app/core/login.service';
 import { TimeZoneHelperService } from 'app/core/timezone-helper.service';
 import {
+  convertDate,
   eventsStartTimeComparator,
   getFullDate,
   padWithLeadingZero as padWithLeadingZeroGlobal,
   translateOccurrenceRate,
-  convertDate,
 } from 'app/core/util';
 import { firstValueFrom } from 'rxjs';
 interface CalendarDayType {
@@ -46,28 +47,20 @@ interface ViewRowElement {
 @Component({
   selector: 'cbc-week',
   templateUrl: './week.component.html',
-  styleUrls: ['./week.component.scss'],
+  styleUrl: './week.component.scss',
   preserveWhitespaces: true,
+  imports: [RouterLink, TranslocoModule],
 })
 export class WeekComponent implements OnChanges {
-  @Input()
-  public date!: Date;
-  @Input()
-  public id!: string;
-  @Input()
-  public meMode = false;
+  public readonly date = input.required<Date>();
+  public readonly id = input<string>();
+  public readonly meMode = input(false);
   // property used to fire the ngOnChanges event when toggled for redisplay (new event/meeting has been added)
-  // property used to fire the ngOnChanges event when toggled for redisplay (new event/meeting has been added)
-  @Input()
-  public redisplay!: boolean;
-  @Input()
-  public displayFromHour!: number;
-  @Input()
-  public displayToHour!: number;
-  @Input()
-  public workWeek!: boolean;
-  @Output()
-  public readonly processingEventEmitter = new EventEmitter<string>();
+  public readonly redisplay = input<boolean>();
+  public readonly displayFromHour = input.required<number>();
+  public readonly displayToHour = input.required<number>();
+  public readonly workWeek = input.required<boolean>();
+  public readonly processingEventEmitter = output<string>();
 
   private firstOfWeek!: Date;
   private lastOfWeek!: Date;
@@ -98,19 +91,18 @@ export class WeekComponent implements OnChanges {
 
   private async initDays() {
     // monday
-    this.firstOfWeek = new Date(this.date.getTime());
-    this.firstOfWeek.setDate(
-      this.firstOfWeek.getDate() - this.date.getDay() + 1
-    );
+    this.firstOfWeek = new Date(this.date().getTime());
+    const date = this.date();
+    this.firstOfWeek.setDate(this.firstOfWeek.getDate() - date.getDay() + 1);
     // sunday
-    this.lastOfWeek = new Date(this.date.getTime());
+    this.lastOfWeek = new Date(date.getTime());
     this.lastOfWeek.setDate(
-      this.lastOfWeek.getDate() + (6 - this.date.getDay()) + 1
+      this.lastOfWeek.getDate() + (6 - date.getDay()) + 1
     );
     // friday
-    this.lastOfWorkWeek = new Date(this.date.getTime());
+    this.lastOfWorkWeek = new Date(date.getTime());
     this.lastOfWorkWeek.setDate(
-      this.lastOfWeek.getDate() + (6 - this.date.getDay()) - 1
+      this.lastOfWeek.getDate() + (6 - date.getDay()) - 1
     );
 
     // get the day numbers of the week
@@ -151,7 +143,7 @@ export class WeekComponent implements OnChanges {
   private async getWeeklyEvents() {
     let events: EventItemDefinition[] = [];
 
-    if (this.meMode) {
+    if (this.meMode()) {
       events = await firstValueFrom(
         this.userService.getUserEventsPeriod(
           this.getUserId(),
@@ -160,13 +152,16 @@ export class WeekComponent implements OnChanges {
         )
       );
     } else {
-      events = await firstValueFrom(
-        this.eventsService.getInterestGroupEvents(
-          this.id,
-          getFullDate(this.firstOfWeek),
-          getFullDate(this.lastOfWeek)
-        )
-      );
+      const id = this.id();
+      if (id !== undefined) {
+        events = await firstValueFrom(
+          this.eventsService.getInterestGroupEvents(
+            id,
+            getFullDate(this.firstOfWeek),
+            getFullDate(this.lastOfWeek)
+          )
+        );
+      }
     }
 
     events = this.timeZoneHelperService.toLocalDateTime(events);
@@ -236,23 +231,22 @@ export class WeekComponent implements OnChanges {
   }
 
   public getDisplayableDays() {
-    if (this.workWeek) {
+    if (this.workWeek()) {
       return [0, 1, 2, 3, 4];
-    } else {
-      return [0, 1, 2, 3, 4, 5, 6];
     }
+    return [0, 1, 2, 3, 4, 5, 6];
   }
 
   private getViewRows(): void {
     this.viewRowElements = [];
     const multiplicity: Map<string, number> = new Map<string, number>();
     for (
-      let hour: number = this.displayFromHour;
-      hour < this.displayToHour + 1;
+      let hour: number = this.displayFromHour();
+      hour < this.displayToHour() + 1;
       hour += 1
     ) {
       let firstPass = true;
-      const numberOfDays: number = this.workWeek ? 5 : 7;
+      const numberOfDays: number = this.workWeek() ? 5 : 7;
       for (let day = 0; day < numberOfDays; day += 1) {
         if (firstPass) {
           this.viewRowElements.push({
@@ -346,8 +340,7 @@ export class WeekComponent implements OnChanges {
   public getValueAsArray(itemValue: string | ShowableEventItemDefinition[]) {
     if (typeof itemValue === 'string') {
       return [];
-    } else {
-      return itemValue;
     }
+    return itemValue;
   }
 }

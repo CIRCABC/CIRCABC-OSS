@@ -21,14 +21,12 @@
 package eu.cec.digit.circabc.action.evaluator;
 
 import eu.cec.digit.circabc.web.Services;
+import javax.faces.context.FacesContext;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.web.bean.repository.Node;
-
-import javax.faces.context.FacesContext;
-
 
 /**
  * Evalute if the user have rights (AnyIgServicesAdminEvaluator) to change the node preferences and
@@ -37,26 +35,28 @@ import javax.faces.context.FacesContext;
  * @author yanick pignot
  **/
 
-
 public class EditNodePrefrencesEvaluator extends AnyIgServicesAdminEvaluator {
 
-    private static final long serialVersionUID = -1795135756859512399L;
+  private static final long serialVersionUID = -1795135756859512399L;
 
-    public boolean evaluate(final Node node) {
-        if (super.evaluate(node)) {
-            final QName type = node.getType();
-            if (type.equals(ContentModel.TYPE_FOLDER)) {
-                // the most of the cases
-                return true;
-            } else {
-                final FacesContext context = FacesContext.getCurrentInstance();
-                final ServiceRegistry registry = Services.getAlfrescoServiceRegistry(context);
-                final DictionaryService dictionaryService = registry.getDictionaryService();
+  public boolean evaluate(final Node node) {
+    if (super.evaluate(node)) {
+      final QName type = node.getType();
+      if (type.equals(ContentModel.TYPE_FOLDER)) {
+        // the most of the cases
+        return true;
+      } else {
+        final FacesContext context = FacesContext.getCurrentInstance();
+        final ServiceRegistry registry = Services.getAlfrescoServiceRegistry(
+          context
+        );
+        final DictionaryService dictionaryService =
+          registry.getDictionaryService();
 
-                return dictionaryService.isSubClass(type, ContentModel.TYPE_CONTAINER);
-            }
-        } else {
-            return false;
-        }
+        return dictionaryService.isSubClass(type, ContentModel.TYPE_CONTAINER);
+      }
+    } else {
+      return false;
     }
+  }
 }

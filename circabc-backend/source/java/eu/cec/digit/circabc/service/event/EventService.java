@@ -17,10 +17,9 @@
 package eu.cec.digit.circabc.service.event;
 
 import com.google.ical.values.DateValue;
+import java.util.List;
 import org.alfresco.service.Auditable;
 import org.alfresco.service.cmr.repository.NodeRef;
-
-import java.util.List;
 
 /**
  * @author Slobodan Filipovic
@@ -29,218 +28,275 @@ import java.util.List;
  */
 // @PublicService
 public interface EventService {
+  /**
+   * Create circabc event
+   *
+   * @param eventRoot root event NodeRef of interest group
+   */
+  @Auditable(
+    /* key = Auditable.Key.ARG_0, */parameters = { "eventRoot", "event" }
+  )
+  NodeRef createEvent(final NodeRef eventRoot, final Event event);
 
-    /**
-     * Create circabc event
-     *
-     * @param eventRoot root event NodeRef of interest group
-     */
-    @Auditable(/* key = Auditable.Key.ARG_0, */ parameters = {"eventRoot", "event"})
-    NodeRef createEvent(final NodeRef eventRoot, final Event event);
+  /**
+   * Crete circabc event
+   *
+   * @param eventRoot root event NodeRef of interest group
+   */
+  @Auditable(
+    /* key = Auditable.Key.ARG_0, */parameters = {
+      "eventRoot", "event", "enableMailSending",
+    }
+  )
+  NodeRef createEvent(
+    final NodeRef eventRoot,
+    final Event event,
+    final boolean enableMailSending
+  );
 
-    /**
-     * Crete circabc event
-     *
-     * @param eventRoot root event NodeRef of interest group
-     */
-    @Auditable(
-            /* key = Auditable.Key.ARG_0, */ parameters = {"eventRoot", "event", "enableMailSending"})
-    NodeRef createEvent(final NodeRef eventRoot, final Event event, final boolean enableMailSending);
+  /**
+   * Create circabc meeting
+   */
+  @Auditable(
+    /* key = Auditable.Key.ARG_0, */parameters = { "eventRoot", "meeting" }
+  )
+  NodeRef createMeeting(final NodeRef eventRoot, final Meeting meeting);
 
-    /**
-     * Create circabc meeting
-     */
-    @Auditable(/* key = Auditable.Key.ARG_0, */ parameters = {"eventRoot", "meeting"})
-    NodeRef createMeeting(final NodeRef eventRoot, final Meeting meeting);
+  /**
+   * Crete circabc meeting
+   */
+  @Auditable(
+    /* key = Auditable.Key.ARG_0, */parameters = {
+      "eventRoot", "meeting", "enableMailSending",
+    }
+  )
+  NodeRef createMeeting(
+    final NodeRef eventRoot,
+    final Meeting meeting,
+    final boolean enableMailSending
+  );
 
-    /**
-     * Crete circabc meeting
-     */
-    @Auditable(
-            /* key = Auditable.Key.ARG_0, */ parameters = {"eventRoot", "meeting", "enableMailSending"})
-    NodeRef createMeeting(
-            final NodeRef eventRoot, final Meeting meeting, final boolean enableMailSending);
+  @Auditable(/* key = Auditable.Key.ARG_0, */parameters = { "eventRoot" })
+  @Deprecated
+  void deleteAllEvents(final NodeRef eventRoot);
 
-    @Auditable(/* key = Auditable.Key.ARG_0, */ parameters = {"eventRoot"})
-    @Deprecated
-    void deleteAllEvents(final NodeRef eventRoot);
+  /**
+   * Delete appintment(event or meeting) depending of mode parameter it can delete only one , future
+   * ,or all instances of appointmen in wich appointmentNodeRef bellongs
+   */
+  @Auditable(
+    /* key = Auditable.Key.ARG_0, */parameters = {
+      "appointmentNodeRef", "mode",
+    }
+  )
+  void deleteAppointment(
+    final NodeRef appointmentNodeRef,
+    final UpdateMode mode
+  );
 
-    /**
-     * Delete appintment(event or meeting) depending of mode parameter it can delete only one , future
-     * ,or all instances of appointmen in wich appointmentNodeRef bellongs
-     */
-    @Auditable(/* key = Auditable.Key.ARG_0, */ parameters = {"appointmentNodeRef", "mode"})
-    void deleteAppointment(final NodeRef appointmentNodeRef, final UpdateMode mode);
+  /**
+   * Get all appointments for event root
+   *
+   * @param eventRoot root event NodeRef of interest group
+   */
+  @Auditable(/* key = Auditable.Key.ARG_0, */parameters = { "eventRoot" })
+  List<Appointment> getAllAppointments(final NodeRef eventRoot);
 
-    /**
-     * Get all appointments for event root
-     *
-     * @param eventRoot root event NodeRef of interest group
-     */
-    @Auditable(/* key = Auditable.Key.ARG_0, */ parameters = {"eventRoot"})
-    List<Appointment> getAllAppointments(final NodeRef eventRoot);
+  /**
+   * @param filter
+   * @return
+   */
+  @Auditable(
+    /* key = Auditable.Key.ARG_0, */parameters = {
+      "filter", "appointementNodeRef",
+    }
+  )
+  List<EventItem> getAllOccurences(final NodeRef appointementNodeRef);
 
-    /**
-     * @param filter
-     * @return
-     */
-    @Auditable(/* key = Auditable.Key.ARG_0, */ parameters = {"filter", "appointementNodeRef"})
-    List<EventItem> getAllOccurences(final NodeRef appointementNodeRef);
+  /**
+   * @param eventItemId
+   * @return
+   */
+  @Auditable(/* key = Auditable.Key.ARG_0, */parameters = { "eventItemId" })
+  Appointment getAppointmentByNodeRef(final NodeRef eventItemId);
 
-    /**
-     * @param eventItemId
-     * @return
-     */
-    @Auditable(/* key = Auditable.Key.ARG_0, */ parameters = {"eventItemId"})
-    Appointment getAppointmentByNodeRef(final NodeRef eventItemId);
+  /**
+   * @param filter
+   * @param eventRoot
+   * @param userName
+   * @param date
+   * @return
+   */
+  @Auditable(
+    /* key = Auditable.Key.ARG_0, */parameters = {
+      "filter", "eventRoot", "userName", "date",
+    }
+  )
+  List<EventItem> getAppointments(
+    final EventFilter filter,
+    final NodeRef eventRoot,
+    final String userName,
+    final DateValue date
+  );
 
-    /**
-     * @param filter
-     * @param eventRoot
-     * @param userName
-     * @param date
-     * @return
-     */
-    @Auditable(
-            /* key = Auditable.Key.ARG_0, */ parameters = {"filter", "eventRoot", "userName", "date"})
-    List<EventItem> getAppointments(
-            final EventFilter filter,
-            final NodeRef eventRoot,
-            final String userName,
-            final DateValue date);
+  /**
+   * @param eventRoot
+   * @param date
+   * @return
+   */
+  @Auditable(
+    /* key = Auditable.Key.ARG_0, */parameters = { "eventRoot", "date" }
+  )
+  List<EventItem> getCalendarEventsOnDate(
+    final NodeRef eventRoot,
+    final DateValue date
+  );
 
-    /**
-     * @param eventRoot
-     * @param date
-     * @return
-     */
-    @Auditable(/* key = Auditable.Key.ARG_0, */ parameters = {"eventRoot", "date"})
-    List<EventItem> getCalendarEventsOnDate(final NodeRef eventRoot, final DateValue date);
+  /**
+   * @param eventRoot
+   * @param from
+   * @param to
+   * @return
+   */
+  @Auditable(
+    /* key = Auditable.Key.ARG_0, */parameters = { "eventRoot", "from", "to" }
+  )
+  List<EventItem> getEventsBetweenDates(
+    final NodeRef eventRoot,
+    final DateValue from,
+    final DateValue to
+  );
 
-    /**
-     * @param eventRoot
-     * @param from
-     * @param to
-     * @return
-     */
-    @Auditable(/* key = Auditable.Key.ARG_0, */ parameters = {"eventRoot", "from", "to"})
-    List<EventItem> getEventsBetweenDates(
-            final NodeRef eventRoot, final DateValue from, final DateValue to);
+  @Auditable(
+    /* key = Auditable.Key.ARG_0, */parameters = {
+      "meetingDefinitionNodeRef", "recurrenceId",
+    }
+  )
+  NodeRef getMeetingNodeRef(
+    final NodeRef meetingDefinitionNodeRef,
+    final String recurrenceId
+  );
 
-    @Auditable(
-            /* key = Auditable.Key.ARG_0, */ parameters = {"meetingDefinitionNodeRef", "recurrenceId"})
-    NodeRef getMeetingNodeRef(final NodeRef meetingDefinitionNodeRef, final String recurrenceId);
+  /**
+   * @param eventItemId
+   * @param userName
+   * @return
+   */
+  @Auditable(
+    /* key = Auditable.Key.ARG_0, */parameters = { "eventItemId", "userName" }
+  )
+  MeetingRequestStatus getMeetingStatus(
+    final NodeRef eventItemId,
+    final String userName
+  );
 
-    /**
-     * @param eventItemId
-     * @param userName
-     * @return
-     */
-    @Auditable(/* key = Auditable.Key.ARG_0, */ parameters = {"eventItemId", "userName"})
-    MeetingRequestStatus getMeetingStatus(final NodeRef eventItemId, final String userName);
+  /**
+   * Set Meeting request status
+   */
+  @Auditable(
+    /* key = Auditable.Key.ARG_0, */parameters = {
+      "meetingNodeRef", "userName", "meetingRequestStatus", "mode",
+    }
+  )
+  void setMeetingRequestStatus(
+    final NodeRef meetingNodeRef,
+    final String userName,
+    final MeetingRequestStatus meetingRequestStatus,
+    final UpdateMode mode
+  );
 
-    /**
-     * Set Meeting request status
-     */
-    @Auditable(
-            /* key = Auditable.Key.ARG_0, */ parameters = {
-            "meetingNodeRef",
-            "userName",
-            "meetingRequestStatus",
-            "mode"
-    })
-    void setMeetingRequestStatus(
-            final NodeRef meetingNodeRef,
-            final String userName,
-            final MeetingRequestStatus meetingRequestStatus,
-            final UpdateMode mode);
+  /**
+   * @param appointmentNodeRef
+   * @param appointment
+   * @param mode
+   * @param updateInfo
+   */
+  @Auditable(
+    /* key = Auditable.Key.ARG_0, */parameters = {
+      "appointmentNodeRef", "appointment", "mode", "updateInfo",
+    }
+  )
+  void updateAppointment(
+    final NodeRef appointmentNodeRef,
+    final Appointment appointment,
+    final UpdateMode mode,
+    final AppointmentUpdateInfo updateInfo
+  );
 
-    /**
-     * @param appointmentNodeRef
-     * @param appointment
-     * @param mode
-     * @param updateInfo
-     */
-    @Auditable(
-            /* key = Auditable.Key.ARG_0, */ parameters = {
-            "appointmentNodeRef",
-            "appointment",
-            "mode",
-            "updateInfo"
-    })
-    void updateAppointment(
-            final NodeRef appointmentNodeRef,
-            final Appointment appointment,
-            final UpdateMode mode,
-            final AppointmentUpdateInfo updateInfo);
+  /**
+   * @param appointmentNodeRef
+   * @param appointment
+   * @param mode
+   * @param updateInfo
+   * @param sendNotification
+   */
+  @Auditable(
+    /* key = Auditable.Key.ARG_0, */parameters = {
+      "appointmentNodeRef",
+      "appointment",
+      "mode",
+      "updateInfo",
+      "sendNotification",
+    }
+  )
+  void updateAppointment(
+    final NodeRef appointmentNodeRef,
+    final Appointment appointment,
+    final UpdateMode mode,
+    final AppointmentUpdateInfo updateInfo,
+    final Boolean sendNotification
+  );
 
-    /**
-     * @param appointmentNodeRef
-     * @param appointment
-     * @param mode
-     * @param updateInfo
-     * @param sendNotification
-     */
-    @Auditable(
-            /* key = Auditable.Key.ARG_0, */ parameters = {
-            "appointmentNodeRef",
-            "appointment",
-            "mode",
-            "updateInfo",
-            "sendNotification"
-    })
-    void updateAppointment(
-            final NodeRef appointmentNodeRef,
-            final Appointment appointment,
-            final UpdateMode mode,
-            final AppointmentUpdateInfo updateInfo,
-            final Boolean sendNotification);
+  /**
+   * Get the event root of the given IG (given by igId)
+   */
+  @Auditable(/* key = Auditable.Key.ARG_0, */parameters = { "igId" })
+  NodeRef getIGsEventRoot(String igId);
 
-    /**
-     * Get the event root of the given IG (given by igId)
-     */
-    @Auditable(/* key = Auditable.Key.ARG_0, */ parameters = {"igId"})
-    NodeRef getIGsEventRoot(String igId);
+  /**
+   * Gets the IGRoot of a node.
+   */
+  @Auditable(/* key = Auditable.Key.ARG_0, */parameters = { "eventId" })
+  NodeRef getIGRoot(String eventId);
 
-    /**
-     * Gets the IGRoot of a node.
-     */
-    @Auditable(/* key = Auditable.Key.ARG_0, */ parameters = {"eventId"})
-    NodeRef getIGRoot(String eventId);
+  /**
+   * @param interesGroupName
+   * @param nodeRef
+   * @return
+   */
+  EventItem buildEventItem(
+    final String interestGroupName,
+    final String interestGroupTitle,
+    NodeRef nodeRef
+  );
 
-    /**
-     * @param interesGroupName
-     * @param nodeRef
-     * @return
-     */
-    EventItem buildEventItem(
-            final String interestGroupName, final String interestGroupTitle, NodeRef nodeRef);
-
-    /**
-     * @param appointmentNodeRef
-     * @param appointment
-     * @param mode
-     * @param updateInfo
-     * @param oldAppointment
-     * @param appointmentDefinition
-     * @param eventRoot
-     */
-    @Auditable(
-            /* key = Auditable.Key.ARG_0, */ parameters = {
-            "appointmentNodeRef",
-            "appointment",
-            "mode",
-            "updateInfo",
-            "oldAppointment",
-            "appointmentDefinition",
-            "eventRoot"
-    })
-    public void sendNotificationsAfterUpdate(
-            NodeRef appointmentNodeRef,
-            Appointment appointment,
-            UpdateMode mode,
-            AppointmentUpdateInfo updateInfo,
-            Appointment oldAppointment,
-            final NodeRef appointmentDefinition,
-            final NodeRef eventRoot);
+  /**
+   * @param appointmentNodeRef
+   * @param appointment
+   * @param mode
+   * @param updateInfo
+   * @param oldAppointment
+   * @param appointmentDefinition
+   * @param eventRoot
+   */
+  @Auditable(
+    /* key = Auditable.Key.ARG_0, */parameters = {
+      "appointmentNodeRef",
+      "appointment",
+      "mode",
+      "updateInfo",
+      "oldAppointment",
+      "appointmentDefinition",
+      "eventRoot",
+    }
+  )
+  public void sendNotificationsAfterUpdate(
+    NodeRef appointmentNodeRef,
+    Appointment appointment,
+    UpdateMode mode,
+    AppointmentUpdateInfo updateInfo,
+    Appointment oldAppointment,
+    final NodeRef appointmentDefinition,
+    final NodeRef eventRoot
+  );
 }

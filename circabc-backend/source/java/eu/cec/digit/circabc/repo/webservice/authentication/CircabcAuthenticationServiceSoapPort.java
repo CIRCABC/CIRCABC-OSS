@@ -31,9 +31,9 @@
 package eu.cec.digit.circabc.repo.webservice.authentication;
 
 public interface CircabcAuthenticationServiceSoapPort extends java.rmi.Remote {
-
-    public eu.cec.digit.circabc.repo.webservice.authentication.AuthenticationResult startSession(
-            java.lang.String username, java.lang.String ecasProxyTicket)
-            throws java.rmi.RemoteException,
-            eu.cec.digit.circabc.repo.webservice.authentication.AuthenticationFault;
+  public eu.cec.digit.circabc.repo.webservice.authentication.AuthenticationResult startSession(
+    java.lang.String username,
+    java.lang.String ecasProxyTicket
+  )
+    throws java.rmi.RemoteException, eu.cec.digit.circabc.repo.webservice.authentication.AuthenticationFault;
 }

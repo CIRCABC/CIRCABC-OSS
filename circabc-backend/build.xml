@@ -1,28 +1,26 @@
-<?xml version="1.0"?>
-
+<?xml version="1.0" ?>
 <!--+
     |     Copyright European Community 2006 - Licensed under the EUPL V.1.0
     |
     |  		   http://ec.europa.eu/idabc/en/document/6523
     |
     +-->
-
 <project name="Circabc Build File" default="Publish" basedir=".">
 	<property file="build.properties" />
 
 	<macrodef name="delFromZip">
-		<attribute name="zipFile"/>
-		<element   name="selectors" implicit="true" optional="true"/>
+		<attribute name="zipFile" />
+		<element name="selectors" implicit="true" optional="true" />
 		<sequential>
-			<mkdir dir="${dir.target.temp}"/>
-			<unzip dest="${dir.target.temp}" src="@{zipFile}"/>
-			<delete file="@{zipFile}" verbose="true" failonerror="true"/>
+			<mkdir dir="${dir.target.temp}" />
+			<unzip dest="${dir.target.temp}" src="@{zipFile}" />
+			<delete file="@{zipFile}" verbose="true" failonerror="true" />
 			<delete verbose="true">
 				<fileset dir="${dir.target.temp}">
-					<selectors/>
+					<selectors />
 				</fileset>
 			</delete>
-			<zip destfile="@{zipFile}" basedir="${dir.target.temp}"/>
+			<zip destfile="@{zipFile}" basedir="${dir.target.temp}" />
 			<!--
 			<delete dir="${dir.target.temp}"/>
 			-->
@@ -30,12 +28,24 @@
 	</macrodef>
 	
 	<target name="gen-circabc-web-service" depends="init">
-			<mkdir dir="${dir.src.java.generated}/eu/cec/digit/circabc/repo/webservice/authentication" />
+			<mkdir
+      dir="${dir.src.java.generated}/eu/cec/digit/circabc/repo/webservice/authentication"
+    />
 			<delete>
-				<fileset dir="${dir.src.java.generated}/eu/cec/digit/circabc/repo/webservice/authentication" />
+				<fileset
+        dir="${dir.src.java.generated}/eu/cec/digit/circabc/repo/webservice/authentication"
+      />
 			</delete>
-			<wsdl2java url="${dir.src.wsdl}/circabc-authentication-service.wsdl" output="${dir.src.java.generated}" serverSide="true" all="true">
-				<mapping namespace="http://www.cc.cec/circabc/ws/service/authentication/1.0" package="eu.cec.digit.circabc.repo.webservice.authentication" />
+			<wsdl2java
+      url="${dir.src.wsdl}/circabc-authentication-service.wsdl"
+      output="${dir.src.java.generated}"
+      serverSide="true"
+      all="true"
+    >
+				<mapping
+        namespace="http://www.cc.cec/circabc/ws/service/authentication/1.0"
+        package="eu.cec.digit.circabc.repo.webservice.authentication"
+      />
 			</wsdl2java>
 
 	</target>
@@ -51,28 +61,31 @@
 		<echo>!!!Warning!!! Do an prepare.war before if required</echo>
 		<unzip dest="${dir.env.tld.temp}">
 		    <patternset>
-	    	    <include name="**/*.tld"/>
+	    	    <include name="**/*.tld" />
 		    </patternset>
 			<fileset dir="${dir.project}">
-			        <include name="**/*.jar"/>
+			        <include name="**/*.jar" />
 			</fileset>
 		</unzip>
 		<move todir="${dir.env.tld}" overwrite="true" flatten="true">
     		<fileset dir="${dir.env.tld.temp}">
-      			<include name="**/*.tld"/>
+      			<include name="**/*.tld" />
     		</fileset>
   		</move>
 		<copy todir="${dir.env.tld}" overwrite="true" flatten="true">
 			<fileset dir="${dir.build.unwar}">
-				<include name="**/*.tld"/>
+				<include name="**/*.tld" />
 			</fileset>
 		</copy>
   		<delete dir="${dir.env.tld.temp}" />
 	</target>
 
 	<target name="init">
-		<taskdef name="wsdl2java" classpath="${axis-ant.jar};${axis.jar};${jaxrpc.jar};${commons-logging.jar};${commons-discovery.jar};${saaj.jar};${wsdl4j.jar};${activation.jar};${mail.jar}"
-		     classname="org.apache.axis.tools.ant.wsdl.Wsdl2javaAntTask">
+		<taskdef
+      name="wsdl2java"
+      classpath="${axis-ant.jar};${axis.jar};${jaxrpc.jar};${commons-logging.jar};${commons-discovery.jar};${saaj.jar};${wsdl4j.jar};${activation.jar};${mail.jar}"
+      classname="org.apache.axis.tools.ant.wsdl.Wsdl2javaAntTask"
+    >
 	</taskdef>
 		<property name="files.delete.include" value="undeploy.wsdd,*Impl.java" />
 	</target>
@@ -94,8 +107,12 @@
 	<target name="prepare.unwar" depends="clean">
 		<echo>Synchronise (to temporary folder) language pack extension</echo>
 		<mkdir dir="${dir.build.temp.webinf.classes.messages}" />
-		<copy todir="${dir.build.temp.webinf.classes.messages}" overwrite="false" verbose="true">
-			<fileset dir="${dir.lang-packs}" excludes="**/*.svn"/>
+		<copy
+      todir="${dir.build.temp.webinf.classes.messages}"
+      overwrite="false"
+      verbose="true"
+    >
+			<fileset dir="${dir.lang-packs}" excludes="**/*.svn" />
 		</copy>
 
 		<echo>Expand the archive alfresco.war...</echo>
@@ -117,13 +134,15 @@
 		<mkdir dir="${dir.alf_data}" />
 		<echo>${db.jar}</echo>
 		<!-- Intialize the DB -->
-		<sql classpath="${db.jar}"
-			 driver="${db.driver}"
-			 src="${db.init.sql}"
-			 url="${db.url}"
-			 userid="${db.user}"
-			 password="${db.password}"
-			 onerror="continue"/>
+		<sql
+      classpath="${db.jar}"
+      driver="${db.driver}"
+      src="${db.init.sql}"
+      url="${db.url}"
+      userid="${db.user}"
+      password="${db.password}"
+      onerror="continue"
+    />
 	</target>
 
 	<target name="clean-db-oracle" depends="clean-tomcat-catalina-cache-alfresco">
@@ -133,13 +152,15 @@
 			<mkdir dir="${dir.alf_data}" />
 			<echo>${db.jar}</echo>
 			<!-- Intialize the DB -->
-			<sql classpath="${db.oracle.jar}"
-				 driver="${db.oracle.driver}"
-				 src="${db.oracle.init.sql}"
-				 url="${db.oracle.url}"
-				 userid="${db.user}"
-				 password="${db.password}"
-				 onerror="continue"/>
+			<sql
+      classpath="${db.oracle.jar}"
+      driver="${db.oracle.driver}"
+      src="${db.oracle.init.sql}"
+      url="${db.oracle.url}"
+      userid="${db.user}"
+      password="${db.password}"
+      onerror="continue"
+    />
 		</target>
 
 	<target name="backup-all" depends="-backup-alf_data, -export-database-mysql">
@@ -172,7 +193,7 @@
 	<target name="-export-database-mysql">
 		<echo>Export database</echo>
 		<delete dir="${dir.backup.db}" />
-		<mkdir dir="${dir.backup.db}"/>
+		<mkdir dir="${dir.backup.db}" />
 		<exec dir="" executable="${mysqldump}">
 			<arg line="--host=${db.host}" />
 			<arg line="--port=${db.host.port}" />
@@ -188,13 +209,13 @@
 	<target name="-export-database">
 		<echo>Export database</echo>
 		<delete dir="${dir.backup.db}" />
-		<mkdir dir="${dir.backup.db}"/>
+		<mkdir dir="${dir.backup.db}" />
 		<exec dir="" executable="${oracle.backup}" inputstring="Y">
 		</exec>
 	</target>
 
 	<!-- import db mysql -->
-	<target name="-import-database-mysql" >
+	<target name="-import-database-mysql">
 		<echo>Import database</echo>
 		<exec executable="${mysql}" input="${dir.backup.db}/backup.sql">
 			<arg value="--host=${db.host}" />
@@ -206,9 +227,9 @@
 	</target>
 
 	<!-- import oracle -->
-	<target name="-import-database" >
+	<target name="-import-database">
 		<echo>Import database</echo>
-		<exec executable="${oracle.restore}" inputstring="Y" >
+		<exec executable="${oracle.restore}" inputstring="Y">
 		</exec>
 	</target>
 
@@ -232,7 +253,10 @@
 		<copy todir="${dir.webapp.alfresco}" verbose="true" overwrite="true">
 			<fileset dir="buildconfig/dia-math-dev" includes="**/*" />
 		</copy>
-		<delete file="${dir.webapp.alfresco}/WEB-INF/lib/log4j-1.2.15.jar" verbose="true" />
+		<delete
+      file="${dir.webapp.alfresco}/WEB-INF/lib/log4j-1.2.15.jar"
+      verbose="true"
+    />
 	</target>	
 	
 	<target name="Publish-math-dev" depends="Publish, copy-math-dev">
@@ -242,12 +266,12 @@
 		<echo>Synchronise (to temporary folder) Circabc classes</echo>
 		<mkdir dir="${dir.build.temp.webinf.classes}" />
 		<sync todir="${dir.build.temp.webinf.classes}" overwrite="false" verbose="true">
-			<fileset dir="${dir.build.classes}" excludes="**/*.svn"/>
+			<fileset dir="${dir.build.classes}" excludes="**/*.svn" />
 			<!--<fileset dir="${dir.build.business.classes}" excludes="**/*.svn"/>
 			<fileset dir="${dir.build.core.classes}" excludes="**/*.svn"/>-->
-			<fileset dir="${dir.build.migration}" excludes="**/*.svn"/>
-			<fileset dir="${dir.src.modulekake}" excludes="**/*.svn"/>
-			<fileset dir="${dir.build.module}" excludes="**/*.svn"/>
+			<fileset dir="${dir.build.migration}" excludes="**/*.svn" />
+			<fileset dir="${dir.src.modulekake}" excludes="**/*.svn" />
+			<fileset dir="${dir.build.module}" excludes="**/*.svn" />
 		</sync>
 	</target>
 
@@ -257,45 +281,69 @@
 		<echo>copy original version of ${original.alfresco.war})</echo>
 		<unwar src="${alfresco.war}" dest="${dir.webapp.alfresco}" />
 
-		<delete failonerror="false" file="${dir.webapp.alfresco.classes}/log4j.properties" verbose="true"/>
-		<copy file="${dir.src.native_alfresco}/custom-repository-context.xml"
-			  tofile="${dir.webapp.alfresco.classes}/alfresco/extension/custom-repository-context.xml"
-			  overwrite="true"
-			  verbose="true"/>
-		<copy file="${dir.src.java}${repository.properties}"
-			  tofile="${dir.webapp.alfresco.classes}/${custom.repository.properties}"
-			  overwrite="true"
-			  verbose="true"/>
-		<copy file="${dir.src.java}${log4j.xml}"
-			  tofile="${dir.webapp.alfresco.classes}${log4j.xml}"
-			  overwrite="true"
-			  verbose="true"/>
+		<delete
+      failonerror="false"
+      file="${dir.webapp.alfresco.classes}/log4j.properties"
+      verbose="true"
+    />
+		<copy
+      file="${dir.src.native_alfresco}/custom-repository-context.xml"
+      tofile="${dir.webapp.alfresco.classes}/alfresco/extension/custom-repository-context.xml"
+      overwrite="true"
+      verbose="true"
+    />
+		<copy
+      file="${dir.src.java}${repository.properties}"
+      tofile="${dir.webapp.alfresco.classes}/${custom.repository.properties}"
+      overwrite="true"
+      verbose="true"
+    />
+		<copy
+      file="${dir.src.java}${log4j.xml}"
+      tofile="${dir.webapp.alfresco.classes}${log4j.xml}"
+      overwrite="true"
+      verbose="true"
+    />
 	</target>
 
 	<!-- Integrate the extension to the original alfresco webapp in tomcat -->
 	<target name="Publish" depends="synchro-classes">
-		<echo>Synchronise (to tomcat) original Alfresco files + Circabc Web + temp1 </echo>
+		<echo
+    >Synchronise (to tomcat) original Alfresco files + Circabc Web + temp1 </echo>
 		<sync todir="${dir.webapp.alfresco}" overwrite="false" verbose="true">
 			<!-- Web part of SDK Project (JSP, ...) -->
-			<fileset dir="${dir.src.web}" excludes="**/*.svn"/>
-			<fileset dir="${dir.src.migration.web}" excludes="**/*.svn"/>
-			<fileset dir="${dir.build.temp}" excludes="**/*.svn
+			<fileset dir="${dir.src.web}" excludes="**/*.svn" />
+			<fileset dir="${dir.src.migration.web}" excludes="**/*.svn" />
+			<fileset
+        dir="${dir.build.temp}"
+        excludes="**/*.svn
 													   **/naming-factory.jar
-													   **/naming-resources.jar" />
+													   **/naming-resources.jar"
+      />
 			<!-- Original Alfresco files -->
-			<fileset dir="${dir.build.unwar}" excludes="**/*.svn
+			<fileset
+        dir="${dir.build.unwar}"
+        excludes="**/*.svn
 														${dir.build.temp}/**/*.*
 														${dir.build.classes}/**/*.*
 				                                        ${dir.build.module}/**/*.*
 														${dir.src.web}/**/*.*
 														${dir.build.unwar}/WEB-INF/web.xml
 														**/naming-factory.jar
-														**/naming-resources.jar"/>
+														**/naming-resources.jar"
+      />
 		</sync>
-		<delete file="${dir.webapp.alfresco}/WEB-INF/classes/log4j.properties" verbose="true" />
-		<copy todir="${dir.webapp.alfresco}/WEB-INF/lib" verbose="true" overwrite="true">
+		<delete
+      file="${dir.webapp.alfresco}/WEB-INF/classes/log4j.properties"
+      verbose="true"
+    />
+		<copy
+      todir="${dir.webapp.alfresco}/WEB-INF/lib"
+      verbose="true"
+      overwrite="true"
+    >
 			<fileset dir="${dir.circabc3rdparty}/lib">
-				<filename name="p6spy.jar"/>
+				<filename name="p6spy.jar" />
 			</fileset>
 			<fileset dir="${dir.circabc3rdparty}/lib">
 				<filename name="irontracksql.jar" />

@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-
 <!-- Copyright 2006 European Community Licensed under the EUPL, Version 1.1 
 	or – as soon they will be approved by the European Commission - subsequent 
 	versions of the EUPL (the "Licence"); You may not use this work except in 
@@ -8,9 +7,8 @@
 	under the Licence is distributed on an "AS IS" basis, WITHOUT WARRANTIES 
 	OR CONDITIONS OF ANY KIND, either express or implied. See the Licence for 
 	the specific language governing permissions and limitations under the Licence. -->
-	
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="History">
 
 	<insert id="insert_membership_history" parameterType="map">
@@ -20,8 +18,11 @@
 		jdbcType=VARCHAR}, #{state}, SYSDATE)
 	</insert>
 
-	<select id="get_membership_history_in_group" parameterType="map"
-		resultType="string">
+	<select
+    id="get_membership_history_in_group"
+    parameterType="map"
+    resultType="string"
+  >
 		SELECT profile_id
 		FROM cbc_member_history
 		WHERE user_id =
@@ -30,8 +31,7 @@
 		AND state = 0
 	</select>
 
-	<update id="update_membership_history_in_group"
-		parameterType="map">
+	<update id="update_membership_history_in_group" parameterType="map">
 		UPDATE cbc_member_history SET state = #{state},
 		state_date = SYSDATE,
 		profile_id= #{profileId, jdbcType=VARCHAR},
@@ -42,8 +42,7 @@
 		jdbcType=VARCHAR}
 	</update>
 
-	<select id="count_membership_history" parameterType="map"
-		resultType="int">
+	<select id="count_membership_history" parameterType="map" resultType="int">
 		SELECT count(*)
 		FROM cbc_member_history
 		WHERE user_id =
@@ -64,8 +63,7 @@
 		WHERE TYPE_NAME = 'notification'
 	</select>
 
-	<select id="count_property_history" parameterType="map"
-		resultType="int">
+	<select id="count_property_history" parameterType="map" resultType="int">
 		SELECT count(*)
 		FROM cbc_property_history
 		WHERE user_id =
@@ -90,7 +88,11 @@
 		jdbcType=VARCHAR} AND node_id = #{nodeId, jdbcType=VARCHAR} AND type_id = #{typeId}
 	</update>
 	
-	<select id="select_group_property_history" parameterType="map" resultType="UserPropertyHistoryDAO">
+	<select
+    id="select_group_property_history"
+    parameterType="map"
+    resultType="UserPropertyHistoryDAO"
+  >
 		SELECT
 			user_id as userId,
 			group_id as groupId,
@@ -136,7 +138,11 @@
 		SELECT count(*) FROM cbc_revocation_request
 	</select>
 	
-	<select id="select_user_revocation_request" parameterType="map" resultType="UserRevocationRequestDAO">
+	<select
+    id="select_user_revocation_request"
+    parameterType="map"
+    resultType="UserRevocationRequestDAO"
+  >
 		SELECT *
 		FROM (SELECT 
 			id,
@@ -155,7 +161,11 @@
 		</if>
 	</select>
 	
-	<select id="select_waiting_revocation_request" parameterType="map" resultType="UserRevocationRequestDAO">
+	<select
+    id="select_waiting_revocation_request"
+    parameterType="map"
+    resultType="UserRevocationRequestDAO"
+  >
 		SELECT
 			id,
 			requester,
@@ -171,7 +181,11 @@
 		AND action = 'revoke'
 	</select>
 	
-	<select id="select_waiting_clean_permission_request" parameterType="map" resultType="UserRevocationRequestDAO">
+	<select
+    id="select_waiting_clean_permission_request"
+    parameterType="map"
+    resultType="UserRevocationRequestDAO"
+  >
 		SELECT
 			id,
 			requester,
@@ -238,7 +252,11 @@
   		</if>
 	</delete>
 
-	<select id="select_member_expiration_by_group_id" parameterType="map" resultType="MemberExpirationDAO">
+	<select
+    id="select_member_expiration_by_group_id"
+    parameterType="map"
+    resultType="MemberExpirationDAO"
+  >
 		SELECT
 			group_id as groupId,	
 			profile_id as profileId,	
@@ -260,7 +278,11 @@
 		ORDER BY expiration_date ASC
 	</select>
 	
-	<select id="count_expiration_for_user_group" resultType="Integer" parameterType="map">
+	<select
+    id="count_expiration_for_user_group"
+    resultType="Integer"
+    parameterType="map"
+  >
 		SELECT
 			count(*)
 		FROM cbc_member_expiration

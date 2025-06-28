@@ -24,29 +24,28 @@ import org.alfresco.service.cmr.repository.NodeRef;
  * @author Yanick Pignot
  */
 public interface LogoDefinition {
+  /**
+   * @return the logo
+   */
+  NodeRef getReference();
 
-    /**
-     * @return the logo
-     */
-    NodeRef getReference();
+  /**
+   * @return where the logo is defined
+   */
+  NodeRef getDefinedOn();
 
-    /**
-     * @return where the logo is defined
-     */
-    NodeRef getDefinedOn();
+  /**
+   * @return the logoDescription
+   */
+  String getDescription();
 
-    /**
-     * @return the logoDescription
-     */
-    String getDescription();
+  /**
+   * @return the logoName
+   */
+  String getName();
 
-    /**
-     * @return the logoName
-     */
-    String getName();
-
-    /**
-     * @return the logoTitle
-     */
-    String getTitle();
+  /**
+   * @return the logoTitle
+   */
+  String getTitle();
 }

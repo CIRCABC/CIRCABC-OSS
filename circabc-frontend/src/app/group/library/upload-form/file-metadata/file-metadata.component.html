@@ -1,6 +1,6 @@
+@if (file) {
 <section
   class="metadata-container"
-  *ngIf="file"
   style="background-color: #fff; padding: 25px"
 >
   <form [formGroup]="fileForm">
@@ -8,6 +8,7 @@
     <div class="field">
       <div class="secondary-action">
         <a
+          tabindex="0"
           class="step-link"
           (click)="step = 'main'"
           [class.step-link-selected]="step === 'main'"
@@ -15,6 +16,7 @@
           {{ 'label.properties' | transloco }}</a
         >&nbsp;
         <a
+          tabindex="0"
           class="step-link"
           (click)="step = 'showTranslationPanel'"
           [class.step-link-selected]="step === 'showTranslationPanel'"
@@ -22,6 +24,7 @@
           {{ 'label.multilingualism' | transloco }}</a
         >&nbsp;
         <a
+          tabindex="0"
           class="step-link"
           (click)="step = 'showKeywordsPanel'"
           [class.step-link-selected]="step === 'showKeywordsPanel'"
@@ -30,6 +33,7 @@
         >
         &nbsp;
         <a
+          tabindex="0"
           class="step-link"
           (click)="step = 'showDynPropPanel'"
           [class.step-link-selected]="step === 'showDynPropPanel'"
@@ -41,18 +45,20 @@
     </div>
 
     <!-- main -->
-    <section class="main-panel flexContainer flexGap" *ngIf="step === 'main'">
+    @if (step === 'main') {
+    <section class="main-panel flexContainer flexGap">
       <div class="flexWrap flexContainer">
         <div class="flexFullRow">
           <label for="name">{{ 'label.name' | transloco }}</label>
         </div>
         <div class="flexWrap">
           <input type="text" id="name" formControlName="name" />
+          @if (fileForm) {
           <cbc-control-message
-            *ngIf="fileForm"
             [showInvalid]="true"
             [control]="nameControl"
           ></cbc-control-message>
+          }
         </div>
       </div>
 
@@ -81,11 +87,12 @@
         </div>
         <div class="flexWrap">
           <input type="text" id="author" formControlName="author" />
+          @if (fileForm) {
           <cbc-control-message
-            *ngIf="fileForm"
             [showInvalid]="true"
             [control]="authorControl"
           ></cbc-control-message>
+          }
         </div>
       </div>
 
@@ -95,11 +102,12 @@
         </div>
         <div class="flexWrap">
           <input type="text" id="reference" formControlName="reference" />
+          @if (fileForm) {
           <cbc-control-message
-            *ngIf="fileForm"
             [showInvalid]="true"
             [control]="referenceControl"
           ></cbc-control-message>
+          }
         </div>
       </div>
 
@@ -110,14 +118,17 @@
           >
         </div>
         <div class="flexWrap">
-          <p-calendar
+          <p-datepicker
             formControlName="expirationDate"
             [dateFormat]="'dd/mm/yy'"
             [placeholder]="'dd/mm/yyyy'"
             [showIcon]="true"
             [style]="{ width: '100%' }"
             [inputStyle]="{ width: '100%', height: '37px' }"
-          ></p-calendar>
+            [minDate]="minDate"
+            [keepInvalid]="true"
+            appendTo="body"
+          ></p-datepicker>
         </div>
       </div>
 
@@ -147,7 +158,7 @@
         <div class="flexWrap">
           <div class="custom-select select--form">
             <select name="" id="security" formControlName="securityRanking">
-              <option value="NORMAL"> {{ 'label.normal' | transloco }} </option>
+              <option value="NORMAL">{{ 'label.normal' | transloco }}</option>
               <option value="SENSITIVE">
                 {{ 'label.sensitive' | transloco }}
               </option>
@@ -158,9 +169,7 @@
               <option value="INTERNAL">
                 {{ 'label.internal' | transloco }}
               </option>
-              <option value="LIMITED">
-                {{ 'label.limited' | transloco }}
-              </option>
+              <option value="LIMITED">{{ 'label.limited' | transloco }}</option>
             </select>
           </div>
         </div>
@@ -173,24 +182,27 @@
         <div class="flexWrap">
           <div class="keyword-inline">
             <ul>
-              <li *ngFor="let keyword of selectedKeywords">
+              @for (keyword of selectedKeywords; track keyword.id) {
+              <li>
                 <cbc-keyword-tag
                   [keyword]="keyword"
                   [lang]="lang"
                 ></cbc-keyword-tag>
               </li>
+              }
             </ul>
           </div>
         </div>
       </div>
     </section>
+    }
 
     <!-- showKeywordsPanel -->
     <section
       class="secondary-panel"
       [class.secondary-panel--show]="step === 'showKeywordsPanel'"
     >
-      <h2> {{ 'label.keywords' | transloco }} </h2>
+      <h2>{{ 'label.keywords' | transloco }}</h2>
       <div class="secondary-container">
         <form [formGroup]="filterForm">
           <div class="field">
@@ -202,7 +214,10 @@
                 <input type="text" formControlName="keywordSearch" />
               </div>
               <div class="flex0">
-                <a (click)="resetKeywordSearch()" style="margin-left: 25px"
+                <a
+                  tabindex="0"
+                  (click)="resetKeywordSearch()"
+                  style="margin-left: 25px"
                   >{{ 'label.reset' | transloco }}</a
                 >
               </div>
@@ -211,7 +226,8 @@
         </form>
 
         <ul class="keyword-list">
-          <li *ngFor="let keyword of filteredKeywords">
+          @for (keyword of filteredKeywords; track keyword.id) {
+          <li>
             <div class="field">
               <input
                 type="checkbox"
@@ -225,6 +241,7 @@
               ></cbc-keyword-tag>
             </div>
           </li>
+          }
         </ul>
       </div>
     </section>
@@ -235,14 +252,16 @@
       [class.secondary-panel--show]="step === 'showTranslationPanel'"
     >
       <h2>{{ 'label.multilingualism' | transloco }}</h2>
-      <div class="secondary-container" *ngIf="!file.isTranslation">
+      @if (!file.isTranslation) {
+      <div class="secondary-container">
         <h2>{{ 'label.make.as.pivot' | transloco }}</h2>
-        <h3 *ngIf="file.isPivot">
-          {{ 'text.is.pivot' | transloco: { lang: file.lang } }}
-        </h3>
+        @if (file.isPivot) {
+        <h3>{{ 'text.is.pivot' | transloco: { lang: file.lang } }}</h3>
+        }
 
         <form [formGroup]="pivotForm">
-          <div class="field" *ngIf="!file.isPivot">
+          @if (!file.isPivot) {
+          <div class="field">
             <div class="flexWrap flexContainer">
               <div class="flexFullRow">
                 <label for="pivotLang"
@@ -259,30 +278,36 @@
                 </div>
               </div>
               <div class="flex0">
-                <a class="button" (click)="makeAsPivot()"
+                <a tabindex="0" class="button" (click)="makeAsPivot()"
                   >{{ 'label.ok' | transloco }}</a
                 >
               </div>
             </div>
           </div>
+          }
 
           <div class="field">
             <label for=""></label>
-            <a class="button" (click)="cancelPivot()" *ngIf="file.isPivot">
+            @if (file.isPivot) {
+            <a tabindex="0" class="button" (click)="cancelPivot()">
               {{ 'label.cancel.pivot' | transloco }}</a
             >
+            }
           </div>
         </form>
       </div>
-
-      <div class="secondary-container" *ngIf="!file.isPivot">
+      } @if (!file.isPivot) {
+      <div class="secondary-container">
         <h2>{{ 'label.make.as.translation' | transloco }}</h2>
-        <h3 *ngIf="file.isTranslation">
+        @if (file.isTranslation) {
+        <h3>
           {{ 'text.is.translation' | transloco: { lang: file.lang, of:
           file.translationOf } }}
         </h3>
+        }
         <form [formGroup]="translationForm">
-          <div class="flexWrap flexContainer" *ngIf="!file.isTranslation">
+          @if (!file.isTranslation) {
+          <div class="flexWrap flexContainer">
             <div class="flexFullRow">
               <label for="pivotId"
                 >{{ 'label.pivot.document.available' | transloco }}</label
@@ -291,22 +316,17 @@
             <div class="flexWrap">
               <div class="custom-select select--form">
                 <select name="pivotId" id="header" formControlName="pivotId">
-                  <option [value]="pivot.id" *ngFor="let pivot of pivots">
-                    {{ pivot.id }}
-                  </option>
+                  @for (pivot of pivots(); track pivot.id) {
+                  <option [value]="pivot.id">{{ pivot.id }}</option>
+                  }
                 </select>
               </div>
             </div>
           </div>
-          <div
-            class="field"
-            *ngIf="
-              translationForm.value.pivotId !== undefined &&
-              translationForm.value.pivotId !== null &&
-              translationForm.value.pivotId !== '' &&
-              !file.isTranslation
-            "
-          >
+          } @if ( translationForm.value.pivotId !== undefined &&
+          translationForm.value.pivotId !== null &&
+          translationForm.value.pivotId !== '' && !file.isTranslation ) {
+          <div class="field">
             <label for="translationLang">{{ 'label.in' | transloco }}</label>
             <div class="custom-select select--form">
               <cbc-lang-selector
@@ -315,19 +335,21 @@
                 formControlName="translationLang"
               ></cbc-lang-selector>
             </div>
-            &nbsp;<a class="button" (click)="defineAsTranslation()"
+            &nbsp;<a tabindex="0" class="button" (click)="defineAsTranslation()"
               >{{ 'label.ok' | transloco }}</a
             >
           </div>
-
-          <div class="field" *ngIf="file.isTranslation">
+          } @if (file.isTranslation) {
+          <div class="field">
             <label for="lang"></label>
-            <a class="button" (click)="cancelTranslation()"
+            <a tabindex="0" class="button" (click)="cancelTranslation()"
               >{{ 'label.cancel.translation' | transloco }}</a
             >
           </div>
+          }
         </form>
       </div>
+      }
     </section>
 
     <!-- showDynPropPanel -->
@@ -335,11 +357,11 @@
       class="secondary-panel"
       [class.secondary-panel--show]="step === 'showDynPropPanel'"
     >
-      <h2> {{ 'label.dynamic.properties' | transloco }} </h2>
+      <h2>{{ 'label.dynamic.properties' | transloco }}</h2>
       <div class="secondary-container">
+        @for (dynprop of dynamicProperties; track dynprop.id) {
         <div
           class="field field--textarea"
-          *ngFor="let dynprop of dynamicProperties"
           [class.field--with-icon]="isDateField(dynprop)"
           [class.field--date]="isDateField(dynprop)"
         >
@@ -347,21 +369,20 @@
             >{{ dynprop.title | cbcI18n }}</label
           >
 
+          @if (isTextField(dynprop)) {
           <input
-            *ngIf="isTextField(dynprop)"
             type="text"
             id="{{ 'dynAttr' + getIndex(dynprop) }}"
             formControlName="{{ 'dynAttr' + getIndex(dynprop) }}"
           />
-
-          <p-calendar
-            *ngIf="isDateField(dynprop)"
+          } @if (isDateField(dynprop)) {
+          <p-datepicker
             formControlName="{{ 'dynAttr' + getIndex(dynprop) }}"
             [dateFormat]="'dd/mm/yy'"
             [placeholder]="'dd/mm/yyyy'"
-          ></p-calendar>
-
-          <div *ngIf="isTextArea(dynprop)" class="editor-container">
+          ></p-datepicker>
+          } @if (isTextArea(dynprop)) {
+          <div class="editor-container">
             <p-editor
               id="{{ 'dynAttr' + getIndex(dynprop) }}"
               formControlName="{{ 'dynAttr' + getIndex(dynprop) }}"
@@ -375,43 +396,40 @@
               </p-header>
             </p-editor>
           </div>
-
+          } @if (isSelectionOrMultiSelection(dynprop)) {
           <div
             class="custom-select"
             [class.select--form]="!isMultiSelection(dynprop)"
             [class.select--multiple]="isMultiSelection(dynprop)"
-            *ngIf="isSelectionOrMultiSelection(dynprop)"
           >
+            @if (isMultiSelection(dynprop)) {
             <select
-              *ngIf="isMultiSelection(dynprop)"
               formControlName="{{ 'dynAttr' + getIndex(dynprop) }}"
               multiple
             >
-              <option value="" *ngIf="!isMultiSelection(dynprop)"></option>
-              <option
-                *ngFor="let opt of dynprop.possibleValues"
-                value="{{ opt }}"
-              >
-                {{ opt }}
-              </option>
+              @if (!isMultiSelection(dynprop)) {
+              <option value=""></option>
+              } @for (opt of dynprop.possibleValues; track opt) {
+              <option value="{{ opt }}">{{ opt }}</option>
+              }
             </select>
-            <select
-              *ngIf="isSelection(dynprop)"
-              formControlName="{{ 'dynAttr' + getIndex(dynprop) }}"
-            >
-              <option value="" *ngIf="!isMultiSelection(dynprop)"></option>
-              <option
-                *ngFor="let opt of dynprop.possibleValues"
-                value="{{ opt }}"
-              >
-                {{ opt }}
-              </option>
+            } @if (isSelection(dynprop)) {
+            <select formControlName="{{ 'dynAttr' + getIndex(dynprop) }}">
+              @if (!isMultiSelection(dynprop)) {
+              <option value=""></option>
+              } @for (opt of dynprop.possibleValues; track opt) {
+              <option value="{{ opt }}">{{ opt }}</option>
+              }
             </select>
+            }
           </div>
-
-          <span class="icon" *ngIf="isDateField(dynprop)"></span>
+          } @if (isDateField(dynprop)) {
+          <span class="icon"></span>
+          }
         </div>
+        }
       </div>
     </section>
   </form>
 </section>
+}

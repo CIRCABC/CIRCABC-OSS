@@ -1,7 +1,13 @@
-{{ 'admin.tab.auto.upload' | transloco | cbcSetTitle }}
-<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+{{ 'admin.tab.auto.upload' | transloco | cbcSetTitle }} @if (loading) {
+<cbc-horizontal-loader />
+}
 <div class="fluid page-container">
-  <a class="cta cta--plus" style="float: right" (click)="showAddModal = true"
+  <a
+    tabindex="0"
+    data-cy="add-configuration"
+    class="cta cta--plus"
+    style="float: right"
+    (click)="showAddModal = true"
     >{{ 'label.add.configuration' | transloco }}</a
   >
   <br />
@@ -10,19 +16,31 @@
       <cbc-pager
         [length]="totalItems"
         [pageSize]="listingOptions.limit"
-        [pageIndex]="listingOptions.page"
-        (pageChanged)="goToPage($event)"
+        [page]="listingOptions.page"
+        (pageChange)="goToPage($event)"
       ></cbc-pager>
       <cbc-pager-configuration
         (pageSizeChanged)="changeLimit($event)"
       ></cbc-pager-configuration>
       <div style="float: right; font-size: 12px">
-        <img src="img/light-bulb-3355.png" width="17" height="17" />&nbsp;{{
-        'label.enabled' | transloco }}&nbsp;&nbsp;
-        <img src="img/cancel.png" width="15" height="15" />&nbsp;{{
-        'label.disabled' | transloco }}&nbsp;&nbsp;
-        <img src="img/problem-003355.png" width="15" height="15" />&nbsp;{{
-        'label.problem.verify' | transloco }}
+        <img
+          src="img/light-bulb-3355.png"
+          width="17"
+          height="17"
+          alt="Enabled"
+        />&nbsp;{{ 'label.enabled' | transloco }}&nbsp;&nbsp;
+        <img
+          src="img/cancel.png"
+          width="15"
+          height="15"
+          alt="Disabled"
+        />&nbsp;{{ 'label.disabled' | transloco }}&nbsp;&nbsp;
+        <img
+          src="img/problem-003355.png"
+          width="15"
+          height="15"
+          alt="Problem"
+        />&nbsp;{{ 'label.problem.verify' | transloco }}
       </div>
     </header>
 
@@ -31,53 +49,49 @@
         <tr>
           <th></th>
           <th style="width: 22px"></th>
-          <th> {{ 'label.status' | transloco }} </th>
-          <th> {{ 'label.path.to.file' | transloco }} </th>
-          <th> {{ 'label.file.name' | transloco }} </th>
-          <th> {{ 'label.ftp.host' | transloco }} </th>
-          <th> {{ 'label.job.notification' | transloco }} </th>
-          <th> {{ 'label.auto.extract' | transloco }} </th>
-          <th> {{ 'label.date.restriction' | transloco }} </th>
+          <th>{{ 'label.status' | transloco }}</th>
+          <th>{{ 'label.path.to.file' | transloco }}</th>
+          <th>{{ 'label.file.name' | transloco }}</th>
+          <th>{{ 'label.ftp.host' | transloco }}</th>
+          <th>{{ 'label.job.notification' | transloco }}</th>
+          <th>{{ 'label.auto.extract' | transloco }}</th>
+          <th>{{ 'label.date.restriction' | transloco }}</th>
         </tr>
       </thead>
 
       <tbody>
-        <tr class="row empty-row" *ngIf="configurations !== undefined">
-          <td
-            style="padding-left: 22px"
-            colspan="9"
-            *ngIf="configurations.length === 0"
-          >
+        @if (configurations !== undefined) {
+        <tr class="row empty-row">
+          @if (configurations.length === 0) {
+          <td style="padding-left: 22px" colspan="9">
             {{ 'auto.upload.display.none' | transloco }}
           </td>
+          }
         </tr>
-
-        <tr
-          class="row"
-          *ngFor="let configuration of configurations; trackBy: trackById"
-        >
+        } @for (configuration of configurations; track
+        configuration.idConfiguration) {
+        <tr class="row">
           <td class="cell-left-border"></td>
           <td class="cell-checkbox"></td>
           <td class="cell-file-name" style="width: 30px">
-            <a (click)="toggleConfiguration(configuration)">
+            <a tabindex="0" (click)="toggleConfiguration(configuration)">
+              @if (configuration.status === 1) {
               <img
-                *ngIf="configuration.status === 1"
                 src="img/light-bulb-3355.png"
                 width="17"
                 height="17"
+                alt="Enabled"
               />
+              } @if (configuration.status === 0) {
+              <img src="img/cancel.png" width="15" height="15" alt="Disabled" />
+              } @if (configuration.status === 2) {
               <img
-                *ngIf="configuration.status === 0"
-                src="img/cancel.png"
-                width="15"
-                height="15"
-              />
-              <img
-                *ngIf="configuration.status === 2"
                 src="img/problem-003355.png"
                 width="15"
                 height="15"
+                alt="Problem"
               />
+              }
             </a>
             <ul class="actions" style="width: 80px">
               <li>
@@ -91,39 +105,46 @@
           <td>{{ configuration.fileId }}</td>
           <td>{{ configuration.ftpHost }}</td>
           <td>
+            @if (configuration.jobNotifications) {
             <img
               class="center-img"
-              *ngIf="configuration.jobNotifications"
               src="img/light-bulb-3355.png"
               width="17"
               height="17"
+              alt="Job notification enabled"
             />
+            } @if (!configuration.jobNotifications) {
             <img
               class="center-img"
-              *ngIf="!configuration.jobNotifications"
               src="img/cancel.png"
               width="15"
               height="15"
+              alt="Cancel"
             />
+            }
           </td>
           <td>
+            @if (configuration.autoExtract) {
             <img
               class="center-img"
-              *ngIf="configuration.autoExtract"
               src="img/light-bulb-3355.png"
               width="17"
               height="17"
+              alt="Job notification enabled"
             />
+            } @if (!configuration.autoExtract) {
             <img
               class="center-img"
-              *ngIf="!configuration.autoExtract"
               src="img/cancel.png"
               width="15"
               height="15"
+              alt="Cancel"
             />
+            }
           </td>
           <td>{{ configuration.dateRestriction }}</td>
         </tr>
+        }
       </tbody>
     </table>
 
@@ -131,8 +152,8 @@
       <cbc-pager
         [length]="totalItems"
         [pageSize]="listingOptions.limit"
-        [pageIndex]="listingOptions.page"
-        (pageChanged)="goToPage($event)"
+        [page]="listingOptions.page"
+        (pageChange)="goToPage($event)"
       ></cbc-pager>
       <cbc-pager-configuration
         (pageSizeChanged)="changeLimit($event)"

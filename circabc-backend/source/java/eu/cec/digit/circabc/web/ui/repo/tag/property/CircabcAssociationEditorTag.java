@@ -24,11 +24,10 @@ import org.alfresco.web.ui.repo.tag.property.AssociationEditorTag;
 
 public class CircabcAssociationEditorTag extends AssociationEditorTag {
 
-    /**
-     * @see javax.faces.webapp.UIComponentTag#getComponentType()
-     */
-    public String getComponentType() {
-        return "eu.cec.digit.circabc.faces.CircabcAssociationEditor";
-    }
-
+  /**
+   * @see javax.faces.webapp.UIComponentTag#getComponentType()
+   */
+  public String getComponentType() {
+    return "eu.cec.digit.circabc.faces.CircabcAssociationEditor";
+  }
 }

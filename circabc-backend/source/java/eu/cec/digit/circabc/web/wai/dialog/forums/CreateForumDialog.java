@@ -25,6 +25,10 @@ import eu.cec.digit.circabc.service.struct.ManagementService;
 import eu.cec.digit.circabc.web.Services;
 import eu.cec.digit.circabc.web.WebClientHelper;
 import eu.cec.digit.circabc.web.wai.dialog.BaseWaiDialog;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+import javax.faces.context.FacesContext;
 import org.alfresco.model.ApplicationModel;
 import org.alfresco.model.ContentModel;
 import org.alfresco.model.ForumModel;
@@ -36,12 +40,6 @@ import org.alfresco.web.ui.common.Utils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.faces.context.FacesContext;
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-
-
 /**
  * Bean implementation of the "Create Forum Dialog".
  *
@@ -49,142 +47,158 @@ import java.util.Map;
  */
 public class CreateForumDialog extends BaseWaiDialog {
 
-    public static final String BEAN_NAME = "CircabcCreateForumDialog";
-    private static final String MSG_EMPTY_NAME = "newsgroups_forum_create_forum_name_mandatory";
-    private static final long serialVersionUID = 8637487953006931563L;
-    private static final Log logger = LogFactory.getLog(CreateForumDialog.class);
-    private transient ModerationService moderationService;
-    private String name;
-    private String description;
-    private boolean moderated;
+  public static final String BEAN_NAME = "CircabcCreateForumDialog";
+  private static final String MSG_EMPTY_NAME =
+    "newsgroups_forum_create_forum_name_mandatory";
+  private static final long serialVersionUID = 8637487953006931563L;
+  private static final Log logger = LogFactory.getLog(CreateForumDialog.class);
+  private transient ModerationService moderationService;
+  private String name;
+  private String description;
+  private boolean moderated;
 
-    // ------------------------------------------------------------------------------
-    // Wizard implementation
+  // ------------------------------------------------------------------------------
+  // Wizard implementation
 
-    @Override
-    public void init(Map<String, String> parameters) {
-        super.init(parameters);
-        logRecord.setService("Newsgroup");
-        logRecord.setActivity("Create forum");
+  @Override
+  public void init(Map<String, String> parameters) {
+    super.init(parameters);
+    logRecord.setService("Newsgroup");
+    logRecord.setActivity("Create forum");
 
-        if (getActionNode() == null) {
-            throw new IllegalArgumentException("The node id parameter is mandatory");
-        }
-
-        if (parameters != null) {
-            this.name = null;
-            this.description = null;
-            this.moderated = getModerationService().isContainerModerated(getActionNode().getNodeRef());
-        }
+    if (getActionNode() == null) {
+      throw new IllegalArgumentException("The node id parameter is mandatory");
     }
 
-    @Override
-    protected String finishImpl(final FacesContext context, final String outcome) throws Exception {
-        if (name == null || name.trim().length() < 1) {
-            Utils.addErrorMessage(translate(MSG_EMPTY_NAME));
-            this.isFinished = false;
-            return null;
-        }
+    if (parameters != null) {
+      this.name = null;
+      this.description = null;
+      this.moderated = getModerationService()
+        .isContainerModerated(getActionNode().getNodeRef());
+    }
+  }
 
-        if (!isCleanHTML(name, false)) {
-
-            Utils.addErrorMessage(translate(MSG_ERR_INVALID_VALUE_FOR, translate("name")));
-            this.isFinished = false;
-            return null;
-        }
-
-        if (!isCleanHTML(description, true)) {
-
-            Utils.addErrorMessage(translate(MSG_ERR_INVALID_VALUE_FOR, translate("description")));
-            this.isFinished = false;
-            return null;
-        }
-
-        final String cleanName = WebClientHelper.toValidFileName(this.name);
-        final String title = this.name;
-
-        updateLogDocument(getActionNode().getNodeRef(), logRecord);
-
-        final FileInfo fileInfo = getFileFolderService().create(
-                getActionNode().getNodeRef(), cleanName, ForumModel.TYPE_FORUM);
-
-        final NodeRef nodeRef = fileInfo.getNodeRef();
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("Created forum node with name: " + cleanName);
-        }
-
-        // apply the uifacets aspect - icon, title and description props
-        final Map<QName, Serializable> uiFacetsProps = new HashMap<>(5);
-        uiFacetsProps.put(ApplicationModel.PROP_ICON, ManagementService.DEFAULT_FORUM_ICON_NAME);
-        uiFacetsProps.put(ContentModel.PROP_TITLE, title);
-        uiFacetsProps.put(ContentModel.PROP_DESCRIPTION, this.description);
-        this.getNodeService().addAspect(nodeRef, ApplicationModel.ASPECT_UIFACETS, uiFacetsProps);
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("Added uifacets aspect with properties: " + uiFacetsProps);
-        }
-
-        if (moderated) {
-            getModerationService().applyModeration(nodeRef, false);
-
-            if (logger.isDebugEnabled()) {
-                logger.debug("Moderation activated on forum and furtu topics.");
-            }
-        }
-
-        return outcome;
+  @Override
+  protected String finishImpl(final FacesContext context, final String outcome)
+    throws Exception {
+    if (name == null || name.trim().length() < 1) {
+      Utils.addErrorMessage(translate(MSG_EMPTY_NAME));
+      this.isFinished = false;
+      return null;
     }
 
-    @Override
-    public String getFinishButtonLabel() {
-        return Application
-                .getMessage(FacesContext.getCurrentInstance(), "newsgroups_forum_create_forum");
+    if (!isCleanHTML(name, false)) {
+      Utils.addErrorMessage(
+        translate(MSG_ERR_INVALID_VALUE_FOR, translate("name"))
+      );
+      this.isFinished = false;
+      return null;
     }
 
-    public String getBrowserTitle() {
-        return Application.getMessage(FacesContext.getCurrentInstance(),
-                "newsgroups_forum_create_forum_browser_title");
+    if (!isCleanHTML(description, true)) {
+      Utils.addErrorMessage(
+        translate(MSG_ERR_INVALID_VALUE_FOR, translate("description"))
+      );
+      this.isFinished = false;
+      return null;
     }
 
-    public String getPageIconAltText() {
-        return Application.getMessage(FacesContext.getCurrentInstance(),
-                "newsgroups_forum_create_forum_icon_tooltip");
+    final String cleanName = WebClientHelper.toValidFileName(this.name);
+    final String title = this.name;
+
+    updateLogDocument(getActionNode().getNodeRef(), logRecord);
+
+    final FileInfo fileInfo = getFileFolderService()
+      .create(getActionNode().getNodeRef(), cleanName, ForumModel.TYPE_FORUM);
+
+    final NodeRef nodeRef = fileInfo.getNodeRef();
+
+    if (logger.isDebugEnabled()) {
+      logger.debug("Created forum node with name: " + cleanName);
     }
 
-    public final boolean isModerated() {
-        return moderated;
+    // apply the uifacets aspect - icon, title and description props
+    final Map<QName, Serializable> uiFacetsProps = new HashMap<>(5);
+    uiFacetsProps.put(
+      ApplicationModel.PROP_ICON,
+      ManagementService.DEFAULT_FORUM_ICON_NAME
+    );
+    uiFacetsProps.put(ContentModel.PROP_TITLE, title);
+    uiFacetsProps.put(ContentModel.PROP_DESCRIPTION, this.description);
+    this.getNodeService()
+      .addAspect(nodeRef, ApplicationModel.ASPECT_UIFACETS, uiFacetsProps);
+
+    if (logger.isDebugEnabled()) {
+      logger.debug("Added uifacets aspect with properties: " + uiFacetsProps);
     }
 
-    public final void setModerated(boolean moderated) {
-        this.moderated = moderated;
+    if (moderated) {
+      getModerationService().applyModeration(nodeRef, false);
+
+      if (logger.isDebugEnabled()) {
+        logger.debug("Moderation activated on forum and furtu topics.");
+      }
     }
 
-    public final ModerationService getModerationService() {
-        if (moderationService == null) {
-            moderationService = Services.getCircabcServiceRegistry(FacesContext.getCurrentInstance())
-                    .getModerationService();
-        }
-        return moderationService;
-    }
+    return outcome;
+  }
 
-    public final void setModerationService(ModerationService moderationService) {
-        this.moderationService = moderationService;
-    }
+  @Override
+  public String getFinishButtonLabel() {
+    return Application.getMessage(
+      FacesContext.getCurrentInstance(),
+      "newsgroups_forum_create_forum"
+    );
+  }
 
-    public final String getDescription() {
-        return description;
-    }
+  public String getBrowserTitle() {
+    return Application.getMessage(
+      FacesContext.getCurrentInstance(),
+      "newsgroups_forum_create_forum_browser_title"
+    );
+  }
 
-    public final void setDescription(String description) {
-        this.description = description;
-    }
+  public String getPageIconAltText() {
+    return Application.getMessage(
+      FacesContext.getCurrentInstance(),
+      "newsgroups_forum_create_forum_icon_tooltip"
+    );
+  }
 
-    public final String getName() {
-        return name;
-    }
+  public final boolean isModerated() {
+    return moderated;
+  }
 
-    public final void setName(String name) {
-        this.name = name;
+  public final void setModerated(boolean moderated) {
+    this.moderated = moderated;
+  }
+
+  public final ModerationService getModerationService() {
+    if (moderationService == null) {
+      moderationService = Services.getCircabcServiceRegistry(
+        FacesContext.getCurrentInstance()
+      ).getModerationService();
     }
+    return moderationService;
+  }
+
+  public final void setModerationService(ModerationService moderationService) {
+    this.moderationService = moderationService;
+  }
+
+  public final String getDescription() {
+    return description;
+  }
+
+  public final void setDescription(String description) {
+    this.description = description;
+  }
+
+  public final String getName() {
+    return name;
+  }
+
+  public final void setName(String name) {
+    this.name = name;
+  }
 }

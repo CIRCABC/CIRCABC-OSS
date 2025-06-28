@@ -18,162 +18,48 @@
 package eu.cec.digit.circabc.service.statistics.ig;
 
 import eu.cec.digit.circabc.repo.log.ActivityCountDAO;
+import eu.cec.digit.circabc.repo.statistics.ig.IgStatisticsParameter;
 import eu.cec.digit.circabc.repo.statistics.ig.ServiceTreeRepresentation;
-import org.alfresco.service.cmr.repository.NodeRef;
-
-import java.io.Serializable;
 import java.util.List;
+import org.alfresco.service.cmr.repository.NodeRef;
 
 /** @author beaurpi */
 public interface IgStatisticsService {
+  IgStatisticsParameter buildStatsData(NodeRef igRoot);
 
-    void buildStatsData(NodeRef igRoot);
+  /**
+   * @param igRoot
+   * @return the title of the group.
+   */
+  String getIGTitle(NodeRef igRoot);
 
-    /**
-     * *
-     *
-     * @param igRoot
-     * @return the number of invited users in InterestGroup
-     */
-    Integer getNumberOfUsers(NodeRef igRoot);
+  /**
+   * @param igRoot
+   * @return the Tree structure of the library service
+   */
+  ServiceTreeRepresentation getLibraryStructure(NodeRef igRoot);
 
-    /**
-     * *
-     *
-     * @return the number of document stored in the library
-     */
-    Integer getNumberOfLibraryDocuments();
+  /**
+   * *
+   *
+   * @param igRoot
+   * @return the Tree structure of the information service
+   */
+  ServiceTreeRepresentation getInformationStructure(NodeRef igRoot);
 
-    /** @return the number of versions of documents */
-    Integer getNumberOfVersions();
+  /**
+   * *
+   *
+   * @param currentNode
+   * @return the Tree structure of the newsgroup service
+   */
+  ServiceTreeRepresentation getNewsgroupsStructure(NodeRef currentNode);
 
-    /** @return the size of versions of documents */
-    Long getSizeOfVersions();
-
-    /** @return the numberOfCustomizationAndHiddenContent */
-    Integer getNumberOfCustomizationAndHiddenContent();
-
-    /** @return the sizeOfCustomizationAndHiddenContent */
-    Long getSizeOfCustomizationAndHiddenContent();
-
-    /**
-     * *
-     *
-     * @return the number of Spaces stored in the library
-     */
-    Integer getNumberOfLibrarySpaces();
-
-    /**
-     * *
-     *
-     * @return the number of document stored in the library
-     */
-    Integer getNumberOfInformationDocuments();
-
-    /**
-     * *
-     *
-     * @return the number of Spaces stored in the library
-     */
-    Integer getNumberOfInformationSpaces();
-
-    /**
-     * *
-     *
-     * @param igRoot
-     * @return the title of the group.
-     */
-    String getIGTitle(NodeRef igRoot);
-
-    /**
-     * *
-     *
-     * @param igRoot
-     * @return the created date of Interest group
-     */
-    Serializable getIGCreationDate(NodeRef igRoot);
-
-    /**
-     * *
-     *
-     * @return the number of Meeting objects in this IG
-     */
-    Integer getNumbetOfMeetings();
-
-    /**
-     * *
-     *
-     * @return the number of Event objects in this IG
-     */
-    Integer getNumbetOfEvents();
-
-    /**
-     * *
-     *
-     * @return the number of forums in this IG
-     */
-    Integer getNumberOfForums();
-
-    /**
-     * *
-     *
-     * @return the number of topics in this IG
-     */
-    Integer getNumberOfTopics();
-
-    /**
-     * *
-     *
-     * @return the number of topics in this IG
-     */
-    Integer getNumberOfPosts();
-
-    /**
-     * *
-     *
-     * @return the total size of content in Library
-     */
-    Long getContentSizeOfLibrary();
-
-    /**
-     * *
-     *
-     * @return the total size of content in Library
-     */
-    Long getContentSizeOfInformation();
-
-    /**
-     * *
-     *
-     * @param igRoot
-     * @return the Tree structure of the library service
-     */
-    ServiceTreeRepresentation getLibraryStructure(NodeRef igRoot);
-
-    /**
-     * *
-     *
-     * @param igRoot
-     * @return the Tree structure of the information service
-     */
-    ServiceTreeRepresentation getInformationStructure(NodeRef igRoot);
-
-    /**
-     * *
-     *
-     * @param currentNode
-     * @return the Tree structure of the newsgroup service
-     */
-    ServiceTreeRepresentation getNewsgroupsStructure(NodeRef currentNode);
-
-    /**
-     * * get the list from audit database
-     *
-     * @param igRoot
-     * @return
-     */
-    List<ActivityCountDAO> getListOfActivityCount(NodeRef igRoot);
-
-    /** get the deepness of the library or information service */
-    int getMaxLevel();
+  /**
+   * * get the list from audit database
+   *
+   * @param igRoot
+   * @return
+   */
+  List<ActivityCountDAO> getListOfActivityCount(NodeRef igRoot);
 }

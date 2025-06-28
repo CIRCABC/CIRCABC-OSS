@@ -22,7 +22,6 @@ package eu.cec.digit.circabc.action.evaluator;
 
 import org.alfresco.web.bean.repository.Node;
 
-
 /**
  * Evaluates whether the current user can delete or edit a topic
  *
@@ -30,9 +29,9 @@ import org.alfresco.web.bean.repository.Node;
  */
 public class DeleteAndEditTopicEvaluator extends DeleteAndEditForumEvaluator {
 
-    private static final long serialVersionUID = 6427824694092387176L;
+  private static final long serialVersionUID = 6427824694092387176L;
 
-    public boolean evaluate(final Node node) {
-        return super.evaluate(node);
-    }
+  public boolean evaluate(final Node node) {
+    return super.evaluate(node);
+  }
 }

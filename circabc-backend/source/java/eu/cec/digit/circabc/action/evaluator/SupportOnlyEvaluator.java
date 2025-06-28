@@ -23,11 +23,9 @@ package eu.cec.digit.circabc.action.evaluator;
 import eu.cec.digit.circabc.service.support.SupportService;
 import eu.cec.digit.circabc.web.Beans;
 import eu.cec.digit.circabc.web.Services;
+import javax.faces.context.FacesContext;
 import org.alfresco.web.action.evaluator.BaseActionEvaluator;
 import org.alfresco.web.bean.repository.Node;
-
-import javax.faces.context.FacesContext;
-
 
 /**
  * Due to a lack of the Alfresco security model, this evaluator tests if the current user is
@@ -37,16 +35,19 @@ import javax.faces.context.FacesContext;
  **/
 public class SupportOnlyEvaluator extends BaseActionEvaluator {
 
-    private static final long serialVersionUID = -3812188271951597814L;
+  private static final long serialVersionUID = -3812188271951597814L;
 
-    public boolean evaluate(final Node node) {
-        final SupportService supportService = Services
-                .getCircabcServiceRegistry(FacesContext.getCurrentInstance()).getSupportService();
-        final String currentUser = Beans.getWaiNavigator().getCurrentUser().getUserName();
-        if (supportService.isUserFromSupport(currentUser)) {
-            return true;
-        } else {
-            return false;
-        }
+  public boolean evaluate(final Node node) {
+    final SupportService supportService = Services.getCircabcServiceRegistry(
+      FacesContext.getCurrentInstance()
+    ).getSupportService();
+    final String currentUser = Beans.getWaiNavigator()
+      .getCurrentUser()
+      .getUserName();
+    if (supportService.isUserFromSupport(currentUser)) {
+      return true;
+    } else {
+      return false;
     }
+  }
 }

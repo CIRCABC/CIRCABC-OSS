@@ -1,42 +1,55 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, Input, OnInit, output, input } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
   FormGroup,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
   ActionType,
 } from 'app/action-result';
 import { Node as ModelNode, SpaceService } from 'app/core/generated/circabc';
-import { ValidationService } from 'app/core/validation.service';
+import { fileNameValidator } from 'app/core/validation.service';
+import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
+import { ModalComponent } from 'app/shared/modal/modal.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-add-url',
   templateUrl: './add-url.component.html',
   preserveWhitespaces: true,
+  imports: [
+    ModalComponent,
+    ReactiveFormsModule,
+    ControlMessageComponent,
+    TranslocoModule,
+  ],
 })
 export class AddUrlComponent implements OnInit {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   showModal = false;
-  @Input()
-  public parentNode!: ModelNode;
-  @Output()
-  public readonly modalHide = new EventEmitter<ActionEmitterResult>();
+  public readonly parentNode = input.required<ModelNode>();
+  public readonly modalHide = output<ActionEmitterResult>();
 
   public createUrlForm!: FormGroup;
   public processing = false;
 
-  constructor(private fb: FormBuilder, private spaceService: SpaceService) {}
+  constructor(
+    private fb: FormBuilder,
+    private spaceService: SpaceService
+  ) {}
 
   ngOnInit() {
     this.createUrlForm = this.fb.group(
       {
-        name: ['', [Validators.required, ValidationService.fileNameValidator]],
+        name: ['', [Validators.required, fileNameValidator]],
         url: ['', Validators.required],
       },
       {
@@ -47,7 +60,8 @@ export class AddUrlComponent implements OnInit {
 
   async createUrl() {
     this.processing = true;
-    if (this.parentNode.id !== undefined) {
+    const parentNode = this.parentNode();
+    if (parentNode.id !== undefined) {
       const res: ActionEmitterResult = {};
       res.type = ActionType.ADD_URL;
 
@@ -59,13 +73,11 @@ export class AddUrlComponent implements OnInit {
       };
 
       try {
-        await firstValueFrom(
-          this.spaceService.postURL(this.parentNode.id, body)
-        );
+        await firstValueFrom(this.spaceService.postURL(parentNode.id, body));
         res.result = ActionResult.SUCCEED;
         this.showModal = false;
         this.createUrlForm.reset();
-      } catch (error) {
+      } catch (_error) {
         res.result = ActionResult.FAILED;
       }
 

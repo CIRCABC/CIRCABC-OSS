@@ -1,15 +1,33 @@
 import { Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import {
+  FormArray,
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ExternalRepositoryService } from 'app/core/generated/circabc';
 import { LoginService } from 'app/core/login.service';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { firstValueFrom } from 'rxjs';
+
+import { DatePipe, NgFor } from '@angular/common';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @Component({
   selector: 'cbc-external-repository-properties',
   templateUrl: './external-repository-properties.component.html',
-  styleUrls: ['./external-repository-properties.component.scss'],
+  styleUrl: './external-repository-properties.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    ReactiveFormsModule,
+    NgFor,
+    MatSlideToggleModule,
+    SpinnerComponent,
+    DatePipe,
+    TranslocoModule,
+  ],
 })
 export class ExternalRepositoryPropertiesComponent implements OnInit {
   public igId!: string;
@@ -49,9 +67,10 @@ export class ExternalRepositoryPropertiesComponent implements OnInit {
     availableRepos.forEach((repo: string) => {
       const name = repo;
       let enabled = false;
-      let requestedOn;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let requestedOn: any;
       const externalRepo = repos.find((r) => r.name === name);
-      if (externalRepo && externalRepo.registrationDate) {
+      if (externalRepo?.registrationDate) {
         enabled = true;
         requestedOn = new Date(externalRepo.registrationDate);
       }
@@ -61,11 +80,15 @@ export class ExternalRepositoryPropertiesComponent implements OnInit {
 
   private addRepo(name: string, enabled: boolean, requestedOn?: Date) {
     const repos = this.form.controls.repos as FormArray;
+    const enabledControl = this.fb.control(enabled);
+    if (this.isExternalUser) {
+      enabledControl.disable();
+    }
     repos.push(
       this.fb.group({
         name: name,
         requestedOn: requestedOn,
-        enabled: enabled,
+        enabled: enabledControl,
       })
     );
   }
@@ -105,5 +128,10 @@ export class ExternalRepositoryPropertiesComponent implements OnInit {
 
   public async cancel() {
     await this.load();
+  }
+
+  public toggleChange(i: number) {
+    const reposFormArray = this.form.controls.repos as FormArray;
+    reposFormArray.at(i).value.enabled = !reposFormArray.at(i).value.enabled;
   }
 }

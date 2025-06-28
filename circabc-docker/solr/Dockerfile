@@ -2,7 +2,9 @@ FROM tomcat:8.5.41-jdk8
 
 
 WORKDIR /usr/local/tomcat/
-
+RUN mkdir -p /usr/local/tomcat/temp/Alfresco && \
+    chmod -R 777 /usr/local/tomcat/temp
+    
 RUN ["rm", "-fr", "/usr/local/tomcat/webapps/ROOT"]
 RUN ["rm", "-fr", "/usr/local/tomcat/webapps/examples"]
 RUN ["rm", "-fr", "/usr/local/tomcat/webapps/manager"]

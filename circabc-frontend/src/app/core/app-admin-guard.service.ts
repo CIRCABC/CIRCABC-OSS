@@ -1,39 +1,33 @@
-import { Injectable } from '@angular/core';
+import { inject } from '@angular/core';
 import {
   ActivatedRouteSnapshot,
-  CanActivate,
+  CanActivateFn,
   RouterStateSnapshot,
 } from '@angular/router';
 import { User } from 'app/core/generated/circabc';
 import { LoginService } from 'app/core/login.service';
 
-@Injectable({
-  providedIn: 'root',
-})
-export class AppAdminGuard implements CanActivate {
-  public constructor(private loginService: LoginService) {}
-  public canActivate(
-    _route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): boolean {
-    const url: string = state.url;
+export const canActivateAppAdmin: CanActivateFn = (
+  _route: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot
+) => {
+  const url: string = state.url;
 
-    return this.checkLogin(url);
-  }
+  return checkLogin(url);
+};
 
-  private checkLogin(_url: string): boolean {
-    const user: User = this.loginService.getUser();
-    if (
-      user.properties === null ||
-      user.userId === '' ||
-      user.userId === 'guest'
-    ) {
-      return false;
-    }
-    return (
-      user.properties !== undefined &&
-      (user.properties.isAdmin === 'true' ||
-        user.properties.isCircabcAdmin === 'true')
-    );
+function checkLogin(_url: string): boolean {
+  const user: User = inject(LoginService).getUser();
+  if (
+    user.properties === null ||
+    user.userId === '' ||
+    user.userId === 'guest'
+  ) {
+    return false;
   }
+  return (
+    user.properties !== undefined &&
+    (user.properties.isAdmin === 'true' ||
+      user.properties.isCircabcAdmin === 'true')
+  );
 }

@@ -34,21 +34,28 @@ import org.alfresco.web.bean.repository.Node;
  */
 public class EditInlineDocumentEvaluator extends BaseActionEvaluator {
 
-    private static final long serialVersionUID = 2888369999290163419L;
+  private static final long serialVersionUID = 2888369999290163419L;
 
-    public boolean evaluate(final Node node) {
-        if (node.hasAspect(WCMAppModel.ASPECT_FORM_INSTANCE_DATA)
-                || node.isLocked()
-                || node.hasAspect(DocumentModel.ASPECT_URLABLE)
-                || node.hasAspect(ContentModel.ASPECT_MULTILINGUAL_EMPTY_TRANSLATION)
-                || (node.hasAspect(ContentModel.ASPECT_WORKING_COPY) && !node.isWorkingCopyOwner())) {
-            return false;
-        } else {
-            return node.hasAspect(ApplicationModel.ASPECT_INLINEEDITABLE) &&
-                    node.getProperties().get(ApplicationModel.PROP_EDITINLINE.toString()) != null &&
-                    (Boolean) node.getProperties().get(ApplicationModel.PROP_EDITINLINE.toString()) == true;
-        }
-
+  public boolean evaluate(final Node node) {
+    if (
+      node.hasAspect(WCMAppModel.ASPECT_FORM_INSTANCE_DATA) ||
+      node.isLocked() ||
+      node.hasAspect(DocumentModel.ASPECT_URLABLE) ||
+      node.hasAspect(ContentModel.ASPECT_MULTILINGUAL_EMPTY_TRANSLATION) ||
+      (node.hasAspect(ContentModel.ASPECT_WORKING_COPY) &&
+        !node.isWorkingCopyOwner())
+    ) {
+      return false;
+    } else {
+      return (
+        node.hasAspect(ApplicationModel.ASPECT_INLINEEDITABLE) &&
+        node.getProperties().get(ApplicationModel.PROP_EDITINLINE.toString()) !=
+        null &&
+        (Boolean) node
+          .getProperties()
+          .get(ApplicationModel.PROP_EDITINLINE.toString()) ==
+        true
+      );
     }
-
+  }
 }

@@ -19,12 +19,10 @@
  *  permissions and limitations under the Licence.
  ******************************************************************************/
 
-
 package eu.cec.digit.circabc.web.wai.dialog.resend;
 
 import eu.cec.digit.circabc.web.app.CircabcNavigationHandler;
 import eu.cec.digit.circabc.web.wai.dialog.BaseWaiDialog;
-
 import javax.faces.context.FacesContext;
 
 /**
@@ -32,35 +30,35 @@ import javax.faces.context.FacesContext;
  */
 public class SelfResendSuccessDialog extends BaseWaiDialog {
 
-    private static final long serialVersionUID = -685695045385990641L;
+  private static final long serialVersionUID = -685695045385990641L;
 
-    public static String BEAN_NAME = "SelfResendSuccessDialog";
+  public static String BEAN_NAME = "SelfResendSuccessDialog";
 
-    public SelfResendSuccessDialog() {
-        super();
-    }
+  public SelfResendSuccessDialog() {
+    super();
+  }
 
-    @Override
-    protected String finishImpl(FacesContext context, String outcome) throws Exception {
-        return CircabcNavigationHandler.CLOSE_WAI_DIALOG_OUTCOME;
-    }
+  @Override
+  protected String finishImpl(FacesContext context, String outcome)
+    throws Exception {
+    return CircabcNavigationHandler.CLOSE_WAI_DIALOG_OUTCOME;
+  }
 
-    public String getBrowserTitle() {
-        return translate("resend_congratulation_page_title");
-    }
+  public String getBrowserTitle() {
+    return translate("resend_congratulation_page_title");
+  }
 
-    public String getPageIconAltText() {
-        return translate("resend_congratulation_page_title");
-    }
+  public String getPageIconAltText() {
+    return translate("resend_congratulation_page_title");
+  }
 
-    @Override
-    public boolean isCancelButtonVisible() {
-        return false;
-    }
+  @Override
+  public boolean isCancelButtonVisible() {
+    return false;
+  }
 
-    @Override
-    public String getFinishButtonLabel() {
-        return translate("ok");
-    }
-
+  @Override
+  public String getFinishButtonLabel() {
+    return translate("ok");
+  }
 }

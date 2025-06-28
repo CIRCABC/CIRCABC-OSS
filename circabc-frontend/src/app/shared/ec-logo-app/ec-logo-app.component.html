@@ -1,18 +1,13 @@
-<img
-  class="logo eu-logo"
-  src="img/all-ec-logo-neg/flag_yellow_low.jpg"
-  alt="eu-logo"
-/>
-<img
-  *ngIf="circabcRelease !== 'echa'"
-  class="logo app-logo"
-  src="img/all-ec-logo-neg/circabc-text-white-clean.png"
-  alt="CIRCABC"
-/>
+<div class="logo-box">
+  <img
+    class="eu-logo"
+    src="img/all-ec-logo-neg/flag_yellow_low.jpg"
+    alt="eu-logo"
+  />
 
-<img
-  *ngIf="circabcRelease === 'echa'"
-  class="logo app-logo"
-  src="img/all-ec-logo-neg/s-circabc-text-white-clean.png"
-  alt="CIRCABC"
-/>
+  <img
+    class="app-logo"
+    [src]="circabcRelease !== 'echa'? 'img/all-ec-logo-neg/circabc-text-white-clean.svg' : 'img/all-ec-logo-neg/s-circabc-text-white-clean.png'"
+    alt="CIRCABC"
+  />
+</div>

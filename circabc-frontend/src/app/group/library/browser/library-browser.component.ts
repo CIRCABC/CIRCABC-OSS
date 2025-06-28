@@ -1,10 +1,15 @@
-import { Location } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
+import { DatePipe, Location } from '@angular/common';
+import { Component, Input, OnInit, output, input, signal } from '@angular/core';
+import { NavigationEnd, Router, RouterLink } from '@angular/router';
 
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
-import { AbstractControl, FormBuilder, FormGroup } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import {
   ActionEmitterResult,
   ActionResult,
@@ -14,17 +19,17 @@ import { AresBridgeHelperService } from 'app/core/ares-bridge-helper.service';
 import { PermissionEvaluator } from 'app/core/evaluator/permission-evaluator';
 import { PermissionEvaluatorService } from 'app/core/evaluator/permission-evaluator.service';
 import {
-  ContentService,
   ColumnOptions,
   ExternalRepositoryData,
   ListingOptions,
   Node as ModelNode,
   NotificationService,
-  PreferenceConfiguration,
+  type PreferenceConfiguration,
   User,
   UserService,
 } from 'app/core/generated/circabc';
 
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { LoginService } from 'app/core/login.service';
 import { UiMessageService } from 'app/core/message/ui-message.service';
 import { SaveAsService } from 'app/core/save-as.service';
@@ -34,24 +39,66 @@ import {
   getErrorTranslation,
   getSuccessTranslation,
   isContentPreviewable,
+  isContentPreviewableFull,
 } from 'app/core/util';
 import { ClipboardService } from 'app/group/library/clipboard/clipboard.service';
+import { ContentPreviewExtendedComponent } from 'app/group/library/content-preview-ext/content-preview-ext.component';
+import { DeleteActionComponent } from 'app/group/library/delete/delete-action.component';
+import { DeleteMultipleComponent } from 'app/group/library/delete/delete-multiple.component';
+import { FavouriteSwitchComponent } from 'app/group/library/favourite-switch/favourite-switch.component';
 import { BulkDownloadPipe } from 'app/group/library/pipes/bulk-download.pipe';
+import { SnackbarComponent } from 'app/group/library/snackbar/snackbar.component';
+import { ConfirmDialogComponent } from 'app/shared/confirm-dialog/confirm-dialog.component';
+import { DataCyDirective } from 'app/shared/directives/data-cy.directive';
+import { HintComponent } from 'app/shared/hint/hint.component';
+import { ModalComponent } from 'app/shared/modal/modal.component';
+import { NumberBadgeComponent } from 'app/shared/number-badge/number-badge.component';
+import { PagerComponent } from 'app/shared/pager/pager.component';
 import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
+import { IfRolesPipe } from 'app/shared/pipes/if-roles.pipe';
+import { SizePipe } from 'app/shared/pipes/size.pipe';
+import { SaveAsComponent } from 'app/shared/save-as/save-as.component';
+import { ShareComponent } from 'app/shared/share/share.component';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
+import { UserCardComponent } from 'app/shared/user-card/user-card.component';
 import { environment } from 'environments/environment';
 import { CookieService } from 'ngx-cookie-service';
-import { debounceTime } from 'rxjs/operators';
 import { firstValueFrom } from 'rxjs';
-import { ConfirmDialogComponent } from 'app/shared/confirm-dialog/confirm-dialog.component';
-import { MatDialog } from '@angular/material/dialog';
+import { debounceTime } from 'rxjs/operators';
+import { AlfrescoService } from 'app/core/alfresco.service';
 
 @Component({
   selector: 'cbc-library-browser',
   templateUrl: './library-browser.component.html',
-  styleUrls: ['./library-browser.component.scss'],
+  styleUrl: './library-browser.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    RouterLink,
+    PagerComponent,
+    ShareComponent,
+    ReactiveFormsModule,
+    DataCyDirective,
+    NumberBadgeComponent,
+    SpinnerComponent,
+    HintComponent,
+    FavouriteSwitchComponent,
+    UserCardComponent,
+    SaveAsComponent,
+    DeleteActionComponent,
+    SnackbarComponent,
+    DeleteMultipleComponent,
+    ContentPreviewExtendedComponent,
+    ModalComponent,
+    DatePipe,
+    I18nPipe,
+    IfRolesPipe,
+    SizePipe,
+    TranslocoModule,
+    MatDialogModule,
+  ],
 })
 export class LibraryBrowserComponent implements OnInit {
+  public readonly MAX_NODES = 160;
   private listingOptions: ListingOptions = {
     page: 1,
     limit: 10,
@@ -72,36 +119,28 @@ export class LibraryBrowserComponent implements OnInit {
     securityRanking: false,
   };
 
-  @Input()
-  public contents!: SelectableNode[];
-  @Input()
-  public parent!: ModelNode;
-  @Input()
-  public preferences: PreferenceConfiguration = {
+  public readonly contents = input.required<SelectableNode[]>();
+  public readonly parent = input.required<ModelNode>();
+  public readonly preferences = input<PreferenceConfiguration>({
     library: {
       column: this.columnOptions,
       listing: this.listingOptions,
     },
-  };
-  @Input()
-  public totalItems = 25;
+    search: [],
+  });
+  public readonly totalItems = input(25);
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   treeView = false;
-  @Input()
-  restrictedMode = false;
-  @Input()
-  igId: string | undefined;
-  @Input()
-  resetPage!: boolean;
+  readonly restrictedMode = input(false);
+  readonly igId = input<string>();
+  readonly resetPage = input.required<boolean>();
 
-  @Output()
-  public readonly needRefresh = new EventEmitter<ActionEmitterResult>();
-  @Output()
-  public readonly changedPage = new EventEmitter<number>();
-  @Output()
-  public readonly changedListing = new EventEmitter<ListingOptions>();
-  @Output()
-  public readonly treeViewChange = new EventEmitter();
+  public readonly needRefresh = output<ActionEmitterResult>();
+  public readonly changedPage = output<number>();
+  public readonly changedListing = output<ListingOptions>();
+  public readonly treeViewChange = output<boolean>();
 
   public columnForm!: FormGroup;
   public selection!: SelectableNode[];
@@ -118,19 +157,10 @@ export class LibraryBrowserComponent implements OnInit {
   private currentIgId!: string;
   public processing = false;
   public bulkDownloading = false;
-  private allSelectedValue = false;
+  public allSelected = signal(false);
   public isSubscribedToNotifications!: boolean;
   private isAresBridgeEnabled = false;
-  @Output()
-  readonly allSelectedChange = new EventEmitter();
-  @Input()
-  get allSelected() {
-    return this.allSelectedValue;
-  }
-  set allSelected(value: boolean) {
-    this.allSelectedValue = value;
-    this.allSelectedChange.emit(this.allSelectedValue);
-  }
+  public acceptSncShowModal = false;
 
   public constructor(
     private router: Router,
@@ -138,7 +168,6 @@ export class LibraryBrowserComponent implements OnInit {
     private translateService: TranslocoService,
     private permEvalService: PermissionEvaluatorService,
     private clipboardService: ClipboardService,
-    private contentService: ContentService,
     private notificationService: NotificationService,
     private loginService: LoginService,
     private bulkDownloadPipe: BulkDownloadPipe,
@@ -150,7 +179,8 @@ export class LibraryBrowserComponent implements OnInit {
     private fb: FormBuilder,
     private userService: UserService,
     private aresBridgeHelperService: AresBridgeHelperService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private alfrescoService: AlfrescoService
   ) {
     // analyses which condition should make the shared space message disappear...
     this.router.events.subscribe((value) => {
@@ -176,12 +206,13 @@ export class LibraryBrowserComponent implements OnInit {
       this.user = this.loginService.getUser();
     }
 
-    if (this.preferences.library && this.preferences.library.listing) {
-      this.localListingOptions = this.preferences.library.listing;
+    const preferences = this.preferences();
+    if (preferences.library?.listing) {
+      this.localListingOptions = preferences.library.listing;
     }
 
-    if (this.preferences.library && this.preferences.library.column) {
-      this.columnForm = this.fb.group(this.preferences.library.column);
+    if (preferences.library?.column) {
+      this.columnForm = this.fb.group(preferences.library.column);
     }
 
     this.columnForm.valueChanges.pipe(debounceTime(1000)).subscribe((value) => {
@@ -190,10 +221,11 @@ export class LibraryBrowserComponent implements OnInit {
 
     this.isSubscribedToNotifications =
       await this.calculateIsSubscribedToNotifications();
-    if (this.igId) {
+    const igId = this.igId();
+    if (igId) {
       if (!this.isGuest()) {
         this.isAresBridgeEnabled =
-          await this.aresBridgeHelperService.isAresBridgeEnabled(this.igId);
+          await this.aresBridgeHelperService.isAresBridgeEnabled(igId);
       }
     }
   }
@@ -244,40 +276,40 @@ export class LibraryBrowserComponent implements OnInit {
   }
 
   public toggleSelect() {
-    if (this.contents) {
-      this.contents.forEach((content: SelectableNode) => {
-        if (!this.locked(content) && !this.workingCopy(content)) {
-          if (!this.allSelected) {
-            content.selected = true;
-          } else {
+    const contents = this.contents();
+    if (contents) {
+      contents.forEach((content: SelectableNode) => {
+        if (!(this.locked(content) || this.workingCopy(content))) {
+          if (this.allSelected()) {
             content.selected = false;
+          } else {
+            content.selected = true;
           }
         }
       });
     }
-    this.allSelected = !this.allSelected;
+    this.allSelected.set(!this.allSelected());
   }
 
   public toggleSelected(content: SelectableNode): boolean {
-    if (!this.locked(content) && !this.workingCopy(content)) {
-      this.contents.forEach((contentTmp) => {
-        const idx = this.contents.indexOf(contentTmp);
-        if (contentTmp.id === content.id) {
-          contentTmp.selected = !contentTmp.selected;
-          this.contents[idx] = contentTmp;
-        }
-      });
-
-      return true;
-    } else {
+    if (this.locked(content) || this.workingCopy(content)) {
       return false;
     }
+    this.contents().forEach((contentTmp) => {
+      const idx = this.contents().indexOf(contentTmp);
+      if (contentTmp.id === content.id) {
+        contentTmp.selected = !contentTmp.selected;
+        this.contents()[idx] = contentTmp;
+      }
+    });
+
+    return true;
   }
 
   public showDeleteAllModal() {
     this.selection = [];
 
-    this.contents.forEach((content: SelectableNode) => {
+    this.contents().forEach((content: SelectableNode) => {
       if (content.selected) {
         this.selection.push(content);
       }
@@ -317,44 +349,39 @@ export class LibraryBrowserComponent implements OnInit {
   }
 
   public isOwner(selectableNode: SelectableNode) {
-    if (this.user && this.user.userId) {
+    if (this.user?.userId) {
       return this.permEvalService.isOwner(selectableNode, this.user.userId);
-    } else {
-      return false;
     }
+    return false;
   }
 
   isFile(node: ModelNode): boolean {
     if (node.type) {
       return node.type.indexOf('folder') === -1 && !this.isLibraryLink(node);
-    } else {
-      return false;
     }
+    return false;
   }
 
   isFolder(node: ModelNode): boolean {
     if (node.type) {
       return node.type.indexOf('folder') !== -1 && !this.isLibraryLink(node);
-    } else {
-      return false;
     }
+    return false;
   }
 
   isLink(node: ModelNode): boolean {
-    if (node.properties && node.properties.mimetype && node.properties.url) {
+    if (node.properties?.mimetype && node.properties.url) {
       return node.properties.isUrl === 'true';
-    } else {
-      return false;
     }
+    return false;
   }
 
   getDestinationId(destination: string): string {
     const destinationPart = destination.split('/');
     if (destinationPart.length === 4) {
       return destinationPart[3];
-    } else {
-      return '';
     }
+    return '';
   }
 
   private isLibraryItem(
@@ -363,9 +390,8 @@ export class LibraryBrowserComponent implements OnInit {
   ): boolean {
     if (node.type) {
       return node.type.indexOf(item) !== -1;
-    } else {
-      return false;
     }
+    return false;
   }
 
   isLibraryLink(node: ModelNode): boolean {
@@ -377,33 +403,37 @@ export class LibraryBrowserComponent implements OnInit {
   }
 
   hasExpirationDate(node: ModelNode): boolean {
-    return (
-      node.properties !== undefined &&
-      node.properties.expiration_date !== undefined
-    );
+    const expirationDate = node.properties?.expiration_date;
+    const hasDate =
+      expirationDate !== undefined &&
+      expirationDate !== null &&
+      expirationDate !== 'null';
+    return hasDate;
   }
 
   removeStoredLinkNavigationInfo() {
-    localStorage.removeItem(`sharedSpaceLink-${this.parent.id}`);
+    localStorage.removeItem(`sharedSpaceLink-${this.parent().id}`);
   }
 
   isStoredInSharedLinkNavigationInfo(): boolean {
     return (
-      localStorage.getItem(`sharedSpaceLink-${this.parent.id}`) !== null &&
-      this.igId !== this.getOriginIgId()
+      localStorage.getItem(`sharedSpaceLink-${this.parent().id}`) !== null &&
+      this.igId() !== this.getOriginIgId()
     );
   }
 
   getOriginIgId(): string {
-    return JSON.parse(
-      localStorage.getItem(`sharedSpaceLink-${this.parent.id}`) as string
-    ).originIgId;
+    const item = localStorage.getItem(
+      `sharedSpaceLink-${this.parent().id}`
+    ) as string;
+    return (JSON.parse(item) as { originIgId: string }).originIgId;
   }
 
   getOriginId(): string {
-    return JSON.parse(
-      localStorage.getItem(`sharedSpaceLink-${this.parent.id}`) as string
-    ).originId;
+    const item = localStorage.getItem(
+      `sharedSpaceLink-${this.parent().id}`
+    ) as string;
+    return (JSON.parse(item) as { originId: string }).originId;
   }
 
   openSharedLinkNavigation(node: ModelNode) {
@@ -443,7 +473,7 @@ export class LibraryBrowserComponent implements OnInit {
   }
 
   public addSelectedToClipboard() {
-    this.contents.forEach((node: SelectableNode) => {
+    this.contents().forEach((node: SelectableNode) => {
       if (
         node.selected &&
         node.properties !== undefined &&
@@ -457,7 +487,7 @@ export class LibraryBrowserComponent implements OnInit {
   }
 
   public getSelectedNodes() {
-    return this.contents
+    return this.contents()
       .filter((node: SelectableNode) => node.selected)
       .map((node: SelectableNode) => node.id);
   }
@@ -471,18 +501,19 @@ export class LibraryBrowserComponent implements OnInit {
   }
 
   public async changeNotificationSubscription(value: string) {
-    if (value && value !== '' && this.parent.id) {
+    const parent = this.parent();
+    if (value && value !== '' && parent.id) {
       try {
         await firstValueFrom(
           this.notificationService.putNotificationAuthority(
-            this.parent.id,
+            parent.id,
             this.loginService.getCurrentUsername(),
             value
           )
         );
         this.isSubscribedToNotifications =
           await this.calculateIsSubscribedToNotifications();
-      } catch (error) {
+      } catch (_error) {
         const text = this.translateService.translate(
           getErrorTranslation(ActionType.CHANGE_SUBSCRIPTION)
         );
@@ -492,11 +523,31 @@ export class LibraryBrowserComponent implements OnInit {
   }
 
   public async bulkDownload() {
+    this.acceptSncShowModal = false;
+
+    if (this.getSelectedNodes().length > this.MAX_NODES) {
+      const text = this.translateService.translate(
+        'label.bulk.download.limit',
+        { limit: this.MAX_NODES }
+      );
+      this.uiMessageService.addErrorMessage(text);
+    }
     const url = this.bulkDownloadPipe.transform(this.getSelectedNodes());
     const name = 'bulk.zip';
     this.bulkDownloading = true;
     try {
       await this.saveAsService.saveUrlAsync(url, name);
+    } catch (error) {
+      if (error.name === 'HttpErrorResponse' && error.status === 507) {
+        const text = this.translateService.translate(
+          'label.bulk.download.too.big',
+          { fileSize: error?.error?.size ?? 2147479168 }
+        );
+        this.uiMessageService.addErrorMessage(text);
+      } else {
+        this.uiMessageService.addErrorMessage(error.message);
+      }
+      console.error(error);
     } finally {
       this.bulkDownloading = false;
     }
@@ -508,10 +559,11 @@ export class LibraryBrowserComponent implements OnInit {
 
   private async calculateIsSubscribedToNotifications() {
     let result = false;
-    if (this.parent.id && !this.isGuest()) {
+    const parent = this.parent();
+    if (parent.id && !this.isGuest()) {
       const isSubscribed = await firstValueFrom(
         this.notificationService.isUserSubscribed(
-          this.parent.id,
+          parent.id,
           this.loginService.getCurrentUsername()
         )
       );
@@ -521,19 +573,54 @@ export class LibraryBrowserComponent implements OnInit {
   }
 
   public isPreviewable(content: SelectableNode): boolean {
+    if (environment.useAlfrescoAPI) {
+      return isContentPreviewableFull(content);
+    }
     return isContentPreviewable(content);
   }
 
-  public previewContent(content: SelectableNode) {
+  public async previewContent(content: SelectableNode) {
     this.contentToPreview = content;
     this.dummyPreviewUrlChange = !this.dummyPreviewUrlChange;
-    this.contentURL = `${
-      environment.serverURL
-    }pdfRendition?documentId=workspace://SpacesStore/${
-      content.id
-    }&response=content&ticket=${this.loginService.getTicket()}&dummy=${
-      this.dummyPreviewUrlChange
-    }`;
+    if (environment.useAlfrescoAPI) {
+      if (!isContentPreviewable(content) && isContentPreviewableFull(content)) {
+        try {
+          const rendition = await this.alfrescoService.getRendition(
+            content.id as string,
+            'pdf'
+          );
+          if (rendition.entry.status !== 'CREATED') {
+            await this.alfrescoService.createRendition(
+              content.id as string,
+              'pdf'
+            );
+          }
+        } catch (error) {
+          this.uiMessageService.addErrorMessage(
+            this.translateService.translate('preview.messages.not.available'),
+            true
+          );
+          console.error(error);
+        }
+
+        this.contentURL = `${environment.serverURL}api/-default-/public/alfresco/versions/1/nodes/${content.id}/renditions/pdf/content?attachment=true&alf_ticket=${this.loginService.getTicket()}&dummy=${
+          this.dummyPreviewUrlChange
+        }`;
+      } else {
+        this.contentURL = `${environment.serverURL}api/-default-/public/alfresco/versions/1/nodes/${content.id}/content?attachment=false&alf_ticket=${this.loginService.getTicket()}&dummy=${
+          this.dummyPreviewUrlChange
+        }`;
+      }
+    } else {
+      this.contentURL = `${
+        environment.serverURL
+      }pdfRendition?documentId=workspace://SpacesStore/${
+        content.id
+      }&response=content&ticket=${this.loginService.getTicket()}&dummy=${
+        this.dummyPreviewUrlChange
+      }`;
+    }
+
     this.previewDocumentId = content.id as string;
     this.showPreview = true;
   }
@@ -589,74 +676,6 @@ export class LibraryBrowserComponent implements OnInit {
     );
   }
 
-  public async zipAndEmailMe() {
-    let text: string;
-    this.processing = true;
-    const result: ActionEmitterResult = {};
-    result.type = ActionType.EMAIL_CONTENTS;
-    try {
-      if (this.parent.id !== undefined) {
-        const selection: string[] = [];
-
-        this.contents.forEach((content: SelectableNode) => {
-          if (content.selected) {
-            selection.push(content.id as string);
-          }
-        });
-
-        const status = await firstValueFrom(
-          this.contentService.postContentsEmail(this.parent.id, selection)
-        );
-        if (!status.result) {
-          text = this.translateService.translate(
-            getErrorTranslation(ActionType.EMAIL_CONTENTS),
-            {
-              name: `${this.user.firstname} ${this.user.lastname}`,
-              email: this.user.email,
-            }
-          );
-          this.uiMessageService.addErrorMessage(text);
-          this.processing = false;
-          this.needRefresh.emit(result);
-          return;
-        }
-        text = this.translateService.translate(
-          getSuccessTranslation(ActionType.EMAIL_CONTENTS),
-          {
-            name: `${this.user.firstname} ${this.user.lastname}`,
-            email: this.user.email,
-          }
-        );
-        this.uiMessageService.addSuccessMessage(text);
-      } else {
-        text = this.translateService.translate(
-          getErrorTranslation(ActionType.EMAIL_CONTENTS),
-          {
-            name: `${this.user.firstname} ${this.user.lastname}`,
-            email: this.user.email,
-          }
-        );
-        this.uiMessageService.addErrorMessage(text);
-      }
-    } catch (error) {
-      text = this.translateService.translate(
-        getErrorTranslation(ActionType.EMAIL_CONTENTS),
-        {
-          name: `${this.user.firstname} ${this.user.lastname}`,
-          email: this.user.email,
-        }
-      );
-      const jsonError = JSON.parse(error._body);
-      if (jsonError) {
-        this.uiMessageService.addErrorMessage(
-          `${text} -> ${jsonError.message as string}`
-        );
-      }
-    }
-    this.processing = false;
-    this.needRefresh.emit(result);
-  }
-
   public canSendToAresBridge() {
     if (this.user?.properties?.domain === 'external') {
       return false;
@@ -674,20 +693,19 @@ export class LibraryBrowserComponent implements OnInit {
 
     if (environment.circabcRelease !== 'oss') {
       return this.areNodesDeletable();
-    } else {
-      return false;
     }
+    return false;
   }
 
   private isFolderSelected() {
-    return this.contents.some((node) => node.selected && this.isFolder(node));
+    return this.contents().some((node) => node.selected && this.isFolder(node));
   }
 
   public async sendToAresBridge() {
     const selectedNodes: SelectableNode[] = [];
     const nodeLogDuplicated: ExternalRepositoryData[] = [];
 
-    this.contents.forEach((content: SelectableNode) => {
+    this.contents().forEach((content: SelectableNode) => {
       if (content.selected && this.isFile(content)) {
         selectedNodes.push(content);
       }
@@ -761,10 +779,10 @@ export class LibraryBrowserComponent implements OnInit {
   groupBy<K, V>(arrayr: V[], grouper: (item: V) => K) {
     return arrayr.reduce((store, item) => {
       const key = grouper(item);
-      if (!store.has(key)) {
-        store.set(key, [item]);
-      } else {
+      if (store.has(key)) {
         store.get(key)?.push(item);
+      } else {
+        store.set(key, [item]);
       }
       return store;
     }, new Map<K, V[]>());
@@ -775,7 +793,7 @@ export class LibraryBrowserComponent implements OnInit {
   ) {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
-        title: 'label.ares.bridge.resend.title',
+        title: 'label.send.to.ares',
         layoutStyle: 'sendDuplicatesManyToAres',
         nodeLog: nodeLogDuplicated,
       },
@@ -791,7 +809,7 @@ export class LibraryBrowserComponent implements OnInit {
   ) {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
-        title: 'label.ares.bridge.resend.title',
+        title: 'label.send.to.ares',
         layoutStyle: 'sendManyToAres',
         nodeLog: nodeLog,
       },
@@ -815,88 +833,77 @@ export class LibraryBrowserComponent implements OnInit {
   public url(content: SelectableNode): string {
     if (content.properties) {
       return content.properties.url;
-    } else {
-      return '';
     }
+    return '';
   }
 
   public locale(content: SelectableNode): string {
     if (content.properties) {
       return content.properties.locale;
-    } else {
-      return '';
     }
+    return '';
   }
 
   public versionLabel(content: SelectableNode): string {
     if (content.properties) {
       return content.properties.versionLabel;
-    } else {
-      return '';
     }
+    return '';
   }
   public locked(content: SelectableNode): boolean {
     if (content.properties) {
       return content.properties.locked === 'true';
-    } else {
-      return false;
     }
+    return false;
   }
   public workingCopy(content: SelectableNode): boolean {
     if (content.properties) {
       return content.properties.workingCopy === 'true';
-    } else {
-      return false;
     }
+    return false;
   }
   public multilingual(content: SelectableNode): string {
     if (content.properties) {
       return content.properties.multilingual;
-    } else {
-      return 'false';
     }
+    return 'false';
   }
 
   public modified(content: SelectableNode): string | null {
     if (content.properties) {
       return content.properties.modified;
-    } else {
-      return null;
     }
+    return null;
   }
 
   public created(content: SelectableNode): string | null {
     if (content.properties) {
       return content.properties.created;
-    } else {
-      return null;
     }
+    return null;
   }
 
   public size(content: SelectableNode): string | null {
     if (content.properties) {
       return content.properties.size;
-    } else {
-      return null;
     }
+    return null;
   }
 
   public modifier(content: SelectableNode): string {
     if (content.properties) {
       return content.properties.modifier;
-    } else {
-      return '';
     }
+    return '';
   }
 
   public creatoOrOwner(content: SelectableNode): string {
     if (content.properties) {
-      return !content.properties.owner
-        ? content.properties.creator
-        : content.properties.owner;
-    } else {
-      return '';
+      return content.properties.owner
+        ? content.properties.owner
+        : content.properties.creator;
     }
+    return '';
   }
 
   public getSelectCheckboxTooltip(content: SelectableNode): string {
@@ -911,7 +918,7 @@ export class LibraryBrowserComponent implements OnInit {
     let result = true;
 
     const selecteds: SelectableNode[] = [];
-    this.contents.forEach((node: SelectableNode) => {
+    this.contents().forEach((node: SelectableNode) => {
       if (node.selected) {
         selecteds.push(node);
       }
@@ -966,20 +973,14 @@ export class LibraryBrowserComponent implements OnInit {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private async saveUserPreferences(column: any) {
     const columnPref = column as ColumnOptions;
-    if (
-      this.preferences &&
-      this.preferences.library &&
-      this.preferences.library.column
-    ) {
-      this.preferences.library.column = columnPref;
+    const preferences = this.preferences();
+    if (preferences?.library?.column) {
+      preferences.library.column = columnPref;
     }
     try {
-      if (this.user && this.user.userId) {
+      if (this.user?.userId) {
         await firstValueFrom(
-          this.userService.saveUserPreferences(
-            this.user.userId,
-            this.preferences
-          )
+          this.userService.saveUserPreferences(this.user.userId, preferences)
         );
       }
     } catch (error) {
@@ -1004,9 +1005,41 @@ export class LibraryBrowserComponent implements OnInit {
   public getTranslationsCount(content: SelectableNode): string {
     return content?.properties?.translations === undefined
       ? '0'
-      : '' + (Number(content?.properties?.translations) - 1);
+      : `${Number(content?.properties?.translations) - 1}`;
   }
-  public trackById(_index: number, item: { id?: string | number }) {
-    return item.id;
+
+  public isSensitive(content: SelectableNode) {
+    return (
+      content?.properties?.security_ranking === 'SENSITIVE' ||
+      content?.properties?.security_ranking === 'SPECIAL_HANDLING'
+    );
+  }
+
+  public getSncFiles() {
+    return this.contents()
+      .filter(
+        (node: SelectableNode) =>
+          node.selected &&
+          (node?.properties?.security_ranking === 'SENSITIVE' ||
+            node?.properties?.security_ranking === 'SPECIAL_HANDLING')
+      )
+      .map((node: SelectableNode) => node.name);
+  }
+
+  public bulkDownloadCheck() {
+    if (
+      environment.circabcRelease === 'echa' &&
+      this.getSncFiles().length > 0
+    ) {
+      this.acceptSncShowModal = true;
+    } else {
+      this.bulkDownload();
+    }
+  }
+
+  get message() {
+    return this.translateService.translate('label.dialog.alert.snc.download', {
+      link: `<a href=\"https://ec.europa.eu/transparency/documents-register/detail?ref=C(2019)1904&lang=en\" target=\"_blank\">C(2019)1904</a>`,
+    });
   }
 }

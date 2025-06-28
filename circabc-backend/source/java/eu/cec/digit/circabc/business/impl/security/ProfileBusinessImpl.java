@@ -22,7 +22,6 @@ package eu.cec.digit.circabc.business.impl.security;
 
 import eu.cec.digit.circabc.business.api.security.ProfileBusinessSrv;
 
-
 /**
  * Business service implementation to manage profiles.
  *
@@ -30,7 +29,4 @@ import eu.cec.digit.circabc.business.api.security.ProfileBusinessSrv;
  * <p>
  * TODO super class comments
  */
-public class ProfileBusinessImpl implements ProfileBusinessSrv {
-
-
-}
+public class ProfileBusinessImpl implements ProfileBusinessSrv {}

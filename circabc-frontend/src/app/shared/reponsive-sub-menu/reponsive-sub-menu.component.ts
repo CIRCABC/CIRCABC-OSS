@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'cbc-reponsive-sub-menu',
   templateUrl: './reponsive-sub-menu.component.html',
-  styleUrls: ['./reponsive-sub-menu.component.scss'],
+  styleUrl: './reponsive-sub-menu.component.scss',
   preserveWhitespaces: true,
 })
 export class ReponsiveSubMenuComponent {

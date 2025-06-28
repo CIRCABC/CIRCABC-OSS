@@ -20,10 +20,8 @@
  ******************************************************************************/
 package eu.cec.digit.circabc.web.ui.common.tag.data;
 
-import org.springframework.extensions.webscripts.ui.common.tag.BaseComponentTag;
-
 import javax.faces.component.UIComponent;
-
+import org.springframework.extensions.webscripts.ui.common.tag.BaseComponentTag;
 
 /**
  * @author Guillaume
@@ -33,82 +31,82 @@ import javax.faces.component.UIComponent;
  */
 public class ColumnTag extends BaseComponentTag {
 
-    /**
-     * the actions
-     */
-    private String actions;
-    /**
-     * the styleClass
-     */
-    private String styleClass;
-    /**
-     * the primary
-     */
-    private String primary;
+  /**
+   * the actions
+   */
+  private String actions;
+  /**
+   * the styleClass
+   */
+  private String styleClass;
+  /**
+   * the primary
+   */
+  private String primary;
 
-    /**
-     * @see javax.faces.webapp.UIComponentTag#getComponentType()
-     */
-    public String getComponentType() {
-        return "eu.cec.digit.circabc.faces.ListColumn";
-    }
+  /**
+   * @see javax.faces.webapp.UIComponentTag#getComponentType()
+   */
+  public String getComponentType() {
+    return "eu.cec.digit.circabc.faces.ListColumn";
+  }
 
-    // ------------------------------------------------------------------------------
-    // Tag properties
+  // ------------------------------------------------------------------------------
+  // Tag properties
 
-    /**
-     * @see javax.faces.webapp.UIComponentTag#getRendererType()
-     */
-    public String getRendererType() {
-        // the component is renderer by the parent
-        return null;
-    }
+  /**
+   * @see javax.faces.webapp.UIComponentTag#getRendererType()
+   */
+  public String getRendererType() {
+    // the component is renderer by the parent
+    return null;
+  }
 
-    /**
-     * @see javax.servlet.jsp.tagext.Tag#release()
-     */
-    public void release() {
-        super.release();
-        this.primary = null;
-        this.actions = null;
-        this.styleClass = null;
-    }
+  /**
+   * @see javax.servlet.jsp.tagext.Tag#release()
+   */
+  public void release() {
+    super.release();
+    this.primary = null;
+    this.actions = null;
+    this.styleClass = null;
+  }
 
-    /**
-     * @see javax.faces.webapp.UIComponentTag#setProperties(javax.faces.component.UIComponent)
-     */
-    protected void setProperties(UIComponent component) {
-        super.setProperties(component);
+  /**
+   * @see javax.faces.webapp.UIComponentTag#setProperties(javax.faces.component.UIComponent)
+   */
+  protected void setProperties(UIComponent component) {
+    super.setProperties(component);
 
-        setBooleanProperty(component, "primary", this.primary);
-        setBooleanProperty(component, "actions", this.actions);
-        setStringProperty(component, "styleClass", this.styleClass);
-    }
+    setBooleanProperty(component, "primary", this.primary);
+    setBooleanProperty(component, "actions", this.actions);
+    setStringProperty(component, "styleClass", this.styleClass);
+  }
 
-    /**
-     * Set if this is the primary column
-     *
-     * @param primary the primary if "true", otherwise false
-     */
-    public void setPrimary(String primary) {
-        this.primary = primary;
-    }
+  /**
+   * Set if this is the primary column
+   *
+   * @param primary the primary if "true", otherwise false
+   */
+  public void setPrimary(String primary) {
+    this.primary = primary;
+  }
 
-    /**
-     * Set the styleClass
-     *
-     * @param styleClass the styleClass
-     */
-    public void setStyleClass(String styleClass) {
-        this.styleClass = styleClass;
-    }
+  /**
+   * Set the styleClass
+   *
+   * @param styleClass the styleClass
+   */
+  public void setStyleClass(String styleClass) {
+    this.styleClass = styleClass;
+  }
 
-    /**
-     * Set if this is the actions column
-     *
-     * @param actions the actions if "true", otherwise false
-     */
-    public void setActions(String actions) {
-        this.actions = actions;
-    }
+  /**
+   * Set if this is the actions column
+   *
+   * @param actions the actions if "true", otherwise false
+   */
+  public void setActions(String actions) {
+    this.actions = actions;
+  }
 }

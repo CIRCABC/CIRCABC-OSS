@@ -26,11 +26,15 @@ import org.alfresco.service.cmr.repository.NodeRef;
  *
  * @author Yanick Pignot
  */
-public class DirectDowloadUrlMethod extends NodeRefBaseTemplateProcessorExtension
-        implements TemplateMethodModelEx {
+public class DirectDowloadUrlMethod
+  extends NodeRefBaseTemplateProcessorExtension
+  implements TemplateMethodModelEx {
 
-    @Override
-    public String getResult(NodeRef nodeRef) {
-        return WebClientHelper.getGeneratedWaiFullUrl(nodeRef, ExtendedURLMode.HTTP_DOWNLOAD);
-    }
+  @Override
+  public String getResult(NodeRef nodeRef) {
+    return WebClientHelper.getGeneratedWaiFullUrl(
+      nodeRef,
+      ExtendedURLMode.HTTP_DOWNLOAD
+    );
+  }
 }

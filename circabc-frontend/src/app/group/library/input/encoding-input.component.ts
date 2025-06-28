@@ -1,13 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Component, forwardRef, Input, OnInit } from '@angular/core';
+import { Component, OnInit, forwardRef, input } from '@angular/core';
 import {
   ControlValueAccessor,
   FormBuilder,
   FormGroup,
   NG_VALUE_ACCESSOR,
+  ReactiveFormsModule,
 } from '@angular/forms';
 
-import { Encodings } from 'app/group/library/encodings/encodings';
+import { TranslocoModule } from '@jsverse/transloco';
+import { availableEncodings } from 'app/group/library/encodings/encodings';
 
 @Component({
   selector: 'cbc-encoding-input',
@@ -21,10 +23,10 @@ import { Encodings } from 'app/group/library/encodings/encodings';
     },
   ],
   preserveWhitespaces: true,
+  imports: [ReactiveFormsModule, TranslocoModule],
 })
 export class EncodingInputComponent implements OnInit, ControlValueAccessor {
-  @Input()
-  disabled = false;
+  readonly disabled = input(false);
   form!: FormGroup;
 
   // impement ControlValueAccessor interface
@@ -68,12 +70,12 @@ export class EncodingInputComponent implements OnInit, ControlValueAccessor {
       }
     });
 
-    if (this.disabled) {
+    if (this.disabled()) {
       this.form.controls.encoding.disable();
     }
   }
 
   getAvailableEncodings() {
-    return Encodings.availableEncodings;
+    return availableEncodings;
   }
 }

@@ -1,24 +1,19 @@
-<?xml version='1.0' encoding='UTF-8'?>
-
+<?xml version='1.0' encoding='UTF-8' ?>
 <!--+
     |     Copyright European Community 2006 - Licensed under the EUPL V.1.0
     |
     |  		   http://ec.europa.eu/idabc/en/document/6523
     |
     +-->
-
-<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
-
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN'
+  'http://www.springframework.org/dtd/spring-beans.dtd'>
 <!-- ========================== -->
 <!-- Enforcement of permissions -->
 <!-- ========================== -->
-
 <!--                                                                                     -->
 <!-- This file defines the beans that intercept method calls to the repository services  -->
 <!-- and enforce security based on the currently authenticated user.                     -->
 <!--                                                                                     -->
-
-
 <beans>
 
 
@@ -26,9 +21,14 @@
   <!-- Support for permissions -->
   <!-- ========================-->
 	
-    <bean id="permissionService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+    <bean
+    id="permissionService"
+    class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean"
+    lazy-init="true"
+  >
         <property name="proxyInterfaces">
-            <value>org.alfresco.repo.security.permissions.PermissionServiceSPI</value>
+            <value
+      >org.alfresco.repo.security.permissions.PermissionServiceSPI</value>
         </property>
         <property name="transactionManager">
             <ref bean="transactionManager" />
@@ -44,12 +44,16 @@
     </bean>
 	
 <!--    <bean id="permissionServiceImpl" class="org.alfresco.repo.security.permissions.impl.PermissionServiceImpl" init-method="init"> -->
-    <bean id="permissionServiceImpl" class="eu.cec.digit.circabc.repo.security.CircabcPermissionServiceImpl" init-method="init">
+    <bean
+    id="permissionServiceImpl"
+    class="eu.cec.digit.circabc.repo.security.CircabcPermissionServiceImpl"
+    init-method="init"
+  >
         <property name="nodeService">
-            <ref bean="mtAwareNodeService"/>
+            <ref bean="mtAwareNodeService" />
         </property>
         <property name="tenantService">
-            <ref bean="tenantService"/>
+            <ref bean="tenantService" />
         </property>
         <property name="dictionaryService">
             <ref bean="dictionaryService" />
@@ -89,146 +93,70 @@
         <!-- as opposed to being fixed like user name and groups.                -->
         <!-- There are two dynamic authorities, the owner of a node and the owner -->
         <!-- of a lock on a node.                                                -->
-		<property name="dynamicAuthorities">
+        <property name="dynamicAuthorities">
             <list>
-                <ref bean="ownerDynamicAuthority" />
-                <ref bean="lockOwnerDynamicAuthority" />
+            <!-- <ref bean="ownerDynamicAuthority" /> -->
+				    <ref bean="circabcOwnerDynamicAuthority" />
+            <ref bean="lockOwnerDynamicAuthority" />
+            <ref bean="circabcInterestGroupLeaderDynamicAuthority" />
             </list>
         </property>
-
-
     </bean>
-	
-	<bean id="circabcDynamicAuthorityMethodCacheInterceptor" class="eu.cec.digit.circabc.spring.interceptor.MethodCacheInterceptor">
-		<property name="cache">
-			<ref bean="circabcDynamicAuthorityMethodCache" />
-		</property>
-	</bean>
-	
-	<bean id="circabcDynamicAuthorityMethodCachePointCut" class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
-		<property name="advice">
-			<ref local="circabcDynamicAuthorityMethodCacheInterceptor"/>
-		</property>
-		<property name="patterns">
-			<list>
-			  <value>.*hasAuthority</value>
-			</list>
-		</property>
-	</bean>
-	
-	<!-- DynamicAuthorityCached -->
-	<bean id="circabcDynamicAuthorityCached" class="org.springframework.aop.framework.ProxyFactoryBean">
-		<property name="target">
-			<ref local="circabcDynamicAuthority"/>
-		</property>
-		<property name="interceptorNames">
-			<list>
-				<value>circabcDynamicAuthorityMethodCachePointCut</value>
-			</list>
-		</property>
-	</bean>
-	
-	<!-- OwnerDynamicAuthorityCached -->
-	<bean id="circabcOwnerDynamicAuthorityCached" class="org.springframework.aop.framework.ProxyFactoryBean">
-		<property name="target">
-			<ref local="circabcOwnerDynamicAuthority"/>
-		</property>
-		<property name="interceptorNames">
-			<list>
-				<value>circabcDynamicAuthorityMethodCachePointCut</value>
-			</list>
-		</property>
-	</bean>
-	
-	
-  <!-- =================== -->
-  <!-- Dynamic Authorities -->
-  <!-- =================== -->
+  <bean
+    id="circabcDynamicAuthorityService"
+    class="eu.cec.digit.circabc.service.dynamic.authority.CircabcDynamicAuthorityServiceImpl"
+    lazy-init="true"
+  >
+    <property name="nodeService" ref="NodeService" />
+    <property name="circabcDAO" ref="circabcDynamicAuthorityDAO" />
+</bean>
+<!-- Add a bean to set up the circular reference after initialization -->
+<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+      depends-on="permissionService,MultilingualContentService">
+  <property name="targetObject" ref="circabcDynamicAuthorityService"/>
+  <property name="targetMethod" value="setMultilingualContentService"/>
+  <property name="arguments">
+    <list>
+      <ref bean="MultilingualContentService"/>
+    </list>
+  </property>
+</bean>
+<bean
+    id="circabcOwnerDynamicAuthority"
+    class="eu.cec.digit.circabc.service.dynamic.authority.CircabcOwnerDynamicAuthority"
+    lazy-init="true"
+  >
+    <property name="circabcService" ref="circabcDynamicAuthorityService" />
+</bean>
 
-  <bean id="transgressCutHeritance"
-		class="eu.cec.digit.circabc.service.dynamic.authority.AbstractTransgressCutHeritance"
-		abstract="true">
-		<property name="nodeService">
-			<ref bean="nodeService" />
-		</property>
-		<property name="permissionsDaoComponent">
-			<ref bean="permissionsDaoComponent" />
-		</property>
-		<property name="authorityService">
-			<ref bean="authorityService" />
-		</property>
-		<property name="modelDAO">
-			<ref bean="permissionsModelDAO" />
-		</property>
-		<property name="roleToGrant" value="ROLE_TRANSGRESS_CUT_HERITANCE" />
-		<property name="permissionToCheck" value="TransgressCutInheritancePermission" />
-	</bean>
-	
-	<!-- The provider that evaluate if the current user has trnasgress permission on one of his parents nodes -->
-	<bean id="circabcDynamicAuthority"
-		class="eu.cec.digit.circabc.service.dynamic.authority.TransgressCutHeritance"
-		parent="transgressCutHeritance">
-		<property name="circabcService" value="circabcDynamicAuthority" />
-		<property name="mandatoryAspects">
-			<map>
-				<entry key="{http://www.cc.cec/circabc/model/content/1.0}circaLibrary">
-					<value>{http://www.cc.cec/circabc/model/content/1.0}circaLibraryRoot</value>
-				</entry>
-				<entry key="{http://www.cc.cec/circabc/model/content/1.0}circaNewsGroup">
-					<value>{http://www.cc.cec/circabc/model/content/1.0}circaNewsGroupRoot</value>
-				</entry>
-				<entry key="{http://www.cc.cec/circabc/model/content/1.0}circabcManagement">
-					<value>{http://www.cc.cec/circabc/model/content/1.0}circaIGRoot</value>
-				</entry>
-				<entry key="{http://www.cc.cec/circabc/model/content/1.0}circabcInformation">
-					<value>{http://www.cc.cec/circabc/model/content/1.0}circabcInformationRoot</value>
-				</entry>
-				<entry key="{http://www.cc.cec/circabc/model/content/1.0}circabcEvent">
-					<value>{http://www.cc.cec/circabc/model/content/1.0}circabcEventRoot</value>
-				</entry>
-				<entry key="{http://www.cc.cec/circabc/model/content/1.0}circaSurvey">
-					<value>{http://www.cc.cec/circabc/model/content/1.0}circaSurveyRoot</value>
-				</entry>
-			</map>
-		</property>
-		<property name="requiredFor">
-			<list>
-				<value>InfAdmin</value>
-				<value>LibAdmin</value>
-				<value>DirAdmin</value>
-				<value>NwsAdmin</value>
-				<value>NwsModerate</value>
-				<value>EveAdmin</value>
-				<value>SurAdmin</value>
-			</list>
-		</property>
-	</bean>
+<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+      depends-on="ownableService">
+  <property name="targetObject" ref="circabcOwnerDynamicAuthority"/>
+  <property name="targetMethod" value="setOwnableService"/>
+  <property name="arguments">
+    <list>
+      <ref bean="ownableService"/>
+    </list>
+  </property>
+</bean>
 
-  <!-- The provider to evaluate if the current authentication is the owner of a node and also member of CIRCABC groups  -->
-  <bean id="circabcOwnerDynamicAuthority" class="eu.cec.digit.circabc.service.dynamic.authority.CircabcOwnerDynamicAuthority">
-    <property name="ownableService">
-      <ref bean="ownableService" />
-     </property>
-     <property name="nodeService">
-      <ref bean="nodeService" />
-     </property>
-     <property name="serviceRegistry">
-      <ref bean="ServiceRegistry" />
-     </property>
-     <property name="authorityService">
-      <ref bean="authorityService" />
-     </property>
-	 <property name="circabcService">
-		  <ref bean="circabcService" />
-	 </property>
-  </bean>
-  
-  
+<bean
+    id="circabcInterestGroupLeaderDynamicAuthority"
+    class="eu.cec.digit.circabc.service.dynamic.authority.CircabcInterestGroupLeaderDynamicAuthority"
+    init-method="init"
+  >
+    <property name="circabcService" ref="circabcDynamicAuthorityService" />
+</bean>
+	
   <!-- ===================== -->
   <!-- Permissions Model DAO -->
   <!-- ===================== -->
 
-    <bean id='permissionsModelDAO' class="org.alfresco.repo.security.permissions.impl.model.PermissionModel" init-method="init">
+    <bean
+    id='permissionsModelDAO'
+    class="org.alfresco.repo.security.permissions.impl.model.PermissionModel"
+    init-method="init"
+  >
         <property name="model">
       		<value>alfresco/extension/config/circabc-permissionDefinitions.xml</value>
         </property>
@@ -259,10 +187,19 @@
   <!-- FileFolder Service Permissions -->
   <!-- ============================== -->
 
-    <bean id="FileFolderService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
-        <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-        <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-        <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+    <bean
+    id="FileFolderService_security"
+    class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+  >
+        <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+        <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+        <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
         <property name="objectDefinitionSource">
             <value>
                org.alfresco.service.cmr.model.FileFolderService.list=ACL_NODE.0.sys:base.ReadChildren,AFTER_ACL_NODE.sys:base.ReadProperties
@@ -297,10 +234,19 @@
   <!-- InformationProfileManagerService_security Service Permissions -->
   <!-- =============================================================  -->
 
-  <bean id="InformationProfileManagerService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
-    <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-    <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-    <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+  <bean
+    id="InformationProfileManagerService_security"
+    class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+  >
+    <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+    <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+    <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
     <property name="objectDefinitionSource">
       <value>
 		eu.cec.digit.circabc.service.profile.InformationProfileManagerService.addApplicantPerson=ACL_ALLOW
@@ -358,10 +304,19 @@
   <!-- EventProfileManagerService_security Service Permissions -->
   <!-- =============================================================  -->
 
-  <bean id="EventProfileManagerService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
-    <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-    <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-    <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+  <bean
+    id="EventProfileManagerService_security"
+    class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+  >
+    <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+    <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+    <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
     <property name="objectDefinitionSource">
       <value>
 		eu.cec.digit.circabc.service.profile.EventProfileManagerService.addApplicantPerson=ACL_ALLOW
@@ -419,10 +374,19 @@
   <!-- LibraryProfileManagerService_security Service Permissions -->
   <!-- =============================================================  -->
 
-  <bean id="LibraryProfileManagerService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
-    <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-    <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-    <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+  <bean
+    id="LibraryProfileManagerService_security"
+    class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+  >
+    <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+    <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+    <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
     <property name="objectDefinitionSource">
       <value>
 		eu.cec.digit.circabc.service.profile.LibraryProfileManagerService.addApplicantPerson=ACL_ALLOW
@@ -480,10 +444,19 @@
   <!-- NewsGroupProfileManagerService_security Service Permissions -->
   <!-- ============================================================= -->
 
-  <bean id="NewsGroupProfileManagerService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
-    <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-    <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-    <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+  <bean
+    id="NewsGroupProfileManagerService_security"
+    class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+  >
+    <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+    <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+    <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
     <property name="objectDefinitionSource">
       <value>
 		eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService.addApplicantPerson=ACL_ALLOW
@@ -541,10 +514,19 @@
   <!-- SurveyProfileManagerService_security Service Permissions -->
   <!-- ============================================================= -->
 
-  <bean id="SurveyProfileManagerService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
-    <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-    <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-    <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+  <bean
+    id="SurveyProfileManagerService_security"
+    class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+  >
+    <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+    <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+    <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
     <property name="objectDefinitionSource">
       <value>
 		eu.cec.digit.circabc.service.profile.SurveyProfileManagerService.addApplicantPerson=ACL_ALLOW
@@ -601,10 +583,19 @@
    <!-- ================================================================ -->
    <!-- IGRootProfileManagerService_security Service Permissions -->
    <!-- ================================================================ -->
-  <bean id="IGRootProfileManagerService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
-    <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-    <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-    <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+  <bean
+    id="IGRootProfileManagerService_security"
+    class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+  >
+    <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+    <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+    <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
     <property name="objectDefinitionSource">
       <value>
 		eu.cec.digit.circabc.service.profile.IGRootProfileManagerService.addApplicantPerson=ACL_NODE.0.ci:circaIGRoot.Join
@@ -663,10 +654,19 @@
   <!-- ========================================================= -->
   <!-- CircabcRootProfileManagerService_security Service Permissions -->
   <!-- ========================================================= -->
-  <bean id="CircabcRootProfileManagerService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
-    <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-    <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-    <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+  <bean
+    id="CircabcRootProfileManagerService_security"
+    class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+  >
+    <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+    <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+    <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
     <property name="objectDefinitionSource">
       <value>
 		eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService.addApplicantPerson=ACL_ALLOW
@@ -728,10 +728,19 @@
   <!-- =============================================================== -->
   <!-- CategoryProfileManagerService_security Service Permissions -->
   <!-- =============================================================== -->
-  <bean id="CategoryProfileManagerService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
-    <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-    <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-    <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+  <bean
+    id="CategoryProfileManagerService_security"
+    class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+  >
+    <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+    <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+    <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
     <property name="objectDefinitionSource">
       <value>
 		eu.cec.digit.circabc.service.profile.CategoryProfileManagerService.addApplicantPerson=ACL_ALLOW
@@ -788,10 +797,19 @@
 
   <!--  TODO to secure !!! -->
 
-  <bean id="UserService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+  <bean
+    id="UserService_security"
+    class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
 			eu.cec.digit.circabc.service.user.UserService.createLdapUser=ACL_ALLOW
@@ -841,10 +859,19 @@
 
    <!--  TODO to secure !!! -->
 
-	<bean id="LdapUserService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+	<bean
+    id="LdapUserService_security"
+    class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
 			eu.cec.digit.circabc.service.user.LdapUserService.getLDAPUserDataByUid=ACL_ALLOW
@@ -867,10 +894,19 @@
 			** The create/remove/update keyword is performed only by AllAdmin (libadmin + newsadmin + diradmin + suradmin)
 			For instance, only the weblcient is secured!!!
 	-->
-	<bean id="KeywordsService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+	<bean
+    id="KeywordsService_security"
+    class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
 			eu.cec.digit.circabc.service.keyword.KeywordsService.addKeywordToNode=ACL_ALLOW
@@ -889,10 +925,19 @@
       </property>
 	</bean>
 
-	<bean id="EventService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+	<bean
+    id="EventService_security"
+    class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
 			eu.cec.digit.circabc.service.event.EventService.createEvent=ACL_NODE.0.sys:base.CreateChildren
@@ -916,10 +961,19 @@
 
     <!--  TODO to secure !!! -->
 
-	<bean id="ShareSpaceService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+	<bean
+    id="ShareSpaceService_security"
+    class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
 			eu.cec.digit.circabc.service.sharespace.ShareSpaceService.getAllSharedSpaceInInterestGroup=ACL_ALLOW
@@ -935,10 +989,19 @@
 	</bean>
 
 	<!--  TODO to secure !!! -->
-	<bean id="MailToMembersService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+	<bean
+    id="MailToMembersService_security"
+    class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
 			eu.cec.digit.circabc.service.mail.MailToMembersService.sendToAllMembers=ACL_ALLOW
@@ -952,10 +1015,19 @@
 			Only the admin of the current node can set the notification status. IGLeader on ig, LibAdmin on library, NewsAdmin sur Newsgroup ...
 			For instance, only the weblcient is secured!!!
 	-->
-	<bean id="NotificationSubscriptionService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+	<bean
+    id="NotificationSubscriptionService_security"
+    class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
 			eu.cec.digit.circabc.service.notification.NotificationSubscriptionService.getAuthorityNotificationStatus=ACL_ALLOW
@@ -969,15 +1041,24 @@
       </property>
 	</bean>
 
-	<bean id="EcasAdapterService_security" class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor" />
+	<bean
+    id="EcasAdapterService_security"
+    class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor"
+  />
 
 
-    <bean id="ManagementService_security" class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor" />
+    <bean
+    id="ManagementService_security"
+    class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor"
+  />
 
     <!-- =============================================================== -->
     <!-- CategoryProfileManagerService_security Service Permissions -->
     <!-- =============================================================== -->
-    <bean id="CircaGenericProfileManagerService_security" class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor" />
+    <bean
+    id="CircaGenericProfileManagerService_security"
+    class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor"
+  />
 
     <!-- ============= -->
     <!-- Audit Service -->
@@ -985,25 +1066,55 @@
 
     <!-- TODO: Add audit security -->
 
-    <bean id="AuditService_security" class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor" />
+    <bean
+    id="AuditService_security"
+    class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor"
+  />
 
 
-   	<bean id="CircabcNotificationService_security" class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor" />
+   	<bean
+    id="CircabcNotificationService_security"
+    class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor"
+  />
 
-   	<bean id="NotificationManagerService_security" class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor" />
+   	<bean
+    id="NotificationManagerService_security"
+    class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor"
+  />
 
-   	<bean id="CircabcMailService_security" class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor" />
+   	<bean
+    id="CircabcMailService_security"
+    class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor"
+  />
 
-   	<bean id="BulkService_security" class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor" />
+   	<bean
+    id="BulkService_security"
+    class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor"
+  />
 
-   	<bean id="IndexService_security" class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor" />
+   	<bean
+    id="IndexService_security"
+    class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor"
+  />
 
-   	<bean id="ZipService_security" class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor" />
+   	<bean
+    id="ZipService_security"
+    class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor"
+  />
 
-	<bean id="AttachementService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+	<bean
+    id="AttachementService_security"
+    class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
       	<value>
 				eu.cec.digit.circabc.service.newsgroup.AttachementService.attach=ACL_NODE.0.sys:base.WriteContent
@@ -1015,10 +1126,19 @@
 	</bean>
 	
     <!--  TODO to secure !!! -->
-	<bean id="DynamicPropertiesService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+	<bean
+    id="DynamicPropertiesService_security"
+    class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
 			eu.cec.digit.circabc.service.dynamic.property.DynamicPropertyService.addDynamicProperty=ACL_ALLOW
@@ -1034,10 +1154,19 @@
 	</bean>
 	
 	<!--  TODO to secure !!! -->
-	<bean id="LogoPreferencesService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+	<bean
+    id="LogoPreferencesService_security"
+    class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
 			eu.cec.digit.circabc.service.customisation.logo.LogoPreferencesService.addLogo=ACL_ALLOW
@@ -1056,10 +1185,19 @@
 	</bean>
 
 	<!--  TODO to secure !!! -->
-	<bean id="MailPreferencesService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+	<bean
+    id="MailPreferencesService_security"
+    class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
 			eu.cec.digit.circabc.service.customisation.mail.MailPreferencesService.addMailTemplate=ACL_ALLOW
@@ -1080,10 +1218,19 @@
 			NwsModerate (or LibAdmin) can: accept, reject, signalNotAbuse
 			EveryBody can: WaitForApprovale, is*, get*
 	-->
-	<bean id="ModerationService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+	<bean
+    id="ModerationService_security"
+    class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
 			eu.cec.digit.circabc.service.newsgroup.ModerationService.accept=ACL_ALLOW
@@ -1104,10 +1251,19 @@
 	</bean>
 	
     <!--  TODO to secure !!! -->
-	<bean id="NavigationPreferencesService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+	<bean
+    id="NavigationPreferencesService_security"
+    class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
 	        eu.cec.digit.circabc.service.customisation.nav.NavigationPreferencesService.addServicePreference=ACL_ALLOW
@@ -1118,10 +1274,19 @@
       </property>
 	</bean>
 	
-	<bean id="NodePreferencesService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+	<bean
+    id="NodePreferencesService_security"
+    class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
 			eu.cec.digit.circabc.service.customisation.NodePreferencesService.addCustomizationFile=ACL_NODE.0.sys:base.WriteContent
@@ -1139,10 +1304,19 @@
       </property>
 	</bean>
 	
-	<bean id="SupportService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+	<bean
+    id="SupportService_security"
+    class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
 			eu.cec.digit.circabc.service.support.SupportService.isUserFromSupport=ACL_ALLOW
@@ -1157,44 +1331,45 @@
 	</bean>
 	
 	
-	<bean id="IgStatisticsService_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+	<bean
+    id="IgStatisticsService_security"
+    class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
-			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getNumberOfUsers=ACL_ALLOW
-			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getIGCreationDate=ACL_ALLOW
-			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getNumberOfLibraryDocuments=ACL_ALLOW
-			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getNumberOfLibrarySpaces=ACL_ALLOW
-			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getNumberOfInformationDocuments=ACL_ALLOW
-			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getNumberOfInformationSpaces=ACL_ALLOW
 			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getIGTitle=ACL_ALLOW
-			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getNumbetOfMeetings=ACL_ALLOW
-			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getNumbetOfEvents=ACL_ALLOW
-			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getNumberOfForums=ACL_ALLOW
-			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getNumberOfTopics=ACL_ALLOW
-			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getNumberOfPosts=ACL_ALLOW
-			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getContentSizeOfLibrary=ACL_ALLOW
-			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getContentSizeOfInformation=ACL_ALLOW
 			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getLibraryStructure=ACL_ALLOW
 			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getInformationStructure=ACL_ALLOW
 			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getNewsgroupsStructure=ACL_ALLOW
 			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getListOfActivityCount=ACL_ALLOW
 			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.buildStatsData=ACL_ALLOW
-			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getNumberOfVersions=ACL_ALLOW
-			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getSizeOfVersions=ACL_ALLOW
-			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getNumberOfCustomizationAndHiddenContent=ACL_ALLOW
-			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.getSizeOfCustomizationAndHiddenContent=ACL_ALLOW
 			eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService.*=ACL_DENY
          </value>
       </property>
 	</bean>
 
-	<bean id="GlobalStatisticsService_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+	<bean
+    id="GlobalStatisticsService_security"
+    class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
 			eu.cec.digit.circabc.service.statistics.global.GlobalStatisticsService.prepareFolderRecipient=ACL_ALLOW
@@ -1219,10 +1394,19 @@
       </property>
 	</bean>
 	
-	<bean id="AutoUploadManagementService_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+	<bean
+    id="AutoUploadManagementService_security"
+    class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
 			eu.cec.digit.circabc.service.config.auto.upload.AutoUploadManagementService.registerConfiguration=ACL_ALLOW
@@ -1247,10 +1431,19 @@
       </property>
 	</bean>
 	
-	<bean id="ExternalRepositoriesManagementService_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+	<bean
+    id="ExternalRepositoriesManagementService_security"
+    class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
 			eu.cec.digit.circabc.service.external.repositories.ExternalRepositoriesManagementService.*=ACL_ALLOW
@@ -1258,10 +1451,19 @@
       </property>
 	</bean>
 	
-	<bean id="AutonomySearchService_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+	<bean
+    id="AutonomySearchService_security"
+    class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
 			eu.cec.digit.circabc.service.search.autonomy.AutonomySearchService.*=ACL_ALLOW
@@ -1269,10 +1471,19 @@
       </property>
 	</bean>
 	
-	<bean id="SynchronizationService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+	<bean
+    id="SynchronizationService_security"
+    class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
          	eu.cec.digit.circabc.service.iam.SynchronizationService.grantThemeRole=ACL_ALLOW
@@ -1284,10 +1495,19 @@
       </property>
 	</bean>
 
-	<bean id="BulkUserImportService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+	<bean
+    id="BulkUserImportService_security"
+    class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
          	eu.cec.digit.circabc.service.user.BulkUserImportService.listMembers=ACL_ALLOW
@@ -1302,10 +1522,19 @@
       </property>
 	</bean>
 	
-	<bean id="TranslationService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+	<bean
+    id="TranslationService_security"
+    class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
             eu.cec.digit.circabc.service.translation.TranslationService.getAvailableLanguages=ACL_ALLOW
@@ -1321,10 +1550,19 @@
       </property>
 	</bean>
 	
-	<bean id="ApplicationCustomisationService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
-      <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-      <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-      <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+	<bean
+    id="ApplicationCustomisationService_security"
+    class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+  >
+      <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+      <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+      <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
       <property name="objectDefinitionSource">
          <value>
             eu.cec.digit.circabc.service.customisation.ApplicationCustomisationService.getDefaultLogoNodeRef=ACL_ALLOW
@@ -1353,10 +1591,19 @@
       </property>
 	</bean>
 	
-	<bean id="ProfilesApi_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
-    <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-    <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-    <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+	<bean
+    id="ProfilesApi_security"
+    class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+  >
+    <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+    <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+    <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
     <property name="objectDefinitionSource">
       <value>
       	io.swagger.api.ProfilesApi.groupsIdProfilesGet=ACL_ALLOW
@@ -1366,14 +1613,24 @@
 		io.swagger.api.ProfilesApi.profilesIdPut=ACL_ALLOW
 		io.swagger.api.ProfilesApi.getInvitedUsers=ACL_ALLOW
 		io.swagger.api.ProfilesApi.profilesIdGet=ACL_ALLOW
+		io.swagger.api.ProfilesApi.groupsIdProfilesPost=ACL_ALLOW
 		io.swagger.api.ProfilesApi.*=ACL_DENY
       </value>
     </property>
   </bean>
-  <bean id="GroupsApi_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
-    <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-    <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-    <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+  <bean
+    id="GroupsApi_security"
+    class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+  >
+    <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+    <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+    <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
     <property name="objectDefinitionSource">
       <value>
       	io.swagger.api.GroupsApi.groupsIdMembersPost=ACL_NODE.0.ci:circaIGRoot.DirManageMembers
@@ -1383,6 +1640,7 @@
 		io.swagger.api.GroupsApi.groupsIdPut=ACL_ALLOW
 		io.swagger.api.GroupsApi.getInterestGroupDetails=ACL_ALLOW
 		io.swagger.api.GroupsApi.getInterestGroup=ACL_ALLOW
+		io.swagger.api.GroupsApi.getAccessibleInterestGroup=ACL_ALLOW
 		io.swagger.api.GroupsApi.getGroupDashboard=ACL_ALLOW
 		io.swagger.api.GroupsApi.groupsIdMembersApplicantsGet=ACL_ALLOW
 		io.swagger.api.GroupsApi.groupsIdMembersApplicantsPut=ACL_ALLOW
@@ -1410,10 +1668,19 @@
       </value>
     </property>
   </bean>
-  <bean id="ArchiveApi_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
-    <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-    <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-    <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+  <bean
+    id="ArchiveApi_security"
+    class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+  >
+    <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+    <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+    <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
     <property name="objectDefinitionSource">
       <value>
 		io.swagger.api.ArchiveApi.groupsIdDocumentsDeletedGet=ACL_ALLOW
@@ -1423,10 +1690,19 @@
       </value>
     </property>
   </bean>
-  <bean id="DashboardApi_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
-    <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-    <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-    <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+  <bean
+    id="DashboardApi_security"
+    class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+  >
+    <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+    <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+    <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
     <property name="objectDefinitionSource">
       <value>
 		io.swagger.api.DashboardApi.usersUserIdDashboardDownloadsGet=ACL_ALLOW
@@ -1436,10 +1712,19 @@
       </value>
     </property>
   </bean>
-  <bean id="CategoriesApi_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
-    <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-    <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-    <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+  <bean
+    id="CategoriesApi_security"
+    class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+  >
+    <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+    <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+    <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
     <property name="objectDefinitionSource">
       <value>
 		io.swagger.api.CategoriesApi.getCategories=ACL_ALLOW
@@ -1459,18 +1744,31 @@
 		io.swagger.api.CategoriesApi.categoriesIdAdminsDelete=ACL_ALLOW
 		io.swagger.api.CategoriesApi.headersIdCategoryPost=ACL_ALLOW
 		io.swagger.api.CategoriesApi.categoriesIdGet=ACL_ALLOW
+		io.swagger.api.CategoriesApi.groupIdDeleteRequestPost=ACL_ALLOW
+		io.swagger.api.CategoriesApi.existsGroupDeleteRequest=ACL_ALLOW
+		io.swagger.api.CategoriesApi.categoriesIdGroupDeleteRequestsGet=ACL_ALLOW
 		io.swagger.api.CategoriesApi.categoriesIdAdminContactPost=ACL_ALLOW
 		io.swagger.api.CategoriesApi.categoriesIdGroupRequestsGet=ACL_ALLOW
 		io.swagger.api.CategoriesApi.categoriesIdGroupRequestApprovalPost=ACL_ALLOW
+		io.swagger.api.CategoriesApi.categoriesIdGroupRequestDeleteApprovalPost=ACL_ALLOW
 		io.swagger.api.CategoriesApi.categoriesGroupRequestPut=ACL_ALLOW
 		io.swagger.api.CategoriesApi.*=ACL_DENY
       </value>
     </property>
   </bean>
-  <bean id="circabcService_security" class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor">
-    <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-    <property name="accessDecisionManager"><ref bean="accessDecisionManager"/></property>
-    <property name="afterInvocationManager"><ref bean="afterInvocationManager"/></property>
+  <bean
+    id="circabcService_security"
+    class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+  >
+    <property name="authenticationManager"><ref
+        bean="authenticationManager"
+      /></property>
+    <property name="accessDecisionManager"><ref
+        bean="accessDecisionManager"
+      /></property>
+    <property name="afterInvocationManager"><ref
+        bean="afterInvocationManager"
+      /></property>
     <property name="objectDefinitionSource">
       <value>
 		eu.cec.digit.circabc.repo.app.CircabcServiceImpl.*=ACL_ALLOW

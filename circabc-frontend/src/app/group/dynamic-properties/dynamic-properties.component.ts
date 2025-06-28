@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
@@ -15,13 +16,27 @@ import {
   Node as ModelNode,
   NodesService,
 } from 'app/core/generated/circabc';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
+import { ReponsiveSubMenuComponent } from 'app/shared/reponsive-sub-menu/reponsive-sub-menu.component';
 import { firstValueFrom } from 'rxjs';
+import { DynamicPropertyBoxComponent } from './box/dynamic-property-box.component';
+import { CreateDynamicPropertyComponent } from './create/create-dynamic-property.component';
+import { DynamicPropertyDeleteComponent } from './delete/dynamic-property-delete.component';
 
 @Component({
   selector: 'cbc-dynamic-properties',
   templateUrl: './dynamic-properties.component.html',
-  styleUrls: ['./dynamic-properties.component.scss'],
+  styleUrl: './dynamic-properties.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    HorizontalLoaderComponent,
+    ReponsiveSubMenuComponent,
+    RouterLink,
+    DynamicPropertyBoxComponent,
+    DynamicPropertyDeleteComponent,
+    CreateDynamicPropertyComponent,
+    TranslocoModule,
+  ],
 })
 export class DynamicPropertiesComponent implements OnInit {
   public groupId!: string;

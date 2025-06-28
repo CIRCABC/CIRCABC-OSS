@@ -29,29 +29,35 @@ import org.alfresco.web.bean.repository.Node;
  *
  * @author schwerr
  */
-public class ManageExternalRepositoriesActionEvaluator extends
-        AllIgServicesAdminEvaluator {
+public class ManageExternalRepositoriesActionEvaluator
+  extends AllIgServicesAdminEvaluator {
 
-    private static final long serialVersionUID = -4285205449710953828L;
+  private static final long serialVersionUID = -4285205449710953828L;
 
-    private static ExternalRepositoriesManagementService externalRepositoriesManagementService = null;
+  private static ExternalRepositoriesManagementService externalRepositoriesManagementService =
+    null;
 
-    /**
-     * Sets the value of the externalRepositoriesManagementService
-     *
-     * @param externalRepositoriesManagementService the externalRepositoriesManagementService to set.
-     */
-    public static void setExternalRepositoriesManagementService(
-            ExternalRepositoriesManagementService externalRepositoriesManagementService) {
-        ManageExternalRepositoriesActionEvaluator.externalRepositoriesManagementService = externalRepositoriesManagementService;
-    }
+  /**
+   * Sets the value of the externalRepositoriesManagementService
+   *
+   * @param externalRepositoriesManagementService the externalRepositoriesManagementService to set.
+   */
+  public static void setExternalRepositoriesManagementService(
+    ExternalRepositoriesManagementService externalRepositoriesManagementService
+  ) {
+    ManageExternalRepositoriesActionEvaluator.externalRepositoriesManagementService =
+      externalRepositoriesManagementService;
+  }
 
-    /**
-     * @see eu.cec.digit.circabc.action.evaluator.AllIgServicesAdminEvaluator#evaluate(org.alfresco.web.bean.repository.Node)
-     */
-    @Override
-    public boolean evaluate(Node node) {
-        return super.evaluate(node) && externalRepositoriesManagementService.isOperational()
-                && CircabcConfig.ENT;
-    }
+  /**
+   * @see eu.cec.digit.circabc.action.evaluator.AllIgServicesAdminEvaluator#evaluate(org.alfresco.web.bean.repository.Node)
+   */
+  @Override
+  public boolean evaluate(Node node) {
+    return (
+      super.evaluate(node) &&
+      externalRepositoriesManagementService.isOperational() &&
+      CircabcConfig.ENT
+    );
+  }
 }

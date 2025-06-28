@@ -1,11 +1,6 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
-} from '@angular/core';
+import { Component, Input, OnChanges, output, input } from '@angular/core';
 
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   AuditService,
   LogSearchResult,
@@ -16,18 +11,18 @@ import { firstValueFrom } from 'rxjs';
 @Component({
   selector: 'cbc-history',
   templateUrl: './history.component.html',
-  styleUrls: ['./history.component.scss'],
+  styleUrl: './history.component.scss',
   preserveWhitespaces: true,
+  imports: [TranslocoModule],
 })
 export class HistoryComponent implements OnChanges {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   public showModal = false;
-  @Output()
-  public readonly modalHide = new EventEmitter();
-  @Input()
-  public itemId!: string;
-  @Input()
-  public historyText!: string;
+  public readonly modalHide = output();
+  public readonly itemId = input.required<string>();
+  public readonly historyText = input.required<string>();
 
   public historyEntries: LogSearchResult[] = [];
 
@@ -38,9 +33,10 @@ export class HistoryComponent implements OnChanges {
   }
 
   async loadHistory() {
-    if (this.itemId !== undefined && this.showModal) {
+    const itemId = this.itemId();
+    if (itemId !== undefined && this.showModal) {
       const results: PagedLogSearchResult = await firstValueFrom(
-        this.auditService.getHistory(this.itemId, 0, 1)
+        this.auditService.getHistory(itemId, 0, 1)
       );
       if (results.data !== undefined) {
         this.historyEntries = results.data;

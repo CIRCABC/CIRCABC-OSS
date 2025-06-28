@@ -27,15 +27,21 @@ import org.alfresco.service.cmr.repository.NodeRef;
  *
  * @author Pierre Beauregard
  */
-public class SimpleDirectDowloadUrlMethod extends NodeRefBaseTemplateProcessorExtension
-        implements TemplateMethodModelEx {
+public class SimpleDirectDowloadUrlMethod
+  extends NodeRefBaseTemplateProcessorExtension
+  implements TemplateMethodModelEx {
 
-    @Override
-    public String getResult(NodeRef nodeRef) {
-        return ExternalAccessServlet.getServerContext()
-                + "/d/d/workspace/SpacesStore/"
-                + nodeRef.getId()
-                + "/"
-                + super.getNodeService().getProperty(nodeRef, ContentModel.PROP_NAME).toString();
-    }
+  @Override
+  public String getResult(NodeRef nodeRef) {
+    return (
+      ExternalAccessServlet.getServerContext() +
+      "/d/d/workspace/SpacesStore/" +
+      nodeRef.getId() +
+      "/" +
+      super
+        .getNodeService()
+        .getProperty(nodeRef, ContentModel.PROP_NAME)
+        .toString()
+    );
+  }
 }

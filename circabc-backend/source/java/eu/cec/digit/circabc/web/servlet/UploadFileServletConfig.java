@@ -24,19 +24,17 @@ import java.io.Serializable;
 
 public class UploadFileServletConfig implements Serializable {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = -6295252016923465072L;
-    private int maxSizeInMegaBytes = -1;
+  /**
+   *
+   */
+  private static final long serialVersionUID = -6295252016923465072L;
+  private int maxSizeInMegaBytes = -1;
 
-    public int getMaxSizeInMegaBytes() {
-        return maxSizeInMegaBytes;
-    }
+  public int getMaxSizeInMegaBytes() {
+    return maxSizeInMegaBytes;
+  }
 
-    public void setMaxSizeInMegaBytes(int maxSizeInMegaBytes) {
-        this.maxSizeInMegaBytes = maxSizeInMegaBytes;
-    }
-
-
+  public void setMaxSizeInMegaBytes(int maxSizeInMegaBytes) {
+    this.maxSizeInMegaBytes = maxSizeInMegaBytes;
+  }
 }

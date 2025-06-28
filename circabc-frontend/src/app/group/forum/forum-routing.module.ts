@@ -1,31 +1,38 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ForumComponent } from 'app/group/forum/forum.component';
-import { TopicComponent } from 'app/group/forum/topic/topic.component';
-import { ViewEditDetailsTopicComponent } from 'app/group/forum/topic/view-edit-details-topic/view-edit-details-topic.component';
-import { ViewEditDetailsForumComponent } from 'app/group/forum/view-edit-details-forum/view-edit-details-forum.component';
-import { NodeAccessGuard } from 'app/group/guards/access-guard.service';
 
-const forumRoutes: Routes = [
+import { canActivateNodeAccess } from 'app/group/guards/access-guard.service';
+
+export const forumRoutes: Routes = [
   {
     path: ':nodeId',
-    component: ForumComponent,
-    canActivate: [NodeAccessGuard],
+    loadComponent: () =>
+      import('app/group/forum/forum.component').then((m) => m.ForumComponent),
+    canActivate: [canActivateNodeAccess],
   },
   {
     path: 'topic/:nodeId',
-    component: TopicComponent,
-    canActivate: [NodeAccessGuard],
+    loadComponent: () =>
+      import('app/group/forum/topic/topic.component').then(
+        (m) => m.TopicComponent
+      ),
+    canActivate: [canActivateNodeAccess],
   },
   {
     path: ':forumId/details',
-    component: ViewEditDetailsForumComponent,
-    canActivate: [NodeAccessGuard],
+    loadComponent: () =>
+      import(
+        'app/group/forum/view-edit-details-forum/view-edit-details-forum.component'
+      ).then((m) => m.ViewEditDetailsForumComponent),
+    canActivate: [canActivateNodeAccess],
   },
   {
     path: ':topicId/topic-details',
-    component: ViewEditDetailsTopicComponent,
-    canActivate: [NodeAccessGuard],
+    loadComponent: () =>
+      import(
+        'app/group/forum/topic/view-edit-details-topic/view-edit-details-topic.component'
+      ).then((m) => m.ViewEditDetailsTopicComponent),
+    canActivate: [canActivateNodeAccess],
   },
 ];
 

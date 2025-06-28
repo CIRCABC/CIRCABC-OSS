@@ -2,33 +2,25 @@ version: "3"
 services:
   db:
     container_name: db
-    image: mysql:5.6
+    image: mysql:9.3.0
     ports:
       - "3306:3306"  
     environment:
         - MYSQL_ROOT_PASSWORD=password
     volumes:
-        - ./mysql/init:/docker-entrypoint-initdb.d/:ro
+        - mysql_data:/var/lib/mysql
+        - mysql_init:/docker-entrypoint-initdb.d/:ro
     command: --lower_case_table_names=1 --transaction-isolation=READ-COMMITTED
-  db_admin:
-    container_name: db_admin
-    image: phpmyadmin/phpmyadmin
-    depends_on:
-      - db
-    environment: 
-      PMA_HOST: db
-      PMA_PORT: 3306
-      PMA_ARBITRARY: 1
-    ports:
-      - "83:80"
   tomcat:
     build: tomcat
     image: tomcat-circabc
     ports:
       - "81:8080"
+      - "8889:8889"
     container_name: tomcat
     depends_on:
       - db
+
   solr:
     build: solr
     image: solr-circabc
@@ -51,27 +43,25 @@ services:
     depends_on:
       - angular
     volumes:
-      - ./proxy/conf:/etc/nginx
+      - nginx_conf:/etc/nginx
     ports:
       - 80:80
       - 443:443
       - 14500:14500
-#  wireshark:
-#    image: "ffeldhaus/wireshark:0.5"
-#    container_name: wireshark
-#    restart: always
-#    privileged: true
-#    network_mode: "service:proxy"
-#    environment:
-#      - XPRA_PW=wireshark # password to access wireshark
-#  haproxy:
-#    image: haproxy:1
-#    container_name: proxy
-#    restart: always
-#    ports:
-#      - 80:80
-#      - 445:445
-#      - 2049:2049
-#      - 14500:14500 # required to access wireshark, change first port if necessary
-#    volumes:
-#      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:Z
+
+volumes:
+  nas0_contentstore:
+  nas1_contentstore:
+  nas2_contentstore:
+  mysql_data:
+  mysql_init:
+    driver_opts:
+      type: none
+      o: bind
+      device: ./mysql/init
+  nginx_conf:
+    driver_opts:
+      type: none
+      o: bind
+      device: ./proxy/conf
+

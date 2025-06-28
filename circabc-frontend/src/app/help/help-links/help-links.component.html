@@ -1,29 +1,38 @@
 <section class="contact-button">
   <a [routerLink]="['/help/contact']"
-    >{{ 'contact.support' | transloco }} <img src="img/email.png"
+    >{{ 'contact.support' | transloco }}
+    <img src="img/email.png" alt="Email icon"
   /></a>
 </section>
 
 <h2>{{ 'help.userful.links.title' | transloco }}</h2>
 
-<p *ngIf="links.length === 0"> {{ 'help.userful.links.empty' | transloco }} </p>
-
-<ul *ngIf="links.length > 0">
-  <li *ngFor="let link of links">
+@if (links.length === 0) {
+<p> {{ 'help.userful.links.empty' | transloco }} </p>
+} @if (links.length > 0) {
+<ul>
+  @for (link of links; track link.id) {
+  <li>
     <a
       class="alink"
       [href]="sanitizeLinkRef(link.href)"
       target="{{ getTarget(link.href) }}"
       >{{ link.title | cbcI18n }}</a
     >
-    <p *ngIf="isAdminOrSupport()" class="actions">
-      <a (click)="edit(link)">{{ 'label.edit' | transloco }}</a>
+    @if (isAdminOrSupport()) {
+    <p class="actions">
+      <a data-cy="edit-inline" tabindex="0" (click)="edit(link)"
+        >{{ 'label.edit' | transloco }}</a
+      >
       <cbc-inline-delete
         (deletionConfirmed)="deleteLink(link)"
       ></cbc-inline-delete>
     </p>
+    }
   </li>
+  }
 </ul>
+}
 
 <h2>{{ 'label.legal.notice' | transloco }}</h2>
 <ul>

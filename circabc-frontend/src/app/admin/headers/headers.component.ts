@@ -1,15 +1,18 @@
 import { Component, OnChanges, OnDestroy, OnInit } from '@angular/core';
 
+import { TranslocoModule } from '@jsverse/transloco';
 import { Header, HeaderService, User } from 'app/core/generated/circabc';
 import { HeaderReloadListenerService } from 'app/core/header-reload-listener.service';
 import { LoginService } from 'app/core/login.service';
+import { InlineDeleteComponent } from 'app/shared/delete/inline-delete.component';
 import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
-import { firstValueFrom, Subscription } from 'rxjs';
+import { Subscription, firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-headers',
   templateUrl: './headers.component.html',
   preserveWhitespaces: true,
+  imports: [InlineDeleteComponent, TranslocoModule],
 })
 export class HeadersComponent implements OnInit, OnChanges, OnDestroy {
   public loading = false;

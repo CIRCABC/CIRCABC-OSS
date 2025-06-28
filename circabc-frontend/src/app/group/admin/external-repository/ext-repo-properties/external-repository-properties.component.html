@@ -6,7 +6,7 @@
     <ng-template
       ngFor
       let-repo
-      [ngForOf]="form.controls.repos?.value"
+      [ngForOf]="form.controls.repos.value"
       let-i="index"
     >
       <div class="grid-item">{{ repo.name }}</div>
@@ -14,21 +14,31 @@
         {{ repo.requestedOn | date: 'yyyy-MM-dd HH:mm' }}
       </div>
       <div class="grid-item" [formGroupName]="i">
-        <p-inputSwitch
+        <mat-slide-toggle
           formControlName="enabled"
-          [disabled]="isExternalUser"
-        ></p-inputSwitch>
+          [checked]="repo.enabled"
+          (toggleChange)="toggleChange(i)"
+        >
+        </mat-slide-toggle>
       </div>
     </ng-template>
   </section>
-  <div class="field" *ngIf="saving">
-    <label
+  @if (saving) {
+  <div class="field">
+    <div
       >{{ 'label.saving' | transloco }}...
       <cbc-spinner></cbc-spinner>
-    </label>
+    </div>
   </div>
+  }
 </form>
-<div class="buttons-group" *ngIf="!saving">
-  <a class="cta" (click)="save()">{{ 'label.save' | transloco }}</a>
-  <a class="button" (click)="cancel()">{{ 'label.cancel' | transloco }}</a>
+@if (!saving) {
+<div class="buttons-group">
+  <a tabindex="0" class="cta" (click)="save()"
+    >{{ 'label.save' | transloco }}</a
+  >
+  <a tabindex="0" class="button" (click)="cancel()"
+    >{{ 'label.cancel' | transloco }}</a
+  >
 </div>
+}

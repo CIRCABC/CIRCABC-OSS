@@ -30,7 +30,7 @@
     <bean id="ProxyChainTrustHandler" class="eu.cec.digit.ecas.client.validation.FirstParentProxyChainTrustHandler">
         <constructor-arg index="0">
             <list>
-                <value>https://d02di1637770dit.net1.cec.eu.int:7002/new/login/cas/proxyreceptor</value>
+                <value></value>
             </list>
         </constructor-arg>
     </bean>
@@ -45,18 +45,18 @@
         This is the EcasConfiguration bean containing the whole ECAS client configuration
     -->
     <bean id="EcasConfiguration" class="eu.cec.digit.ecas.client.configuration.ChainableSpringConfiguration">
-        <property name="configurationId" value="eu.cec.digit.circabc.verifyProxyTicket"/>
-        <property name="serverName" value="d02di1637770dit.net1.cec.eu.int"/>
-        <property name="ecasBaseUrl" value="https://192.168.99.100:7002"/>
+        <property name="configurationId" value=""/>
+        <property name="serverName" value=""/>
+        <property name="ecasBaseUrl" value=""/>
         <property name="initLoginUrl" value="/cas/login/init"/>
-        <property name="loginUrl" value="https://192.168.99.100:7002/cas/login"/>
-        <property name="validateUrl" value="https://192.168.99.100:7002/cas/TicketValidationService"/>
+        <property name="loginUrl" value=""/>
+        <property name="validateUrl" value="e"/>
         <property name="proxyUrl" value="/cas/proxy"/>
         <property name="forcingRenew" value="false"/>
         <!-- for ECAS proxy clients only: -->
         <property name="authorizedProxies">
             <list>
-                <value>https://d02di1637770dit.net1.cec.eu.int:7002/new/login/cas/proxyreceptor</value>
+                <value></value>
             </list>
         </property>
         <property name="proxyChainTrustHandler" ref="ProxyChainTrustHandler"/>

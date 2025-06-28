@@ -1,5 +1,7 @@
+import { DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ActionEmitterResult, ActionResult } from 'app/action-result';
 import {
   HelpArticle,
@@ -7,12 +9,29 @@ import {
   HelpService,
 } from 'app/core/generated/circabc';
 import { LoginService } from 'app/core/login.service';
+import { AddHelpArticleComponent } from 'app/help/add-help-article/add-help-article.component';
+import { AddHelpCategoryComponent } from 'app/help/add-help-category/add-help-category.component';
+import { DeleteHelpCategoryComponent } from 'app/help/delete-help-category/delete-help-category.component';
+import { CategoryListSelectComponent } from 'app/help/help-category/category-list-select/category-list-select.component';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
+import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-help-category',
   templateUrl: './help-category.component.html',
-  styleUrls: ['./help-category.component.scss'],
+  styleUrl: './help-category.component.scss',
+  imports: [
+    HorizontalLoaderComponent,
+    RouterLink,
+    CategoryListSelectComponent,
+    AddHelpArticleComponent,
+    DeleteHelpCategoryComponent,
+    AddHelpCategoryComponent,
+    DatePipe,
+    I18nPipe,
+    TranslocoModule,
+  ],
 })
 export class HelpCategoryComponent implements OnInit {
   public articles: HelpArticle[] = [];

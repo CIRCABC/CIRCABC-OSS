@@ -1,0 +1,241 @@
+openapi: 3.0.3
+info:
+  title: EU Captcha Rest API
+  description: API for use of EU Captcha
+  contact:
+    name: Digit info
+    email: DIGIT-EU-CAPTCHA@ec.europa.eu
+  license:
+    name: European Union Public License 1.2
+    url: https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  version: '1.0'
+servers:
+  - url: https://api.eucaptcha.eu:443
+    description: Inferred Url
+tags:
+  - name: captcha-controller
+    description: Captcha Controller
+paths:
+  /api/captchaImg:
+    get:
+      tags:
+        - captcha-controller
+      summary: Get a Captcha image
+      description: Returns a captcha image as per locale, captchaLength, type and capitalization or not
+      operationId: getCaptchaImageUsingGET
+      parameters:
+        - name: locale
+          in: query
+          description: locale
+          required: false
+          style: form
+          schema:
+            type: string
+        - name: captchaLength
+          in: query
+          description: captchaLength
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int32
+        - name: captchaType
+          in: query
+          description: captchaType
+          required: false
+          style: form
+          schema:
+            type: string
+        - name: capitalized
+          in: query
+          description: capitalized
+          required: false
+          style: form
+          schema:
+            type: boolean
+        - name: degree
+          in: query
+          description: degree
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int32
+        - name: userId
+          in: query
+          description: userId
+          required: false
+          style: form
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved captcha image
+          headers:
+            x-jwtString:
+              schema:
+                type: string
+                description: token to use when validate captcha
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CaptchaResultDto'
+        '406':
+          description: Not Acceptable - Locale is missing or invalid
+  /api/reloadCaptchaImg/{previousCaptchaId}:
+    get:
+      tags:
+        - captcha-controller
+      summary: Refresh a previous Captcha image
+      description: Returns a new captcha image as per locale, captchaLength, type and capitalization or not
+      operationId: reloadCaptchaImageUsingGET
+      parameters:
+        - name: previousCaptchaId
+          in: path
+          description: previousCaptchaId
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: locale
+          in: query
+          description: locale
+          required: false
+          style: form
+          schema:
+            type: string
+        - name: captchaLength
+          in: query
+          description: captchaLength
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int32
+        - name: captchaType
+          in: query
+          description: captchaType
+          required: false
+          style: form
+          schema:
+            type: string
+        - name: capitalized
+          in: query
+          description: capitalized
+          required: false
+          style: form
+          schema:
+            type: boolean
+        - name: degree
+          in: query
+          description: degree
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int32
+        - name: userId
+          in: query
+          description: userId
+          required: false
+          style: form
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved captcha image
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CaptchaResultDto'
+        '400':
+          description: CaptchaId is missing
+        '406':
+          description: Not Acceptable - Locale is missing or invalid
+  /api/validateCaptcha/{captchaId}:
+    post:
+      tags:
+        - captcha-controller
+      summary: Validate a Captcha image
+      description: Returns success or failed as an answer
+      operationId: validateCaptchaUsingPOST
+      parameters:
+        - name: x-jwtString
+          in: header
+          description: captcha token retrieved from get in header response
+          required: true
+          schema:
+            type: string
+        - name: captchaId
+          in: path
+          description: captchaId
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: captchaAnswer
+          in: query
+          description: captchaAnswer
+          required: false
+          style: form
+          schema:
+            type: string
+        - name: useAudio
+          in: query
+          description: useAudio
+          required: false
+          style: form
+          schema:
+            type: boolean
+        - name: captchaType
+          in: query
+          description: captchaType
+          required: false
+          style: form
+          schema:
+            type: string
+        - name: userId
+          in: query
+          description: userId
+          required: false
+          style: form
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfull response can be success or fail
+          content:
+            '*/*':
+              schema:
+                type: string
+        '400':
+          description: CaptchaId is missing
+components:
+  schemas:
+    CaptchaResultDto:
+      title: CaptchaResultDto
+      type: object
+      properties:
+        captchaId:
+          type: string
+          description: Generated ID of the Captcha
+          example: mj0kvg8s39sufq9uj8cs5ckorj
+        captchaImg:
+          type: string
+          description: The CaptchaImage
+          example: iVBORw0KGgoAAAANSUhEUgAAAZAAAADICAIAAABJdyC//...
+        captchaType:
+          type: string
+          description: Type of the Captcha
+          enum:
+            - STANDARD
+            - WHATS_UP
+          example: STANDARD for textual captcha or WHATS_UP for rotated image captcha
+        audioCaptcha:
+          type: string
+      required:
+        - captchaId
+        - captchaImg
+        - captchaType
+        - audioCaptcha
+

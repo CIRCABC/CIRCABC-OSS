@@ -1,9 +1,7 @@
-.main {
-  padding: 25px !important;
-}
+@use '_global';
+@use '_forms';
+@use '_boxes';
 
-.mandatory::after {
-  content: '*';
-  color: red;
-  margin-left: 15px;
+.captcha {
+  align-self: end;
 }

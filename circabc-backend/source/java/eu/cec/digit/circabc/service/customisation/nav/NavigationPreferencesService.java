@@ -28,38 +28,42 @@ import org.alfresco.service.cmr.repository.NodeRef;
  * @see eu.cec.digit.circabc.service.customisation.NodePreferencesService
  */
 public interface NavigationPreferencesService {
+  String SEARCH_SERVICE = "search";
+  String LIBRARY_SERVICE = "library";
+  String INFORMATION_SERVICE = "information";
+  String NEWSGROUP_SERVICE = "newsgroup";
 
-    String SEARCH_SERVICE = "search";
-    String LIBRARY_SERVICE = "library";
-    String INFORMATION_SERVICE = "information";
-    String NEWSGROUP_SERVICE = "newsgroup";
+  String DISCUSSION_TYPE = "discussion";
+  String CONTAINER_TYPE = "container";
+  String CONTENT_TYPE = "content";
+  String FORUM_TYPE = "forum";
+  String TOPIC_TYPE = "topic";
 
-    String DISCUSSION_TYPE = "discussion";
-    String CONTAINER_TYPE = "container";
-    String CONTENT_TYPE = "content";
-    String FORUM_TYPE = "forum";
-    String TOPIC_TYPE = "topic";
+  /**
+   * Return the navigation preference of a sepecif service of a given interest group.
+   */
+  NodeRef addServicePreference(
+    final NodeRef interestGroup,
+    final String serviceName,
+    final String nodeType,
+    final NavigationPreference navigationPreference
+  ) throws CustomizationException;
 
-    /**
-     * Return the navigation preference of a sepecif service of a given interest group.
-     */
-    NodeRef addServicePreference(
-            final NodeRef interestGroup,
-            final String serviceName,
-            final String nodeType,
-            final NavigationPreference navigationPreference)
-            throws CustomizationException;
+  /**
+   * Return the navigation preference of a sepecif service of a given interest group.
+   */
+  NavigationPreference getServicePreference(
+    final NodeRef interestGroup,
+    final String serviceName,
+    final String nodeType
+  );
 
-    /**
-     * Return the navigation preference of a sepecif service of a given interest group.
-     */
-    NavigationPreference getServicePreference(
-            final NodeRef interestGroup, final String serviceName, final String nodeType);
-
-    /**
-     * Remove a given navigation preference for a given node.
-     */
-    void removeServicePreference(
-            final NodeRef interestGroup, final String serviceName, final String nodeType)
-            throws CustomizationException;
+  /**
+   * Remove a given navigation preference for a given node.
+   */
+  void removeServicePreference(
+    final NodeRef interestGroup,
+    final String serviceName,
+    final String nodeType
+  ) throws CustomizationException;
 }

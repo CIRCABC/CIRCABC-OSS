@@ -22,11 +22,10 @@ package eu.cec.digit.circabc.web.ui.common.component.debug;
 
 import eu.cec.digit.circabc.service.admin.debug.ServerConfigurationService;
 import eu.cec.digit.circabc.web.Services;
-import org.alfresco.web.ui.common.component.debug.BaseDebugComponent;
-
-import javax.faces.context.FacesContext;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import javax.faces.context.FacesContext;
+import org.alfresco.web.ui.common.component.debug.BaseDebugComponent;
 
 /**
  * Component which displays the Server configuration properties
@@ -35,34 +34,34 @@ import java.util.Map;
  */
 public class UIServerConfiguration extends BaseDebugComponent {
 
-    private transient ServerConfigurationService serverConfigurationService;
+  private transient ServerConfigurationService serverConfigurationService;
 
-    /**
-     * @see javax.faces.component.UIComponent#getFamily()
-     */
-    public String getFamily() {
-        return "eu.cec.digit.circabc.faces.debug.ServerConfiguration";
+  /**
+   * @see javax.faces.component.UIComponent#getFamily()
+   */
+  public String getFamily() {
+    return "eu.cec.digit.circabc.faces.debug.ServerConfiguration";
+  }
+
+  /**
+   * @see org.alfresco.web.ui.common.component.debug.BaseDebugComponent#getDebugData()
+   */
+  @SuppressWarnings("unchecked")
+  public Map getDebugData() {
+    final Map properties = new LinkedHashMap();
+
+    return properties;
+  }
+
+  /**
+   * @return the serverConfigurationService
+   */
+  protected final ServerConfigurationService getServerConfigurationService() {
+    if (serverConfigurationService == null) {
+      serverConfigurationService = Services.getCircabcServiceRegistry(
+        FacesContext.getCurrentInstance()
+      ).getServerConfigurationService();
     }
-
-    /**
-     * @see org.alfresco.web.ui.common.component.debug.BaseDebugComponent#getDebugData()
-     */
-    @SuppressWarnings("unchecked")
-    public Map getDebugData() {
-        final Map properties = new LinkedHashMap();
-
-        return properties;
-    }
-
-    /**
-     * @return the serverConfigurationService
-     */
-    protected final ServerConfigurationService getServerConfigurationService() {
-        if (serverConfigurationService == null) {
-            serverConfigurationService = Services
-                    .getCircabcServiceRegistry(FacesContext.getCurrentInstance())
-                    .getServerConfigurationService();
-        }
-        return serverConfigurationService;
-    }
+    return serverConfigurationService;
+  }
 }

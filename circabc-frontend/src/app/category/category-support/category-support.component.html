@@ -18,7 +18,8 @@
     >
   </div>
 
-  <div class="field" *ngIf="categoryForm.value.useSingleContact === true">
+  @if (categoryForm.value.useSingleContact === true) {
+  <div class="field">
     <div class="label">{{ 'label.email' | transloco }}</div>
     <input
       id="contactEmails"
@@ -28,35 +29,40 @@
       email
     />
   </div>
-
-  <div *ngIf="categoryForm.value.useSingleContact === false">
+  } @if (categoryForm.value.useSingleContact === false) {
+  <div>
     <p> {{ 'admin.category.support.contact.many.explanation' | transloco }} </p>
     <ul class="list-of-admins">
-      <li *ngFor="let admin of administrators" class="row">
-        <a (click)="toggleSelect(admin.email)">
+      @for (admin of administrators; track admin.userId) {
+      <li class="row">
+        <a tabindex="0" (click)="toggleSelect(admin.email)">
           <span class="admin-user"
             >{{ admin.firstname + ' ' + admin.lastname }}</span
           >&nbsp;<span class="admin-email">{{ admin.email }}</span>
         </a>
-        <img
-          src="img/check.png"
-          alt="selected"
-          *ngIf="isEmailSelected(admin.email)"
-        />
+        @if (isEmailSelected(admin.email)) {
+        <img src="img/check.png" alt="selected" />
+        }
       </li>
+      }
     </ul>
   </div>
-
-  <div class="field" *ngIf="updating">
-    <label
-      >{{ 'label.updating' | transloco }}...<cbc-spinner></cbc-spinner
-    ></label>
+  } @if (updating) {
+  <div class="field">
+    <div>{{ 'label.updating' | transloco }}...<cbc-spinner></cbc-spinner></div>
   </div>
-
-  <div class="buttons-group" *ngIf="!updating">
-    <a class="cta" (click)="update()" [class.disabled]="!isFormValid()"
+  } @if (!updating) {
+  <div class="buttons-group">
+    <a
+      tabindex="0"
+      class="cta"
+      (click)="update()"
+      [class.disabled]="!isFormValid()"
       >{{ 'label.update' | transloco }}</a
     >
-    <a class="button" (click)="cancel()">{{ 'label.cancel' | transloco }}</a>
+    <a tabindex="0" class="button" (click)="cancel()"
+      >{{ 'label.cancel' | transloco }}</a
+    >
   </div>
+  }
 </form>

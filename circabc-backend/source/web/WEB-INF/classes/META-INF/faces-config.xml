@@ -1,14 +1,13 @@
-<?xml version='1.0' encoding='UTF-8'?>
-
+<?xml version='1.0' encoding='UTF-8' ?>
 <!--+
     |     Copyright European Community 2006 - Licensed under the EUPL V.1.0
     |
     |  		   http://ec.europa.eu/idabc/en/document/6523
     |
     +-->
-
-<!DOCTYPE faces-config PUBLIC "-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.1//EN"
-                              "http://java.sun.com/dtd/web-facesconfig_1_1.dtd">
+<!DOCTYPE faces-config PUBLIC
+  "-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.1//EN"
+  "http://java.sun.com/dtd/web-facesconfig_1_1.dtd">
 <faces-config>
   <application>
     <navigation-handler>
@@ -23,7 +22,8 @@
     </locale-config>
   </application>
   <lifecycle>
-  	<phase-listener>eu.cec.digit.circabc.myfaces.application.jsp.LifeCycleListener</phase-listener>
+  	<phase-listener
+    >eu.cec.digit.circabc.myfaces.application.jsp.LifeCycleListener</phase-listener>
   </lifecycle>
   <!--  Only  <navigation-rule> here  -->
   <navigation-rule>
@@ -61,7 +61,7 @@
     </description>
     <from-view-id>/jsp/*</from-view-id>
     <navigation-case>
-      <description></description>
+      <description />
       <from-outcome>ecaspage</from-outcome>
       <to-view-id>/jsp/extension/wai/ecas/ecaslogin.jsp</to-view-id>
       <redirect />

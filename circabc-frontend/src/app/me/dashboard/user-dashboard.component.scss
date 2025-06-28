@@ -1,4 +1,12 @@
-@use '~css/global/variables-mixins-keyframes';
+@use 'css/global/variables-mixins-keyframes';
+
+h1 {
+  font-size: 30px;
+  font-weight: bold;
+  color: var(--theme-timeline-header);
+  margin-bottom: 15px;
+  text-align: center;
+}
 
 aside.sidebar-left {
   float: left;

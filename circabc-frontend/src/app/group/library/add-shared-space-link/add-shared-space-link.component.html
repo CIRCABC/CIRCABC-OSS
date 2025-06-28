@@ -1,7 +1,7 @@
 <cbc-modal
   [title]="'label.add.shared.space.link'"
   (ok)="createSharedSpaceLink()"
-  (cancel)="cancel()"
+  (cancelModal)="cancel()"
   [okLabel]="'label.add'"
   [(visible)]="showModal"
   [executing]="processing"
@@ -26,11 +26,9 @@
           style="width: 500px"
           formControlName="sharedSpaceId"
         >
-          <option
-            *ngFor="let sharedSpace of sharedSpaceItems"
-            value="{{ sharedSpace.id }}"
-            >{{ sharedSpace.path }}</option
-          >
+          @for (sharedSpace of sharedSpaceItems(); track sharedSpace.id) {
+          <option value="{{ sharedSpace.id }}">{{ sharedSpace.path }}</option>
+          }
         </select>
         <cbc-control-message
           [control]="sharedSpaceIdControl"

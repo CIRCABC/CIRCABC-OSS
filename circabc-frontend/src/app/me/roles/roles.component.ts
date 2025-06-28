@@ -9,16 +9,32 @@ import {
   UserService,
 } from 'app/core/generated/circabc';
 
-import { LoginService } from 'app/core/login.service';
-import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
+import { RouterLink } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ActionEmitterResult } from 'app/action-result';
+import { LoginService } from 'app/core/login.service';
+import { QuitGroupComponent } from 'app/me/quit-group/quit-group.component';
+import { CreateUserComponent } from 'app/shared/create-user-wizard/create-user.component';
+import { DataCyDirective } from 'app/shared/directives/data-cy.directive';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
+import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
+import { SetTitlePipe } from 'app/shared/pipes/set-title.pipe';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-roles',
   templateUrl: './roles.component.html',
-  styleUrls: ['./roles.component.scss'],
+  styleUrl: './roles.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    HorizontalLoaderComponent,
+    DataCyDirective,
+    CreateUserComponent,
+    RouterLink,
+    QuitGroupComponent,
+    SetTitlePipe,
+    TranslocoModule,
+  ],
 })
 export class RolesComponent implements OnInit {
   public memberships: InterestGroupProfile[] = [];

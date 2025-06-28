@@ -1,38 +1,81 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { CategoryActionsComponent } from 'app/category/category-actions/category-actions.component';
-import { CategoryAdministratorsComponent } from 'app/category/category-administrators/category-administrators.component';
-import { CategoryCustomisationComponent } from 'app/category/category-customisation/category-customisation.component';
-import { CategoryDetailsComponent } from 'app/category/category-details/category-details.component';
-import { CategoryGroupsComponent } from 'app/category/category-group/category-groups.component';
-import { CategorySupportComponent } from 'app/category/category-support/category-support.component';
-import { CategoryComponent } from 'app/category/category.component';
-import { GroupRequestsComponent } from 'app/category/group-requests/group-requests.component';
-import { IgStatisticsComponent } from 'app/category/ig-statistics/ig-statistics.component';
-import { AdminGuard } from 'app/group/guards/admin-guard.service';
 
-const routes: Routes = [
+import { canActivateAdmin } from 'app/group/guards/admin-guard.service';
+
+export const categoryRoutes: Routes = [
   {
     path: ':id',
-    component: CategoryComponent,
-    canActivate: [AdminGuard],
+    loadComponent: () =>
+      import('app/category/category.component').then(
+        (m) => m.CategoryComponent
+      ),
+    canActivate: [canActivateAdmin],
 
     children: [
       { path: '', redirectTo: 'details', pathMatch: 'full' },
-      { path: 'details', component: CategoryDetailsComponent },
-      { path: 'administrators', component: CategoryAdministratorsComponent },
-      { path: 'actions', component: CategoryActionsComponent },
-      { path: 'ig-statistics', component: IgStatisticsComponent },
-      { path: 'customisation', component: CategoryCustomisationComponent },
-      { path: 'support', component: CategorySupportComponent },
-      { path: 'group-requests', component: GroupRequestsComponent },
-      { path: 'interest-groups', component: CategoryGroupsComponent },
+      {
+        path: 'details',
+        loadComponent: () =>
+          import(
+            'app/category/category-details/category-details.component'
+          ).then((m) => m.CategoryDetailsComponent),
+      },
+      {
+        path: 'administrators',
+        loadComponent: () =>
+          import(
+            'app/category/category-administrators/category-administrators.component'
+          ).then((m) => m.CategoryAdministratorsComponent),
+      },
+      {
+        path: 'actions',
+        loadComponent: () =>
+          import(
+            'app/category/category-actions/category-actions.component'
+          ).then((m) => m.CategoryActionsComponent),
+      },
+      {
+        path: 'ig-statistics',
+        loadComponent: () =>
+          import('app/category/ig-statistics/ig-statistics.component').then(
+            (m) => m.IgStatisticsComponent
+          ),
+      },
+      {
+        path: 'customisation',
+        loadComponent: () =>
+          import(
+            'app/category/category-customisation/category-customisation.component'
+          ).then((m) => m.CategoryCustomisationComponent),
+      },
+      {
+        path: 'support',
+        loadComponent: () =>
+          import(
+            'app/category/category-support/category-support.component'
+          ).then((m) => m.CategorySupportComponent),
+      },
+      {
+        path: 'group-requests',
+        loadComponent: () =>
+          import('./ig-requests/ig-requests.component').then(
+            (m) => m.IgRequestsComponent
+          ),
+      },
+      {
+        path: 'interest-groups',
+        loadComponent: () =>
+          import('app/category/category-group/category-groups.component').then(
+            (m) => m.CategoryGroupsComponent
+          ),
+      },
     ],
   },
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
+  imports: [RouterModule.forChild(categoryRoutes)],
   exports: [RouterModule],
 })
 export class CategoryRoutingModule {}

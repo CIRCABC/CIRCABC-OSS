@@ -28,7 +28,6 @@ import eu.cec.digit.circabc.web.bean.navigation.NavigableNodeType;
 import org.alfresco.web.action.evaluator.BaseActionEvaluator;
 import org.alfresco.web.bean.repository.Node;
 
-
 /**
  * Evaluate if the current user can send an email to the members.
  *
@@ -36,19 +35,25 @@ import org.alfresco.web.bean.repository.Node;
  **/
 public class MailToMembersEvaluator extends BaseActionEvaluator {
 
-    private static final long serialVersionUID = 969643930963034329L;
+  private static final long serialVersionUID = 969643930963034329L;
 
-    public boolean evaluate(final Node node) {
-        if (NavigableNodeType.CIRCABC_ROOT.isNodeFromType(node)) {
-            if (Beans.getWaiNavigator().getCurrentUser().isAdmin()) {
-                return true;
-            } else {
-                return node.hasPermission(CircabcRootPermissions.CIRCABCMANAGEMEMBERS.toString());
-            }
-        } else if (NavigableNodeType.CATEGORY.isNodeFromType(node)) {
-            return node.hasPermission(CategoryPermissions.CIRCACATEGORYMANAGEMEMBERS.toString());
-        } else {
-            return node.hasPermission(DirectoryPermissions.DIRMANAGEMEMBERS.toString());
-        }
+  public boolean evaluate(final Node node) {
+    if (NavigableNodeType.CIRCABC_ROOT.isNodeFromType(node)) {
+      if (Beans.getWaiNavigator().getCurrentUser().isAdmin()) {
+        return true;
+      } else {
+        return node.hasPermission(
+          CircabcRootPermissions.CIRCABCMANAGEMEMBERS.toString()
+        );
+      }
+    } else if (NavigableNodeType.CATEGORY.isNodeFromType(node)) {
+      return node.hasPermission(
+        CategoryPermissions.CIRCACATEGORYMANAGEMEMBERS.toString()
+      );
+    } else {
+      return node.hasPermission(
+        DirectoryPermissions.DIRMANAGEMEMBERS.toString()
+      );
     }
+  }
 }

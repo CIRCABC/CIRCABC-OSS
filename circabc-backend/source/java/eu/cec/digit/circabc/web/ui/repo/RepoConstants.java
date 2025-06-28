@@ -25,14 +25,17 @@ package eu.cec.digit.circabc.web.ui.repo;
  */
 public final class RepoConstants {
 
-    public static final String CIRCABC_FACES_MLTEXT_RENDERER = "eu.cec.digit.circabc.faces.MultilingualText";
-    public static final String CIRCABC_FACES_MLTEXTAREA_RENDERER = "eu.cec.digit.circabc.faces.MultilingualTextArea";
+  public static final String CIRCABC_FACES_MLTEXT_RENDERER =
+    "eu.cec.digit.circabc.faces.MultilingualText";
+  public static final String CIRCABC_FACES_MLTEXTAREA_RENDERER =
+    "eu.cec.digit.circabc.faces.MultilingualTextArea";
 
-    public static final String CIRCAB_FACES_ASSOCIATION = "eu.cec.digit.circabc.faces.CircabcAssociation";
-    public static final String CIRCAB_FACES_ASSOC_EDITOR = "eu.cec.digit.circabc.faces.CircabcAssociationEditor";
-    public static final String CIRCAB_GENERATOR_ASSOCIATION = "CircabcAssociationGenerator";
+  public static final String CIRCAB_FACES_ASSOCIATION =
+    "eu.cec.digit.circabc.faces.CircabcAssociation";
+  public static final String CIRCAB_FACES_ASSOC_EDITOR =
+    "eu.cec.digit.circabc.faces.CircabcAssociationEditor";
+  public static final String CIRCAB_GENERATOR_ASSOCIATION =
+    "CircabcAssociationGenerator";
 
-    private RepoConstants() {
-
-    }
+  private RepoConstants() {}
 }

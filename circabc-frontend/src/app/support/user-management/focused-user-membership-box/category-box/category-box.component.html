@@ -2,11 +2,13 @@
   <div class="profile">
     <strong>{{ 'label.category.administrator' | transloco }}</strong>
   </div>
-  <div class="group" *ngIf="category && category.title">
+  @if (category && category.title) {
+  <div class="group">
     <strong>{{ category.title | cbcI18n }}</strong>
     <br />
     {{ category.name }}
   </div>
+  }
   <div class="actions">
     <cbc-inline-delete
       [deleteLabel]="'label.remove' | transloco"

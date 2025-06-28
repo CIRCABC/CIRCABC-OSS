@@ -1,11 +1,21 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { DynamicPropertiesComponent } from 'app/group/dynamic-properties/dynamic-properties.component';
-import { EditDynamicPropertyComponent } from 'app/group/dynamic-properties/edit-dynamic-property/edit-dynamic-property.component';
 
-const dynPropRoutes: Routes = [
-  { path: '', component: DynamicPropertiesComponent },
-  { path: ':dpId/edit', component: EditDynamicPropertyComponent },
+export const dynPropRoutes: Routes = [
+  {
+    path: '',
+    loadComponent: () =>
+      import('app/group/dynamic-properties/dynamic-properties.component').then(
+        (m) => m.DynamicPropertiesComponent
+      ),
+  },
+  {
+    path: ':dpId/edit',
+    loadComponent: () =>
+      import(
+        'app/group/dynamic-properties/edit-dynamic-property/edit-dynamic-property.component'
+      ).then((m) => m.EditDynamicPropertyComponent),
+  },
 ];
 
 @NgModule({

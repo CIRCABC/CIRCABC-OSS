@@ -2,7 +2,7 @@
   <shortname>contact the support by email</shortname>
   <description>contact the support by email</description>
   <url>/circabc/help/support/mail</url>
-  <format default="json"/>
-  <authentication>user</authentication>
+  <format default="json" />
+  <authentication>guest</authentication>
   <transaction>required</transaction>
 </webscript>

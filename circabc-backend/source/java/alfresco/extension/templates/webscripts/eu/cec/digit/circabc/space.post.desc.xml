@@ -2,7 +2,7 @@
   <shortname>create a new space</shortname>
   <description>create a new  space </description>
     <url>/circabc/spaces/{id}/subspaces</url>
-  <format default="json"/>
+  <format default="json" />
   <authentication>guest</authentication>
   <transaction>required</transaction>
 </webscript>

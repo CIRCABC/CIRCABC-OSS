@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ActionService } from 'app/action-result/action.service';
 import {
   ActionEmitterResult,
@@ -11,13 +12,24 @@ import {
   Node as ModelNode,
   NodesService,
 } from 'app/core/generated/circabc';
+import { InlineDeleteComponent } from 'app/shared/delete/inline-delete.component';
+import { OldDownloadPipe } from 'app/shared/pipes/old.download.pipe';
+import { SecurePipe } from 'app/shared/pipes/secure.pipe';
 import { firstValueFrom } from 'rxjs';
+import { AddCategoryLogoComponent } from './add-category-logo/add-category-logo.component';
 
 @Component({
   selector: 'cbc-category-customisation',
   templateUrl: './category-customisation.component.html',
-  styleUrls: ['./category-customisation.component.scss'],
+  styleUrl: './category-customisation.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    InlineDeleteComponent,
+    AddCategoryLogoComponent,
+    OldDownloadPipe,
+    SecurePipe,
+    TranslocoModule,
+  ],
 })
 export class CategoryCustomisationComponent implements OnInit {
   public logos: ModelNode[] = [];
@@ -45,7 +57,7 @@ export class CategoryCustomisationComponent implements OnInit {
     this.loading = true;
     try {
       this.category = await firstValueFrom(this.nodesService.getNode(id));
-    } catch (error) {
+    } catch (_error) {
       console.error('impossible to get the category');
     }
 
@@ -60,7 +72,7 @@ export class CategoryCustomisationComponent implements OnInit {
       this.logos = await firstValueFrom(
         this.categoryService.getCategoryLogoByCategoryId(id)
       );
-    } catch (error) {
+    } catch (_error) {
       console.error('impossible to get the logos');
     }
     this.loading = false;
@@ -101,7 +113,7 @@ export class CategoryCustomisationComponent implements OnInit {
         );
         this.actionService.propagateActionFinished(result);
         await this.loadCategory(this.categoryId);
-      } catch (error) {
+      } catch (_error) {
         console.error('impossible to select the image');
       }
     }
@@ -113,7 +125,7 @@ export class CategoryCustomisationComponent implements OnInit {
         this.logos = await firstValueFrom(
           this.categoryService.deleteCategoryLogoByLogoId(this.categoryId, id)
         );
-      } catch (error) {
+      } catch (_error) {
         console.error('impossible to select the image');
       }
     }

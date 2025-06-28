@@ -5,12 +5,12 @@ package io.swagger.exception;
  */
 public class EmptyQueryStringException extends Exception {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1L;
 
-    public EmptyQueryStringException(String text) {
-        super(text);
-    }
+  public EmptyQueryStringException(String text) {
+    super(text);
+  }
 }

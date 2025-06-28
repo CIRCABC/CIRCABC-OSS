@@ -1,7 +1,7 @@
 <cbc-modal
   [title]="'admin.header.add'"
   (ok)="addHeader()"
-  (cancel)="cancel()"
+  (cancelModal)="cancel()"
   [okLabel]="'label.add'"
   [(visible)]="showModal"
 >
@@ -9,11 +9,12 @@
     <div class="field">
       <label for="name">{{ 'label.name' | transloco }}</label>
       <input data-cy="name" type="text" id="name" formControlName="name" />
+      @if (headerForm) {
       <cbc-control-message
-        *ngIf="headerForm"
         [showInvalid]="true"
         [control]="nameControl"
       ></cbc-control-message>
+      }
     </div>
     <cbc-multilingual-input
       data-cy="description"
@@ -21,17 +22,18 @@
       [label]="'label.description' | transloco"
       [lang]="'EN'"
     ></cbc-multilingual-input>
+    @if (headerForm) {
     <cbc-control-message
-      *ngIf="headerForm"
       [showInvalid]="true"
       [control]="descriptionControl"
     ></cbc-control-message>
-
-    <div class="field" *ngIf="processing">
-      <label
+    } @if (processing) {
+    <div class="field">
+      <div
         >{{ 'label.creating' | transloco }}...
         <cbc-spinner></cbc-spinner>
-      </label>
+      </div>
     </div>
+    }
   </form>
 </cbc-modal>

@@ -27,11 +27,10 @@ import eu.cec.digit.circabc.web.Beans;
 import eu.cec.digit.circabc.web.Services;
 import eu.cec.digit.circabc.web.bean.navigation.NavigableNodeType;
 import eu.cec.digit.circabc.web.bean.override.CircabcNavigationBean;
+import java.util.Set;
+import javax.faces.context.FacesContext;
 import org.alfresco.web.action.evaluator.BaseActionEvaluator;
 import org.alfresco.web.bean.repository.Node;
-
-import javax.faces.context.FacesContext;
-import java.util.Set;
 
 /**
  * Evaluate if the user can create an interest group.
@@ -42,34 +41,41 @@ import java.util.Set;
  */
 public class CreateInterestGroupEvaluator extends BaseActionEvaluator {
 
-    private static final long serialVersionUID = 308051234539899525L;
+  private static final long serialVersionUID = 308051234539899525L;
 
-    /**
-     * Return false if the given node is a dossier
-     */
-    public boolean evaluate(final Node node) {
+  /**
+   * Return false if the given node is a dossier
+   */
+  public boolean evaluate(final Node node) {
+    if (NavigableNodeType.CATEGORY.isNodeFromType(node) == false) {
+      return false;
+    } else if (
+      node.hasPermission(CategoryPermissions.CIRCACATEGORYADMIN.toString()) ==
+      false
+    ) {
+      return false;
+    } else {
+      final ProfileManagerServiceFactory factory =
+        Services.getCircabcServiceRegistry(
+          FacesContext.getCurrentInstance()
+        ).getProfileManagerServiceFactory();
+      final CategoryProfileManagerService profileManager =
+        factory.getCategoryProfileManagerService();
 
-        if (NavigableNodeType.CATEGORY.isNodeFromType(node) == false) {
-            return false;
-        } else if (node.hasPermission(CategoryPermissions.CIRCACATEGORYADMIN.toString()) == false) {
-            return false;
-        } else {
-            final ProfileManagerServiceFactory factory = Services
-                    .getCircabcServiceRegistry(FacesContext.getCurrentInstance())
-                    .getProfileManagerServiceFactory();
-            final CategoryProfileManagerService profileManager = factory
-                    .getCategoryProfileManagerService();
+      Set<String> admins = profileManager.getPersonInProfile(
+        node.getNodeRef(),
+        CategoryProfileManagerService.Profiles.CIRCA_CATEGORY_ADMIN
+      );
 
-            Set<String> admins = profileManager.getPersonInProfile(node.getNodeRef(),
-                    CategoryProfileManagerService.Profiles.CIRCA_CATEGORY_ADMIN);
-
-            return admins.contains(getCurrentUserName());
-        }
+      return admins.contains(getCurrentUserName());
     }
+  }
 
-    private String getCurrentUserName() {
-        final CircabcNavigationBean navigator = Beans.getWaiNavigator();
+  private String getCurrentUserName() {
+    final CircabcNavigationBean navigator = Beans.getWaiNavigator();
 
-        return (navigator.isGuest()) ? null : navigator.getCurrentUser().getUserName();
-    }
+    return (navigator.isGuest())
+      ? null
+      : navigator.getCurrentUser().getUserName();
+  }
 }

@@ -22,9 +22,8 @@ package eu.cec.digit.circabc.business.api.nav;
 
 import eu.cec.digit.circabc.business.acl.AclAwareWrapper;
 import eu.cec.digit.circabc.business.api.props.PropertyItem;
-import org.alfresco.service.cmr.repository.NodeRef;
-
 import java.util.Map;
+import org.alfresco.service.cmr.repository.NodeRef;
 
 /**
  * Represent a node in the business layer. Must encapsulate and hide all target implementation
@@ -45,11 +44,10 @@ import java.util.Map;
  * </p>
  */
 public interface NavNode extends Map<String, PropertyItem>, AclAwareWrapper {
-
-    /**
-     * Get the node reference identifier.
-     *
-     * @return The node reference
-     */
-    NodeRef getNodeRef();
+  /**
+   * Get the node reference identifier.
+   *
+   * @return The node reference
+   */
+  NodeRef getNodeRef();
 }

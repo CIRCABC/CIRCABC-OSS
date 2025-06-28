@@ -2,37 +2,48 @@
   <cbc-header></cbc-header>
   <cbc-navigator></cbc-navigator>
   <div class="wrap page-container">
-    <section class="access-denied-container" *ngIf="!isGuest">
+    @if (!isGuest) {
+    <section class="access-denied-container">
       <aside class="right-decoration">
-        <img src="img/prohibition.png" />
+        <img src="img/prohibition.png" alt="Prohibition sign" />
       </aside>
 
       <h1>{{ 'error.access.denied.title' | transloco }}</h1>
       <p [innerHTML]="'error.access.denied.text' | transloco"> </p>
       <p class="actions">
-        <a class="button" (click)="goBack()"
+        <a
+          tabindex="0"
+          class="button"
+          (click)="goBack()"
+          (keydown.enter)="goBack()"
+          (keydown.space)="goBack()"
           >{{ 'label.go.back' | transloco }}</a
         >
       </p>
     </section>
-    <section class="access-denied-container must-login" *ngIf="isGuest">
+    } @if (isGuest) {
+    <section class="access-denied-container must-login">
       <aside class="right-decoration">
-        <img src="img/user-white.png" />
+        <img src="img/user-white.png" alt="User icon" />
       </aside>
 
       <h1>{{ 'error.access.denied.must.login.title' | transloco }}</h1>
       <p [innerHTML]="'error.access.denied.must.login.text' | transloco"> </p>
       <p class="actions">
-        <a class="button" (click)="goBack()"
+        <a tabindex="0" class="button" (click)="goBack()"
           >{{ 'label.go.back' | transloco }}</a
         >
-        <a class="cta" (click)="goToLogin()" *ngIf="isGuest && !useEULogin"
+        @if (isGuest && !useEULogin) {
+        <a tabindex="0" class="cta" (click)="goToLogin()"
           >{{ 'label.login' | transloco }}</a
         >
-        <a class="cta" (click)="euLogin()" *ngIf="isGuest && useEULogin"
+        } @if (isGuest && useEULogin) {
+        <a tabindex="0" class="cta" (click)="euLogin()"
           >{{ 'label.login' | transloco }}</a
         >
+        }
       </p>
     </section>
+    }
   </div>
 </div>

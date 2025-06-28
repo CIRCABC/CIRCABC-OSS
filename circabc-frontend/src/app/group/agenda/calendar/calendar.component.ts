@@ -1,13 +1,16 @@
 import {
   Component,
-  EventEmitter,
   Input,
   OnChanges,
   OnInit,
-  Output,
   SimpleChange,
+  output,
+  input,
 } from '@angular/core';
 
+import { DatePipe, I18nSelectPipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import { PermissionEvaluatorService } from 'app/core/evaluator/permission-evaluator.service';
 import {
   EventItemDefinition,
@@ -36,27 +39,25 @@ interface CalendarDayType {
 @Component({
   selector: 'cbc-calendar',
   templateUrl: './calendar.component.html',
-  styleUrls: ['./calendar.component.scss'],
+  styleUrl: './calendar.component.scss',
   preserveWhitespaces: true,
+  imports: [RouterLink, DatePipe, I18nSelectPipe, TranslocoModule],
 })
 export class CalendarComponent implements OnChanges, OnInit {
   public get dayNames() {
     return this.localizationService.getDayNames('Sunday', 'short');
   }
 
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   public date!: Date;
-  @Output()
-  public readonly popupCreateEventEmitter = new EventEmitter();
-  @Output()
-  public readonly popupDeleteEventEmitter = new EventEmitter();
-  @Input()
-  public igId!: string;
-  @Input()
-  public eventRootId: string | undefined;
+  public readonly popupCreateEventEmitter = output<Date>();
+  public readonly popupDeleteEventEmitter = output<EventItemDefinition>();
+  public readonly igId = input.required<string>();
+  public readonly eventRootId = input<string>();
   // property used to fire the ngOnChanges event when toggled for redisplay (new event/meeting has been added)
-  @Input()
-  public redisplay!: boolean;
+  public readonly redisplay = input.required<boolean>();
 
   public eventRootNode!: ModelNode;
 
@@ -67,8 +68,7 @@ export class CalendarComponent implements OnChanges, OnInit {
   private todaysDate!: Date;
 
   public processing = false;
-  @Output()
-  public readonly processingEventEmitter = new EventEmitter<string>();
+  public readonly processingEventEmitter = output<string>();
 
   public constructor(
     private eventsService: EventsService,
@@ -80,9 +80,10 @@ export class CalendarComponent implements OnChanges, OnInit {
   ) {}
 
   public async ngOnInit() {
-    if (this.eventRootId) {
+    const eventRootId = this.eventRootId();
+    if (eventRootId) {
       this.eventRootNode = await firstValueFrom(
-        this.nodesService.getNode(this.eventRootId)
+        this.nodesService.getNode(eventRootId)
       );
     }
   }
@@ -128,7 +129,7 @@ export class CalendarComponent implements OnChanges, OnInit {
   public async getEvents(startDate: Date, endDate: Date) {
     return await firstValueFrom(
       this.eventsService.getInterestGroupEvents(
-        this.igId,
+        this.igId(),
         getFullDate(startDate),
         getFullDate(endDate)
       )
@@ -233,9 +234,9 @@ export class CalendarComponent implements OnChanges, OnInit {
       this.processing = false;
       this.processingEventEmitter.emit('month');
     } catch (error) {
-      const jsonError = JSON.parse(error.error);
-      if (jsonError) {
-        this.uiMessageService.addErrorMessage(jsonError.message);
+      const jsonError = JSON.parse(error.error) as Record<string, unknown>;
+      if (jsonError && 'message' in jsonError) {
+        this.uiMessageService.addErrorMessage(jsonError.message as string);
       }
     }
   }

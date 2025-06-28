@@ -1,7 +1,9 @@
 <section class="tab-actions">
-  <a class="cta cta--plus" (click)="showModal = true" *ngIf="categoryId"
+  @if (categoryId) {
+  <a tabindex="0" class="cta cta--plus" (click)="showModal = true"
     >{{ 'admin.category.invite.title' | transloco }}</a
   >
+  }
 </section>
 <section class="table-container">
   <table class="main">
@@ -18,19 +20,20 @@
     </thead>
 
     <tbody>
-      <tr class="row empty-row" *ngIf="administrators !== undefined">
-        <td colspan="5" *ngIf="administrators.length === 0"
-          >{{ 'members.display.none' | transloco }}</td
-        >
+      @if (administrators !== undefined) {
+      <tr class="row empty-row">
+        @if (administrators.length === 0) {
+        <td colspan="5">{{ 'members.display.none' | transloco }}</td>
+        }
       </tr>
-
-      <tr class="row" *ngFor="let admin of administrators">
+      } @for (admin of administrators; track admin.userId) {
+      <tr class="row">
         <td class="cell-left-border"></td>
         <td class="cell-photo">
           <div class="photo">
             <img
               [attr.src]="admin.avatar | cbcDownload | cbcSecure"
-              alt=""
+              alt="avatar"
               width="50"
               height="50"
             />
@@ -39,22 +42,25 @@
         <td class="cell-file-name">
           <div class="file-name">{{ admin.firstname }}</div>
           <ul class="actions" style="font-size: 11px">
+            @if (canDeleteAdmin(admin)) {
             <cbc-inline-delete
               (deletionConfirmed)="uninviteUser(admin)"
-              *ngIf="canDeleteAdmin(admin)"
             ></cbc-inline-delete>
+            }
           </ul>
         </td>
         <td class="cell-lastname">{{ admin.lastname }}</td>
         <td class="cell-email" class="col-hidable">{{ admin.email }}</td>
       </tr>
+      }
     </tbody>
   </table>
 </section>
 
+@if (categoryId) {
 <cbc-add-category-administrator
   [showModal]="showModal"
   [categoryId]="categoryId"
-  *ngIf="categoryId"
   (modalHide)="refresh($event)"
-></cbc-add-category-administrator>
+/>
+}

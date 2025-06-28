@@ -1,12 +1,15 @@
-import { Component, Input } from '@angular/core';
-import { HelpArticle } from 'app/core/generated/circabc';
+import { DatePipe } from '@angular/common';
+import { Component, input } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { type HelpArticle } from 'app/core/generated/circabc';
+import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
 
 @Component({
   selector: 'cbc-article-card',
   templateUrl: './article-card.component.html',
-  styleUrls: ['./article-card.component.scss'],
+  styleUrl: './article-card.component.scss',
+  imports: [RouterLink, DatePipe, I18nPipe],
 })
 export class ArticleCardComponent {
-  @Input()
-  article!: HelpArticle;
+  readonly article = input.required<HelpArticle>();
 }

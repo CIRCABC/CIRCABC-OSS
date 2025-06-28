@@ -1,9 +1,16 @@
-<h2 *ngIf="topic && !editPost"
-  ><a (click)="showForm = true">{{ 'forum.add.comment' | transloco }}</a></h2
+@if (topic() && !editPost) {
+<h2
+  ><a tabindex="0" (click)="showForm = true"
+    >{{ 'forum.add.comment' | transloco }}</a
+  ></h2
 >
-<h2 *ngIf="topic && editPost"
-  ><a (click)="showForm = true">{{ 'forum.edit.comment' | transloco }}</a></h2
+} @if (topic() && editPost) {
+<h2
+  ><a tabindex="0" (click)="showForm = true"
+    >{{ 'forum.edit.comment' | transloco }}</a
+  ></h2
 >
+}
 <form [formGroup]="addPostForm" [class.hidden]="!showForm">
   <div class="field">
     <p-editor
@@ -43,28 +50,34 @@
     </p-editor>
   </div>
 
-  <div class="field" *ngIf="posting">
-    <label
-      >{{ 'label.posting' | transloco }}... <cbc-spinner></cbc-spinner
-    ></label>
+  @if (posting) {
+  <div class="field">
+    <div>{{ 'label.posting' | transloco }}... <cbc-spinner></cbc-spinner></div>
   </div>
+  }
   <!-- Buttons -->
-  <div class="field buttons-group" *ngIf="!posting">
-    <label></label>
+  @if (!posting) {
+  <div class="field buttons-group">
+    @if (!editPost) {
     <a
+      tabindex="0"
       class="cta"
       (click)="addPost()"
-      *ngIf="!editPost"
       [class.disabled]="!addPostForm.valid"
       >{{ 'label.post' | transloco }}</a
     >
+    } @if (editPost) {
     <a
+      tabindex="0"
       class="cta"
       (click)="updatePost()"
-      *ngIf="editPost"
       [class.disabled]="!addPostForm.valid"
       >{{ 'label.edit' | transloco }}</a
     >
-    <a class="button" (click)="resetForm()">{{ 'label.reset' | transloco }}</a>
+    }
+    <a tabindex="0" class="button" (click)="resetForm()"
+      >{{ 'label.reset' | transloco }}</a
+    >
   </div>
+  }
 </form>

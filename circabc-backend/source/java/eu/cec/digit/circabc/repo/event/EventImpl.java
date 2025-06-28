@@ -16,87 +16,84 @@
  */
 package eu.cec.digit.circabc.repo.event;
 
+import static eu.cec.digit.circabc.model.EventModel.PROP_EVENT_PRIORITY;
+import static eu.cec.digit.circabc.model.EventModel.PROP_EVENT_TYPE;
+
 import eu.cec.digit.circabc.service.event.AppointmentUpdateInfo;
 import eu.cec.digit.circabc.service.event.Event;
 import eu.cec.digit.circabc.service.event.EventPriority;
 import eu.cec.digit.circabc.service.event.EventType;
+import java.io.Serializable;
+import java.util.Map;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.util.PropertyMap;
 
-import java.io.Serializable;
-import java.util.Map;
-
-import static eu.cec.digit.circabc.model.EventModel.PROP_EVENT_PRIORITY;
-import static eu.cec.digit.circabc.model.EventModel.PROP_EVENT_TYPE;
-
 public class EventImpl extends AppointmentImpl implements Event {
 
-    private EventType eventType;
-    private EventPriority priority;
+  private EventType eventType;
+  private EventPriority priority;
 
-    public EventType getEventType() {
+  public EventType getEventType() {
+    return eventType;
+  }
 
-        return eventType;
+  public void setEventType(EventType value) {
+    eventType = value;
+  }
+
+  public EventPriority getPriority() {
+    return priority;
+  }
+
+  public void setPriority(EventPriority value) {
+    priority = value;
+  }
+
+  @Override
+  public PropertyMap getProperties() {
+    PropertyMap properties = super.getProperties();
+
+    if (this.getPriority() != null) {
+      properties.put(PROP_EVENT_PRIORITY, this.getPriority());
+    }
+    if (this.getEventType() != null) {
+      properties.put(PROP_EVENT_TYPE, this.getEventType());
     }
 
-    public void setEventType(EventType value) {
-        eventType = value;
-    }
+    return properties;
+  }
 
-    public EventPriority getPriority() {
-        return priority;
-    }
+  @Override
+  public PropertyMap getProperties(AppointmentUpdateInfo updateInfo) {
+    PropertyMap properties = super.getProperties(updateInfo);
 
-    public void setPriority(EventPriority value) {
-        priority = value;
-    }
-
-    @Override
-    public PropertyMap getProperties() {
-        PropertyMap properties = super.getProperties();
-
+    switch (updateInfo) {
+      case GeneralInformation:
         if (this.getPriority() != null) {
-            properties.put(PROP_EVENT_PRIORITY, this.getPriority());
+          properties.put(PROP_EVENT_PRIORITY, this.getPriority());
         }
         if (this.getEventType() != null) {
-            properties.put(PROP_EVENT_TYPE, this.getEventType());
+          properties.put(PROP_EVENT_TYPE, this.getEventType());
         }
 
-        return properties;
+        break;
+      default:
+        break;
     }
+    return properties;
+  }
 
-    @Override
-    public PropertyMap getProperties(AppointmentUpdateInfo updateInfo) {
-        PropertyMap properties = super.getProperties(updateInfo);
+  @Override
+  public void init(Map<QName, Serializable> properties) {
+    super.init(properties);
 
-        switch (updateInfo) {
-            case GeneralInformation:
-                if (this.getPriority() != null) {
-                    properties.put(PROP_EVENT_PRIORITY, this.getPriority());
-                }
-                if (this.getEventType() != null) {
-                    properties.put(PROP_EVENT_TYPE, this.getEventType());
-                }
-
-                break;
-
-            default:
-                break;
-        }
-        return properties;
+    Serializable eventPriority = properties.get(PROP_EVENT_PRIORITY);
+    if (eventPriority != null) {
+      this.setPriority(EventPriority.valueOf(eventPriority.toString()));
     }
-
-    @Override
-    public void init(Map<QName, Serializable> properties) {
-        super.init(properties);
-
-        Serializable eventPriority = properties.get(PROP_EVENT_PRIORITY);
-        if (eventPriority != null) {
-            this.setPriority(EventPriority.valueOf(eventPriority.toString()));
-        }
-        Serializable propertyEventType = properties.get(PROP_EVENT_TYPE);
-        if (propertyEventType != null) {
-            this.setEventType(EventType.valueOf(propertyEventType.toString()));
-        }
+    Serializable propertyEventType = properties.get(PROP_EVENT_TYPE);
+    if (propertyEventType != null) {
+      this.setEventType(EventType.valueOf(propertyEventType.toString()));
     }
+  }
 }

@@ -23,11 +23,10 @@ package eu.cec.digit.circabc.web.wai.dialog.ig;
 import eu.cec.digit.circabc.repo.external.repositories.RepositoryConfiguration;
 import eu.cec.digit.circabc.service.external.repositories.ExternalRepositoriesManagementService;
 import eu.cec.digit.circabc.web.wai.dialog.BaseWaiDialog;
-
-import javax.faces.context.FacesContext;
-import javax.faces.model.SelectItem;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
 
 /**
  * Dialog to add or remove an available external repository.
@@ -36,185 +35,195 @@ import java.util.*;
  */
 public class ManageExternalRepositoriesDialog extends BaseWaiDialog {
 
-    private static final long serialVersionUID = 2844550968531893829L;
+  private static final long serialVersionUID = 2844550968531893829L;
 
-    private ExternalRepositoriesManagementService externalRepositoriesManagementService = null;
+  private ExternalRepositoriesManagementService externalRepositoriesManagementService =
+    null;
 
-    private int pageSize = 10;
-    private List<SelectItem> availableRepositories = null;
-    private String selectedAvailableRepository = null;
-    private String parentNodeId = null;
+  private int pageSize = 10;
+  private List<SelectItem> availableRepositories = null;
+  private String selectedAvailableRepository = null;
+  private String parentNodeId = null;
 
-    @Override
-    public void init(Map<String, String> parameters) {
+  @Override
+  public void init(Map<String, String> parameters) {
+    super.init(parameters);
 
-        super.init(parameters);
+    if (parameters != null) {
+      if (parentNodeId == null && parameters.containsKey("id")) {
+        parentNodeId = "workspace://SpacesStore/" + parameters.get("id");
+      }
 
-        if (parameters != null) {
+      if (parameters.containsKey("removeName")) {
+        String name = parameters.get("removeName");
 
-            if (parentNodeId == null && parameters.containsKey("id")) {
-                parentNodeId = "workspace://SpacesStore/" + parameters.get("id");
-            }
-
-            if (parameters.containsKey("removeName")) {
-
-                String name = parameters.get("removeName");
-
-                externalRepositoriesManagementService.removeRepository(
-                        parentNodeId, name);
-                getConfiguredRepositories();
-            }
-        }
-
-        fillAvailableRepositories();
-    }
-
-    private void fillAvailableRepositories() {
-
-        this.availableRepositories = new ArrayList<>();
-
-        Collection<RepositoryConfiguration> availableRepositories =
-                externalRepositoriesManagementService.getAvailableRepositories();
-
-        Collection<RepositoryConfiguration> configuredRepositories =
-                externalRepositoriesManagementService.getConfiguredRepositories(
-                        parentNodeId);
-
-        for (RepositoryConfiguration repositoryConfiguration : availableRepositories) {
-            if (!configuredRepositories.contains(repositoryConfiguration)) {
-                this.availableRepositories.add(new SelectItem(
-                        repositoryConfiguration.getName(),
-                        repositoryConfiguration.getName()));
-            }
-        }
-    }
-
-    public List<Map<String, String>> getConfiguredRepositories() {
-
-        Collection<RepositoryConfiguration> repositories =
-                externalRepositoriesManagementService.getConfiguredRepositories(
-                        parentNodeId);
-
-        List<Map<String, String>> configuredRepositories = new ArrayList<>();
-
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMMM yyyy");
-
-        for (RepositoryConfiguration repositoryConfiguration : repositories) {
-
-            Map<String, String> repository = new HashMap<>();
-
-            repository.put("icon", "/images/extension/storage_icon_small.png");
-            repository.put("name", repositoryConfiguration.getName());
-            repository.put("date", simpleDateFormat.format(
-                    repositoryConfiguration.getRegistrationDate()));
-
-            configuredRepositories.add(repository);
-        }
-
-        return configuredRepositories;
-    }
-
-    public String addRepository() {
-
-        RepositoryConfiguration configuration = new RepositoryConfiguration();
-
-        configuration.setName(selectedAvailableRepository);
-
-        externalRepositoriesManagementService.addRepository(parentNodeId, configuration);
-
-        fillAvailableRepositories();
+        externalRepositoriesManagementService.removeRepository(
+          parentNodeId,
+          name
+        );
         getConfiguredRepositories();
-
-        return "wai:dialog:close:wai:dialog:manageExternalRepositoriesDialogWai";
+      }
     }
 
-    public String removeRepository() {
-        return "wai:dialog:close:wai:dialog:manageExternalRepositoriesDialogWai";
+    fillAvailableRepositories();
+  }
+
+  private void fillAvailableRepositories() {
+    this.availableRepositories = new ArrayList<>();
+
+    Collection<RepositoryConfiguration> availableRepositories =
+      externalRepositoriesManagementService.getAvailableRepositories();
+
+    Collection<RepositoryConfiguration> configuredRepositories =
+      externalRepositoriesManagementService.getConfiguredRepositories(
+        parentNodeId
+      );
+
+    for (RepositoryConfiguration repositoryConfiguration : availableRepositories) {
+      if (!configuredRepositories.contains(repositoryConfiguration)) {
+        this.availableRepositories.add(
+            new SelectItem(
+              repositoryConfiguration.getName(),
+              repositoryConfiguration.getName()
+            )
+          );
+      }
+    }
+  }
+
+  public List<Map<String, String>> getConfiguredRepositories() {
+    Collection<RepositoryConfiguration> repositories =
+      externalRepositoriesManagementService.getConfiguredRepositories(
+        parentNodeId
+      );
+
+    List<Map<String, String>> configuredRepositories = new ArrayList<>();
+
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMMM yyyy");
+
+    for (RepositoryConfiguration repositoryConfiguration : repositories) {
+      Map<String, String> repository = new HashMap<>();
+
+      repository.put("icon", "/images/extension/storage_icon_small.png");
+      repository.put("name", repositoryConfiguration.getName());
+      repository.put(
+        "date",
+        simpleDateFormat.format(repositoryConfiguration.getRegistrationDate())
+      );
+
+      configuredRepositories.add(repository);
     }
 
-    /**
-     * @see eu.cec.digit.circabc.web.wai.dialog.WaiDialog#getPageIconAltText()
-     */
-    @Override
-    public String getPageIconAltText() {
-        return translate("manage_external_repositories_dialog_description");
-    }
+    return configuredRepositories;
+  }
 
-    /**
-     * @see eu.cec.digit.circabc.web.wai.dialog.WaiDialog#getBrowserTitle()
-     */
-    @Override
-    public String getBrowserTitle() {
-        return translate("manage_external_repositories_dialog_title");
-    }
+  public String addRepository() {
+    RepositoryConfiguration configuration = new RepositoryConfiguration();
 
-    @Override
-    public String getCancelButtonLabel() {
-        return translate("close");
-    }
+    configuration.setName(selectedAvailableRepository);
 
-    /**
-     * @see org.alfresco.web.bean.dialog.BaseDialogBean#finishImpl(javax.faces.context.FacesContext,
-     * java.lang.String)
-     */
-    @Override
-    protected String finishImpl(FacesContext context, String outcome)
-            throws Throwable {
-        return outcome;
-    }
+    externalRepositoriesManagementService.addRepository(
+      parentNodeId,
+      configuration
+    );
 
-    /**
-     * Gets the value of the availableRepositories
-     *
-     * @return the availableRepositories
-     */
-    public List<SelectItem> getAvailableRepositories() {
-        return availableRepositories;
-    }
+    fillAvailableRepositories();
+    getConfiguredRepositories();
 
-    /**
-     * Sets the value of the availableRepositories
-     *
-     * @param availableRepositories the availableRepositories to set.
-     */
-    public void setAvailableRepositories(List<SelectItem> availableRepositories) {
-        this.availableRepositories = availableRepositories;
-    }
+    return "wai:dialog:close:wai:dialog:manageExternalRepositoriesDialogWai";
+  }
 
-    /**
-     * Gets the value of the pageSize
-     *
-     * @return the pageSize
-     */
-    public int getPageSize() {
-        return pageSize;
-    }
+  public String removeRepository() {
+    return "wai:dialog:close:wai:dialog:manageExternalRepositoriesDialogWai";
+  }
 
-    /**
-     * Gets the value of the selectedAvailableRepository
-     *
-     * @return the selectedAvailableRepository
-     */
-    public String getSelectedAvailableRepository() {
-        return selectedAvailableRepository;
-    }
+  /**
+   * @see eu.cec.digit.circabc.web.wai.dialog.WaiDialog#getPageIconAltText()
+   */
+  @Override
+  public String getPageIconAltText() {
+    return translate("manage_external_repositories_dialog_description");
+  }
 
-    /**
-     * Sets the value of the selectedAvailableRepository
-     *
-     * @param selectedAvailableRepository the selectedAvailableRepository to set.
-     */
-    public void setSelectedAvailableRepository(String selectedAvailableRepository) {
-        this.selectedAvailableRepository = selectedAvailableRepository;
-    }
+  /**
+   * @see eu.cec.digit.circabc.web.wai.dialog.WaiDialog#getBrowserTitle()
+   */
+  @Override
+  public String getBrowserTitle() {
+    return translate("manage_external_repositories_dialog_title");
+  }
 
-    /**
-     * Sets the value of the externalRepositoriesManagementService
-     *
-     * @param externalRepositoriesManagementService the externalRepositoriesManagementService to set.
-     */
-    public void setExternalRepositoriesManagementService(
-            ExternalRepositoriesManagementService externalRepositoriesManagementService) {
-        this.externalRepositoriesManagementService = externalRepositoriesManagementService;
-    }
+  @Override
+  public String getCancelButtonLabel() {
+    return translate("close");
+  }
+
+  /**
+   * @see org.alfresco.web.bean.dialog.BaseDialogBean#finishImpl(javax.faces.context.FacesContext,
+   * java.lang.String)
+   */
+  @Override
+  protected String finishImpl(FacesContext context, String outcome)
+    throws Throwable {
+    return outcome;
+  }
+
+  /**
+   * Gets the value of the availableRepositories
+   *
+   * @return the availableRepositories
+   */
+  public List<SelectItem> getAvailableRepositories() {
+    return availableRepositories;
+  }
+
+  /**
+   * Sets the value of the availableRepositories
+   *
+   * @param availableRepositories the availableRepositories to set.
+   */
+  public void setAvailableRepositories(List<SelectItem> availableRepositories) {
+    this.availableRepositories = availableRepositories;
+  }
+
+  /**
+   * Gets the value of the pageSize
+   *
+   * @return the pageSize
+   */
+  public int getPageSize() {
+    return pageSize;
+  }
+
+  /**
+   * Gets the value of the selectedAvailableRepository
+   *
+   * @return the selectedAvailableRepository
+   */
+  public String getSelectedAvailableRepository() {
+    return selectedAvailableRepository;
+  }
+
+  /**
+   * Sets the value of the selectedAvailableRepository
+   *
+   * @param selectedAvailableRepository the selectedAvailableRepository to set.
+   */
+  public void setSelectedAvailableRepository(
+    String selectedAvailableRepository
+  ) {
+    this.selectedAvailableRepository = selectedAvailableRepository;
+  }
+
+  /**
+   * Sets the value of the externalRepositoriesManagementService
+   *
+   * @param externalRepositoriesManagementService the externalRepositoriesManagementService to set.
+   */
+  public void setExternalRepositoriesManagementService(
+    ExternalRepositoriesManagementService externalRepositoriesManagementService
+  ) {
+    this.externalRepositoriesManagementService =
+      externalRepositoriesManagementService;
+  }
 }

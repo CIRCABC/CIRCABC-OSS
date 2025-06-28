@@ -1,20 +1,31 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { TranslocoService } from '@ngneat/transloco';
+import { Router, RouterLink } from '@angular/router';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { EULoginService } from 'app/core/eulogin.service';
 import { LoginService } from 'app/core/login.service';
 import { RedirectionService } from 'app/core/redirection.service';
+import { DataCyDirective } from 'app/shared/directives/data-cy.directive';
+import { LangSelectorComponent } from 'app/shared/lang/lang-selector.component';
+import { SystemMessageIndicatorComponent } from 'app/shared/system-message-indicator/system-message-indicator.component';
 import { environment } from 'environments/environment';
 import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'cbc-welcome',
   templateUrl: './welcome.component.html',
-  styleUrls: ['./welcome.component.scss'],
+  styleUrl: './welcome.component.scss',
   preserveWhitespaces: true,
   providers: [CookieService],
+  imports: [
+    SystemMessageIndicatorComponent,
+    RouterLink,
+    LangSelectorComponent,
+    DataCyDirective,
+    TranslocoModule,
+  ],
 })
 export class WelcomeComponent implements OnInit {
+  public circabcRelease = environment.circabcRelease;
   public waitingAfterLogin = false;
   public isOSS = false;
 
@@ -73,7 +84,7 @@ export class WelcomeComponent implements OnInit {
 
   public euLoginCreate() {
     window.location.href =
-      'https://ecas.cc.cec.eu.int:7002/cas/eim/external/register.cgi';
+      '';
   }
 
   public get useEULogin(): boolean {

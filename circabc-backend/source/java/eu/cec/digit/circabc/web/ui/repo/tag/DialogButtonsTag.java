@@ -20,7 +20,6 @@
  ******************************************************************************/
 package eu.cec.digit.circabc.web.ui.repo.tag;
 
-
 import org.alfresco.web.ui.common.tag.HtmlComponentTag;
 
 /**
@@ -30,17 +29,17 @@ import org.alfresco.web.ui.common.tag.HtmlComponentTag;
  */
 public class DialogButtonsTag extends HtmlComponentTag {
 
-    /**
-     * @see javax.faces.webapp.UIComponentTag#getComponentType()
-     */
-    public String getComponentType() {
-        return "eu.cec.digit.circabc.faces.DialogButtons";
-    }
+  /**
+   * @see javax.faces.webapp.UIComponentTag#getComponentType()
+   */
+  public String getComponentType() {
+    return "eu.cec.digit.circabc.faces.DialogButtons";
+  }
 
-    /**
-     * @see javax.faces.webapp.UIComponentTag#getRendererType()
-     */
-    public String getRendererType() {
-        return null;
-    }
+  /**
+   * @see javax.faces.webapp.UIComponentTag#getRendererType()
+   */
+  public String getRendererType() {
+    return null;
+  }
 }

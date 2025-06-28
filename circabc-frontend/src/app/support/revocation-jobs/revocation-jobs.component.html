@@ -4,15 +4,16 @@
       <cbc-pager
         [length]="totalItems"
         [pageSize]="listingOptions.limit"
-        [pageIndex]="listingOptions.page"
-        (pageChanged)="goToPage($event)"
+        [page]="listingOptions.page"
+        (pageChange)="goToPage($event)"
       ></cbc-pager>
       <cbc-pager-configuration
         (pageSizeChanged)="changeLimit($event)"
       ></cbc-pager-configuration>
     </header>
 
-    <table *ngIf="revocations" class="main">
+    @if (revocations) {
+    <table class="main">
       <thead>
         <tr class="row">
           <th></th>
@@ -28,10 +29,8 @@
         </tr>
       </thead>
       <tbody>
-        <tr
-          *ngFor="let req of revocations.data; trackBy: trackById"
-          class="row"
-        >
+        @for (req of revocations.data; track req.id) {
+        <tr class="row">
           <td class="cell-left-border"></td>
           <td>{{ req.id }}</td>
           <td>{{ req.requester }}</td>
@@ -51,15 +50,17 @@
           <td>{{ req.action }}</td>
           <td>{{ req.groupId }}</td>
         </tr>
+        }
       </tbody>
     </table>
+    }
 
     <div class="footer">
       <cbc-pager
         [length]="totalItems"
         [pageSize]="listingOptions.limit"
-        [pageIndex]="listingOptions.page"
-        (pageChanged)="goToPage($event)"
+        [page]="listingOptions.page"
+        (pageChange)="goToPage($event)"
       ></cbc-pager>
     </div>
   </section>

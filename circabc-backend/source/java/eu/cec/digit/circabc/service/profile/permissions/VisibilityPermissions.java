@@ -26,58 +26,59 @@ import java.util.HashSet;
  * @author clinckart
  */
 public enum VisibilityPermissions {
-    VISIBILITY("Visibility"),
-    NOVISIBILITY("NoVisibility");
+  VISIBILITY("Visibility"),
+  NOVISIBILITY("NoVisibility");
 
-    static HashSet<VisibilityPermissions> visibilityPermissions = null;
+  static HashSet<VisibilityPermissions> visibilityPermissions = null;
 
-    String visibilityPermissionString;
+  String visibilityPermissionString;
 
-    VisibilityPermissions(String permission) {
-        visibilityPermissionString = permission;
+  VisibilityPermissions(String permission) {
+    visibilityPermissionString = permission;
+  }
+
+  protected static void init() {
+    visibilityPermissions = new HashSet<>();
+    Collections.addAll(visibilityPermissions, VisibilityPermissions.values());
+  }
+
+  public static VisibilityPermissions withPermissionString(String permiString) {
+    VisibilityPermissions match = null;
+
+    for (VisibilityPermissions permission : getPermissions()) {
+      if (permission.visibilityPermissionString.equals(permiString)) {
+        match = permission;
+        break;
+      }
     }
-
-    protected static void init() {
-        visibilityPermissions = new HashSet<>();
-        Collections.addAll(visibilityPermissions, VisibilityPermissions.values());
+    if (match == null) {
+      throw new IllegalArgumentException(
+        "No enum const class with permission string " + permiString
+      );
+    } else {
+      return match;
     }
+  }
 
-    public static VisibilityPermissions withPermissionString(String permiString) {
-        VisibilityPermissions match = null;
-
-        for (VisibilityPermissions permission : getPermissions()) {
-            if (permission.visibilityPermissionString.equals(permiString)) {
-                match = permission;
-                break;
-            }
-        }
-        if (match == null) {
-            throw new IllegalArgumentException(
-                    "No enum const class with permission string " + permiString);
-        } else {
-            return match;
-        }
+  /**
+   * return an List representing the permission list.
+   *
+   * @return List of JoinPermissions
+   */
+  public static HashSet<VisibilityPermissions> getPermissions() {
+    if (visibilityPermissions == null) {
+      init();
     }
+    return (HashSet<VisibilityPermissions>) visibilityPermissions.clone();
+  }
 
-    /**
-     * return an List representing the permission list.
-     *
-     * @return List of JoinPermissions
-     */
-    public static HashSet<VisibilityPermissions> getPermissions() {
-        if (visibilityPermissions == null) {
-            init();
-        }
-        return (HashSet<VisibilityPermissions>) visibilityPermissions.clone();
+  /**
+   * Return the string value associated to the permission
+   */
+  public String toString() {
+    if (visibilityPermissions == null) {
+      init();
     }
-
-    /**
-     * Return the string value associated to the permission
-     */
-    public String toString() {
-        if (visibilityPermissions == null) {
-            init();
-        }
-        return visibilityPermissionString;
-    }
+    return visibilityPermissionString;
+  }
 }

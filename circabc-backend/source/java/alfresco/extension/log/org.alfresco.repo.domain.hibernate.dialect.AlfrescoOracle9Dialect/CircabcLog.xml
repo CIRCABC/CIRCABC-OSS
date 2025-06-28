@@ -21,10 +21,13 @@
 -->
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
 <mapper namespace="CircabcLog">
 
-  <select id="select_log_records" parameterType="LogSearchParameter" resultType="LogSearchResult">
+  <select
+    id="select_log_records"
+    parameterType="LogSearchParameter"
+    resultType="LogSearchResult"
+  >
     select user_name as userName ,
     cbc_log_activity.service_desc as serviceDescription,
     cbc_log_activity.activity_desc as activityDescription,
@@ -48,7 +51,11 @@
     order by log_date desc
   </select>
 
-  <select id="select_item_history" parameterType="map" resultType="LogSearchResult">
+  <select
+    id="select_item_history"
+    parameterType="map"
+    resultType="LogSearchResult"
+  >
     select distinct user_name as userName,
     cbc_log_activity.service_desc as serviceDescription,
     cbc_log_activity.activity_desc as activityDescription,
@@ -58,7 +65,7 @@
     isok as isOK
     from cbc_log, cbc_log_activity
     where cbc_log.activity_id = cbc_log_activity.id
-    and (document_id = #{documentID, jdbcType=NUMERIC} or uuid = #{uuid, jdbcType=VARCHAR})
+    and (document_id = #{documentId, jdbcType=NUMERIC} or uuid = #{uuid, jdbcType=VARCHAR})
     order by log_date desc
   </select>
 
@@ -78,8 +85,11 @@
     )
   </select>
 
-  <select id="select_item_history_pagination" parameterType="map"
-    resultType="LogSearchResult">
+  <select
+    id="select_item_history_pagination"
+    parameterType="map"
+    resultType="LogSearchResult"
+  >
     select * from (
     select rownum row_id, user_name as userName ,
     cbc_log_activity.service_desc as serviceDescription,
@@ -96,7 +106,11 @@
     AND row_id <![CDATA[<]]>= #{startRecord, jdbcType=NUMERIC} + #{pageSize, jdbcType=NUMERIC}
   </select>
 
-  <select id="select_log_records_count" parameterType="LogSearchParameter" resultType="Integer">
+  <select
+    id="select_log_records_count"
+    parameterType="LogSearchParameter"
+    resultType="Integer"
+  >
     select count(*)
     from cbc_log , cbc_log_activity
     where cbc_log.activity_id = cbc_log_activity.id
@@ -113,8 +127,11 @@
     </if>
   </select>
 
-  <select id="select_log_records_page" parameterType="LogSearchLimitParameter"
-    resultType="LogSearchResult">
+  <select
+    id="select_log_records_page"
+    parameterType="LogSearchLimitParameter"
+    resultType="LogSearchResult"
+  >
     SELECT B.userName ,
     B.serviceDescription,
     B.activityDescription,
@@ -161,7 +178,11 @@
 		]]>
   </select>
 
-  <select id="select_log_activity_by_id" resultType="LogActivity" parameterType="map">
+  <select
+    id="select_log_activity_by_id"
+    resultType="LogActivity"
+    parameterType="map"
+  >
     <![CDATA[
       SELECT
           distinct 
@@ -185,7 +206,11 @@
     (#{id},#{igID},#{documentID},#{user},#{date},#{activityID},#{igName},#{info},#{path},#{isOK},#{uuid, jdbcType=VARCHAR})
   </insert>
 
-  <select id="select_activity_id" resultType="integer" parameterType="LogActivity">
+  <select
+    id="select_activity_id"
+    resultType="integer"
+    parameterType="LogActivity"
+  >
     select id
     from cbc_log_activity
     where service_desc = #{serviceDescription} and activity_desc=#{activityDescription}
@@ -204,13 +229,19 @@
       select cbc_rest_log_seq.nextval as value from dual
     </selectKey>
     insert into cbc_rest_log
-    (id,template_id,user_name,log_date,status_code,url,info,path_one_name,path_one_value,path_two_name,path_two_value,path_three_name,path_three_value,node_parent,node_path,node_id)
+    (id,template_id,user_name,log_date,status_code,url,info,path_one_name,path_one_value,path_two_name,path_two_value,path_three_name,path_three_value,node_parent,node_path,node_id,cbc_log_id)
     values
-    (#{id},#{templateID},#{userName},#{logDate},#{statusCode},#{url},#{info},#{pathOneName, jdbcType=VARCHAR},#{pathOneValue, jdbcType=VARCHAR},#{pathTwoName, jdbcType=VARCHAR},#{pathTwoValue, jdbcType=VARCHAR},#{pathThreeName, jdbcType=VARCHAR},#{pathThreeValue, jdbcType=VARCHAR},#{nodeParent, jdbcType=VARCHAR},#{nodePath, jdbcType=VARCHAR},#{nodeID, jdbcType=NUMERIC})
+    (#{id},#{templateID},#{userName},#{logDate},#{statusCode},
+    SUBSTRB(#{url, jdbcType=VARCHAR}, 1, LEAST(LENGTHB(#{url, jdbcType=VARCHAR}), 510)),
+    SUBSTRB(#{info, jdbcType=VARCHAR}, 1, LEAST(LENGTHB(#{info, jdbcType=VARCHAR}), 4000)),
+    #{pathOneName, jdbcType=VARCHAR},#{pathOneValue, jdbcType=VARCHAR},#{pathTwoName, jdbcType=VARCHAR},#{pathTwoValue, jdbcType=VARCHAR},#{pathThreeName, jdbcType=VARCHAR},#{pathThreeValue, jdbcType=VARCHAR},#{nodeParent, jdbcType=VARCHAR},#{nodePath, jdbcType=VARCHAR},#{nodeID, jdbcType=NUMERIC},0)
   </insert>
 
-  <select id="select_rest_log_by_id_user" resultType="String"
-    parameterType="VisitedLogRestParameters">
+  <select
+    id="select_rest_log_by_id_user"
+    resultType="String"
+    parameterType="VisitedLogRestParameters"
+  >
     SELECT
     a.path_one_value AS ig_id
     FROM (
@@ -226,7 +257,11 @@
     2 DESC) a
   </select>
 
-  <select id="select_template_id" resultType="integer" parameterType="LogTemplate">
+  <select
+    id="select_template_id"
+    resultType="integer"
+    parameterType="LogTemplate"
+  >
     select id
     from cbc_rest_template
     where method = #{method} and template=#{template}
@@ -251,14 +286,21 @@
     activity_desc='Login');
   </select>
 
-  <select id="select_last_login_date_of_user" resultType="Date" parameterType="String">
+  <select
+    id="select_last_login_date_of_user"
+    resultType="Date"
+    parameterType="String"
+  >
     select max(log_date) as last_login_date
     from cbc_log
     where user_name=#{username}
     and activity_id= (select cbc_log_activity.id from cbc_log_activity where activity_desc='Login')
   </select>
 
-  <select id="select_count_actions_per_hour_yesterday" resultType="LogCountResult">
+  <select
+    id="select_count_actions_per_hour_yesterday"
+    resultType="LogCountResult"
+  >
     select to_char(log_date, 'HH24') as hourPeriod, count(*) as numberOfActions
     from cbc_log
     where log_date &gt;= to_date(to_char(sysdate - 1,'DD MM YYYY'), 'DD MM YYYY') and log_date &lt;
@@ -267,7 +309,11 @@
     order by 1
   </select>
 
-  <select id="select_activity_of_interest_group" parameterType="Long" resultType="ActivityCount">
+  <select
+    id="select_activity_of_interest_group"
+    parameterType="Long"
+    resultType="ActivityCount"
+  >
     select to_date(to_char(log_date,'MM YYYY'), 'MM YYYY') as monthActivity, service_desc as
     service, activity_desc as activity, activity_id as activityId, count(*) as actionNumber
     from cbc_log, cbc_log_activity
@@ -294,18 +340,132 @@
     select max(log_date) from cbc_log where ig_id=#{igID}
   </select>
 
-  <select id="select_last_update_log_for_ig" parameterType="Long" resultType="Date">
+  <select
+    id="select_last_update_log_for_ig"
+    parameterType="Long"
+    resultType="Date"
+  >
+SELECT MAX(log_date)
+  FROM cbc_log
+  JOIN (
+    SELECT id
+    FROM cbc_log_activity
+    WHERE 
+        (service_desc = 'Library' AND activity_desc LIKE 'Add Content Translation%')
+        OR 
+        (service_desc = 'Library' AND activity_desc LIKE 'Create Folder%')
+        OR 
+        (service_desc = 'Library' AND activity_desc LIKE 'Create Link%')
+        OR 
+        (service_desc = 'Library' AND activity_desc LIKE 'Create Space from Share%')
+        OR 
+        (service_desc = 'Library' AND activity_desc LIKE 'Import ZIP or ACP%')
+        OR 
+        (service_desc = 'Library' AND activity_desc LIKE 'Modify Dynamic Property%')
+        OR 
+        (service_desc = 'Library' AND activity_desc LIKE 'Modify Folder%')
+        OR 
+        (service_desc = 'Library' AND activity_desc LIKE 'Perform Checkin%')
+        OR 
+        (service_desc = 'Library' AND activity_desc LIKE 'Remove Content%')
+        OR 
+        (service_desc = 'Library' AND activity_desc LIKE 'Remove Folder%')
+        OR 
+        (service_desc = 'Library' AND activity_desc LIKE 'Update content properties%')
+        OR 
+        (service_desc = 'Library' AND activity_desc LIKE 'UpdateDocument%')
+        OR 
+        (service_desc = 'Library' AND activity_desc LIKE 'Upload document%')
+        OR 
+        (service_desc = 'Administration' AND activity_desc LIKE 'Add%')
+        OR 
+        (service_desc = 'Administration' AND activity_desc LIKE 'Remove%')
+        OR 
+        (service_desc = 'Administration' AND activity_desc LIKE 'Update%')
+        OR 
+        (service_desc = 'Events' AND activity_desc LIKE 'Add Event%')
+        OR 
+        (service_desc = 'Events' AND activity_desc LIKE 'Modify Event%')
+        OR 
+        (service_desc = 'Events' AND activity_desc LIKE 'Remove Event or Meeting%')
+        OR
+        (service_desc = 'Information' AND activity_desc LIKE 'Add news%')
+        OR
+        (service_desc = 'Information' AND activity_desc LIKE 'Remove News%')
+        OR
+        (service_desc = 'Information' AND activity_desc LIKE 'Update News%')
+        OR
+        (service_desc = 'Information' AND activity_desc LIKE 'Browse information service%')
+        OR
+        (service_desc = 'Newsgroups' AND activity_desc LIKE 'Add Forum%')
+        OR
+        (service_desc = 'Newsgroups' AND activity_desc LIKE 'Add New Topic%')
+        OR
+        (service_desc = 'Newsgroups' AND activity_desc LIKE 'Add Reply%')
+        OR
+        (service_desc = 'Newsgroups' AND activity_desc LIKE 'Add Topic%')
+        OR
+        (service_desc = 'Newsgroups' AND activity_desc LIKE 'Modify Post%')
+        OR
+        (service_desc = 'Newsgroups' AND activity_desc LIKE 'Modify Topic%')
+        OR
+        (service_desc = 'Newsgroups' AND activity_desc LIKE 'Remove Forum%')
+        OR
+        (service_desc = 'Newsgroups' AND activity_desc LIKE 'Remove Post%')
+        OR
+        (service_desc = 'Newsgroups' AND activity_desc LIKE 'Remove Signaled Abuse%')
+        OR
+        (service_desc = 'Newsgroups' AND activity_desc LIKE 'Remove Topic%')
+        OR
+        (service_desc = 'Newsgroups' AND activity_desc LIKE 'Report Abuse%')
+        OR
+        (service_desc = 'Newsgroups' AND activity_desc LIKE 'Toggle Forum Moderation%')
+        OR
+        (service_desc = 'Newsgroups' AND activity_desc LIKE 'Update Forum%')
+        OR
+        (service_desc = 'Newsgroups' AND activity_desc LIKE 'Verify Post by Moderator%')
+        OR
+        (service_desc = 'Members' AND activity_desc LIKE 'Apply for Membership%')
+        OR
+        (service_desc = 'Members' AND activity_desc LIKE 'Bulk Invite%')
+        OR
+        (service_desc = 'Members' AND activity_desc LIKE 'Invite Users%')
+        OR
+        (service_desc = 'Members' AND activity_desc LIKE 'Remove Member%')
+        OR
+        (service_desc = 'Members' AND activity_desc LIKE 'Update Application for Membership%')
+        OR
+        (service_desc = 'Members' AND activity_desc LIKE 'Update Members%')
+      ) activityIds
+    ON cbc_log.activity_id = activityIds.id
+    WHERE ig_id =#{igID}
+  </select>
+
+  <select
+    id="select_last_update_date_ig_statistics"
+    parameterType="Long"
+    resultType="Date"
+  >
     select max(log_date)
     from cbc_log,
     (
-    select * from cbc_log_activity where activity_desc like 'Edit%' or activity_desc like 'Upload%'
-    or activity_desc like 'Create%'
+        select id from cbc_log_activity where 
+            (service_desc='Events' and (activity_desc like 'Add%' or activity_desc like 'Remove%'))
+         or (service_desc='Information' and (activity_desc like 'Add%' or activity_desc like 'Remove%' or activity_desc like 'Upload%'))
+         or (service_desc='Library' and (activity_desc like 'Add%' or activity_desc like'Create%' or activity_desc like'Import%' 
+         or activity_desc like'Paste%' or activity_desc like 'Remove%' or activity_desc like 'Upload%'))
+         or (service_desc='Members' and (activity_desc like '%Invite%' or activity_desc like'Remove%'))
+         or (service_desc='Newsgroups' and (activity_desc like 'Add%' or activity_desc like'Remove%')) order by service_desc, activity_desc
     ) editionIds
     where ig_id=#{igID}
     and cbc_log.activity_id = editionIds.id
   </select>
 
-  <select id="select_download_logs_for_user" parameterType="map" resultType="UserActionLogDAO">
+  <select
+    id="select_download_logs_for_user"
+    parameterType="map"
+    resultType="UserActionLogDAO"
+  >
     select DOCUMENT_ID as documentId, IG_ID as igId, LOG_DATE as logDate
     from
     (select DOCUMENT_ID, IG_ID, LOG_DATE
@@ -318,7 +478,11 @@
     where #{nbResults} >= ROWNUM
   </select>
 
-  <select id="select_upload_logs_for_user" parameterType="map" resultType="UserActionLogDAO">
+  <select
+    id="select_upload_logs_for_user"
+    parameterType="map"
+    resultType="UserActionLogDAO"
+  >
     select DOCUMENT_ID as documentId, IG_ID as igId, LOG_DATE as logDate
     from
     (select DOCUMENT_ID, IG_ID, LOG_DATE
@@ -331,8 +495,11 @@
     where #{nbResults} >= ROWNUM
   </select>
 
-  <select id="select_group_news_feed_uploads" resultType="UserActionLogDAO"
-    parameterType="UserNewsFeedRequest">
+  <select
+    id="select_group_news_feed_uploads"
+    resultType="UserActionLogDAO"
+    parameterType="UserNewsFeedRequest"
+  >
     select ig_id as igId, document_id as documentId, lower(activity_desc) as action, user_name as
     username, log_date as logDate
     from cbc_log, cbc_log_activity
@@ -341,7 +508,13 @@
       #{igId}
     </foreach>
     and activity_id in
-    <foreach item="actId" collection="activityIds" open="(" separator="," close=")">
+    <foreach
+      item="actId"
+      collection="activityIds"
+      open="("
+      separator=","
+      close=")"
+    >
       #{actId}
     </foreach>
     and cbc_log.activity_id = cbc_log_activity.id
@@ -394,11 +567,13 @@
     AND
     cbc_rest_template.activity_desc = cbc_log_activity.activity_desc
     WHERE
-    cbc_rest_log.log_date > SYSDATE - 90
-    AND
-    cbc_rest_log.cbc_log_id IS NULL
+    cbc_rest_log.cbc_log_id = 0
   </select>
-  <select id="select_activity_id_by_template_id" resultType="Long" parameterType="Long">
+  <select
+    id="select_activity_id_by_template_id"
+    resultType="Long"
+    parameterType="Long"
+  >
     SELECT
     cbc_log_activity.id
     FROM

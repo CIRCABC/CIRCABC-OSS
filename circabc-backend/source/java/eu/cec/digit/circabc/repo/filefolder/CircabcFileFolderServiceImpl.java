@@ -17,6 +17,9 @@
 package eu.cec.digit.circabc.repo.filefolder;
 
 import eu.cec.digit.circabc.service.filefolder.CircabcFileFolderService;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import org.alfresco.model.ContentModel;
 import org.alfresco.model.ForumModel;
 import org.alfresco.service.cmr.model.FileFolderService;
@@ -35,154 +38,153 @@ import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.util.ISO9075;
 import org.alfresco.web.bean.repository.Repository;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 public class CircabcFileFolderServiceImpl implements CircabcFileFolderService {
 
-    private FileFolderService fileFolderService;
-    private PermissionService permissionService;
-    private SearchService searchService;
-    private NamespaceService namespaceService;
-    private NodeService nodeService;
+  private FileFolderService fileFolderService;
+  private PermissionService permissionService;
+  private SearchService searchService;
+  private NamespaceService namespaceService;
+  private NodeService nodeService;
 
-    public List<FileInfo> list(NodeRef contextNodeRef) {
-
-        final List<FileInfo> list = getFileFolderService().list(contextNodeRef);
-        final List<FileInfo> result = new ArrayList<>(list.size());
-        for (FileInfo fileInfo : list) {
-            final AccessStatus hasPermission =
-                    getPermissionService()
-                            .hasPermission(fileInfo.getNodeRef(), PermissionService.READ_PROPERTIES);
-            if (fileInfo.isFolder()) {
-                if (hasPermission != AccessStatus.ALLOWED) {
-                    if (hasVisibleChildren(fileInfo.getNodeRef())) {
-                        result.add(fileInfo);
-                    }
-                } else {
-                    result.add(fileInfo);
-                }
-            } else {
-                if (hasPermission == AccessStatus.ALLOWED) {
-                    result.add(fileInfo);
-                }
-            }
-        }
-
-        return result;
-    }
-
-    private boolean hasVisibleChildren(NodeRef nodeRef) {
-        final SearchParameters sp = new SearchParameters();
-        sp.setLanguage(SearchService.LANGUAGE_LUCENE);
-        sp.setQuery(buildvisibleDocumentQuery(nodeRef));
-        sp.addStore(Repository.getStoreRef());
-        sp.setLimitBy(LimitBy.FINAL_SIZE);
-        sp.setLimit(1);
-        ResultSet result = null;
-        boolean visibleChildren;
-        try {
-            result = getSearchService().query(sp);
-            visibleChildren = !result.getNodeRefs().isEmpty();
-        } finally {
-            if (result != null) {
-                result.close();
-            }
-        }
-        return visibleChildren;
-    }
-
-    private String buildvisibleDocumentQuery(NodeRef nodeRef) {
-        String query = "( PATH:\"" + getPathFromSpaceRef(nodeRef, true) + "\"" + " )";
-        query =
-                query
-                        + "AND (( TYPE:\""
-                        + ForumModel.TYPE_POST
-                        + "\" OR TYPE:\""
-                        + ForumModel.TYPE_FORUMS
-                        + "\") OR (TYPE:\""
-                        + ContentModel.TYPE_CONTENT
-                        + "\" OR TYPE:\""
-                        + ContentModel.TYPE_FOLDER
-                        + "\")) )";
-        return query;
-    }
-
-    private String getPathFromSpaceRef(final NodeRef ref, boolean children) {
-        final Path path = getNodeService().getPath(ref);
-        final StringBuilder buf = new StringBuilder(64);
-        String elementString;
-        Path.Element element;
-        ChildAssociationRef elementRef;
-        Collection<?> prefixes;
-        for (int i = 0; i < path.size(); i++) {
-            elementString = "";
-            element = path.get(i);
-            if (element instanceof Path.ChildAssocElement) {
-                elementRef = ((Path.ChildAssocElement) element).getRef();
-                if (elementRef.getParentRef() != null) {
-                    prefixes = getNamespaceService().getPrefixes(elementRef.getQName().getNamespaceURI());
-                    if (prefixes.size() > 0) {
-                        elementString =
-                                '/'
-                                        + (String) prefixes.iterator().next()
-                                        + ':'
-                                        + ISO9075.encode(elementRef.getQName().getLocalName());
-                    }
-                }
-            }
-
-            buf.append(elementString);
-        }
-        if (children == true) {
-            // append syntax to get all children of the path
-            buf.append("//*");
+  public List<FileInfo> list(NodeRef contextNodeRef) {
+    final List<FileInfo> list = getFileFolderService().list(contextNodeRef);
+    final List<FileInfo> result = new ArrayList<>(list.size());
+    for (FileInfo fileInfo : list) {
+      final AccessStatus hasPermission = getPermissionService()
+        .hasPermission(
+          fileInfo.getNodeRef(),
+          PermissionService.READ_PROPERTIES
+        );
+      if (fileInfo.isFolder()) {
+        if (hasPermission != AccessStatus.ALLOWED) {
+          if (hasVisibleChildren(fileInfo.getNodeRef())) {
+            result.add(fileInfo);
+          }
         } else {
-            // append syntax to just represent the path, not the children
-            buf.append("/*");
+          result.add(fileInfo);
         }
-
-        return buf.toString();
+      } else {
+        if (hasPermission == AccessStatus.ALLOWED) {
+          result.add(fileInfo);
+        }
+      }
     }
 
-    public FileFolderService getFileFolderService() {
-        return fileFolderService;
+    return result;
+  }
+
+  private boolean hasVisibleChildren(NodeRef nodeRef) {
+    final SearchParameters sp = new SearchParameters();
+    sp.setLanguage(SearchService.LANGUAGE_LUCENE);
+    sp.setQuery(buildvisibleDocumentQuery(nodeRef));
+    sp.addStore(Repository.getStoreRef());
+    sp.setLimitBy(LimitBy.FINAL_SIZE);
+    sp.setLimit(1);
+    ResultSet result = null;
+    boolean visibleChildren;
+    try {
+      result = getSearchService().query(sp);
+      visibleChildren = !result.getNodeRefs().isEmpty();
+    } finally {
+      if (result != null) {
+        result.close();
+      }
+    }
+    return visibleChildren;
+  }
+
+  private String buildvisibleDocumentQuery(NodeRef nodeRef) {
+    String query =
+      "( PATH:\"" + getPathFromSpaceRef(nodeRef, true) + "\"" + " )";
+    query =
+      query +
+      "AND (( TYPE:\"" +
+      ForumModel.TYPE_POST +
+      "\" OR TYPE:\"" +
+      ForumModel.TYPE_FORUMS +
+      "\") OR (TYPE:\"" +
+      ContentModel.TYPE_CONTENT +
+      "\" OR TYPE:\"" +
+      ContentModel.TYPE_FOLDER +
+      "\")) )";
+    return query;
+  }
+
+  private String getPathFromSpaceRef(final NodeRef ref, boolean children) {
+    final Path path = getNodeService().getPath(ref);
+    final StringBuilder buf = new StringBuilder(64);
+    String elementString;
+    Path.Element element;
+    ChildAssociationRef elementRef;
+    Collection<?> prefixes;
+    for (int i = 0; i < path.size(); i++) {
+      elementString = "";
+      element = path.get(i);
+      if (element instanceof Path.ChildAssocElement) {
+        elementRef = ((Path.ChildAssocElement) element).getRef();
+        if (elementRef.getParentRef() != null) {
+          prefixes = getNamespaceService()
+            .getPrefixes(elementRef.getQName().getNamespaceURI());
+          if (prefixes.size() > 0) {
+            elementString =
+              '/' +
+              (String) prefixes.iterator().next() +
+              ':' +
+              ISO9075.encode(elementRef.getQName().getLocalName());
+          }
+        }
+      }
+
+      buf.append(elementString);
+    }
+    if (children == true) {
+      // append syntax to get all children of the path
+      buf.append("//*");
+    } else {
+      // append syntax to just represent the path, not the children
+      buf.append("/*");
     }
 
-    public void setFileFolderService(FileFolderService fileFolderService) {
-        this.fileFolderService = fileFolderService;
-    }
+    return buf.toString();
+  }
 
-    public PermissionService getPermissionService() {
-        return permissionService;
-    }
+  public FileFolderService getFileFolderService() {
+    return fileFolderService;
+  }
 
-    public void setPermissionService(PermissionService permissionService) {
-        this.permissionService = permissionService;
-    }
+  public void setFileFolderService(FileFolderService fileFolderService) {
+    this.fileFolderService = fileFolderService;
+  }
 
-    public SearchService getSearchService() {
-        return searchService;
-    }
+  public PermissionService getPermissionService() {
+    return permissionService;
+  }
 
-    public void setSearchService(SearchService searchService) {
-        this.searchService = searchService;
-    }
+  public void setPermissionService(PermissionService permissionService) {
+    this.permissionService = permissionService;
+  }
 
-    public NamespaceService getNamespaceService() {
-        return namespaceService;
-    }
+  public SearchService getSearchService() {
+    return searchService;
+  }
 
-    public void setNamespaceService(NamespaceService namespaceService) {
-        this.namespaceService = namespaceService;
-    }
+  public void setSearchService(SearchService searchService) {
+    this.searchService = searchService;
+  }
 
-    public NodeService getNodeService() {
-        return nodeService;
-    }
+  public NamespaceService getNamespaceService() {
+    return namespaceService;
+  }
 
-    public void setNodeService(NodeService nodeService) {
-        this.nodeService = nodeService;
-    }
+  public void setNamespaceService(NamespaceService namespaceService) {
+    this.namespaceService = namespaceService;
+  }
+
+  public NodeService getNodeService() {
+    return nodeService;
+  }
+
+  public void setNodeService(NodeService nodeService) {
+    this.nodeService = nodeService;
+  }
 }

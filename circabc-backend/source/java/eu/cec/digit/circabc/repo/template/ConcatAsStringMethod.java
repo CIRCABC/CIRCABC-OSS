@@ -18,31 +18,31 @@ package eu.cec.digit.circabc.repo.template;
 
 import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModelException;
-import org.alfresco.repo.template.BaseTemplateProcessorExtension;
-
 import java.util.List;
+import org.alfresco.repo.template.BaseTemplateProcessorExtension;
 
 /**
  * Freemarker method to concat any object as a String
  *
  * @author Yanick Pignot
  */
-public class ConcatAsStringMethod extends BaseTemplateProcessorExtension
-        implements TemplateMethodModelEx {
+public class ConcatAsStringMethod
+  extends BaseTemplateProcessorExtension
+  implements TemplateMethodModelEx {
 
-    /**
-     * @see freemarker.template.TemplateMethodModel#exec(java.util.List)
-     */
-    @SuppressWarnings("unchecked")
-    public Object exec(List args) throws TemplateModelException {
-        StringBuilder result = new StringBuilder("");
+  /**
+   * @see freemarker.template.TemplateMethodModel#exec(java.util.List)
+   */
+  @SuppressWarnings("unchecked")
+  public Object exec(List args) throws TemplateModelException {
+    StringBuilder result = new StringBuilder("");
 
-        for (Object obj : args) {
-            if (obj != null) {
-                result.append(obj.toString());
-            }
-        }
-
-        return result.toString();
+    for (Object obj : args) {
+      if (obj != null) {
+        result.append(obj.toString());
+      }
     }
+
+    return result.toString();
+  }
 }

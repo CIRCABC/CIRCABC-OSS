@@ -14,7 +14,8 @@
         }}</span
       >
     </div>
-    <div class="field switch" *ngIf="form.value.enableOld === true">
+    @if (form.value.enableOld === true) {
+    <div class="field switch">
       <div class="label">{{ 'admin.display.old.message' | transloco }}</div>
       <input
         id="displayed"
@@ -27,5 +28,6 @@
         >{{ (form.value.display ? 'label.yes' : 'label.no') | transloco }}</span
       >
     </div>
+    }
   </form>
 </div>

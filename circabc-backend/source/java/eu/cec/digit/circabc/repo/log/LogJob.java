@@ -30,56 +30,62 @@ import org.quartz.JobExecutionException;
 
 public class LogJob implements Job {
 
-    private static final String LOG_JOB = "LOG_JOB";
+  private static final String LOG_JOB = "LOG_JOB";
 
-    private static boolean isInitialized = false;
+  private static boolean isInitialized = false;
 
-    private static ServiceRegistry serviceRegistry;
+  private static ServiceRegistry serviceRegistry;
 
-    private static CircabcServiceRegistry circabcServiceRegistry;
+  private static CircabcServiceRegistry circabcServiceRegistry;
 
-    private static Log logger = LogFactory.getLog(eu.cec.digit.circabc.repo.log.LogJob.class);
+  private static Log logger = LogFactory.getLog(
+    eu.cec.digit.circabc.repo.log.LogJob.class
+  );
 
-    private static LockService lockService;
-    private static LogService logService;
+  private static LockService lockService;
+  private static LogService logService;
 
-    @Override
-    public void execute(JobExecutionContext context) throws JobExecutionException {
+  @Override
+  public void execute(JobExecutionContext context)
+    throws JobExecutionException {
+    try {
+      AuthenticationUtil.setRunAsUser(AuthenticationUtil.getSystemUserName());
+      initialize(context);
+      boolean isLocked = false;
+      if (!lockService.isLocked(LOG_JOB)) {
         try {
-            AuthenticationUtil.setRunAsUser(AuthenticationUtil.getSystemUserName());
-            initialize(context);
-            boolean isLocked = false;
-            if (!lockService.isLocked(LOG_JOB)) {
-                try {
-                    lockService.lock(LOG_JOB);
-                    isLocked = true;
-                    logService.processRestLog();
-                } catch (Exception e) {
-                    logger.error("Exception when running the log job.", e);
-                } finally {
-                    if (isLocked) {
-                        lockService.unlock(LOG_JOB);
-                    }
-                }
-            }
-        } catch (final Exception e) {
-            logger.error("Can not run job LogJob", e);
+          lockService.lock(LOG_JOB);
+          isLocked = true;
+          logService.processRestLog();
+        } catch (Exception e) {
+          logger.error("Exception when running the log job.", e);
         } finally {
-            AuthenticationUtil.clearCurrentSecurityContext();
+          if (isLocked) {
+            lockService.unlock(LOG_JOB);
+          }
         }
+      }
+    } catch (final Exception e) {
+      logger.error("Can not run job LogJob", e);
+    } finally {
+      AuthenticationUtil.clearCurrentSecurityContext();
     }
+  }
 
-    private void initialize(final JobExecutionContext context) {
-        if (!isInitialized) {
-            final JobDataMap jobData = context.getJobDetail().getJobDataMap();
-            final Object serviceRegistryObj = jobData.get("serviceRegistry");
-            serviceRegistry = (ServiceRegistry) serviceRegistryObj;
+  private void initialize(final JobExecutionContext context) {
+    if (!isInitialized) {
+      final JobDataMap jobData = context.getJobDetail().getJobDataMap();
+      final Object serviceRegistryObj = jobData.get("serviceRegistry");
+      serviceRegistry = (ServiceRegistry) serviceRegistryObj;
 
-            final Object circabcServiceRegistryObj = jobData.get("circabcServiceRegistry");
-            circabcServiceRegistry = (CircabcServiceRegistry) circabcServiceRegistryObj;
-            lockService = circabcServiceRegistry.getLockService();
-            logService = circabcServiceRegistry.getLogService();
-            isInitialized = true;
-        }
+      final Object circabcServiceRegistryObj = jobData.get(
+        "circabcServiceRegistry"
+      );
+      circabcServiceRegistry =
+        (CircabcServiceRegistry) circabcServiceRegistryObj;
+      lockService = circabcServiceRegistry.getLockService();
+      logService = circabcServiceRegistry.getLogService();
+      isInitialized = true;
     }
+  }
 }

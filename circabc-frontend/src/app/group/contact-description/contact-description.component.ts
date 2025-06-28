@@ -1,23 +1,28 @@
 import { Component, Input } from '@angular/core';
 
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
-import { InterestGroup } from 'app/core/generated/circabc';
+import { I18nSelectPipe } from '@angular/common';
+import { type InterestGroup } from 'app/core/generated/circabc';
 
 @Component({
   selector: 'cbc-contact-description',
   templateUrl: './contact-description.component.html',
-  styleUrls: ['./contact-description.component.scss'],
+  styleUrl: './contact-description.component.scss',
   preserveWhitespaces: true,
+  imports: [I18nSelectPipe, TranslocoModule],
 })
 export class ContactDescriptionComponent {
+  // TODO: Skipped for migration because:
+  //  This input is used in a control flow expression (e.g. `@if` or `*ngIf`)
+  //  and migrating would break narrowing currently.
   @Input()
   public group!: InterestGroup;
 
   constructor(private translateService: TranslocoService) {}
 
   hasContact(): boolean {
-    if (this.group && this.group.contact) {
+    if (this.group?.contact) {
       return this.hasMLValue(this.group.contact);
     }
     return false;
@@ -36,15 +41,13 @@ export class ContactDescriptionComponent {
 
   getLang(): string {
     if (
-      this.group &&
-      this.group.description &&
+      this.group?.description &&
       Object.keys(this.group.description).indexOf(
         this.translateService.getActiveLang()
       ) !== -1
     ) {
       return this.translateService.getActiveLang();
-    } else {
-      return this.translateService.getDefaultLang();
     }
+    return this.translateService.getDefaultLang();
   }
 }

@@ -26,71 +26,72 @@ import java.util.HashSet;
  * @author Pignot Yanick
  */
 public enum EventPermissions {
-    EVEADMIN("EveAdmin"),
-    EVEACCESS("EveAccess"),
-    EVENOACCESS("EveNoAccess");
+  EVEADMIN("EveAdmin"),
+  EVEACCESS("EveAccess"),
+  EVENOACCESS("EveNoAccess");
 
-    static HashSet<EventPermissions> eventPermissions = null;
-    protected String permissionString;
+  static HashSet<EventPermissions> eventPermissions = null;
+  protected String permissionString;
 
-    /**
-     * Constructor initialising the string value of the permission. The String values will be defined
-     * in the file permissionDefinitions.xml
-     *
-     * @param value string value associated to the enumeration value.
-     */
-    EventPermissions(String value) {
-        permissionString = value;
+  /**
+   * Constructor initialising the string value of the permission. The String values will be defined
+   * in the file permissionDefinitions.xml
+   *
+   * @param value string value associated to the enumeration value.
+   */
+  EventPermissions(String value) {
+    permissionString = value;
+  }
+
+  public static EventPermissions withPermissionString(String permiString) {
+    EventPermissions match = null;
+
+    for (EventPermissions permission : getPermissions()) {
+      if (permission.permissionString.equals(permiString)) {
+        match = permission;
+        break;
+      }
     }
-
-    public static EventPermissions withPermissionString(String permiString) {
-        EventPermissions match = null;
-
-        for (EventPermissions permission : getPermissions()) {
-            if (permission.permissionString.equals(permiString)) {
-                match = permission;
-                break;
-            }
-        }
-        if (match == null) {
-            throw new IllegalArgumentException(
-                    "No enum const class with permission string " + permiString);
-        } else {
-            return match;
-        }
+    if (match == null) {
+      throw new IllegalArgumentException(
+        "No enum const class with permission string " + permiString
+      );
+    } else {
+      return match;
     }
+  }
 
-    /**
-     * initialise the list of permissions
-     */
-    protected static void init() {
-        eventPermissions = new HashSet<>();
-        Collections.addAll(eventPermissions, EventPermissions.values());
-    }
+  /**
+   * initialise the list of permissions
+   */
+  protected static void init() {
+    eventPermissions = new HashSet<>();
+    Collections.addAll(eventPermissions, EventPermissions.values());
+  }
 
-    /**
-     * return an Set representing the permission list.
-     *
-     * @return Set of LibraryPermissions
-     */
-    public static HashSet<EventPermissions> getPermissions() {
-        if (eventPermissions == null) {
-            init();
-        }
-        return (HashSet<EventPermissions>) eventPermissions.clone();
+  /**
+   * return an Set representing the permission list.
+   *
+   * @return Set of LibraryPermissions
+   */
+  public static HashSet<EventPermissions> getPermissions() {
+    if (eventPermissions == null) {
+      init();
     }
+    return (HashSet<EventPermissions>) eventPermissions.clone();
+  }
 
-    public static EventPermissions[] minimalValues() {
-        return new EventPermissions[]{EVEACCESS, EVENOACCESS};
-    }
+  public static EventPermissions[] minimalValues() {
+    return new EventPermissions[] { EVEACCESS, EVENOACCESS };
+  }
 
-    /**
-     * Return the string value associated to the permission
-     */
-    public String toString() {
-        if (eventPermissions == null) {
-            init();
-        }
-        return permissionString;
+  /**
+   * Return the string value associated to the permission
+   */
+  public String toString() {
+    if (eventPermissions == null) {
+      init();
     }
+    return permissionString;
+  }
 }

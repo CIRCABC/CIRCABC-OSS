@@ -1,116 +1,150 @@
-# CIRCABC 
+# CIRCABC
 
-## Building Circabc web application
+This project is a fully open-source release of CIRCABC, based on Alfresco Community Edition 4.2.f, and used by the official CIRCABC website: https://circabc.europa.eu
+
+## Building Circabc Web Application
 
 ### Prerequisites
 
 - Install Java JDK 1.8+
-    - set JAVA_HOME variable and add JAVA_HOME/bin to your PATH
+  - Set `JAVA_HOME` variable and add `JAVA_HOME/bin` to your `PATH`
 
 - Install Maven
-    - set M2_HOME variable and add M2_HOME/bin to your PATH
+  - Set `M2_HOME` variable and add `M2_HOME/bin` to your `PATH`
+  - Edit `M2_HOME/conf/settings.xml`
 
-    - Edit M2_HOME/conf/settings.xml 
+- Download and add `alfresco.war` to `circabc-resources` folder:  
+  - Download Alfresco 4.2.f Community Edition from the Alfresco website:  
+    (https://download.alfresco.com/release/community/4.2.f-build-00012/alfresco-community-4.2.f.zip)
+  - Unzip the `alfresco-community-4.2.f.zip` archive
+  - Copy the `alfresco.war` archive (located in `web-server/webapps`) to the `circabc-resources` folder
 
-- Download and add alfresco.war to circabc-resources folder :    
-    - Go to alfresco web site and download Alfresco 4.2.f community edition
- (https://hub.alfresco.com/t5/alfresco-content-services-hub/community-file-list-4-2-f/ba-p/289696)
-    - Unzip the alfresco-community-4.2.f.zip archive
-    - Copy the alfresco.war archive (located in web-server/webapps) to the circabc-resources folder
+```bash
+mkdir tmp && cd tmp
+wget https://download.alfresco.com/release/community/4.2.f-build-00012/alfresco-community-4.2.f.zip
+unzip alfresco-community-4.2.f.zip
+cp web-server/webapps/alfresco.war ../circabc-resources
+cd ..
+rm -rf tmp
+```
 
-### Repository initialisation
+### Repository Initialization
 
-Run a first mvn clean to add some missing libraries to your local repository :
-``` 
+Run a first `mvn clean` to add some missing libraries to your local maven repository:
+
+```bash
 mvn clean
 ```
 
 ### Build
 
-Run to following command to build the entire Circabc application (frontend and backend) :
+Run the following command to build the entire CIRCABC application (frontend and backend):
 
+
+```bash
+mvn clean package -Dbackend-target.env=tomcat-docker -Dfrontend-target.env=docker
 ```
-mvn clean package -Dbackend-target.env=tomcat-docker  -Dfrontend-target.env=docker -Dserver.node=N2
-```
 
-### Troubleshooting
+(File : circabc-build/docker-tomcat-build.sh)
 
-- If you have permission denied error while building the frontend, check the npm executable inside circabc has exec rights.
+## Deploying CIRCABC Web Application in Docker Environment
 
+### Tomcat/MySQL Docker Environment
 
-## Deploying Circabc web application in docker environment
+The aim of this project is to provide an easy-to-install environment for the OSS CIRCABC version.
 
-### Tomcat/MySql docker environment
-The aim of this project is to provide an easy to install environment for OSS CIRCABC version.
-
-- This environment contains the following containers :
-   - Tomcat 8.5 Docker container running Circabc Web Application
-   - MySQL 5.6 Database container
-   - Angular Nginx container running Circabc Angular application
-   - Reverse Proxy (Nginx) abstracting the connections to Circabc apps to avoid any Cors config.
+- This environment contains the following containers:
+  - Tomcat 8.5 Docker container running CIRCABC Web Application
+  - MySQL 5.6 Database container
+  - Angular Nginx container running CIRCABC Angular application
+  - Reverse Proxy (Nginx) abstracting the connections to CIRCABC apps to avoid any CORS configuration
 
 ![docker-env](doc/Slide2.PNG)
 
+Go to the `circabc` root folder and copy the artifacts to the Docker dist folders. (Note that this step can be automated with your CI/CD tools.)
+
+Copy backend and frontend archives to the `circabc-docker` directories:
 
 
-Go to the `circabc` root folder and copy the artifacts to the docker dist folders. (Note that this step can be automated with your CD/CI tools)
 
-Copy backend and fronted archives to the circabc-docker directories :
-
-```
+```bash
+rm -rf circabc-docker/tomcat/dist
 mkdir -p circabc-docker/tomcat/dist
-mkdir -p circabc-docker/angular/dist
-cp -f  circabc-backend/target/circabc.war circabc-docker/tomcat/dist/
-cp -rf circabc-frontend/dist/circabc circabc-docker/angular/dist/
+cp -f circabc-backend/target/circabc.war circabc-docker/tomcat/dist/ROOT.war
+
+rm -rf circabc-docker/angular/dist
+mkdir -p circabc-docker/angular/dist/circabc
+cp -rf circabc-frontend/dist/circabc/* circabc-docker/angular/dist/circabc/
 ```
 
-## Running Circabc web application in docker environment
+(File : circabc-build/docker-tomcat-deploy.sh)
 
-Go to `circabc-docker` folder
+## Running CIRCABC Web Application in Docker Environment
 
-Launch `docker-compose -f docker-compose-tomcat.yml up`
 
-(you can used the `clean.sh` script to delete your environement)
+Go to the `circabc-docker` folder.
 
-## Using Circabc web application in docker environment
+Launch:
 
-### Main Circabc web application
-Connect to the exposed IP of the nginx container http://your_host_ip/ui/login 
+```bash
+docker-compose -f docker-compose-tomcat.yml down 
+docker-compose -f docker-compose-tomcat.yml up --build
+```
 
-You can connect with the following default credentials :
-- Default Alfresco admin username/password are admin/password
-- Default CircaBC admin userame/password are circabc_admin/password
+(File : circabc-build/docker-tomcat-run.sh)
+
+## Using CIRCABC Web Application in Docker Environment
+
+### Main CIRCABC Web Application
+
+Connect to the exposed IP of the Nginx container:  
+http://your_host_ip/ui/login
+
+You can connect with the following default credentials:
+
+- Default Alfresco admin username/password: `admin/admin`
 
 ![docker-env](doc/circabc.PNG)
 
 ### Swagger API
-You can configure Circabc with the REST Api using the Swagger UI : http://your_host_ip/swagger-ui/index.html
-Note that the Alfresco admin console is not avaiable in Alfresco OSS.
+
+You can configure CIRCABC with the REST API using the Swagger UI:  
+http://your_host_ip/swagger-ui/index.html
 
 ![docker-env](doc/swagger.PNG)
 
-### Database administration
-A MySql administration console is available in the docker environment.  
-It is a PhpMyAdmin instance and can be accessed at the following url : http://your_host_ip:83/
-with the following settings :
-- Server : db
-- Username : root
-- Password : password
+## Creating Sample Users and Data
 
-![docker-env](doc/dbadmin.PNG)
+Optionally, you can launch E2E tests with Cypress to create sample users and data:
 
-## Limitations ##
-Warning :
- - This is an alpha release of a full open-source version of Circabc.  It has not been tested and is still under development.  Use only for test and evaluation.
- - Hazelcast has been removed.  An alternative cache should be implemented.
- -  Authentication not yet implemented, you can login with local Alfresco of Circab admin credentials here above.
+1. Install node and npm locally.
+2. Install and launch cypress tests :
+```bash
+cd circabc-e2e
+npm install cypress --save-dev
+npm run cy:run-oss
+```
 
-## License ##
-Copyright European Community - Licensed under the EUPL V.1.2
-https://ec.europa.eu/isa2/solutions/european-union-public-licence-eupl_en
+Then you should be able to connect with any users defined in `circabc-e2e/cypress.config.oss.ts` and browse the sample CIRCABC data:
 
-This Circabc version is entirely based on OSS libraries.  It does not rely on any Alfresco license.
-Note that Hazelcast cache and other entreprise features of Alfresco have been disabled. 
- 
+| Username       | Password    | Role                  |
+|----------------|-------------|-----------------------|
+| admin          | admin       | Alfresco Admin        |
+| circabc_admin  | password    | CIRCABC Admin         |
+| IGadmin1       | password123 | Interest Group Admin  |
+| Author         | password123 | Author User           |
 
+## Notes
 
+- You cannot run this version in a cluster — only one node can run at a time. Hazelcast is not used as a distributed cache, unlike in Alfresco Enterprise.
+- If you want to run an Alfresco instance with multi-store support, you can use the open-source alternative to Alfresco Enterprise :  
+  Acosix GitHub project: https://github.com/Acosix/alfresco-simple-content-stores
+
+## License
+
+Copyright European Community —
+Licensed under the EUPL V.1.2  
+https://interoperable-europe.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+
+This CIRCABC version is entirely based on OSS libraries. It does not rely on any Alfresco Enterprise license.  
+Note that Hazelcast cache and other Enterprise features of Alfresco are not available.

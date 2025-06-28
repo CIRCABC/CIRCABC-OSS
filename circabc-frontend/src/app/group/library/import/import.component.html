@@ -1,18 +1,24 @@
 <!-- MODAL BOX -->
+@if (showModal) {
 <div
   class="black-overlayer"
-  *ngIf="showModal"
   [class.overlayer-shown]="showModal"
   [class.overlayer-hidden]="!showModal"
 ></div>
+} @if (showModal) {
 <section
   class="modal modal--select-files"
-  *ngIf="showModal"
   [class.modal-shown]="showModal"
   [class.modal-hidden]="!showModal"
   style="margin-top: 0"
 >
-  <a class="close-icon" (click)="cancel('close')"></a>
+  <a
+    tabindex="0"
+    role="button"
+    class="close-icon"
+    aria-label="Cancel"
+    (click)="cancel('close')"
+  ></a>
   <header>
     <h2 class="title">{{ 'import.select.zip.file' | transloco }}</h2>
   </header>
@@ -45,14 +51,16 @@
       {{ 'label.drag.drop.file' | transloco }}
     </div>
 
-    <div *ngIf="fileToUpload !== undefined" class="field">
+    @if (fileToUpload !== undefined) {
+    <div class="field">
       <label>{{ 'label.file.uploaded' | transloco }}</label> ( {{
       'label.upload.total.size' | transloco }}: {{ fileToUpload.size | cbcSize:
-      true }}<span *ngIf="importExceeds(fileToUpload.size)" style="color: red"
+      true }}@if (importExceeds(fileToUpload.size)) {
+      <span style="color: red"
         >, {{ 'import.maximum.size' | transloco: { size: importMaxSize }
         }}</span
       >
-      )
+      } )
       <br />
       <div class="listToBeUploaded">
         <ul>
@@ -91,9 +99,9 @@
           >
         </div>
         <div class="field switch">
-          <div class="label"
-            >{{ 'import.disable.notification' | transloco }}</div
-          >
+          <div class="label">
+            {{ 'import.disable.notification' | transloco }}
+          </div>
           <input
             id="disableNotification"
             class="cmn-toggle cmn-toggle-round"
@@ -118,23 +126,30 @@
         </div>
       </form>
     </div>
-
-    <div class="field" *ngIf="uploading">
+    } @if (uploading) {
+    <div class="field">
       <label
         >{{ 'label.importing' | transloco }}<cbc-spinner></cbc-spinner
       ></label>
     </div>
+    }
 
-    <span style="font-size: 13px"
+    <span style="font-size: 13px" tabindex="0"
       >{{ 'import.need.empty.template' | transloco }}&nbsp;<a
+        tabindex="0"
         (click)="getImportIndexFileTemplate()"
-        ><img src="img/download-2.png" width="15" height="15" /></a
+        ><img
+          src="img/download-2.png"
+          width="15"
+          height="15"
+          alt="Download template" /></a
     ></span>
   </section>
   <section class="modal-footer">
     <!-- Buttons -->
     <div class="buttons-group">
       <a
+        tabindex="0"
         [class.disabled]="
           fileToUpload === undefined || importExceeds(fileToUpload.size)
         "
@@ -142,9 +157,10 @@
         (click)="import()"
         >{{ 'label.import' | transloco }}</a
       >
-      <a class="button" (click)="cancel('close')"
+      <a tabindex="0" class="button" (click)="cancel('close')"
         >{{ 'label.cancel' | transloco }}</a
       >
     </div>
   </section>
 </section>
+}

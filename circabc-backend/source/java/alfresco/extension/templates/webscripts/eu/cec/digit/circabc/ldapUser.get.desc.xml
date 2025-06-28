@@ -1,0 +1,7 @@
+<webscript>
+  <shortname>Get the user details</shortname>
+  <description>Get the user details</description>
+    <url>/circabc/ldapUser</url>
+  <format default="json" />
+  <authentication>user</authentication>
+</webscript>

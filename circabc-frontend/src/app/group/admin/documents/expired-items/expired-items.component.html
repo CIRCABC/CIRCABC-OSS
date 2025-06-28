@@ -3,8 +3,8 @@
     <cbc-pager
       [length]="totalItems"
       [pageSize]="listingOptions.limit"
-      [pageIndex]="listingOptions.page"
-      (pageChanged)="goToPage($event)"
+      [page]="listingOptions.page"
+      (pageChange)="goToPage($event)"
     ></cbc-pager>
 
     <cbc-pager-configuration
@@ -25,41 +25,36 @@
             [checked]="allSelected"
           />
         </th>
-        <td class="col-hidable"></td>
+        <th class="col-hidable"></th>
         <th>
-          <a (click)="changeSort('name')">{{ 'label.name' | transloco }}</a>
-          <span
-            class="order-arrow-up"
-            *ngIf="listingOptions.sort === 'name_ASC'"
-          ></span>
-          <span
-            class="order-arrow-down"
-            *ngIf="listingOptions.sort === 'name_DESC'"
-          ></span>
+          <a tabindex="0" (click)="changeSort('name')"
+            >{{ 'label.name' | transloco }}</a
+          >
+          @if (listingOptions.sort === 'name_ASC') {
+          <span class="order-arrow-up"></span>
+          } @if (listingOptions.sort === 'name_DESC') {
+          <span class="order-arrow-down"></span>
+          }
         </th>
         <th class="col-hidable">
-          <a (click)="changeSort('modifier')">{{ 'label.By' | transloco }}</a>
-          <span
-            class="order-arrow-up"
-            *ngIf="listingOptions.sort === 'modifier_ASC'"
-          ></span>
-          <span
-            class="order-arrow-down"
-            *ngIf="listingOptions.sort === 'modifier_DESC'"
-          ></span>
+          <a tabindex="0" (click)="changeSort('modifier')"
+            >{{ 'label.By' | transloco }}</a
+          >
+          @if (listingOptions.sort === 'modifier_ASC') {
+          <span class="order-arrow-up"></span>
+          } @if (listingOptions.sort === 'modifier_DESC') {
+          <span class="order-arrow-down"></span>
+          }
         </th>
         <th class="col-hidable">
-          <a (click)="changeSort('expirationDate')"
+          <a tabindex="0" (click)="changeSort('expirationDate')"
             >{{ 'label.expiration.date' | transloco }}</a
           >
-          <span
-            class="order-arrow-up"
-            *ngIf="listingOptions.sort === 'expirationDate_ASC'"
-          ></span>
-          <span
-            class="order-arrow-down"
-            *ngIf="listingOptions.sort === 'expirationDate_DESC'"
-          ></span>
+          @if (listingOptions.sort === 'expirationDate_ASC') {
+          <span class="order-arrow-up"></span>
+          } @if (listingOptions.sort === 'expirationDate_DESC') {
+          <span class="order-arrow-down"></span>
+          }
         </th>
         <th>{{ 'label.actions' | transloco }}</th>
       </tr>
@@ -67,7 +62,8 @@
 
     <tbody>
       <tr>
-        <td colspan="7" *ngIf="deletableNodes.length > 0">
+        @if (deletableNodes.length > 0) {
+        <td colspan="7">
           <ul class="bulk-actions">
             <li>
               <cbc-number-badge
@@ -78,6 +74,7 @@
               <img
                 src="img/rubbish-bin-blue-small.png"
                 style="vertical-align: middle"
+                alt="Rubbish bin icon"
               />
               <cbc-inline-delete
                 (deletionConfirmed)="deleteNodes()"
@@ -87,39 +84,26 @@
             </li>
           </ul>
         </td>
+        }
       </tr>
 
-      <tr class="row empty-row" *ngIf="loading">
+      @if (loading) {
+      <tr class="row empty-row">
         <td class="cell-left-border"></td>
         <td class="cell-checkbox"></td>
         <td class="col-hidable"></td>
-        <td class="cell-file-name cell-archive-item-name">
-          <div class="file-name">
-            {{ 'label.loading' | transloco }}
-            <cbc-spinner class="loader"></cbc-spinner>
-          </div>
-          <ul class="actions">
-            <li>&nbsp;</li>
-          </ul>
-        </td>
-        <td class="cell-email" colspan="3"></td>
+        <td class="cell-file-name">{{ 'label.loading' | transloco }}</td>
+        <td class="cell-email"></td>
       </tr>
-
-      <tr
-        class="row empty-row"
-        *ngIf="
-          expiredNodes !== undefined && expiredNodes.total === 0 && !loading
-        "
-      >
+      } @if ( expiredNodes !== undefined && expiredNodes.total === 0 && !loading
+      ) {
+      <tr class="row empty-row">
         <td colspan="7">
           {{ 'admin.expired.items.display.none' | transloco }}
         </td>
       </tr>
-
-      <tr
-        class="row"
-        *ngFor="let expiredNode of expiredNodes.data; trackBy: trackById"
-      >
+      } @for (expiredNode of expiredNodes.data; track expiredNode.id) {
+      <tr class="row">
         <td class="cell-left-border"></td>
         <td class="cell-checkbox">
           <input
@@ -136,32 +120,28 @@
         >
           <div class="icon"></div>
         </td>
-        <td class="cell-file-name cell-archive-item-name">
-          <div class="file-name">
-            <a [routerLink]="['../../library', expiredNode.id, 'details']"
-              >{{ expiredNode.name }}</a
-            >
-          </div>
-          <ul class="actions">
-            <li>&nbsp;</li>
-          </ul>
+        <td class="cell-file-name">
+          <a [routerLink]="['../../library', expiredNode.id, 'details']"
+            >{{ expiredNode.name }}</a
+          >
         </td>
         <td class="cell-email col-hidable">
           <cbc-user-card [userId]="getModifier(expiredNode)"></cbc-user-card>
         </td>
-        <td class="cell-email col-hidable">
+        <td class="cell-dateTime col-hidable">
           {{ getExpirationDate(expiredNode) | date: 'yyyy MM dd, HH:mm' }}
         </td>
 
         <td class="cell-access-level">
-          <img
-            src="img/calendar-with-a-clock-time-tools-155D79.png"
-            style="vertical-align: middle"
-            width="16px"
-            (click)="updateExpiredDate(expiredNode)"
-            alt=""
-            title="{{ 'label.expired.update.date' | transloco }}"
-          />
+          <a tabindex="0" (click)="updateExpiredDate(expiredNode)">
+            <img
+              src="img/calendar-with-a-clock-time-tools-155D79.png"
+              style="vertical-align: middle"
+              width="18px"
+              alt="Update expiration date"
+              title="{{ 'label.expired.update.date' | transloco }}"
+            />
+          </a>
 
           <cbc-inline-delete
             (deletionConfirmed)="deleteNode(expiredNode)"
@@ -171,10 +151,12 @@
           ></cbc-inline-delete>
         </td>
       </tr>
+      }
     </tbody>
   </table>
 
-  <ul class="bulk-actions bulk-actions--grey" *ngIf="deletableNodes.length > 0">
+  @if (deletableNodes.length > 0) {
+  <ul class="bulk-actions bulk-actions--grey">
     <li>
       <cbc-number-badge [number]="deletableNodes.length"></cbc-number-badge>
     </li>
@@ -182,6 +164,7 @@
       <img
         src="img/rubbish-bin-blue-small.png"
         style="vertical-align: middle"
+        alt="Rubbish bin icon"
       />
       <cbc-inline-delete
         (deletionConfirmed)="deleteNodes()"
@@ -190,13 +173,14 @@
       ></cbc-inline-delete>
     </li>
   </ul>
+  }
 
   <div class="footer">
     <cbc-pager
       [length]="totalItems"
       [pageSize]="listingOptions.limit"
-      [pageIndex]="listingOptions.page"
-      (pageChanged)="goToPage($event)"
+      [page]="listingOptions.page"
+      (pageChange)="goToPage($event)"
     ></cbc-pager>
   </div>
 </section>
@@ -205,5 +189,4 @@
   [(showModal)]="showUpdateExpirateDateModal"
   [nodeSelected]="nodeSelected"
   (modalHide)="refreshExpiredItemsList()"
->
-</cbc-update-expired-date>
+/>

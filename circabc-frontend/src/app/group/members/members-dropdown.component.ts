@@ -1,17 +1,19 @@
-import { Component, HostListener, Output, EventEmitter } from '@angular/core';
+import { Component, HostListener, output } from '@angular/core';
+import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
   selector: 'cbc-members-dropdown',
   templateUrl: './members-dropdown.component.html',
   preserveWhitespaces: true,
+  imports: [TranslocoModule],
 })
 export class MembersDropdownComponent {
   //   @Input() currentHeader!: Header;
   //   @Input() currentCategory!: Category;
 
   public showActionsDropdown = false;
-  @Output() public readonly showWizard = new EventEmitter<boolean>();
-  @Output() public readonly showUserCreateWizard = new EventEmitter<boolean>();
+  public readonly showWizard = output<boolean>();
+  public readonly showUserCreateWizard = output<boolean>();
 
   @HostListener('document:click', ['$event'])
 

@@ -1,11 +1,11 @@
 <cbc-modal
-  [title]="title"
+  [title]="title()"
   (ok)="delete()"
-  (cancel)="closePopupWindow()"
+  (cancelModal)="closePopupWindow()"
   [okLabel]="'label.delete'"
   [executingLabel]="'label.deleting'"
   [(visible)]="showModal"
   [contentClass]="'modal-content section-scroll'"
 >
-  {{ text | transloco }}
+  {{ text() | transloco }}
 </cbc-modal>

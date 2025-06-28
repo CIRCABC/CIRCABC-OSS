@@ -1,20 +1,26 @@
 <!-- MODAL BOX -->
+@if (showWizard) {
 <div
   class="black-overlayer"
-  *ngIf="showWizard"
   [class.overlayer-shown]="showWizard"
   [class.overlayer-hidden]="!showWizard"
 ></div>
+} @if (showWizard) {
 <section
   class="modal modal--select-files"
-  *ngIf="showWizard"
   [class.modal-shown]="showWizard"
   [class.modal-hidden]="!showWizard"
   style="margin-top: 0"
 >
-  <a class="close-icon" (click)="cancelWizard('close')"></a>
+  <a
+    tabindex="0"
+    role="button"
+    class="close-icon"
+    aria-label="Cancel wizard"
+    (click)="cancelWizard('close')"
+  ></a>
   <header>
-    <a class="back-link" (click)="cancelWizard('close')"
+    <a tabindex="0" class="back-link" (click)="cancelWizard('close')"
       >{{ 'label.back' | transloco }}</a
     >
     <h2 class="title">{{ 'label.select.file.upload' | transloco }}</h2>
@@ -59,22 +65,35 @@
         </ul>
       </div>
     </div>
-
-    <div class="field" *ngIf="uploading">
+    <form style="margin-top: 15px" [formGroup]="notifyFormGroup">
+      <label class="label">{{"label.notifications.dialog" | transloco}}</label>
+      <mat-slide-toggle formControlName="notify"></mat-slide-toggle>
+      <span style="margin: 0 10px"
+        >{{(notifyFormGroup.controls.notify.value)?("label.yes" |
+        transloco):"label.no" | transloco}}</span
+      >
+      <span>
+        ({{(notifyFormGroup.controls.notify.value)?("label.notifications.send" |
+        transloco): "label.notifications.no-send" | transloco }})
+      </span>
+    </form>
+    @if (uploading) {
+    <div class="field">
       <label
         >{{ 'label.uploading' | transloco }}<cbc-spinner></cbc-spinner
       ></label>
     </div>
+    }
   </section>
   <section class="modal-footer">
     <!-- Buttons -->
     <div class="buttons-group">
-      <a
-        class="cta"
-        (click)="update()"
-        *ngIf="fileToUpload !== undefined && !uploading"
+      @if (fileToUpload !== undefined && !uploading) {
+      <a tabindex="0" class="cta" (click)="update()"
         >{{ 'label.update' | transloco }}</a
       >
+      }
     </div>
   </section>
 </section>
+}

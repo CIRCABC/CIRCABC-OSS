@@ -8,10 +8,61 @@ body .ui-inputswitch.ui-inputswitch-checked .ui-inputswitch-slider {
   background-color: #58c37e;
 }
 
-body .ui-inputswitch.ui-inputswitch-checked:not(.ui-state-disabled):hover .ui-inputswitch-slider {
+body
+  .ui-inputswitch.ui-inputswitch-checked:not(.ui-state-disabled):hover
+  .ui-inputswitch-slider {
   background-color: #58c37e;
 }
 
-body .ui-inputswitch.ui-inputswitch-checked.ui-inputswitch-focus .ui-inputswitch-slider {
+body
+  .ui-inputswitch.ui-inputswitch-checked.ui-inputswitch-focus
+  .ui-inputswitch-slider {
   background: #58c37e;
+}
+
+.p-datepicker-dropdown {
+  background: #4caf50 !important;
+  color: #fff !important;
+}
+
+.p-datepicker-input {
+  font-size: 100% !important;
+  font-family: verdana, helvetica, sans-serif !important;
+  color: #5b5b5b !important;
+}
+
+.p-accordion .p-accordion-content {
+  padding: 1rem;
+  border: 1px solid #dee2e6;
+  background: #fff;
+  color: #495057;
+  border-top: 0;
+  border-radius: 0 0 3px 3px;
+}
+
+.p-accordioncontent-content {
+  padding: 1rem !important;
+  border: 1px solid #dee2e6 !important;
+  background: #fff !important;
+  color: #495057 !important;
+  border-top: 0 !important;
+  border-radius: 0 0 3px 3px !important;
+}
+
+.p-accordionpanel {
+  background: #f8f9fa !important;
+  border-color: #dee2e6 !important;
+  color: #495057 !important;
+  border-bottom-right-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+
+.p-accordionpanel:not(.p-disabled).p-accordionpanel-active
+  > .p-accordionheader {
+  background: #f2f2f2 !important;
+  color: #495057 !important;
+}
+
+.p-accordionheader:has(.p-accordionheader-toggle-icon.icon-start) {
+  background-color: #f9f9f9;
 }

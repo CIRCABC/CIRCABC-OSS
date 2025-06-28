@@ -1,7 +1,7 @@
 <cbc-modal
   [title]="'admin.upload.logo.action'"
   (ok)="uploadLogo()"
-  (cancel)="cancel()"
+  (cancelModal)="cancel()"
   [okLabel]="'label.upload'"
   [(visible)]="showModal"
   [showOkButton]="hasFile() && isValidImage()"
@@ -26,8 +26,8 @@
       </label>
     </div>
     <div style="color: green">{{ 'image.upload.1mb' | transloco }}</div>
-    <span *ngIf="hasFile() && !isValidImage()" style="color: red"
-      >{{ 'error.image.upload' | transloco }}</span
-    >
+    @if (hasFile() && !isValidImage()) {
+    <span style="color: red">{{ 'error.image.upload' | transloco }}</span>
+    }
   </form>
 </cbc-modal>

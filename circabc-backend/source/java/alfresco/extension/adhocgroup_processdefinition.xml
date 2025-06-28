@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!--
   Copyright 2006 European Community
   
@@ -21,11 +21,11 @@
 -->
 <process-definition xmlns="urn:jbpm.org:jpdl-3.1" name="wfag:adhocgroup">
  
-   <swimlane name="initiator"/>
+   <swimlane name="initiator" />
  
    <start-state name="start">
-      <task name="wfag:submitAdhocGroupTask" swimlane="initiator"/>
-      <transition name="" to="adhoc"/>
+      <task name="wfag:submitAdhocGroupTask" swimlane="initiator" />
+      <transition name="" to="adhoc" />
    </start-state>
  
    <swimlane name="assignee">
@@ -45,7 +45,7 @@
           <event type="task-end">
              <action class="org.alfresco.repo.workflow.jbpm.AlfrescoJavaScript">
                 <script>
-                   <variable name="bpm_assignee" access="write"/>
+                   <variable name="bpm_assignee" access="write" />
                    <expression>
                       if (taskInstance.actorId == undefined)
                          person;
@@ -74,10 +74,10 @@
    </task-node>
  
    <task-node name="completed">
-      <task name="wf:completedAdhocTask" swimlane="initiator"/>
-      <transition name="" to="end"/>
+      <task name="wf:completedAdhocTask" swimlane="initiator" />
+      <transition name="" to="end" />
    </task-node>
  
-   <end-state name="end"/>
+   <end-state name="end" />
  
 </process-definition>

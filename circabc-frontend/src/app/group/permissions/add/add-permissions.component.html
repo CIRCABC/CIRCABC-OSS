@@ -1,7 +1,7 @@
 <cbc-modal
   [title]="'label.add'"
   (ok)="addPermissions()"
-  (cancel)="cancelWizard()"
+  (cancelModal)="cancelWizard()"
   [okLabel]="'label.add'"
   [(visible)]="showModal"
   [(executing)]="adding"
@@ -11,7 +11,7 @@
   <form [formGroup]="newPermissionsForm">
     <p> {{ 'permissions.selection.explanation' | transloco }} </p>
     <cbc-users-picker
-      [igId]="ig"
+      [igId]="ig()"
       formControlName="invitedUsersOrProfiles"
       [showSelectedList]="false"
       (afterSelectionMade)="assign()"
@@ -20,8 +20,8 @@
   </form>
   <p>
     {{ 'permissions.future.configuration' | transloco }}
-    <a (click)="toggleHelp()">
-      <img src="img/icon-help-blue.png" />
+    <a tabindex="0" (click)="toggleHelp()">
+      <img src="img/icon-help-blue.png" alt="Help" />
     </a>
   </p>
   <table class="authorityTable">
@@ -33,7 +33,8 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let pair of configModel">
+      @for (pair of configModel; track pair) {
+      <tr>
         <td>
           <span class="authorityName"
             >{{ getAuthorityDisplay(pair.authValue.authority) }}</span
@@ -49,13 +50,15 @@
         </td>
         <td>
           <a
+            tabindex="0"
             (click)="removePerm(pair.authKey)"
             title="{{ 'label.delete' | transloco }}"
           >
-            <img src="img/icon-close-20x20.png" width="16" />
+            <img src="img/icon-close-20x20.png" width="16" alt="Close" />
           </a>
         </td>
       </tr>
+      }
     </tbody>
   </table>
 
@@ -66,25 +69,28 @@
     <h2>{{ 'label.help' | transloco }}</h2>
     <h3>{{ 'permissions.more.information.title' | transloco }}</h3>
 
-    <dl *ngIf="node && node.service === 'library'">
+    @if (node() && node().service === 'library') {
+    <dl>
       <dt>{{ 'permissions.LibNoAccess' | transloco }}</dt>
       <dd>{{ 'permissions.LibNoAccess.help' | transloco }}</dd>
       <dt>{{ 'permissions.LibAccess' | transloco }}</dt>
       <dd>{{ 'permissions.LibAccess.help' | transloco }}</dd>
       <dt>{{ 'permissions.LibEditOnly' | transloco }}</dt>
       <dd>{{ 'permissions.LibEditOnly.help' | transloco }}</dd>
-      <dt *ngIf="!isContent()">{{ 'permissions.LibManageOwn' | transloco }}</dt>
-      <dd *ngIf="!isContent()"
-        >{{ 'permissions.LibManageOwn.help' | transloco }}</dd
-      >
+      @if (!isContent()) {
+      <dt>{{ 'permissions.LibManageOwn' | transloco }}</dt>
+      } @if (!isContent()) {
+      <dd>{{ 'permissions.LibManageOwn.help' | transloco }}</dd>
+      }
       <dt>{{ 'permissions.LibFullEdit' | transloco }}</dt>
       <dd>{{ 'permissions.LibFullEdit.help' | transloco }}</dd>
       <dt>{{ 'permissions.LibAdmin' | transloco }}</dt>
       <dd>{{ 'permissions.LibAdmin.help' | transloco }}</dd>
     </dl>
+    }
 
     <div class="actions">
-      <a class="button" (click)="toggleHelp()"
+      <a tabindex="0" class="button" (click)="toggleHelp()"
         >{{ 'label.close' | transloco }}</a
       >
     </div>

@@ -33,100 +33,125 @@ package eu.cec.digit.circabc.repo.hrs.ws;
 /** Request for bypassing a e-Signatory task. */
 public class BypassSignatoryTaskRequest implements java.io.Serializable {
 
-    // Type metadata
-    private static org.apache.axis.description.TypeDesc typeDesc =
-            new org.apache.axis.description.TypeDesc(BypassSignatoryTaskRequest.class, true);
+  // Type metadata
+  private static org.apache.axis.description.TypeDesc typeDesc =
+    new org.apache.axis.description.TypeDesc(
+      BypassSignatoryTaskRequest.class,
+      true
+    );
 
-    static {
-        typeDesc.setXmlType(
-                new javax.xml.namespace.QName(
-                        "http://ec.europa.eu/sg/hrs/types", "BypassSignatoryTaskRequest"));
-        org.apache.axis.description.ElementDesc elemField =
-                new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("taskId");
-        elemField.setXmlName(
-                new javax.xml.namespace.QName("http://ec.europa.eu/sg/hrs/types", "taskId"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
-        elemField.setNillable(false);
-        typeDesc.addFieldDesc(elemField);
+  static {
+    typeDesc.setXmlType(
+      new javax.xml.namespace.QName(
+        "http://ec.europa.eu/sg/hrs/types",
+        "BypassSignatoryTaskRequest"
+      )
+    );
+    org.apache.axis.description.ElementDesc elemField =
+      new org.apache.axis.description.ElementDesc();
+    elemField.setFieldName("taskId");
+    elemField.setXmlName(
+      new javax.xml.namespace.QName(
+        "http://ec.europa.eu/sg/hrs/types",
+        "taskId"
+      )
+    );
+    elemField.setXmlType(
+      new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int")
+    );
+    elemField.setNillable(false);
+    typeDesc.addFieldDesc(elemField);
+  }
+
+  /* The task id for the e-Signatory task to be bypassed. */
+  private int taskId;
+  private java.lang.Object __equalsCalc = null;
+  private boolean __hashCodeCalc = false;
+
+  public BypassSignatoryTaskRequest() {}
+
+  public BypassSignatoryTaskRequest(int taskId) {
+    this.taskId = taskId;
+  }
+
+  /** Return type metadata object */
+  public static org.apache.axis.description.TypeDesc getTypeDesc() {
+    return typeDesc;
+  }
+
+  /** Get Custom Serializer */
+  public static org.apache.axis.encoding.Serializer getSerializer(
+    java.lang.String mechType,
+    java.lang.Class _javaType,
+    javax.xml.namespace.QName _xmlType
+  ) {
+    return new org.apache.axis.encoding.ser.BeanSerializer(
+      _javaType,
+      _xmlType,
+      typeDesc
+    );
+  }
+
+  /** Get Custom Deserializer */
+  public static org.apache.axis.encoding.Deserializer getDeserializer(
+    java.lang.String mechType,
+    java.lang.Class _javaType,
+    javax.xml.namespace.QName _xmlType
+  ) {
+    return new org.apache.axis.encoding.ser.BeanDeserializer(
+      _javaType,
+      _xmlType,
+      typeDesc
+    );
+  }
+
+  /**
+   * Gets the taskId value for this BypassSignatoryTaskRequest.
+   *
+   * @return taskId * The task id for the e-Signatory task to be bypassed.
+   */
+  public int getTaskId() {
+    return taskId;
+  }
+
+  /**
+   * Sets the taskId value for this BypassSignatoryTaskRequest.
+   *
+   * @param taskId * The task id for the e-Signatory task to be bypassed.
+   */
+  public void setTaskId(int taskId) {
+    this.taskId = taskId;
+  }
+
+  public synchronized boolean equals(java.lang.Object obj) {
+    if (!(obj instanceof BypassSignatoryTaskRequest)) {
+      return false;
     }
-
-    /* The task id for the e-Signatory task to be bypassed. */
-    private int taskId;
-    private java.lang.Object __equalsCalc = null;
-    private boolean __hashCodeCalc = false;
-
-    public BypassSignatoryTaskRequest() {
+    BypassSignatoryTaskRequest other = (BypassSignatoryTaskRequest) obj;
+    if (obj == null) {
+      return false;
     }
-
-    public BypassSignatoryTaskRequest(int taskId) {
-        this.taskId = taskId;
+    if (this == obj) {
+      return true;
     }
-
-    /** Return type metadata object */
-    public static org.apache.axis.description.TypeDesc getTypeDesc() {
-        return typeDesc;
+    if (__equalsCalc != null) {
+      return (__equalsCalc == obj);
     }
+    __equalsCalc = obj;
+    boolean _equals;
+    _equals = true && this.taskId == other.getTaskId();
+    __equalsCalc = null;
+    return _equals;
+  }
 
-    /** Get Custom Serializer */
-    public static org.apache.axis.encoding.Serializer getSerializer(
-            java.lang.String mechType, java.lang.Class _javaType, javax.xml.namespace.QName _xmlType) {
-        return new org.apache.axis.encoding.ser.BeanSerializer(_javaType, _xmlType, typeDesc);
+  public synchronized int hashCode() {
+    if (__hashCodeCalc) {
+      return 0;
     }
-
-    /** Get Custom Deserializer */
-    public static org.apache.axis.encoding.Deserializer getDeserializer(
-            java.lang.String mechType, java.lang.Class _javaType, javax.xml.namespace.QName _xmlType) {
-        return new org.apache.axis.encoding.ser.BeanDeserializer(_javaType, _xmlType, typeDesc);
-    }
-
-    /**
-     * Gets the taskId value for this BypassSignatoryTaskRequest.
-     *
-     * @return taskId * The task id for the e-Signatory task to be bypassed.
-     */
-    public int getTaskId() {
-        return taskId;
-    }
-
-    /**
-     * Sets the taskId value for this BypassSignatoryTaskRequest.
-     *
-     * @param taskId * The task id for the e-Signatory task to be bypassed.
-     */
-    public void setTaskId(int taskId) {
-        this.taskId = taskId;
-    }
-
-    public synchronized boolean equals(java.lang.Object obj) {
-        if (!(obj instanceof BypassSignatoryTaskRequest)) {
-            return false;
-        }
-        BypassSignatoryTaskRequest other = (BypassSignatoryTaskRequest) obj;
-        if (obj == null) {
-            return false;
-        }
-        if (this == obj) {
-            return true;
-        }
-        if (__equalsCalc != null) {
-            return (__equalsCalc == obj);
-        }
-        __equalsCalc = obj;
-        boolean _equals;
-        _equals = true && this.taskId == other.getTaskId();
-        __equalsCalc = null;
-        return _equals;
-    }
-
-    public synchronized int hashCode() {
-        if (__hashCodeCalc) {
-            return 0;
-        }
-        __hashCodeCalc = true;
-        int _hashCode = 1;
-        _hashCode += getTaskId();
-        __hashCodeCalc = false;
-        return _hashCode;
-    }
+    __hashCodeCalc = true;
+    int _hashCode = 1;
+    _hashCode += getTaskId();
+    __hashCodeCalc = false;
+    return _hashCode;
+  }
 }

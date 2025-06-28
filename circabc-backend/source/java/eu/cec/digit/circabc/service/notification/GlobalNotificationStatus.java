@@ -22,16 +22,16 @@ package eu.cec.digit.circabc.service.notification;
  * @author Yanick Pignot
  */
 public enum GlobalNotificationStatus {
-    ENABLED {
-        public boolean toBoolean() {
-            return true;
-        }
-    },
-    DISABLED {
-        public boolean toBoolean() {
-            return false;
-        }
-    };
+  ENABLED {
+    public boolean toBoolean() {
+      return true;
+    }
+  },
+  DISABLED {
+    public boolean toBoolean() {
+      return false;
+    }
+  };
 
-    public abstract boolean toBoolean();
+  public abstract boolean toBoolean();
 }

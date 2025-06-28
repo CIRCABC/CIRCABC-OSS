@@ -1,19 +1,40 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, model } from '@angular/core';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
 
+import { TranslocoModule } from '@jsverse/transloco';
+import { CreateCircabcComponent } from 'app/admin/circabc/create-circabc/create-circabc.component';
+import { CreateCategoryComponent } from 'app/admin/create-category/create-category.component';
+import { AddHeaderComponent } from 'app/admin/headers/add-header/add-header.component';
 import { User } from 'app/core/generated/circabc';
 import { HeaderReloadListenerService } from 'app/core/header-reload-listener.service';
 import { LoginService } from 'app/core/login.service';
+import { DataCyDirective } from 'app/shared/directives/data-cy.directive';
+import { HeaderComponent } from 'app/shared/header/header.component';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
+import { NavigatorComponent } from 'app/shared/navigator/navigator.component';
 
 @Component({
   selector: 'cbc-admin',
   templateUrl: './admin.component.html',
   preserveWhitespaces: true,
+  imports: [
+    HeaderComponent,
+    NavigatorComponent,
+    HorizontalLoaderComponent,
+    DataCyDirective,
+    RouterLink,
+    AddHeaderComponent,
+    CreateCategoryComponent,
+    CreateCircabcComponent,
+    RouterOutlet,
+    TranslocoModule,
+  ],
 })
 export class AdminComponent {
   public loading = false;
-  public showAddHeaderModal = false;
-  public showCreateCategory = false;
+  public showAddHeaderModal = model(false);
+  public showCreateCategory = model(false);
+  public showCreateCircabc = model(false);
 
   constructor(
     private router: Router,
@@ -29,6 +50,10 @@ export class AdminComponent {
     return this.checkCurrentRouteActive('headers');
   }
 
+  public isCircabcRoute(): boolean {
+    return this.checkCurrentRouteActive('circabc');
+  }
+
   public isAdmin(): boolean {
     const user: User = this.loginService.getUser();
     return user.properties !== undefined && user.properties.isAdmin === 'true';
@@ -42,10 +67,9 @@ export class AdminComponent {
   }
 
   public addHeader() {
-    this.showAddHeaderModal = true;
+    this.showAddHeaderModal.set(true);
   }
 
-  // eslint-disable-next-line no-empty, @typescript-eslint/no-empty-function
   public loadHeaders() {
     this.headerReloadListenerService.propagateHeaderRefresh();
   }

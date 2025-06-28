@@ -1,5 +1,6 @@
 <h2>{{ 'label.details' | transloco }}</h2>
-<section *ngIf="user">
+@if (user) {
+<section>
   <table style="font-size: 13px">
     <tbody>
       <tr>
@@ -18,34 +19,43 @@
         <td class="bold"> {{ 'label.email' | transloco }}</td>
         <td>{{ user.email }} </td>
       </tr>
-      <tr *ngIf="user.properties">
+      @if (user.properties) {
+      <tr>
         <td class="bold"> {{ 'label.postal.address' | transloco }}</td>
         <td>{{ user.properties.address }} </td>
       </tr>
-      <tr *ngIf="user.properties">
+      } @if (user.properties) {
+      <tr>
         <td class="bold"> {{ 'label.phone' | transloco }}</td>
         <td>{{ user.properties.phone }} </td>
       </tr>
-      <tr *ngIf="user.properties">
+      } @if (user.properties) {
+      <tr>
         <td class="bold"> {{ 'label.organisation' | transloco }}</td>
         <td>{{ user.properties.organisation }} </td>
       </tr>
-      <tr *ngIf="user.properties">
+      } @if (user.properties) {
+      <tr>
         <td class="bold"> {{ 'label.title' | transloco }}</td>
         <td>{{ user.properties.title }} </td>
       </tr>
-      <tr *ngIf="user.properties">
+      } @if (user.properties) {
+      <tr>
         <td class="bold"> {{ 'label.description' | transloco }}</td>
         <td>{{ user.properties.description }} </td>
       </tr>
-      <tr *ngIf="user.properties">
+      } @if (user.properties) {
+      <tr>
         <td class="bold"> {{ 'label.fax' | transloco }}</td>
         <td>{{ user.properties.fax }} </td>
       </tr>
-      <tr *ngIf="user.properties">
+      } @if (user.properties) {
+      <tr>
         <td class="bold"> {{ 'label.url' | transloco }}</td>
         <td>{{ user.properties.url }} </td>
       </tr>
+      }
     </tbody>
   </table>
 </section>
+}

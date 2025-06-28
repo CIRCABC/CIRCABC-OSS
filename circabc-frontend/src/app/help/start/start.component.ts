@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
+import { RouterLink } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ActionEmitterResult } from 'app/action-result';
 import {
   HelpCategory,
@@ -7,12 +9,30 @@ import {
   HelpService,
 } from 'app/core/generated/circabc';
 import { LoginService } from 'app/core/login.service';
+import { AddHelpCategoryComponent } from 'app/help/add-help-category/add-help-category.component';
+import { AddLinkComponent } from 'app/help/add-link/add-link.component';
+import { FaqHighlightsComponent } from 'app/help/faq-highlights/faq-highlights.component';
+import { HelpLinksComponent } from 'app/help/help-links/help-links.component';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
+import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
+import { SetTitlePipe } from 'app/shared/pipes/set-title.pipe';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-start',
   templateUrl: './start.component.html',
-  styleUrls: ['./start.component.scss'],
+  styleUrl: './start.component.scss',
+  imports: [
+    HorizontalLoaderComponent,
+    RouterLink,
+    FaqHighlightsComponent,
+    HelpLinksComponent,
+    AddHelpCategoryComponent,
+    AddLinkComponent,
+    I18nPipe,
+    SetTitlePipe,
+    TranslocoModule,
+  ],
 })
 export class StartComponent implements OnInit {
   public categories: HelpCategory[] = [];
@@ -74,7 +94,7 @@ export class StartComponent implements OnInit {
     this.loading = false;
   }
 
-  public async refreshLinks(_result: ActionEmitterResult) {
+  public async refreshLinks(_result?: ActionEmitterResult) {
     this.loading = true;
     this.showCreateLinkModal = false;
 

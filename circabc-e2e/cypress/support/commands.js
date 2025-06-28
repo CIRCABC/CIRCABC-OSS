@@ -25,45 +25,38 @@
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 import 'cypress-file-upload';
 
-// Cypress.Commands.add('badLogin', (username, password) => {
-//   cy.visit("/");
-//   cy.get('[data-cy=connect]').click();
-//   cy.get('[data-cy=username]').type(username);
-//   cy.get('[data-cy=password]').type(password);
-//   cy.get('[data-cy=login]').click();
-// });
-
 Cypress.Commands.add('setPassword', (username, password) => {
   cy.request({
     method: 'POST',
-    url: '../service/api/person/changepassword/' + username,
+    url:
+      `http://${Cypress.env('host')}:${Cypress.env('port')}${Cypress.env('path')}/service/api/person/changepassword/${username}`,
     body: {
-      newpw: password
+      newpw: password,
     },
-    headers: { Authorization: 'Basic ' + btoa('admin:admin') }
+    headers: { Authorization: 'Basic ' + btoa('admin:admin') },
   });
 });
 
 Cypress.Commands.add('login', (username, password) => {
-  
-  // accept cookies  
-  window.localStorage.setItem("allow-cookies", "yes");
+  // accept cookies
+  window.localStorage.setItem('allow-cookies', 'yes');
 
   cy.request({
     method: 'POST',
-    url: '../service/api/login?guest=true',
+    url:    `http://${Cypress.env('host')}:${Cypress.env('port')}${Cypress.env('path')}/service/api/login?guest=true`,
     body: {
       username: username,
-      password: password
-    }
-  }).then(resp => {
+      password: password,
+    },
+  }).then((resp) => {
     window.sessionStorage.setItem('ticket', resp.body.data.ticket);
 
     cy.request({
       method: 'GET',
-      url: '../service/circabc/users/' + username,
-      headers: { Authorization: 'Basic ' + btoa(resp.body.data.ticket) }
-    }).then(resp => {
+      url:
+        `http://${Cypress.env('host')}:${Cypress.env('port')}${Cypress.env('path')}/service/circabc/users/${username}`,
+      headers: { Authorization: 'Basic ' + btoa(resp.body.data.ticket) },
+    }).then((resp) => {
       let user = resp.body;
       window.sessionStorage.setItem('user.userId', user.userId);
       window.sessionStorage.setItem('user.email', user.email);
@@ -95,12 +88,9 @@ Cypress.Commands.add('logout', () => {
   if (ticket !== null) {
     cy.request({
       method: 'DELETE',
-      url:
-        '../service/api/login/ticket/' +
-        ticket +
-        '?format=json',
-      headers: { Authorization: 'Basic ' + btoa(ticket) }
-    }).then(resp => {
+      url: '../service/api/login/ticket/' + ticket + '?format=json',
+      headers: { Authorization: 'Basic ' + btoa(ticket) },
+    }).then((resp) => {
       if (resp) {
         window.sessionStorage.removeItem('ticket');
         window.sessionStorage.removeItem('user.userId');
@@ -116,4 +106,43 @@ Cypress.Commands.add('logout', () => {
       }
     });
   }
+});
+
+import 'cypress-axe';
+
+const logA11yViolations = (violations) => {
+  cy.task('log', `${violations.length} accessibility violation(s) detected.`);
+  violations.forEach(({ id, impact, description, nodes }) => {
+    cy.task('log', `[${impact}] ${id}: ${description}`);
+    nodes.forEach(({ html }) => {
+      cy.task('log', `Affected Node: ${html}`);
+    });
+  });
+  cy.wait(500);
+};
+
+// Add violationCallback as a custom command
+// @ts-ignore
+Cypress.Commands.add('checkA11yWithLogging', (context, options) => {
+
+  if (Cypress.env('timeout') > 0 ) {
+    cy.wait(Cypress.env('timeout'));
+  }
+  if (!Cypress.env('runA11y')) {
+    return;
+  }
+  cy.injectAxe();
+  if (Cypress.env('logA11yFailures')) {
+    // @ts-ignore
+    cy.checkA11y(
+      context,
+      options,
+      logA11yViolations,
+      Cypress.env('skipA11yFailures')
+    );
+  } else {
+    // @ts-ignore
+    cy.checkA11y(context, options, undefined, Cypress.env('skipA11yFailures'));
+  }
+  
 });

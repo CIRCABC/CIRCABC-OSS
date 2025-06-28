@@ -1,8 +1,14 @@
-import { Location } from '@angular/common';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup } from '@angular/forms';
+import { CommonModule, Location } from '@angular/common';
+import { Component, ElementRef, OnInit, viewChild } from '@angular/core';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+} from '@angular/forms';
 
-import { TranslocoService } from '@ngneat/transloco';
+import { RouterLink } from '@angular/router';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { ActionEmitterResult, ActionType } from 'app/action-result';
 import { AnalyticsService } from 'app/core/analytics.service';
 import {
@@ -14,31 +20,56 @@ import {
 import { LoginService } from 'app/core/login.service';
 import { UiMessageService } from 'app/core/message/ui-message.service';
 import { getSuccessTranslation } from 'app/core/util';
-import { ValidationService } from 'app/core/validation.service';
+import { emailValidator, urlValidator } from 'app/core/validation.service';
+import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
+import { InlineDeleteComponent } from 'app/shared/delete/inline-delete.component';
+import { FadeInOutDirective } from 'app/shared/directives/fade-in-out.directive';
+import { HintComponent } from 'app/shared/hint/hint.component';
+import { LangSelectorComponent } from 'app/shared/lang/lang-selector.component';
+import { DownloadPipe } from 'app/shared/pipes/download.pipe';
+import { SecurePipe } from 'app/shared/pipes/secure.pipe';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
+import { SharedModule } from 'primeng/api';
+import { EditorModule } from 'primeng/editor';
 import { firstValueFrom } from 'rxjs';
-import { ConfirmDialogComponent } from 'app/shared/confirm-dialog/confirm-dialog.component';
-import { MatDialog } from '@angular/material/dialog';
+import { ChangeAvatarComponent } from './change-avatar/change-avatar.component';
 
 @Component({
   selector: 'cbc-account',
   templateUrl: './account.component.html',
-  styleUrls: ['./account.component.scss'],
+  styleUrl: './account.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    CommonModule,
+    SpinnerComponent,
+    ReactiveFormsModule,
+    InlineDeleteComponent,
+    ControlMessageComponent,
+    LangSelectorComponent,
+    HintComponent,
+    EditorModule,
+    SharedModule,
+    RouterLink,
+    ChangeAvatarComponent,
+    DownloadPipe,
+    SecurePipe,
+    TranslocoModule,
+    FadeInOutDirective,
+  ],
 })
 export class AccountComponent implements OnInit {
-  @ViewChild('nameInputFieldElement', { static: true })
-  nameInputFieldElement!: ElementRef;
+  readonly nameInputFieldElement = viewChild.required<ElementRef>(
+    'nameInputFieldElement'
+  );
 
   public user!: User;
   public distributionMail!: DistributionMail | undefined;
-
   public viewing = false;
   public processing = false;
   public ready = false;
-
+  public agreeAlert = false;
   public launchChangeAvatar = false;
   public mustConfirmAvatarDelete = false;
-
   public updateUserForm!: FormGroup;
 
   constructor(
@@ -49,8 +80,7 @@ export class AccountComponent implements OnInit {
     private uiMessageService: UiMessageService,
     private location: Location,
     private appMessageService: AppMessageService,
-    private analyticsService: AnalyticsService,
-    private dialog: MatDialog
+    private analyticsService: AnalyticsService
   ) {}
 
   async ngOnInit() {
@@ -60,7 +90,7 @@ export class AccountComponent implements OnInit {
       {
         firstname: [''],
         lastname: [''],
-        email: ['', ValidationService.emailValidator],
+        email: ['', emailValidator],
 
         title: [''],
         organisation: [''],
@@ -68,7 +98,7 @@ export class AccountComponent implements OnInit {
         description: [''],
         phone: [''],
         fax: [''],
-        urlAddress: ['', ValidationService.urlValidator],
+        urlAddress: ['', urlValidator],
         uiLanguage: [''],
         globalNotificationEnabled: [false],
         globalDistributionEnabled: [false],
@@ -95,18 +125,6 @@ export class AccountComponent implements OnInit {
         this.subscribeDistributionList(data);
       }
     );
-
-    this.showAlertDialog();
-  }
-
-  private async showAlertDialog() {
-    this.dialog.open(ConfirmDialogComponent, {
-      data: {
-        message: 'label.dialog.alert.updating.user.line1',
-        message2: 'label.dialog.alert.updating.user.line2',
-        layoutStyle: 'alert',
-      },
-    });
   }
 
   private async fillForm() {
@@ -147,7 +165,7 @@ export class AccountComponent implements OnInit {
         );
       }
 
-      if (this.distributionMail && this.distributionMail.id) {
+      if (this.distributionMail?.id) {
         this.updateUserForm.controls.globalDistributionEnabled.patchValue(true);
       } else {
         this.updateUserForm.controls.globalDistributionEnabled.patchValue(
@@ -155,13 +173,13 @@ export class AccountComponent implements OnInit {
         );
       }
     } catch (error) {
-      const jsonError = JSON.parse(error._body);
-      if (jsonError) {
+      const jsonError = JSON.parse(error._body) as Record<string, string>;
+      if (jsonError && 'message' in jsonError) {
         this.uiMessageService.addErrorMessage(jsonError.message);
       }
     }
 
-    this.nameInputFieldElement.nativeElement.focus();
+    this.nameInputFieldElement().nativeElement.focus();
   }
 
   public cutDate(dateString: string) {
@@ -229,7 +247,7 @@ export class AccountComponent implements OnInit {
     try {
       this.processing = true;
       this.setAllowCookies();
-      if (this.user !== undefined && this.user.properties !== undefined) {
+      if (this.user?.properties !== undefined) {
         // fill user fields
         this.user.firstname = this.updateUserForm.controls.firstname.value;
         this.user.lastname = this.updateUserForm.controls.lastname.value;
@@ -260,7 +278,7 @@ export class AccountComponent implements OnInit {
           this.userService.putUser(this.user.userId as string, this.user)
         );
 
-        await this.refreshUILang(this.updateUserForm.controls.uiLanguage.value);
+        this.refreshUILang(this.updateUserForm.controls.uiLanguage.value);
 
         const text = this.translateService.translate(
           getSuccessTranslation(ActionType.UPDATE_ACCOUNT)
@@ -288,9 +306,6 @@ export class AccountComponent implements OnInit {
     if (
       agreeWithCookies !== this.updateUserForm.controls.agreeWithCookies.value
     ) {
-      this.analyticsService.setAgreeWithCookies(
-        this.updateUserForm.controls.agreeWithCookies.value
-      );
       if (this.updateUserForm.controls.agreeWithCookies.value) {
         this.analyticsService.init();
       }
@@ -304,15 +319,8 @@ export class AccountComponent implements OnInit {
     return this.updateUserForm.controls.urlAddress;
   }
 
-  public async refreshUILang(lang: string) {
+  private refreshUILang(lang: string) {
     this.translateService.setActiveLang(lang);
-    if (!this.loginService.isGuest()) {
-      await firstValueFrom(
-        this.userService.putUser(this.loginService.getCurrentUsername(), {
-          uiLang: lang,
-        })
-      );
-    }
   }
 
   private async subscribeDistributionList(value: boolean) {
@@ -331,12 +339,12 @@ export class AccountComponent implements OnInit {
           this.appMessageService.addDistributionEmails([distrib])
         );
 
-        const result = await firstValueFrom(
+        const result: DistributionMail = await firstValueFrom(
           this.appMessageService.getDistributionEmailSubscription(
             this.user.userId
           )
         );
-        if (result && result.id) {
+        if (result?.id) {
           this.distributionMail = result;
         }
       } catch (error) {
@@ -367,13 +375,13 @@ export class AccountComponent implements OnInit {
       this.userService.getUser(this.user.userId as string)
     );
 
-    if (this.user && this.user.userId) {
-      const result = await firstValueFrom(
+    if (this.user?.userId) {
+      const result: DistributionMail = await firstValueFrom(
         this.appMessageService.getDistributionEmailSubscription(
           this.user.userId
         )
       );
-      if (result && result.id) {
+      if (result?.id) {
         this.distributionMail = result;
       }
     }

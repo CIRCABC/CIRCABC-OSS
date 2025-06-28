@@ -1,30 +1,37 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { Component, Input, OnInit, output, input } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
   ActionType,
 } from 'app/action-result';
 import { HelpCategory, HelpService } from 'app/core/generated/circabc';
-import { ValidationService } from 'app/core/validation.service';
+import { nonEmptyTitle } from 'app/core/validation.service';
+import { MultilingualInputComponent } from 'app/shared/input/multilingual-input.component';
+import { ModalComponent } from 'app/shared/modal/modal.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-add-help-category',
   templateUrl: './add-help-category.component.html',
   preserveWhitespaces: true,
+  imports: [
+    ModalComponent,
+    ReactiveFormsModule,
+    MultilingualInputComponent,
+    TranslocoModule,
+  ],
 })
 export class AddHelpCategoryComponent implements OnInit {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   showModal = false;
-  @Input()
-  categoryId: string | undefined;
-  @Output()
-  readonly showModalChange = new EventEmitter();
-  @Output()
-  readonly categoryCreated = new EventEmitter<ActionEmitterResult>();
-  @Output()
-  readonly categoryUpdated = new EventEmitter<ActionEmitterResult>();
+  readonly categoryId = input<string>();
+  readonly showModalChange = output<boolean>();
+  readonly categoryCreated = output<ActionEmitterResult>();
+  readonly categoryUpdated = output<ActionEmitterResult>();
 
   public creating = false;
   public newCategoryForm!: FormGroup;
@@ -32,12 +39,15 @@ export class AddHelpCategoryComponent implements OnInit {
   public categoryToEdit!: HelpCategory;
   public isValid = false;
 
-  constructor(private fb: FormBuilder, private helpService: HelpService) {}
+  constructor(
+    private fb: FormBuilder,
+    private helpService: HelpService
+  ) {}
 
   async ngOnInit() {
     this.newCategoryForm = this.fb.group(
       {
-        title: ['', ValidationService.nonEmptyTitle],
+        title: ['', nonEmptyTitle],
       },
       {
         updateOn: 'change',
@@ -48,10 +58,11 @@ export class AddHelpCategoryComponent implements OnInit {
       this.computeValidity();
     });
 
-    if (this.categoryId) {
+    const categoryId = this.categoryId();
+    if (categoryId) {
       this.editMode = true;
       this.categoryToEdit = await firstValueFrom(
-        this.helpService.getHelpCategory(this.categoryId)
+        this.helpService.getHelpCategory(categoryId)
       );
 
       this.newCategoryForm.controls.title.patchValue(this.categoryToEdit.title);
@@ -61,7 +72,7 @@ export class AddHelpCategoryComponent implements OnInit {
   public async createCategory() {
     this.creating = true;
     const result: ActionEmitterResult = {};
-    result.type = ActionType.ADD_HELP_CATEGORY;
+    result.type = ActionType.ADD_HELP_SECTION;
     result.result = ActionResult.FAILED;
 
     try {
@@ -85,7 +96,7 @@ export class AddHelpCategoryComponent implements OnInit {
   public async updateCategory() {
     this.creating = true;
     const result: ActionEmitterResult = {};
-    result.type = ActionType.UPDATE_HELP_CATEGORY;
+    result.type = ActionType.UPDATE_HELP_SECTION;
     result.result = ActionResult.FAILED;
 
     try {
@@ -93,9 +104,10 @@ export class AddHelpCategoryComponent implements OnInit {
         title: this.newCategoryForm.value.title,
       };
 
-      if (this.categoryId) {
+      const categoryId = this.categoryId();
+      if (categoryId) {
         await firstValueFrom(
-          this.helpService.updateHelpCategory(this.categoryId, body)
+          this.helpService.updateHelpCategory(categoryId, body)
         );
         result.result = ActionResult.SUCCEED;
         this.showModal = false;

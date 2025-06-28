@@ -2,24 +2,72 @@
 
    <plug-ins>
       <evaluators>
-         <evaluator id="node-type" class="org.alfresco.web.config.NodeTypeEvaluator" />
-         <evaluator id="aspect-name" class="org.alfresco.web.config.AspectEvaluator" />
+         <evaluator
+        id="node-type"
+        class="org.alfresco.web.config.NodeTypeEvaluator"
+      />
+         <evaluator
+        id="aspect-name"
+        class="org.alfresco.web.config.AspectEvaluator"
+      />
       </evaluators>
       <element-readers>
-         <element-reader element-name="client" class="org.alfresco.web.config.ClientElementReader"/>
-         <element-reader element-name="server" class="org.springframework.extensions.config.ServerElementReader"/>
-         <element-reader element-name="property-sheet" class="org.alfresco.web.config.PropertySheetElementReader"/>
-         <element-reader element-name="navigation" class="org.alfresco.web.config.NavigationElementReader" />
-         <element-reader element-name="languages" class="org.alfresco.web.config.LanguagesElementReader" />
-         <element-reader element-name="command-servlet" class="org.alfresco.web.config.CommandServletElementReader" />
-         <element-reader element-name="advanced-search" class="org.alfresco.web.config.AdvancedSearchElementReader" />
-         <element-reader element-name="views" class="org.alfresco.web.config.ViewsElementReader" />
-         <element-reader element-name="actions" class="org.alfresco.web.config.ActionsElementReader" />
-         <element-reader element-name="dialogs" class="org.alfresco.web.config.DialogsElementReader"/>
-         <element-reader element-name="wizards" class="org.alfresco.web.config.WizardsElementReader"/>
-         <element-reader element-name="dashboards" class="org.alfresco.web.config.DashboardsElementReader"/>
-         <element-reader element-name="sidebar" class="org.alfresco.web.config.SidebarElementReader"/>
-         <element-reader element-name="wcm" class="org.alfresco.web.config.WCMElementReader" />
+         <element-reader
+        element-name="client"
+        class="org.alfresco.web.config.ClientElementReader"
+      />
+         <element-reader
+        element-name="server"
+        class="org.springframework.extensions.config.ServerElementReader"
+      />
+         <element-reader
+        element-name="property-sheet"
+        class="org.alfresco.web.config.PropertySheetElementReader"
+      />
+         <element-reader
+        element-name="navigation"
+        class="org.alfresco.web.config.NavigationElementReader"
+      />
+         <element-reader
+        element-name="languages"
+        class="org.alfresco.web.config.LanguagesElementReader"
+      />
+         <element-reader
+        element-name="command-servlet"
+        class="org.alfresco.web.config.CommandServletElementReader"
+      />
+         <element-reader
+        element-name="advanced-search"
+        class="org.alfresco.web.config.AdvancedSearchElementReader"
+      />
+         <element-reader
+        element-name="views"
+        class="org.alfresco.web.config.ViewsElementReader"
+      />
+         <element-reader
+        element-name="actions"
+        class="org.alfresco.web.config.ActionsElementReader"
+      />
+         <element-reader
+        element-name="dialogs"
+        class="org.alfresco.web.config.DialogsElementReader"
+      />
+         <element-reader
+        element-name="wizards"
+        class="org.alfresco.web.config.WizardsElementReader"
+      />
+         <element-reader
+        element-name="dashboards"
+        class="org.alfresco.web.config.DashboardsElementReader"
+      />
+         <element-reader
+        element-name="sidebar"
+        class="org.alfresco.web.config.SidebarElementReader"
+      />
+         <element-reader
+        element-name="wcm"
+        class="org.alfresco.web.config.WCMElementReader"
+      />
       </element-readers>
    </plug-ins>
    
@@ -59,7 +107,8 @@
          <tasks-completed-max-results>100</tasks-completed-max-results>
          
          <!-- The path to starting point when creating/finding home folders for new users in the UI -->
-         <default-home-space-path>/app:company_home/app:user_homes</default-home-space-path>
+         <default-home-space-path
+      >/app:company_home/app:user_homes</default-home-space-path>
          
          <!-- The default permissions to apply to a new users Home Space when first created -->
          <!-- this permission is for other users attempting to access that Home Space -->
@@ -75,7 +124,8 @@
          <allow-guest-config>false</allow-guest-config>
          
          <!-- the URL to the client Help file -->
-         <help-url>http://docs.alfresco.com/{version.major}.{version.minor}/topic/com.alfresco.{version.edition}_{version.major}_{version.minor}_0.doc/topics/guh-wcm-welcome-explorer.html</help-url>
+         <help-url
+      >http://docs.alfresco.com/{version.major}.{version.minor}/topic/com.alfresco.{version.edition}_{version.major}_{version.minor}_0.doc/topics/guh-wcm-welcome-explorer.html</help-url>
          
          <!-- the type of edit link to use, NOTE: inline editable will always take precedence -->
          <!-- can be: http|webdav -->
@@ -166,10 +216,14 @@
    <config evaluator="string-compare" condition="Views">
       <!-- the views available in the client -->
       <views>
-         <view-impl>org.alfresco.web.ui.common.renderer.data.RichListRenderer$DetailsViewRenderer</view-impl>
-         <view-impl>org.alfresco.web.ui.common.renderer.data.RichListRenderer$IconViewRenderer</view-impl>
-         <view-impl>org.alfresco.web.ui.common.renderer.data.RichListRenderer$ListViewRenderer</view-impl>
-         <view-impl>org.alfresco.web.bean.forums.ForumsBean$TopicBubbleViewRenderer</view-impl>
+         <view-impl
+      >org.alfresco.web.ui.common.renderer.data.RichListRenderer$DetailsViewRenderer</view-impl>
+         <view-impl
+      >org.alfresco.web.ui.common.renderer.data.RichListRenderer$IconViewRenderer</view-impl>
+         <view-impl
+      >org.alfresco.web.ui.common.renderer.data.RichListRenderer$ListViewRenderer</view-impl>
+         <view-impl
+      >org.alfresco.web.bean.forums.ForumsBean$TopicBubbleViewRenderer</view-impl>
          
          <!-- default values for the views available in the client -->
          <view-defaults>
@@ -227,10 +281,22 @@
       <!-- They register a class impl against a unique name. All calls to the command servlet -->
       <!-- which match the name are forwared to the class instance -->
       <command-servlet>
-         <command-processor name="workflow" class="org.alfresco.web.app.servlet.command.WorkflowCommandProcessor" />
-         <command-processor name="task" class="org.alfresco.web.app.servlet.command.TaskCommandProcessor" />
-         <command-processor name="script" class="org.alfresco.web.app.servlet.command.ScriptCommandProcessor" />
-         <command-processor name="ui" class="org.alfresco.web.app.servlet.command.UIActionCommandProcessor" />
+         <command-processor
+        name="workflow"
+        class="org.alfresco.web.app.servlet.command.WorkflowCommandProcessor"
+      />
+         <command-processor
+        name="task"
+        class="org.alfresco.web.app.servlet.command.TaskCommandProcessor"
+      />
+         <command-processor
+        name="script"
+        class="org.alfresco.web.app.servlet.command.ScriptCommandProcessor"
+      />
+         <command-processor
+        name="ui"
+        class="org.alfresco.web.app.servlet.command.UIActionCommandProcessor"
+      />
       </command-servlet>
    </config>
    
@@ -258,49 +324,116 @@
       <dashboards>
          <layouts>
             <!-- the mandatory "default" layout - will be used for all users initially -->
-            <layout id="default" columns="1" column-length="5" image="/images/icons/layout_single_column.gif"
-                  label-id="layout_single_label" description-id="layout_single_desc"
-                  jsp="/jsp/dashboards/layouts/single-column.jsp" />
-            <layout id="narrow-right-2column" columns="2" column-length="4" image="/images/icons/layout_narrow_right_2column.gif"
-                  label-id="layout_narrow_right_label" description-id="layout_narrow_right_desc"
-                  jsp="/jsp/dashboards/layouts/narrow-right-2column.jsp" />
-            <layout id="narrow-left-2column" columns="2" column-length="4" image="/images/icons/layout_narrow_left_2column.gif"
-                  label-id="layout_narrow_left_label" description-id="layout_narrow_left_desc"
-                  jsp="/jsp/dashboards/layouts/narrow-left-2column.jsp" />
-            <layout id="three-column" columns="3" column-length="4" image="/images/icons/layout_three_column.gif"
-                  label-id="layout_three_column_label" description-id="layout_three_column_desc"
-                  jsp="/jsp/dashboards/layouts/three-column.jsp" />
+            <layout
+          id="default"
+          columns="1"
+          column-length="5"
+          image="/images/icons/layout_single_column.gif"
+          label-id="layout_single_label"
+          description-id="layout_single_desc"
+          jsp="/jsp/dashboards/layouts/single-column.jsp"
+        />
+            <layout
+          id="narrow-right-2column"
+          columns="2"
+          column-length="4"
+          image="/images/icons/layout_narrow_right_2column.gif"
+          label-id="layout_narrow_right_label"
+          description-id="layout_narrow_right_desc"
+          jsp="/jsp/dashboards/layouts/narrow-right-2column.jsp"
+        />
+            <layout
+          id="narrow-left-2column"
+          columns="2"
+          column-length="4"
+          image="/images/icons/layout_narrow_left_2column.gif"
+          label-id="layout_narrow_left_label"
+          description-id="layout_narrow_left_desc"
+          jsp="/jsp/dashboards/layouts/narrow-left-2column.jsp"
+        />
+            <layout
+          id="three-column"
+          columns="3"
+          column-length="4"
+          image="/images/icons/layout_three_column.gif"
+          label-id="layout_three_column_label"
+          description-id="layout_three_column_desc"
+          jsp="/jsp/dashboards/layouts/three-column.jsp"
+        />
          </layouts>
          
          <dashlets>
             <!-- this is the default dashlet shown in the default layout initially -->
             <!-- the default dashlet must have the id of 'getting-started' -->
-            <dashlet id="getting-started" label-id="dashlet_gettingstarted_label"
-                  description-id="dashlet_gettingstarted_desc"
-                  jsp="/jsp/dashboards/dashlets/getting-started.jsp" allow-narrow="false" />
+            <dashlet
+          id="getting-started"
+          label-id="dashlet_gettingstarted_label"
+          description-id="dashlet_gettingstarted_desc"
+          jsp="/jsp/dashboards/dashlets/getting-started.jsp"
+          allow-narrow="false"
+        />
             <!-- this dashlet 'tasks-todo' is also shown by default for all users -->
-            <dashlet id="tasks-todo" label-id="my_tasks_todo_title" description-id="my_tasks_todo_desc"
-                  jsp="/jsp/workflow/tasks-todo-dashlet.jsp" allow-narrow="false" />
+            <dashlet
+          id="tasks-todo"
+          label-id="my_tasks_todo_title"
+          description-id="my_tasks_todo_desc"
+          jsp="/jsp/workflow/tasks-todo-dashlet.jsp"
+          allow-narrow="false"
+        />
             <!-- Not enabled by default
    			<dashlet id="tasks-active" label-id="tasks_active_title" description-id="tasks_active_desc"
                      jsp="/jsp/workflow/tasks-active-dashlet.jsp" allow-narrow="false" />
    			-->
-            <dashlet id="pooled-tasks" label-id="pooled_tasks_title" description-id="pooled_tasks_desc"
-                  jsp="/jsp/workflow/pooled-tasks-todo-dashlet.jsp" allow-narrow="false" />
-            <dashlet id="tasks-completed" label-id="my_tasks_completed_title" description-id="my_tasks_completed_desc"
-                  jsp="/jsp/workflow/tasks-completed-dashlet.jsp" allow-narrow="false" />
-            <dashlet id="opensearch" label-id="opensearch" description-id="opensearch_desc"
-                  jsp="/jsp/dashboards/dashlets/opensearch.jsp" />
-            <dashlet id="doclist-webscript" label-id="doclist-webscript_title" description-id="doclist-webscript_desc"
-                  jsp="/jsp/dashboards/dashlets/doclist-webscript.jsp" />
-            <dashlet id="myspaces-webscript" label-id="myspaces-webscript_title" description-id="myspaces-webscript_desc"
-                  jsp="/jsp/dashboards/dashlets/myspaces-webscript.jsp" />
-            <dashlet id="mytasks-webscript" label-id="mytasks-webscript_title" description-id="mytasks-webscript_desc"
-                  jsp="/jsp/dashboards/dashlets/mytasks-webscript.jsp" />
-            <dashlet id="mywebforms-webscript" label-id="mywebforms-webscript_title" description-id="mywebforms-webscript_desc"
-                  jsp="/jsp/dashboards/dashlets/mywebforms-webscript.jsp" />
-            <dashlet id="mywebfiles-webscript" label-id="mywebfiles-webscript_title" description-id="mywebfiles-webscript_desc"
-                  jsp="/jsp/dashboards/dashlets/mywebfiles-webscript.jsp" />
+            <dashlet
+          id="pooled-tasks"
+          label-id="pooled_tasks_title"
+          description-id="pooled_tasks_desc"
+          jsp="/jsp/workflow/pooled-tasks-todo-dashlet.jsp"
+          allow-narrow="false"
+        />
+            <dashlet
+          id="tasks-completed"
+          label-id="my_tasks_completed_title"
+          description-id="my_tasks_completed_desc"
+          jsp="/jsp/workflow/tasks-completed-dashlet.jsp"
+          allow-narrow="false"
+        />
+            <dashlet
+          id="opensearch"
+          label-id="opensearch"
+          description-id="opensearch_desc"
+          jsp="/jsp/dashboards/dashlets/opensearch.jsp"
+        />
+            <dashlet
+          id="doclist-webscript"
+          label-id="doclist-webscript_title"
+          description-id="doclist-webscript_desc"
+          jsp="/jsp/dashboards/dashlets/doclist-webscript.jsp"
+        />
+            <dashlet
+          id="myspaces-webscript"
+          label-id="myspaces-webscript_title"
+          description-id="myspaces-webscript_desc"
+          jsp="/jsp/dashboards/dashlets/myspaces-webscript.jsp"
+        />
+            <dashlet
+          id="mytasks-webscript"
+          label-id="mytasks-webscript_title"
+          description-id="mytasks-webscript_desc"
+          jsp="/jsp/dashboards/dashlets/mytasks-webscript.jsp"
+        />
+            <dashlet
+          id="mywebforms-webscript"
+          label-id="mywebforms-webscript_title"
+          description-id="mywebforms-webscript_desc"
+          jsp="/jsp/dashboards/dashlets/mywebforms-webscript.jsp"
+        />
+            <dashlet
+          id="mywebfiles-webscript"
+          label-id="mywebfiles-webscript_title"
+          description-id="mywebfiles-webscript_desc"
+          jsp="/jsp/dashboards/dashlets/mywebfiles-webscript.jsp"
+        />
          </dashlets>
          
          <!-- configuration of the default dashlets to display when users login for the first time -->
@@ -320,15 +453,32 @@
       <sidebar>
          <!-- the list of plugins available in the sidebar -->
          <plugins>
-            <plugin id="navigator" label-id="navigator" description-id="navigator_desc" 
-                    page="/jsp/sidebar/navigator.jsp" actions-config-id="navigator_actions" />
-            <plugin id="shelf" label-id="shelf" description-id="shelf_desc"
-                    page="/jsp/sidebar/shelf.jsp" />
-            <plugin id="opensearch" label-id="opensearch" description-id="opensearch_desc"
-                    page="/jsp/sidebar/opensearch.jsp" />
-            <plugin id="category-browser" label-id="category_browser_plugin_label"
-                    description-id="category_browser_plugin_description" actions-config-id="category_plugin_actions"
-                    page="/jsp/sidebar/category-browser.jsp" />
+            <plugin
+          id="navigator"
+          label-id="navigator"
+          description-id="navigator_desc"
+          page="/jsp/sidebar/navigator.jsp"
+          actions-config-id="navigator_actions"
+        />
+            <plugin
+          id="shelf"
+          label-id="shelf"
+          description-id="shelf_desc"
+          page="/jsp/sidebar/shelf.jsp"
+        />
+            <plugin
+          id="opensearch"
+          label-id="opensearch"
+          description-id="opensearch_desc"
+          page="/jsp/sidebar/opensearch.jsp"
+        />
+            <plugin
+          id="category-browser"
+          label-id="category_browser_plugin_label"
+          description-id="category_browser_plugin_description"
+          actions-config-id="category_plugin_actions"
+          page="/jsp/sidebar/category-browser.jsp"
+        />
          </plugins>
          
          <!-- the default sidebar plugin to be shown on app startup -->
@@ -339,7 +489,11 @@
    <config evaluator="string-compare" condition="Space Wizards">
       <!-- The list of custom folder types to show in the advanced space wizard -->
       <folder-types>
-         <type name="fm:forums" icon="/images/icons/forums.gif" description-id="forums_desc" />
+         <type
+        name="fm:forums"
+        icon="/images/icons/forums.gif"
+        description-id="forums_desc"
+      />
       </folder-types>
    </config>
    
@@ -373,17 +527,20 @@
       
       <!-- default encoding when creating new inline content
            if not set then server default charset encoding will be used -->
-      <default-encoding></default-encoding>
+      <default-encoding />
       
       <!-- Controls the message regarding property editing after the content is created -->
-      <other-properties user-choice-visible="true" user-choice-default="true" /> 
+      <other-properties
+      user-choice-visible="true"
+      user-choice-default="true"
+    /> 
    </config>
    
    <config evaluator="string-compare" condition="Action Wizards">
       <!-- The list of types shown in the is-subtype condition -->
       <subtypes>
-         <type name="folder" display-label-id="space"/>
-         <type name="content"/>
+         <type name="folder" display-label-id="space" />
+         <type name="content" />
       </subtypes>
       <!-- The list of content and/or folder types shown in the specialise-type action -->
       <specialise-types>
@@ -392,18 +549,18 @@
       <!-- The list of aspects to show in the add/remove features action -->
       <!-- and the has-aspect condition -->
       <aspects>
-         <aspect name="ci:lockedForAccess"/>
-         <aspect name="ci:lockedForAccessEnabled"/>
-         <aspect name="generalclassifiable"/>
-         <aspect name="complianceable"/>
-         <aspect name="dublincore"/>
-         <aspect name="effectivity"/>
-         <aspect name="summarizable"/>
-         <aspect name="versionable"/>
-         <aspect name="templatable"/>
-         <aspect name="emailed"/>
-         <aspect name="emailserver:aliasable"/>
-         <aspect name="taggable"/>
+         <aspect name="ci:lockedForAccess" />
+         <aspect name="ci:lockedForAccessEnabled" />
+         <aspect name="generalclassifiable" />
+         <aspect name="complianceable" />
+         <aspect name="dublincore" />
+         <aspect name="effectivity" />
+         <aspect name="summarizable" />
+         <aspect name="versionable" />
+         <aspect name="templatable" />
+         <aspect name="emailed" />
+         <aspect name="emailserver:aliasable" />
+         <aspect name="taggable" />
       </aspects>
       <!-- List of aspects to only show in the add features action -->
       <aspects-add>
@@ -417,58 +574,133 @@
 
       <!-- The list of transformers to show in the transform actions -->
       <transformers>
-         <transformer name="application/vnd.oasis.opendocument.text"/>
-         <transformer name="application/vnd.oasis.opendocument.presentation"/>
-         <transformer name="application/vnd.oasis.opendocument.spreadsheet"/>
-         <transformer name="application/rtf"/>
-         <transformer name="text/html"/>
-         <transformer name="application/pdf"/>
-         <transformer name="text/plain"/>
-         <transformer name="text/xml"/>
-         <transformer name="application/x-shockwave-flash"/>
-         <transformer name="image/gif"/>
-         <transformer name="image/jpeg"/>
-         <transformer name="application/msword"/>
-         <transformer name="application/vnd.ms-excel"/>
-         <transformer name="application/vnd.ms-powerpoint"/>
+         <transformer name="application/vnd.oasis.opendocument.text" />
+         <transformer name="application/vnd.oasis.opendocument.presentation" />
+         <transformer name="application/vnd.oasis.opendocument.spreadsheet" />
+         <transformer name="application/rtf" />
+         <transformer name="text/html" />
+         <transformer name="application/pdf" />
+         <transformer name="text/plain" />
+         <transformer name="text/xml" />
+         <transformer name="application/x-shockwave-flash" />
+         <transformer name="image/gif" />
+         <transformer name="image/jpeg" />
+         <transformer name="application/msword" />
+         <transformer name="application/vnd.ms-excel" />
+         <transformer name="application/vnd.ms-powerpoint" />
       </transformers>
       <image-transformers>
-         <transformer name="image/gif"/>
-         <transformer name="image/jpeg"/>
-         <transformer name="image/png"/>
+         <transformer name="image/gif" />
+         <transformer name="image/jpeg" />
+         <transformer name="image/png" />
       </image-transformers>
 
       <!-- The classes used to handle actions -->
       <action-handlers>
-         <handler name="add-features" class="org.alfresco.web.bean.actions.handlers.AddFeaturesHandler" />
-         <handler name="check-in" class="org.alfresco.web.bean.actions.handlers.CheckInHandler" />
-         <handler name="check-out" class="org.alfresco.web.bean.actions.handlers.CheckOutHandler" />
-         <handler name="copy" class="org.alfresco.web.bean.actions.handlers.CopyHandler" />
-         <handler name="copy-to-web-project" class="org.alfresco.web.bean.actions.handlers.CopyToWebProjectHandler" />
-         <handler name="import" class="org.alfresco.web.bean.actions.handlers.ImportHandler" />
-         <handler name="link-category" class="org.alfresco.web.bean.actions.handlers.LinkCategoryHandler" />
-         <handler name="mail" class="org.alfresco.web.bean.actions.handlers.MailHandler" />
-         <handler name="move" class="org.alfresco.web.bean.actions.handlers.MoveHandler" />
-         <handler name="remove-features" class="org.alfresco.web.bean.actions.handlers.RemoveFeaturesHandler" />
-         <handler name="script" class="org.alfresco.web.bean.actions.handlers.ScriptHandler" />
-         <handler name="simple-workflow" class="org.alfresco.web.bean.actions.handlers.SimpleWorkflowHandler" />
-         <handler name="specialise-type" class="org.alfresco.web.bean.actions.handlers.SpecialiseTypeHandler" />
-         <handler name="transform" class="org.alfresco.web.bean.actions.handlers.TransformHandler" />
-         <handler name="transform-image" class="org.alfresco.web.bean.actions.handlers.TransformImageHandler" />
+         <handler
+        name="add-features"
+        class="org.alfresco.web.bean.actions.handlers.AddFeaturesHandler"
+      />
+         <handler
+        name="check-in"
+        class="org.alfresco.web.bean.actions.handlers.CheckInHandler"
+      />
+         <handler
+        name="check-out"
+        class="org.alfresco.web.bean.actions.handlers.CheckOutHandler"
+      />
+         <handler
+        name="copy"
+        class="org.alfresco.web.bean.actions.handlers.CopyHandler"
+      />
+         <handler
+        name="copy-to-web-project"
+        class="org.alfresco.web.bean.actions.handlers.CopyToWebProjectHandler"
+      />
+         <handler
+        name="import"
+        class="org.alfresco.web.bean.actions.handlers.ImportHandler"
+      />
+         <handler
+        name="link-category"
+        class="org.alfresco.web.bean.actions.handlers.LinkCategoryHandler"
+      />
+         <handler
+        name="mail"
+        class="org.alfresco.web.bean.actions.handlers.MailHandler"
+      />
+         <handler
+        name="move"
+        class="org.alfresco.web.bean.actions.handlers.MoveHandler"
+      />
+         <handler
+        name="remove-features"
+        class="org.alfresco.web.bean.actions.handlers.RemoveFeaturesHandler"
+      />
+         <handler
+        name="script"
+        class="org.alfresco.web.bean.actions.handlers.ScriptHandler"
+      />
+         <handler
+        name="simple-workflow"
+        class="org.alfresco.web.bean.actions.handlers.SimpleWorkflowHandler"
+      />
+         <handler
+        name="specialise-type"
+        class="org.alfresco.web.bean.actions.handlers.SpecialiseTypeHandler"
+      />
+         <handler
+        name="transform"
+        class="org.alfresco.web.bean.actions.handlers.TransformHandler"
+      />
+         <handler
+        name="transform-image"
+        class="org.alfresco.web.bean.actions.handlers.TransformImageHandler"
+      />
       </action-handlers>
 
       <!-- The classes used to handle conditions -->
       <condition-handlers>
-         <handler name="compare-mime-type" class="org.alfresco.web.bean.rules.handlers.CompareMimeTypeHandler" />
-         <handler name="compare-property-value" class="org.alfresco.web.bean.rules.handlers.PropertyValueHandler" />
-         <handler name="has-aspect" class="org.alfresco.web.bean.rules.handlers.HasAspectHandler" />
-         <handler name="has-tag" class="org.alfresco.web.bean.rules.handlers.HasTagHandler" />
-         <handler name="in-category" class="org.alfresco.web.bean.rules.handlers.InCategoryHandler" />
-         <handler name="is-subtype" class="org.alfresco.web.bean.rules.handlers.IsSubTypeHandler" />
-         <handler name="composite-condition" class="org.alfresco.web.bean.rules.handlers.CompositeConditionHandler" />
-         <handler name="compare-date-property" class="org.alfresco.web.bean.rules.handlers.property.DatePropertyValueConditionHandler" />
-         <handler name="compare-integer-property" class="org.alfresco.web.bean.rules.handlers.property.IntegerPropertyValueConditionHandler" />
-         <handler name="compare-text-property" class="org.alfresco.web.bean.rules.handlers.property.TextPropertyValueConditionHandler" />
+         <handler
+        name="compare-mime-type"
+        class="org.alfresco.web.bean.rules.handlers.CompareMimeTypeHandler"
+      />
+         <handler
+        name="compare-property-value"
+        class="org.alfresco.web.bean.rules.handlers.PropertyValueHandler"
+      />
+         <handler
+        name="has-aspect"
+        class="org.alfresco.web.bean.rules.handlers.HasAspectHandler"
+      />
+         <handler
+        name="has-tag"
+        class="org.alfresco.web.bean.rules.handlers.HasTagHandler"
+      />
+         <handler
+        name="in-category"
+        class="org.alfresco.web.bean.rules.handlers.InCategoryHandler"
+      />
+         <handler
+        name="is-subtype"
+        class="org.alfresco.web.bean.rules.handlers.IsSubTypeHandler"
+      />
+         <handler
+        name="composite-condition"
+        class="org.alfresco.web.bean.rules.handlers.CompositeConditionHandler"
+      />
+         <handler
+        name="compare-date-property"
+        class="org.alfresco.web.bean.rules.handlers.property.DatePropertyValueConditionHandler"
+      />
+         <handler
+        name="compare-integer-property"
+        class="org.alfresco.web.bean.rules.handlers.property.IntegerPropertyValueConditionHandler"
+      />
+         <handler
+        name="compare-text-property"
+        class="org.alfresco.web.bean.rules.handlers.property.TextPropertyValueConditionHandler"
+      />
       </condition-handlers>
    </config>
 
@@ -482,12 +714,21 @@
 
    <config evaluator="string-compare" condition="cm:folder icons">
       <icons>
-         <icon name="space-icon-default" path="/images/icons/space-icon-default.gif" />
-         <icon name="space-icon-star" path="/images/icons/space-icon-star.gif" />
+         <icon
+        name="space-icon-default"
+        path="/images/icons/space-icon-default.gif"
+      />
+         <icon
+        name="space-icon-star"
+        path="/images/icons/space-icon-star.gif"
+      />
          <icon name="space-icon-doc" path="/images/icons/space-icon-doc.gif" />
          <icon name="space-icon-pen" path="/images/icons/space-icon-pen.gif" />
          <icon name="space-icon-cd" path="/images/icons/space-icon-cd.gif" />
-         <icon name="space-icon-image" path="/images/icons/space-icon-image.gif" />
+         <icon
+        name="space-icon-image"
+        path="/images/icons/space-icon-image.gif"
+      />
       </icons>
    </config>
 
@@ -506,7 +747,10 @@
    <config evaluator="string-compare" condition="fm:topic icons">
       <icons>
          <icon name="topic" path="/images/icons/topic.gif" />
-         <icon name="topic_exclamation" path="/images/icons/topic_exclamation.gif" />
+         <icon
+        name="topic_exclamation"
+        path="/images/icons/topic_exclamation.gif"
+      />
          <icon name="topic_question" path="/images/icons/topic_question.gif" />
       </icons>
    </config>

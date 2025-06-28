@@ -1,39 +1,60 @@
 <div class="fluid page-container">
   <div class="file-details">
     <div class="wrap">
-      <a (click)="goBack()" class="page-header__backlink"
+      <a tabindex="0" (click)="goBack()" class="page-header__backlink"
         >{{ 'label.back' | transloco }}</a
       >
       <section class="box">
         <header class="header">
-          <span *ngIf="viewing" class="title"
-            >{{ 'account.view.details' | transloco }}</span
-          >
-          <span *ngIf="!viewing" class="title"
-            >{{ 'account.edit.details' | transloco }}</span
-          >
-          <div class="field" style="float: right" *ngIf="processing">
+          @if (viewing) {
+          <span class="title">{{ 'account.view.details' | transloco }}</span>
+          } @if (!viewing) {
+          <span class="title">{{ 'account.edit.details' | transloco }}</span>
+          } @if (processing) {
+          <div class="field" style="float: right">
             <cbc-spinner></cbc-spinner>
           </div>
+          }
         </header>
-        <div class="main">
+
+        <div class="alert" cbcFadeInOut [show]="!agreeAlert">
+          <div class="alert-icon">
+            <img
+              src="img/exclamation.png"
+              class="img--exclamation--size"
+              alt="Exclamation Icon"
+            />
+          </div>
+          <div class="message">
+            <p>{{ "label.dialog.alert.updating.user.line1" | transloco }}</p>
+            <strong>
+              <p>{{ "label.dialog.alert.updating.user.line2" | transloco }}</p>
+            </strong>
+          </div>
+          <div class="alertButtonBox">
+            <a tabindex="0" class="button" (click)="agreeAlert = true"
+              >{{ 'label.ok' | transloco }}
+            </a>
+          </div>
+        </div>
+
+        <div class="main" cbcFadeInOut [show]="agreeAlert">
           <section class="file-informations">
             <form [formGroup]="updateUserForm">
               <div class="field switch">
                 <!-- User details -->
                 <div class="cell-photo">
                   <span class="photo" style="float: right">
+                    @if (user.lastname && ready) {
                     <img
-                      *ngIf="user.lastname && ready"
                       class="img-border"
                       [attr.src]="user.avatar | cbcDownload | cbcSecure"
                       width="90"
                       height="90"
+                      alt="User Avatar"
                     />
-                    <div
-                      *ngIf="user.lastname && !user.defaultAvatar"
-                      style="font-size: 12px; margin-top: 5px"
-                    >
+                    } @if (user.lastname && !user.defaultAvatar) {
+                    <div style="font-size: 12px; margin-top: 5px">
                       <cbc-inline-delete
                         style="position: absolute"
                         [image]="'img/rubbish-bin-blue-small.png'"
@@ -45,18 +66,18 @@
                       ></cbc-inline-delete
                       ><br />
                     </div>
-                    <div
-                      *ngIf="user.lastname"
-                      style="font-size: 12px; margin-top: 5px"
-                    >
-                      <a (click)="changeAvatar()"
+                    } @if (user.lastname) {
+                    <div style="font-size: 12px; margin-top: 5px">
+                      <a tabindex="0" (click)="changeAvatar()"
                         ><img
                           src="img/bigicon-upload-53x53.png"
                           width="13"
                           height="13"
+                          alt="Upload Icon"
                         />&nbsp;{{ 'label.update.logo' | transloco }}</a
                       >
                     </div>
+                    }
                   </span>
                 </div>
                 <span style="font-size: 16px"
@@ -164,7 +185,10 @@
                   <label for="uiLanguage"
                     >{{ 'label.ui.language' | transloco }}</label
                   >
-                  <div class="custom-select select--form reset-width">
+                  <div
+                    id="uiLanguage"
+                    class="custom-select select--form reset-width"
+                  >
                     <cbc-lang-selector
                       [disable]="viewing"
                       formControlName="uiLanguage"
@@ -172,9 +196,9 @@
                   </div>
                 </div>
                 <div class="field switch">
-                  <div class="label"
-                    >{{ 'label.global.notification' | transloco }}</div
-                  >
+                  <div class="label">
+                    {{ 'label.global.notification' | transloco }}
+                  </div>
                   <input
                     id="globalNotificationEnabled"
                     class="cmn-toggle cmn-toggle-round"
@@ -258,7 +282,7 @@
                   <label for="signature"
                     >{{ 'label.signature' | transloco }}</label
                   >
-                  <div class="editor-container">
+                  <div id="signature" class="editor-container">
                     <p-editor
                       formControlName="signature"
                       [style]="{ height: '150px' }"
@@ -293,33 +317,25 @@
                 <br />
                 <hr />
                 <br />
-                <span style="font-size: 16px"
-                  >{{ 'label.privacy.statement' | transloco }}</span
-                >
-                <br />
-                <br />
-                <a [routerLink]="['/help/legal-notice/terms']"
-                  >{{ 'label.privacy.statement.title' | transloco }}</a
+                <a [routerLink]="['/help/legal-notice']"
+                  >{{ 'label.privacy.statement' | transloco }}</a
                 >
               </div>
             </form>
-            <div class="field" *ngIf="processing">
+            @if (processing) {
+            <div class="field">
               <label
                 >{{ 'label.updating' | transloco }}...
                 <cbc-spinner></cbc-spinner>
               </label>
             </div>
-
-            <br />
-            <!-- Buttons -->
-            <div class="buttons-group center" *ngIf="!processing">
-              <a
-                class="cta"
-                [routerLink]="['.']"
-                *ngIf="updateUserForm.status === 'VALID'"
-                (click)="update()"
+            } @if (!processing) {
+            <div class="buttons-group center">
+              @if (updateUserForm.status === 'VALID') {
+              <a class="cta" [routerLink]="['.']" (click)="update()"
                 >{{ 'label.update' | transloco }}</a
               >
+              }
               <a class="button" [routerLink]="['.']" (click)="cancel()"
                 >{{ 'label.cancel' | transloco }}</a
               >
@@ -331,6 +347,7 @@
                 >{{ 'label.refresh.central.db' | transloco }}</a
               >
             </div>
+            }
           </section>
         </div>
       </section>
@@ -341,4 +358,4 @@
   [showWizard]="launchChangeAvatar"
   (modalHide)="changeAvatarClosed()"
   (avatarUploaded)="avatarUploaded($event)"
-></cbc-change-avatar>
+/>

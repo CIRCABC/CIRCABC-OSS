@@ -36,10 +36,8 @@ import org.alfresco.service.cmr.repository.NodeRef;
  * <b>circabc-business-security-context.xml</b>
  */
 public interface AclAwareWrapper {
-
-    /**
-     * get the wrapper related node reference
-     */
-    NodeRef getNodeRef();
-
+  /**
+   * get the wrapper related node reference
+   */
+  NodeRef getNodeRef();
 }

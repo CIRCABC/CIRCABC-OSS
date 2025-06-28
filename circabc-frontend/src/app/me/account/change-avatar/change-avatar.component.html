@@ -1,20 +1,26 @@
 <!-- MODAL BOX -->
+@if (showWizard) {
 <div
   class="black-overlayer"
-  *ngIf="showWizard"
   [class.overlayer-shown]="showWizard"
   [class.overlayer-hidden]="!showWizard"
 ></div>
+} @if (showAddWizardStep1) {
 <section
   class="modal modal--select-files"
-  *ngIf="showAddWizardStep1"
   [class.modal-shown]="showAddWizardStep1"
   [class.modal-hidden]="!showAddWizardStep1"
   style="margin-top: 0"
 >
-  <a class="close-icon" (click)="cancelWizard('close')"></a>
+  <a
+    tabindex="0"
+    role="button"
+    class="close-icon"
+    aria-label="Cancel wizard"
+    (click)="cancelWizard('close')"
+  ></a>
   <header>
-    <a class="back-link" (click)="cancelWizard('close')"
+    <a tabindex="0" class="back-link" (click)="cancelWizard('close')"
       >{{ 'label.back' | transloco }}</a
     >
     <h2 class="title">{{ 'avatar.select.image' | transloco }}</h2>
@@ -46,7 +52,8 @@
       {{ 'avatar.drag.drop' | transloco }}
     </div>
 
-    <div *ngIf="fileToUpload !== undefined" class="field">
+    @if (fileToUpload !== undefined) {
+    <div class="field">
       <label>{{ 'avatar.file.upload' | transloco }}</label> ( {{ 'label.size' |
       transloco }}: {{ fileToUpload.size | cbcSize: true }} )
       <br />
@@ -56,34 +63,42 @@
         </ul>
       </div>
     </div>
+    }
 
     <div style="color: green">{{ 'image.upload.1mb' | transloco }}</div>
-    <span *ngIf="!fileNameValid()" style="color: red"
-      >{{ 'error.image.upload' | transloco }}</span
-    >
+    @if (!fileNameValid()) {
+    <span style="color: red">{{ 'error.image.upload' | transloco }}</span>
+    }
   </section>
   <section class="modal-footer">
     <!-- Buttons -->
     <div class="buttons-group">
+      @if (fileToUpload !== undefined) {
       <a
+        tabindex="0"
         class="cta"
         (click)="launchAddWizardStep2()"
         [class.disabled]="!fileNameValid()"
-        *ngIf="fileToUpload !== undefined"
         >{{ 'label.upload' | transloco }}</a
       >
+      }
     </div>
   </section>
 </section>
-
+} @if (showAddWizardStep2) {
 <section
   class="modal"
-  *ngIf="showAddWizardStep2"
   [class.modal-shown]="showAddWizardStep2"
   [class.modal-hidden]="!showAddWizardStep2"
   style="margin-top: 0"
 >
-  <a class="close-icon" (click)="cancelWizard('close')"></a>
+  <a
+    tabindex="0"
+    role="button"
+    class="close-icon"
+    aria-label="Cancel wizard"
+    (click)="cancelWizard('close')"
+  ></a>
   <header>
     <h2 class="title">{{ 'avatar.uploading' | transloco }}</h2>
   </header>
@@ -91,9 +106,11 @@
   <section class="modal-content">
     <div class="field">
       <label
-        >{{ 'label.progress' | transloco }}
-        <cbc-spinner *ngIf="progressValue !== progressMax"></cbc-spinner
-      ></label>
+        >{{ 'label.progress' | transloco }} @if (progressValue !== progressMax)
+        {
+        <cbc-spinner></cbc-spinner>
+        }</label
+      >
       <progress
         class="progressUploadBar"
         [value]="progressValue"
@@ -102,3 +119,4 @@
     </div>
   </section>
 </section>
+}

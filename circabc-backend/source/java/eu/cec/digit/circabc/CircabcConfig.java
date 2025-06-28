@@ -25,8 +25,15 @@ import eu.cec.digit.circabc.config.CircabcConfiguration;
 @SuppressWarnings("checkstyle:LineLength")
 public final class CircabcConfig {
 
-    private static final String BUILD_RELEASE = CircabcConfiguration.getProperty(CircabcConfiguration.BUILD_RELEASE);
-    public static final boolean OSS = BUILD_RELEASE.equalsIgnoreCase("oss");
-    public static final boolean ENT = !OSS;
-    public static final boolean ECHA = BUILD_RELEASE.equalsIgnoreCase("echa");
+  private static final String BUILD_RELEASE = CircabcConfiguration.getProperty(
+    CircabcConfiguration.BUILD_RELEASE
+  );
+  public static final boolean OSS = BUILD_RELEASE.equalsIgnoreCase("oss");
+  public static final boolean ENT = !OSS;
+  public static final boolean ECHA = BUILD_RELEASE.equalsIgnoreCase("echa");
+  public static final boolean OLAF = BUILD_RELEASE.equalsIgnoreCase("olaf");
+  public static final boolean CIRCABC_EWPP = BUILD_RELEASE.equalsIgnoreCase(
+    "circabc_ewpp"
+  );
+  public static final boolean USE_LDAP = ENT && !OLAF;
 }

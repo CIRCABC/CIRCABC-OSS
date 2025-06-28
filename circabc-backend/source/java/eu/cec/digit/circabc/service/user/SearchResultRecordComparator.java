@@ -3,27 +3,28 @@ package eu.cec.digit.circabc.service.user;
 import java.io.Serializable;
 import java.util.Comparator;
 
-public class SearchResultRecordComparator implements Comparator<SearchResultRecord>, Serializable {
+public class SearchResultRecordComparator
+  implements Comparator<SearchResultRecord>, Serializable {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 5428412809586963529L;
+  /**
+   *
+   */
+  private static final long serialVersionUID = 5428412809586963529L;
 
-    private SearchResultRecordComparator() {
-    }
+  private SearchResultRecordComparator() {}
 
-    public static SearchResultRecordComparator getInstance() {
-        return SearchResultRecordComparatorHolder.INSTANCE;
-    }
+  public static SearchResultRecordComparator getInstance() {
+    return SearchResultRecordComparatorHolder.INSTANCE;
+  }
 
-    @Override
-    public int compare(SearchResultRecord first, SearchResultRecord second) {
-        return first.getLastName().compareTo(second.getLastName());
-    }
+  @Override
+  public int compare(SearchResultRecord first, SearchResultRecord second) {
+    return first.getLastName().compareToIgnoreCase(second.getLastName());
+  }
 
-    private static class SearchResultRecordComparatorHolder {
+  private static class SearchResultRecordComparatorHolder {
 
-        public static final SearchResultRecordComparator INSTANCE = new SearchResultRecordComparator();
-    }
+    public static final SearchResultRecordComparator INSTANCE =
+      new SearchResultRecordComparator();
+  }
 }

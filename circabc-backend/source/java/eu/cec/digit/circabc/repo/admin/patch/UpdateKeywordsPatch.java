@@ -18,6 +18,11 @@ package eu.cec.digit.circabc.repo.admin.patch;
 
 import eu.cec.digit.circabc.model.DocumentModel;
 import eu.cec.digit.circabc.service.struct.ManagementService;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import org.alfresco.jcr.item.NodeImpl;
 import org.alfresco.repo.domain.node.NodePropertyValue;
 import org.alfresco.repo.domain.qname.QNameEntity;
@@ -33,208 +38,217 @@ import org.hibernate.SessionFactory;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 /**
  * Applicatif patch that convert old keywords properties to new one
  *
  * @author yanick pignot
  */
-public class UpdateKeywordsPatch // extends BaseReindexingPatch
-{
+public class UpdateKeywordsPatch { // extends BaseReindexingPatch
 
-    /**
-     * Logger
-     */
-    private static final Log logger = LogFactory.getLog(UpdateKeywordsPatch.class);
+  /**
+   * Logger
+   */
+  private static final Log logger = LogFactory.getLog(
+    UpdateKeywordsPatch.class
+  );
 
-    private static final String LUCENE_QUERY = "@cd\\:keyword:*";
+  private static final String LUCENE_QUERY = "@cd\\:keyword:*";
 
-    private int updatedCount = 0;
+  private int updatedCount = 0;
 
-    private ManagementService managementService;
-    private DictionaryService dictionaryService;
-    private SessionFactory sessionFactory;
+  private ManagementService managementService;
+  private DictionaryService dictionaryService;
+  private SessionFactory sessionFactory;
 
-    private HibernateHelper helper;
+  private HibernateHelper helper;
 
-    public UpdateKeywordsPatch() {
-        helper = new HibernateHelper();
+  public UpdateKeywordsPatch() {
+    helper = new HibernateHelper();
+  }
+
+  //	@Override
+  protected String applyInternal() throws Exception {
+    updatedCount = 0;
+
+    final NodeRef circabc = managementService.getCircabcNodeRef();
+
+    if (circabc != null) {
+      helper.setSessionFactory(getSessionFactory());
+
+      updatedCount = helper.fixKeywordvalues();
+      //			super.reindex(LUCENE_QUERY, circabc.getStoreRef());
+
     }
 
-    //	@Override
-    protected String applyInternal() throws Exception {
-        updatedCount = 0;
+    return (
+      "Keyword properties successfully updated" +
+      "\n\tDocument updated: " +
+      updatedCount
+    );
+  }
 
-        final NodeRef circabc = managementService.getCircabcNodeRef();
+  /**
+   * @return the dictionaryService
+   */
+  protected final DictionaryService getDictionaryService() {
+    return dictionaryService;
+  }
 
-        if (circabc != null) {
+  /**
+   * @param dictionaryService the dictionaryService to set
+   */
+  public final void setDictionaryService(DictionaryService dictionaryService) {
+    this.dictionaryService = dictionaryService;
+  }
 
-            helper.setSessionFactory(getSessionFactory());
+  /**
+   * @return the managementService
+   */
+  protected final ManagementService getManagementService() {
+    return managementService;
+  }
 
-            updatedCount = helper.fixKeywordvalues();
+  /**
+   * @param managementService the managementService to set
+   */
+  public final void setManagementService(ManagementService managementService) {
+    this.managementService = managementService;
+  }
 
-            //			super.reindex(LUCENE_QUERY, circabc.getStoreRef());
+  /**
+   * @return the sessionFactory
+   */
+  public final SessionFactory getSessionFactory() {
+    return sessionFactory;
+  }
 
+  /**
+   * @param sessionFactory the sessionFactory to set
+   */
+  public final void setSessionFactory(SessionFactory sessionFactory) {
+    this.sessionFactory = sessionFactory;
+  }
+
+  private static class HibernateHelper extends HibernateDaoSupport {
+
+    private static final String HBM_SELECT_QNAME =
+      " select qname from " +
+      QNameEntity.class.getName() +
+      " as qname " +
+      " join qname.namespace as ns " +
+      " where qname.localName = :localName" +
+      " and ns.safeUri = :uri";
+
+    private static final String HBM_SELECT_NODES =
+      "select node from " +
+      NodeImpl.class.getName() +
+      " as node " +
+      " join node.properties prop " +
+      " where index(prop) = :qnameId";
+
+    private boolean isNodeRefOrListOf(NodePropertyValue value) {
+      Serializable persistedValue = value.getStringValue();
+
+      if (persistedValue == null) {
+        persistedValue = value.getSerializableValue();
+      }
+
+      if (persistedValue == null || persistedValue instanceof Map) {
+        return false;
+      } else if (persistedValue instanceof Collection) {
+        Collection col = (Collection) persistedValue;
+
+        if (col.size() == 0) {
+          return false;
+        } else {
+          return NodeRef.isNodeRef(col.toArray()[0].toString());
         }
-
-        return "Keyword properties successfully updated" + "\n\tDocument updated: " + updatedCount;
+      } else {
+        return NodeRef.isNodeRef(persistedValue.toString());
+      }
     }
 
-    /**
-     * @return the dictionaryService
-     */
-    protected final DictionaryService getDictionaryService() {
-        return dictionaryService;
-    }
+    public int fixKeywordvalues() {
+      HibernateCallback callback = new HibernateCallback() {
+        @SuppressWarnings("unchecked")
+        public Object doInHibernate(Session session) {
+          final Query qnameQuery = session.createQuery(HBM_SELECT_QNAME);
+          qnameQuery.setString(
+            "localName",
+            DocumentModel.PROP_KEYWORD.getLocalName()
+          );
+          qnameQuery.setString(
+            "uri",
+            DocumentModel.PROP_KEYWORD.getNamespaceURI()
+          );
 
-    /**
-     * @param dictionaryService the dictionaryService to set
-     */
-    public final void setDictionaryService(DictionaryService dictionaryService) {
-        this.dictionaryService = dictionaryService;
-    }
+          final QNameEntity qnameEntity =
+            (QNameEntity) qnameQuery.uniqueResult();
 
-    /**
-     * @return the managementService
-     */
-    protected final ManagementService getManagementService() {
-        return managementService;
-    }
+          int modifiedElement = 0;
 
-    /**
-     * @param managementService the managementService to set
-     */
-    public final void setManagementService(ManagementService managementService) {
-        this.managementService = managementService;
-    }
+          if (qnameEntity != null) {
+            final long qnameId = qnameEntity.getId();
+            final Query nodesQuery = session.createQuery(HBM_SELECT_NODES);
+            nodesQuery.setLong("qnameId", qnameId);
 
-    /**
-     * @return the sessionFactory
-     */
-    public final SessionFactory getSessionFactory() {
-        return sessionFactory;
-    }
+            final List<Node> nodes = nodesQuery.list();
 
-    /**
-     * @param sessionFactory the sessionFactory to set
-     */
-    public final void setSessionFactory(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
-
-    private static class HibernateHelper extends HibernateDaoSupport {
-
-        private static final String HBM_SELECT_QNAME =
-                " select qname from "
-                        + QNameEntity.class.getName()
-                        + " as qname "
-                        + " join qname.namespace as ns "
-                        + " where qname.localName = :localName"
-                        + " and ns.safeUri = :uri";
-
-        private static final String HBM_SELECT_NODES =
-                "select node from "
-                        + NodeImpl.class.getName()
-                        + " as node "
-                        + " join node.properties prop "
-                        + " where index(prop) = :qnameId";
-
-        private boolean isNodeRefOrListOf(NodePropertyValue value) {
-            Serializable persistedValue = value.getStringValue();
-
-            if (persistedValue == null) {
-                persistedValue = value.getSerializableValue();
+            if (UpdateKeywordsPatch.logger.isDebugEnabled()) {
+              UpdateKeywordsPatch.logger.debug("");
             }
 
-            if (persistedValue == null || persistedValue instanceof Map) {
-                return false;
-            } else if (persistedValue instanceof Collection) {
-                Collection col = (Collection) persistedValue;
+            String qnameIDString = Long.toString(qnameId);
+            for (Node node : nodes) {
+              final NodePropertyValue value = (NodePropertyValue) node
+                .getProperties()
+                .get(qnameIDString);
+              if (value != null && !isNodeRefOrListOf(value)) {
+                NodePropertyValue newPropertyValue = new NodePropertyValue(
+                  DataTypeDefinition.NODE_REF,
+                  (Serializable) new ArrayList<NodeRef>()
+                );
+                //	                    		 PropertyMapKey pmk = new PropertyMapKey();
+                //	                    		 pmk.setQnameId(qnameId);
+                node.getProperties().put(qnameIDString, newPropertyValue);
+                modifiedElement++;
 
-                if (col.size() == 0) {
-                    return false;
-                } else {
-                    return NodeRef.isNodeRef(col.toArray()[0].toString());
+                if (UpdateKeywordsPatch.logger.isDebugEnabled()) {
+                  UpdateKeywordsPatch.logger.debug(
+                    "  --  The keyword of the node " +
+                    node.getNodeRef() +
+                    " has been updated " +
+                    "\n\tOld value " +
+                    value +
+                    "\n\tNew value " +
+                    newPropertyValue
+                  );
                 }
-            } else {
-                return NodeRef.isNodeRef(persistedValue.toString());
+              }
             }
+          }
+
+          return modifiedElement;
         }
+      };
 
-        public int fixKeywordvalues() {
+      if (UpdateKeywordsPatch.logger.isDebugEnabled()) {
+        UpdateKeywordsPatch.logger.debug(
+          "Trying to check for the keyword properties .... "
+        );
+      }
 
-            HibernateCallback callback =
-                    new HibernateCallback() {
-                        @SuppressWarnings("unchecked")
-                        public Object doInHibernate(Session session) {
-                            final Query qnameQuery = session.createQuery(HBM_SELECT_QNAME);
-                            qnameQuery.setString("localName", DocumentModel.PROP_KEYWORD.getLocalName());
-                            qnameQuery.setString("uri", DocumentModel.PROP_KEYWORD.getNamespaceURI());
+      Integer updateCount = (Integer) getHibernateTemplate().execute(callback);
 
-                            final QNameEntity qnameEntity = (QNameEntity) qnameQuery.uniqueResult();
+      if (UpdateKeywordsPatch.logger.isDebugEnabled()) {
+        UpdateKeywordsPatch.logger.debug(
+          updateCount +
+          " keyword was badly setted... The model is now respected."
+        );
+      }
 
-                            int modifiedElement = 0;
-
-                            if (qnameEntity != null) {
-                                final long qnameId = qnameEntity.getId();
-                                final Query nodesQuery = session.createQuery(HBM_SELECT_NODES);
-                                nodesQuery.setLong("qnameId", qnameId);
-
-                                final List<Node> nodes = nodesQuery.list();
-
-                                if (UpdateKeywordsPatch.logger.isDebugEnabled()) {
-                                    UpdateKeywordsPatch.logger.debug("");
-                                }
-
-                                String qnameIDString = Long.toString(qnameId);
-                                for (Node node : nodes) {
-                                    final NodePropertyValue value =
-                                            (NodePropertyValue) node.getProperties().get(qnameIDString);
-                                    if (value != null && !isNodeRefOrListOf(value)) {
-                                        NodePropertyValue newPropertyValue =
-                                                new NodePropertyValue(
-                                                        DataTypeDefinition.NODE_REF, (Serializable) new ArrayList<NodeRef>());
-                                        //	                    		 PropertyMapKey pmk = new PropertyMapKey();
-                                        //	                    		 pmk.setQnameId(qnameId);
-                                        node.getProperties().put(qnameIDString, newPropertyValue);
-                                        modifiedElement++;
-
-                                        if (UpdateKeywordsPatch.logger.isDebugEnabled()) {
-                                            UpdateKeywordsPatch.logger.debug(
-                                                    "  --  The keyword of the node "
-                                                            + node.getNodeRef()
-                                                            + " has been updated "
-                                                            + "\n\tOld value "
-                                                            + value
-                                                            + "\n\tNew value "
-                                                            + newPropertyValue);
-                                        }
-                                    }
-                                }
-                            }
-
-                            return modifiedElement;
-                        }
-                    };
-
-            if (UpdateKeywordsPatch.logger.isDebugEnabled()) {
-                UpdateKeywordsPatch.logger.debug("Trying to check for the keyword properties .... ");
-            }
-
-            Integer updateCount = (Integer) getHibernateTemplate().execute(callback);
-
-            if (UpdateKeywordsPatch.logger.isDebugEnabled()) {
-                UpdateKeywordsPatch.logger.debug(
-                        updateCount + " keyword was badly setted... The model is now respected.");
-            }
-
-            // done
-            return updateCount;
-        }
+      // done
+      return updateCount;
     }
+  }
 }

@@ -16,7 +16,7 @@ exports.config = {
     }
   },
   directConnect: true,
-  baseUrl: 'http://d02di1335287dit.net1.cec.eu.int:4200/',
+  baseUrl: '',
   framework: 'jasmine',
   jasmineNodeOpts: {
     showColors: true,

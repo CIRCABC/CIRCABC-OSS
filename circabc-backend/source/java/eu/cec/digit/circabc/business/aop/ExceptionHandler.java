@@ -29,31 +29,27 @@ import org.aopalliance.intercept.MethodInvocation;
  * @author Yanick Pignot
  */
 public interface ExceptionHandler {
+  /**
+   * Get a user friendly message to be display to the target client.
+   *
+   * @param error The relevant error
+   * @return a I18N message key
+   */
+  String getMessageKey(final Throwable error);
 
-    /**
-     * Get a user friendly message to be display to the target client.
-     *
-     * @param error The relevant error
-     * @return a I18N message key
-     */
-    String getMessageKey(final Throwable error);
+  /**
+   * Get message key parameters needed for translation of the message key.
+   *
+   * @param error The relevant error
+   * @return a I18N message key parameters
+   */
+  Object[] getMessageParameters(final Throwable error);
 
-
-    /**
-     * Get message key parameters needed for translation of the message key.
-     *
-     * @param error The relevant error
-     * @return a I18N message key parameters
-     */
-    Object[] getMessageParameters(final Throwable error);
-
-    /**
-     * Do someting when the managed kind error is throwed. (ie: send an email, ...)
-     *
-     * @param methodInvocation The aop method call
-     * @param error            The relevant error
-     */
-    void onThrows(final MethodInvocation methodInvocation, final Throwable error);
-
-
+  /**
+   * Do someting when the managed kind error is throwed. (ie: send an email, ...)
+   *
+   * @param methodInvocation The aop method call
+   * @param error            The relevant error
+   */
+  void onThrows(final MethodInvocation methodInvocation, final Throwable error);
 }

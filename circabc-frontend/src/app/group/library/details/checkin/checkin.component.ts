@@ -1,24 +1,26 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { Component, Input, OnInit, output, input } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
+import { TranslocoModule } from '@jsverse/transloco';
 import { ContentService } from 'app/core/generated/circabc';
+import { ModalComponent } from 'app/shared/modal/modal.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-checkin',
   templateUrl: './checkin.component.html',
-  styleUrls: ['./checkin.component.scss'],
+  styleUrl: './checkin.component.scss',
   preserveWhitespaces: true,
+  imports: [ModalComponent, ReactiveFormsModule, TranslocoModule],
 })
 export class CheckinComponent implements OnInit {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   public showModal = false;
-  @Output()
-  public readonly modalHide = new EventEmitter();
-  @Output()
-  public readonly checkedIn = new EventEmitter();
-  @Input()
-  public nodeId!: string;
+  public readonly modalHide = output();
+  public readonly checkedIn = output();
+  public readonly nodeId = input.required<string>();
   public form!: FormGroup;
 
   // to enable/disable the spinner for lengthy operations
@@ -58,7 +60,7 @@ export class CheckinComponent implements OnInit {
     // checkin document
     await firstValueFrom(
       this.contentService.putCheckin(
-        this.nodeId,
+        this.nodeId(),
         this.form.controls.comment.value,
         this.form.controls.minorChange.value,
         this.form.controls.keepCheckedOut.value

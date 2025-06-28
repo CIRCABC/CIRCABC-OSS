@@ -34,42 +34,53 @@ import org.alfresco.web.bean.repository.Node;
 
 public class IgServicesAdminEvaluator extends BaseActionEvaluator {
 
+  /**
+   *
+   */
+  private static final long serialVersionUID = -8808602456838094585L;
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = -8808602456838094585L;
+  public boolean evaluate(final Node node) {
+    final InterestGroupNode ig = (InterestGroupNode) Beans.getWaiNavigator()
+      .getCurrentIGRoot();
+    final CategoryNode cat = (CategoryNode) Beans.getWaiNavigator()
+      .getCurrentCategory();
 
-    public boolean evaluate(final Node node) {
-
-        final InterestGroupNode ig = (InterestGroupNode) Beans.getWaiNavigator().getCurrentIGRoot();
-        final CategoryNode cat = (CategoryNode) Beans.getWaiNavigator().getCurrentCategory();
-
-        if (cat != null && cat.hasPermission(CategoryPermissions.CIRCACATEGORYADMIN.toString())) {
-            return true;
-        } else if (ig == null) {
-            return false;
-        }
-
-        final IGServicesNode library = ig.getLibrary();
-        if (library != null && library.hasPermission(LibraryPermissions.LIBADMIN.toString()) && node
-                .hasAspect(CircabcModel.ASPECT_LIBRARY)) {
-            return true;
-        }
-
-        final IGServicesNode newsgroup = ig.getNewsgroup();
-        if (newsgroup != null && newsgroup.hasPermission(NewsGroupPermissions.NWSADMIN.toString())
-                && node.hasAspect(CircabcModel.ASPECT_NEWSGROUP)) {
-            return true;
-        }
-
-        final IGServicesNode information = ig.getInformation();
-        if (information != null && information.hasPermission(InformationPermissions.INFADMIN.toString())
-                && node.hasAspect(CircabcModel.ASPECT_INFORMATION)) {
-            return true;
-        }
-
-        return false;
+    if (
+      cat != null &&
+      cat.hasPermission(CategoryPermissions.CIRCACATEGORYADMIN.toString())
+    ) {
+      return true;
+    } else if (ig == null) {
+      return false;
     }
 
+    final IGServicesNode library = ig.getLibrary();
+    if (
+      library != null &&
+      library.hasPermission(LibraryPermissions.LIBADMIN.toString()) &&
+      node.hasAspect(CircabcModel.ASPECT_LIBRARY)
+    ) {
+      return true;
+    }
+
+    final IGServicesNode newsgroup = ig.getNewsgroup();
+    if (
+      newsgroup != null &&
+      newsgroup.hasPermission(NewsGroupPermissions.NWSADMIN.toString()) &&
+      node.hasAspect(CircabcModel.ASPECT_NEWSGROUP)
+    ) {
+      return true;
+    }
+
+    final IGServicesNode information = ig.getInformation();
+    if (
+      information != null &&
+      information.hasPermission(InformationPermissions.INFADMIN.toString()) &&
+      node.hasAspect(CircabcModel.ASPECT_INFORMATION)
+    ) {
+      return true;
+    }
+
+    return false;
+  }
 }

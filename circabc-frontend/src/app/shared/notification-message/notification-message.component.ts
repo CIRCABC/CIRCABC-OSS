@@ -1,18 +1,19 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'cbc-notification-message',
   templateUrl: './notification-message.component.html',
-  styleUrls: ['./notification-message.component.scss'],
+  styleUrl: './notification-message.component.scss',
 })
 export class NotificationMessageComponent {
-  @Input() public message!: string;
-  @Input() public severity = 0;
-  @Input() guestAllowed: boolean | undefined = false;
+  public readonly message = input.required<string>();
+  public readonly severity = input(0);
+  readonly guestAllowed = input<boolean | undefined>(false);
 
   public isGuestAllowed(): boolean {
-    if (this.guestAllowed) {
-      return this.guestAllowed;
+    const guestAllowed = this.guestAllowed();
+    if (guestAllowed) {
+      return guestAllowed;
     }
     return false;
   }

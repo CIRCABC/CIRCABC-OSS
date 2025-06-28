@@ -22,54 +22,56 @@ package eu.cec.digit.circabc.web.wai.bean.navigation.library;
 
 import eu.cec.digit.circabc.web.bean.navigation.NavigableNodeType;
 import eu.cec.digit.circabc.web.wai.bean.navigation.LibraryBean;
+import java.util.Map;
 import org.alfresco.model.ContentModel;
 import org.owasp.esapi.ESAPI;
-
-import java.util.Map;
 
 //
 public class DossierBean extends LibraryBean {
 
-    public static final String JSP_NAME = "dossier.jsp";
-    public static final String BEAN_NAME = "DossierBean";
-    public static final String DESCRPTION = "library_dossier_title_desc";
-    public static final String TITLE = "library_dossier_title";
-    /**
-     *
-     */
-    private static final long serialVersionUID = 3115195309313119381L;
+  public static final String JSP_NAME = "dossier.jsp";
+  public static final String BEAN_NAME = "DossierBean";
+  public static final String DESCRPTION = "library_dossier_title_desc";
+  public static final String TITLE = "library_dossier_title";
+  /**
+   *
+   */
+  private static final long serialVersionUID = 3115195309313119381L;
 
-    public NavigableNodeType getManagedNodeType() {
-        return NavigableNodeType.LIBRARY_DOSSIER;
+  public NavigableNodeType getManagedNodeType() {
+    return NavigableNodeType.LIBRARY_DOSSIER;
+  }
+
+  public String getBrowserTitle() {
+    String titleOrName = null;
+
+    final String propertyTitle = ContentModel.PROP_TITLE.toString();
+    final Object title = getCurrentNode().getProperties().get(propertyTitle);
+    if (title != null) {
+      ESAPI.encoder()
+        .encodeForHTML(
+          titleOrName = (title.toString().length() > 0
+              ? title.toString()
+              : getCurrentNode().getName())
+        );
     }
 
-    public String getBrowserTitle() {
-        String titleOrName = null;
+    return titleOrName;
+  }
 
-        final String propertyTitle = ContentModel.PROP_TITLE.toString();
-        final Object title = getCurrentNode().getProperties().get(propertyTitle);
-        if (title != null) {
-            ESAPI.encoder().encodeForHTML(titleOrName = (title.toString().length() > 0 ? title.toString()
-                    : getCurrentNode().getName()));
-        }
+  public String getPageDescription() {
+    return translate(DESCRPTION, getCurrentNode().getName());
+  }
 
-        return titleOrName;
-    }
+  public String getPageTitle() {
+    return getCurrentNode().getName();
+  }
 
-    public String getPageDescription() {
-        return translate(DESCRPTION, getCurrentNode().getName());
-    }
+  public String getRelatedJsp() {
+    return NAVIGATION_JSP_FOLDER + "library/" + JSP_NAME;
+  }
 
-    public String getPageTitle() {
-        return getCurrentNode().getName();
-    }
-
-    public String getRelatedJsp() {
-        return NAVIGATION_JSP_FOLDER + "library/" + JSP_NAME;
-    }
-
-    public void init(final Map<String, String> parameters) {
-        super.init(parameters);
-    }
+  public void init(final Map<String, String> parameters) {
+    super.init(parameters);
+  }
 }
-

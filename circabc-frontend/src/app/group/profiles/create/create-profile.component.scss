@@ -1,41 +1,3 @@
-:host {
-  ::ng-deep mat-slider {
-    width: 100%;
-    height: auto;
-    margin-top: -35px;
-
-    .mat-slider-track-wrapper {
-      background-color: #cecece !important;
-      height: 6px !important;
-      border-radius: 25px !important;
-    }
-
-    .mat-slider-track-fill {
-      background-color: #8ce196 !important;
-      height: 6px !important;
-      border-radius: 25px !important;
-    }
-
-    .mat-slider-thumb {
-      background-color: #fff !important;
-      top: -8px !important;
-      border: 2px solid #4caf50 !important;
-    }
-
-    .mat-slider-thumb:hover {
-      background-color: #8ce196 !important;
-    }
-
-    .mat-slider-track-background {
-      height: 0;
-    }
-  }
-}
-
-form {
-  display: flex;
-}
-
 .modal {
   min-width: 280px;
   width: auto;
@@ -46,10 +8,6 @@ form {
   display: flex;
 }
 
-.modal-content {
-  max-height: none;
-}
-
 .flexContainer {
   display: flex;
   flex-flow: row;
@@ -57,12 +15,15 @@ form {
   gap: 5px;
 }
 
-.flexGap {
-  gap: 15px;
-}
-
 .flexFullRow {
   flex: 1 1 100%;
+}
+
+.flexFullRowWarn {
+  flex: 1 1 100%;
+  border: solid;
+  border-color: red;
+  padding: 5pt;
 }
 
 .flexWrap {
@@ -92,12 +53,39 @@ form {
   width: 300px !important;
 }
 
-.permission {
-  min-width: 100px;
-  padding-left: 15px;
-}
-
 .access {
   min-width: 100px;
   padding-right: 15px;
+}
+
+mat-slider {
+  width: 100%;
+}
+
+.slide-container {
+  flex: 1 1 100%;
+  padding-top: 20px;
+
+  .slide-box {
+    flex: 1 1 auto;
+    align-items: center;
+    display: flex;
+    flex-wrap: nowrap;
+
+    .slide-label {
+      flex: 0;
+      min-width: 100px;
+      padding-right: 15px;
+    }
+
+    .slide {
+      flex: 1 1 auto;
+    }
+
+    .slide-permission {
+      flex: 0;
+      min-width: 100px;
+      padding-left: 20px;
+    }
+  }
 }

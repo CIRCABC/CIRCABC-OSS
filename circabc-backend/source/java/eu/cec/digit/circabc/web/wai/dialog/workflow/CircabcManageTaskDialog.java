@@ -25,6 +25,10 @@ import eu.cec.digit.circabc.web.Beans;
 import eu.cec.digit.circabc.web.bean.override.CircabcBrowseBean;
 import eu.cec.digit.circabc.web.wai.dialog.WaiDialog;
 import eu.cec.digit.circabc.web.wai.manager.ActionsListWrapper;
+import java.io.Serializable;
+import java.util.Map;
+import javax.faces.context.FacesContext;
+import javax.transaction.UserTransaction;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.cmr.workflow.WorkflowTaskState;
@@ -40,183 +44,194 @@ import org.alfresco.web.bean.workflow.ManageTaskDialog;
 import org.alfresco.web.bean.workflow.WorkflowUtil;
 import org.alfresco.web.ui.common.Utils;
 
-import javax.faces.context.FacesContext;
-import javax.transaction.UserTransaction;
-import java.io.Serializable;
-import java.util.Map;
+public class CircabcManageTaskDialog
+  extends ManageTaskDialog
+  implements WaiDialog {
 
-public class CircabcManageTaskDialog extends ManageTaskDialog implements
-        WaiDialog {
+  protected static final String CLIENT_ID_PREFIX =
+    "FormPrincipal" + AlfrescoNavigationHandler.OUTCOME_SEPARATOR + ID_PREFIX;
+  /**
+   *
+   */
+  private static final long serialVersionUID = 7269656716977726537L;
+  protected CircabcBrowseBean circabcBrowseBean;
+  private String interestGroupNodeRef;
 
-    protected static final String CLIENT_ID_PREFIX =
-            "FormPrincipal" + AlfrescoNavigationHandler.OUTCOME_SEPARATOR + ID_PREFIX;
-    /**
-     *
-     */
-    private static final long serialVersionUID = 7269656716977726537L;
-    protected CircabcBrowseBean circabcBrowseBean;
-    private String interestGroupNodeRef;
+  @Override
+  public void init(Map<String, String> parameters) {
+    super.init(parameters);
 
-    @Override
-    public void init(Map<String, String> parameters) {
-        super.init(parameters);
+    if (super.workflowPackage != null) {
+      if (
+        getNodeService()
+          .hasAspect(
+            super.workflowPackage,
+            CircabcModel.ASPECT_BELONG_TO_INTEREST_GROUP
+          )
+      ) {
+        interestGroupNodeRef = ((NodeRef) getNodeService()
+            .getProperty(
+              workflowPackage,
+              CircabcModel.PROP_INTEREST_GROUP_NODE_REF
+            )).toString();
+      }
+    }
+  }
 
-        if (super.workflowPackage != null) {
-            if (getNodeService()
-                    .hasAspect(super.workflowPackage, CircabcModel.ASPECT_BELONG_TO_INTEREST_GROUP)) {
-                interestGroupNodeRef = ((NodeRef) getNodeService()
-                        .getProperty(workflowPackage, CircabcModel.PROP_INTEREST_GROUP_NODE_REF)).toString();
-            }
+  @SuppressWarnings("deprecation")
+  @Override
+  public String transition() {
+    String outcome = getDefaultFinishOutcome();
+
+    // before transitioning check the task still exists and is not completed
+    FacesContext context = FacesContext.getCurrentInstance();
+    WorkflowTask checkTask =
+      this.getWorkflowService().getTaskById(this.getWorkflowTask().id);
+    if (checkTask == null || checkTask.state == WorkflowTaskState.COMPLETED) {
+      Utils.addErrorMessage(Application.getMessage(context, "invalid_task"));
+      return outcome;
+    }
+
+    // to find out which transition button was pressed we need
+    // to look for the button's id in the request parameters,
+    // the first non-null result is the button that was pressed.
+    Map<?, ?> reqParams = context.getExternalContext().getRequestParameterMap();
+
+    String selectedTransition = null;
+    for (WorkflowTransition trans : this.getWorkflowTransitions()) {
+      Object result = reqParams.get(
+        CLIENT_ID_PREFIX + FacesHelper.makeLegalId(trans.title)
+      );
+      if (result != null) {
+        // this was the button that was pressed
+        selectedTransition = trans.id;
+        break;
+      }
+    }
+
+    UserTransaction tx = null;
+
+    try {
+      tx = Repository.getUserTransaction(context);
+      tx.begin();
+
+      // prepare the edited parameters for saving
+      Map<QName, Serializable> params = WorkflowUtil.prepareTaskParams(
+        this.taskNode
+      );
+
+      // update the task with the updated parameters and resources
+      updateResources();
+      this.getWorkflowService()
+        .updateTask(this.getWorkflowTask().id, params, null, null);
+
+      // signal the selected transition to the workflow task
+      this.getWorkflowService()
+        .endTask(this.getWorkflowTask().id, selectedTransition);
+
+      // commit the changes
+      tx.commit();
+    } catch (Throwable e) {
+      // rollback the transaction
+      try {
+        if (tx != null) {
+          tx.rollback();
         }
-
-
+      } catch (Exception ex) {}
+      Utils.addErrorMessage(formatErrorMessage(e), e);
+      outcome = this.getErrorOutcome(e);
     }
 
-    @SuppressWarnings("deprecation")
-    @Override
-    public String transition() {
-        String outcome = getDefaultFinishOutcome();
+    return outcome;
+  }
 
-        // before transitioning check the task still exists and is not completed
-        FacesContext context = FacesContext.getCurrentInstance();
-        WorkflowTask checkTask = this.getWorkflowService().getTaskById(this.getWorkflowTask().id);
-        if (checkTask == null || checkTask.state == WorkflowTaskState.COMPLETED) {
-            Utils.addErrorMessage(Application.getMessage(context, "invalid_task"));
-            return outcome;
-        }
+  @Override
+  public String getPageIconAltText() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
-        // to find out which transition button was pressed we need
-        // to look for the button's id in the request parameters,
-        // the first non-null result is the button that was pressed.
-        Map<?, ?> reqParams = context.getExternalContext().getRequestParameterMap();
+  @Override
+  public String getBrowserTitle() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
-        String selectedTransition = null;
-        for (WorkflowTransition trans : this.getWorkflowTransitions()) {
-            Object result = reqParams.get(CLIENT_ID_PREFIX + FacesHelper.makeLegalId(trans.title));
-            if (result != null) {
-                // this was the button that was pressed
-                selectedTransition = trans.id;
-                break;
-            }
-        }
+  @Override
+  public ActionsListWrapper getActionList() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
-        UserTransaction tx = null;
+  @Override
+  public boolean isCancelButtonVisible() {
+    // TODO Auto-generated method stub
+    return true;
+  }
 
-        try {
-            tx = Repository.getUserTransaction(context);
-            tx.begin();
+  @Override
+  public boolean isFormProvided() {
+    // TODO Auto-generated method stub
+    return false;
+  }
 
-            // prepare the edited parameters for saving
-            Map<QName, Serializable> params = WorkflowUtil.prepareTaskParams(this.taskNode);
+  @Override
+  public String getCancelButtonLabel() {
+    return Application.getMessage(FacesContext.getCurrentInstance(), "close");
+  }
 
-            // update the task with the updated parameters and resources
-            updateResources();
-            this.getWorkflowService().updateTask(this.getWorkflowTask().id, params, null, null);
+  public String getInterestGroupNodeRef() {
+    return interestGroupNodeRef;
+  }
 
-            // signal the selected transition to the workflow task
-            this.getWorkflowService().endTask(this.getWorkflowTask().id, selectedTransition);
+  public void setInterestGroupNodeRef(String interestGroupNodeRef) {
+    this.interestGroupNodeRef = interestGroupNodeRef;
+  }
 
-            // commit the changes
-            tx.commit();
+  @Override
+  protected void createAndAddNode(NodeRef nodeRef) {
+    if (!nodeExistsInResources(nodeRef)) {
+      // create our Node representation
+      MapNode node = new MapNode(nodeRef, this.getNodeService(), true);
+      this.browseBean.setupCommonBindingProperties(node);
+      node.addPropertyResolver(
+        "displayPath",
+        getCircabcBrowseBean().resolverSimpleDisplayPath
+      );
+      node.addPropertyResolver(
+        "displayLigthPath",
+        getCircabcBrowseBean().resolverSimpleDisplayPathLight
+      );
 
-        } catch (Throwable e) {
-            // rollback the transaction
-            try {
-                if (tx != null) {
-                    tx.rollback();
-                }
-            } catch (Exception ex) {
-            }
-            Utils.addErrorMessage(formatErrorMessage(e), e);
-            outcome = this.getErrorOutcome(e);
-        }
+      // add a property resolver to indicate whether the item has been
+      // completed or not
+      // node.addPropertyResolver("completed", this.completeResolver);
 
-        return outcome;
+      // add the id of the task being managed
+      node.getProperties().put("taskId", this.getWorkflowTask().id);
+
+      this.resources.add(node);
     }
+  }
 
-    @Override
-    public String getPageIconAltText() {
-        // TODO Auto-generated method stub
-        return null;
+  private boolean nodeExistsInResources(NodeRef nodeRef) {
+    boolean result = false;
+    for (Node resource : this.resources) {
+      if (resource.getNodeRef().equals(nodeRef)) {
+        result = true;
+        break;
+      }
     }
+    return result;
+  }
 
-    @Override
-    public String getBrowserTitle() {
-        // TODO Auto-generated method stub
-        return null;
+  /**
+   * @return the browseBean
+   */
+  protected final CircabcBrowseBean getCircabcBrowseBean() {
+    if (circabcBrowseBean == null) {
+      circabcBrowseBean = Beans.getWaiBrowseBean();
     }
-
-    @Override
-    public ActionsListWrapper getActionList() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public boolean isCancelButtonVisible() {
-        // TODO Auto-generated method stub
-        return true;
-    }
-
-    @Override
-    public boolean isFormProvided() {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public String getCancelButtonLabel() {
-        return Application.getMessage(FacesContext.getCurrentInstance(), "close");
-    }
-
-    public String getInterestGroupNodeRef() {
-        return interestGroupNodeRef;
-    }
-
-    public void setInterestGroupNodeRef(String interestGroupNodeRef) {
-        this.interestGroupNodeRef = interestGroupNodeRef;
-    }
-
-    @Override
-    protected void createAndAddNode(NodeRef nodeRef) {
-        if (!nodeExistsInResources(nodeRef)) {
-            // create our Node representation
-            MapNode node = new MapNode(nodeRef, this.getNodeService(), true);
-            this.browseBean.setupCommonBindingProperties(node);
-            node.addPropertyResolver("displayPath", getCircabcBrowseBean().resolverSimpleDisplayPath);
-            node.addPropertyResolver("displayLigthPath",
-                    getCircabcBrowseBean().resolverSimpleDisplayPathLight);
-
-            // add a property resolver to indicate whether the item has been
-            // completed or not
-            // node.addPropertyResolver("completed", this.completeResolver);
-
-            // add the id of the task being managed
-            node.getProperties().put("taskId", this.getWorkflowTask().id);
-
-            this.resources.add(node);
-        }
-    }
-
-    private boolean nodeExistsInResources(NodeRef nodeRef) {
-        boolean result = false;
-        for (Node resource : this.resources) {
-            if (resource.getNodeRef().equals(nodeRef)) {
-                result = true;
-                break;
-            }
-        }
-        return result;
-    }
-
-
-    /**
-     * @return the browseBean
-     */
-    protected final CircabcBrowseBean getCircabcBrowseBean() {
-        if (circabcBrowseBean == null) {
-            circabcBrowseBean = Beans.getWaiBrowseBean();
-        }
-        return circabcBrowseBean;
-    }
+    return circabcBrowseBean;
+  }
 }

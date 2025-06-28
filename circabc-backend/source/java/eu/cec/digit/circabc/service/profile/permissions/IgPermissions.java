@@ -26,58 +26,59 @@ import java.util.HashSet;
  * @author Stephane Clinckart
  */
 public enum IgPermissions {
-    IGDELETE("IgDelete"),
-    IGCREATE("IgCreate");
+  IGDELETE("IgDelete"),
+  IGCREATE("IgCreate");
 
-    static HashSet<IgPermissions> igPermissions = null;
+  static HashSet<IgPermissions> igPermissions = null;
 
-    String igPermissionString;
+  String igPermissionString;
 
-    IgPermissions(final String permission) {
-        igPermissionString = permission;
+  IgPermissions(final String permission) {
+    igPermissionString = permission;
+  }
+
+  protected static void init() {
+    igPermissions = new HashSet<>();
+    Collections.addAll(igPermissions, IgPermissions.values());
+  }
+
+  public static IgPermissions withPermissionString(String permiString) {
+    IgPermissions match = null;
+
+    for (IgPermissions permission : getPermissions()) {
+      if (permission.igPermissionString.equals(permiString)) {
+        match = permission;
+        break;
+      }
     }
-
-    protected static void init() {
-        igPermissions = new HashSet<>();
-        Collections.addAll(igPermissions, IgPermissions.values());
+    if (match == null) {
+      throw new IllegalArgumentException(
+        "No enum const class with permission string " + permiString
+      );
+    } else {
+      return match;
     }
+  }
 
-    public static IgPermissions withPermissionString(String permiString) {
-        IgPermissions match = null;
-
-        for (IgPermissions permission : getPermissions()) {
-            if (permission.igPermissionString.equals(permiString)) {
-                match = permission;
-                break;
-            }
-        }
-        if (match == null) {
-            throw new IllegalArgumentException(
-                    "No enum const class with permission string " + permiString);
-        } else {
-            return match;
-        }
+  /**
+   * return an Set representing the permission list.
+   *
+   * @return Set of IgPermissions
+   */
+  public static HashSet<IgPermissions> getPermissions() {
+    if (igPermissions == null) {
+      init();
     }
+    return (HashSet<IgPermissions>) igPermissions.clone();
+  }
 
-    /**
-     * return an Set representing the permission list.
-     *
-     * @return Set of IgPermissions
-     */
-    public static HashSet<IgPermissions> getPermissions() {
-        if (igPermissions == null) {
-            init();
-        }
-        return (HashSet<IgPermissions>) igPermissions.clone();
+  /**
+   * Return the string value associated to the permission
+   */
+  public String toString() {
+    if (igPermissions == null) {
+      init();
     }
-
-    /**
-     * Return the string value associated to the permission
-     */
-    public String toString() {
-        if (igPermissions == null) {
-            init();
-        }
-        return igPermissionString;
-    }
+    return igPermissionString;
+  }
 }

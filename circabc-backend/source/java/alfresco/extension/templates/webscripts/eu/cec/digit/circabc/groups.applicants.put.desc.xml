@@ -2,7 +2,7 @@
   <shortname>Updates one application for membership</shortname>
   <description>Updates one application for membership</description>
     <url>/circabc/groups/{igId}/members/applicants</url>
-  <format default="json"/>
+  <format default="json" />
   <authentication>user</authentication>
   <transaction>required</transaction>
 </webscript>

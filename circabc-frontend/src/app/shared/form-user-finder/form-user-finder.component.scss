@@ -1,0 +1,61 @@
+input,
+.select--multiple,
+select {
+  width: 100%;
+  margin: 0;
+}
+
+.select--multiple,
+.selectUsers {
+  height: 100px;
+}
+
+input {
+  font-size: 12px;
+}
+
+.flexForm {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.flexGroupField {
+  display: flex;
+  flex-flow: row;
+  flex-wrap: wrap;
+  gap: 5px;
+  width: 100%;
+  align-items: center;
+}
+
+.flexLabel {
+  flex: 1 1 100%;
+}
+
+.flexField {
+  flex: 1 1 300px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.flex0 {
+  flex: 0;
+}
+
+.flex1 {
+  flex: 1;
+}
+
+.userOption:hover {
+  background-color: #eee;
+  cursor: pointer;
+}
+
+.formBorder {
+  border-radius: 3px;
+  border: 1px solid #dedede;
+  padding: 12px;
+  padding: 1.2rem;
+}

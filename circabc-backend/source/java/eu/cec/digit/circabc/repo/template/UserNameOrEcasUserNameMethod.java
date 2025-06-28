@@ -19,30 +19,36 @@ package eu.cec.digit.circabc.repo.template;
 import eu.cec.digit.circabc.CircabcConfig;
 import eu.cec.digit.circabc.model.UserModel;
 import freemarker.template.TemplateMethodModelEx;
+import java.io.Serializable;
+import java.util.Map;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 
-import java.io.Serializable;
-import java.util.Map;
-
 /**
- * Freemarker method to display the ECAS user name or user nsame base on CircabcConfig ENT or OSS
+ * Freemarker method to display the ECAS user name or user nsame base on
+ * CircabcConfig ENT or OSS
  *
  * @author filipsl
  */
-public class UserNameOrEcasUserNameMethod extends NodeRefBaseTemplateProcessorExtension
-        implements TemplateMethodModelEx {
+public class UserNameOrEcasUserNameMethod
+  extends NodeRefBaseTemplateProcessorExtension
+  implements TemplateMethodModelEx {
 
-    @Override
-    public String getResult(final NodeRef nodeRef) {
-
-        final Map<QName, Serializable> props = getNodeService().getProperties(nodeRef);
-
-        if (CircabcConfig.ENT) {
-            return (String) props.get(UserModel.PROP_ECAS_USER_NAME);
-        } else {
-            return (String) props.get(ContentModel.PROP_USERNAME);
-        }
+  @Override
+  public String getResult(final NodeRef nodeRef) {
+    final Map<QName, Serializable> props = getNodeService()
+      .getProperties(nodeRef);
+    String result = null;
+    if (CircabcConfig.USE_LDAP) {
+      result = (String) props.get(UserModel.PROP_ECAS_USER_NAME);
     }
+    if (result == null) {
+      // it could be the case when CircabcConfig.USE_LDAP is true but we use a
+      // technical user not known in the ldap
+      // or when CircabcConfig.USE_LDAP is false
+      result = (String) props.get(ContentModel.PROP_USERNAME);
+    }
+    return result;
+  }
 }

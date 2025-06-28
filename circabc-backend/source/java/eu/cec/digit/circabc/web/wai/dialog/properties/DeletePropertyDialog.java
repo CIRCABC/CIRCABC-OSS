@@ -24,16 +24,14 @@ import eu.cec.digit.circabc.service.dynamic.property.DynamicProperty;
 import eu.cec.digit.circabc.service.dynamic.property.DynamicPropertyService;
 import eu.cec.digit.circabc.web.Services;
 import eu.cec.digit.circabc.web.wai.dialog.BaseWaiDialog;
+import java.text.MessageFormat;
+import java.util.Map;
+import javax.faces.context.FacesContext;
 import org.alfresco.service.cmr.lock.NodeLockedException;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.web.ui.common.Utils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import javax.faces.context.FacesContext;
-import java.text.MessageFormat;
-import java.util.Map;
-
 
 /**
  * Bean that backs the "Delete Property" WAI Dialog.
@@ -42,88 +40,99 @@ import java.util.Map;
  */
 public class DeletePropertyDialog extends BaseWaiDialog {
 
-    /**
-     * Public JSF Bean name
-     */
-    public static final String BEAN_NAME = "DeletePropertyDialog";
-    private static final long serialVersionUID = 5393940370953035374L;
-    @SuppressWarnings("unused")
-    private static final Log logger = LogFactory.getLog(DeletePropertyDialog.class);
+  /**
+   * Public JSF Bean name
+   */
+  public static final String BEAN_NAME = "DeletePropertyDialog";
+  private static final long serialVersionUID = 5393940370953035374L;
 
-    private static final String MSG_ERROR_NODE_LOCKED = "delete_property_dialog_error_node_locked";
+  @SuppressWarnings("unused")
+  private static final Log logger = LogFactory.getLog(
+    DeletePropertyDialog.class
+  );
 
-    private transient DynamicPropertyService propertiesService;
-    private DynamicProperty propertyToDelete = null;
+  private static final String MSG_ERROR_NODE_LOCKED =
+    "delete_property_dialog_error_node_locked";
 
+  private transient DynamicPropertyService propertiesService;
+  private DynamicProperty propertyToDelete = null;
 
-    @Override
-    public void init(Map<String, String> parameters) {
-        super.init(parameters);
+  @Override
+  public void init(Map<String, String> parameters) {
+    super.init(parameters);
 
-        if (parameters != null) {
-            final String propertyAsString = parameters.get(ManagePropertiesDialog.PROPERTY_PARAMETER);
-            propertyToDelete = null;
+    if (parameters != null) {
+      final String propertyAsString = parameters.get(
+        ManagePropertiesDialog.PROPERTY_PARAMETER
+      );
+      propertyToDelete = null;
 
-            if (propertyAsString == null) {
-                throw new IllegalArgumentException(
-                        "Impossible to delete the property if the property parameters is not seted: "
-                                + ManagePropertiesDialog.PROPERTY_PARAMETER);
-            }
+      if (propertyAsString == null) {
+        throw new IllegalArgumentException(
+          "Impossible to delete the property if the property parameters is not seted: " +
+          ManagePropertiesDialog.PROPERTY_PARAMETER
+        );
+      }
 
-            propertyToDelete = this.getPropertiesService()
-                    .getDynamicPropertyByID(new NodeRef(propertyAsString));
-        }
+      propertyToDelete = this.getPropertiesService()
+        .getDynamicPropertyByID(new NodeRef(propertyAsString));
     }
+  }
 
-    @Override
-    protected String finishImpl(FacesContext context, String outcome) throws Exception {
-        try {
-            String info = MessageFormat
-                    .format("the property {0} has been deleted", propertyToDelete.getName());
-            logRecord.setInfo(info);
-            this.getPropertiesService().deleteDynamicProperty(propertyToDelete);
-            return outcome;
+  @Override
+  protected String finishImpl(FacesContext context, String outcome)
+    throws Exception {
+    try {
+      String info = MessageFormat.format(
+        "the property {0} has been deleted",
+        propertyToDelete.getName()
+      );
+      logRecord.setInfo(info);
+      this.getPropertiesService().deleteDynamicProperty(propertyToDelete);
+      return outcome;
+    } catch (NodeLockedException e) {
+      Utils.addErrorMessage(translate(MSG_ERROR_NODE_LOCKED));
 
-        } catch (NodeLockedException e) {
-            Utils.addErrorMessage(translate(MSG_ERROR_NODE_LOCKED));
+      if (logger.isDebugEnabled()) {
+        logger.debug(
+          "Impossible to delete a dynamic property since documents are locked"
+        );
+      }
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("Impossible to delete a dynamic property since documents are locked");
-            }
-
-            return null;
-        }
-
-
+      return null;
     }
+  }
 
-    public String getPropertyName() {
-        return this.propertyToDelete.getName();
-    }
+  public String getPropertyName() {
+    return this.propertyToDelete.getName();
+  }
 
-    public String getBrowserTitle() {
-        return translate("delete_property_dialog_browser_title");
-    }
+  public String getBrowserTitle() {
+    return translate("delete_property_dialog_browser_title");
+  }
 
-    public String getPageIconAltText() {
-        return translate("delete_property_dialog_icon_tooltip");
-    }
+  public String getPageIconAltText() {
+    return translate("delete_property_dialog_icon_tooltip");
+  }
 
-    /**
-     * @return the propertiesService
-     */
-    protected final DynamicPropertyService getPropertiesService() {
-        if (propertiesService == null) {
-            propertiesService = Services.getCircabcServiceRegistry(FacesContext.getCurrentInstance())
-                    .getDynamicPropertieService();
-        }
-        return propertiesService;
+  /**
+   * @return the propertiesService
+   */
+  protected final DynamicPropertyService getPropertiesService() {
+    if (propertiesService == null) {
+      propertiesService = Services.getCircabcServiceRegistry(
+        FacesContext.getCurrentInstance()
+      ).getDynamicPropertieService();
     }
+    return propertiesService;
+  }
 
-    /**
-     * @param propertiesService the propertiesService to set
-     */
-    public final void setDynamicPropertyService(DynamicPropertyService dynamicPropertyService) {
-        this.propertiesService = dynamicPropertyService;
-    }
+  /**
+   * @param propertiesService the propertiesService to set
+   */
+  public final void setDynamicPropertyService(
+    DynamicPropertyService dynamicPropertyService
+  ) {
+    this.propertiesService = dynamicPropertyService;
+  }
 }

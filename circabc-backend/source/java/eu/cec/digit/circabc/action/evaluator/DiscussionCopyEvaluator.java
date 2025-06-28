@@ -22,17 +22,15 @@ package eu.cec.digit.circabc.action.evaluator;
 
 import org.alfresco.web.bean.repository.Node;
 
-
 /**
  * @author Yanick Pignot
  */
-public class DiscussionCopyEvaluator extends
-        org.alfresco.web.action.evaluator.DiscussionCopyEvaluator {
+public class DiscussionCopyEvaluator
+  extends org.alfresco.web.action.evaluator.DiscussionCopyEvaluator {
 
-    private static final long serialVersionUID = 216431234585621419L;
+  private static final long serialVersionUID = 216431234585621419L;
 
-    public boolean evaluate(final Node node) {
-        return !node.isLocked() && super.evaluate(node);
-    }
-
+  public boolean evaluate(final Node node) {
+    return !node.isLocked() && super.evaluate(node);
+  }
 }

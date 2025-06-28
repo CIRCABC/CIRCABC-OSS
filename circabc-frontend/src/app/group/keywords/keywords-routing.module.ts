@@ -1,9 +1,15 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { KeywordsComponent } from 'app/group/keywords/keywords.component';
-
-const keywordsRoutes: Routes = [{ path: '', component: KeywordsComponent }];
+export const keywordsRoutes: Routes = [
+  {
+    path: '',
+    loadComponent: () =>
+      import('app/group/keywords/keywords.component').then(
+        (m) => m.KeywordsComponent
+      ),
+  },
+];
 
 @NgModule({
   imports: [RouterModule.forChild(keywordsRoutes)],

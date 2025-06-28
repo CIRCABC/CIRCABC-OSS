@@ -14,109 +14,112 @@ import java.util.Objects;
  */
 public class UserDashboard {
 
-    private String userId = null;
+  private String userId = null;
 
-    private List<UserDashboardEntry> entries = new ArrayList<>();
+  private List<UserDashboardEntry> entries = new ArrayList<>();
 
-    private List<Node> incomingEvents = new ArrayList<>();
+  private List<Node> incomingEvents = new ArrayList<>();
 
-    private List<Object> membershipRequests = new ArrayList<>();
+  private List<Object> membershipRequests = new ArrayList<>();
 
-    /**
-     * Get userId
-     *
-     * @return userId
-     */
-    public String getUserId() {
-        return userId;
+  /**
+   * Get userId
+   *
+   * @return userId
+   */
+  public String getUserId() {
+    return userId;
+  }
+
+  public void setUserId(String userId) {
+    this.userId = userId;
+  }
+
+  /**
+   * Get entries
+   *
+   * @return entries
+   */
+  public List<UserDashboardEntry> getEntries() {
+    return entries;
+  }
+
+  public void setEntries(List<UserDashboardEntry> entries) {
+    this.entries = entries;
+  }
+
+  /**
+   * Get incomingEvents
+   *
+   * @return incomingEvents
+   */
+  public List<Node> getIncomingEvents() {
+    return incomingEvents;
+  }
+
+  public void setIncomingEvents(List<Node> incomingEvents) {
+    this.incomingEvents = incomingEvents;
+  }
+
+  /**
+   * Get membershipRequests
+   *
+   * @return membershipRequests
+   */
+  public List<Object> getMembershipRequests() {
+    return membershipRequests;
+  }
+
+  public void setMembershipRequests(List<Object> membershipRequests) {
+    this.membershipRequests = membershipRequests;
+  }
+
+  @Override
+  public boolean equals(java.lang.Object o) {
+    if (this == o) {
+      return true;
     }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
+    if (o == null || getClass() != o.getClass()) {
+      return false;
     }
+    UserDashboard userDashboard = (UserDashboard) o;
+    return (
+      Objects.equals(this.userId, userDashboard.userId) &&
+      Objects.equals(this.entries, userDashboard.entries) &&
+      Objects.equals(this.incomingEvents, userDashboard.incomingEvents) &&
+      Objects.equals(this.membershipRequests, userDashboard.membershipRequests)
+    );
+  }
 
-    /**
-     * Get entries
-     *
-     * @return entries
-     */
-    public List<UserDashboardEntry> getEntries() {
-        return entries;
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(userId, entries, incomingEvents, membershipRequests);
+  }
 
-    public void setEntries(List<UserDashboardEntry> entries) {
-        this.entries = entries;
-    }
+  @Override
+  public String toString() {
+    return (
+      "class UserDashboard {\n" +
+      "    userId: " +
+      toIndentedString(userId) +
+      "\n" +
+      "    entries: " +
+      toIndentedString(entries) +
+      "\n" +
+      "    incomingEvents: " +
+      toIndentedString(incomingEvents) +
+      "\n" +
+      "    membershipRequests: " +
+      toIndentedString(membershipRequests) +
+      "\n" +
+      "}"
+    );
+  }
 
-    /**
-     * Get incomingEvents
-     *
-     * @return incomingEvents
-     */
-    public List<Node> getIncomingEvents() {
-        return incomingEvents;
-    }
-
-    public void setIncomingEvents(List<Node> incomingEvents) {
-        this.incomingEvents = incomingEvents;
-    }
-
-    /**
-     * Get membershipRequests
-     *
-     * @return membershipRequests
-     */
-    public List<Object> getMembershipRequests() {
-        return membershipRequests;
-    }
-
-    public void setMembershipRequests(List<Object> membershipRequests) {
-        this.membershipRequests = membershipRequests;
-    }
-
-    @Override
-    public boolean equals(java.lang.Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        UserDashboard userDashboard = (UserDashboard) o;
-        return Objects.equals(this.userId, userDashboard.userId)
-                && Objects.equals(this.entries, userDashboard.entries)
-                && Objects.equals(this.incomingEvents, userDashboard.incomingEvents)
-                && Objects.equals(this.membershipRequests, userDashboard.membershipRequests);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(userId, entries, incomingEvents, membershipRequests);
-    }
-
-    @Override
-    public String toString() {
-
-        return "class UserDashboard {\n"
-                + "    userId: "
-                + toIndentedString(userId)
-                + "\n"
-                + "    entries: "
-                + toIndentedString(entries)
-                + "\n"
-                + "    incomingEvents: "
-                + toIndentedString(incomingEvents)
-                + "\n"
-                + "    membershipRequests: "
-                + toIndentedString(membershipRequests)
-                + "\n"
-                + "}";
-    }
-
-    /**
-     * Convert the given object to string with each line indented by 4 spaces (except the first line).
-     */
-    private String toIndentedString(java.lang.Object o) {
-        return Util.toIndentedString(o);
-    }
+  /**
+   * Convert the given object to string with each line indented by 4 spaces (except the first line).
+   */
+  private String toIndentedString(java.lang.Object o) {
+    return Util.toIndentedString(o);
+  }
 }

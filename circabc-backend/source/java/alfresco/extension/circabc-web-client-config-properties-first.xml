@@ -4,21 +4,23 @@
     |  		   http://ec.europa.eu/idabc/en/document/6523
     |
     +-->
-
 <alfresco-config>
 
   <plug-ins>
 		<evaluators>
-			<evaluator id="always-true" class="eu.cec.digit.circabc.web.config.AlwaysTrueEvaluator" />
+			<evaluator
+        id="always-true"
+        class="eu.cec.digit.circabc.web.config.AlwaysTrueEvaluator"
+      />
 		</evaluators>
   </plug-ins>
 
   <config evaluator="always-true" condition="forallobjects">
       <property-sheet>
          <!-- Force the name to be displayed under the title and the descritpion -->
-         <show-property name="title"/>
-         <show-property name="description"/>
-         <show-property name="name"/>
+         <show-property name="title" />
+         <show-property name="description" />
+         <show-property name="name" />
       </property-sheet>
    </config>
 

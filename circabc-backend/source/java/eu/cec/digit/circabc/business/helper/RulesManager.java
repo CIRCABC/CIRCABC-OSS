@@ -42,71 +42,91 @@ import org.alfresco.service.namespace.QName;
  */
 public class RulesManager {
 
-    private ActionService actionService;
-    private RuleService ruleService;
+  private ActionService actionService;
+  private RuleService ruleService;
 
-    public void addAspectToAllChilds(final NodeRef nodeRef, final QName aspectQName) {
-        addAspectToAllChilds(nodeRef, aspectQName, null);
+  public void addAspectToAllChilds(
+    final NodeRef nodeRef,
+    final QName aspectQName
+  ) {
+    addAspectToAllChilds(nodeRef, aspectQName, null);
+  }
+
+  public void addAspectToAllChilds(
+    final NodeRef nodeRef,
+    final QName aspectQName,
+    final QName childTypeQName
+  ) {
+    // create the action
+    final CompositeAction compositeAction =
+      actionService.createCompositeAction();
+
+    final Action action = actionService.createAction(
+      AddFeaturesActionExecuter.NAME
+    );
+    compositeAction.setParameterValue(
+      AddFeaturesActionExecuter.PARAM_ASPECT_NAME,
+      aspectQName
+    );
+
+    compositeAction.addAction(action);
+    compositeAction.setTitle("Add " + aspectQName.getLocalName() + " Aspect");
+    compositeAction.setDescription(
+      compositeAction.getTitle() + " to any child ref"
+    );
+
+    //create the action Condition
+    final ActionCondition condition;
+    if (childTypeQName == null) {
+      condition = actionService.createActionCondition(
+        NoConditionEvaluator.NAME
+      );
+    } else {
+      condition = actionService.createActionCondition(IsSubTypeEvaluator.NAME);
+      condition.setParameterValue(
+        IsSubTypeEvaluator.PARAM_TYPE,
+        ContentModel.TYPE_CONTENT
+      );
+
+      compositeAction.setDescription(
+        compositeAction.getDescription() +
+        " of type " +
+        childTypeQName.getLocalName()
+      );
     }
+    compositeAction.addActionCondition(condition);
 
-    public void addAspectToAllChilds(final NodeRef nodeRef, final QName aspectQName,
-                                     final QName childTypeQName) {
-        // create the action
-        final CompositeAction compositeAction = actionService.createCompositeAction();
+    // create a rule
+    final Rule rule = new Rule();
+    rule.setRuleType(RuleType.INBOUND);
 
-        final Action action = actionService.createAction(AddFeaturesActionExecuter.NAME);
-        compositeAction.setParameterValue(
-                AddFeaturesActionExecuter.PARAM_ASPECT_NAME,
-                aspectQName);
+    rule.applyToChildren(true);
+    rule.setExecuteAsynchronously(false);
+    rule.setAction(compositeAction);
+    rule.setTitle(compositeAction.getTitle() + " Rule");
+    rule.setDescription(
+      compositeAction.getDescription() + " synchronly to any sub level"
+    );
+    ruleService.saveRule(nodeRef, rule);
+  }
 
-        compositeAction.addAction(action);
-        compositeAction.setTitle("Add " + aspectQName.getLocalName() + " Aspect");
-        compositeAction.setDescription(compositeAction.getTitle() + " to any child ref");
+  //--------------
+  //-- private helpers
 
-        //create the action Condition
-        final ActionCondition condition;
-        if (childTypeQName == null) {
-            condition = actionService.createActionCondition(NoConditionEvaluator.NAME);
-        } else {
-            condition = actionService.createActionCondition(IsSubTypeEvaluator.NAME);
-            condition.setParameterValue(IsSubTypeEvaluator.PARAM_TYPE, ContentModel.TYPE_CONTENT);
+  //--------------
+  //-- IOC
 
-            compositeAction.setDescription(
-                    compositeAction.getDescription() + " of type " + childTypeQName.getLocalName());
-        }
-        compositeAction.addActionCondition(condition);
+  /**
+   * @param actionService the actionService to set
+   */
+  public final void setActionService(ActionService actionService) {
+    this.actionService = actionService;
+  }
 
-        // create a rule
-        final Rule rule = new Rule();
-        rule.setRuleType(RuleType.INBOUND);
-
-        rule.applyToChildren(true);
-        rule.setExecuteAsynchronously(false);
-        rule.setAction(compositeAction);
-        rule.setTitle(compositeAction.getTitle() + " Rule");
-        rule.setDescription(compositeAction.getDescription() + " synchronly to any sub level");
-        ruleService.saveRule(nodeRef, rule);
-
-    }
-
-    //--------------
-    //-- private helpers
-
-    //--------------
-    //-- IOC
-
-    /**
-     * @param actionService the actionService to set
-     */
-    public final void setActionService(ActionService actionService) {
-        this.actionService = actionService;
-    }
-
-    /**
-     * @param ruleService the ruleService to set
-     */
-    public final void setRuleService(RuleService ruleService) {
-        this.ruleService = ruleService;
-    }
-
+  /**
+   * @param ruleService the ruleService to set
+   */
+  public final void setRuleService(RuleService ruleService) {
+    this.ruleService = ruleService;
+  }
 }

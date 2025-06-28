@@ -40,6 +40,13 @@
  */
 package eu.cec.digit.circabc.repo.admin;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Properties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -48,14 +55,6 @@ import org.apache.log4j.spi.LoggerRepository;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Properties;
 
 /**
  * Initialises Log4j's HierarchyDynamicMBean (refer to core-services-context.xml) and any overriding
@@ -135,116 +134,118 @@ import java.util.Properties;
  */
 public class Log4JHierarchyInit {
 
-    private static final String XML = ".xml";
-    private HierarchyDynamicMBean log4jHierarchy;
-    private List<String> extra_log4j_urls;
+  private static final String XML = ".xml";
+  private HierarchyDynamicMBean log4jHierarchy;
+  private List<String> extra_log4j_urls;
 
-    public Log4JHierarchyInit() {
-        extra_log4j_urls = new ArrayList<>();
+  public Log4JHierarchyInit() {
+    extra_log4j_urls = new ArrayList<>();
+  }
+
+  /**
+   * Loads a set of augmenting/overriding log4j.properties files from locations specified via an
+   * array of 'spring_urls' (typically provided by a core-services-context.xml).
+   *
+   * <p>This function supports Spring's syntax for retrieving multiple class path resources with the
+   * same name, via the "classpath&#042;:" prefix. For details, see: <a
+   * href='http://www.jdocs.com/spring/1.2.8/org/springframework/core/io/support/PathMatchingResourcePatternResolver.html'>PathMatchingResourcePatternResolver</a>.
+   */
+  public void setOverriding_log4j_properties(final List<String> spring_urls) {
+    for (final String url : spring_urls) {
+      extra_log4j_urls.add(url);
+    }
+  }
+
+  public void setLog4jHierarchy(final HierarchyDynamicMBean log4jHierarchy) {
+    this.log4jHierarchy = log4jHierarchy;
+  }
+
+  @SuppressWarnings("unchecked")
+  public void init() {
+    // Add each logger (that has a level set) from
+    // the Log4J Repository to the Hierarchy MBean
+
+    final LoggerRepository r = LogManager.getLoggerRepository();
+
+    // Include overriding loggers
+    //
+    //       Typically, extra loggers come from AMP modules, but you
+    //       could add others by augmenting core-services-context.xml
+    //       This mechanism allows modules to have their own local
+    //       log4j.properties file within:
+    //
+    //          WEB-INF/classes/alfresco/module/{module.id}/log4j.properties
+    //
+    //       Where:  module.id is whatever value is set within the AMP's
+    //               'module.properties' file.
+    //
+    //       See also:
+    //         http://wiki.alfresco.com/wiki/Developing_an_Alfresco_Module
+    //         (the module.properties section)
+    //
+    //       And:
+    //         core-services-context.xml
+
+    set_overriding_loggers(r);
+
+    final Enumeration loggers = r.getCurrentLoggers();
+    Logger logger = null;
+
+    while (loggers.hasMoreElements()) {
+      logger = (Logger) loggers.nextElement();
+      if (logger.getLevel() != null) {
+        log4jHierarchy.addLoggerMBean(logger.getName());
+      }
+    }
+  }
+
+  void set_overriding_loggers(final LoggerRepository hierarchy) {
+    for (final String spring_url : extra_log4j_urls) {
+      set_overriding_logger(spring_url, hierarchy);
+    }
+  }
+
+  void set_overriding_logger(
+    final String spring_url,
+    final LoggerRepository hierarchy
+  ) {
+    final PathMatchingResourcePatternResolver resolver =
+      new PathMatchingResourcePatternResolver();
+    final PropertyConfigurator prop_config = new PropertyConfigurator();
+    final DOMConfigurator dom_config = new DOMConfigurator();
+
+    Resource[] resources = null;
+
+    try {
+      resources = resolver.getResources(spring_url);
+    } catch (final Exception e) {
+      return;
     }
 
-    /**
-     * Loads a set of augmenting/overriding log4j.properties files from locations specified via an
-     * array of 'spring_urls' (typically provided by a core-services-context.xml).
-     *
-     * <p>This function supports Spring's syntax for retrieving multiple class path resources with the
-     * same name, via the "classpath&#042;:" prefix. For details, see: <a
-     * href='http://www.jdocs.com/spring/1.2.8/org/springframework/core/io/support/PathMatchingResourcePatternResolver.html'>PathMatchingResourcePatternResolver</a>.
-     */
-    public void setOverriding_log4j_properties(final List<String> spring_urls) {
-        for (final String url : spring_urls) {
-            extra_log4j_urls.add(url);
+    InputStream istream;
+    Properties properties;
+    // Read each resource
+    for (final Resource resource : resources) {
+      istream = null;
+      try {
+        istream = new BufferedInputStream(resource.getInputStream());
+
+        if (resource.getFilename().endsWith(XML)) {
+          dom_config.doConfigure(istream, hierarchy);
+        } else {
+          properties = new Properties();
+          properties.load(istream);
+          prop_config.doConfigure(properties, hierarchy);
         }
-    }
-
-    public void setLog4jHierarchy(final HierarchyDynamicMBean log4jHierarchy) {
-        this.log4jHierarchy = log4jHierarchy;
-    }
-
-    @SuppressWarnings("unchecked")
-    public void init() {
-        // Add each logger (that has a level set) from
-        // the Log4J Repository to the Hierarchy MBean
-
-        final LoggerRepository r = LogManager.getLoggerRepository();
-
-        // Include overriding loggers
-        //
-        //       Typically, extra loggers come from AMP modules, but you
-        //       could add others by augmenting core-services-context.xml
-        //       This mechanism allows modules to have their own local
-        //       log4j.properties file within:
-        //
-        //          WEB-INF/classes/alfresco/module/{module.id}/log4j.properties
-        //
-        //       Where:  module.id is whatever value is set within the AMP's
-        //               'module.properties' file.
-        //
-        //       See also:
-        //         http://wiki.alfresco.com/wiki/Developing_an_Alfresco_Module
-        //         (the module.properties section)
-        //
-        //       And:
-        //         core-services-context.xml
-
-        set_overriding_loggers(r);
-
-        final Enumeration loggers = r.getCurrentLoggers();
-        Logger logger = null;
-
-        while (loggers.hasMoreElements()) {
-            logger = (Logger) loggers.nextElement();
-            if (logger.getLevel() != null) {
-                log4jHierarchy.addLoggerMBean(logger.getName());
-            }
+      } catch (final Throwable e) {
+        /* do nothing */
+      } finally {
+        if (istream != null) {
+          try {
+            istream.close();
+          } catch (IOException ignore) {}
         }
+      }
     }
-
-    void set_overriding_loggers(final LoggerRepository hierarchy) {
-        for (final String spring_url : extra_log4j_urls) {
-            set_overriding_logger(spring_url, hierarchy);
-        }
-    }
-
-    void set_overriding_logger(final String spring_url, final LoggerRepository hierarchy) {
-        final PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-        final PropertyConfigurator prop_config = new PropertyConfigurator();
-        final DOMConfigurator dom_config = new DOMConfigurator();
-
-        Resource[] resources = null;
-
-        try {
-            resources = resolver.getResources(spring_url);
-        } catch (final Exception e) {
-            return;
-        }
-
-        InputStream istream;
-        Properties properties;
-        // Read each resource
-        for (final Resource resource : resources) {
-            istream = null;
-            try {
-                istream = new BufferedInputStream(resource.getInputStream());
-
-                if (resource.getFilename().endsWith(XML)) {
-                    dom_config.doConfigure(istream, hierarchy);
-                } else {
-                    properties = new Properties();
-                    properties.load(istream);
-                    prop_config.doConfigure(properties, hierarchy);
-                }
-            } catch (final Throwable e) {
-                /* do nothing */
-            } finally {
-                if (istream != null) {
-                    try {
-                        istream.close();
-                    } catch (IOException ignore) {
-
-                    }
-                }
-            }
-        }
-    }
+  }
 }

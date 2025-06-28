@@ -20,74 +20,73 @@
  ******************************************************************************/
 package eu.cec.digit.circabc.web.ui.repo.tag;
 
-import org.alfresco.web.ui.common.tag.HtmlComponentTag;
-
 import javax.faces.component.UIComponent;
+import org.alfresco.web.ui.common.tag.HtmlComponentTag;
 
 /**
  * @author yanick Pignot
  */
 public class SearchDynamicPropertiesTag extends HtmlComponentTag {
 
-    /**
-     * the bean reference
-     */
-    private String bean;
-    /**
-     * the variable Map reference
-     */
-    private String var;
+  /**
+   * the bean reference
+   */
+  private String bean;
+  /**
+   * the variable Map reference
+   */
+  private String var;
 
-    /**
-     * @see javax.faces.webapp.UIComponentTag#getComponentType()
-     */
-    public String getComponentType() {
-        return "eu.cec.digit.circabc.faces.AdvancedSearch";
-    }
+  /**
+   * @see javax.faces.webapp.UIComponentTag#getComponentType()
+   */
+  public String getComponentType() {
+    return "eu.cec.digit.circabc.faces.AdvancedSearch";
+  }
 
-    /**
-     * @see javax.faces.webapp.UIComponentTag#getRendererType()
-     */
-    public String getRendererType() {
-        // self rendering component
-        return null;
-    }
+  /**
+   * @see javax.faces.webapp.UIComponentTag#getRendererType()
+   */
+  public String getRendererType() {
+    // self rendering component
+    return null;
+  }
 
-    /**
-     * @see javax.faces.webapp.UIComponentTag#setProperties(javax.faces.component.UIComponent)
-     */
-    protected void setProperties(UIComponent component) {
-        super.setProperties(component);
+  /**
+   * @see javax.faces.webapp.UIComponentTag#setProperties(javax.faces.component.UIComponent)
+   */
+  protected void setProperties(UIComponent component) {
+    super.setProperties(component);
 
-        setStringProperty(component, "bean", this.bean);
-        setStringProperty(component, "var", this.var);
-    }
+    setStringProperty(component, "bean", this.bean);
+    setStringProperty(component, "var", this.var);
+  }
 
-    /**
-     * @see org.alfresco.web.ui.common.tag.HtmlComponentTag#release()
-     */
-    public void release() {
-        super.release();
+  /**
+   * @see org.alfresco.web.ui.common.tag.HtmlComponentTag#release()
+   */
+  public void release() {
+    super.release();
 
-        this.bean = null;
-        this.var = null;
-    }
+    this.bean = null;
+    this.var = null;
+  }
 
-    /**
-     * Set the bean reference
-     *
-     * @param bean the bean reference
-     */
-    public void setBean(String bean) {
-        this.bean = bean;
-    }
+  /**
+   * Set the bean reference
+   *
+   * @param bean the bean reference
+   */
+  public void setBean(String bean) {
+    this.bean = bean;
+  }
 
-    /**
-     * Set the var
-     *
-     * @param var the var
-     */
-    public void setVar(String var) {
-        this.var = var;
-    }
+  /**
+   * Set the var
+   *
+   * @param var the var
+   */
+  public void setVar(String var) {
+    this.var = var;
+  }
 }

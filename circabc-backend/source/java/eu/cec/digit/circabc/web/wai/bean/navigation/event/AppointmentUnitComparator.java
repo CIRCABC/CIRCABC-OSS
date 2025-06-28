@@ -21,7 +21,6 @@
 package eu.cec.digit.circabc.web.wai.bean.navigation.event;
 
 import eu.cec.digit.circabc.web.ui.tag.AppointmentUnit;
-
 import java.io.Serializable;
 import java.util.Comparator;
 
@@ -30,18 +29,19 @@ import java.util.Comparator;
  *
  * @author yanick pignot
  */
-public class AppointmentUnitComparator implements Comparator<AppointmentUnit>, Serializable {
+public class AppointmentUnitComparator
+  implements Comparator<AppointmentUnit>, Serializable {
 
-    private static final long serialVersionUID = 6227528170880231785L;
+  private static final long serialVersionUID = 6227528170880231785L;
 
-    public int compare(AppointmentUnit a1, AppointmentUnit a2) {
-        final int diffDate = a1.getStartDay().compareTo(a2.getStartDay());
+  public int compare(AppointmentUnit a1, AppointmentUnit a2) {
+    final int diffDate = a1.getStartDay().compareTo(a2.getStartDay());
 
-        if (diffDate == 0) {
-            // if same day, compare the time
-            return a1.getStart().compareTo(a2.getStart());
-        } else {
-            return diffDate;
-        }
+    if (diffDate == 0) {
+      // if same day, compare the time
+      return a1.getStart().compareTo(a2.getStart());
+    } else {
+      return diffDate;
     }
+  }
 }

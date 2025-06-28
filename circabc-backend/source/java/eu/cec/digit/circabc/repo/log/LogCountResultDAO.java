@@ -20,29 +20,28 @@ package eu.cec.digit.circabc.repo.log;
 /** @author beaurpi */
 public class LogCountResultDAO {
 
-    private Integer hourPeriod;
-    private Integer numberOfActions;
+  private Integer hourPeriod;
+  private Integer numberOfActions;
 
-    public LogCountResultDAO() {
-    }
+  public LogCountResultDAO() {}
 
-    /** @return the date */
-    public Integer getHourPeriod() {
-        return hourPeriod;
-    }
+  /** @return the date */
+  public Integer getHourPeriod() {
+    return hourPeriod;
+  }
 
-    /** @param date the date to set */
-    public void setHourPeriod(Integer hourPeriod) {
-        this.hourPeriod = hourPeriod;
-    }
+  /** @param date the date to set */
+  public void setHourPeriod(Integer hourPeriod) {
+    this.hourPeriod = hourPeriod;
+  }
 
-    /** @return the numberOfActions */
-    public Integer getNumberOfActions() {
-        return numberOfActions;
-    }
+  /** @return the numberOfActions */
+  public Integer getNumberOfActions() {
+    return numberOfActions;
+  }
 
-    /** @param numberOfActions the numberOfActions to set */
-    public void setNumberOfActions(Integer numberOfActions) {
-        this.numberOfActions = numberOfActions;
-    }
+  /** @param numberOfActions the numberOfActions to set */
+  public void setNumberOfActions(Integer numberOfActions) {
+    this.numberOfActions = numberOfActions;
+  }
 }

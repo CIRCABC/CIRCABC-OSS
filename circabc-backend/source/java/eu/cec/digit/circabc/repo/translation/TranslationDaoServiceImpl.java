@@ -16,91 +16,108 @@
  */
 package eu.cec.digit.circabc.repo.translation;
 
-import org.mybatis.spring.SqlSessionTemplate;
-
 import java.util.Date;
 import java.util.List;
+import org.mybatis.spring.SqlSessionTemplate;
 
 public class TranslationDaoServiceImpl implements TranslationDaoService {
 
-    private SqlSessionTemplate sqlSessionTemplate = null;
+  private SqlSessionTemplate sqlSessionTemplate = null;
 
-    @Override
-    public void saveRequest(Request request) {
-        sqlSessionTemplate.insert("Translation.insert_request", request);
-    }
+  @Override
+  public void saveRequest(Request request) {
+    sqlSessionTemplate.insert("Translation.insert_request", request);
+  }
 
-    @Override
-    public void saveSuccessResponse(
-            String requestId, String targetLanguage, String deliveryUrl, String translatedText) {
-        Response response = new Response();
-        response.setDeliveryURL(deliveryUrl);
-        response.setRespDate(new Date());
-        response.setTargetLang(targetLanguage);
-        response.setTranslated(1);
-        response.setTranslatedText(translatedText);
+  @Override
+  public void saveSuccessResponse(
+    String requestId,
+    String targetLanguage,
+    String deliveryUrl,
+    String translatedText
+  ) {
+    Response response = new Response();
+    response.setDeliveryURL(deliveryUrl);
+    response.setRespDate(new Date());
+    response.setTargetLang(targetLanguage);
+    response.setTranslated(1);
+    response.setTranslatedText(translatedText);
 
-        response.setRequestID(requestId);
-        sqlSessionTemplate.insert("Translation.insert_response", response);
-    }
+    response.setRequestID(requestId);
+    sqlSessionTemplate.insert("Translation.insert_response", response);
+  }
 
-    @Override
-    public void saveErrorResponse(
-            String requestId, String targetLanguage, String errorCode, String errorMessage) {
-        Response response = new Response();
-        response.setRespDate(new Date());
-        response.setTargetLang(targetLanguage);
-        response.setErrCode(errorCode);
-        response.setErrCode(errorMessage);
-        response.setTranslated(0);
+  @Override
+  public void saveErrorResponse(
+    String requestId,
+    String targetLanguage,
+    String errorCode,
+    String errorMessage
+  ) {
+    Response response = new Response();
+    response.setRespDate(new Date());
+    response.setTargetLang(targetLanguage);
+    response.setErrCode(errorCode);
+    response.setErrCode(errorMessage);
+    response.setTranslated(0);
 
-        response.setRequestID(requestId);
-        sqlSessionTemplate.insert("Translation.insert_response", response);
-    }
+    response.setRequestID(requestId);
+    sqlSessionTemplate.insert("Translation.insert_response", response);
+  }
 
-    @Override
-    public void markAsProccesed(String requestId, String targetLanguage) {
-        Response response = new Response();
-        response.setRequestID(requestId);
-        response.setTargetLang(targetLanguage);
+  @Override
+  public void markAsProccesed(String requestId, String targetLanguage) {
+    Response response = new Response();
+    response.setRequestID(requestId);
+    response.setTargetLang(targetLanguage);
 
-        sqlSessionTemplate.update("Translation.updateResponse", response);
-    }
+    sqlSessionTemplate.update("Translation.updateResponse", response);
+  }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<SearchResult> getTranslationsToProcess(Date from) {
-        Search params = new Search();
-        params.setFromDate(from);
-        return ((List<SearchResult>)
-                sqlSessionTemplate.selectList("Translation.selectItemsToProccess", params));
-    }
+  @SuppressWarnings("unchecked")
+  @Override
+  public List<SearchResult> getTranslationsToProcess(Date from) {
+    Search params = new Search();
+    params.setFromDate(from);
+    return (
+      (List<SearchResult>) sqlSessionTemplate.selectList(
+        "Translation.selectItemsToProccess",
+        params
+      )
+    );
+  }
 
-    /**
-     * @param sqlSessionTemplate the sqlSessionTemplate to set
-     */
-    public void setSqlSessionTemplate(SqlSessionTemplate sqlSessionTemplate) {
-        this.sqlSessionTemplate = sqlSessionTemplate;
-    }
+  /**
+   * @param sqlSessionTemplate the sqlSessionTemplate to set
+   */
+  public void setSqlSessionTemplate(SqlSessionTemplate sqlSessionTemplate) {
+    this.sqlSessionTemplate = sqlSessionTemplate;
+  }
 
-    @Override
-    public List<SearchResultNotify> getUserToNotify(Date from) {
-        Search params = new Search();
-        params.setFromDate(from);
-        return ((List<SearchResultNotify>)
-                sqlSessionTemplate.selectList("Translation.selectUsersToNotify", params));
-    }
+  @Override
+  public List<SearchResultNotify> getUserToNotify(Date from) {
+    Search params = new Search();
+    params.setFromDate(from);
+    return (
+      (List<SearchResultNotify>) sqlSessionTemplate.selectList(
+        "Translation.selectUsersToNotify",
+        params
+      )
+    );
+  }
 
-    @Override
-    public void markAsNotified(String requestId) {
-        Request request = new Request();
-        request.setRequestID(requestId);
-        sqlSessionTemplate.update("Translation.updateRequest", request);
-    }
+  @Override
+  public void markAsNotified(String requestId) {
+    Request request = new Request();
+    request.setRequestID(requestId);
+    sqlSessionTemplate.update("Translation.updateRequest", request);
+  }
 
-    @Override
-    public int getCountOfErrorTranslation(String requestId) {
-
-        return (Integer) sqlSessionTemplate.selectOne("Translation.getEroroCount", requestId);
-    }
+  @Override
+  public int getCountOfErrorTranslation(String requestId) {
+    return (Integer) sqlSessionTemplate.selectOne(
+      "Translation.getEroroCount",
+      requestId
+    );
+  }
 }

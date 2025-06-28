@@ -1,0 +1,99 @@
+<mat-card>
+  @if(!isPending && !processing){
+
+  <div class="heather">
+    <div class="title">
+      {{ 'label.request.delete.interest-group' | transloco }}
+    </div>
+  </div>
+
+  <div class="dialogContent">
+    <div>
+      <form [formGroup]="form">
+        <div class="small-padding">
+          <div class="field" style="display: flex; flex-wrap: wrap">
+            <div style="width: 100%">
+              <label for="name">{{ 'label.name' | transloco }} </label>
+            </div>
+
+            <input type="text" formControlName="name" readonly />
+          </div>
+          <cbc-multilingual-input
+            formControlName="title"
+            [label]="'label.title' | transloco"
+            [placeholder]="'label.title' | transloco"
+            [lang]="'EN'"
+            [enabled]="false"
+          ></cbc-multilingual-input>
+          <div class="field">
+            <cbc-multilingual-input
+              data-cy="justification"
+              formControlName="justification"
+              [label]="'label.justification' | transloco"
+              [lang]="'EN'"
+              [textarea]="true"
+            >
+            </cbc-multilingual-input>
+            <cbc-control-message
+              [control]="justificationControl"
+            ></cbc-control-message>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="buttons-group">
+    <a
+      tabindex="0"
+      data-cy="ok"
+      class="cta"
+      (click)="requestDeleteGroup()"
+      [class.disabled]="processing"
+      >{{ 'label.submit' | transloco }}</a
+    >
+    <a tabindex="0" class="button" (click)="dialogRef.close()">
+      {{ 'label.cancel' | transloco }}</a
+    >
+  </div>
+
+  } @if(isPending && !processing){
+
+  <div class="alert">
+    <div class="alert-icon">
+      <img
+        src="img/exclamation.png"
+        class="img--exclamation--size"
+        alt="Exclamation mark"
+      />
+    </div>
+    <div class="message">
+      <p>{{ 'label.request.delete.title' | transloco }}</p>
+      <strong>
+        <p>{{ 'label.request.delete.message'| transloco }}</p>
+      </strong>
+    </div>
+    <div class="alertButtonBox">
+      <a tabindex="0" class="button" (click)="dialogRef.close()"
+        >{{ 'label.ok' | transloco }}
+      </a>
+    </div>
+  </div>
+
+  } @if (processing) {
+
+  <div class="heather">
+    <div class="title">
+      {{ 'label.request.delete.interest-group' | transloco }}
+    </div>
+  </div>
+
+  <div class="dialogContent">
+    <p>
+      {{ 'label.processing' | transloco }}...
+      <cbc-spinner></cbc-spinner>
+    </p>
+  </div>
+
+  }
+</mat-card>

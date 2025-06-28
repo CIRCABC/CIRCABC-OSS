@@ -14,8 +14,9 @@
     "strictDomEventTypes": true,
     "strictInputTypes": true,
     "extendedDiagnostics": {
-      "defaultCategory": "error"
-    }
+      "defaultCategory": "warning"
+    },
+    "strictStandalone":true
   },
   "compilerOptions": {
     "experimentalDecorators": true,

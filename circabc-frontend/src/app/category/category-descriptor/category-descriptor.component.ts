@@ -1,10 +1,10 @@
 import {
   Component,
-  Input,
   OnChanges,
   OnDestroy,
   OnInit,
   SimpleChanges,
+  input,
 } from '@angular/core';
 import {
   ActionEmitterResult,
@@ -13,20 +13,22 @@ import {
 } from 'app/action-result';
 import { ActionService } from 'app/action-result/action.service';
 import { Node as ModelNode, NodesService } from 'app/core/generated/circabc';
+import { DownloadPipe } from 'app/shared/pipes/download.pipe';
 import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
-import { firstValueFrom, Subscription } from 'rxjs';
+import { SecurePipe } from 'app/shared/pipes/secure.pipe';
+import { Subscription, firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-category-descriptor',
   templateUrl: './category-descriptor.component.html',
-  styleUrls: ['./category-descriptor.component.scss'],
+  styleUrl: './category-descriptor.component.scss',
   preserveWhitespaces: true,
+  imports: [DownloadPipe, SecurePipe],
 })
 export class CategoryDescriptorComponent
   implements OnInit, OnChanges, OnDestroy
 {
-  @Input()
-  categoryId!: string;
+  readonly categoryId = input.required<string>();
   public category!: ModelNode;
   private actionFinishedSubscription$!: Subscription;
 
@@ -55,7 +57,7 @@ export class CategoryDescriptorComponent
 
   async ngOnInit() {
     this.subscribe();
-    await this.loadCategoryNode(this.categoryId);
+    await this.loadCategoryNode(this.categoryId());
   }
 
   async ngOnChanges(changes: SimpleChanges) {
@@ -77,7 +79,7 @@ export class CategoryDescriptorComponent
   }
 
   public hasModelNodeLogo(): boolean {
-    if (this.category && this.category.properties) {
+    if (this.category?.properties) {
       return !(
         this.category.properties.logoRef === undefined ||
         this.category.properties.logoRef === ''
@@ -87,7 +89,7 @@ export class CategoryDescriptorComponent
   }
 
   public getLogoRef(): string {
-    if (this.category && this.category.properties) {
+    if (this.category?.properties) {
       const parts = this.category.properties.logoRef.split('/');
       return parts[parts.length - 1];
     }
@@ -96,7 +98,7 @@ export class CategoryDescriptorComponent
 
   public getCategoryGroupDescription(): string {
     let result = '';
-    if (this.category && this.category.title !== undefined) {
+    if (this.category?.title !== undefined) {
       result = this.i18nPipe.transform(this.category.title);
       if (result === '') {
         result = this.i18nPipe.transform(this.category.title);

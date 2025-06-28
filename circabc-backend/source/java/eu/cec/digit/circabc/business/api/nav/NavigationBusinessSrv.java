@@ -20,10 +20,9 @@
  ******************************************************************************/
 package eu.cec.digit.circabc.business.api.nav;
 
-import org.alfresco.service.cmr.repository.NodeRef;
-
 import java.util.List;
 import java.util.Map;
+import org.alfresco.service.cmr.repository.NodeRef;
 
 /**
  * Business service that helps the navigation througt circabc spaces and contents.
@@ -31,98 +30,100 @@ import java.util.Map;
  * @author Yanick Pignot
  */
 public interface NavigationBusinessSrv {
+  /**
+   * Return the node path of a NodeRef as a String. Must -	try first to return a circabc like path,
+   * -	if the node is not managed by circabc, return the alfresco like path -	if any error occurs,
+   * return the nodeRef passed in parameter as Srting.
+   *
+   * @param nodeRef The Not Null nodeRef to retreive path
+   * @return Always an not null String
+   */
+  String getNodePathString(final NodeRef nodeRef);
 
-    /**
-     * Return the node path of a NodeRef as a String. Must -	try first to return a circabc like path,
-     * -	if the node is not managed by circabc, return the alfresco like path -	if any error occurs,
-     * return the nodeRef passed in parameter as Srting.
-     *
-     * @param nodeRef The Not Null nodeRef to retreive path
-     * @return Always an not null String
-     */
-    String getNodePathString(final NodeRef nodeRef);
+  /**
+   * Get the Circabc root node
+   *
+   * <p><i>Circabc root folder is visible for every body, authenticated or not</p>
+   */
+  NodeRef getCircabcRoot();
 
+  /**
+   * Get all headers defined in circabc
+   *
+   * <p><i>Headers are visible for every body, authenticated or not</p>
+   */
+  List<NodeRef> getHeaders();
 
-    /**
-     * Get the Circabc root node
-     *
-     * <p><i>Circabc root folder is visible for every body, authenticated or not</p>
-     */
-    NodeRef getCircabcRoot();
+  /**
+   * Get all categories for a given header
+   *
+   * <p><i>categories are visible for every body, authenticated or not</i></p>
+   **/
+  List<NodeRef> getCategories();
 
-    /**
-     * Get all headers defined in circabc
-     *
-     * <p><i>Headers are visible for every body, authenticated or not</p>
-     */
-    List<NodeRef> getHeaders();
+  /**
+   * Get all categories for a given header
+   *
+   * <p><i>categories are visible for every body, authenticated or not</i></p>
+   */
+  List<NodeRef> getCategories(final NodeRef categoryHeader);
 
-    /**
-     * Get all categories for a given header
-     *
-     * <p><i>categories are visible for every body, authenticated or not</i></p>
-     **/
-    List<NodeRef> getCategories();
+  /**
+   * Get the category with the given name. Null if not exists
+   */
+  NodeRef getCategory(String categoryName);
 
-    /**
-     * Get all categories for a given header
-     *
-     * <p><i>categories are visible for every body, authenticated or not</i></p>
-     */
-    List<NodeRef> getCategories(final NodeRef categoryHeader);
+  /**
+   * Return all categories for each header
+   *
+   * <p><i>Headers and Categories are visible for every body, authenticated or not</i></p>
+   *
+   * @return A map with as key: all headers. As values: each categories in the key header.
+   */
+  Map<NodeRef, List<NodeRef>> getCategoriesByHeader();
 
-    /**
-     * Get the category with the given name. Null if not exists
-     */
-    NodeRef getCategory(String categoryName);
+  /**
+   * Return all interestgroup for a given category <b>visible for the current authenticated
+   * user</b>.
+   */
+  List<NodeRef> getInterestGroups(final NodeRef category);
 
-    /**
-     * Return all categories for each header
-     *
-     * <p><i>Headers and Categories are visible for every body, authenticated or not</i></p>
-     *
-     * @return A map with as key: all headers. As values: each categories in the key header.
-     */
-    Map<NodeRef, List<NodeRef>> getCategoriesByHeader();
+  /**
+   * Return all interestgroup for a given category <b>visible for the current authenticated
+   * user</b>. The list is sorted by Interst Group Visibility Mode (Public, Registred or Members)
+   *
+   * <p><i>All know Access Mode will be found in the keys, consequently the values can be empty
+   * lists but never null</i></p>
+   *
+   * @return A map with as key: all Interest group modes. As values: each interestgourp in the
+   * key mode.
+   */
+  Map<InterestGroupAccessMode, List<NodeRef>> getInterestGroupsByMode(
+    final NodeRef category
+  );
 
-    /**
-     * Return all interestgroup for a given category <b>visible for the current authenticated
-     * user</b>.
-     */
-    List<NodeRef> getInterestGroups(final NodeRef category);
+  /**
+   * Return all interestgroup services for a given interestgroup <b>visible for the current
+   * authenticated user</b>. The list is sorted by Interst Group Service (Information, Library,
+   * Newsgroup, Directory, ... )
+   *
+   * <p><i>The values will never be null, consequently all services may not appears in the
+   * keys</i></p>
+   *
+   * @return A map with as key: all Interest group services identifier. As values: the node
+   * reference of the service for the key.
+   */
+  Map<InterestGroupServices, NodeRef> getInterestGroupServices(
+    final NodeRef interestGroup
+  );
 
-    /**
-     * Return all interestgroup for a given category <b>visible for the current authenticated
-     * user</b>. The list is sorted by Interst Group Visibility Mode (Public, Registred or Members)
-     *
-     * <p><i>All know Access Mode will be found in the keys, consequently the values can be empty
-     * lists but never null</i></p>
-     *
-     * @return A map with as key: all Interest group modes. As values: each interestgourp in the
-     * key mode.
-     */
-    Map<InterestGroupAccessMode, List<NodeRef>> getInterestGroupsByMode(final NodeRef category);
+  /**
+   * Return true if the given node is a container (Space, Forum, Topic, ...)
+   */
+  boolean isContainer(final NodeRef ref);
 
-    /**
-     * Return all interestgroup services for a given interestgroup <b>visible for the current
-     * authenticated user</b>. The list is sorted by Interst Group Service (Information, Library,
-     * Newsgroup, Directory, ... )
-     *
-     * <p><i>The values will never be null, consequently all services may not appears in the
-     * keys</i></p>
-     *
-     * @return A map with as key: all Interest group services identifier. As values: the node
-     * reference of the service for the key.
-     */
-    Map<InterestGroupServices, NodeRef> getInterestGroupServices(final NodeRef interestGroup);
-
-    /**
-     * Return true if the given node is a container (Space, Forum, Topic, ...)
-     */
-    boolean isContainer(final NodeRef ref);
-
-    /**
-     * Return true if the given node is a content (Document, URL, ...)
-     */
-    boolean isContent(final NodeRef ref);
+  /**
+   * Return true if the given node is a content (Document, URL, ...)
+   */
+  boolean isContent(final NodeRef ref);
 }

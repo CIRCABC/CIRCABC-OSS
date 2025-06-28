@@ -2,11 +2,9 @@
   <label for="mimetype">{{ 'label.type' | transloco }}</label>
   <div class="custom-select select--form">
     <select id="mimetype" formControlName="mimetype">
-      <option
-        *ngFor="let mime of getAvailableMimetypes()"
-        value="{{ mime.mimetype }}"
-        >{{ mime.display }}</option
-      >
+      @for (mime of getAvailableMimetypes(); track mime.mimetype) {
+      <option value="{{ mime.mimetype }}">{{ mime.display }}</option>
+      }
     </select>
   </div>
 </div>

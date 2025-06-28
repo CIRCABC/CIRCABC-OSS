@@ -21,10 +21,9 @@ import eu.cec.digit.circabc.service.bulk.indexes.IndexRecord;
 import eu.cec.digit.circabc.service.bulk.indexes.message.ValidationMessage;
 import eu.cec.digit.circabc.service.bulk.indexes.message.ValidationMessageImpl;
 import eu.cec.digit.circabc.service.bulk.validation.ErrorType;
+import java.util.List;
 import org.alfresco.service.ServiceRegistry;
 import org.springframework.extensions.surf.util.I18NUtil;
-
-import java.util.List;
 
 /**
  * Migration 3.1 -> 3.4.6 - 02/12/2011 I18NUtil was moved to Spring. This class seems to be
@@ -32,57 +31,66 @@ import java.util.List;
  */
 public class StatusValidator extends AbstractIndexValidator {
 
-    private static final String ERROR_DESCRIPTION_1 = "bulk_upload_status_undefined";
-    private static final String ERROR_DESCRIPTION_2 = "bulk_upload_status_invalid";
+  private static final String ERROR_DESCRIPTION_1 =
+    "bulk_upload_status_undefined";
+  private static final String ERROR_DESCRIPTION_2 =
+    "bulk_upload_status_invalid";
 
-    public StatusValidator(final ServiceRegistry serviceRegistry) {
-        super(serviceRegistry);
-    }
+  public StatusValidator(final ServiceRegistry serviceRegistry) {
+    super(serviceRegistry);
+  }
 
-    public void validate(final IndexRecord indexRecord, final List<ValidationMessage> messages) {
-        boolean valid = false;
-        if (indexRecord.getStatus().length() == 0) {
-            if (indexRecord.getRelTrans() != null) {
-                // Traduction... no Status provided for a translation (not pivot)
-                // This is normal: Do nothing
-            } else {
-                // Set default value and raise a warning
-                indexRecord.setStatus(DocumentModel.STATUS_VALUES.get(0));
-                final String errorDescription = I18NUtil.getMessage(ERROR_DESCRIPTION_1);
-                final ValidationMessage validationMessage =
-                        new ValidationMessageImpl(
-                                indexRecord.getRowNumber(),
-                                indexRecord.getName(),
-                                errorDescription,
-                                ErrorType.Warning);
-                messages.add(validationMessage);
-            }
-        } else {
-        	//FIX by ALMO.
-        	//In the functional analysis, possible values are DRAFT, FINAL and RELEASED.
-        	//In the model we use "RELEASE" instead of "RELEASED".
-        	//To avoid updating all the model, if the user used RELEASED, we change the value to RELEASE
-        	if("RELEASED".contentEquals(indexRecord.getStatus())) {
-        		indexRecord.setStatus(DocumentModel.STATUS_VALUE_RELEASE);
-        		valid=true;
-        	} else {
-        			for (final String status : DocumentModel.STATUS_VALUES) {
-        				if (status.equals(indexRecord.getStatus())) {
-        					valid = true;
-        					break;
-        				}
-        			}
-            }
-            if (!valid) {
-                final String errorDescription = I18NUtil.getMessage(ERROR_DESCRIPTION_2);
-                final ValidationMessage validationMessage =
-                        new ValidationMessageImpl(
-                                indexRecord.getRowNumber(),
-                                indexRecord.getName(),
-                                errorDescription,
-                                ErrorType.Fatal);
-                messages.add(validationMessage);
-            }
+  public void validate(
+    final IndexRecord indexRecord,
+    final List<ValidationMessage> messages
+  ) {
+    boolean valid = false;
+    if (indexRecord.getStatus().length() == 0) {
+      if (indexRecord.getRelTrans() != null) {
+        // Traduction... no Status provided for a translation (not pivot)
+        // This is normal: Do nothing
+      } else {
+        // Set default value and raise a warning
+        indexRecord.setStatus(DocumentModel.STATUS_VALUES.get(0));
+        final String errorDescription = I18NUtil.getMessage(
+          ERROR_DESCRIPTION_1
+        );
+        final ValidationMessage validationMessage = new ValidationMessageImpl(
+          indexRecord.getRowNumber(),
+          indexRecord.getName(),
+          errorDescription,
+          ErrorType.Warning
+        );
+        messages.add(validationMessage);
+      }
+    } else {
+      //FIX by ALMO.
+      //In the functional analysis, possible values are DRAFT, FINAL and RELEASED.
+      //In the model we use "RELEASE" instead of "RELEASED".
+      //To avoid updating all the model, if the user used RELEASED, we change the value to RELEASE
+      if ("RELEASED".contentEquals(indexRecord.getStatus())) {
+        indexRecord.setStatus(DocumentModel.STATUS_VALUE_RELEASE);
+        valid = true;
+      } else {
+        for (final String status : DocumentModel.STATUS_VALUES) {
+          if (status.equals(indexRecord.getStatus())) {
+            valid = true;
+            break;
+          }
         }
+      }
+      if (!valid) {
+        final String errorDescription = I18NUtil.getMessage(
+          ERROR_DESCRIPTION_2
+        );
+        final ValidationMessage validationMessage = new ValidationMessageImpl(
+          indexRecord.getRowNumber(),
+          indexRecord.getName(),
+          errorDescription,
+          ErrorType.Fatal
+        );
+        messages.add(validationMessage);
+      }
     }
+  }
 }

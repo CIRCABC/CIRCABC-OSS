@@ -23,42 +23,42 @@ package eu.cec.digit.circabc.service.external.repositories;
  */
 public class PublishResponse {
 
-    private boolean success = true;
-    private String message = null;
+  private boolean success = true;
+  private String message = null;
 
-    /**
-     * Gets the value of the success
-     *
-     * @return the success
-     */
-    public boolean isSuccess() {
-        return success;
-    }
+  /**
+   * Gets the value of the success
+   *
+   * @return the success
+   */
+  public boolean isSuccess() {
+    return success;
+  }
 
-    /**
-     * Sets the value of the success
-     *
-     * @param success the success to set.
-     */
-    public void setSuccess(boolean success) {
-        this.success = success;
-    }
+  /**
+   * Sets the value of the success
+   *
+   * @param success the success to set.
+   */
+  public void setSuccess(boolean success) {
+    this.success = success;
+  }
 
-    /**
-     * Gets the value of the message
-     *
-     * @return the message
-     */
-    public String getMessage() {
-        return message;
-    }
+  /**
+   * Gets the value of the message
+   *
+   * @return the message
+   */
+  public String getMessage() {
+    return message;
+  }
 
-    /**
-     * Sets the value of the message
-     *
-     * @param message the message to set.
-     */
-    public void setMessage(String message) {
-        this.message = message;
-    }
+  /**
+   * Sets the value of the message
+   *
+   * @param message the message to set.
+   */
+  public void setMessage(String message) {
+    this.message = message;
+  }
 }

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Data, Router } from '@angular/router';
+import { ActivatedRoute, Data, Router, RouterLink } from '@angular/router';
 
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
@@ -15,18 +16,34 @@ import {
   NodesService,
 } from 'app/core/generated/circabc';
 import { LoginService } from 'app/core/login.service';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
+import { SetTitlePipe } from 'app/shared/pipes/set-title.pipe';
+import { ReponsiveSubMenuComponent } from 'app/shared/reponsive-sub-menu/reponsive-sub-menu.component';
 import { firstValueFrom } from 'rxjs';
+import { ForumBrowserComponent } from './browser/forum-browser.component';
+import { ConfigureForumServiceComponent } from './configure-forum-service/configure-forum-service.component';
+import { ForumDropdownComponent } from './dropdown/forum-dropdown.component';
 
 @Component({
   selector: 'cbc-forum',
   templateUrl: './forum.component.html',
   preserveWhitespaces: true,
+  imports: [
+    HorizontalLoaderComponent,
+    ReponsiveSubMenuComponent,
+    RouterLink,
+    ForumDropdownComponent,
+    ForumBrowserComponent,
+    ConfigureForumServiceComponent,
+    SetTitlePipe,
+    TranslocoModule,
+  ],
 })
 export class ForumComponent implements OnInit {
   public node!: ModelNode;
   public nodeId!: string;
   public groupId!: string;
-  public group!: InterestGroup;
+  public group?: InterestGroup;
   public loading = false;
   public showConfigurationModal = false;
   public groupConfiguration!: GroupConfiguration;
@@ -44,11 +61,11 @@ export class ForumComponent implements OnInit {
     this.route.data.subscribe(async (value: Data) => {
       this.group = value.group;
 
-      if (this.group.id) {
+      if (this.group?.id) {
         this.groupId = this.group.id;
       }
 
-      if (this.group.newsgroupId) {
+      if (this.group?.newsgroupId) {
         await this.getGroupConf();
       }
 
@@ -78,7 +95,7 @@ export class ForumComponent implements OnInit {
       result.result === ActionResult.SUCCEED &&
       result.type === ActionType.CREATE_FORUM
     ) {
-      if (result && result.node) {
+      if (result?.node) {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         this.router.navigate(['..', result.node.id], {
           relativeTo: this.route,
@@ -111,7 +128,7 @@ export class ForumComponent implements OnInit {
   }
 
   public isNewsgroupAdmin(): boolean {
-    if (this.group.permissions.newsgroup === 'NwsAdmin') {
+    if (this.group?.permissions.newsgroup === 'NwsAdmin') {
       return true;
     }
     return (
@@ -124,7 +141,7 @@ export class ForumComponent implements OnInit {
   }
 
   public isLibAdmin(): boolean {
-    if (this.group.permissions.library === 'LibAdmin') {
+    if (this.group?.permissions.library === 'LibAdmin') {
       return true;
     }
     return this.permEvalService.isLibAdmin(this.node);

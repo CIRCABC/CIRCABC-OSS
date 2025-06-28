@@ -1,0 +1,83 @@
+@use 'css/global/variables-mixins-keyframes';
+
+.searchBox {
+  color: grey;
+}
+
+.searchHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flexForm {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 5px;
+  gap: 15px;
+  flex: 1 1 300px;
+}
+
+::ng-deep cbc-lang-selector {
+  input,
+  .select--multiple,
+  .select--form select,
+  select,
+  .select--form {
+    width: 100% !important;
+    margin: 0;
+  }
+}
+
+input,
+.select--multiple,
+.select--form select,
+select,
+.select--form {
+  width: 100%;
+  margin: 0;
+}
+
+.custom-select .select--form {
+  width: 100%;
+}
+
+::ng-deep .flex {
+  span {
+    width: 100%;
+  }
+}
+
+.flexGroupField {
+  flex: 1 1 400px;
+}
+
+.flexField {
+  padding-bottom: 15px;
+}
+
+.save-as-box {
+  display: flex;
+  flex-wrap: wrap;
+
+  .save-as-form {
+    flex: 1 1 300px;
+  }
+
+  .save-as-buttons {
+    margin-top: 20px;
+    margin-left: 10px;
+  }
+}
+
+.custom-buttons-group {
+  display: flex;
+  margin-top: 20px;
+
+  .button,
+  .cta {
+    width: unset;
+    flex: 1 1 148px;
+    max-width: 150px;
+  }
+}

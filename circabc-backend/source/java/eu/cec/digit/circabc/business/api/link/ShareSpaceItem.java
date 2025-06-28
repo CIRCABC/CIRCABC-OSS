@@ -21,35 +21,32 @@
 package eu.cec.digit.circabc.business.api.link;
 
 import eu.cec.digit.circabc.business.acl.AclAwareWrapper;
-import org.alfresco.service.cmr.repository.NodeRef;
-
 import java.io.Serializable;
-
+import org.alfresco.service.cmr.repository.NodeRef;
 
 /**
  * @author Slobodan Filipovic
  */
 public final class ShareSpaceItem implements Serializable, AclAwareWrapper {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 4555015582693128592L;
+  /**
+   *
+   */
+  private static final long serialVersionUID = 4555015582693128592L;
 
-    private NodeRef id;
-    private String path;
+  private NodeRef id;
+  private String path;
 
+  public ShareSpaceItem(NodeRef id, String path) {
+    this.id = id;
+    this.path = path;
+  }
 
-    public ShareSpaceItem(NodeRef id, String path) {
-        this.id = id;
-        this.path = path;
-    }
+  public NodeRef getNodeRef() {
+    return id;
+  }
 
-    public NodeRef getNodeRef() {
-        return id;
-    }
-
-    public String getPath() {
-        return path;
-    }
+  public String getPath() {
+    return path;
+  }
 }

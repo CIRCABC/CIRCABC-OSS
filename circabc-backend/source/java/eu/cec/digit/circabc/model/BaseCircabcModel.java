@@ -21,9 +21,8 @@
 package eu.cec.digit.circabc.model;
 
 public interface BaseCircabcModel {
-
-    /**
-     * Circabc name space definition
-     */
-    String CIRCABC_NAMESPACE = "http://www.cc.cec/circabc";
+  /**
+   * Circabc name space definition
+   */
+  String CIRCABC_NAMESPACE = "http://www.cc.cec/circabc";
 }

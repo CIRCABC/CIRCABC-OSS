@@ -1,21 +1,35 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ActionEmitterResult, ActionResult } from 'app/action-result';
 import {
   InterestGroup,
   InterestGroupService,
   Node as ModelNode,
 } from 'app/core/generated/circabc';
+import { InlineDeleteComponent } from 'app/shared/delete/inline-delete.component';
+import { DownloadPipe } from 'app/shared/pipes/download.pipe';
+import { SecurePipe } from 'app/shared/pipes/secure.pipe';
+import { SetTitlePipe } from 'app/shared/pipes/set-title.pipe';
 import { firstValueFrom } from 'rxjs';
+import { AddGroupLogoComponent } from './add-group-logo/add-group-logo.component';
 
 @Component({
   selector: 'cbc-logos',
   templateUrl: './logos.component.html',
-  styleUrls: ['./logos.component.scss'],
+  styleUrl: './logos.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    InlineDeleteComponent,
+    AddGroupLogoComponent,
+    DownloadPipe,
+    SecurePipe,
+    SetTitlePipe,
+    TranslocoModule,
+  ],
 })
 export class LogosComponent implements OnInit {
-  public group!: InterestGroup;
+  public group?: InterestGroup;
   public logos: ModelNode[] = [];
   public showUploadModal = false;
 
@@ -75,7 +89,7 @@ export class LogosComponent implements OnInit {
   }
 
   public async refresh(res: ActionEmitterResult) {
-    if (res.result === ActionResult.SUCCEED && this.group.id) {
+    if (res.result === ActionResult.SUCCEED && this.group?.id) {
       await this.loadGroup(this.group.id);
     }
     this.showUploadModal = false;

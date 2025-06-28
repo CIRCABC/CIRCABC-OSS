@@ -1,7 +1,6 @@
 package io.swagger.model;
 
 import eu.cec.digit.circabc.web.wai.dialog.notification.NotificationWrapper;
-
 import java.util.List;
 
 /**
@@ -12,26 +11,29 @@ import java.util.List;
  */
 public class PagedNotificationConfigurations {
 
-    private List<NotificationWrapper> data;
-    private long total;
+  private List<NotificationWrapper> data;
+  private long total;
 
-    public PagedNotificationConfigurations(List<NotificationWrapper> data, long total) {
-        super();
-        this.data = data;
-        this.total = total;
-    }
+  public PagedNotificationConfigurations(
+    List<NotificationWrapper> data,
+    long total
+  ) {
+    super();
+    this.data = data;
+    this.total = total;
+  }
 
-    /**
-     * @return the data
-     */
-    public List<NotificationWrapper> getData() {
-        return data;
-    }
+  /**
+   * @return the data
+   */
+  public List<NotificationWrapper> getData() {
+    return data;
+  }
 
-    /**
-     * @return the total
-     */
-    public long getTotal() {
-        return total;
-    }
+  /**
+   * @return the total
+   */
+  public long getTotal() {
+    return total;
+  }
 }

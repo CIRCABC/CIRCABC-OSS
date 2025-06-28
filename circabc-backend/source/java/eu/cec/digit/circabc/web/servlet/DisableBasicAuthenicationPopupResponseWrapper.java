@@ -4,17 +4,18 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
 public class DisableBasicAuthenicationPopupResponseWrapper
-        extends HttpServletResponseWrapper {
+  extends HttpServletResponseWrapper {
 
-    public DisableBasicAuthenicationPopupResponseWrapper(HttpServletResponse response) {
-        super(response);
+  public DisableBasicAuthenicationPopupResponseWrapper(
+    HttpServletResponse response
+  ) {
+    super(response);
+  }
+
+  @Override
+  public void setHeader(String name, String value) {
+    if (!name.equalsIgnoreCase("WWW-Authenticate")) {
+      super.setHeader(name, value);
     }
-
-    @Override
-    public void setHeader(String name, String value) {
-        if (!name.equalsIgnoreCase("WWW-Authenticate")) {
-            super.setHeader(name, value);
-        }
-    }
-
+  }
 }

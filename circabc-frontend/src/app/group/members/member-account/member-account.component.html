@@ -1,7 +1,9 @@
-<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+@if (loading) {
+<cbc-horizontal-loader />
+}
 <div class="wrap page-container">
   <div class="page-header">
-    <a (click)="goBack()" class="page-header__backlink backlink"
+    <a tabindex="0" (click)="goBack()" class="page-header__backlink backlink"
       >{{ 'label.back' | transloco }}</a
     >
     <span

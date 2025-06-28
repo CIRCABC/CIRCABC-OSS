@@ -1,18 +1,21 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input, output } from '@angular/core';
+import { TranslocoModule } from '@jsverse/transloco';
+import { ModalComponent } from 'app/shared/modal/modal.component';
 
 @Component({
   selector: 'cbc-cancel-checkout',
   templateUrl: './cancel-checkout.component.html',
-  styleUrls: ['./cancel-checkout.component.scss'],
+  styleUrl: './cancel-checkout.component.scss',
   preserveWhitespaces: true,
+  imports: [ModalComponent, TranslocoModule],
 })
 export class CancelCheckoutComponent {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   public showModal = false;
-  @Output()
-  public readonly modalHide = new EventEmitter();
-  @Output()
-  public readonly checkoutCanceled = new EventEmitter();
+  public readonly modalHide = output();
+  public readonly checkoutCanceled = output();
 
   public closePopupWindow(): void {
     this.showModal = false;

@@ -1,6 +1,7 @@
+@if (circabcRelease !== 'echa') {
 <div class="wrap">
   <div class="logo">
-    <img src="img/logo-blue.png" />
+    <img src="img/logo-blue.png" alt="CIRCABC Logo" />
   </div>
 
   <h1>{{ 'label.about' | transloco }}</h1>
@@ -40,9 +41,10 @@
       multilingual and multi-format content (any file/document), with version
       control;
     </li>
-    <li></li>
-    high level of security, as the system uses the HTTPS protocol to guarantee
-    confidential data transfer;
+    <li>
+      high level of security, as the system uses the HTTPS protocol to guarantee
+      confidential data transfer;
+    </li>
     <li>
       secured access by EU Login, the European Commission’s Authentication
       Service;
@@ -124,8 +126,157 @@
   </ul>
 
   <h2>Source code</h2>
-  <p
-    >CIRCBAC is available as Open Source software. The code is hosted on
-    GitHub</p
-  >
+  <p>
+    CIRCBAC is available as Open Source software. The code is hosted on GitHub
+  </p>
 </div>
+} @if (circabcRelease === 'echa') {
+<div class="wrap">
+  <div class="logo">
+    <img src="img/s-circabcLogo-blue.svg" width="200px" alt="S-CIRCABC Logo" />
+  </div>
+
+  <h1>{{ 'label.about.scircabc' | transloco }}</h1>
+
+  <p>
+    S-CIRCABC (Secured, Collaborative and Information Resources Centre for
+    Administration, Businesses and Citizens) provides a web-based application,
+    which enables geographically spread collaborative groups to share documents,
+    information, and resources in private workspaces.
+  </p>
+  <p>
+    S-CIRCABC is accessible to any user inside or outside of the European
+    Institutions. Businesses; international, national or local administrations;
+    and associations of citizens can access and use S-CIRCABC.
+  </p>
+
+  <h2>The platform</h2>
+
+  <p>
+    S-CIRCABC was launched January 2006 by the European Commission and funded by
+    the European Union via the Interoperability solutions for public
+    administrations, businesses and citizens (ISA²) Programme. Thanks to this
+    service, you will be able to share documents with colleagues working in the
+    European Union Institutions and with third parties collaborators.
+  </p>
+
+  <p>
+    The provided platform is divided into categories and interest groups,
+    allowing people to manage content, users and communications in a more
+    organised way.
+  </p>
+
+  <p>It offers functionalities such as:</p>
+
+  <ul>
+    <li>
+      multilingual and multi-format content (any file/document), with version
+      control;
+    </li>
+    <li>
+      high level of security, as the system is hosted in the Secured Hosting
+      Services provided by the DIGIT Datacenter featuring:<br />
+      - encryption of the data at rest (File systems and Databases)<br />
+      - encryption of the communication via uses the HTTPS protocol to guarantee
+      confidential data transfer;
+    </li>
+    <li>
+      secured access by
+      <a href="https://digit-itservices.prd.fpfis.tech.ec.europa.eu/eu-login_en"
+        >EU Login</a
+      >, 2-factor authentication, the European Commission’s Authentication
+      Service;
+    </li>
+    <li>high-availability environment;</li>
+    <li>
+      fine-grained access management, depending on the user’s access profile;
+    </li>
+    <li>sharing of users and information between different workspaces;</li>
+    <li>translation management, multilingual search;</li>
+    <li>scheduling events and meetings;</li>
+    <li>discussion forums;</li>
+  </ul>
+
+  <p>
+    S-CIRCABC can be used to exchange up to Sensitive Non Classified (SNC)
+    documents, provided that the handling rules described in the ‘Security
+    Notice Marking and handling of sensitive non-classified information’ are
+    applied.
+    <a
+      href="https://ec.europa.eu/transparency/documents-register/detail?ref=C(2019)1904&lang=en"
+      >C(2019)1904</a
+    >
+  </p>
+
+  <h2>Can you speak S-CIRCABC?</h2>
+
+  <p>
+    The application is divided into Categories and Interest Groups, allowing
+    people in those groups to share information and resources.
+  </p>
+  <p>
+    S-CIRCABC calls an INTEREST GROUP (IG) the private workspace shared by a
+    community of users and a CATEGORY is a set of Interest Groups. Some Interest
+    Groups may be entirely or partly public (no authentication required). Others
+    can be entered by any logged-in user ("registered access"). Others are
+    reserved for their members.
+  </p>
+
+  <p>
+    An Interest Group is characterized by a group of users (potentially
+    unlimited), a set of services (Information, Library, Members, Events,
+    Forums, etc.) and a series of contents.
+  </p>
+
+  <p>
+    Users may be granted more or less rights depending on their access profile.
+  </p>
+  <h2>What is set of services included?</h2>
+
+  <ul>
+    <li>
+      <strong>Information service :</strong><br />
+      This functionality allows you to publish articles, news and any kind of
+      information within your group.
+    </li>
+    <li>
+      <strong> Library service : </strong><br />
+      This functionality allows you to upload, share and manage documents in a
+      folders-structured way. S-CIRCABC allows for multilingual and multi-format
+      content (any file/document), with version control and automated
+      translation.
+    </li>
+    <li>
+      <strong> Members : </strong><br />
+      This functionality allows you to manage the members of your group and
+      classify them into profiles with specific customisable access rights.
+    </li>
+    <li>
+      <strong> Agenda/Meeting : </strong><br />
+      This functionality provides you a group calendar, allowing the
+      organization of meetings (with audience) or events and to directly link
+      documents from the Library.
+    </li>
+    <li>
+      <strong> Forums : </strong><br />
+      This functionality provides you with discussion fora, allowing the free
+      and easy exchange of ideas between the members of the group.
+    </li>
+
+    <li>
+      <strong> Administration : </strong><br />
+      This functionality provides Administrator use to manage the Interest
+      Group. Security : The system provides a very fine-grained permission
+      mechanism allowing a flexible group security management (e.g. visibility
+      of the group, access rights for ‘Profiles’, ‘Members’, per service,
+      folder, or file)
+    </li>
+  </ul>
+
+  <h2>Source code</h2>
+  <p>
+    S-CIRCBAC is available as Open Source software. The code is hosted on
+    <a href="https://github.com/CIRCABC/Circabc-OSS">GitHub</a>
+  </p>
+</div>
+}

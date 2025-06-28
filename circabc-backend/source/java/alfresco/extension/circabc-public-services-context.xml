@@ -1,11 +1,12 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version='1.0' encoding='UTF-8' ?>
 <!--+ | Copyright European Community 2006 - Licensed under the EUPL V.1.0 
 	| | http://ec.europa.eu/idabc/en/document/6523 | + -->
-<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
-
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN'
+  'http://www.springframework.org/dtd/spring-beans.dtd'>
 <beans>
 	<import
-		resource="classpath:alfresco/extension/circabc-public-services-security-context.xml" />
+    resource="classpath:alfresco/extension/circabc-public-services-security-context.xml"
+  />
 
 	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 	<!-- You specify here Spring beans related to CIRCABC -->
@@ -16,15 +17,20 @@
 
 	<!-- Exception Translation -->
 	<!-- WorkArround for bug DIGIT-CIRCABC-1465 -->
-	<bean id="exceptionTranslator"
-		class="org.alfresco.repo.security.permissions.impl.ExceptionTranslatorMethodInterceptor" />
+	<bean
+    id="exceptionTranslator"
+    class="org.alfresco.repo.security.permissions.impl.ExceptionTranslatorMethodInterceptor"
+  />
 
 
 	<!-- Descriptor Service -->
 
 
 	<!-- AuditMethodInterceptor -->
-	<bean id="AuditMethodInterceptor" class="org.alfresco.repo.audit.AuditMethodInterceptor">
+	<bean
+    id="AuditMethodInterceptor"
+    class="org.alfresco.repo.audit.AuditMethodInterceptor"
+  >
 		<property name="beanIdentifier">
 			<ref bean="beanIdentifier" />
 		</property>
@@ -129,7 +135,10 @@
 
 	<!-- MultilingualContentService -->
 	<!-- WorkArround for bug DIGIT-CIRCABC-1465 -->
-	<bean id="MultilingualContentService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="MultilingualContentService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>org.alfresco.service.cmr.ml.MultilingualContentService</value>
 		</property>
@@ -145,8 +154,10 @@
 		</property>
 	</bean>
 
-	<bean id="MultilingualContentService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="MultilingualContentService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -180,13 +191,15 @@
 	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 
 	<!-- Bean in charge of notifying Circabc users -->
-	<bean id="circabcNotificationService"
-		class="eu.cec.digit.circabc.repo.notification.NotificationServiceImpl">
+	<bean
+    id="circabcNotificationService"
+    class="eu.cec.digit.circabc.repo.notification.NotificationServiceImpl"
+  >
 		<property name="nodeService">
 			<ref bean="nodeService" />
 		</property>
 		<property name="mailService">
-			<ref bean="circabcMailService"></ref>
+			<ref bean="circabcMailService" />
 		</property>
 		<property name="dictionaryService">
 			<ref bean="dictionaryService" />
@@ -195,7 +208,7 @@
 			<ref bean="mailPreferencesService" />
 		</property>
 		<property name="managementService">
-			<ref bean="managementService"></ref>
+			<ref bean="managementService" />
 		</property>
 		<property name="logService">
 			<ref bean="logService" />
@@ -207,15 +220,18 @@
 			<ref bean="personService" />
 		</property>
 		<property name="authenticationService">
-			<ref bean="authenticationService"/>
+			<ref bean="authenticationService" />
 		</property>
 		<property name="dynamicPropertyService">
-			<ref bean="dynamicPropertiesService"/>
+			<ref bean="dynamicPropertiesService" />
 		</property>
 	</bean>
 
 	<!-- Proxied NotificationService -->
-	<bean id="CircabcNotificationService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="CircabcNotificationService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.notification.NotificationService
@@ -234,8 +250,10 @@
 	</bean>
 
 	<!-- Transaction interceptor for NotificationService -->
-	<bean id="CircabcNotificationService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="CircabcNotificationService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -248,8 +266,10 @@
 	</bean>
 
 	<!-- Bean in charge of notification subscription -->
-	<bean id="notificationSubscriptionService"
-		class="eu.cec.digit.circabc.repo.notification.NotificationSubscriptionServiceImpl">
+	<bean
+    id="notificationSubscriptionService"
+    class="eu.cec.digit.circabc.repo.notification.NotificationSubscriptionServiceImpl"
+  >
 		<property name="nodeService">
 			<ref bean="nodeService" />
 		</property>
@@ -277,7 +297,10 @@
 	</bean>
 
 	<!-- Proxied NotificationService -->
-	<bean id="NotificationSubscriptionService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="NotificationSubscriptionService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.notification.NotificationSubscriptionService
@@ -296,8 +319,10 @@
 	</bean>
 
 	<!-- Transaction interceptor for NotificationService -->
-	<bean id="NotificationSubscriptionService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="NotificationSubscriptionService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -312,15 +337,20 @@
 
 	<!-- Bean in charge of enabling or disabling notifying Circabc users on 
 		moving and copying nodes -->
-	<bean id="notificationManagerService"
-		class="eu.cec.digit.circabc.repo.notification.NotificationManagerServiceImpl">
+	<bean
+    id="notificationManagerService"
+    class="eu.cec.digit.circabc.repo.notification.NotificationManagerServiceImpl"
+  >
 		<property name="nodeService">
 			<ref bean="nodeService" />
 		</property>
 	</bean>
 
 	<!-- Proxied NotificationService -->
-	<bean id="NotificationManagerService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="NotificationManagerService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.notification.NotificationManagerService
@@ -339,8 +369,10 @@
 	</bean>
 
 	<!-- Transaction interceptor for NotificationManagerService -->
-	<bean id="NotificationManagerService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="NotificationManagerService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -353,12 +385,17 @@
 	</bean>
 
 	<!-- CircabcServiceRegistry -->
-	<bean id="circabcServiceRegistry" class="eu.cec.digit.circabc.service.CircabcServiceDescriptor" />
+	<bean
+    id="circabcServiceRegistry"
+    class="eu.cec.digit.circabc.service.CircabcServiceDescriptor"
+  />
 
 	<bean id="circabcConfig" class="eu.cec.digit.circabc.CircabcConfig" />
 
-	<bean id="circabcRenditionHelper"
-		class="eu.cec.digit.circabc.service.rendition.CircabcRenditionHelper">
+	<bean
+    id="circabcRenditionHelper"
+    class="eu.cec.digit.circabc.service.rendition.CircabcRenditionHelper"
+  >
 		<property name="renditionService">
 			<ref bean="renditionService" />
 		</property>
@@ -410,11 +447,11 @@
 		</property>
 		<property name="ldapUserService">
 			<ref
-				bean="#{circabcConfig.ENT == true ? 'ldapUserService' : 'luceneUserService'}" />
+        bean="#{circabcConfig.USE_LDAP == true ? 'ldapUserService' : 'luceneUserService'}"
+      />
 		</property>
 		<property name="luceneUserService">
-			<ref
-				bean="luceneUserService" />
+			<ref bean="luceneUserService" />
 		</property>
 		<!-- ticketComponent - can be removed when Alfresco will implement authenticationService.getUsersWithTickets -->
 		<property name="ticketComponent">
@@ -424,7 +461,7 @@
 			<ref bean="ownableService" />
 		</property>
 		<property name="redirectUrlAfterLogout">
-			<value>${redirerect.url.after.logout}</value>
+			<value>${redirect.url.after.logout}</value>
 		</property>
 		<property name="circabcService">
 			<ref bean="circabcService" />
@@ -432,7 +469,10 @@
 	</bean>
 
 	<!-- Proxied UserService -->
-	<bean id="UserService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="UserService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.user.UserService
@@ -452,8 +492,10 @@
 	</bean>
 
 	<!-- Transaction interceptor for UserService -->
-	<bean id="UserService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="UserService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -467,17 +509,23 @@
 
 	<!-- Bean in charge of loading ECAS Domains from LDAP -->
 
-	<bean id="ldapEcasDomainService"
-		class="eu.cec.digit.circabc.repo.user.LdapEcasDomainServiceImpl"
-		init-method="init">
+	<bean
+    id="ldapEcasDomainService"
+    class="eu.cec.digit.circabc.repo.user.LdapEcasDomainServiceImpl"
+    init-method="init"
+  >
 		<property name="ldapECASDomainsCache">
 			<ref bean="ldapEcasDomainServiceCache" />
 		</property>
 	</bean>
 
 	<!-- Bean in charge of managing Circabc users over LDAP -->
-	<bean id="ldapUserService" class="eu.cec.digit.circabc.repo.user.LdapUserServiceImpl"
-		init-method="init" depends-on="ldapEcasDomainService">
+	<bean
+    id="ldapUserService"
+    class="eu.cec.digit.circabc.repo.user.LdapUserServiceImpl"
+    init-method="init"
+    depends-on="ldapEcasDomainService"
+  >
 		<property name="profileManagerServiceFactory">
 			<ref bean="profileManagerServiceFactory" />
 		</property>
@@ -487,14 +535,19 @@
 	</bean>
 
 	<!-- Proxied LdapUserService -->
-	<bean id="LdapUserService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="LdapUserService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.user.LdapUserService
 			</value>
 		</property>
 		<property name="target">
-			<ref bean="ldapUserService" />
+			<ref
+        bean="#{circabcConfig.USE_LDAP == true ? 'ldapUserService' : 'luceneUserService'}"
+      />
 		</property>
 		<property name="interceptorNames">
 			<list>
@@ -506,8 +559,10 @@
 	</bean>
 
 	<!-- Transaction interceptor for LdapUserService -->
-	<bean id="LdapUserService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="LdapUserService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -520,8 +575,11 @@
 	</bean>
 
 	<!-- Bean in charge of managing Circabc users over LDAP -->
-	<bean id="luceneUserService" class="eu.cec.digit.circabc.repo.user.LuceneUserServiceImpl"
-		init-method="init">
+	<bean
+    id="luceneUserService"
+    class="eu.cec.digit.circabc.repo.user.LuceneUserServiceImpl"
+    init-method="init"
+  >
 		<property name="profileManagerServiceFactory">
 			<ref bean="profileManagerServiceFactory" />
 		</property>
@@ -537,7 +595,10 @@
 	</bean>
 
 	<!-- Proxied LdapUserService -->
-	<bean id="LuceneUserService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="LuceneUserService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.user.LdapUserService
@@ -556,8 +617,10 @@
 	</bean>
 
 	<!-- Transaction interceptor for LdapUserService -->
-	<bean id="LuceneUserService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="LuceneUserService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -571,7 +634,10 @@
 
 
 	<!-- Bean in charge of managing Circabc keywords -->
-	<bean id="keywordsService" class="eu.cec.digit.circabc.repo.keywords.KeywordsServiceImpl">
+	<bean
+    id="keywordsService"
+    class="eu.cec.digit.circabc.repo.keywords.KeywordsServiceImpl"
+  >
 		<property name="nodeService">
 			<ref bean="nodeService" />
 		</property>
@@ -590,7 +656,10 @@
 	</bean>
 
 	<!-- Proxied keywordService -->
-	<bean id="KeywordsService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="KeywordsService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.keyword.KeywordsService
@@ -609,8 +678,10 @@
 	</bean>
 
 	<!-- Transaction interceptor for KeywordService -->
-	<bean id="KeywordsService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="KeywordsService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -623,7 +694,10 @@
 	</bean>
 
 	<!-- Bean in charge of managing Circabc events -->
-	<bean id="eventService" class="eu.cec.digit.circabc.repo.event.EventServiceImpl">
+	<bean
+    id="eventService"
+    class="eu.cec.digit.circabc.repo.event.EventServiceImpl"
+  >
 		<property name="nodeService">
 			<ref bean="nodeService" />
 		</property>
@@ -661,7 +735,10 @@
 
 
 	<!-- Proxied event Service -->
-	<bean id="EventService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="EventService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.event.EventService
@@ -680,8 +757,10 @@
 	</bean>
 
 	<!-- Transaction interceptor for EventService -->
-	<bean id="EventService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="EventService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -695,8 +774,10 @@
 
 	<!-- Bean in charge of managing Circabc shared spaces -->
 
-	<bean id="shareSpaceService"
-		class="eu.cec.digit.circabc.repo.sharespace.ShareSpaceServiceImpl">
+	<bean
+    id="shareSpaceService"
+    class="eu.cec.digit.circabc.repo.sharespace.ShareSpaceServiceImpl"
+  >
 		<property name="nodeService">
 			<ref bean="nodeService" />
 		</property>
@@ -723,7 +804,10 @@
 
 
 	<!-- Proxied event Service -->
-	<bean id="ShareSpaceService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="ShareSpaceService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.sharespace.ShareSpaceService
@@ -742,8 +826,10 @@
 	</bean>
 
 	<!-- Transaction interceptor for EventService -->
-	<bean id="ShareSpaceService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="ShareSpaceService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -756,7 +842,10 @@
 	</bean>
 
 	<!-- Load the Logger Action Messages -->
-	<bean id="mailwithattach-messages" class="org.alfresco.i18n.ResourceBundleBootstrapComponent">
+	<bean
+    id="mailwithattach-messages"
+    class="org.alfresco.i18n.ResourceBundleBootstrapComponent"
+  >
 		<property name="resourceBundles">
 			<list>
 				<value>alfresco.extension.messages.action-config</value>
@@ -765,7 +854,10 @@
 	</bean>
 
 	<!-- Load the notification messages -->
-	<bean id="notification-messages" class="org.alfresco.i18n.ResourceBundleBootstrapComponent">
+	<bean
+    id="notification-messages"
+    class="org.alfresco.i18n.ResourceBundleBootstrapComponent"
+  >
 		<property name="resourceBundles">
 			<list>
 				<value>alfresco.extension.messages.notification</value>
@@ -774,7 +866,10 @@
 	</bean>
 
 	<!-- Load the bulk upload Messages -->
-	<bean id="bulk-upload-messages" class="org.alfresco.i18n.ResourceBundleBootstrapComponent">
+	<bean
+    id="bulk-upload-messages"
+    class="org.alfresco.i18n.ResourceBundleBootstrapComponent"
+  >
 		<property name="resourceBundles">
 			<list>
 				<value>alfresco.extension.messages.bulk-upload</value>
@@ -782,16 +877,20 @@
 		</property>
 	</bean>
 
-	<bean id="profileManagerServiceFactory"
-		class="eu.cec.digit.circabc.service.profile.ProfileManagerServiceFactory">
+	<bean
+    id="profileManagerServiceFactory"
+    class="eu.cec.digit.circabc.service.profile.ProfileManagerServiceFactory"
+  >
 		<property name="nodeService">
 			<ref bean="nodeService" />
 		</property>
 		<property name="secure" value="false" />
 	</bean>
 
-	<bean id="ProfileManagerServiceFactory"
-		class="eu.cec.digit.circabc.service.profile.ProfileManagerServiceFactory">
+	<bean
+    id="ProfileManagerServiceFactory"
+    class="eu.cec.digit.circabc.service.profile.ProfileManagerServiceFactory"
+  >
 		<property name="nodeService">
 			<ref bean="NodeService" />
 		</property>
@@ -799,8 +898,11 @@
 	</bean>
 
 	<!-- Common beans for XXXProfileManagerService -->
-	<bean id="profileManagerServiceAbstract" abstract="true"
-		class="eu.cec.digit.circabc.service.profile.ProfileManagerService">
+	<bean
+    id="profileManagerServiceAbstract"
+    abstract="true"
+    class="eu.cec.digit.circabc.service.profile.ProfileManagerService"
+  >
 		<property name="profileManagerServiceFactory">
 			<ref bean="profileManagerServiceFactory" />
 		</property>
@@ -834,14 +936,16 @@
 		<property name="invitedUsersCache">
 			<ref bean="invitedUsersCache" />
 		</property>
-		<property name="circabcDynamicAuthorityCache">
+		<!-- property name="circabcDynamicAuthorityCache">
 			<ref bean="circabcDynamicAuthorityMethodCache" />
-		</property>
+		</property -->
 	</bean>
 
 	<!-- CircabcRootProfileManagerService Service -->
-	<bean id="CircabcRootProfileManagerService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="CircabcRootProfileManagerService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -861,11 +965,16 @@
 		</property>
 	</bean>
 
-	<bean id="circabcRootProfileManagerService"
-		class="eu.cec.digit.circabc.repo.profile.root.CircabcRootProfileManagerServiceImpl"
-		parent="profileManagerServiceAbstract" />
+	<bean
+    id="circabcRootProfileManagerService"
+    class="eu.cec.digit.circabc.repo.profile.root.CircabcRootProfileManagerServiceImpl"
+    parent="profileManagerServiceAbstract"
+  />
 
-	<bean id="CircabcRootProfileManagerService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="CircabcRootProfileManagerService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService
@@ -887,8 +996,10 @@
 	</bean>
 
 	<!-- CategoryProfileManagerService Service -->
-	<bean id="CategoryProfileManagerService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="CategoryProfileManagerService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -908,11 +1019,16 @@
 		</property>
 	</bean>
 
-	<bean id="categoryProfileManagerService"
-		class="eu.cec.digit.circabc.repo.profile.category.CategoryProfileManagerServiceImpl"
-		parent="profileManagerServiceAbstract" />
+	<bean
+    id="categoryProfileManagerService"
+    class="eu.cec.digit.circabc.repo.profile.category.CategoryProfileManagerServiceImpl"
+    parent="profileManagerServiceAbstract"
+  />
 
-	<bean id="CategoryProfileManagerService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="CategoryProfileManagerService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.profile.CategoryProfileManagerService
@@ -935,8 +1051,10 @@
 	</bean>
 
 	<!-- IGRootProfileManagerService Service -->
-	<bean id="IGRootProfileManagerService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="IGRootProfileManagerService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -956,11 +1074,16 @@
 		</property>
 	</bean>
 
-	<bean id="igRootProfileManagerService"
-		class="eu.cec.digit.circabc.repo.profile.interestGroup.IGRootProfileManagerServiceImpl"
-		parent="profileManagerServiceAbstract" />
+	<bean
+    id="igRootProfileManagerService"
+    class="eu.cec.digit.circabc.repo.profile.interestGroup.IGRootProfileManagerServiceImpl"
+    parent="profileManagerServiceAbstract"
+  />
 
-	<bean id="IGRootProfileManagerService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="IGRootProfileManagerService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.profile.IGRootProfileManagerService
@@ -983,8 +1106,10 @@
 	</bean>
 
 	<!-- LibraryProfileManagerService Service -->
-	<bean id="LibraryProfileManagerService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="LibraryProfileManagerService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -1004,11 +1129,16 @@
 		</property>
 	</bean>
 
-	<bean id="libraryProfileManagerService"
-		class="eu.cec.digit.circabc.repo.profile.library.LibraryProfileManagerServiceImpl"
-		parent="profileManagerServiceAbstract" />
+	<bean
+    id="libraryProfileManagerService"
+    class="eu.cec.digit.circabc.repo.profile.library.LibraryProfileManagerServiceImpl"
+    parent="profileManagerServiceAbstract"
+  />
 
-	<bean id="LibraryProfileManagerService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="LibraryProfileManagerService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.profile.LibraryProfileManagerService
@@ -1030,8 +1160,10 @@
 	</bean>
 
 	<!-- NewsGroupProfileManagerService Service -->
-	<bean id="NewsGroupProfileManagerService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="NewsGroupProfileManagerService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -1051,11 +1183,16 @@
 		</property>
 	</bean>
 
-	<bean id="newsGroupProfileManagerService"
-		class="eu.cec.digit.circabc.repo.profile.newsgroup.NewsGroupProfileManagerServiceImpl"
-		parent="profileManagerServiceAbstract" />
+	<bean
+    id="newsGroupProfileManagerService"
+    class="eu.cec.digit.circabc.repo.profile.newsgroup.NewsGroupProfileManagerServiceImpl"
+    parent="profileManagerServiceAbstract"
+  />
 
-	<bean id="NewsGroupProfileManagerService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="NewsGroupProfileManagerService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.profile.NewsGroupProfileManagerService
@@ -1077,8 +1214,10 @@
 	</bean>
 
 	<!-- SurveyProfileManagerService Service -->
-	<bean id="SurveyProfileManagerService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="SurveyProfileManagerService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -1098,11 +1237,16 @@
 		</property>
 	</bean>
 
-	<bean id="surveyProfileManagerService"
-		class="eu.cec.digit.circabc.repo.profile.survey.SurveyProfileManagerServiceImpl"
-		parent="profileManagerServiceAbstract" />
+	<bean
+    id="surveyProfileManagerService"
+    class="eu.cec.digit.circabc.repo.profile.survey.SurveyProfileManagerServiceImpl"
+    parent="profileManagerServiceAbstract"
+  />
 
-	<bean id="SurveyProfileManagerService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="SurveyProfileManagerService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.profile.SurveyProfileManagerService
@@ -1124,8 +1268,10 @@
 	</bean>
 
 	<!-- InformationProfileManagerService Service -->
-	<bean id="InformationProfileManagerService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="InformationProfileManagerService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -1145,11 +1291,16 @@
 		</property>
 	</bean>
 
-	<bean id="informationProfileManagerService"
-		class="eu.cec.digit.circabc.repo.profile.inf.InformationProfileManagerServiceImpl"
-		parent="profileManagerServiceAbstract" />
+	<bean
+    id="informationProfileManagerService"
+    class="eu.cec.digit.circabc.repo.profile.inf.InformationProfileManagerServiceImpl"
+    parent="profileManagerServiceAbstract"
+  />
 
-	<bean id="InformationProfileManagerService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="InformationProfileManagerService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.profile.InformationProfileManagerService
@@ -1171,8 +1322,10 @@
 	</bean>
 
 	<!-- EventProfileManagerService Service -->
-	<bean id="EventProfileManagerService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="EventProfileManagerService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -1192,11 +1345,16 @@
 		</property>
 	</bean>
 
-	<bean id="eventProfileManagerService"
-		class="eu.cec.digit.circabc.repo.profile.event.EventProfileManagerServiceImpl"
-		parent="profileManagerServiceAbstract" />
+	<bean
+    id="eventProfileManagerService"
+    class="eu.cec.digit.circabc.repo.profile.event.EventProfileManagerServiceImpl"
+    parent="profileManagerServiceAbstract"
+  />
 
-	<bean id="EventProfileManagerService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="EventProfileManagerService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.profile.EventProfileManagerService
@@ -1218,8 +1376,10 @@
 	</bean>
 
 	<!-- ManagementService Service -->
-	<bean id="ManagementService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="ManagementService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -1239,8 +1399,11 @@
 		</property>
 	</bean>
 
-	<bean id="managementService" class="eu.cec.digit.circabc.repo.struct.ManagementServiceImpl"
-		init-method="init">
+	<bean
+    id="managementService"
+    class="eu.cec.digit.circabc.repo.struct.ManagementServiceImpl"
+    init-method="init"
+  >
 
 		<property name="searchService">
 			<ref bean="searchService" />
@@ -1270,13 +1433,13 @@
 			<ref bean="authenticationService" />
 		</property>
 		<property name="profileManagerServiceFactory">
-			<ref bean="profileManagerServiceFactory"></ref>
+			<ref bean="profileManagerServiceFactory" />
 		</property>
 		<property name="contentService">
 			<ref bean="contentService" />
 		</property>
 		<property name="dictionaryService">
-			<ref bean="dictionaryService"></ref>
+			<ref bean="dictionaryService" />
 		</property>
 		<property name="multilingualContentService">
 			<ref bean="multilingualContentService" />
@@ -1299,7 +1462,10 @@
 		<property name="namespacePrefixResolver" ref="namespaceService" />
 	</bean>
 
-	<bean id="ManagementService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="ManagementService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.struct.ManagementService
@@ -1321,8 +1487,10 @@
 	</bean>
 
 	<!-- MailService Service -->
-	<bean id="CircabcMailService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="CircabcMailService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -1335,23 +1503,26 @@
 		</property>
 	</bean>
 
-	<bean id="circabcMailService" class="eu.cec.digit.circabc.repo.mail.MailServiceImpl"
-		init-method="init">
+	<bean
+    id="circabcMailService"
+    class="eu.cec.digit.circabc.repo.mail.MailServiceImpl"
+    init-method="init"
+  >
 
 		<property name="fileFolderService">
 			<ref bean="fileFolderService" />
 		</property>
 		<property name="mailSender">
-			<ref bean="mailService"></ref>
+			<ref bean="mailService" />
 		</property>
 		<property name="managementService">
-			<ref bean="managementService"></ref>
+			<ref bean="managementService" />
 		</property>
 		<property name="mailPreferencesService">
-			<ref bean="mailPreferencesService"></ref>
+			<ref bean="mailPreferencesService" />
 		</property>
 		<property name="contentService">
-			<ref bean="contentService"></ref>
+			<ref bean="contentService" />
 		</property>
 		<property name="noReply">
 			<value>${mail.from.default}</value>
@@ -1391,7 +1562,10 @@
 		</property>
 	</bean>
 
-	<bean id="CircabcMailService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="CircabcMailService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.mail.MailService
@@ -1414,8 +1588,10 @@
 
 
 	<!-- MailToMembersService Service -->
-	<bean id="MailToMembersService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="MailToMembersService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -1428,16 +1604,22 @@
 		</property>
 	</bean>
 
-	<bean id="mailToMembersService" class="eu.cec.digit.circabc.repo.mail.MailToMembersServiceImpl">
+	<bean
+    id="mailToMembersService"
+    class="eu.cec.digit.circabc.repo.mail.MailToMembersServiceImpl"
+  >
 		<property name="mailService">
-			<ref bean="circabcMailService"></ref>
+			<ref bean="circabcMailService" />
 		</property>
 		<property name="profileManagerServiceFactory">
-			<ref bean="profileManagerServiceFactory"></ref>
+			<ref bean="profileManagerServiceFactory" />
 		</property>
 	</bean>
 
-	<bean id="MailToMembersService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="MailToMembersService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.mail.MailToMembersService
@@ -1459,8 +1641,10 @@
 	</bean>
 
 	<!-- BulkService Service -->
-	<bean id="BulkService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="BulkService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -1472,7 +1656,10 @@
 		</property>
 	</bean>
 
-	<bean id="bulkService" class="eu.cec.digit.circabc.service.bulk.BulkServiceImpl">
+	<bean
+    id="bulkService"
+    class="eu.cec.digit.circabc.service.bulk.BulkServiceImpl"
+  >
 		<property name="fileFolderService">
 			<ref bean="fileFolderService" />
 		</property>
@@ -1508,7 +1695,10 @@
 		</property>
 	</bean>
 
-	<bean id="BulkService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="BulkService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.bulk.BulkService
@@ -1530,8 +1720,10 @@
 	</bean>
 
 	<!-- IndexService Service -->
-	<bean id="IndexService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="IndexService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -1543,14 +1735,19 @@
 		</property>
 	</bean>
 
-	<bean id="indexService"
-		class="eu.cec.digit.circabc.service.bulk.indexes.IndexServiceImpl">
+	<bean
+    id="indexService"
+    class="eu.cec.digit.circabc.service.bulk.indexes.IndexServiceImpl"
+  >
 		<property name="serviceRegistry">
 			<ref bean="ServiceRegistry" />
 		</property>
 	</bean>
 
-	<bean id="IndexService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="IndexService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.bulk.indexes.IndexService
@@ -1572,8 +1769,10 @@
 	</bean>
 
 	<!-- ZipService Service -->
-	<bean id="ZipService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="ZipService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -1585,7 +1784,10 @@
 		</property>
 	</bean>
 
-	<bean id="zipService" class="eu.cec.digit.circabc.service.compress.ZipServiceImpl">
+	<bean
+    id="zipService"
+    class="eu.cec.digit.circabc.service.compress.ZipServiceImpl"
+  >
 		<property name="nodeService">
 			<ref bean="nodeService" />
 		</property>
@@ -1612,7 +1814,10 @@
 		</property>
 	</bean>
 
-	<bean id="ZipService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="ZipService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.compress.ZipService
@@ -1634,8 +1839,10 @@
 	</bean>
 
 	<!-- Bean in charge of dynamic properties -->
-	<bean id="dynamicPropertiesService"
-		class="eu.cec.digit.circabc.repo.dynamic.property.DynamicPropertyServiceImpl">
+	<bean
+    id="dynamicPropertiesService"
+    class="eu.cec.digit.circabc.repo.dynamic.property.DynamicPropertyServiceImpl"
+  >
 		<property name="nodeService">
 			<ref bean="nodeService" />
 		</property>
@@ -1657,7 +1864,10 @@
 	</bean>
 
 	<!-- Proxied DynamicPropertiesService -->
-	<bean id="DynamicPropertiesService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="DynamicPropertiesService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.dynamic.property.DynamicPropertyService
@@ -1676,8 +1886,10 @@
 	</bean>
 
 	<!-- Transaction interceptor for NotificationService -->
-	<bean id="DynamicPropertiesService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="DynamicPropertiesService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -1690,8 +1902,11 @@
 	</bean>
 
 	<!-- Bean in charge of server configration reporter -->
-	<bean id="abstractServerConfigurationService" abstract="true"
-		class="eu.cec.digit.circabc.repo.admin.debug.ServerConfigurationServiceImpl">
+	<bean
+    id="abstractServerConfigurationService"
+    abstract="true"
+    class="eu.cec.digit.circabc.repo.admin.debug.ServerConfigurationServiceImpl"
+  >
 		<property name="nodeService">
 			<ref bean="nodeService" />
 		</property>
@@ -1701,27 +1916,12 @@
 	</bean>
 
 
-	<!-- Proxied ServerConfigurationService -->
-	<!-- bean id="ServerConfigurationService" class="org.springframework.aop.framework.ProxyFactoryBean">
-		<property name="proxyInterfaces">
-			<value>
-				eu.cec.digit.circabc.service.admin.debug.ServerConfigurationService
-			</value>
-		</property>
-		<property name="target">
-			<ref bean="serverConfigurationService" />
-		</property>
-		<property name="interceptorNames">
-			<list>
-				<idref local="ServerConfigurationService_transaction" />
-			
-			</list>
-		</property>
-	</bean -->
 
 	<!-- Transaction interceptor for NotificationService -->
-	<bean id="ServerConfigurationService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="ServerConfigurationService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -1734,8 +1934,10 @@
 	</bean>
 
 
-	<bean id="rootPreferencesUpdater"
-		class="eu.cec.digit.circabc.repo.customisation.RootPreferencesUpdater">
+	<bean
+    id="rootPreferencesUpdater"
+    class="eu.cec.digit.circabc.repo.customisation.RootPreferencesUpdater"
+  >
 		<property name="configService">
 			<ref bean="rootPreferenceConfigService" />
 		</property>
@@ -1760,8 +1962,10 @@
 	</bean>
 
 	<!-- Bean in charge of the customisation of the presentation of any node -->
-	<bean id="nodePreferencesService"
-		class="eu.cec.digit.circabc.repo.customisation.NodePreferencesServiceImpl">
+	<bean
+    id="nodePreferencesService"
+    class="eu.cec.digit.circabc.repo.customisation.NodePreferencesServiceImpl"
+  >
 		<property name="nodeService">
 			<ref bean="nodeService" />
 		</property>
@@ -1789,7 +1993,10 @@
 	</bean>
 
 	<!-- Proxied NodePreferencesService -->
-	<bean id="NodePreferencesService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="NodePreferencesService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.customisation.NodePreferencesService
@@ -1808,8 +2015,10 @@
 	</bean>
 
 	<!-- Transaction interceptor for Node Preferences Service -->
-	<bean id="NodePreferencesService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="NodePreferencesService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -1823,8 +2032,10 @@
 	</bean>
 
 	<!-- Bean in charge of the customisation of the presentation of any mail -->
-	<bean id="mailPreferencesService"
-		class="eu.cec.digit.circabc.repo.customisation.mail.MailPreferencesServiceImpl">
+	<bean
+    id="mailPreferencesService"
+    class="eu.cec.digit.circabc.repo.customisation.mail.MailPreferencesServiceImpl"
+  >
 		<property name="nodePreferencesService">
 			<ref bean="nodePreferencesService" />
 		</property>
@@ -1849,7 +2060,10 @@
 	</bean>
 
 	<!-- Proxied MailPreferencesService -->
-	<bean id="MailPreferencesService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="MailPreferencesService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.customisation.mail.MailPreferencesService
@@ -1868,8 +2082,10 @@
 	</bean>
 
 	<!-- Transaction interceptor for Mail Preferences Service -->
-	<bean id="MailPreferencesService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="MailPreferencesService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -1883,8 +2099,10 @@
 	</bean>
 
 	<!-- Bean in charge of the customisation of the presentation of any Navigation -->
-	<bean id="navigationPreferencesService"
-		class="eu.cec.digit.circabc.repo.customisation.nav.NavigationPreferencesServiceImpl">
+	<bean
+    id="navigationPreferencesService"
+    class="eu.cec.digit.circabc.repo.customisation.nav.NavigationPreferencesServiceImpl"
+  >
 		<property name="nodeService">
 			<ref bean="nodeService" />
 		</property>
@@ -1900,7 +2118,10 @@
 	</bean>
 
 	<!-- Proxied NavigationPreferencesService -->
-	<bean id="NavigationPreferencesService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="NavigationPreferencesService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.customisation.nav.NavigationPreferencesService
@@ -1919,8 +2140,10 @@
 	</bean>
 
 	<!-- Transaction interceptor for Navigation Preferences Service -->
-	<bean id="NavigationPreferencesService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="NavigationPreferencesService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -1934,8 +2157,10 @@
 	</bean>
 
 	<!-- Bean in charge of the customisation of the ig logo -->
-	<bean id="logoPreferencesService"
-		class="eu.cec.digit.circabc.repo.customisation.logo.LogoPreferencesServiceImpl">
+	<bean
+    id="logoPreferencesService"
+    class="eu.cec.digit.circabc.repo.customisation.logo.LogoPreferencesServiceImpl"
+  >
 		<property name="nodeService">
 			<ref bean="nodeService" />
 		</property>
@@ -1954,7 +2179,10 @@
 	</bean>
 
 	<!-- Proxied LogoPreferencesService -->
-	<bean id="LogoPreferencesService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="LogoPreferencesService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.customisation.logo.LogoPreferencesService
@@ -1974,8 +2202,10 @@
 	</bean>
 
 	<!-- Transaction interceptor for Logo Preferences Service -->
-	<bean id="LogoPreferencesService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="LogoPreferencesService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -1990,26 +2220,35 @@
 	<!-- Bean in charge of logging service -->
 	<bean id="logService" class="eu.cec.digit.circabc.repo.log.DBLogServiceImpl">
 		<property name="logDaoService" ref="LogDaoService" />
-    	<property name="managementService" ref="ManagementService"/>
-    	<property name="nodeService" ref="nodeService"/>
-    	<property name="authenticationService" ref="authenticationService"/>
-    	<property name="logTransformService" ref="logTransformService"/>
+    	<property name="managementService" ref="ManagementService" />
+    	<property name="nodeService" ref="nodeService" />
+    	<property name="authenticationService" ref="authenticationService" />
+    	<property name="logTransformService" ref="logTransformService" />
 	</bean>
 
 	<!-- Bean in charge of logging service -->
-	<bean id="logTransformService" class="eu.cec.digit.circabc.repo.log.LogTransformServiceImpl">
+	<bean
+    id="logTransformService"
+    class="eu.cec.digit.circabc.repo.log.LogTransformServiceImpl"
+  >
 		<property name="logDaoService" ref="LogDaoService" />
 		<property name="apiToolBox" ref="apiToolBox" />
-    	<property name="managementService" ref="ManagementService"/>
+    	<property name="managementService" ref="ManagementService" />
 	</bean>
 
 	<!-- Bean in charge of locking service -->
 
-	<bean id="circabcLockService" class="eu.cec.digit.circabc.repo.lock.DBLockServiceImpl">
+	<bean
+    id="circabcLockService"
+    class="eu.cec.digit.circabc.repo.lock.DBLockServiceImpl"
+  >
 		<property name="lockDaoService" ref="lockDaoService" />
 	</bean>
 
-	<bean id="CircabcLockService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="CircabcLockService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.lock.LockService
@@ -2025,8 +2264,10 @@
 		</property>
 	</bean>
 
-	<bean id="CircabcLockService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="CircabcLockService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -2039,8 +2280,10 @@
 	</bean>
 
 	<!-- Bean in charge of managing moderated nodes -->
-	<bean id="moderationService"
-		class="eu.cec.digit.circabc.repo.newsgroup.ModerationServiceImpl">
+	<bean
+    id="moderationService"
+    class="eu.cec.digit.circabc.repo.newsgroup.ModerationServiceImpl"
+  >
 		<property name="nodeService">
 			<ref bean="nodeService" />
 		</property>
@@ -2059,7 +2302,10 @@
 	</bean>
 
 	<!-- Proxied moderationService -->
-	<bean id="ModerationService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="ModerationService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.newsgroup.ModerationService
@@ -2078,8 +2324,10 @@
 	</bean>
 
 	<!-- Transaction interceptor for ModerationService -->
-	<bean id="ModerationService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="ModerationService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -2093,7 +2341,10 @@
 	</bean>
 
 	<!-- Bean in charge of support users -->
-	<bean id="supportService" class="eu.cec.digit.circabc.repo.support.SupportServiceImpl">
+	<bean
+    id="supportService"
+    class="eu.cec.digit.circabc.repo.support.SupportServiceImpl"
+  >
 		<property name="authorityService">
 			<ref bean="authorityService" />
 		</property>
@@ -2121,7 +2372,10 @@
 	</bean>
 
 	<!-- Proxied supportService -->
-	<bean id="SupportService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="SupportService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.support.SupportService
@@ -2140,8 +2394,10 @@
 	</bean>
 
 	<!-- Transaction interceptor for ModerationService -->
-	<bean id="SupportService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="SupportService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -2155,8 +2411,10 @@
 	</bean>
 
 	<!-- Bean in charge of managing attachement -->
-	<bean id="attachementService"
-		class="eu.cec.digit.circabc.repo.newsgroup.AttachementServiceImpl">
+	<bean
+    id="attachementService"
+    class="eu.cec.digit.circabc.repo.newsgroup.AttachementServiceImpl"
+  >
 		<property name="nodeService">
 			<ref bean="nodeService" />
 		</property>
@@ -2166,7 +2424,10 @@
 	</bean>
 
 	<!-- Proxied attachementService -->
-	<bean id="AttachementService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="AttachementService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.newsgroup.AttachementService
@@ -2185,8 +2446,10 @@
 	</bean>
 
 	<!-- Transaction interceptor for AttachementService -->
-	<bean id="AttachementService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="AttachementService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -2199,8 +2462,10 @@
 		</property>
 	</bean>
 
-	<bean id="circabcFileFolderService"
-		class="eu.cec.digit.circabc.repo.filefolder.CircabcFileFolderServiceImpl">
+	<bean
+    id="circabcFileFolderService"
+    class="eu.cec.digit.circabc.repo.filefolder.CircabcFileFolderServiceImpl"
+  >
 		<property name="fileFolderService">
 			<ref bean="fileFolderService" />
 		</property>
@@ -2218,8 +2483,10 @@
 		</property>
 	</bean>
 
-	<bean id="eagerCircabcFileFolderService"
-		class="eu.cec.digit.circabc.repo.filefolder.EagerCircabcFileFolderServiceImpl">
+	<bean
+    id="eagerCircabcFileFolderService"
+    class="eu.cec.digit.circabc.repo.filefolder.EagerCircabcFileFolderServiceImpl"
+  >
 		<property name="searchService">
 			<ref bean="SearchService" />
 		</property>
@@ -2238,8 +2505,10 @@
 	</bean>
 
 	<!-- Bean in charge of statistics in one IG -->
-	<bean id="igStatisticsService"
-		class="eu.cec.digit.circabc.repo.statistics.ig.IgStatisticsServiceImpl">
+	<bean
+    id="igStatisticsService"
+    class="eu.cec.digit.circabc.repo.statistics.ig.IgStatisticsServiceImpl"
+  >
 		<property name="nodeService">
 			<ref bean="nodeService" />
 		</property>
@@ -2252,10 +2521,22 @@
 		<property name="logService">
 			<ref bean="logService" />
 		</property>
+		<property name="igStatisticsDaoService">
+			<ref bean="igStatisticsDaoService" />
+		</property>
+		<property name="circabcService">
+			<ref bean="circabcService" />
+		</property>
+		<property name="circabcLockService">
+			<ref bean="CircabcLockService" />
+		</property>
 	</bean>
 
 	<!-- Proxied statistics service -->
-	<bean id="IgStatisticsService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="IgStatisticsService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.statistics.ig.IgStatisticsService
@@ -2274,8 +2555,10 @@
 	</bean>
 
 	<!-- Transaction interceptor for NotificationService -->
-	<bean id="IgStatisticsService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="IgStatisticsService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -2287,8 +2570,10 @@
 		</property>
 	</bean>
 	<!-- Bean in charge of global statistics in Circabc -->
-	<bean id="globalStatisticsService"
-		class="eu.cec.digit.circabc.repo.statistics.global.GlobalStatisticsServiceImpl">
+	<bean
+    id="globalStatisticsService"
+    class="eu.cec.digit.circabc.repo.statistics.global.GlobalStatisticsServiceImpl"
+  >
 		<property name="managementService">
 			<ref bean="managementService" />
 		</property>
@@ -2335,13 +2620,13 @@
 			<ref bean="igStatisticsService" />
 		</property>
 		<property name="namespacePrefixResolver" ref="namespaceService" />
-		<property name="profilesApi">
-			<ref bean="profilesApi" />
-		</property>
 	</bean>
 
 	<!-- Proxied statistics service -->
-	<bean id="GlobalStatisticsService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="GlobalStatisticsService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.statistics.global.GlobalStatisticsService
@@ -2360,8 +2645,10 @@
 	</bean>
 
 	<!-- Transaction interceptor for NotificationService -->
-	<bean id="GlobalStatisticsService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="GlobalStatisticsService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -2375,9 +2662,11 @@
 	</bean>
 
 	<!-- External Repositories Management Service definitions -->
-	<bean id="externalRepositoriesManagementService"
-		class="eu.cec.digit.circabc.repo.external.repositories.ExternalRepositoriesManagementServiceImpl"
-		init-method="init">
+	<bean
+    id="externalRepositoriesManagementService"
+    class="eu.cec.digit.circabc.repo.external.repositories.ExternalRepositoriesManagementServiceImpl"
+    init-method="init"
+  >
 		<property name="nodeService">
 			<ref bean="NodeService" />
 		</property>
@@ -2416,7 +2705,10 @@
 		</property>
 	</bean>
 
-	<bean id="ExternalRepositoriesManagementService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="ExternalRepositoriesManagementService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.external.repositories.ExternalRepositoriesManagementService
@@ -2434,8 +2726,10 @@
 		</property>
 	</bean>
 
-	<bean id="ExternalRepositoriesManagementService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="ExternalRepositoriesManagementService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -2448,9 +2742,11 @@
 	</bean>
 
 	<!-- Autonomy Search Service definitions -->
-	<bean id="autonomySearchService"
-		class="eu.cec.digit.circabc.repo.search.autonomy.AutonomySearchServiceImpl"
-		init-method="init">
+	<bean
+    id="autonomySearchService"
+    class="eu.cec.digit.circabc.repo.search.autonomy.AutonomySearchServiceImpl"
+    init-method="init"
+  >
 		<property name="authenticationService">
 			<ref bean="authenticationService" />
 		</property>
@@ -2482,7 +2778,10 @@
 		<property name="securityKeys" value="123, 144, 564, 231" />
 	</bean>
 
-	<bean id="AutonomySearchService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="AutonomySearchService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.search.autonomy.AutonomySearchService
@@ -2500,8 +2799,10 @@
 		</property>
 	</bean>
 
-	<bean id="AutonomySearchService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="AutonomySearchService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -2514,8 +2815,10 @@
 	</bean>
 
 	<!-- Bean in charge of global statistics in Circabc -->
-	<bean id="autoUploadManagementService"
-		class="eu.cec.digit.circabc.repo.config.auto.upload.AutoUploadManagementServiceImpl">
+	<bean
+    id="autoUploadManagementService"
+    class="eu.cec.digit.circabc.repo.config.auto.upload.AutoUploadManagementServiceImpl"
+  >
 		<property name="actionService">
 			<ref bean="ActionService" />
 		</property>
@@ -2555,7 +2858,10 @@
 	</bean>
 
 	<!-- Proxied statistics service -->
-	<bean id="AutoUploadManagementService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="AutoUploadManagementService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.config.auto.upload.AutoUploadManagementService
@@ -2574,8 +2880,10 @@
 	</bean>
 
 	<!-- Transaction interceptor for NotificationService -->
-	<bean id="AutoUploadManagementService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="AutoUploadManagementService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -2602,8 +2910,10 @@
 
 
 	<!-- Bean in charge of CIRCABC IAM synchronization -->
-	<bean id="synchronizationService"
-		class="eu.cec.digit.circabc.repo.iam.SynchronizationServiceImpl">
+	<bean
+    id="synchronizationService"
+    class="eu.cec.digit.circabc.repo.iam.SynchronizationServiceImpl"
+  >
 		<property name="nodeService">
 			<ref bean="nodeService" />
 		</property>
@@ -2629,7 +2939,10 @@
 
 
 	<!-- Proxied Synchronization Service -->
-	<bean id="SynchronizationService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="SynchronizationService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.iam.SynchronizationService
@@ -2648,8 +2961,10 @@
 	</bean>
 
 	<!-- Transaction interceptor for SynchronizationService -->
-	<bean id="SynchronizationService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="SynchronizationService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -2660,13 +2975,17 @@
 		</property>
 	</bean>
 
-	<bean id="synchronizationTaskExecutor"
-		class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+	<bean
+    id="synchronizationTaskExecutor"
+    class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor"
+  >
 		<property name="corePoolSize" value="4" />
 	</bean>
 
-	<bean id="bulkUserImportService"
-		class="eu.cec.digit.circabc.repo.user.BulkUserImportServiceImpl">
+	<bean
+    id="bulkUserImportService"
+    class="eu.cec.digit.circabc.repo.user.BulkUserImportServiceImpl"
+  >
 		<property name="nodeService">
 			<ref bean="nodeService" />
 		</property>
@@ -2675,7 +2994,8 @@
 		</property>
 		<property name="ldapUserService">
 			<ref
-				bean="#{circabcConfig.ENT == true ? 'ldapUserService' : 'luceneUserService'}" />
+        bean="#{circabcConfig.USE_LDAP == true ? 'ldapUserService' : 'luceneUserService'}"
+      />
 		</property>
 		<property name="igRootProfileManagerService">
 			<ref bean="IGRootProfileManagerService" />
@@ -2689,7 +3009,10 @@
 	</bean>
 
 	<!-- Proxied statistics service -->
-	<bean id="BulkUserImportService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="BulkUserImportService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.user.BulkUserImportService
@@ -2708,8 +3031,10 @@
 	</bean>
 
 	<!-- Transaction interceptor for NotificationService -->
-	<bean id="BulkUserImportService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="BulkUserImportService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -2721,14 +3046,18 @@
 		</property>
 	</bean>
 
-	<bean id="machineTranslationService"
-		class="eu.cec.digit.circabc.repo.translation.MachineTranslationServiceImpl">
+	<bean
+    id="machineTranslationService"
+    class="eu.cec.digit.circabc.repo.translation.MachineTranslationServiceImpl"
+  >
 	</bean>
 
 
 	<!-- Bean in charge of translation service -->
-	<bean id="translationService"
-		class="eu.cec.digit.circabc.repo.translation.TranslationServiceImpl">
+	<bean
+    id="translationService"
+    class="eu.cec.digit.circabc.repo.translation.TranslationServiceImpl"
+  >
 		<property name="machineTranslationService">
 			<ref bean="machineTranslationService" />
 		</property>
@@ -2760,7 +3089,8 @@
 			<ref bean="DictionaryService" />
 		</property>
 		<property name="ftpUrl">
-			<value>${mt.protocol}://${mt.user}:${mt.password}@${mt.host}:${mt.port}/Alfresco</value>
+			<value
+      >${mt.protocol}://${mt.user}:${mt.password}@${mt.host}:${mt.port}/Alfresco</value>
 		</property>
 		<property name="mtRootSpace">
 			<value>${mt.root.space}</value>
@@ -2830,7 +3160,10 @@
 
 
 	<!-- Proxied translation Service -->
-	<bean id="TranslationService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="TranslationService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.translation.TranslationService
@@ -2849,8 +3182,10 @@
 	</bean>
 
 	<!-- Transaction interceptor for EventService -->
-	<bean id="TranslationService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="TranslationService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -2862,8 +3197,10 @@
 	</bean>
 
 	<!-- Bean in charge of translation service -->
-	<bean id="applicationCustomisationService"
-		class="eu.cec.digit.circabc.repo.customisation.ApplicationCustomisationServiceImpl">
+	<bean
+    id="applicationCustomisationService"
+    class="eu.cec.digit.circabc.repo.customisation.ApplicationCustomisationServiceImpl"
+  >
 		<property name="nodeService">
 			<ref bean="nodeService" />
 		</property>
@@ -2880,7 +3217,10 @@
 
 
 	<!-- Proxied translation Service -->
-	<bean id="ApplicationCustomisationService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="ApplicationCustomisationService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.customisation.ApplicationCustomisationService
@@ -2899,8 +3239,10 @@
 	</bean>
 
 	<!-- Transaction interceptor for EventService -->
-	<bean id="ApplicationCustomisationService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="ApplicationCustomisationService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -2913,8 +3255,10 @@
 	</bean>
 	<!-- Rendition service -->
 
-	<bean id="circabcRenditionService"
-		class="eu.cec.digit.circabc.service.rendition.CircabcRenditionServiceImpl">
+	<bean
+    id="circabcRenditionService"
+    class="eu.cec.digit.circabc.service.rendition.CircabcRenditionServiceImpl"
+  >
 		<property name="nodeService">
 			<ref bean="NodeService" />
 		</property>
@@ -2925,14 +3269,20 @@
 
 
 
-	<bean id="ApplicationListenerBean" class="eu.cec.digit.circabc.repo.app.ApplicationListenerBean">
+	<bean
+    id="ApplicationListenerBean"
+    class="eu.cec.digit.circabc.repo.app.ApplicationListenerBean"
+  >
 		<property name="antisamyEsapi">
 			<value>classpath:antisamy-esapi.xml</value>
 		</property>
 	</bean>
 
-	<bean id="circabcMethodInterceptor" class="eu.cec.digit.circabc.repo.app.CircabcMethodInterceptor"
-		init-method="init">
+	<bean
+    id="circabcMethodInterceptor"
+    class="eu.cec.digit.circabc.repo.app.CircabcMethodInterceptor"
+    init-method="init"
+  >
 		<property name="circabcService">
 			<ref bean="circabcService" />
 		</property>
@@ -2941,13 +3291,18 @@
 		</property>
 	</bean>
 
-	<bean id="disableNotificationMethodInterceptor"
-		class="eu.cec.digit.circabc.repo.app.DisableNotificationMethodInterceptor">
+	<bean
+    id="disableNotificationMethodInterceptor"
+    class="eu.cec.digit.circabc.repo.app.DisableNotificationMethodInterceptor"
+  >
 	</bean>
 
 
 
-	<bean id="circabcService" class="eu.cec.digit.circabc.repo.app.CircabcServiceImpl">
+	<bean
+    id="circabcService"
+    class="eu.cec.digit.circabc.repo.app.CircabcServiceImpl"
+  >
 		<property name="managementService">
 			<ref bean="managementService" />
 		</property>
@@ -2991,7 +3346,10 @@
 			<value>${read.from.database}</value>
 		</property>
 	</bean>
-	<bean id="CircabcService" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="CircabcService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				eu.cec.digit.circabc.service.app.CircabcService
@@ -3007,8 +3365,10 @@
 			</list>
 		</property>
 	</bean>
-	<bean id="circabcService_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="circabcService_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -3019,7 +3379,10 @@
 		</property>
 	</bean>
 
-	<bean id="SecurityService" class="eu.cec.digit.circabc.repo.app.SecurityService">
+	<bean
+    id="SecurityService"
+    class="eu.cec.digit.circabc.repo.app.SecurityService"
+  >
 	</bean>
 
 	<bean id="headerApi" class="io.swagger.api.HeadersApiImpl">
@@ -3060,8 +3423,10 @@
 		</property>
 	</bean>
 
-	<bean id="headerApi_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="headerApi_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -3109,7 +3474,7 @@
 			<ref bean="apiToolBox" />
 		</property>
         <property name="authorityService">
-            <ref bean="AuthorityService"/>
+            <ref bean="AuthorityService" />
         </property>
 		<property name="groupsApi">
 			<ref bean="groupsApi" />
@@ -3133,8 +3498,10 @@
 		</property>
 	</bean>
 
-	<bean id="nodeApi_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="nodeApi_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -3180,7 +3547,7 @@
 			<ref bean="permissionService" />
 		</property>
 		<property name="dictionaryService">
-			<ref bean="dictionaryService"></ref>
+			<ref bean="dictionaryService" />
 		</property>
 		<property name="personService">
 			<ref bean="personService" />
@@ -3210,8 +3577,10 @@
 		</property>
 	</bean>
 
-	<bean id="spacesApi_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="spacesApi_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -3278,8 +3647,10 @@
 		</property>
 	</bean>
 
-	<bean id="forumsApi_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="forumsApi_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -3334,8 +3705,10 @@
 		</property>
 	</bean>
 
-	<bean id="topicsApi_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="topicsApi_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -3397,8 +3770,10 @@
 		</property>
 	</bean>
 
-	<bean id="eventsApi_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="eventsApi_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -3419,7 +3794,10 @@
 		</property>
 	</bean>
 
-	<bean id="AutoUploadApi" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="AutoUploadApi"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				io.swagger.api.AutoUploadApi
@@ -3436,8 +3814,10 @@
 		</property>
 	</bean>
 
-	<bean id="autoUploadApi_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="autoUploadApi_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -3479,7 +3859,10 @@
 		</property>
 	</bean>
 
-	<bean id="ClipboardApi" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="ClipboardApi"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				io.swagger.api.ClipboardApi
@@ -3496,8 +3879,10 @@
 		</property>
 	</bean>
 
-	<bean id="clipboardApi_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="clipboardApi_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -3581,7 +3966,8 @@
 		</property>
 		<property name="ldapUserService">
 			<ref
-				bean="#{circabcConfig.ENT == true ? 'ldapUserService' : 'luceneUserService'}" />
+        bean="#{circabcConfig.USE_LDAP == true ? 'ldapUserService' : 'luceneUserService'}"
+      />
 		</property>
 		<property name="serviceRegistry">
 			<ref bean="ServiceRegistry" />
@@ -3594,7 +3980,10 @@
 		</property>
 	</bean>
 
-	<bean id="CategoriesApi" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="CategoriesApi"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				io.swagger.api.CategoriesApi
@@ -3612,8 +4001,10 @@
 		</property>
 	</bean>
 
-	<bean id="categoriesApi_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="categoriesApi_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -3669,7 +4060,8 @@
 		</property>
 		<property name="ldapUserService">
 			<ref
-				bean="#{circabcConfig.ENT == true ? 'ldapUserService' : 'luceneUserService'}" />
+        bean="#{circabcConfig.USE_LDAP == true ? 'ldapUserService' : 'luceneUserService'}"
+      />
 		</property>
 		<property name="authorityService">
 			<ref bean="authorityService" />
@@ -3707,9 +4099,6 @@
 		<property name="logService">
 			<ref bean="logService" />
 		</property>
-		<property name="currentUserPermissionCheckerService">
-			<ref bean="currentUserPermissionCheckerService" />
-		</property>
 		<property name="mimetypeService">
 			<ref bean="mimetypeService" />
 		</property>
@@ -3717,14 +4106,8 @@
 			<ref bean="managementService" />
 		</property>
 	    <property name="config">
-	      <ref bean="importFileLimit"></ref>
+	      <ref bean="importFileLimit" />
 	    </property>
-		<property name="asyncThreadPoolExecutor">
-			<ref bean="AsyncThreadPoolExecutor" />
-		</property>
-		<property name="transactionService">
-			<ref bean="TransactionService" />
-		</property>
 		<property name="circabcLockService">
 			<ref bean="CircabcLockService" />
 		</property>
@@ -3732,10 +4115,10 @@
 			<ref bean="historyApi" />
 		</property>
 		<property name="ruleService">
-			<ref bean="ruleService"/>
+			<ref bean="ruleService" />
 		</property>
 		<property name="nodeArchiveService">
-			<ref bean="nodeArchiveService"/>
+			<ref bean="nodeArchiveService" />
 		</property>
 	</bean>
 
@@ -3757,8 +4140,10 @@
 		</property>
 	</bean>
 
-	<bean id="groupsApi_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="groupsApi_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -3787,7 +4172,8 @@
 		</property>
 		<property name="ldapUserService">
 			<ref
-				bean="#{circabcConfig.ENT == true ? 'ldapUserService' : 'luceneUserService'}" />
+        bean="#{circabcConfig.USE_LDAP == true ? 'ldapUserService' : 'luceneUserService'}"
+      />
 		</property>
 		<property name="businessRegistry">
 			<ref bean="businessRegistry" />
@@ -3808,17 +4194,20 @@
 			<ref bean="bulkUserImportService" />
 		</property>
 		<property name="currentUserPermissionCheckerService">
-			<ref bean="currentUserPermissionCheckerService"/>
+			<ref bean="currentUserPermissionCheckerService" />
 		</property>
 		<property name="configurableService">
-			<ref bean="configurableService"/>
+			<ref bean="configurableService" />
 		</property>
 		<property name="userManager">
-			<ref bean="_userManager"/>
+			<ref bean="_userManager" />
 		</property>
 		<property name="circabcService">
-			<ref bean="CircabcService"/>
+			<ref bean="CircabcService" />
 		</property>
+		<property name="maxUserNumber">
+			<value>${max.user.number}</value>
+	   </property>
 	</bean>
 
 	<bean id="UsersApi" class="org.springframework.aop.framework.ProxyFactoryBean">
@@ -3838,8 +4227,10 @@
 		</property>
 	</bean>
 
-	<bean id="usersApi_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="usersApi_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -3921,11 +4312,14 @@
 			<ref bean="logService" />
 		</property>
 		<property name="metadataManager">
-		    <ref bean="_metadataManager"/>
+		    <ref bean="_metadataManager" />
 		</property>
 	</bean>
 
-	<bean id="ContentApi" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="ContentApi"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				io.swagger.api.ContentApi
@@ -3942,8 +4336,10 @@
 		</property>
 	</bean>
 
-	<bean id="contentApi_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="contentApi_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -3963,7 +4359,10 @@
 		</property>
 	</bean>
 
-	<bean id="KeywordsApi" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="KeywordsApi"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				io.swagger.api.KeywordsApi
@@ -3980,8 +4379,10 @@
 		</property>
 	</bean>
 
-	<bean id="keywordsApi_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="keywordsApi_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -3998,7 +4399,10 @@
 		</property>
 	</bean>
 
-	<bean id="DynamicPropertiesApi" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="DynamicPropertiesApi"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				io.swagger.api.DynamicPropertiesApi
@@ -4015,8 +4419,10 @@
 		</property>
 	</bean>
 
-	<bean id="dynamicPropertiesApi_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="dynamicPropertiesApi_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -4042,7 +4448,10 @@
 		</property>
 	</bean>
 
-	<bean id="ProfilesApi" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="ProfilesApi"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				io.swagger.api.ProfilesApi
@@ -4060,8 +4469,10 @@
 		</property>
 	</bean>
 
-	<bean id="profilesApi_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="profilesApi_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -4099,7 +4510,10 @@
 		</property>
 	</bean>
 
-	<bean id="InformationApi" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="InformationApi"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				io.swagger.api.InformationApi
@@ -4116,8 +4530,10 @@
 		</property>
 	</bean>
 
-	<bean id="informationApi_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="informationApi_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -4140,7 +4556,10 @@
 		</property>
 	</bean>
 
-	<bean id="currentUserPermissionCheckerService" class="io.swagger.util.CurrentUserPermissionCheckerService">
+	<bean
+    id="currentUserPermissionCheckerService"
+    class="io.swagger.util.CurrentUserPermissionCheckerService"
+  >
 		<property name="circabcService">
 			<ref bean="circabcService" />
 		</property>
@@ -4154,7 +4573,9 @@
 			<ref bean="nodeService" />
 		</property>
 		<property name="ldapUserService">
-			<ref bean="ldapUserService" />
+			<ref
+        bean="#{circabcConfig.USE_LDAP == true ? 'ldapUserService' : 'luceneUserService'}"
+      />
 		</property>
 	</bean>
 
@@ -4164,6 +4585,9 @@
 		</property>
 		<property name="searchService">
 			<ref bean="SearchService" />
+		</property>
+		<property name="dynamicPropertyService">
+			<ref bean="dynamicPropertiesService" />
 		</property>
 		<property name="apiToolBox">
 			<ref bean="apiToolBox" />
@@ -4190,8 +4614,10 @@
 		</property>
 	</bean>
 
-	<bean id="searchApi_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="searchApi_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -4220,7 +4646,10 @@
 		</property>
 	</bean>
 
-	<bean id="PermissionsApi" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="PermissionsApi"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				io.swagger.api.PermissionsApi
@@ -4237,8 +4666,10 @@
 		</property>
 	</bean>
 
-	<bean id="permissionsApi_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="permissionsApi_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -4279,7 +4710,10 @@
 		</property>
 	</bean>
 
-	<bean id="NotificationsApi" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="NotificationsApi"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				io.swagger.api.NotificationsApi
@@ -4296,8 +4730,10 @@
 		</property>
 	</bean>
 
-	<bean id="notificationsApi_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="notificationsApi_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -4353,7 +4789,8 @@
 		</property>
 		<property name="ldapUserService">
 			<ref
-				bean="#{circabcConfig.ENT == true ? 'ldapUserService' : 'luceneUserService'}" />
+        bean="#{circabcConfig.USE_LDAP == true ? 'ldapUserService' : 'luceneUserService'}"
+      />
 		</property>
 	</bean>
 
@@ -4374,8 +4811,10 @@
 		</property>
 	</bean>
 
-	<bean id="emailApi_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="emailApi_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -4403,7 +4842,7 @@
 			<ref bean="PermissionService" />
 		</property>
 		<property name="authorityService">
-			<ref bean="AuthorityService"/>
+			<ref bean="AuthorityService" />
 		</property>
 	</bean>
 
@@ -4424,8 +4863,10 @@
 		</property>
 	</bean>
 
-	<bean id="guardsApi_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="guardsApi_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -4451,7 +4892,10 @@
 		</property>
 	</bean>
 
-	<bean id="ArchiveApi" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="ArchiveApi"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				io.swagger.api.ArchiveApi
@@ -4469,8 +4913,10 @@
 		</property>
 	</bean>
 
-	<bean id="archiveApi_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="archiveApi_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -4496,7 +4942,10 @@
 		</property>
 	</bean>
 
-	<bean id="ExpiredApi" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="ExpiredApi"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				io.swagger.api.ExpiredApi
@@ -4513,8 +4962,10 @@
 		</property>
 	</bean>
 
-	<bean id="expiredApi_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="expiredApi_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -4543,7 +4994,10 @@
 		</property>
 	</bean>
 
-	<bean id="DashboardApi" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="DashboardApi"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				io.swagger.api.DashboardApi
@@ -4561,8 +5015,10 @@
 		</property>
 	</bean>
 
-	<bean id="dashboardApi_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="dashboardApi_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -4582,7 +5038,10 @@
 		</property>
 	</bean>
 
-	<bean id="FavouritesApi" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="FavouritesApi"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				io.swagger.api.FavouritesApi
@@ -4599,8 +5058,10 @@
 		</property>
 	</bean>
 
-	<bean id="favouritesApi_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="favouritesApi_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -4626,7 +5087,10 @@
 		</property>
 	</bean>
 
-	<bean id="AppMessageApi" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="AppMessageApi"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				io.swagger.api.AppMessageApi
@@ -4643,8 +5107,10 @@
 		</property>
 	</bean>
 
-	<bean id="appMessageApi_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="appMessageApi_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -4654,8 +5120,35 @@
 			</props>
 		</property>
 	</bean>
+
+	<bean id="captchaApi" class="io.swagger.api.CaptchaApiImpl">
+		<property name="captchaUrl">
+			<value>${eu.captcha.url}</value>
+	    </property>
+		<property name="useProxy">
+			<value>${eu.captcha.use.proxy}</value>
+		</property>
+		<property name="proxyHost">
+			<value>${proxy.host}</value>
+		</property>
+		<property name="proxyPort">
+			<value>${proxy.port}</value>
+		</property>
+		<property name="proxyUserName">
+			<value>${proxy.username}</value>
+		</property>
+		<property name="proxyPassword">
+			<value>${proxy.password}</value>
+		</property>
+	</bean>
 	
 	<bean id="helpApi" class="io.swagger.api.HelpApiImpl">
+		<property name="authenticationService">
+			<ref bean="authenticationService" />
+		</property>
+		<property name="currentUserPermissionCheckerService">
+			<ref bean="currentUserPermissionCheckerService" />
+		</property>
 		<property name="nodeService">
 			<ref bean="nodeService" />
 		</property>
@@ -4673,6 +5166,44 @@
 		</property>
 		<property name="emailApi">
 			<ref bean="emailApi" />
+		</property>
+		<property name="ldapUserService">
+			<ref
+        bean="#{circabcConfig.USE_LDAP == true ? 'ldapUserService' : 'luceneUserService'}"
+      />
+		</property>
+		<property name="serviceNowEnable">
+			<value>${serviceNow.enable}</value>
+		</property>
+		<property name="serviceNowPrefix">
+			<value>${serviceNow.prefix}</value>
+		</property>
+		<property name="serviceNowUrl">
+			<value>${serviceNow.url}</value>
+		</property>
+		<property name="serviceNowUser">
+			<value>${serviceNow.user}</value>
+		</property>
+			<property name="serviceNowPassword">
+			<value>${serviceNow.password}</value>
+		</property>
+		<property name="environmentName">
+			<value>${mail.environment.name}</value>
+		</property>
+		<property name="proxyEnable">
+			<value>${proxy.enable}</value>
+		</property>
+		<property name="proxyUrl">
+			<value>${proxy.url}</value>
+		</property>
+		<property name="proxyPort">
+			<value>${proxy.port}</value>
+		</property>
+		<property name="proxyUsername">
+			<value>${proxy.username}</value>
+		</property>
+		<property name="proxyPassword">
+			<value>${proxy.password}</value>
 		</property>
 	</bean>
 
@@ -4693,8 +5224,10 @@
 		</property>
 	</bean>
 
-	<bean id="helpApi_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="helpApi_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -4714,13 +5247,13 @@
 			<ref bean="usersApi" />
 		</property>
 		<property name="profilesApi">
-			<ref bean="profilesApi"/>
+			<ref bean="profilesApi" />
 		</property>
 		<property name="historyDaoService">
 			<ref bean="historyDaoService" />
 		</property>
 		<property name="nodeService">
-			<ref bean="nodeService"/>
+			<ref bean="nodeService" />
 		</property>
 		<property name="permissionService">
 			<ref bean="permissionService" />
@@ -4736,7 +5269,10 @@
 		</property>
 	</bean>
 
-	<bean id="HistoryApi" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="HistoryApi"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				io.swagger.api.HistoryApi
@@ -4753,8 +5289,10 @@
 		</property>
 	</bean>
 
-	<bean id="historyApi_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="historyApi_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -4767,23 +5305,26 @@
 	
 	<bean id="libraryApi" class="io.swagger.api.LibraryApiImpl">
 		<property name="nodeService">
-			<ref bean="nodeService"/>
+			<ref bean="nodeService" />
 		</property>
 		<property name="searchService">
-			<ref bean="searchService"/>
+			<ref bean="searchService" />
 		</property>
 		<property name="apiToolBox">
-			<ref bean="apiToolBox"/>
+			<ref bean="apiToolBox" />
 		</property>
 		<property name="nodesApi">
-			<ref bean="nodesApi"/>
+			<ref bean="nodesApi" />
 		</property>
 		<property name="profilesApi">
-			<ref bean="profilesApi"/>
+			<ref bean="profilesApi" />
 		</property>
 	</bean>
 
-	<bean id="LibraryApi" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean
+    id="LibraryApi"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<value>
 				io.swagger.api.LibraryApi
@@ -4800,8 +5341,10 @@
 		</property>
 	</bean>
 
-	<bean id="libraryApi_transaction"
-		class="org.springframework.transaction.interceptor.TransactionInterceptor">
+	<bean
+    id="libraryApi_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
@@ -4812,8 +5355,7 @@
 		</property>
 	</bean>
 
-	<bean id="AresBridgeApi"
-		class="io.swagger.api.AresBridgeApiImpl">
+	<bean id="AresBridgeApi" class="io.swagger.api.AresBridgeApiImpl">
 		<property name="applicationName">
 		 	<value>${ab.application.name}</value>
 		</property>
@@ -4841,11 +5383,40 @@
 
 	</bean>
 
-	<bean id="aresBridgeService" class="eu.cec.digit.circabc.repo.ares.AresBridgeServiceImpl">
-		<property name="aresBridgeDaoService" ref="aresBridgeDaoService"/>
+	<bean
+    id="aresBridgeService"
+    class="eu.cec.digit.circabc.repo.ares.AresBridgeServiceImpl"
+  >
+		<property name="aresBridgeDaoService" ref="aresBridgeDaoService" />
 		<property name="externalRepositoriesManagementService">
 			<ref bean="ExternalRepositoriesManagementService" />
 		</property>
 	</bean>
 
+	<bean id="circabcApi" class="io.swagger.api.CircabcApiImpl">
+    <property name="personService">
+        <ref bean="personService" />
+    </property>
+    <property name="userService">
+        <ref bean="userService" />
+    </property>
+    <property name="authorityService">
+        <ref bean="authorityService" />
+    </property>
+    <property name="circabcService">
+        <ref bean="circabcService" />
+    </property>
+    <property name="managementService">
+        <ref bean="managementService" />
+    </property>
+    <property name="circabcRootProfileManagerService">
+        <ref bean="circabcRootProfileManagerService" />
+    </property>
+	</bean>
+
+	<bean id="pingInfoApi" class="io.swagger.api.PingInfoApiImpl">
+		<property name="userService">
+			<ref bean="userService" />
+		</property>
+	</bean>
 </beans>

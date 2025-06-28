@@ -1,9 +1,10 @@
-@use '~css/global/variables-mixins-keyframes';
+@use 'css/global/variables-mixins-keyframes';
 
 @font-face {
   font-family: Flaticon;
   src: url('./Flaticon.eot');
-  src: url('./Flaticon.eot?#iefix') format('embedded-opentype'),
+  src:
+    url('./Flaticon.eot?#iefix') format('embedded-opentype'),
     url('./Flaticon.woff') format('woff'),
     url('./Flaticon.ttf') format('truetype'),
     url('./Flaticon.svg#Flaticon') format('svg');

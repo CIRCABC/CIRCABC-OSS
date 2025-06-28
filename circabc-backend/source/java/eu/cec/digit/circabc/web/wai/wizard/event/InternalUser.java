@@ -29,45 +29,51 @@ import org.apache.commons.lang.ObjectUtils;
  */
 public class InternalUser implements Comparable<InternalUser> {
 
-    private String authority;
-    private String firstName;
-    private String lastName;
-    private String email;
+  private String authority;
+  private String firstName;
+  private String lastName;
+  private String email;
 
-    public InternalUser(final String authority, final String firstName, final String lastName,
-                        final String email) {
-        this.authority = authority;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-    }
+  public InternalUser(
+    final String authority,
+    final String firstName,
+    final String lastName,
+    final String email
+  ) {
+    this.authority = authority;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.email = email;
+  }
 
-    public InternalUser(final String authority, final String firstName) {
-        this(authority, firstName, null, null);
-    }
+  public InternalUser(final String authority, final String firstName) {
+    this(authority, firstName, null, null);
+  }
 
-    public final String getAuthority() {
-        return authority;
-    }
+  public final String getAuthority() {
+    return authority;
+  }
 
-    public final String getLongDisplayName() {
-        return getShortDisplayName() + ((email == null) ? "" : " (" + email + ")");
-    }
+  public final String getLongDisplayName() {
+    return getShortDisplayName() + ((email == null) ? "" : " (" + email + ")");
+  }
 
-    public final String getShortDisplayName() {
-        return ((firstName == null) ? "" : firstName + " ") + ((lastName == null) ? "" : lastName);
-    }
+  public final String getShortDisplayName() {
+    return (
+      ((firstName == null) ? "" : firstName + " ") +
+      ((lastName == null) ? "" : lastName)
+    );
+  }
 
+  /**
+   * @return the email
+   */
+  public String getEmail() {
+    return email;
+  }
 
-    /**
-     * @return the email
-     */
-    public String getEmail() {
-        return email;
-    }
-
-    @Override
-    public int compareTo(InternalUser o) {
-        return ObjectUtils.compare(this.email, o.email);
-    }
+  @Override
+  public int compareTo(InternalUser o) {
+    return ObjectUtils.compare(this.email, o.email);
+  }
 }

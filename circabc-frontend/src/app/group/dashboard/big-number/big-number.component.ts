@@ -1,14 +1,14 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
+import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
   selector: 'cbc-big-number',
   templateUrl: './big-number.component.html',
-  styleUrls: ['./big-number.component.scss'],
+  styleUrl: './big-number.component.scss',
   preserveWhitespaces: true,
+  imports: [TranslocoModule],
 })
 export class BigNumberComponent {
-  @Input()
-  value!: number;
-  @Input()
-  label!: string;
+  readonly value = input.required<number>();
+  readonly label = input.required<string>();
 }

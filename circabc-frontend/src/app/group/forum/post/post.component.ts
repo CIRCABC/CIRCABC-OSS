@@ -1,18 +1,21 @@
 import {
   Component,
-  EventEmitter,
   Inject,
   Input,
   Optional,
-  Output,
+  output,
+  input,
 } from '@angular/core';
 
+import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
   ActionType,
 } from 'app/action-result';
+import { assertDefined } from 'app/core/asserts';
 import { PermissionEvaluatorService } from 'app/core/evaluator/permission-evaluator.service';
 import {
   AbuseReport,
@@ -25,30 +28,46 @@ import {
 import { LoginService } from 'app/core/login.service';
 import { SaveAsService } from 'app/core/save-as.service';
 import { Quote } from 'app/core/ui-model/index';
-import { assertDefined } from 'app/core/asserts';
+import { InlineDeleteComponent } from 'app/shared/delete/inline-delete.component';
+import { HintComponent } from 'app/shared/hint/hint.component';
+import { DownloadPipe } from 'app/shared/pipes/download.pipe';
+import { IfRoleGePipe } from 'app/shared/pipes/if-role-ge.pipe';
+import { SecurePipe } from 'app/shared/pipes/secure.pipe';
+import { UserCardComponent } from 'app/shared/user-card/user-card.component';
 import { firstValueFrom } from 'rxjs';
+import { RejectPostComponent } from './reject-post/reject-post.component';
+import { SignalAbuseComponent } from './signal-abuse/signal-abuse.component';
 
 @Component({
   selector: 'cbc-post',
   templateUrl: './post.component.html',
-  styleUrls: ['./post.component.scss'],
+  styleUrl: './post.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    HintComponent,
+    UserCardComponent,
+    InlineDeleteComponent,
+    RejectPostComponent,
+    SignalAbuseComponent,
+    DatePipe,
+    DownloadPipe,
+    IfRoleGePipe,
+    SecurePipe,
+    TranslocoModule,
+  ],
 })
 export class PostComponent {
-  @Input()
-  public topic: ModelNode | undefined;
+  public readonly topic = input<ModelNode>();
+  // TODO: Skipped for migration because:
+  //  This input is used in a control flow expression (e.g. `@if` or `*ngIf`)
+  //  and migrating would break narrowing currently.
   @Input()
   public post!: ModelNode;
-  @Input()
-  public igId: string | undefined;
-  @Output()
-  public readonly replyClicked = new EventEmitter<Quote>();
-  @Output()
-  public readonly editClicked = new EventEmitter<ModelNode>();
-  @Output()
-  public readonly deleted = new EventEmitter<ActionEmitterResult>();
-  @Output()
-  public readonly verified = new EventEmitter<ActionEmitterResult>();
+  public readonly igId = input<string>();
+  public readonly replyClicked = output<Quote>();
+  public readonly editClicked = output<ModelNode>();
+  public readonly deleted = output<ActionEmitterResult>();
+  public readonly verified = output<ActionEmitterResult>();
 
   public abuses!: AbuseReport[];
 
@@ -79,7 +98,7 @@ export class PostComponent {
   }
 
   public fireReply() {
-    if (this.post && this.post.properties) {
+    if (this.post?.properties) {
       const allQuotesExpression =
         /<p><br><\/p><p>(\w)+: (((\w)+\s)*)(\w)+<\/p>(<p><br><\/p>)?<blockquote>(.)+<\/blockquote>$/;
       const message =
@@ -95,7 +114,7 @@ export class PostComponent {
   }
 
   public fireEdit() {
-    if (this.post && this.post.properties) {
+    if (this.post?.properties) {
       this.editClicked.emit(this.post);
     }
   }
@@ -109,7 +128,7 @@ export class PostComponent {
         await firstValueFrom(this.postService.deletePost(this.post.id));
         result.result = ActionResult.SUCCEED;
       }
-    } catch (error) {
+    } catch (_error) {
       result.result = ActionResult.FAILED;
     }
 
@@ -142,13 +161,12 @@ export class PostComponent {
   }
 
   public isOwner(): boolean {
-    if (this.post && this.post.properties) {
+    if (this.post?.properties) {
       return (
         this.loginService.getCurrentUsername() === this.post.properties.owner
       );
-    } else {
-      return false;
     }
+    return false;
   }
 
   public async approve() {
@@ -188,11 +206,12 @@ export class PostComponent {
   }
 
   public isModerator(): boolean {
-    assertDefined(this.topic);
-    if (this.topic.permissions) {
+    const topic = this.topic();
+    assertDefined(topic);
+    if (topic.permissions) {
       return (
-        this.topic.permissions.NwsModerate === 'ALLOWED' ||
-        this.topic.permissions.NwsAdmin === 'ALLOWED'
+        topic.permissions.NwsModerate === 'ALLOWED' ||
+        topic.permissions.NwsAdmin === 'ALLOWED'
       );
     }
     return false;
@@ -216,10 +235,7 @@ export class PostComponent {
     if (!this.post.properties) {
       return false;
     }
-    return (
-      this.post.properties.messages !== undefined &&
-      this.post.properties.messages.includes('Abuse Report:')
-    );
+    return this.post.properties.messages?.includes('Abuse Report:');
   }
 
   public signalAbuse() {
@@ -265,8 +281,8 @@ export class PostComponent {
       );
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.router.navigate([
-        `/group/${this.igId}/library/${attachment.id}${
-          !(attachmentNode.type as string).endsWith('folder') ? '/details' : ''
+        `/group/${this.igId()}/library/${attachment.id}${
+          (attachmentNode.type as string).endsWith('folder') ? '' : '/details'
         }`,
       ]);
     } else {
@@ -282,64 +298,56 @@ export class PostComponent {
   get avatar(): string | null {
     if (this.post.properties) {
       return this.post.properties.avatar;
-    } else {
-      return null;
     }
+    return null;
   }
 
   get creator(): string | null {
     if (this.post.properties) {
       return this.post.properties.creator;
-    } else {
-      return null;
     }
+    return null;
   }
 
   get modifier(): string | null {
     if (this.post.properties) {
       return this.post.properties.modifier;
-    } else {
-      return null;
     }
+    return null;
   }
 
   get created(): string | null {
     if (this.post.properties) {
       return this.post.properties.created;
-    } else {
-      return null;
     }
+    return null;
   }
 
   get modified(): string | null {
     if (this.post.properties) {
       return this.post.properties.modified;
-    } else {
-      return null;
     }
+    return null;
   }
 
   get rejectedBy(): string | null {
     if (this.post.properties) {
       return this.post.properties.rejectedBy;
-    } else {
-      return null;
     }
+    return null;
   }
 
   get rejectedOn(): string | null {
     if (this.post.properties) {
       return this.post.properties.rejectedOn;
-    } else {
-      return null;
     }
+    return null;
   }
 
   get message(): string | null {
     if (this.post.properties) {
       return this.post.properties.message;
-    } else {
-      return null;
     }
+    return null;
   }
 }

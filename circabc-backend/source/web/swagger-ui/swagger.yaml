@@ -1,6 +1,6 @@
 openapi: '3.0.3'
 info:
-  version: '4.2.0'
+  version: '4.2.4.3'
   title: CIRCABC REST API
   description: >
     This is the first version of the CIRCABC REST API used by the new User
@@ -12,11 +12,82 @@ info:
   license:
     name: EUPL-1.1
 servers:
-  - url: '/service/circabc'
+  - url: ../service/circabc
     description: Default server
 security:
   - basicAuth: []
 paths:
+  '/admins':
+    x-swagger-router-controller: ciracbc
+    get:
+      operationId: getCircabAdministrators
+      security:
+        - basicAuth: []
+      tags:
+        - Circabc
+      description: get CIRCABC administrators, only available to Alfresco and CIRCABC administators
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '403':
+          description: Unauthorized action
+        '405':
+          description: Invalid object
+        '500':
+          description: Internal Server Error
+    post:
+      operationId: postCircabcAdministrators
+      security:
+        - basicAuth: []
+      tags:
+        - Circabc
+      description: add users as CIRCABC administrator
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad request
+        '403':
+          description: Unauthorized action
+        '500':
+          description: Internal Server Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+        required: true
+  '/admins/{userId}':
+    delete:
+      operationId: deleteCircabcAdministrators
+      security:
+        - basicAuth: []
+      tags:
+        - Circabc
+      description: remove  user from  CIRCABC administrator group
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad request
+        '403':
+          description: Unauthorized action
+        '500':
+          description: Internal Server Error
   /headers:
     x-swagger-router-controller: header
     get:
@@ -31,7 +102,7 @@ paths:
       parameters:
         - name: language
           in: query
-          description: 'Langauage code for example en,fr,de ...'
+          description: 'Language code for example en,fr,de ...'
           required: false
           schema:
             type: string
@@ -1409,6 +1480,142 @@ paths:
             schema:
               $ref: '#/components/schemas/GroupConfiguration'
         required: true
+  '/categories/{id}/groups/deletion/request':
+    get:
+      operationId: getGroupDeletionRequests
+      security:
+        - basicAuth: []
+      tags:
+        - Category
+      description: |
+        lists all the new Group Deletion Requests.
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: |
+            the amount of values per page
+            values = 25 (default) / 50 / 100 / 0 (all)
+            if not any value is passed, the default value (25) is used
+          required: false
+          schema:
+            type: number
+        - name: page
+          in: query
+          description: the number of the page
+          required: false
+          schema:
+            type: number
+        - name: filter
+          in: query
+          description: the type of agreement (waiting / approved / rejected)
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedGroupDeletionRequests'
+        '403':
+          description: Unauthorized action
+        '405':
+          description: Invalid request
+        '500':
+          description: Internal Server Error
+    post:
+      operationId: postGroupDeletionRequest
+      security:
+        - basicAuth: []
+      tags:
+        - Category
+      description: IG leaders ask the Category Administrator to delete it.
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+        '403':
+          description: Unauthorized action
+        '405':
+          description: Invalid request
+        '500':
+          description: Internal Server Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroupDeletionRequestInput'
+        required: true
+  '/categories/{id}/request/delete/group/approval':
+    post:
+      operationId: validateInterestGroupDeleteRequests
+      security:
+        - basicAuth: []
+      tags:
+        - Category
+      description: |
+        the category admin refuses or accepts delete an Interest Group
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+        '403':
+          description: Unauthorized action
+        '405':
+          description: Invalid request
+        '500':
+          description: Internal Server Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroupDeletionRequestApproval'
+        required: true
+  '/categories/{groupId}/groups/deletion-status':
+    get:
+      operationId: isDeleteRequestPending
+      security:
+        - basicAuth: []
+      tags:
+        - Category
+      description: Check if a request to delete an interest group already exists
+      parameters:
+        - name: groupId
+          required: true
+          in: path
+          schema:
+            type: string
+          description: The ID of the interest group
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: boolean
+                example: true
+        '403':
+          description: Unauthorized action
+        '405':
+          description: Invalid request
+        '500':
+          description: Internal Server Error
   '/check/deletion/groups/{id}':
     get:
       operationId: isGroupDeletable
@@ -1572,6 +1779,85 @@ paths:
           description: Internal Server Error
       requestBody:
         $ref: '#/components/requestBodies/MembershipPostDefinition'
+  '/groups/{id}/members/filter':
+    get:
+      operationId: getMembersFilter
+      security:
+        - basicAuth: []
+      tags:
+        - Members
+      description: get all members of an Interest group or can be filtered using a combination of their respective name, last name, email,and profile.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: profile
+          in: query
+          description: filters the members that belong to one profile
+          required: false
+          style: form
+          explode: false
+          schema:
+            type: string
+        - name: language
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: |
+            the amount of values per page
+            values = 25 (default) / 50 / 100 / 0 (all)
+            if not any value is passed, the default value (25) is used
+          required: false
+          schema:
+            type: number
+        - name: page
+          in: query
+          description: the number of the page
+          required: false
+          schema:
+            type: number
+        - name: order
+          in: query
+          description: the column name on which a sorting applies  - for DESC and + for ASC
+          required: false
+          schema:
+            type: string
+        - name: firstName
+          in: query
+          description: query to search users by their first name
+          required: false
+          schema:
+            type: string
+        - name: lastName
+          in: query
+          description: query to search users by their last name
+          required: false
+          schema:
+            type: string
+        - name: email
+          in: query
+          description: query to search users by their email
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedUserProfile'
+        '403':
+          description: Unauthorized action
+        '405':
+          description: Invalid object
+        '500':
+          description: Internal Server Error
   '/groups/{id}/members/count':
     get:
       operationId: getMemberCount
@@ -3604,6 +3890,34 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UserPostDefinition'
+  /ldapUser:
+    get:
+      operationId: getLdapdUser
+      security:
+        - basicAuth: []
+      tags:
+        - User
+      description: >
+        Get the user from the LDAP based on his userId or email
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LdapUser'
+        '403':
+          description: Unauthorized action
+        '500':
+          description: Internal Server Error
   /users/bulkinvite/template:
     get:
       operationId: getBulkInviteTemplate
@@ -3821,29 +4135,6 @@ paths:
                 $ref: '#/components/schemas/User'
         '403':
           description: Unauthorized action
-        '500':
-          description: Internal Server Error
-    delete:
-      operationId: deleteUser
-      security:
-        - basicAuth: []
-      tags:
-        - User
-      description: |
-        Delete one user
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: ok
-        '403':
-          description: Unauthorized action
-        '405':
-          description: Invalid input
         '500':
           description: Internal Server Error
     put:
@@ -4494,6 +4785,11 @@ paths:
           required: true
           schema:
             type: string
+        - name: notify
+          in: query
+          required: false
+          schema:
+            type: boolean
       responses:
         '200':
           description: OK
@@ -4516,6 +4812,11 @@ paths:
           required: true
           schema:
             type: string
+        - name: notify
+          in: query
+          required: false
+          schema:
+            type: boolean
       responses:
         '200':
           description: ok
@@ -4552,7 +4853,7 @@ paths:
             type: string
         - name: language
           description: >-
-            Langauage code for example en,fr,de... ,if specify filter filter
+            Language code for example en,fr,de... , if specify filters
             multilingual documents and multilingual properties
           in: query
           required: false
@@ -5032,6 +5333,11 @@ paths:
           required: true
           schema:
             type: string
+        - name: notify
+          in: query
+          required: false
+          schema:
+            type: boolean
       responses:
         '200':
           description: ok
@@ -5054,6 +5360,11 @@ paths:
           required: true
           schema:
             type: string
+        - name: notify
+          in: query
+          required: false
+          schema:
+            type: boolean
       responses:
         '200':
           description: ok
@@ -5118,26 +5429,6 @@ paths:
           required: true
           schema:
             type: string
-        - name: comment
-          in: query
-          required: false
-          schema:
-            type: string
-        - name: minorChange
-          in: query
-          required: false
-          schema:
-            type: boolean
-        - name: keepCheckedOut
-          in: query
-          required: false
-          schema:
-            type: boolean
-        - name: endEditInline
-          in: query
-          required: false
-          schema:
-            type: boolean
       responses:
         '200':
           description: ok
@@ -5147,6 +5438,11 @@ paths:
           description: Invalid input
         '500':
           description: Internal Server Error
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CheckinData'
     delete:
       operationId: deleteCheckout
       security:
@@ -5711,40 +6007,6 @@ paths:
           description: Internal Server Error
       requestBody:
         $ref: '#/components/requestBodies/Node'
-  '/content/{id}/email':
-    post:
-      operationId: postContentEmail
-      security:
-        - basicAuth: []
-      tags:
-        - Content
-      description: >
-        email this content node to the user with the given id. If userId is not
-        provided, it emails to the current authenticated user
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: userId
-          in: query
-          required: false
-          schema:
-            type: string
-      responses:
-        '200':
-          description: ok
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'
-        '403':
-          description: Unauthorized action
-        '405':
-          description: Invalid input
-        '500':
-          description: Internal Server Error
   /content/bulk:
     get:
       operationId: getBulk
@@ -5770,47 +6032,6 @@ paths:
               schema:
                 type: string
                 format: binary
-        '403':
-          description: Unauthorized action
-        '405':
-          description: Invalid input
-        '500':
-          description: Internal Server Error
-  /contents/email:
-    post:
-      operationId: postContentsEmail
-      security:
-        - basicAuth: []
-      tags:
-        - Content
-      description: >
-        email this content zip file link to the user with the given id. If
-        userId is not provided, it emails to the current authenticated user
-      parameters:
-        - name: parentId
-          in: query
-          required: true
-          schema:
-            type: string
-        - name: nodeIds
-          in: query
-          required: true
-          schema:
-            type: array
-            items:
-              type: string
-        - name: userId
-          in: query
-          required: false
-          schema:
-            type: string
-      responses:
-        '200':
-          description: ok
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'
         '403':
           description: Unauthorized action
         '405':
@@ -6085,15 +6306,34 @@ paths:
           required: false
           schema:
             type: string
+        - name: limit
+          in: query
+          description: |
+            the amount of values per page
+            values = 100 (default) / 50 / 100 / 0 (all)
+            if not any value is passed, the default value (25) is used
+          required: false
+          schema:
+            type: number
+        - name: page
+          in: query
+          description: the number of the page
+          required: false
+          schema:
+            type: number
+        - name: order
+          in: query
+          description: the column name on which a sorting applies  - for DESC and + for ASC
+          required: false
+          schema:
+            type: string
       responses:
         '200':
           description: ok
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Node'
+                $ref: '#/components/schemas/PagedNodes'
         '403':
           description: Unauthorized action
         '405':
@@ -6342,6 +6582,11 @@ paths:
           required: true
           schema:
             type: string
+        - name: notify
+          in: query
+          required: false
+          schema:
+            type: boolean
       responses:
         '200':
           description: ok
@@ -6438,6 +6683,11 @@ paths:
           required: true
           schema:
             type: string
+        - name: notify
+          in: query
+          required: false
+          schema:
+            type: boolean
       responses:
         '200':
           description: ok
@@ -7024,16 +7274,15 @@ paths:
           required: true
           schema:
             type: string
-        - name: nodeIds
-          in: query
-          required: true
-          schema:
-            type: array
-            items:
-              type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasteNodesRequestPost'
       responses:
         '200':
-          description: ok
+          description: ok 
         '403':
           description: Unauthorized action
         '405':
@@ -7055,13 +7304,12 @@ paths:
           required: true
           schema:
             type: string
-        - name: nodeIds
-          in: query
-          required: true
-          schema:
-            type: array
-            items:
-              type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasteNodesRequestPut'
       responses:
         '200':
           description: ok
@@ -7087,13 +7335,13 @@ paths:
           required: true
           schema:
             type: string
-        - name: nodeIds
-          in: query
-          required: true
-          schema:
-            type: array
-            items:
-              type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasteNodesRequestPost'
+      
       responses:
         '200':
           description: ok
@@ -7325,6 +7573,24 @@ paths:
           required: false
           schema:
             type: string
+        - name: type
+          in: query
+          description: query to search users by their type
+          required: false
+          schema:
+            type: string
+        - name: userName
+          in: query
+          description: query to search users by their user name
+          required: false
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: query to search users by their status
+          required: false
+          schema:
+            type: string
       responses:
         '200':
           description: ok
@@ -7401,6 +7667,30 @@ paths:
           required: false
           schema:
             type: number
+        - name: userName
+          in: query
+          description: query to search users by their user name
+          required: false
+          schema:
+            type: string
+        - name: firstName
+          in: query
+          description: query to search users by their first name
+          required: false
+          schema:
+            type: string
+        - name: lastName
+          in: query
+          description: query to search users by their last name
+          required: false
+          schema:
+            type: string
+        - name: email
+          in: query
+          description: query to search users by their email
+          required: false
+          schema:
+            type: string
       responses:
         '200':
           description: ok
@@ -7735,16 +8025,226 @@ paths:
             type: string
         - name: node
           in: query
-          required: false
+          required: true
           description: the node to which the query is start
+          schema:
+            type: string
+        - name: language
+          in: query
+          required: false
+          description: to filter for a specific language
+          schema:
+            type: string
+        - name: searchFor
+          in: query
+          description: All, Name, Title, Content
+          required: false
+          schema:
+            type: string
+            default: All
+        - name: searchIn
+          in: query
+          description: All, Library, Forums, Information or Agenda
+          required: false
+          schema:
+            type: string
+            default: All
+        - name: creator
+          in: query
+          description: who created the file
+          required: false
+          schema:
+            type: string
+        - name: creationDateFrom
+          in: query
+          description: to filter the documents with a creation date after or equal to the given date in YYYY-MM-DD format
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: creationDateTo
+          in: query
+          description: to filter the documents with a creation date before or equal to the given date in YYYY-MM-DD format
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: modifiedDateFrom
+          in: query
+          description: to filter the documents modified after or equal to the given date in YYYY-MM-DD format
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: modifiedDateTo
+          in: query
+          description: to filter the documents modified before or equal to the given date in YYYY-MM-DD format
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: keywords
+          in: query
+          description: comma separated list of keywords
+          required: false
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: status of a file
+          required: false
+          schema:
+            type: string
+        - name: securityRanking
+          in: query
+          description: securityRanking of a file
+          required: false
+          schema:
+            type: string
+        - name: version
+          in: query
+          description: version label of a file
+          required: false
+          schema:
+            type: string
+        - name: sort
+          in: query
+          description: on which parameter we will sort the results (Name, Title, Creation_Date, Modification_Date, Issue_Date)
+          required: false
+          schema:
+            type: string
+        - name: order
+          in: query
+          description: order of sorting, ascending (Asc) or descending (Desc) order
+          required: false
+          schema:
+            type: string
+            default: Asc
+        - name: dynAttr1
+          in: query
+          description: Dynamic Atribute 1
+          required: false
+          schema:
+            type: string
+        - name: dynAttr2
+          in: query
+          description: Dynamic Atribute 2
+          required: false
+          schema:
+            type: string
+        - name: dynAttr3
+          in: query
+          description: Dynamic Atribute 3
+          required: false
+          schema:
+            type: string
+        - name: dynAttr4
+          in: query
+          description: Dynamic Atribute 4
+          required: false
+          schema:
+            type: string
+        - name: dynAttr5
+          in: query
+          description: Dynamic Atribute 5
+          required: false
+          schema:
+            type: string
+        - name: dynAttr6
+          in: query
+          description: Dynamic Atribute 6
+          required: false
+          schema:
+            type: string
+        - name: dynAttr7
+          in: query
+          description: Dynamic Atribute 7
+          required: false
+          schema:
+            type: string
+        - name: dynAttr8
+          in: query
+          description: Dynamic Atribute 8
+          required: false
+          schema:
+            type: string
+        - name: dynAttr9
+          in: query
+          description: Dynamic Atribute 9
+          required: false
+          schema:
+            type: string
+        - name: dynAttr10
+          in: query
+          description: Dynamic Atribute 10
+          required: false
+          schema:
+            type: string
+        - name: dynAttr11
+          in: query
+          description: Dynamic Atribute 11
+          required: false
+          schema:
+            type: string
+        - name: dynAttr12
+          in: query
+          description: Dynamic Atribute 12
+          required: false
+          schema:
+            type: string
+        - name: dynAttr13
+          in: query
+          description: Dynamic Atribute 13
+          required: false
+          schema:
+            type: string
+        - name: dynAttr14
+          in: query
+          description: Dynamic Atribute 14
+          required: false
+          schema:
+            type: string
+        - name: dynAttr15
+          in: query
+          description: Dynamic Atribute 15
+          required: false
+          schema:
+            type: string
+        - name: dynAttr16
+          in: query
+          description: Dynamic Atribute 16
+          required: false
+          schema:
+            type: string
+        - name: dynAttr17
+          in: query
+          description: Dynamic Atribute 17
+          required: false
+          schema:
+            type: string
+        - name: dynAttr18
+          in: query
+          description: Dynamic Atribute 18
+          required: false
+          schema:
+            type: string
+        - name: dynAttr19
+          in: query
+          description: Dynamic Atribute 19
+          required: false
+          schema:
+            type: string
+        - name: dynAttr20
+          in: query
+          description: Dynamic Atribute 20
+          required: false
           schema:
             type: string
         - name: limit
           in: query
           description: |
-            the amount of values per page
-            values = 25 (default) / 50 / 100 / 0 (all)
-            if not any value is passed, the default value (25) is used
+            the number of result(s) per page.
+            if not set, the default value (250) is used
           required: false
           schema:
             type: number
@@ -8927,6 +9427,23 @@ paths:
         - Help
       description: |
         send an email to the support team to open a ticket
+      parameters:
+        - name: X-EU-CAPTCHA-ID
+          in: header
+          schema:
+            type: string
+            format: uuid
+          required: false
+        - name: X-EU-CAPTCHA-TOKEN
+          in: header
+          schema:
+            type: string
+          required: false
+        - name: X-EU-CAPTCHA-TEXT
+          in: header
+          schema:
+            type: string
+          required: false
       responses:
         '200':
           description: ok
@@ -9219,6 +9736,23 @@ paths:
           description: Internal Server Error
       requestBody:
         $ref: '#/components/requestBodies/ExternalRepoTransaction'
+  '/ping':
+    get:
+      operationId: ping
+      security:
+        - basicAuth: []
+      tags:
+        - Info
+      description: get Information about the current Node
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Info'
+        '500':
+          description: Internal Server Error
 tags:
   - name: Header
     description: all the operations related to the Headers
@@ -9283,6 +9817,8 @@ tags:
     description: all the operations related to the file transfer upload
   - name: ExternalRepository
     description: all the operations related to the external repositories
+  - name: Info
+    description: informations about the current running node
 components:
   requestBodies:
     ExternalRepoTransaction:
@@ -10419,11 +10955,6 @@ components:
             permission
 
             definition may vary depending on its type or service.
-    Status:
-      type: object
-      properties:
-        result:
-          type: boolean
     PagedEventItemDefinition:
       type: object
       required:
@@ -10850,6 +11381,22 @@ components:
           type: number
         justification:
           type: string
+    GroupDeletionRequestApproval:
+      type: object
+      required:
+        - id
+        - agreement
+      properties:
+        id:
+          type: number
+        agreement:
+          description: |
+            1 == agreed
+            -1 == refused
+            0 == waiting approval
+          type: number
+        argument:
+          type: string
     PagedGroupCreationRequests:
       type: object
       required:
@@ -10860,6 +11407,18 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/GroupCreationRequest'
+        total:
+          type: number
+    PagedGroupDeletionRequests:
+      type: object
+      required:
+        - data
+        - total
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/GroupDeletionRequest'
         total:
           type: number
     OfficeEditResult:
@@ -11157,6 +11716,17 @@ components:
           format: binary
       required:
         - fileData
+    CheckinData:
+      type: object
+      properties:
+        comment:
+          type: string
+        minorChange:
+          type: boolean
+        keepCheckedOut:
+          type: boolean
+        endEditInline:
+          type: boolean
     TranslationFileData:
       type: object
       properties:
@@ -11314,8 +11884,13 @@ components:
       properties:
         library:
           $ref: '#/components/schemas/LibraryPreferences'
+        search:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchPreferences'
       required:
         - library
+        - search
     LibraryPreferences:
       type: object
       properties:
@@ -11388,3 +11963,187 @@ components:
         - nodeName
         - versionLabel
         - transactionId
+    SearchPreferences:
+      type: object
+      properties:
+        igId:
+          type: string
+        searchConfig:
+          type: array
+          items:
+            $ref: '#/components/schemas/searchConfig'
+      required:
+        - igId
+        - searchConfig
+    searchConfig:
+      type: object
+      properties:
+        searchName:
+          type: string
+        searchFor:
+          type: string
+        searchIn:
+          type: string
+          enum:
+            - All
+            - library
+            - forums
+            - infoService
+            - agenda
+        language:
+          type: string
+        creationDateFrom:
+          type: string
+          format: dateTime
+        creationDateTo:
+          type: string
+          format: dateTime
+        lastModificationFrom:
+          type: string
+          format: dateTime
+        lastModificationTo:
+          type: string
+          format: dateTime
+        creatorUser:
+          $ref: '#/components/schemas/User'
+        keywords:
+          type: array
+          items:
+            $ref: '#/components/schemas/KeywordDefinition'
+        status:
+          type: string
+          enum:
+            - All
+            - library
+            - forums
+            - infoService
+            - agenda
+      required:
+        - name
+    GroupDeletionRequest:
+      type: object
+      required:
+        - from
+        - justification
+      properties:
+        id:
+          type: number
+        from:
+          $ref: '#/components/schemas/User'
+        requestDate:
+          type: string
+          format: dateTime
+        categoryRef:
+          type: string
+        agreement:
+          description: |
+            1 == agreed
+            -1 == refused
+            0 == waiting approval
+          type: number
+        reviewer:
+          $ref: '#/components/schemas/User'
+        justification:
+          type: string
+        agreementDate:
+          type: string
+          format: dateTime
+        name:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        groupId:
+          type: string
+        leaders:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        rejectedMessage:
+          type: string
+    GroupDeletionRequestInput:
+      type: object
+      required:
+        - justification
+      properties:
+        justification:
+          type: string
+    LdapUser:
+      type: object
+      description: Ldap user
+      properties:
+        userId:
+          type: string
+        firstname:
+          type: string
+        lastname:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        organisation:
+          type: string
+        sourceOrganisation:
+          type: string
+        dg:
+          type: string
+        departmentNumber:
+          type: string
+    PasteNodesRequestPost:
+      type: object
+      properties:
+        nodeIds:
+          type: array
+          items:
+            type: string
+      required:
+        - nodeIds
+    PasteNodesRequestPut:
+      type: object
+      properties:
+        nodeIds:
+          type: array
+          items:
+            type: string
+        notify:
+          type: boolean
+      required:
+        - nodeIds
+    Info:
+      type: object
+      description: Information about current Node
+      properties:
+        instanceId:
+          type: string
+        hostname:
+          type: string
+        ip:
+          type: string
+        upTime:
+          type: string
+        startTime:
+          type: string
+        status:
+          type: string
+        databaseConnected:
+          type: boolean
+        memory:
+          type: object
+          properties:
+            used:
+              type: number
+            max:
+              type: number
+            free:
+              type: number
+        cpu:
+          type: object
+          properties:
+            usage:
+              type: number
+            cores:
+              type: integer
+        version:
+          type: string

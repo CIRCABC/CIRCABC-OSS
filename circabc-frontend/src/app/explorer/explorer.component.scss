@@ -1,4 +1,4 @@
-@use '~css/global/variables-mixins-keyframes';
+@use 'css/global/variables-mixins-keyframes';
 
 .box--groups {
   padding: 0 25px;
@@ -12,7 +12,7 @@
 
   h3 {
     font-size: 14px;
-    color: #035;
+    color: var(--theme-h3);
   }
 
   .breadcrump {
@@ -126,12 +126,12 @@
   width: 64px;
   padding: 12px;
   font-size: 48px;
-  color: #035;
+  color: var(--theme-h3);
 }
 
 .list-groups {
   clear: left;
-  color: #035;
+  color: var(--theme-h3);
   font-size: 14px;
   padding-top: 15px;
 }

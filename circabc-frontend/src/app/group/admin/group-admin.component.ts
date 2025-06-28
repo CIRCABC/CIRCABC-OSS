@@ -1,26 +1,61 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Data, Router } from '@angular/router';
-import { InterestGroup } from 'app/core/generated/circabc';
+import {
+  ActivatedRoute,
+  Data,
+  Router,
+  RouterLink,
+  RouterOutlet,
+} from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
+import { DataCyDirective } from 'app/shared/directives/data-cy.directive';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
+import { SetTitlePipe } from 'app/shared/pipes/set-title.pipe';
 import { environment } from 'environments/environment';
+import { LoginService } from 'app/core/login.service';
+import { MatDialog } from '@angular/material/dialog';
+import { PagedUserProfile } from 'app/core/generated/circabc';
+
+import { InterestGroup } from 'app/core/generated/circabc/model/interestGroup';
+import { User } from 'app/core/generated/circabc';
+import { PermissionEvaluatorService } from 'app/core/evaluator/permission-evaluator.service';
+import { DeleteRequestGroupComponent } from './delete-request-group/delete-request-group.component';
 
 @Component({
   selector: 'cbc-group-admin',
   templateUrl: './group-admin.component.html',
   preserveWhitespaces: true,
+  imports: [
+    HorizontalLoaderComponent,
+    DataCyDirective,
+    RouterLink,
+    RouterOutlet,
+    SetTitlePipe,
+    TranslocoModule,
+  ],
 })
 export class GroupAdminComponent implements OnInit {
   public loading = false;
   public featureDisabled = false;
-  public group!: InterestGroup;
+  public group?: InterestGroup;
   public isExternalRepositoryEnabled = false;
+  public pageUserProfile: PagedUserProfile | undefined;
+  public displayRequestDeleteIg = false;
+  public user: User | undefined;
+  public showActionsDropdown = false;
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private loginService: LoginService,
+    public dialog: MatDialog,
+    private permissionEvaluatorService: PermissionEvaluatorService
+  ) {}
 
-  constructor(private router: Router, private route: ActivatedRoute) {}
-
-  ngOnInit() {
+  async ngOnInit() {
     this.isExternalRepositoryEnabled = environment.aresBridgeEnabled;
     this.route.data.subscribe((value: Data) => {
       this.group = value.group;
     });
+    this.checkIfUserIsLeader();
   }
 
   public checkCurrentRouteActive(routeName: string): boolean {
@@ -75,14 +110,34 @@ export class GroupAdminComponent implements OnInit {
   }
 
   public canDeleteGroup() {
-    if (
-      this.group &&
-      this.group.permissions &&
-      this.group.permissions.IgDelete === 'true'
-    ) {
+    if (this.group?.permissions && this.group.permissions.IgDelete === 'true') {
       return true;
-    } else {
-      return false;
     }
+    return false;
+  }
+  private async checkIfUserIsLeader(): Promise<void> {
+    this.displayRequestDeleteIg = await this.isUserLeader();
+  }
+  private async isUserLeader(): Promise<boolean> {
+    this.user = this.loginService.getUser();
+    if (this.group) {
+      return this.permissionEvaluatorService.isGroupAdmin(this.group);
+    }
+    return false;
+  }
+
+  toggleDropdown(event: Event) {
+    this.showActionsDropdown = !this.showActionsDropdown;
+    event.stopPropagation();
+  }
+
+  openDialogRequestDeleteGroup() {
+    const dialogRef = this.dialog.open(DeleteRequestGroupComponent, {
+      data: {
+        group: this.group,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe(() => {});
   }
 }

@@ -1,14 +1,33 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { TranslocoModule } from '@jsverse/transloco';
 import { User, UserService } from 'app/core/generated/circabc';
+import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { InterestGroupProfileSelectable } from 'app/support/user-management/interest-group-profile-selectable';
 import { UsersMembershipsModel } from 'app/support/user-management/users-memberships-model';
 import { firstValueFrom } from 'rxjs';
+import { ExpirationSchedulerComponent } from './expiration-scheduler/expiration-scheduler.component';
+import { FocusedUserBoxComponent } from './focused-user-box/focused-user-box.component';
+import { FocusedUserMembershipBoxComponent } from './focused-user-membership-box/focused-user-membership-box.component';
+import { RevocationSchedulerComponent } from './revocation-scheduler/revocation-scheduler.component';
+import { UserResultBoxComponent } from './user-result-box/user-result-box.component';
 
 @Component({
   selector: 'cbc-user-management',
   templateUrl: './user-management.component.html',
-  styleUrls: ['./user-management.component.scss'],
+  styleUrl: './user-management.component.scss',
+  imports: [
+    ReactiveFormsModule,
+    SpinnerComponent,
+    UserResultBoxComponent,
+    FocusedUserBoxComponent,
+    FocusedUserMembershipBoxComponent,
+    RevocationSchedulerComponent,
+    ExpirationSchedulerComponent,
+    I18nPipe,
+    TranslocoModule,
+  ],
 })
 export class UserManagementComponent implements OnInit {
   public searchForm!: FormGroup;
@@ -27,7 +46,10 @@ export class UserManagementComponent implements OnInit {
   public showExpirationModal = false;
   public selectedUserIds: string[] = [];
 
-  constructor(private fb: FormBuilder, private userService: UserService) {}
+  constructor(
+    private fb: FormBuilder,
+    private userService: UserService
+  ) {}
 
   ngOnInit() {
     this.searchForm = this.fb.group({
@@ -39,9 +61,9 @@ export class UserManagementComponent implements OnInit {
     });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public fileChangeEvent(fileInput: any) {
-    this.uploadFiles = fileInput.target.files as FileList;
+  public fileChangeEvent(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.uploadFiles = input.files as FileList;
   }
 
   public resetSearch() {
@@ -64,7 +86,7 @@ export class UserManagementComponent implements OnInit {
         this.focusedUserId = '';
         this.oneUserFocus = false;
         this.searchedUsers = await firstValueFrom(
-          this.userService.getUsers(this.searchForm.value.searchField)
+          this.userService.getUsers(this.searchForm.value.searchField, false)
         );
       } catch (error) {
         console.error(error);

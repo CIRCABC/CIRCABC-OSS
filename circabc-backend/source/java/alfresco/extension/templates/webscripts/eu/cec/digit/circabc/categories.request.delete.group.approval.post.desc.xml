@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>approve or decline a category request delete group</shortname>
+  <description>Post a request delete group approval</description>
+  <url>/circabc/categories/{id}/request/delete/group/approval</url>
+  <format default="json" />
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

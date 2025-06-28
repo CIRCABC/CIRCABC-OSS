@@ -1,7 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit, input } from '@angular/core';
 
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
+import { DatePipe } from '@angular/common';
 import {
   ActionEmitterResult,
   ActionResult,
@@ -17,18 +18,35 @@ import {
 } from 'app/core/generated/circabc';
 import { UiMessageService } from 'app/core/message/ui-message.service';
 import { changeSort } from 'app/core/util';
+import { PurgeItemComponent } from 'app/group/admin/documents/purge-item/purge-item.component';
+import { RestoreItemComponent } from 'app/group/admin/documents/restore-item/restore-item.component';
 import { ListingOptions } from 'app/group/listing-options/listing-options';
+import { InlineDeleteComponent } from 'app/shared/delete/inline-delete.component';
+import { NumberBadgeComponent } from 'app/shared/number-badge/number-badge.component';
+import { PagerConfigurationComponent } from 'app/shared/pager-configuration/pager-configuration.component';
+import { PagerComponent } from 'app/shared/pager/pager.component';
+import { UserCardComponent } from 'app/shared/user-card/user-card.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-deleted-items',
   templateUrl: './deleted-items.component.html',
-  styleUrls: ['./deleted-items.component.scss'],
+  styleUrl: './deleted-items.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    PagerComponent,
+    PagerConfigurationComponent,
+    NumberBadgeComponent,
+    UserCardComponent,
+    InlineDeleteComponent,
+    RestoreItemComponent,
+    PurgeItemComponent,
+    DatePipe,
+    TranslocoModule,
+  ],
 })
 export class DeletedItemsComponent implements OnInit {
-  @Input()
-  groupId!: string;
+  readonly groupId = input.required<string>();
 
   public currentIg!: InterestGroup;
   public listingOptions: ListingOptions = {
@@ -58,13 +76,14 @@ export class DeletedItemsComponent implements OnInit {
 
   private async loadIg() {
     this.loading = true;
-    if (this.groupId) {
+    const groupId = this.groupId();
+    if (groupId) {
       this.currentIg = await firstValueFrom(
-        this.groupService.getInterestGroup(this.groupId)
+        this.groupService.getInterestGroup(groupId)
       );
       this.deletedNodes = await firstValueFrom(
         this.archiveService.getDeletedDocuments(
-          this.groupId,
+          groupId,
           this.listingOptions.limit,
           this.listingOptions.page,
           this.listingOptions.sort
@@ -86,10 +105,11 @@ export class DeletedItemsComponent implements OnInit {
   private async changePage(listingOptions: ListingOptions) {
     this.loading = true;
     this.listingOptions = listingOptions;
-    if (this.groupId !== undefined) {
+    const groupId = this.groupId();
+    if (groupId !== undefined) {
       this.deletedNodes = await firstValueFrom(
         this.archiveService.getDeletedDocuments(
-          this.groupId,
+          groupId,
           this.listingOptions.limit,
           this.listingOptions.page,
           this.listingOptions.sort
@@ -117,27 +137,24 @@ export class DeletedItemsComponent implements OnInit {
   public isFile(node: ModelNode): boolean {
     if (node.type) {
       return node.type.indexOf('folder') === -1;
-    } else {
-      return false;
     }
+    return false;
   }
 
   public isFolder(node: ModelNode): boolean {
     if (node.type) {
       return node.type.indexOf('folder') !== -1;
-    } else {
-      return false;
     }
+    return false;
   }
 
   public isLink(node: ModelNode): boolean {
-    if (node.properties && node.properties.mimetype && node.properties.url) {
+    if (node.properties?.mimetype && node.properties.url) {
       return (
         node.properties.mimetype === 'text/html' && node.properties.url !== ''
       );
-    } else {
-      return false;
     }
+    return false;
   }
 
   public restoreNode(archiveNode: ArchiveNode) {
@@ -146,7 +163,7 @@ export class DeletedItemsComponent implements OnInit {
     this.showModal = true;
   }
 
-  public restoreCanceled() {
+  public canceled() {
     this.restorableNodes = [];
     this.showModal = false;
   }
@@ -173,7 +190,7 @@ export class DeletedItemsComponent implements OnInit {
 
     this.deletedNodes = await firstValueFrom(
       this.archiveService.getDeletedDocuments(
-        this.groupId,
+        this.groupId(),
         this.listingOptions.limit,
         this.listingOptions.page,
         this.listingOptions.sort
@@ -222,7 +239,7 @@ export class DeletedItemsComponent implements OnInit {
       }
       // not sure why error is eaten !
       // eslint-disable-next-line no-empty, @typescript-eslint/no-empty-function
-    } catch (error) {}
+    } catch (_error) {}
     await this.purgeFinish(res);
   }
 
@@ -252,7 +269,7 @@ export class DeletedItemsComponent implements OnInit {
 
     this.deletedNodes = await firstValueFrom(
       this.archiveService.getDeletedDocuments(
-        this.groupId,
+        this.groupId(),
         this.listingOptions.limit,
         this.listingOptions.page,
         this.listingOptions.sort
@@ -263,15 +280,12 @@ export class DeletedItemsComponent implements OnInit {
 
   public toggleAllPrepared() {
     this.allSelected = !this.allSelected;
-    if (this.deletedNodes && this.deletedNodes.data && this.allSelected) {
+    if (this.deletedNodes?.data && this.allSelected) {
       for (const delNode of this.deletedNodes.data) {
         this.restorableNodes.push(delNode);
       }
     } else if (!this.allSelected) {
       this.restorableNodes = [];
     }
-  }
-  public trackById(_index: number, item: { id?: string | number }) {
-    return item.id;
   }
 }

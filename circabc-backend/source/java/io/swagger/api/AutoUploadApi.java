@@ -7,14 +7,17 @@ import io.swagger.model.PagedAutoUploadConfiguration;
  * @author schwerr
  */
 public interface AutoUploadApi {
+  PagedAutoUploadConfiguration getAutoUploadEntries(
+    String igId,
+    int startItem,
+    int limit
+  );
 
-    PagedAutoUploadConfiguration getAutoUploadEntries(String igId, int startItem, int limit);
+  void removeAutoUploadEntry(long configurationId);
 
-    void removeAutoUploadEntry(long configurationId);
+  void toggleAutoUploadEntry(long configurationId, boolean enable);
 
-    void toggleAutoUploadEntry(long configurationId, boolean enable);
+  Configuration getAutoUploadEntry(String nodeId);
 
-    Configuration getAutoUploadEntry(String nodeId);
-
-    void addAutoUploadEntry(String autoUploadConfigurationJson);
+  void addAutoUploadEntry(String autoUploadConfigurationJson);
 }

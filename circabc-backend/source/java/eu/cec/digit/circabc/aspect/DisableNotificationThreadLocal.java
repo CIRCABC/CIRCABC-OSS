@@ -22,24 +22,24 @@ package eu.cec.digit.circabc.aspect;
 
 public class DisableNotificationThreadLocal {
 
-    private static ThreadLocalBoolean flag = new ThreadLocalBoolean();
+  private static ThreadLocalBoolean flag = new ThreadLocalBoolean();
 
-    public void remove() {
-        flag.remove();
+  public void remove() {
+    flag.remove();
+  }
+
+  public void set(Boolean value) {
+    flag.set(value);
+  }
+
+  public Boolean get() {
+    return flag.get();
+  }
+
+  private static class ThreadLocalBoolean extends ThreadLocal<Boolean> {
+
+    public Boolean initialValue() {
+      return Boolean.FALSE;
     }
-
-    public void set(Boolean value) {
-        flag.set(value);
-    }
-
-    public Boolean get() {
-        return flag.get();
-    }
-
-    private static class ThreadLocalBoolean extends ThreadLocal<Boolean> {
-
-        public Boolean initialValue() {
-            return Boolean.FALSE;
-        }
-    }
+  }
 }

@@ -17,40 +17,40 @@
 package eu.cec.digit.circabc.service.translation;
 
 import eu.cec.digit.circabc.util.CircabcUserDataBean;
+import java.util.Set;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 
-import java.util.Set;
-
 public interface TranslationService {
+  Set<String> getAvailableLanguages();
 
-    Set<String> getAvailableLanguages();
+  void translateProperty(
+    NodeRef nodeRef,
+    QName property,
+    String sourceLanguage,
+    Set<String> languages,
+    boolean notifyUserByEmail
+  );
 
-    void translateProperty(
-            NodeRef nodeRef,
-            QName property,
-            String sourceLanguage,
-            Set<String> languages,
-            boolean notifyUserByEmail);
+  NodeRef copyDocumentToBeTranslated(NodeRef nodeRef);
 
-    NodeRef copyDocumentToBeTranslated(NodeRef nodeRef);
+  void translateDocument(
+    NodeRef originalDocument,
+    NodeRef copyOfDocument,
+    String sourceLanguage,
+    Set<String> languages,
+    boolean notifyUserByEmail
+  );
 
-    void translateDocument(
-            NodeRef originalDocument,
-            NodeRef copyOfDocument,
-            String sourceLanguage,
-            Set<String> languages,
-            boolean notifyUserByEmail);
+  CircabcUserDataBean getMTUserDetails();
 
-    CircabcUserDataBean getMTUserDetails();
+  void processTranslatedFiles();
 
-    void processTranslatedFiles();
+  boolean canBeTranslated(String filename);
 
-    boolean canBeTranslated(String filename);
+  long fileMaxSize();
 
-    long fileMaxSize();
+  Set<String> getAvailableFileExtensions();
 
-    Set<String> getAvailableFileExtensions();
-
-    void cleanTempSpace(int year, int month);
+  void cleanTempSpace(int year, int month);
 }

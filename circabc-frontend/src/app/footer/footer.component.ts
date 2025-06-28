@@ -1,19 +1,24 @@
 import { Component, Inject } from '@angular/core';
 
+import { RouterLink } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   APP_ALF_VERSION,
   APP_VERSION,
   BUILD_DATE,
   NODE_NAME,
 } from 'app/core/variables';
+import { environment } from 'environments/environment';
 
 @Component({
   selector: 'cbc-footer',
   templateUrl: './footer.component.html',
-  styleUrls: ['./footer.component.scss'],
+  styleUrl: './footer.component.scss',
   preserveWhitespaces: true,
+  imports: [RouterLink, TranslocoModule],
 })
 export class FooterComponent {
+  public circabcRelease = environment.circabcRelease;
   public appAlfVersion = '';
   public appVersion = '';
   public nodeName = '';

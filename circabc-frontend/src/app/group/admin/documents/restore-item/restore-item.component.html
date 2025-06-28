@@ -1,7 +1,7 @@
 <cbc-modal
   [title]="'admin.deleted.items.restore.title'"
   (ok)="restore()"
-  (cancel)="onCancel()"
+  (cancelModal)="onCancel()"
   [okLabel]="'label.restore'"
   [(executing)]="processing"
   [executingLabel]="'label.restoring'"
@@ -14,28 +14,33 @@
   <br />
   <br />
   <ul class="archive-list">
-    <li *ngFor="let archNode of restorableNodes">
-      {{ archNode.name }} (
-      <span *ngIf="isFolder(archNode)">{{ 'label.folder' | transloco }}</span>
-      <span *ngIf="!isFolder(archNode)">{{ 'label.file' | transloco }}</span> )
+    @for (archNode of restorableNodes(); track archNode.id) {
+    <li>
+      {{ archNode.name }} ( @if (isFolder(archNode)) {
+      <span>{{ 'label.folder' | transloco }}</span>
+      } @if (!isFolder(archNode)) {
+      <span>{{ 'label.file' | transloco }}</span>
+      } )
     </li>
+    }
   </ul>
 
   <span class="highlighted">
     {{ 'admin.deleted.items.restore.target.question' | transloco }}
   </span>
-  <a [class.selected]="folderPicker" (click)="showFolderPicker()"
+  <a tabindex="0" [class.selected]="folderPicker" (click)="showFolderPicker()"
     >{{ 'label.yes' | transloco }}</a
   >&nbsp;
-  <a [class.selected]="!folderPicker" (click)="hideFolderPicker()"
+  <a tabindex="0" [class.selected]="!folderPicker" (click)="hideFolderPicker()"
     >{{ 'label.no' | transloco }}</a
   >
   <br />
   <br />
+  @if (folderPicker && currentIg) {
   <cbc-file-picker
-    *ngIf="folderPicker && currentIg"
     [nodeId]="currentIg.libraryId"
     [(selection)]="selectedNodes"
     [targetFolderMode]="true"
-  ></cbc-file-picker>
+  />
+  }
 </cbc-modal>

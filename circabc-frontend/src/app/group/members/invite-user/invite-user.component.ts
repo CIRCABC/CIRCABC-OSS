@@ -1,9 +1,23 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
+import {
+  Component,
+  Input,
+  OnInit,
+  output,
+  input,
+  OnDestroy,
+} from '@angular/core';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+} from '@angular/forms';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { ConfirmDialogComponent } from 'app/shared/confirm-dialog/confirm-dialog.component';
-import { TranslocoService } from '@ngneat/transloco';
 
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import {
   ActionEmitterResult,
   ActionResult,
@@ -11,8 +25,8 @@ import {
 } from 'app/action-result';
 import {
   HistoryService,
-  MembershipPostDefinition,
   MembersService,
+  MembershipPostDefinition,
   PagedUserProfile,
   Profile,
   ProfileService,
@@ -22,27 +36,42 @@ import {
 } from 'app/core/generated/circabc';
 import { UiMessageService } from 'app/core/message/ui-message.service';
 import { getErrorTranslation } from 'app/core/util';
-import { ValidationService } from 'app/core/validation.service';
 import { RestorableUserProfile } from 'app/group/members/invite-user/restorable-user-profile';
-import { environment } from 'environments/environment';
-import { firstValueFrom } from 'rxjs';
+import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
 import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
+import { environment } from 'environments/environment';
+import { DatePicker } from 'primeng/datepicker';
+import { firstValueFrom, Subscription } from 'rxjs';
+import { LoginService } from 'app/core/login.service';
+import { setupCalendarDateHandling } from 'app/core/util/date-calendar-util';
 
 @Component({
   selector: 'cbc-invite-user',
   templateUrl: './invite-user.component.html',
-  styleUrls: ['./invite-user.component.scss'],
+  styleUrl: './invite-user.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    ReactiveFormsModule,
+    MatSlideToggleModule,
+    SpinnerComponent,
+    MatTooltipModule,
+    DatePicker,
+    ControlMessageComponent,
+    I18nPipe,
+    TranslocoModule,
+    MatDialogModule,
+  ],
 })
-export class InviteUserComponent implements OnInit {
+export class InviteUserComponent implements OnInit, OnDestroy {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   public showWizard = false;
-  @Input()
-  public groupId!: string;
-  @Output()
-  public readonly modalHide = new EventEmitter();
-  @Output()
-  public readonly userRestored = new EventEmitter();
+  public isExternalUser = false;
+  public readonly groupId = input.required<string>();
+  public readonly modalHide = output<ActionEmitterResult>();
+  public readonly userRestored = output();
 
   public addUserForm!: FormGroup;
   public availableProfiles: Profile[] = [];
@@ -54,10 +83,10 @@ export class InviteUserComponent implements OnInit {
   public restorableUsers: RestorableUserProfile[] = [];
   public restoringId = '';
   public isOSS = false;
+  public noResultFound = false;
+  public minDate: Date = new Date(new Date().setHours(23, 59, 0, 0));
 
-  public tomorrow = new Date().setTime(
-    new Date().getTime() + 24 * 60 * 60 * 1000
-  );
+  private dateSubscription!: Subscription;
 
   constructor(
     private fb: FormBuilder,
@@ -68,12 +97,16 @@ export class InviteUserComponent implements OnInit {
     private profileService: ProfileService,
     private historyService: HistoryService,
     private dialog: MatDialog,
-    private i18nPipe: I18nPipe
+    private i18nPipe: I18nPipe,
+    private loginService: LoginService
   ) {}
 
   public async ngOnInit() {
     if (environment.circabcRelease === 'oss') {
       this.isOSS = true;
+    } else {
+      this.isExternalUser =
+        this.loginService.getUser().properties?.domain === 'external';
     }
     this.buildForm();
     await this.initProfiles();
@@ -90,34 +123,50 @@ export class InviteUserComponent implements OnInit {
         userNotifications: [false],
         adminNotifications: [false],
         expiration: [false],
-        expirationDateTime: ['', ValidationService.pastDateTimeValidator],
+        expirationDateTime: [this.minDate],
         comment: [''],
       },
       {
         updateOn: 'change',
       }
     );
+
+    // this.addUserForm.controls.expirationDateTime.valueChanges.subscribe((change) => {
+    //   if (change) {
+    //     this.addUserForm.controls.expirationDateTime.setValue(
+    //       new Date(data).setHours(23, 59, 0, 0)
+    //     );
+    //   }
+
+    this.dateSubscription = setupCalendarDateHandling(
+      this.addUserForm.controls.expirationDateTime
+    );
+
     this.addUserForm.controls.expirationDateTime.disable();
     this.addUserForm.controls.expiration.valueChanges.subscribe((data) => {
       if (data === false) {
         this.addUserForm.controls.expirationDateTime.reset();
         this.addUserForm.controls.expirationDateTime.disable();
       } else {
-        const result: Date = new Date();
-        result.setDate(result.getDate() + 1);
-        this.addUserForm.controls.expirationDateTime.setValue(result);
+        this.addUserForm.controls.expirationDateTime.setValue(this.minDate);
         this.addUserForm.controls.expirationDateTime.enable();
       }
     });
+  }
+
+  ngOnDestroy() {
+    if (this.dateSubscription) {
+      this.dateSubscription.unsubscribe();
+    }
   }
 
   public async initMembers() {
     this.existingMembers = [];
     try {
       const result: PagedUserProfile = await firstValueFrom(
-        this.membersService.getMembers(this.groupId, [], '', -1, -1, '')
+        this.membersService.getMembers(this.groupId(), [], '', -1, -1, '')
       );
-      if (result && result.data) {
+      if (result?.data) {
         this.existingMembers = result.data;
       }
     } catch (error) {
@@ -127,7 +176,7 @@ export class InviteUserComponent implements OnInit {
 
   public async initProfiles() {
     const profiles = await firstValueFrom(
-      this.profileService.getProfiles(this.groupId)
+      this.profileService.getProfiles(this.groupId())
     );
 
     this.availableProfiles = [];
@@ -154,22 +203,41 @@ export class InviteUserComponent implements OnInit {
   }
 
   public async searchUsers() {
-    if (this.addUserForm.controls.name.value !== '') {
-      this.addUserForm.controls.possibleUsers.setValue('');
-      await this.populateUsers(
-        this.addUserForm.controls.name.value,
-        this.addUserForm.controls.filter.value
-      );
+    let isValid = true;
+    if (this.isExternalUser && !this.isValidEmail()) {
+      isValid = false;
     }
-    this.initMembers();
+    if (isValid) {
+      if (this.addUserForm.controls.name.value !== '') {
+        this.addUserForm.controls.possibleUsers.setValue('');
+        await this.populateUsers(
+          this.addUserForm.controls.name.value,
+          this.addUserForm.controls.filter.value
+        );
+      }
+      this.initMembers();
+    }
   }
 
   public async populateUsers(query: string, filter: boolean) {
     this.searchingUsers = true;
-    const res = await firstValueFrom(this.userService.getUsers(query, filter));
-    this.availableUsers = [];
-    for (const user of res) {
-      this.availableUsers.push(user);
+
+    try {
+      const res = await firstValueFrom(
+        this.userService.getUsers(query, filter)
+      );
+      this.availableUsers = [];
+      this.noResultFound = false;
+      for (const user of res) {
+        this.availableUsers.push(user);
+      }
+      if (this.availableUsers.length === 0) {
+        this.noResultFound = true;
+      }
+    } catch (error) {
+      if (error.error.message.includes('Please enter a valid email address')) {
+        this.noResultFound = true;
+      }
     }
     this.searchingUsers = false;
   }
@@ -180,8 +248,10 @@ export class InviteUserComponent implements OnInit {
     this.addUserForm.controls.possibleUsers.setValue('');
     this.addUserForm.controls.expiration.setValue(false);
     this.addUserForm.controls.expirationDateTime.setValue('');
+    this.addUserForm.controls.filter.setValue(true);
     this.existingMembers = [];
     this.restorableUsers = [];
+    this.noResultFound = false;
     this.initProfiles();
   }
 
@@ -191,7 +261,7 @@ export class InviteUserComponent implements OnInit {
       this.availableUsers = [];
       this.futureMembers = [];
       this.resetForm();
-      this.modalHide.emit();
+      this.modalHide.emit({ result: ActionResult.CANCELED });
     } else if (backTo === 'step1') {
       this.showWizard = true;
     }
@@ -211,7 +281,7 @@ export class InviteUserComponent implements OnInit {
 
       const restoreOption = await this.getRestorableOption(
         userId,
-        this.groupId
+        this.groupId()
       );
 
       if (restoreOption.recoverable && memberTmp.user) {
@@ -236,9 +306,8 @@ export class InviteUserComponent implements OnInit {
           this.futureMembers.find((member) => {
             if (member.user && memberTmp.user) {
               return member.user.userId === memberTmp.user.userId;
-            } else {
-              return true;
             }
+            return true;
           }) === undefined
         );
       })
@@ -256,10 +325,7 @@ export class InviteUserComponent implements OnInit {
         const dialogRef = this.dialog.open(ConfirmDialogComponent, {
           data: {
             title: 'label.restorable.memberships.explanation',
-            message:
-              restorableUser.user.firstname +
-              ' ' +
-              restorableUser.user.lastname,
+            message: `${restorableUser.user.firstname} ${restorableUser.user.lastname}`,
             message2: restorableUser.user.email,
             labelOK: this.i18nPipe.transform(
               restorableUser.recoveryOption.profile?.title
@@ -287,7 +353,7 @@ export class InviteUserComponent implements OnInit {
       return await firstValueFrom(
         this.historyService.isUserRecoverable(userId, groupId)
       );
-    } catch (error) {
+    } catch {
       return { recoverable: false, profile: undefined };
     }
   }
@@ -316,7 +382,8 @@ export class InviteUserComponent implements OnInit {
           : '',
     };
 
-    if (this.groupId !== undefined) {
+    const groupId = this.groupId();
+    if (groupId !== undefined) {
       const result: ActionEmitterResult = {};
       result.type = ActionType.ADD_MEMBERSHIPS;
 
@@ -326,14 +393,14 @@ export class InviteUserComponent implements OnInit {
             this.addUserForm.value.expirationDateTime.toISOString();
           await firstValueFrom(
             this.membersService.postMember(
-              this.groupId,
+              groupId,
               postData,
               expirationDateTime
             )
           );
         } else {
           await firstValueFrom(
-            this.membersService.postMember(this.groupId, postData)
+            this.membersService.postMember(groupId, postData)
           );
         }
 
@@ -345,7 +412,7 @@ export class InviteUserComponent implements OnInit {
         this.resetForm();
         result.result = ActionResult.SUCCEED;
         this.modalHide.emit(result);
-      } catch (error) {
+      } catch (_error) {
         const res = this.translateService.translate(
           getErrorTranslation(ActionType.ADD_MEMBERSHIPS)
         );
@@ -374,6 +441,14 @@ export class InviteUserComponent implements OnInit {
       );
     }
 
+    return false;
+  }
+  public isValidEmail() {
+    if (this.addUserForm) {
+      const emailRegex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const email = this.addUserForm.value.name;
+      return emailRegex.test(email);
+    }
     return false;
   }
 
@@ -407,14 +482,13 @@ export class InviteUserComponent implements OnInit {
   }
 
   public async cleanRestoreMember(user: RestorableUserProfile) {
-    if (
-      user.recoveryOption &&
-      user.recoveryOption.profile &&
-      user.recoveryOption.profile.id
-    ) {
+    if (user.recoveryOption?.profile?.id) {
       try {
         await firstValueFrom(
-          this.historyService.cleanUserMembershipLogs(this.groupId, user.userId)
+          this.historyService.cleanUserMembershipLogs(
+            this.groupId(),
+            user.userId
+          )
         );
         const i = this.restorableUsers.findIndex((value) => {
           return value.userId === this.restoringId;
@@ -429,10 +503,5 @@ export class InviteUserComponent implements OnInit {
 
   get expirationDateTimeControl(): AbstractControl {
     return this.addUserForm.controls.expirationDateTime;
-  }
-  get minDate(): Date {
-    const result: Date = new Date();
-    result.setDate(result.getDate());
-    return new Date();
   }
 }

@@ -1,14 +1,22 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import { Category, CategoryService, User } from 'app/core/generated/circabc';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-category-support',
   templateUrl: './category-support.component.html',
-  styleUrls: ['./category-support.component.scss'],
+  styleUrl: './category-support.component.scss',
   preserveWhitespaces: true,
+  imports: [ReactiveFormsModule, SpinnerComponent, TranslocoModule],
 })
 export class CategorySupportComponent implements OnInit {
   public updating = false;
@@ -59,7 +67,7 @@ export class CategorySupportComponent implements OnInit {
           this.categoryForm.controls.contactEmails.setValue(emails);
         }
       }
-    } catch (error) {
+    } catch (_error) {
       console.error('impossible to get the category');
     }
   }
@@ -72,16 +80,16 @@ export class CategorySupportComponent implements OnInit {
 
   public async update() {
     this.updating = true;
-    if (this.category && this.category.id && this.isFormValid()) {
+    if (this.category?.id && this.isFormValid()) {
       try {
         this.category.useSingleContact =
           this.categoryForm.value.useSingleContact;
-        if (!this.categoryForm.value.useSingleContact) {
+        if (this.categoryForm.value.useSingleContact) {
+          this.category.contactEmails = [this.categoryForm.value.contactEmail];
+        } else {
           this.category.contactEmails = this.stringToArray(
             this.categoryForm.value.contactEmails
           );
-        } else {
-          this.category.contactEmails = [this.categoryForm.value.contactEmail];
         }
 
         await firstValueFrom(

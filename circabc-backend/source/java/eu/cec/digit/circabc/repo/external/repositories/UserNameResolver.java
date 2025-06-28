@@ -23,9 +23,8 @@ package eu.cec.digit.circabc.repo.external.repositories;
  * @author schwerr
  */
 public interface UserNameResolver {
-
-    /**
-     * Returns the current user name.
-     */
-    String getUserName();
+  /**
+   * Returns the current user name.
+   */
+  String getUserName();
 }

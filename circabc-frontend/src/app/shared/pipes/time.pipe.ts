@@ -1,7 +1,8 @@
 import { Injectable, Pipe, PipeTransform } from '@angular/core';
 
-import { TranslocoService } from '@ngneat/transloco';
-import { TimeZoneHelper, TimeZoneLookupKeys } from './timezonehelper';
+import { TranslocoService } from '@jsverse/transloco';
+import { compensateDST } from 'app/core/util';
+import { TimeZoneLookupKeys, timeZoneLookup } from './timezonehelper';
 
 @Pipe({
   name: 'cbcTime',
@@ -21,12 +22,11 @@ export class TimePipe implements PipeTransform {
       return '';
     }
 
-    const timezone: string =
-      TimeZoneHelper.timeZoneLookup[timeZone as TimeZoneLookupKeys];
+    const timezone: string = timeZoneLookup[timeZone as TimeZoneLookupKeys];
 
     const dateNumber = Date.parse(`${date}T${time}:00.000${timezone}`);
 
-    const dateDate = new Date(dateNumber);
+    const dateDate = compensateDST(new Date(dateNumber));
 
     return dateDate.toLocaleTimeString(this.translateService.getActiveLang());
   }

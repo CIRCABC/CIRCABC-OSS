@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   FavouritesService,
   Node as ModelNode,
@@ -8,6 +9,8 @@ import {
 } from 'app/core/generated/circabc';
 import { LoginService } from 'app/core/login.service';
 import { ListingOptions } from 'app/group/listing-options/listing-options';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
+import { PagerComponent } from 'app/shared/pager/pager.component';
 import { firstValueFrom } from 'rxjs';
 
 // Node as ModelNode,
@@ -15,8 +18,9 @@ import { firstValueFrom } from 'rxjs';
 @Component({
   selector: 'cbc-user-favourites',
   templateUrl: './user-favourites.component.html',
-  styleUrls: ['./user-favourites.component.scss'],
+  styleUrl: './user-favourites.component.scss',
   preserveWhitespaces: true,
+  imports: [HorizontalLoaderComponent, PagerComponent, TranslocoModule],
 })
 export class UserFavouritesComponent implements OnInit {
   public loading = false;
@@ -37,31 +41,35 @@ export class UserFavouritesComponent implements OnInit {
 
   async loadFavourites() {
     this.loading = true;
-    this.pagedFavourites = await firstValueFrom(
-      this.favouritesService.getFavourites(
-        this.loginService.getCurrentUsername(),
-        this.listingOptions.limit,
-        this.listingOptions.page
-      )
-    );
-    this.totalItems = this.pagedFavourites.total;
-    this.loading = false;
+    try {
+      this.pagedFavourites = await firstValueFrom(
+        this.favouritesService.getFavourites(
+          this.loginService.getCurrentUsername(),
+          this.listingOptions.limit,
+          this.listingOptions.page
+        )
+      );
+      this.totalItems = this.pagedFavourites.total;
+    } catch (e) {
+      this.pagedFavourites = { data: [], total: 0 };
+      console.error(e);
+    } finally {
+      this.loading = false;
+    }
   }
 
   isFile(node: ModelNode): boolean {
     if (node.type) {
       return node.type.indexOf('folder') === -1;
-    } else {
-      return false;
     }
+    return false;
   }
 
   isFolder(node: ModelNode): boolean {
     if (node.type) {
       return node.type.indexOf('folder') !== -1;
-    } else {
-      return false;
     }
+    return false;
   }
 
   async openLink(node: ModelNode) {
@@ -87,10 +95,6 @@ export class UserFavouritesComponent implements OnInit {
   async changePage(p: number) {
     this.listingOptions.page = p;
     await this.loadFavourites();
-  }
-
-  public trackById(_index: number, item: { id?: string | number }) {
-    return item.id;
   }
 
   public isPagerVisible(): boolean {

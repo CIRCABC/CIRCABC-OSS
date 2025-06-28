@@ -1,33 +1,30 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, output, input } from '@angular/core';
 
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoService } from '@jsverse/transloco';
 import {
-  KeywordDefinition,
+  type KeywordDefinition,
   KeywordsService,
   Node as ModelNode,
 } from 'app/core/generated/circabc';
-import { SupportedLangs } from 'app/shared/langs/supported-langs';
+import { supportedLanguages } from 'app/shared/langs/supported-langs';
+import { CapitalizePipe } from 'app/shared/pipes/capitalize.pipe';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-keyword-tag',
   templateUrl: './keyword-tag.component.html',
-  styleUrls: ['./keyword-tag.component.scss'],
+  styleUrl: './keyword-tag.component.scss',
   preserveWhitespaces: true,
+  imports: [SpinnerComponent, CapitalizePipe],
 })
 export class KeywordTagComponent {
-  @Input()
-  keyword!: KeywordDefinition;
-  @Input()
-  lang: string | undefined;
-  @Input()
-  documentNode!: ModelNode;
-  @Input()
-  removable = false;
-  @Input()
-  showLang = true;
-  @Output()
-  readonly removed = new EventEmitter<string>();
+  readonly keyword = input.required<KeywordDefinition>();
+  readonly lang = input<string>();
+  readonly documentNode = input<ModelNode>();
+  readonly removable = input(false);
+  readonly showLang = input(true);
+  readonly removed = output<void>();
 
   public deleting = false;
 
@@ -37,28 +34,33 @@ export class KeywordTagComponent {
   ) {}
 
   public getTitleKeys(keyword: KeywordDefinition): string[] {
-    if (this.keyword.title && this.lang) {
-      if (Object.keys(this.keyword.title).indexOf(this.lang) !== -1) {
-        return [this.lang];
-      } else if (
-        Object.keys(this.keyword.title).indexOf(
+    const keywordValue = this.keyword();
+    const lang = this.lang();
+    if (keywordValue.title && lang) {
+      if (Object.keys(keywordValue.title).indexOf(lang) !== -1) {
+        return [lang];
+      }
+      if (
+        Object.keys(keywordValue.title).indexOf(
           this.translateService.getActiveLang()
         ) !== -1
       ) {
         return [this.translateService.getActiveLang()];
-      } else {
-        return [Object.keys(this.keyword.title)[0]];
       }
-    } else {
-      return Object.keys(keyword.title);
+      return [Object.keys(keywordValue.title)[0]];
     }
+    return Object.keys(keyword.title);
   }
 
   public async removeKeyword(keyword: KeywordDefinition) {
-    if (this.removable && keyword.id && this.documentNode.id) {
+    const documentNode = this.documentNode();
+    if (documentNode === undefined) {
+      return;
+    }
+    if (this.removable() && keyword.id && documentNode.id) {
       this.deleting = true;
       await firstValueFrom(
-        this.keywordsService.deleteKeyword(this.documentNode.id, keyword.id)
+        this.keywordsService.deleteKeyword(documentNode.id, keyword.id)
       );
       this.removed.emit();
       this.deleting = false;
@@ -66,7 +68,7 @@ export class KeywordTagComponent {
   }
 
   getLanguageName(langCode: string): string {
-    for (const lang of SupportedLangs.availableLangs) {
+    for (const lang of supportedLanguages) {
       if (lang.code === langCode) {
         return lang.name;
       }

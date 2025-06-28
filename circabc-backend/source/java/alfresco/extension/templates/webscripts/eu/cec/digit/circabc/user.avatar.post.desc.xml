@@ -2,7 +2,7 @@
   <shortname>user.avatar.post</shortname>
   <description>Update the users avatar</description>
     <url>/circabc/users/{userId}/avatar</url>
-  <format default="json"/>
+  <format default="json" />
   <authentication>user</authentication>
   <transaction>required</transaction>
 </webscript>

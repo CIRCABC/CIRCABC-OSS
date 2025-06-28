@@ -7,28 +7,28 @@ import eu.cec.digit.circabc.service.profile.CircabcRootProfileManagerService;
  */
 public class CircabcAdmin {
 
-    long userID;
-    String name;
+  long userID;
+  String name;
 
-    public CircabcAdmin(long userID) {
-        super();
-        this.userID = userID;
-        this.name = CircabcRootProfileManagerService.Profiles.CIRCABC_ADMIN;
-    }
+  public CircabcAdmin(long userID) {
+    super();
+    this.userID = userID;
+    this.name = CircabcRootProfileManagerService.Profiles.CIRCABC_ADMIN;
+  }
 
-    public long getUserID() {
-        return userID;
-    }
+  public long getUserID() {
+    return userID;
+  }
 
-    public void setUserID(long userID) {
-        this.userID = userID;
-    }
+  public void setUserID(long userID) {
+    this.userID = userID;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 }

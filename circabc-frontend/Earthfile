@@ -1,0 +1,24 @@
+VERSION 0.7
+FROM node:18
+WORKDIR /usr/src/app
+
+app-deps:
+    COPY package*.json ./
+    # Copy the rest of the application code to the container
+    
+    RUN npm install --force
+    # Output these back in case npm install changes them.
+    SAVE ARTIFACT package.json AS LOCAL ./package.json
+    SAVE ARTIFACT package-lock.json AS LOCAL ./package-lock.json
+
+build-app:
+    ARG environment
+    FROM +app-deps
+    COPY angular.json ./
+    COPY tsconfig.json ./
+    COPY ngsw-config.json ./
+    COPY getBuildDate.js ./ 
+    COPY ./src ./src
+    RUN npm run $environment
+    SAVE ARTIFACT ./dist AS LOCAL ./dist
+

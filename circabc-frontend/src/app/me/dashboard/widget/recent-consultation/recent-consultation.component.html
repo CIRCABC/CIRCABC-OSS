@@ -9,22 +9,30 @@
       />
     </span>
   </header>
-  <cbc-horizontal-loader
-    *ngIf="loadingUploads || loadingDownloads"
-  ></cbc-horizontal-loader>
+  @if (loadingUploads || loadingDownloads) {
+  <cbc-horizontal-loader></cbc-horizontal-loader>
+  }
   <div class="main main--listing">
     <p class="actions">
-      <a (click)="showDownloads = true" [class.highlighted]="showDownloads"
+      <a
+        tabindex="0"
+        (click)="showDownloads = true"
+        [class.highlighted]="showDownloads"
         >{{ 'label.downloads' | transloco }}
         <img src="img/download-to-storage-drive.png" alt="downloads.png"
       /></a>
-      <a (click)="showDownloads = false" [class.highlighted]="!showDownloads"
+      <a
+        tabindex="0"
+        (click)="showDownloads = false"
+        [class.highlighted]="!showDownloads"
         >{{ 'label.uploads' | transloco }}
         <img src="img/upload-blue.png" alt="uplaods.png"
       /></a>
     </p>
-    <ul *ngIf="showDownloads" id="listOfDownloads">
-      <li class="row file--row" *ngFor="let download of lastDownloads">
+    @if (showDownloads) {
+    <ul id="listOfDownloads">
+      @for (download of lastDownloads; track download.node?.id) {
+      <li class="row file--row">
         <cbc-file-extension-icon
           [filename]="download.node?.name"
           class="file--icon"
@@ -46,12 +54,14 @@
           date }}</span
         >
       </li>
-      <li *ngIf="lastDownloads.length === 0" class="row">
-        {{ 'label.nothing.to.display' | transloco }}
-      </li>
+      } @if (lastDownloads.length === 0) {
+      <li class="row"> {{ 'label.nothing.to.display' | transloco }} </li>
+      }
     </ul>
-    <ul *ngIf="!showDownloads" id="listOfUploads">
-      <li class="row file--row" *ngFor="let upload of lastUploads">
+    } @if (!showDownloads) {
+    <ul id="listOfUploads">
+      @for (upload of lastUploads; track upload.node?.id) {
+      <li class="row file--row">
         <cbc-file-extension-icon
           [filename]="upload.node?.name"
           class="file--icon"
@@ -77,9 +87,10 @@
           {{ 'label.on' | transloco }} {{ upload.actionDate | date }}</span
         >
       </li>
-      <li *ngIf="lastUploads.length === 0" class="row">
-        {{ 'label.nothing.to.display' | transloco }}
-      </li>
+      } @if (lastUploads.length === 0) {
+      <li class="row"> {{ 'label.nothing.to.display' | transloco }} </li>
+      }
     </ul>
+    }
   </div>
 </section>

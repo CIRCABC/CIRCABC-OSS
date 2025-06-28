@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Get the members of a IG with filter</shortname>
+  <description>Get the members of a IG with filter</description>
+    <url>/circabc/groups/{igId}/members/filter</url>
+  <format default="json" />
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

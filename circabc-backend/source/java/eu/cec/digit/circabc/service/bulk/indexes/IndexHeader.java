@@ -19,8 +19,7 @@ package eu.cec.digit.circabc.service.bulk.indexes;
 import java.util.List;
 
 public interface IndexHeader {
+  String getHeaderName();
 
-    String getHeaderName();
-
-    List<HeaderValidator> getHeaderValidators();
+  List<HeaderValidator> getHeaderValidators();
 }

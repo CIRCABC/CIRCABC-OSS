@@ -1,0 +1,20 @@
+version: '3'
+services:
+  circabc-ui:
+    image: next-circabc
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: circabc-ui
+    working_dir: /usr/src/app
+    volumes:
+      - ./src:/usr/src/app/src
+    ports:
+      - "4200:4200"
+    networks:
+      - docker_default  # Replace with your network name if needed
+    command: npm run next-docker
+
+networks:
+  docker_default:
+    external: true  # Use this if the network is external (already created)

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dynamic-authority">
+    <!-- Cache configuration for the mapper -->
+    <cache
+      eviction="LRU"
+      flushInterval="3600000"
+      size="10000"
+      readOnly="true"
+    />
+    
+    <!--                -->
+    <!-- Result Maps    -->
+    <!--                -->
+
+    <resultMap id="result_CircabcPermission" type="CircabcPermission">
+        <result
+      property="libraryPermission"
+      column="lib_perm"
+      jdbcType="VARCHAR"
+      javaType="java.lang.String"
+    />
+        <result
+      property="newsGroupPermission"
+      column="nws_perm"
+      jdbcType="VARCHAR"
+      javaType="java.lang.String"
+    />
+        <result
+      property="informationPermission"
+      column="inf_perm"
+      jdbcType="VARCHAR"
+      javaType="java.lang.String"
+    />
+    </resultMap>
+
+    <!--                -->
+    <!-- Parameter Maps -->
+    <!--                -->
+
+    <parameterMap id="parameter_NodeRefUserName" type="map">
+        <parameter
+      property="nodeRef"
+      jdbcType="VARCHAR"
+      javaType="java.lang.String"
+    />
+        <parameter
+      property="userName"
+      jdbcType="VARCHAR"
+      javaType="java.lang.String"
+    />
+    </parameterMap>
+
+    <!--                -->
+    <!-- Statements     -->
+    <!--                -->
+
+    <select
+    id="select_GroupPermission"
+    parameterMap="parameter_NodeRefUserName"
+    resultMap="result_CircabcPermission"
+    useCache="true"
+    flushCache="false"
+  >
+        SELECT cbc_profiles.lib_perm, cbc_profiles.nws_perm,
+        cbc_profiles.inf_perm FROM cbc_interest_groups INNER JOIN cbc_profiles
+        ON
+        cbc_interest_groups.id = cbc_profiles.ig_id INNER JOIN cbc_profile_users
+        ON
+        cbc_profiles.alfresco_group = cbc_profile_users.alfresco_group INNER
+        JOIN cbc_users ON
+        cbc_profile_users.user_id = cbc_users.id where
+        cbc_interest_groups.node_ref = #{nodeRef} and
+        cbc_users.user_name= #{userName}
+    </select>
+</mapper>

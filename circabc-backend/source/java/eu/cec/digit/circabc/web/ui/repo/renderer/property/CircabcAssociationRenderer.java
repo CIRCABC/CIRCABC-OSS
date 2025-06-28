@@ -22,6 +22,4 @@ package eu.cec.digit.circabc.web.ui.repo.renderer.property;
 
 import org.alfresco.web.ui.repo.renderer.property.AssociationRenderer;
 
-public class CircabcAssociationRenderer extends AssociationRenderer {
-
-}
+public class CircabcAssociationRenderer extends AssociationRenderer {}

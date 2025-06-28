@@ -16,7 +16,6 @@
  */
 package eu.cec.digit.circabc.repo.lock;
 
-
 import eu.cec.digit.circabc.service.CircabcServiceRegistry;
 import eu.cec.digit.circabc.service.lock.LockService;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
@@ -30,49 +29,56 @@ import org.quartz.JobExecutionException;
 
 public class UnlockJob implements Job {
 
-    private static boolean isInitialized = false;
+  private static boolean isInitialized = false;
 
-    private static ServiceRegistry serviceRegistry;
+  private static ServiceRegistry serviceRegistry;
 
-    private static CircabcServiceRegistry circabcServiceRegistry;
+  private static CircabcServiceRegistry circabcServiceRegistry;
 
-    private static Log logger = LogFactory.getLog(eu.cec.digit.circabc.repo.lock.UnlockJob.class);
+  private static Log logger = LogFactory.getLog(
+    eu.cec.digit.circabc.repo.lock.UnlockJob.class
+  );
 
-    private static LockService lockService;
+  private static LockService lockService;
 
-    private static int maxJobLockTimeInHours;
+  private static int maxJobLockTimeInHours;
 
-    @Override
-    public void execute(final JobExecutionContext context) throws JobExecutionException {
-        try {
-            AuthenticationUtil.setRunAsUser(AuthenticationUtil.getSystemUserName());
-            initialize(context);
+  @Override
+  public void execute(final JobExecutionContext context)
+    throws JobExecutionException {
+    try {
+      AuthenticationUtil.setRunAsUser(AuthenticationUtil.getSystemUserName());
+      initialize(context);
 
-            try {
-                lockService.unlockAll(maxJobLockTimeInHours);
-            } catch (final Exception e) {
-                logger.error("Exception when running the unlock job.", e);
-            }
-
-        } catch (final Exception e) {
-            logger.error("Can not run job LockJob", e);
-        } finally {
-            AuthenticationUtil.clearCurrentSecurityContext();
-        }
+      try {
+        lockService.unlockAll(maxJobLockTimeInHours);
+      } catch (final Exception e) {
+        logger.error("Exception when running the unlock job.", e);
+      }
+    } catch (final Exception e) {
+      logger.error("Can not run job LockJob", e);
+    } finally {
+      AuthenticationUtil.clearCurrentSecurityContext();
     }
+  }
 
-    private void initialize(final JobExecutionContext context) {
-        if (!isInitialized) {
-            final JobDataMap jobData = context.getJobDetail().getJobDataMap();
-            final Object serviceRegistryObj = jobData.get("serviceRegistry");
-            serviceRegistry = (ServiceRegistry) serviceRegistryObj;
+  private void initialize(final JobExecutionContext context) {
+    if (!isInitialized) {
+      final JobDataMap jobData = context.getJobDetail().getJobDataMap();
+      final Object serviceRegistryObj = jobData.get("serviceRegistry");
+      serviceRegistry = (ServiceRegistry) serviceRegistryObj;
 
-            final Object circabcServiceRegistryObj = jobData.get("circabcServiceRegistry");
-            circabcServiceRegistry = (CircabcServiceRegistry) circabcServiceRegistryObj;
-            lockService = circabcServiceRegistry.getLockService();
-            maxJobLockTimeInHours = Integer.valueOf((String) jobData.get("maxJobLockTimeInHours"));
+      final Object circabcServiceRegistryObj = jobData.get(
+        "circabcServiceRegistry"
+      );
+      circabcServiceRegistry =
+        (CircabcServiceRegistry) circabcServiceRegistryObj;
+      lockService = circabcServiceRegistry.getLockService();
+      maxJobLockTimeInHours = Integer.valueOf(
+        (String) jobData.get("maxJobLockTimeInHours")
+      );
 
-            isInitialized = true;
-        }
+      isInitialized = true;
     }
+  }
 }

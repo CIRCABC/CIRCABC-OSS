@@ -1,9 +1,9 @@
-import { I18nSelectPipe, Location } from '@angular/common';
+import { DatePipe, I18nSelectPipe, Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
-import { ActivatedRoute, Data, Router } from '@angular/router';
-import { TranslocoService } from '@ngneat/transloco';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { ActivatedRoute, Data, Router, RouterLink } from '@angular/router';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
@@ -33,6 +33,7 @@ import {
 } from 'app/core/generated/circabc';
 import { LibraryIdService } from 'app/core/libraryId.service';
 
+import { MatDividerModule } from '@angular/material/divider';
 import { LoginService } from 'app/core/login.service';
 import { UiMessageService } from 'app/core/message/ui-message.service';
 import { SaveAsService } from 'app/core/save-as.service';
@@ -41,19 +42,93 @@ import {
   getErrorTranslation,
   getSuccessTranslation,
   isContentPreviewable,
+  isContentPreviewableFull,
 } from 'app/core/util';
+import { BreadcrumbComponent } from 'app/group/breadcrumb/breadcrumb.component';
+import { AddPostComponent } from 'app/group/forum/post/add-post.component';
+import { PostComponent } from 'app/group/forum/post/post.component';
+import { CreateDetailsTopicComponent } from 'app/group/forum/topic/create-topic/create-details-topic.component';
+import { DeleteTopicComponent } from 'app/group/forum/topic/delete-topic.component';
+import { EditTopicComponent } from 'app/group/forum/topic/edit-topic/edit-topic.component';
+import { AddKeywordComponent } from 'app/group/keywords/add/add-keyword.component';
+import { KeywordTagComponent } from 'app/group/keywords/tag/keyword-tag.component';
 import { ClipboardService } from 'app/group/library/clipboard/clipboard.service';
+import { ContentPreviewExtendedComponent } from 'app/group/library/content-preview-ext/content-preview-ext.component';
+import { DeleteActionComponent } from 'app/group/library/delete/delete-action.component';
+import { FavouriteSwitchComponent } from 'app/group/library/favourite-switch/favourite-switch.component';
+import { SnackbarComponent } from 'app/group/library/snackbar/snackbar.component';
+import { UpdateContentComponent } from 'app/group/library/update-content/update-content.component';
 import { ListingOptions } from 'app/group/listing-options/listing-options';
 import { ConfirmDialogComponent } from 'app/shared/confirm-dialog/confirm-dialog.component';
+import { IfRoleGEDirective } from 'app/shared/directives/ifrolege.directive';
+import { IfRolesDirective } from 'app/shared/directives/ifroles.directive';
+import { HistoryComponent } from 'app/shared/history/history.component';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
+import { PagerComponent } from 'app/shared/pager/pager.component';
 import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
+import { IfRoleGePipe } from 'app/shared/pipes/if-role-ge.pipe';
+import { IfRolePipe } from 'app/shared/pipes/if-role.pipe';
+import { SecurePipe } from 'app/shared/pipes/secure.pipe';
+import { SizePipe } from 'app/shared/pipes/size.pipe';
+import { ThumbnailPipe } from 'app/shared/pipes/thumbnail.pipe';
+import { ReponsiveSubMenuComponent } from 'app/shared/reponsive-sub-menu/reponsive-sub-menu.component';
+import { SaveAsComponent } from 'app/shared/save-as/save-as.component';
+import { ShareComponent } from 'app/shared/share/share.component';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
+import { UserCardComponent } from 'app/shared/user-card/user-card.component';
 import { environment } from 'environments/environment';
+import { AccordionModule } from 'primeng/accordion';
 import { firstValueFrom } from 'rxjs';
+import { CancelCheckoutComponent } from './cancel-checkout/cancel-checkout.component';
+import { CheckinComponent } from './checkin/checkin.component';
+import { EnableMultilingualComponent } from './enable-multilingual/enable-multilingual.component';
+import { AlfrescoService } from 'app/core/alfresco.service';
 
 @Component({
   selector: 'cbc-node-properties',
   templateUrl: './details.component.html',
-  styleUrls: ['./details-component.scss'],
+  styleUrl: './details-component.scss',
   preserveWhitespaces: true,
+  imports: [
+    HorizontalLoaderComponent,
+    ReponsiveSubMenuComponent,
+    RouterLink,
+    BreadcrumbComponent,
+    FavouriteSwitchComponent,
+    ShareComponent,
+    SpinnerComponent,
+    UserCardComponent,
+    KeywordTagComponent,
+    AddKeywordComponent,
+    AccordionModule,
+    SaveAsComponent,
+    IfRoleGEDirective,
+    IfRolesDirective,
+    DeleteActionComponent,
+    MatDividerModule,
+    HistoryComponent,
+    PostComponent,
+    PagerComponent,
+    AddPostComponent,
+    SnackbarComponent,
+    CancelCheckoutComponent,
+    CheckinComponent,
+    UpdateContentComponent,
+    CreateDetailsTopicComponent,
+    DeleteTopicComponent,
+    EditTopicComponent,
+    EnableMultilingualComponent,
+    ContentPreviewExtendedComponent,
+    DatePipe,
+    I18nPipe,
+    IfRoleGePipe,
+    IfRolePipe,
+    SecurePipe,
+    SizePipe,
+    ThumbnailPipe,
+    TranslocoModule,
+    MatDialogModule,
+  ],
 })
 export class DetailsComponent implements OnInit {
   public nodeLog: ExternalRepositoryData[] = [];
@@ -136,7 +211,8 @@ export class DetailsComponent implements OnInit {
     private aresBridgeHelperService: AresBridgeHelperService,
     private spaceService: SpaceService,
     private dialog: MatDialog,
-    private libraryIdService: LibraryIdService
+    private libraryIdService: LibraryIdService,
+    private alfrescoService: AlfrescoService
   ) {}
 
   public ngOnInit() {
@@ -151,7 +227,7 @@ export class DetailsComponent implements OnInit {
   private ngInit() {
     this.route.data.subscribe(async (value: Data) => {
       this.group = value.group;
-      if (this.group.id) {
+      if (this.group.id && !this.isGuest()) {
         this.isAresBridgeEnabled =
           await this.aresBridgeHelperService.isAresBridgeEnabled(this.group.id);
       }
@@ -185,6 +261,7 @@ export class DetailsComponent implements OnInit {
   public async loadNode(params: { [key: string]: string }) {
     this.loading = true;
     this.nodeId = params.nodeId;
+
     this.versionLabel = params.versionLabel;
 
     this.versions = await firstValueFrom(
@@ -203,6 +280,40 @@ export class DetailsComponent implements OnInit {
       }
     } else {
       this.node = await firstValueFrom(this.nodesService.getNode(this.nodeId));
+    }
+
+    if (!this.node && this.hasMoreVersions) {
+      this.versions = await firstValueFrom(
+        this.contentService.getVersions(this.nodeId)
+      );
+      for (const version of this.versions) {
+        if (version.versionLabel === this.versionLabel) {
+          if (version.node) {
+            this.node = version.node;
+          }
+        }
+      }
+    }
+
+    if (environment.useAlfrescoAPI && this.isFile()) {
+      try {
+        const rendition = await this.alfrescoService.getRendition(
+          this.nodeId as string,
+          'doclib'
+        );
+        if (rendition.entry.status !== 'CREATED') {
+          await this.alfrescoService.createRendition(
+            this.nodeId as string,
+            'doclib'
+          );
+        }
+      } catch (error) {
+        this.uiMessageService.addErrorMessage(
+          this.translateService.translate('preview.messages.not.available'),
+          true
+        );
+        console.error(error);
+      }
     }
 
     await this.verifyParentAccess();
@@ -225,7 +336,9 @@ export class DetailsComponent implements OnInit {
 
     this.extractDestinationId();
 
-    this.nodeLog = await this.aresBridgeHelperService.nodeLog(this.nodeId);
+    if (!this.isGuest()) {
+      this.nodeLog = await this.aresBridgeHelperService.nodeLog(this.nodeId);
+    }
     this.loading = false;
 
     if (this.node.properties !== undefined) {
@@ -241,10 +354,7 @@ export class DetailsComponent implements OnInit {
         );
         if (authorization === null || authorization === undefined) {
           this.restrictedMode = true;
-        } else if (
-          authorization !== undefined &&
-          authorization.granted !== undefined
-        ) {
+        } else if (authorization?.granted !== undefined) {
           this.restrictedMode = !authorization.granted;
         }
       } catch (error) {
@@ -388,7 +498,7 @@ export class DetailsComponent implements OnInit {
 
   public isFile(): boolean {
     let result = false;
-    if (this.node !== undefined && this.node.type !== undefined) {
+    if (this.node?.type !== undefined) {
       result = this.node.type.indexOf('folder') === -1;
     }
     return result;
@@ -432,55 +542,53 @@ export class DetailsComponent implements OnInit {
   public getPageTitle() {
     if (this.isLink()) {
       return 'label.library.details.of.url';
-    } else if (this.isFile()) {
-      return 'label.library.details.of.document';
-    } else {
-      return 'label.library.details.of.folder';
     }
+    if (this.isFile()) {
+      return 'label.library.details.of.document';
+    }
+    return 'label.library.details.of.folder';
   }
 
   public isContent(): boolean {
-    if (this.node !== undefined && this.node.type) {
+    if (this.node?.type) {
       return !this.isLibraryLink(this.node);
-    } else {
-      return false;
     }
+    return false;
   }
 
   public isFolder(node: ModelNode): boolean {
-    if (node !== undefined && node.type) {
+    if (node?.type) {
       return node.type.indexOf('folder') !== -1 && !this.isLibraryLink(node);
-    } else {
-      return false;
     }
+    return false;
   }
 
   public isLink(): boolean {
-    if (this.node !== undefined && this.node.type && this.node.properties) {
+    if (this.node?.type && this.node.properties) {
+      if (this.node.name?.includes('.url')) {
+        return true;
+      }
       return this.node.properties.isUrl === 'true';
-    } else {
-      return false;
     }
+    return false;
   }
 
   getDestinationId(destination: string): string {
     const destinationPart = destination.split('/');
     if (destinationPart.length === 4) {
       return destinationPart[3];
-    } else {
-      return '';
     }
+    return '';
   }
 
   private isNodeTypeOf(
     node: ModelNode,
     item: 'filelink' | 'folderlink'
   ): boolean {
-    if (node !== undefined && node.type) {
+    if (node?.type) {
       return node.type.indexOf(item) !== -1;
-    } else {
-      return false;
     }
+    return false;
   }
 
   isLibraryLink(node: ModelNode): boolean {
@@ -583,7 +691,7 @@ export class DetailsComponent implements OnInit {
   public hasComments(): boolean {
     let result = false;
 
-    if (this.comments && this.comments.total) {
+    if (this.comments?.total) {
       if (this.comments.total > 0) {
         result = true;
       }
@@ -617,7 +725,7 @@ export class DetailsComponent implements OnInit {
         getSuccessTranslation(ActionType.TAKE_OWNERSHIP)
       );
       this.uiMessageService.addSuccessMessage(text, true);
-    } catch (error) {
+    } catch (_error) {
       const text = this.translateService.translate(
         getErrorTranslation(ActionType.TAKE_OWNERSHIP)
       );
@@ -627,6 +735,13 @@ export class DetailsComponent implements OnInit {
 
   public isLocked(): boolean {
     return this.node?.properties?.locked === 'true';
+  }
+
+  public showWorkingCopy(): boolean {
+    return (
+      this.workingCopyId !== '' &&
+      this.node.properties?.lockOwner === this.user.userId
+    );
   }
 
   public isEditOnline(): boolean {
@@ -646,8 +761,7 @@ export class DetailsComponent implements OnInit {
 
   public currentUserHasAccess(): boolean {
     return (
-      this.node !== undefined &&
-      this.node.properties !== undefined &&
+      this.node?.properties !== undefined &&
       this.node.properties.currentUserHasAccess === 'true'
     );
   }
@@ -697,63 +811,6 @@ export class DetailsComponent implements OnInit {
     this.itemToClipboard = this.node.name;
   }
 
-  public async emailMe() {
-    let text: string;
-    try {
-      if (this.node.id !== undefined) {
-        const status = await firstValueFrom(
-          this.contentService.postContentEmail(this.node.id)
-        );
-        if (!status.result) {
-          text = this.translateService.translate(
-            getErrorTranslation(ActionType.EMAIL_CONTENT),
-            {
-              content: this.node.name,
-              name: `${this.user.firstname} ${this.user.lastname}`,
-              email: this.user.email,
-            }
-          );
-          this.uiMessageService.addErrorMessage(text);
-          return;
-        }
-        text = this.translateService.translate(
-          getSuccessTranslation(ActionType.EMAIL_CONTENT),
-          {
-            content: this.node.name,
-            name: `${this.user.firstname} ${this.user.lastname}`,
-            email: this.user.email,
-          }
-        );
-        this.uiMessageService.addSuccessMessage(text);
-      } else {
-        text = this.translateService.translate(
-          getErrorTranslation(ActionType.EMAIL_CONTENT),
-          {
-            content: this.node.name,
-            name: `${this.user.firstname} ${this.user.lastname}`,
-            email: this.user.email,
-          }
-        );
-        this.uiMessageService.addErrorMessage(text);
-      }
-    } catch (error) {
-      text = this.translateService.translate(
-        getErrorTranslation(ActionType.EMAIL_CONTENT),
-        {
-          content: this.node.name,
-          name: `${this.user.firstname} ${this.user.lastname}`,
-          email: this.user.email,
-        }
-      );
-      const jsonError = JSON.parse(error._body);
-      if (jsonError) {
-        this.uiMessageService.addErrorMessage(
-          `${text} -> ${jsonError.message as string}`
-        );
-      }
-    }
-  }
-
   public isPublic() {
     return (
       this.node.properties !== undefined &&
@@ -763,7 +820,7 @@ export class DetailsComponent implements OnInit {
   }
 
   public isMultiLingual(): boolean {
-    if (this.node && this.node.properties) {
+    if (this.node?.properties) {
       return (
         this.node.properties.multilingual === 'true' &&
         this.translationSet !== undefined
@@ -796,9 +853,8 @@ export class DetailsComponent implements OnInit {
           this.node.name.endsWith('.xlsx') ||
           this.node.name.endsWith('.pptx'))
       );
-    } else {
-      return false;
     }
+    return false;
   }
 
   private isOfficeIntegrationEnabled(): boolean {
@@ -806,14 +862,7 @@ export class DetailsComponent implements OnInit {
   }
   public openDocInOffice() {
     const id = this.node?.properties?.workingCopyId ?? this.node.id;
-    if (!this.isWorkingCopy()) {
-      setTimeout(() => location.reload(), 10000);
-      const url = `${environment.serverURL.substring(
-        0,
-        environment.serverURL.length - 1
-      )}${environment.baseHref}office?id=${id}&mode=edit`;
-      window.open(url, '_blank');
-    } else {
+    if (this.isWorkingCopy()) {
       setTimeout(
         () =>
           this.router.navigate([
@@ -830,127 +879,129 @@ export class DetailsComponent implements OnInit {
         environment.serverURL.length - 1
       )}${environment.baseHref}office?id=${id}&mode=update`;
       window.open(url, '_blank');
+    } else {
+      setTimeout(() => location.reload(), 10000);
+      const url = `${environment.serverURL.substring(
+        0,
+        environment.serverURL.length - 1
+      )}${environment.baseHref}office?id=${id}&mode=edit`;
+      window.open(url, '_blank');
     }
   }
 
   get securityRanking(): string {
     if (this.node.properties) {
       return this.node.properties.security_ranking;
-    } else {
-      return '';
     }
+    return '';
   }
 
   get size(): string | null {
     if (this.node.properties) {
       return this.node.properties.size;
-    } else {
-      return null;
     }
+    return null;
   }
 
   get locale(): string {
     if (this.node.properties) {
       return this.node.properties.locale;
-    } else {
-      return '';
     }
+    return '';
+  }
+
+  get language(): string {
+    if (this.node.properties) {
+      const index = this.node.properties.locale.lastIndexOf('_');
+      if (index > 0) {
+        return this.node.properties.locale.substring(0, index);
+      }
+      return this.node.properties.locale;
+    }
+    return '';
   }
   get mimetypeName(): string {
     if (this.node.properties) {
       return this.node.properties.mimetypeName;
-    } else {
-      return '';
     }
+    return '';
   }
   get created(): string | null {
     if (this.node.properties) {
       return this.node.properties.created;
-    } else {
-      return null;
     }
+    return null;
   }
 
   get modified(): string | null {
     if (this.node.properties) {
       return this.node.properties.modified;
-    } else {
-      return null;
     }
+    return null;
   }
   get modifier(): string {
     if (this.node.properties) {
       return this.node.properties.modifier;
-    } else {
-      return '';
     }
+    return '';
   }
   get creator(): string {
     if (this.node.properties) {
       return this.node.properties.creator;
-    } else {
-      return '';
     }
+    return '';
   }
   get author(): string {
     if (this.node.properties) {
       return this.node.properties.author;
-    } else {
-      return '';
     }
+    return '';
   }
 
   get url(): string {
     if (this.node.properties) {
       return this.node.properties.url;
-    } else {
-      return '';
     }
+    return '';
   }
 
   get encoding(): string {
     if (this.node.properties) {
       return this.node.properties.encoding;
-    } else {
-      return '';
     }
+    return '';
   }
 
   get status(): string {
     if (this.node.properties) {
       return this.node.properties.status;
-    } else {
-      return '';
     }
+    return '';
   }
 
   get reference(): string {
     if (this.node.properties) {
       return this.node.properties.reference;
-    } else {
-      return '';
     }
+    return '';
   }
   get nodeVersionLabel(): string {
     if (this.node.properties) {
       return this.node.properties.versionLabel;
-    } else {
-      return '';
     }
+    return '';
   }
   get issueDate(): string | null {
     if (this.node.properties) {
       return this.node.properties.issue_date;
-    } else {
-      return null;
     }
+    return null;
   }
   get expirationDate(): string | null {
     if (this.node.properties) {
       return this.node.properties.expiration_date;
-    } else {
-      return null;
     }
+    return null;
   }
 
   aresBridgeVersionSelected(version: string) {
@@ -988,27 +1039,6 @@ export class DetailsComponent implements OnInit {
     return `${environment.aresBridgeServer}/Ares/document/show.do?documentId=${documentId}`;
   }
 
-  private getRepositoriesInfoProperty(
-    propertyName:
-      | 'property_registration_number='
-      | 'property_save_number='
-      | 'property_document_id='
-  ): string | null {
-    let result: string | null = null;
-    if (this.node.properties && this.node.properties.repositoriesInfo) {
-      const repositoriesInfo: string = this.node.properties.repositoriesInfo;
-      let startIndex = repositoriesInfo.indexOf(propertyName);
-      if (startIndex > -1) {
-        startIndex += propertyName.length;
-        const endIndex = repositoriesInfo.indexOf(',', startIndex);
-        if (endIndex > -1) {
-          result = repositoriesInfo.substring(startIndex, endIndex);
-        }
-      }
-    }
-    return result;
-  }
-
   public isDateField(dpd: DynamicPropertyDefinition): boolean {
     return dpd.propertyType === 'DATE_FIELD';
   }
@@ -1029,9 +1059,8 @@ export class DetailsComponent implements OnInit {
   get workingCopyId(): string {
     if (this.node.properties) {
       return this.node.properties.workingCopyId;
-    } else {
-      return '';
     }
+    return '';
   }
   get isNotItemToClipboardUndefined(): boolean {
     return this.itemToClipboard !== undefined;
@@ -1045,56 +1074,50 @@ export class DetailsComponent implements OnInit {
   }
 
   public getVersionModifier(version: Version): string {
-    if (version.node && version.node.properties) {
+    if (version.node?.properties) {
       return version.node.properties.modifier;
-    } else {
-      return '';
     }
+    return '';
   }
 
   public getVersionModifed(version: Version): string | null {
-    if (version.node && version.node.properties) {
+    if (version.node?.properties) {
       return version.node.properties.modified;
-    } else {
-      return null;
     }
+    return null;
   }
 
   get isNotFolder(): boolean {
     if (this.node.type) {
       return this.node.type.indexOf('folder') === -1;
-    } else {
-      return true;
     }
+    return true;
   }
   get pivotId(): string | null {
-    if (this.translationSet.pivot && this.translationSet.pivot.id) {
+    if (this.translationSet.pivot?.id) {
       return this.translationSet.pivot.id;
-    } else {
-      return null;
     }
+    return null;
   }
 
   get title(): string {
-    if (this.node && this.node.title) {
+    if (this.node?.title) {
       const title = this.i18nPipe.transform(this.node.title);
       if (title !== '') {
         return title;
-      } else {
-        return this.i18nSelectPipe.transform('en', this.node.title);
       }
+      return this.i18nSelectPipe.transform('en', this.node.title);
     }
     return '';
   }
 
   get description(): string {
-    if (this.node && this.node.description) {
+    if (this.node?.description) {
       const description = this.i18nPipe.transform(this.node.description);
       if (description !== '') {
         return description;
-      } else {
-        return this.i18nSelectPipe.transform('en', this.node.description);
       }
+      return this.i18nSelectPipe.transform('en', this.node.description);
     }
 
     return '';
@@ -1150,11 +1173,11 @@ export class DetailsComponent implements OnInit {
         i = 1;
       }
       return result;
-    } else if (value) {
-      return value;
-    } else {
-      return '';
     }
+    if (value) {
+      return value;
+    }
+    return '';
   }
 
   public urlLength(): number {
@@ -1169,30 +1192,43 @@ export class DetailsComponent implements OnInit {
     if (!this.isInterestGroup(this.group)) {
       return;
     }
-    if (
-      this.node &&
-      this.node.properties &&
-      this.node.properties.originalContainerId
-    ) {
+    if (this.node?.properties?.originalContainerId) {
       if (this.urlLength() === 5 && !this.restrictedMode) {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-
-        this.router.navigate(
-          [
-            '../../',
-            this.isFolder(this.node)
-              ? this.node.id
-              : this.node.properties.originalContainerId,
-          ],
-          {
-            relativeTo: this.route,
-            queryParams: {
-              p: sessionStorage.getItem('libraryPage'),
-              n: sessionStorage.getItem('libraryLimit'),
-              s: sessionStorage.getItem('librarySort'),
-            },
-          }
-        );
+        if (this.isSharedSpaceLink(this.node)) {
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          this.router.navigate(
+            [
+              '../../../../',
+              this.node.properties.destinationIgId,
+              'library',
+              this.node.properties.destinationId,
+            ],
+            {
+              relativeTo: this.route,
+              queryParams: {
+                fromLink: 'true',
+              },
+            }
+          );
+        } else {
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          this.router.navigate(
+            [
+              '../../',
+              this.isFolder(this.node)
+                ? this.node.id
+                : this.node.properties.originalContainerId,
+            ],
+            {
+              relativeTo: this.route,
+              queryParams: {
+                p: sessionStorage.getItem('libraryPage'),
+                n: sessionStorage.getItem('libraryLimit'),
+                s: sessionStorage.getItem('librarySort'),
+              },
+            }
+          );
+        }
       } else if (this.urlLength() === 5 && this.restrictedMode) {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         this.router.navigate(['../../', this.group.libraryId], {
@@ -1231,19 +1267,55 @@ export class DetailsComponent implements OnInit {
   }
 
   public isPreviewable(): boolean {
+    if (environment.useAlfrescoAPI) {
+      return isContentPreviewableFull(this.node);
+    }
     return isContentPreviewable(this.node);
   }
 
-  public previewContent() {
+  public async previewContent() {
     this.dummyPreviewUrlChange = !this.dummyPreviewUrlChange;
-    // eslint-disable-next-line max-len
-    this.contentURL = `${
-      environment.serverURL
-    }pdfRendition?documentId=workspace://SpacesStore/${
-      this.node.id
-    }&response=content&ticket=${this.loginService.getTicket()}&dummy=${
-      this.dummyPreviewUrlChange
-    }`;
+    if (environment.useAlfrescoAPI && this.isFile()) {
+      if (
+        !isContentPreviewable(this.node) &&
+        isContentPreviewableFull(this.node)
+      ) {
+        try {
+          const rendition = await this.alfrescoService.getRendition(
+            this.nodeId as string,
+            'pdf'
+          );
+          if (rendition.entry.status !== 'CREATED') {
+            await this.alfrescoService.createRendition(
+              this.nodeId as string,
+              'pdf'
+            );
+          }
+        } catch (error) {
+          this.uiMessageService.addErrorMessage(
+            this.translateService.translate('preview.messages.not.available'),
+            true
+          );
+          console.error(error);
+        }
+
+        this.contentURL = `${environment.serverURL}api/-default-/public/alfresco/versions/1/nodes/${this.node.id}/renditions/pdf/content?attachment=true&alf_ticket=${this.loginService.getTicket()}&dummy=${
+          this.dummyPreviewUrlChange
+        }`;
+      } else {
+        this.contentURL = `${environment.serverURL}api/-default-/public/alfresco/versions/1/nodes/${this.node.id}/content?attachment=false&alf_ticket=${this.loginService.getTicket()}&dummy=${
+          this.dummyPreviewUrlChange
+        }`;
+      }
+    } else {
+      this.contentURL = `${
+        environment.serverURL
+      }pdfRendition?documentId=workspace://SpacesStore/${
+        this.node.id
+      }&response=content&ticket=${this.loginService.getTicket()}&dummy=${
+        this.dummyPreviewUrlChange
+      }`;
+    }
     this.previewDocumentId = this.node.id as string;
     this.showPreview = true;
   }
@@ -1265,7 +1337,7 @@ export class DetailsComponent implements OnInit {
         this.node = await firstValueFrom(
           this.nodesService.getNode(this.node.id)
         );
-      } catch (error) {
+      } catch (_error) {
         const text = this.translateService.translate(
           getErrorTranslation(ActionType.CHANGE_SUBSCRIPTION)
         );
@@ -1283,19 +1355,17 @@ export class DetailsComponent implements OnInit {
   }
 
   public isCurrentOwner() {
-    if (this.node && this.node.properties) {
+    if (this.node?.properties) {
       return this.node.properties.owner === this.user.userId;
-    } else {
-      return false;
     }
+    return false;
   }
 
   public isFolderLink(node: ModelNode) {
-    if (node !== undefined && node.type) {
+    if (node?.type) {
       return node.type.indexOf('folderlink') !== -1;
-    } else {
-      return false;
     }
+    return false;
   }
 
   public canSendToAresBridge() {
@@ -1324,9 +1394,8 @@ export class DetailsComponent implements OnInit {
 
     if (environment.circabcRelease !== 'oss') {
       return this.isLibManageOwnOrHigher();
-    } else {
-      return false;
     }
+    return false;
   }
 
   public async sendToAresBridge() {
@@ -1384,6 +1453,13 @@ export class DetailsComponent implements OnInit {
     return (
       this.formAresInfo.value.registrationNumber === 'null' ||
       this.formAresInfo.value.registrationNumber === ''
+    );
+  }
+
+  public isSensitive() {
+    return (
+      this.node?.properties?.security_ranking === 'SENSITIVE' ||
+      this.node?.properties?.security_ranking === 'SPECIAL_HANDLING'
     );
   }
 }

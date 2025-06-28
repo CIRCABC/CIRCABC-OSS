@@ -1,11 +1,16 @@
-export enum DirectoryPermissions {
-  DirNoAccess,
-  DirAccess,
-  DirManageMembers,
-  DirAdmin,
-}
+export const DirectoryPermissions = {
+  DirNoAccess: 0,
+  DirAccess: 1,
+  DirManageMembers: 2,
+  DirAdmin: 3,
+} as const;
 
-export const directoryPermissionKeys = Object.keys(DirectoryPermissions).filter(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (k) => typeof DirectoryPermissions[k as any] === 'number'
-);
+export type DirectoryPermissions =
+  (typeof DirectoryPermissions)[keyof typeof DirectoryPermissions];
+
+/**
+ * Array of string keys from the DirectoryPermissions object
+ * Used for permission lookups and UI components
+ */
+export const directoryPermissionKeys: string[] =
+  Object.keys(DirectoryPermissions);

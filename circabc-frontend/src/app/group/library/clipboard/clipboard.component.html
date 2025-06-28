@@ -1,28 +1,36 @@
 <div
+  tabindex="0"
   id="theSidenav"
   class="sidenav"
   (click)="clickedInside($event)"
   (mouseover)="visible = true"
+  (focus)="visible = true"
   [class.open-sidenav]="opened"
   [class.close-sidenav]="!opened"
 >
-  <a class="closebtn clipboard-title" (click)="close()">&times;</a>
+  <a tabindex="0" class="closebtn clipboard-title" (click)="close()">&times;</a>
   <p class="clipboard-title">{{ 'label.my.clipboard' | transloco }}</p>
 
-  <p *ngIf="nodes.length === 0" class="sidenav-item"
-    >{{ 'label.clipboard.empty' | transloco }}</p
-  >
+  @if (nodes.length === 0) {
+  <p class="sidenav-item">{{ 'label.clipboard.empty' | transloco }}</p>
+  }
 
   <ul>
-    <li *ngFor="let node of nodes" class="sidenav-item">
+    @for (node of nodes; track node.id) {
+    <li class="sidenav-item">
       <div class="item-actions">
         <div
           id="removeItemFromClipboardId"
           class="tooltip"
           title="{{ 'label.remove' | transloco }}"
         >
-          <a (click)="removeItem(node)">
-            <img src="img/icon-delete-white.png" width="16" height="16" />
+          <a tabindex="0" (click)="removeItem(node)">
+            <img
+              src="img/icon-delete-white.png"
+              width="16"
+              height="16"
+              alt="Delete"
+            />
           </a>
         </div>
         <div
@@ -30,70 +38,126 @@
           class="tooltip"
           title="{{ 'label.copy.here' | transloco }}"
         >
-          <a *ngIf="isAuthorized(node, 'Copy')" (click)="copyPasteItem(node)">
-            <img src="img/icon-paste-white.png" width="16" height="16" />
+          @if (isAuthorized(node, 'Copy')) {
+          <a tabindex="0" (click)="copyPasteItem(node)">
+            <img
+              src="img/icon-paste-white.png"
+              width="16"
+              height="16"
+              alt="Paste"
+            />
           </a>
+          }
         </div>
         <div
           id="cutItemFromClipboardId"
           class="tooltip"
           title="{{ 'label.move.here' | transloco }}"
         >
-          <a *ngIf="isAuthorized(node, 'Move')" (click)="cutPasteItem(node)">
-            <img src="img/icon-move-white.png" width="16" height="16" />
+          @if (isAuthorized(node, 'Move')) {
+          <a tabindex="0" (click)="cutPasteItem(node)">
+            <img
+              src="img/icon-move-white.png"
+              width="16"
+              height="16"
+              alt="Move"
+            />
           </a>
+          }
         </div>
         <div
           id="linkItemFromClipboardId"
           class="tooltip"
           title="{{ 'label.link.here' | transloco }}"
         >
-          <a *ngIf="isAuthorized(node, 'Link')" (click)="linkPasteItem(node)">
-            <img src="img/icon-link-white.png" width="16" height="16" />
+          @if (isAuthorized(node, 'Link')) {
+          <a tabindex="0" (click)="linkPasteItem(node)">
+            <img
+              src="img/icon-link-white.png"
+              width="16"
+              height="16"
+              alt="Link"
+            />
           </a>
+          }
         </div>
       </div>
       <div class="item-name" title="{{ node.name }}">{{ node.name }}</div>
     </li>
+    }
   </ul>
 
-  <div *ngIf="nodes.length !== 0" class="sidenav-all">
+  @if (nodes.length !== 0) {
+  <div class="sidenav-all">
     <br />
     <br />
     <br />
     <div class="tooltip" title="{{ 'label.remove.all' | transloco }}">
-      <a (click)="removeAll()">
-        <img src="img/icon-delete-white.png" width="20" height="20" />
+      <a tabindex="0" (click)="removeAll()">
+        <img
+          src="img/icon-delete-white.png"
+          width="20"
+          height="20"
+          alt="Delete All"
+        />
       </a> </div
     >&nbsp;
     <div class="tooltip" title="{{ 'label.copy.all.here' | transloco }}">
-      <a *ngIf="allAuthorized('Copy')" (click)="copyPasteAll()">
-        <img src="img/icon-paste-white.png" width="25" height="25" />
-      </a> </div
+      @if (allAuthorized('Copy')) {
+      <a tabindex="0" (click)="copyPasteAll()">
+        <img
+          src="img/icon-paste-white.png"
+          width="25"
+          height="25"
+          alt="Paste All"
+        />
+      </a>
+      } </div
     >&nbsp;
     <div class="tooltip" title="{{ 'label.move.all.here' | transloco }}">
-      <a *ngIf="allAuthorized('Move')" (click)="cutPasteAll()">
-        <img src="img/icon-move-white.png" width="25" height="25" />
-      </a> </div
+      @if (allAuthorized('Move')) {
+      <a tabindex="0" (click)="cutPasteAll()">
+        <img
+          src="img/icon-move-white.png"
+          width="25"
+          height="25"
+          alt="Move All"
+        />
+      </a>
+      } </div
     >&nbsp;
     <div class="tooltip" title="{{ 'label.link.all.here' | transloco }}">
-      <a *ngIf="allAuthorized('Link')" (click)="linkPasteAll()">
-        <img src="img/icon-link-white.png" width="25" height="25" />
-      </a> </div
+      @if (allAuthorized('Link')) {
+      <a tabindex="0" (click)="linkPasteAll()">
+        <img
+          src="img/icon-link-white.png"
+          width="25"
+          height="25"
+          alt="Link All"
+        />
+      </a>
+      } </div
     >&nbsp;
     <div class="tooltip" title="{{ 'label.bulk.download' | transloco }}">
       <a href="#" (click)="bulkDownload()">
-        <img src="img/icon-download-white.png" width="20" height="20" />
+        <img
+          src="img/icon-download-white.png"
+          width="20"
+          height="20"
+          alt="Download"
+        />
+        <span class="sr-only">{{ 'label.bulk.download' | transloco }}</span>
       </a>
     </div>
   </div>
-
-  <div *ngIf="processing" style="padding-left: 30%">
+  } @if (processing) {
+  <div style="padding-left: 30%">
     <br />
     <br />
     <span id="clipboardSpinnerId" class="clipboard-spinner"
       >{{ 'label.processing' | transloco }}...</span
     >
-    <img width="40" height="40" src="img/spinner.gif" />
+    <img width="40" height="40" src="img/spinner.gif" alt="Loading spinner" />
   </div>
+  }
 </div>

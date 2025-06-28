@@ -3,10 +3,12 @@ import {
   AbstractControl,
   FormBuilder,
   FormGroup,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute, Router, Params } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
@@ -16,18 +18,38 @@ import {
   ContentService,
   InformationService,
   News,
-  NodesService,
   Node as ModelNode,
+  NodesService,
 } from 'app/core/generated/circabc';
 import { UploadService } from 'app/core/upload.service';
-import { ValidationService } from 'app/core/validation.service';
+import { nonEmptyTitle, urlValidator } from 'app/core/validation.service';
+import { NewsCardComponent } from 'app/group/information/news-card/news-card.component';
+import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
+import { MultilingualInputComponent } from 'app/shared/input/multilingual-input.component';
+import { NotificationMessageComponent } from 'app/shared/notification-message/notification-message.component';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
+import { SharedModule } from 'primeng/api';
+import { DatePicker } from 'primeng/datepicker';
+import { EditorModule } from 'primeng/editor';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-add-news',
   templateUrl: './add-news.component.html',
-  styleUrls: ['./add-news.component.scss'],
+  styleUrl: './add-news.component.scss',
   preserveWhitespaces: false,
+  imports: [
+    ReactiveFormsModule,
+    NotificationMessageComponent,
+    MultilingualInputComponent,
+    ControlMessageComponent,
+    EditorModule,
+    SharedModule,
+    DatePicker,
+    SpinnerComponent,
+    NewsCardComponent,
+    TranslocoModule,
+  ],
 })
 export class AddNewsComponent implements OnInit {
   public newsForm!: FormGroup;
@@ -61,7 +83,7 @@ export class AddNewsComponent implements OnInit {
     this.infoId = params.infoId;
     this.newsForm = this.fb.group(
       {
-        title: ['', [ValidationService.nonEmptyTitle]],
+        title: ['', [nonEmptyTitle]],
         size: [1],
         layout: ['normal'],
         pattern: ['text'],
@@ -119,15 +141,13 @@ export class AddNewsComponent implements OnInit {
         this.newsForm.controls.content.setValidators(null);
         this.newsForm.controls.url.setValidators([
           Validators.required,
-          ValidationService.urlValidator,
+          urlValidator,
         ]);
         this.newsForm.controls.title.updateValueAndValidity();
         this.newsForm.controls.content.updateValueAndValidity();
         this.newsForm.controls.url.updateValueAndValidity();
       } else {
-        this.newsForm.controls.title.setValidators([
-          ValidationService.nonEmptyTitle,
-        ]);
+        this.newsForm.controls.title.setValidators([nonEmptyTitle]);
         this.newsForm.controls.content.setValidators([Validators.required]);
         this.newsForm.controls.url.setValidators(null);
         this.newsForm.controls.title.updateValueAndValidity();
@@ -179,7 +199,7 @@ export class AddNewsComponent implements OnInit {
       }
 
       result.result = ActionResult.SUCCEED;
-    } catch (error) {
+    } catch (_error) {
       result.result = ActionResult.FAILED;
     }
 
@@ -191,9 +211,10 @@ export class AddNewsComponent implements OnInit {
     this.executing = false;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public fileChangeEvent(fileInput: any) {
-    const filesList = fileInput.target.files as FileList;
+  public fileChangeEvent(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const filesList = input.files as FileList;
+
     this.handleFiles(filesList);
   }
 
@@ -210,17 +231,15 @@ export class AddNewsComponent implements OnInit {
   public getFileName() {
     if (this.filesToUpload && this.filesToUpload.length > 0) {
       return this.filesToUpload[0].name;
-    } else {
-      return '';
     }
+    return '';
   }
 
   public getFile() {
     if (this.filesToUpload && this.filesToUpload.length > 0) {
       return this.filesToUpload[0];
-    } else {
-      return undefined;
     }
+    return undefined;
   }
 
   isDateSelected(): boolean {
@@ -279,7 +298,7 @@ export class AddNewsComponent implements OnInit {
       }
 
       result.result = ActionResult.SUCCEED;
-    } catch (error) {
+    } catch (_error) {
       result.result = ActionResult.FAILED;
     }
 
@@ -302,11 +321,11 @@ export class AddNewsComponent implements OnInit {
         this.newsForm.value.pattern === 'image')
     ) {
       return this.newsForm.valid && this.filesToUpload.length > 0;
-    } else if (this.inEditMode() && this.newsForm.value.pattern === 'iframe') {
-      return true;
-    } else {
-      return this.newsForm.valid;
     }
+    if (this.inEditMode() && this.newsForm.value.pattern === 'iframe') {
+      return true;
+    }
+    return this.newsForm.valid;
   }
 
   get titleControl(): AbstractControl {

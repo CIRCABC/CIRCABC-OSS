@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AresBridge">
+	<insert id="insert_request" parameterType="map">
+		insert into cbc_ab_request (ab_transaction_id, node_uuid, version_label, name, group_uuid, request_date)
+		values (#{transactionId}, #{nodeId}, #{versionLabel}, #{name}, #{groupId}, current_timestamp)
+	</insert>
+	<insert id="insert_response" parameterType="map">
+		insert into cbc_ab_response (ab_transaction_id, request_type, document_id, save_number, registration_number, response_date)
+		values (#{transactionId}, #{requestType}, #{documentId,jdbcType=VARCHAR}, #{saveNumber,jdbcType=VARCHAR}, #{registrationNumber,jdbcType=VARCHAR}, current_timestamp)
+	</insert>
+	<select id="select_responses" resultType="AresBridgeDAO">
+		SELECT cbc_ab_request.node_uuid nodeId, cbc_ab_request.version_label versionLabel, cbc_ab_request.ab_transaction_id transactionId, cbc_ab_response.request_type requestType, cbc_ab_response.document_id documentId, cbc_ab_response.save_number saveNumber, cbc_ab_response.registration_number registrationNumber
+		FROM cbc_ab_response
+		JOIN cbc_ab_request ON cbc_ab_request.ab_transaction_id= cbc_ab_response.ab_transaction_id
+		WHERE cbc_ab_response.processed_date is null
+		ORDER BY response_date
+	</select>
+	<select
+    id="select_responses_by_node_id"
+    resultType="AresBridgeDAO"
+    parameterType="map"
+  >
+		SELECT cbc_ab_request.node_uuid nodeId, cbc_ab_request.name nodeName, cbc_ab_request.version_label versionLabel, cbc_ab_request.ab_transaction_id transactionId, cbc_ab_response.request_type requestType, cbc_ab_response.document_id documentId, cbc_ab_response.save_number saveNumber, cbc_ab_response.registration_number registrationNumber
+		FROM cbc_ab_response
+		JOIN cbc_ab_request ON cbc_ab_request.ab_transaction_id= cbc_ab_response.ab_transaction_id
+		WHERE cbc_ab_request.node_uuid = #{nodeId}
+		ORDER BY response_date desc
+	</select>
+	<select
+    id="select_responses_by_group_id"
+    resultType="AresBridgeDAO"
+    parameterType="map"
+  >
+		SELECT cbc_ab_request.node_uuid nodeId, cbc_ab_request.name nodeName, cbc_ab_request.version_label versionLabel, cbc_ab_request.ab_transaction_id transactionId, cbc_ab_response.request_type requestType, cbc_ab_response.document_id documentId, cbc_ab_response.save_number saveNumber, cbc_ab_response.registration_number registrationNumber
+		FROM cbc_ab_response
+		JOIN cbc_ab_request ON cbc_ab_request.ab_transaction_id= cbc_ab_response.ab_transaction_id
+		WHERE cbc_ab_request.group_uuid = #{groupId}
+		ORDER BY response_date desc
+	</select>
+	<update id="update_response" parameterType="map">
+		UPDATE cbc_ab_response SET processed_date = current_timestamp
+		WHERE ab_transaction_id = #{transactionId} AND request_type = #{requestType}
+	</update>
+</mapper>

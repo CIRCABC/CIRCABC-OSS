@@ -1,14 +1,19 @@
 <section class="group-box">
-  <div class="profile" *ngIf="membership && membership.profile">
+  @if (membership && membership.profile) {
+  <div class="profile">
     <strong>{{ membership.profile.title | cbcI18n }}</strong>
     <br />
     {{ membership.profile.name }}
   </div>
-  <div class="group" *ngIf="membership && membership.interestGroup">
+  } @if (membership && membership.interestGroup) {
+  <div class="group">
     <strong>{{ membership.interestGroup.title | cbcI18n }}</strong>
     <br />
-    {{ membership.interestGroup.name }}
+    <a [routerLink]="['/group', membership.interestGroup.id]"
+      >{{ membership.interestGroup.name }}</a
+    >
   </div>
+  }
   <div class="actions">
     <cbc-inline-delete
       [deleteLabel]="'label.remove' | transloco"

@@ -17,13 +17,12 @@
 package eu.cec.digit.circabc.service.bulk.indexes;
 
 import eu.cec.digit.circabc.service.bulk.indexes.message.ValidationMessage;
-
 import java.util.List;
 import java.util.Map;
 
 public interface ValidateHelper {
-
-    void validate(
-            final IndexHeaders index,
-            final Map<IndexEntry, List<ValidationMessage>> indexValidationMessages);
+  void validate(
+    final IndexHeaders index,
+    final Map<IndexEntry, List<ValidationMessage>> indexValidationMessages
+  );
 }

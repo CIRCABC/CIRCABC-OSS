@@ -1,0 +1,19 @@
+.dialog {
+  padding: 20px;
+}
+
+table {
+  width: 100%;
+
+  thead {
+    th {
+      text-align: left;
+    }
+  }
+
+  tbody {
+    td.name {
+      width: 40%;
+    }
+  }
+}

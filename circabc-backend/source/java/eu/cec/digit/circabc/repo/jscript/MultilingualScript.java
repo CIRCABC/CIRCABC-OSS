@@ -16,6 +16,7 @@
  */
 package eu.cec.digit.circabc.repo.jscript;
 
+import java.util.Locale;
 import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.repo.processor.BaseProcessorExtension;
 import org.alfresco.service.ServiceRegistry;
@@ -24,132 +25,157 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.Locale;
-
 /**
  * @author Slobodan Filipovic
  * <p>Expose multilingualContentService to be accessible via javascript
  */
 public final class MultilingualScript extends BaseProcessorExtension {
 
-    private static final Log logger = LogFactory.getLog(MultilingualScript.class);
+  private static final Log logger = LogFactory.getLog(MultilingualScript.class);
 
-    private MultilingualContentService multilingualContentService;
-    private ServiceRegistry serviceRegistry;
+  private MultilingualContentService multilingualContentService;
+  private ServiceRegistry serviceRegistry;
 
-    public ScriptNode addEmptyTranslation(ScriptNode translationOf, String name, String language) {
-        ScriptNode result = null;
-        try {
-            final NodeRef resultNodeRef =
-                    multilingualContentService.addEmptyTranslation(
-                            translationOf.getNodeRef(), name, new Locale(language));
-            result = new ScriptNode(resultNodeRef, serviceRegistry);
-        } catch (Exception e) {
-            if (logger.isErrorEnabled()) {
-                logger.error(
-                        "Error when call addEmptyTranslation with arguments: "
-                                + translationOf.toString()
-                                + " , "
-                                + language,
-                        e);
-            }
-        }
-        return result;
+  public ScriptNode addEmptyTranslation(
+    ScriptNode translationOf,
+    String name,
+    String language
+  ) {
+    ScriptNode result = null;
+    try {
+      final NodeRef resultNodeRef =
+        multilingualContentService.addEmptyTranslation(
+          translationOf.getNodeRef(),
+          name,
+          new Locale(language)
+        );
+      result = new ScriptNode(resultNodeRef, serviceRegistry);
+    } catch (Exception e) {
+      if (logger.isErrorEnabled()) {
+        logger.error(
+          "Error when call addEmptyTranslation with arguments: " +
+          translationOf.toString() +
+          " , " +
+          language,
+          e
+        );
+      }
     }
+    return result;
+  }
 
-    public void unmakeTranslation(ScriptNode content) {
+  public void unmakeTranslation(ScriptNode content) {
+    try {
+      NodeRef contentNodeRef = content.getNodeRef();
 
-        try {
-            NodeRef contentNodeRef = content.getNodeRef();
-
-            multilingualContentService.unmakeTranslation(contentNodeRef);
-        } catch (RuntimeException e) {
-            if (logger.isErrorEnabled()) {
-                logger.error("Error when call unmakeTranslation with arguments: " + content.toString(), e);
-            }
-        }
+      multilingualContentService.unmakeTranslation(contentNodeRef);
+    } catch (RuntimeException e) {
+      if (logger.isErrorEnabled()) {
+        logger.error(
+          "Error when call unmakeTranslation with arguments: " +
+          content.toString(),
+          e
+        );
+      }
     }
+  }
 
-    public Boolean isTranslation(ScriptNode content) {
-        Boolean result = null;
-        try {
-            NodeRef contentNodeRef = content.getNodeRef();
-            result = multilingualContentService.isTranslation(contentNodeRef);
-        } catch (RuntimeException e) {
-            if (logger.isErrorEnabled()) {
-                logger.error("Error when call isTranslation with arguments: " + content.toString(), e);
-            }
-        }
-        return result;
+  public Boolean isTranslation(ScriptNode content) {
+    Boolean result = null;
+    try {
+      NodeRef contentNodeRef = content.getNodeRef();
+      result = multilingualContentService.isTranslation(contentNodeRef);
+    } catch (RuntimeException e) {
+      if (logger.isErrorEnabled()) {
+        logger.error(
+          "Error when call isTranslation with arguments: " + content.toString(),
+          e
+        );
+      }
     }
+    return result;
+  }
 
-    public ScriptNode getPivotTranslation(ScriptNode content) {
-
-        ScriptNode result = null;
-        try {
-            final NodeRef resultNodeRef =
-                    multilingualContentService.getPivotTranslation(content.getNodeRef());
-            result = new ScriptNode(resultNodeRef, serviceRegistry);
-        } catch (Exception e) {
-            if (logger.isErrorEnabled()) {
-                logger.error(
-                        "Error when call getPivotTranslation with arguments: " + content.toString(), e);
-            }
-        }
-        return result;
+  public ScriptNode getPivotTranslation(ScriptNode content) {
+    ScriptNode result = null;
+    try {
+      final NodeRef resultNodeRef =
+        multilingualContentService.getPivotTranslation(content.getNodeRef());
+      result = new ScriptNode(resultNodeRef, serviceRegistry);
+    } catch (Exception e) {
+      if (logger.isErrorEnabled()) {
+        logger.error(
+          "Error when call getPivotTranslation with arguments: " +
+          content.toString(),
+          e
+        );
+      }
     }
+    return result;
+  }
 
-    public void makeTranslation(ScriptNode content, String language) {
-
-        try {
-            NodeRef contentNodeRef = content.getNodeRef();
-            Locale locale = new Locale(language);
-            multilingualContentService.makeTranslation(contentNodeRef, locale);
-        } catch (RuntimeException e) {
-            if (logger.isErrorEnabled()) {
-                logger.error(
-                        "Error when call make translation with arguments: "
-                                + content.toString()
-                                + " , "
-                                + language,
-                        e);
-            }
-        }
+  public void makeTranslation(ScriptNode content, String language) {
+    try {
+      NodeRef contentNodeRef = content.getNodeRef();
+      Locale locale = new Locale(language);
+      multilingualContentService.makeTranslation(contentNodeRef, locale);
+    } catch (RuntimeException e) {
+      if (logger.isErrorEnabled()) {
+        logger.error(
+          "Error when call make translation with arguments: " +
+          content.toString() +
+          " , " +
+          language,
+          e
+        );
+      }
     }
+  }
 
-    public void addTranslation(ScriptNode newTranslation, ScriptNode content, String language) {
-        try {
-            NodeRef newTranslationNodeRef = newTranslation.getNodeRef();
-            NodeRef contentNodeRef = content.getNodeRef();
-            Locale locale = new Locale(language);
-            multilingualContentService.addTranslation(newTranslationNodeRef, contentNodeRef, locale);
-        } catch (RuntimeException e) {
-            if (logger.isErrorEnabled()) {
-                logger.error(
-                        "Error when call add translation with arguments: "
-                                + newTranslation.toString()
-                                + " , "
-                                + content.toString()
-                                + " , "
-                                + language,
-                        e);
-            }
-        }
+  public void addTranslation(
+    ScriptNode newTranslation,
+    ScriptNode content,
+    String language
+  ) {
+    try {
+      NodeRef newTranslationNodeRef = newTranslation.getNodeRef();
+      NodeRef contentNodeRef = content.getNodeRef();
+      Locale locale = new Locale(language);
+      multilingualContentService.addTranslation(
+        newTranslationNodeRef,
+        contentNodeRef,
+        locale
+      );
+    } catch (RuntimeException e) {
+      if (logger.isErrorEnabled()) {
+        logger.error(
+          "Error when call add translation with arguments: " +
+          newTranslation.toString() +
+          " , " +
+          content.toString() +
+          " , " +
+          language,
+          e
+        );
+      }
     }
+  }
 
-    public MultilingualContentService getMultilingualContentService() {
-        return multilingualContentService;
-    }
+  public MultilingualContentService getMultilingualContentService() {
+    return multilingualContentService;
+  }
 
-    public void setMultilingualContentService(MultilingualContentService multilingualContentService) {
-        this.multilingualContentService = multilingualContentService;
-    }
+  public void setMultilingualContentService(
+    MultilingualContentService multilingualContentService
+  ) {
+    this.multilingualContentService = multilingualContentService;
+  }
 
-    public ServiceRegistry getServiceRegistry() {
-        return serviceRegistry;
-    }
+  public ServiceRegistry getServiceRegistry() {
+    return serviceRegistry;
+  }
 
-    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-        this.serviceRegistry = serviceRegistry;
-    }
+  public void setServiceRegistry(ServiceRegistry serviceRegistry) {
+    this.serviceRegistry = serviceRegistry;
+  }
 }

@@ -1,4 +1,6 @@
-<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+@if (loading) {
+<cbc-horizontal-loader />
+}
 <div class="wrap page-container">
   <div class="page-header">
     <span
@@ -6,24 +8,26 @@
       [innerHTML]="'dynamic-property.page.create.title' | transloco"
     ></span>
     <div class="page-header__actions">
-      <cbc-reponsive-sub-menu *ngIf="currentLibrary">
+      @if (currentLibrary) {
+      <cbc-reponsive-sub-menu>
         <a [routerLink]="['../library', currentLibrary.id]"
           >{{ 'label.library' | transloco }}</a
         >
-        <a *ngIf="isLibAdmin()" [routerLink]="['../keywords']"
-          >{{ 'label.keywords' | transloco }}</a
-        >
+        @if (isLibAdmin()) {
+        <a [routerLink]="['../keywords']">{{ 'label.keywords' | transloco }}</a>
+        }
         <a [routerLink]="['.']" class="selected"
           >{{ 'label.dynamic.properties' | transloco }}</a
         >
-        <a
-          *ngIf="isLibAdmin()"
-          [routerLink]="['../admin/documents']"
-          [queryParams]="{ expired: 1 }"
+        @if (isLibAdmin()) {
+        <a [routerLink]="['../admin/documents']" [queryParams]="{ expired: 1 }"
           >{{ 'label.expired.items' | transloco }}</a
         >
+        }
       </cbc-reponsive-sub-menu>
+      }
       <a
+        tabindex="0"
         class="cta cta--plus"
         (click)="prepareCreateModal()"
         [class.disabled]="dynamicProperties.length === 20"
@@ -31,7 +35,8 @@
       >
     </div>
   </div>
-  <div *ngIf="dynamicProperties.length === 20">
+  @if (dynamicProperties.length === 20) {
+  <div>
     <br />
     <br />
     <div
@@ -46,17 +51,19 @@
       <img
         src="img/error-triangle-orange-32.png"
         style="vertical-align: middle; margin: 0 25px"
+        alt="Error triangle"
       />
       {{ 'dynamic-property.max.reached' | transloco }}
     </div>
   </div>
+  } @for (dynProp of dynamicProperties; track dynProp.id) {
   <cbc-dynamic-property-box
-    *ngFor="let dynProp of dynamicProperties"
     [property]="dynProp"
     (dynnamicPropDelete)="showModalDelete($event)"
     (dynamicPropEdit)="showModalEdit($event)"
   ></cbc-dynamic-property-box>
-  <div *ngIf="dynamicProperties.length === 0">
+  } @if (dynamicProperties.length === 0) {
+  <div>
     <br />
     <br />
     <div
@@ -75,18 +82,20 @@
         width="45"
         height="45"
         style="vertical-align: middle; margin: 0 25px"
+        alt="Dynamic property icon"
       />
     </div>
   </div>
+  }
 </div>
 <cbc-dynamic-property-delete
   [showModal]="deleteModalShown"
   [property]="selectedProperty"
   (modalHide)="refresh($event)"
-></cbc-dynamic-property-delete>
+/>
 <cbc-create-dynamic-property
   [showModal]="createModalShown"
   [groupId]="groupId"
   (modalHide)="refresh($event)"
   [property]="propertyToUpdate"
-></cbc-create-dynamic-property>
+/>

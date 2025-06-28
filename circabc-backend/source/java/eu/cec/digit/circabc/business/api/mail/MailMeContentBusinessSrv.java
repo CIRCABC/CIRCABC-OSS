@@ -28,22 +28,20 @@ import org.alfresco.service.cmr.repository.NodeRef;
  * @author patrice.coppens@trasys.lu
  */
 public interface MailMeContentBusinessSrv {
+  /**
+   * Send a nodeRef in email.
+   *
+   * @param contentRef NodeRef is any node.
+   * @return true if the node is successfully sent
+   */
+  boolean send(final NodeRef anyRef, boolean attachContent);
 
-    /**
-     * Send a nodeRef in email.
-     *
-     * @param contentRef NodeRef is any node.
-     * @return true if the node is successfully sent
-     */
-    boolean send(final NodeRef anyRef, boolean attachContent);
-
-    /**
-     * Send a nodeRef by email to the given user.
-     *
-     * @param contentRef NodeRef is any node.
-     * @param userId     id of the user.
-     * @return true if the node is successfully sent
-     */
-    boolean send(final NodeRef anyRef, String userId, boolean attachContent);
-
+  /**
+   * Send a nodeRef by email to the given user.
+   *
+   * @param contentRef NodeRef is any node.
+   * @param userId     id of the user.
+   * @return true if the node is successfully sent
+   */
+  boolean send(final NodeRef anyRef, String userId, boolean attachContent);
 }

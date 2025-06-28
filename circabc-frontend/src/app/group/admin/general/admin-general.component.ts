@@ -3,22 +3,36 @@ import {
   AbstractControl,
   FormBuilder,
   FormGroup,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   InterestGroup,
   InterestGroupService,
 } from 'app/core/generated/circabc';
 import { GroupReloadListenerService } from 'app/core/group-reload-listener.service';
-import { ValidationService } from 'app/core/validation.service';
+import { fileNameValidator } from 'app/core/validation.service';
+import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
+import { FocusDirective } from 'app/shared/directives/focus.directive';
+import { MultilingualInputComponent } from 'app/shared/input/multilingual-input.component';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-admin-general',
   templateUrl: './admin-general.component.html',
   preserveWhitespaces: true,
+  imports: [
+    ReactiveFormsModule,
+    FocusDirective,
+    ControlMessageComponent,
+    MultilingualInputComponent,
+    SpinnerComponent,
+    TranslocoModule,
+  ],
 })
 export class AdminGeneralComponent implements OnInit {
   public ig!: InterestGroup;
@@ -36,7 +50,7 @@ export class AdminGeneralComponent implements OnInit {
     this.igForm = this.fb.group(
       {
         id: [''],
-        name: ['', [Validators.required, ValidationService.fileNameValidator]],
+        name: ['', [Validators.required, fileNameValidator]],
         title: [''],
         description: [''],
         contact: [''],

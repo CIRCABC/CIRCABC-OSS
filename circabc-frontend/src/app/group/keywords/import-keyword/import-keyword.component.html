@@ -1,7 +1,7 @@
 <cbc-modal
   [title]="'keywords.import.title'"
   (ok)="import()"
-  (cancel)="cancelWizard()"
+  (cancelModal)="cancelWizard()"
   [okLabel]="'label.import'"
   [(visible)]="showModal"
   [executing]="uploading"
@@ -35,7 +35,8 @@
     {{ 'label.drag.drop.file' | transloco }}
   </div>
 
-  <div *ngIf="fileToUpload !== undefined" class="field">
+  @if (fileToUpload !== undefined) {
+  <div class="field">
     <label>{{ 'label.file.uploaded' | transloco }}</label> ( {{
     'label.upload.total.size' | transloco }}: {{ fileToUpload.size | cbcSize:
     true }} )
@@ -46,4 +47,5 @@
       </ul>
     </div>
   </div>
+  }
 </cbc-modal>

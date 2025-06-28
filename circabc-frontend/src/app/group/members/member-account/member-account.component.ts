@@ -2,14 +2,18 @@ import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
+import { TranslocoModule } from '@jsverse/transloco';
 import { User, UserService } from 'app/core/generated/circabc';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
 import { firstValueFrom } from 'rxjs';
+import { MemberCardComponent } from './member-card/member-card.component';
 
 @Component({
   selector: 'cbc-member-account',
   templateUrl: './member-account.component.html',
-  styleUrls: ['./member-account.component.scss'],
+  styleUrl: './member-account.component.scss',
   preserveWhitespaces: true,
+  imports: [HorizontalLoaderComponent, MemberCardComponent, TranslocoModule],
 })
 export class MemberAccountComponent implements OnInit {
   public user!: User;

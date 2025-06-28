@@ -21,6 +21,6 @@
 package eu.cec.digit.circabc.web.validator.validatordisabled;
 
 public class UserNameValidatorDisabled {
-    //Used only for developping purpose.
+  //Used only for developping purpose.
 
 }

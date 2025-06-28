@@ -1,20 +1,34 @@
 import { Component, OnInit } from '@angular/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   AppMessageService,
   DistributionMail,
 } from 'app/core/generated/circabc';
 import { ListingOptions } from 'app/group/listing-options/listing-options';
+import { InlineDeleteComponent } from 'app/shared/delete/inline-delete.component';
+import { NumberBadgeComponent } from 'app/shared/number-badge/number-badge.component';
+import { PagerComponent } from 'app/shared/pager/pager.component';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import {
   SelectableDistributionMail,
   SelectablePagedDistributionMails,
 } from 'app/support/distribution-list/selectable-paged-distribution-mails';
 import { saveAs } from 'file-saver';
 import { firstValueFrom } from 'rxjs';
+import { AddDistributionEmailComponent } from './add-distribution-email/add-distribution-email.component';
 
 @Component({
   selector: 'cbc-distribution-list',
   templateUrl: './distribution-list.component.html',
-  styleUrls: ['./distribution-list.component.scss'],
+  styleUrl: './distribution-list.component.scss',
+  imports: [
+    PagerComponent,
+    NumberBadgeComponent,
+    InlineDeleteComponent,
+    SpinnerComponent,
+    AddDistributionEmailComponent,
+    TranslocoModule,
+  ],
 })
 export class DistributionListComponent implements OnInit {
   public distributionEmails: SelectablePagedDistributionMails = {
@@ -144,8 +158,5 @@ export class DistributionListComponent implements OnInit {
       .subscribe((response) => {
         saveAs(response, 'distribution-list.xlsx');
       });
-  }
-  public trackById(_index: number, item: { id?: string | number }) {
-    return item.id;
   }
 }

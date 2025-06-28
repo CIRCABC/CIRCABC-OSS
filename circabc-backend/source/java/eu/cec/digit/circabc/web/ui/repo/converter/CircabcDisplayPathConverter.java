@@ -20,7 +20,6 @@
  ******************************************************************************/
 package eu.cec.digit.circabc.web.ui.repo.converter;
 
-
 /**
  * The display path of a file link or a folder link must start from circabc root
  *
@@ -28,23 +27,23 @@ package eu.cec.digit.circabc.web.ui.repo.converter;
  */
 public class CircabcDisplayPathConverter extends DisplayPathAbstractConverter {
 
-    /**
-     * <p>The standard converter id for this converter.</p>
-     */
-    public static final String CONVERTER_ID = "eu.cec.digit.circabc.faces.CircabcDisplayPathConverter";
+  /**
+   * <p>The standard converter id for this converter.</p>
+   */
+  public static final String CONVERTER_ID =
+    "eu.cec.digit.circabc.faces.CircabcDisplayPathConverter";
 
+  public CircabcDisplayPathConverter() {
+    super();
+  }
 
-    public CircabcDisplayPathConverter() {
-        super();
-    }
+  @Override
+  protected FromElement getFromElement() {
+    return FromElement.CIRCABC_ROOT;
+  }
 
-    @Override
-    protected FromElement getFromElement() {
-        return FromElement.CIRCABC_ROOT;
-    }
-
-    @Override
-    protected LinkType getLinkType() {
-        return LinkType.DOWNLOAD_BROWSE;
-    }
+  @Override
+  protected LinkType getLinkType() {
+    return LinkType.DOWNLOAD_BROWSE;
+  }
 }

@@ -30,13 +30,13 @@ import eu.cec.digit.circabc.web.wai.manager.ActionsListWrapper;
  */
 public class ViewUserDetailsNoActionsDialog extends ViewUserDetailsDialog {
 
-    private static final long serialVersionUID = 8138375774668204122L;
+  private static final long serialVersionUID = 8138375774668204122L;
 
-    /**
-     * @see eu.cec.digit.circabc.web.wai.dialog.users.BaseUserDetailsBean#getActionList()
-     */
-    @Override
-    public ActionsListWrapper getActionList() {
-        return null;
-    }
+  /**
+   * @see eu.cec.digit.circabc.web.wai.dialog.users.BaseUserDetailsBean#getActionList()
+   */
+  @Override
+  public ActionsListWrapper getActionList() {
+    return null;
+  }
 }

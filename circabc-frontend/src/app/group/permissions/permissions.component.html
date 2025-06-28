@@ -1,5 +1,8 @@
-<section class="fix-margin-responsive" *ngIf="perms !== undefined">
-  <cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+@if (perms !== undefined) {
+<section class="fix-margin-responsive">
+  @if (loading) {
+  <cbc-horizontal-loader></cbc-horizontal-loader>
+  }
 
   <div class="wrap page-container">
     <div class="page-header">
@@ -9,21 +12,22 @@
       ></span>
       <div class="page-header__actions">
         <cbc-reponsive-sub-menu>
+          @if (from === 'library') {
           <a
+            tabindex="0"
             (click)="goBackToFolder()"
-            *ngIf="from === 'library'"
             class="page-header__backlink"
             >{{ 'label.back' | transloco }}</a
           >
-          <a (click)="goBack()" *ngIf="from === 'library'"
+          } @if (from === 'library') {
+          <a tabindex="0" (click)="goBack()"
             >{{ 'label.details' | transloco }}</a
           >
-          <a
-            (click)="goBack()"
-            *ngIf="from === 'forum' || from === 'topic'"
-            class="page-header__backlink"
+          } @if (from === 'forum' || from === 'topic') {
+          <a tabindex="0" (click)="goBack()" class="page-header__backlink"
             >{{ 'label.back' | transloco }}</a
           >
+          }
           <a
             class="selected"
             [routerLink]="['.']"
@@ -38,8 +42,9 @@
           >
         </cbc-reponsive-sub-menu>
 
+        @if (!isFolder()) {
         <a
-          *ngIf="!isFolder()"
+          tabindex="0"
           class="cta cta--plus"
           [class.disabled]="shouldDisablePermissionSetting()"
           (click)="showAddPermissionModal()"
@@ -50,8 +55,8 @@
           }}"
           >{{ 'permissions.add.configuration' | transloco }}</a
         >
+        } @if (isFolder()) {
         <cbc-add-permission-dropdown
-          *ngIf="isFolder()"
           [disabled]="shouldDisablePermissionSetting()"
           (launchCreate)="addPermission($event)"
           title="{{
@@ -60,19 +65,21 @@
               : ''
           }}"
         ></cbc-add-permission-dropdown>
+        }
       </div>
     </div>
 
-    <section *ngIf="perms">
+    @if (perms) {
+    <section>
       <div class="main switch-container">
         <h3>
-          {{ 'label.permissions.on' | transloco }}:
-          <span *ngIf="!isFolder()"
+          {{ 'label.permissions.on' | transloco }}: @if (!isFolder()) {
+          <span
             >{{(isForumNewsgroupsName(currentNode.name!,currentNode.type!))?
             ('label.forums' | transloco) : currentNode.name }}</span
           >
+          } @if (isFolder()) {
           <a
-            *ngIf="isFolder()"
             [routerLink]="['../../library/', currentNode.id]"
             [queryParams]="{
            p: '1',
@@ -82,6 +89,7 @@
             style="color: #003355"
             >{{currentNode.name}}</a
           >
+          }
         </h3>
         <div class="field switch inheritance-box">
           <div class="label">
@@ -106,21 +114,25 @@
             }}</span
           >
         </div>
-        <div *ngIf="processing">
+        @if (processing) {
+        <div>
           <label
             >{{ 'label.updating' | transloco }}...
             <cbc-spinner></cbc-spinner>
           </label>
         </div>
+        }
       </div>
 
       <div class="grid-container">
         <div class="box">
           <header class="header">
             <span class="title">{{ 'label.profiles' | transloco }}</span>
-            <span class="div-spinner" *ngIf="deletingProfilePermissions">
+            @if (deletingProfilePermissions) {
+            <span class="div-spinner">
               <cbc-spinner></cbc-spinner>
             </span>
+            }
           </header>
           <div class="table-container permission-container">
             <table class="main">
@@ -137,50 +149,45 @@
               </thead>
 
               <tbody>
+                @if (perms.permissions && perms.permissions.profiles) {
                 <tr
-                  *ngIf="perms.permissions && perms.permissions.profiles"
                   class="row"
                   [class.empty-row]="perms.permissions.profiles.length === 0"
                 >
-                  <td
-                    class="cell-left-border"
-                    *ngIf="perms.permissions.profiles.length === 0"
-                  ></td>
-                  <td
-                    class="cell-checkbox"
-                    *ngIf="perms.permissions.profiles.length === 0"
-                  ></td>
-                  <td
-                    colspan="3"
-                    *ngIf="perms.permissions.profiles.length === 0"
-                  >
+                  @if (perms.permissions.profiles.length === 0) {
+                  <td class="cell-left-border"></td>
+                  } @if (perms.permissions.profiles.length === 0) {
+                  <td class="cell-checkbox"></td>
+                  } @if (perms.permissions.profiles.length === 0) {
+                  <td colspan="3">
                     {{ 'permissions.empty.configuration' | transloco }}
                   </td>
+                  }
                 </tr>
-
-                <tr
-                  class="row"
-                  *ngFor="let groupName of getMapKeys(profilePermissionMap)"
-                >
+                } @for (groupName of getMapKeys(profilePermissionMap); track
+                groupName) {
+                <tr class="row">
                   <td class="cell-left-border"></td>
                   <td class="cell-checkbox"></td>
                   <td style="text-transform: capitalize">
                     {{ getProfileTitle(groupName) | cbcI18n }}
                   </td>
                   <td>
+                    @for (perm of splitProfilePermissions(groupName); track
+                    perm) {
                     <span
-                      *ngFor="let perm of splitProfilePermissions(groupName)"
-                      >{{ 'permissions.' + perm | transloco }}
-                      <br
-                        *ngIf="
-                          splitProfilePermissions(groupName).length > 1
-                        "
-                    /></span>
+                      >{{ 'permissions.' + perm | transloco }} @if (
+                      splitProfilePermissions(groupName).length > 1 ) {
+                      <br />
+                      }</span
+                    >
+                    }
                   </td>
                   <td>
+                    @if (hasProfilePermissionDeletable(groupName)) {
                     <a
+                      tabindex="0"
                       (click)="prepareDeletePermissionEntry(groupName, 'group')"
-                      *ngIf="hasProfilePermissionDeletable(groupName)"
                     >
                       <img
                         src="img/icon-delete-818181.png"
@@ -189,13 +196,16 @@
                         title="{{ 'label.delete' | transloco }}"
                       />
                     </a>
+                    }
                   </td>
                 </tr>
+                }
               </tbody>
             </table>
           </div>
 
-          <div class="box" *ngIf="libAdmin.length > 0">
+          @if (libAdmin.length > 0) {
+          <div class="box">
             <header class="header">
               <span class="title"
                 >{{ 'label.profiles.permanent' | transloco }}</span
@@ -219,25 +229,30 @@
 
                 <tbody>
                   <tr></tr>
-                  <tr *ngFor="let lib of libAdmin" class="row">
+                  @for (lib of libAdmin; track lib) {
+                  <tr class="row">
                     <td class="cell-left-border"></td>
                     <td class="cell-checkbox"></td>
                     <td>{{lib}}</td>
                     <td>{{ 'permissions.LibAdmin' | transloco }}</td>
                   </tr>
+                  }
                 </tbody>
               </table>
             </div>
           </div>
+          }
         </div>
 
         <div class="box">
           <div id="usersPermissionTableId">
             <header class="header">
               <span class="title">{{ 'label.users' | transloco }}</span>
-              <span class="div-spinner" *ngIf="deletingUserPermissions">
+              @if (deletingUserPermissions) {
+              <span class="div-spinner">
                 <cbc-spinner></cbc-spinner>
               </span>
+              }
             </header>
             <div class="table-container permission-container">
               <table class="main">
@@ -257,26 +272,26 @@
 
                 <tbody>
                   <tr></tr>
-                  <tr
-                    class="row"
-                    *ngFor="let userid of getMapKeys(userPermissionMap)"
-                  >
+                  @for (userid of getMapKeys(userPermissionMap); track userid) {
+                  <tr class="row">
                     <td class="cell-left-border"></td>
                     <td class="cell-checkbox"></td>
                     <td>{{ getDisplayUser(userid) }}</td>
                     <td>
-                      <span *ngFor="let perm of splitUserPermissions(userid)"
-                        >{{ 'permissions.' + perm | transloco }}
-                        <br
-                          *ngIf="
-                            splitUserPermissions(userid).length > 1
-                          "
-                      /></span>
+                      @for (perm of splitUserPermissions(userid); track perm) {
+                      <span
+                        >{{ 'permissions.' + perm | transloco }} @if (
+                        splitUserPermissions(userid).length > 1 ) {
+                        <br />
+                        }</span
+                      >
+                      }
                     </td>
                     <td>
+                      @if (hasUserPermissionDeletable(userid)) {
                       <a
+                        tabindex="0"
                         (click)="prepareDeletePermissionEntry(userid, 'user')"
-                        *ngIf="hasUserPermissionDeletable(userid)"
                       >
                         <img
                           src="img/icon-delete-818181.png"
@@ -285,8 +300,10 @@
                           title="{{ 'label.delete' | transloco }}"
                         />
                       </a>
+                      }
                     </td>
                   </tr>
+                  }
 
                   <tr class="row">
                     <td class="cell-left-border"></td>
@@ -300,7 +317,8 @@
             </div>
           </div>
 
-          <div id="igShareTableId" *ngIf="isFolder()">
+          @if (isFolder()) {
+          <div id="igShareTableId">
             <header class="header">
               <span class="title"
                 >{{ 'label.interest.groups' | transloco }}</span
@@ -322,29 +340,28 @@
                 </thead>
 
                 <tbody>
-                  <tr
-                    *ngIf="!hasShares()"
-                    class="row"
-                    [class.empty-row]="!hasShares()"
-                  >
+                  @if (!hasShares()) {
+                  <tr class="row" [class.empty-row]="!hasShares()">
                     <td class="cell-checkbox"></td>
                     <td colspan="3">
                       {{ 'spaces.sharing.display.none' | transloco }}
                     </td>
                   </tr>
+                  }
 
                   <!-- this row is added to start with blue/gray color.
                   It's defined in the CSS and it interferes with the *ngIf above -->
                   <tr class="row"></tr>
 
-                  <tr class="row" *ngFor="let share of shares">
+                  @for (share of shares; track share) {
+                  <tr class="row">
                     <td class="cell-left-border"></td>
                     <td class="cell-checkbox"></td>
                     <td class="cell-file-name" style="max-width: 400px">
                       {{ share.igName }}
                       <ul class="actions" style="width: 160px">
                         <li>
-                          <a (click)="editSharePermission(share)"
+                          <a tabindex="0" (click)="editSharePermission(share)"
                             >{{ 'label.edit' | transloco }}</a
                           >
                         </li>
@@ -357,31 +374,35 @@
                     </td>
                     <td>{{ 'permissions.' + share.permission | transloco }}</td>
                   </tr>
+                  }
                 </tbody>
               </table>
             </div>
           </div>
+          }
         </div>
       </div>
     </section>
+    }
   </div>
 
+  @if (currentNode) {
   <cbc-add-permissions
-    *ngIf="currentNode"
     [inherited]="perms.inherited"
     [showModal]="showAddModal"
     [node]="currentNode"
     [ig]="currentIgId"
     (finished)="addPermissionFinished($event)"
   ></cbc-add-permissions>
+  } @if (isFolder()) {
   <cbc-share-space
-    *ngIf="isFolder()"
     [showModal]="showShareSpaceModal"
     [spaceId]="nodeId"
     [igId]="igId"
     [currentPermission]="currentPermission"
     (modalHide)="refreshShares($event)"
   ></cbc-share-space>
+  }
   <cbc-modal-delete
     [title]="'permissions.delete'"
     [text]="'permissions.delete.text'"
@@ -390,6 +411,4 @@
     (deletionCanceled)="cancelPreparedPermissionEntry()"
   ></cbc-modal-delete>
 </section>
-<!-- <pre>{{currentNode.properties! | json}}</pre> -->
-<!-- <pre>{{perms!.permissions!.users | json}}</pre>
-{{userPermissionMap|json}} -->
+}

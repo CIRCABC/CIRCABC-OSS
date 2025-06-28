@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!-- Copyright 2006 European Community Licensed under the EUPL, Version 1.1 
 	or \?as soon they will be approved by the European Commission - subsequent 
 	versions of the EUPL (the "Licence"); You may not use this work except in 
@@ -7,8 +7,8 @@
 	under the Licence is distributed on an "AS IS" basis, WITHOUT WARRANTIES 
 	OR CONDITIONS OF ANY KIND, either express or implied. See the Licence for 
 	the specific language governing permissions and limitations under the Licence. -->
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="Circabc">
 
 	<insert id="insert_header" parameterType="Header">
@@ -62,8 +62,11 @@
 	</update>
 
 
-	<select id="select_user_id_by_user_name" parameterType="String"
-		resultType="long">
+	<select
+    id="select_user_id_by_user_name"
+    parameterType="String"
+    resultType="long"
+  >
 		select id from cbc_users where user_name = #{value}
 	</select>
 
@@ -161,8 +164,7 @@
 		cbc_profiles where id= #{id}
 	</delete>
 
-	<delete id="delete_profile_title_translations_by_id"
-		parameterType="long">
+	<delete id="delete_profile_title_translations_by_id" parameterType="long">
 		delete from cbc_profile_title_trans where profile_id=
 		#{id}
 	</delete>
@@ -176,8 +178,11 @@
 	</delete>
 
 
-	<select id="select_profile_by_ig_id_profile_name" parameterType="Profile"
-		resultType="Profile">
+	<select
+    id="select_profile_by_ig_id_profile_name"
+    parameterType="Profile"
+    resultType="Profile"
+  >
 		select ig_id interestGroupID ,id,alfresco_group
 		alfrescoGroup,node_ref
 		nodeRef,name,title,dir_perm
@@ -192,8 +197,11 @@
 		#{interestGroupID} and name= #{name}
 	</select>
 
-	<select id="select_profil_count_by_profile_id" parameterType="long"
-		resultType="int">
+	<select
+    id="select_profil_count_by_profile_id"
+    parameterType="long"
+    resultType="int"
+  >
 		SELECT count(*) FROM CBC_PROFILES where id = #{id}
 	</select>
 
@@ -205,8 +213,7 @@
 		(#{userID},#{alfrescoGroup})
 	</insert>
 
-	<delete id="delete_profile_user_by_ig_id_user_name"
-		parameterType="map">
+	<delete id="delete_profile_user_by_ig_id_user_name" parameterType="map">
 		delete
 		from cbc_profile_users
 		where user_id =
@@ -404,8 +411,7 @@
 		cbc_interest_groups where id = #{id}
 	</delete>
 
-	<select id="select_ig_ids_by_cat_id" parameterType="long"
-		resultType="long">
+	<select id="select_ig_ids_by_cat_id" parameterType="long" resultType="long">
 		select id from cbc_interest_groups where category_id =
 		#{id}
 	</select>
@@ -437,14 +443,23 @@
 		#{id}
 	</update>
 
+	<update id="update_to_be_deleted_by_id" parameterType="map">
+		update cbc_interest_groups
+		SET to_be_deleted = #{toBeDeleted}
+		WHERE id = #{id}
+	</update>
+	
 	<update id="update_cat_name_title_by_id" parameterType="Category">
 		update
 		cbc_categories set name = #{name} ,title = #{title}
 		where id = #{id}
 	</update>
 
-	<select id="select_ig_by_cat_user" parameterType="map"
-		resultType="InterestGroupResult">
+	<select
+    id="select_ig_by_cat_user"
+    parameterType="map"
+    resultType="InterestGroupResult"
+  >
         <![CDATA[
     		SELECT CBC_INTEREST_GROUPS.ID id,
 			  MEMBERS.IG_ID memberId,
@@ -480,14 +495,18 @@
 			  ) CBC_IG_TRANS
 			ON CBC_INTEREST_GROUPS.ID             = CBC_IG_TRANS.IG_ID
 			WHERE CBC_INTEREST_GROUPS.CATEGORY_ID = #{catID}
+			and (CBC_INTEREST_GROUPS.TO_BE_DELETED = 0 OR CBC_INTEREST_GROUPS.TO_BE_DELETED IS NULL)
 			and (
 			 (CBC_INTEREST_GROUPS.IS_REGISTERED =1)
 			 OR
 			 MEMBERS.IG_ID is not null)
    		]]>
 	</select>
-	<select id="select_public_ig_by_cat_user" parameterType="map"
-		resultType="InterestGroupResult">
+	<select
+    id="select_public_ig_by_cat_user"
+    parameterType="map"
+    resultType="InterestGroupResult"
+  >
         <![CDATA[
 		 SELECT CBC_INTEREST_GROUPS.ID id,
 		  NULL memberId, 	
@@ -505,9 +524,14 @@
 		ON CBC_INTEREST_GROUPS.ID           = V_CBC_IG_TRANS.IG_ID
 		WHERE CBC_INTEREST_GROUPS.IS_PUBLIC = 1
 		AND CBC_INTEREST_GROUPS.CATEGORY_ID = #{catID}
+		AND (CBC_INTEREST_GROUPS.TO_BE_DELETED = 0 OR CBC_INTEREST_GROUPS.TO_BE_DELETED IS NULL)
    ]]>
 	</select>
-	<select id="select_ig_by_id" parameterType="map" resultType="InterestGroupResult">
+	<select
+    id="select_ig_by_id"
+    parameterType="map"
+    resultType="InterestGroupResult"
+  >
         <![CDATA[
 		 SELECT CBC_INTEREST_GROUPS.ID id,
 		  NULL memberId,
@@ -518,6 +542,7 @@
 		  CBC_INTEREST_GROUPS.IS_APPLY_FOR_MEMBERSHIP isApplyForMembership,
 		  CBC_INTEREST_GROUPS.NODE_REF nodeRef,
 		  CBC_INTEREST_GROUPS.LOGO_REF logoRef,
+		  CBC_INTEREST_GROUPS.TO_BE_DELETED toBeDeleted,
 		  V_CBC_IG_TRANS.TITLE_TRANSLATION titleTranslation,
 		  V_CBC_IG_TRANS.LIGHT_DESC_TRANSLATION lightDescTranslation
 		FROM CBC_INTEREST_GROUPS
@@ -527,8 +552,23 @@
    ]]>
 	</select>
 
-	<select id="select_ig_by_cat_admin" parameterType="map"
-		resultType="InterestGroupResult">
+	<select
+    id="select_ig_to_be_deleted"
+    parameterType="map"
+    resultType="java.lang.Boolean"
+  >
+		<![CDATA[
+			SELECT CBC_INTEREST_GROUPS.TO_BE_DELETED
+			FROM CBC_INTEREST_GROUPS
+			WHERE CBC_INTEREST_GROUPS.ID = #{ID}
+		]]>
+	</select>
+
+	<select
+    id="select_ig_by_cat_admin"
+    parameterType="map"
+    resultType="InterestGroupResult"
+  >
         <![CDATA[
 	   SELECT CBC_INTEREST_GROUPS.id id,
 	  		CASE CBC_INTEREST_GROUPS.IS_PUBLIC+ CBC_INTEREST_GROUPS.IS_REGISTERED
@@ -575,8 +615,7 @@
 	   ]]>
 	</select>
 
-	<select id="select_is_user_cat_admin" parameterType="map"
-		resultType="int">
+	<select id="select_is_user_cat_admin" parameterType="map" resultType="int">
         <![CDATA[
    	SELECT count(*)
 	FROM CBC_CATEGORY_ADMINS
@@ -587,8 +626,11 @@
    ]]>
 	</select>
 
-	<select id="select_exp_profiles_by_cat_id_ig_id" parameterType="map"
-		resultType="ExportedProfileItem">
+	<select
+    id="select_exp_profiles_by_cat_id_ig_id"
+    parameterType="map"
+    resultType="ExportedProfileItem"
+  >
         <![CDATA[
 		 select 
   			CONCAT('GROUP_' , CBC_PROFILES.ALFRESCO_GROUP) AS prefixedAlfrescoGroup,
@@ -606,8 +648,11 @@
 			AND CBC_CATEGORIES.ID        = #{catID}
    ]]>
 	</select>
-	<select id="select_exp_profiles_by_cat_id" parameterType="map"
-		resultType="ExportedProfileItem">
+	<select
+    id="select_exp_profiles_by_cat_id"
+    parameterType="map"
+    resultType="ExportedProfileItem"
+  >
         <![CDATA[
 		 select 
   			CONCAT( 'GROUP_', CBC_PROFILES.ALFRESCO_GROUP) AS prefixedAlfrescoGroup,
@@ -624,8 +669,11 @@
 			AND CBC_CATEGORIES.ID        = #{catID}
    ]]>
 	</select>
-	<select id="select_imp_alf_group_by_ig_id" parameterType="map"
-		resultType="String">
+	<select
+    id="select_imp_alf_group_by_ig_id"
+    parameterType="map"
+    resultType="String"
+  >
         <![CDATA[
 		 SELECT CONCAT('GROUP_' , CBC_PROFILES.ALFRESCO_GROUP) AS prefixedAlfrescoGroup
 			FROM CBC_PROFILES
@@ -638,9 +686,26 @@
    ]]>
 	</select>
 
+	<select
+    id="select_leader_alf_group_by_ig_id"
+    parameterType="map"
+    resultType="String"
+  >
+        <![CDATA[
+		SELECT CONCAT('GROUP_', CBC_PROFILES.ALFRESCO_GROUP) AS prefixedAlfrescoGroup
+		FROM CBC_PROFILES
+		WHERE CBC_PROFILES.IG_ID = #{igID} 
+		AND CBC_PROFILES.dir_perm ='DirAdmin' 
+		AND CBC_PROFILES.inf_perm ='InfAdmin'
+		AND CBC_PROFILES.lib_perm ='LibAdmin'
+		AND CBC_PROFILES.nws_perm ='NwsAdmin'
+		AND CBC_PROFILES.eve_perm ='EveAdmin'
+   ]]>
+	</select>
 
-	<select id="select_alf_group_not_in_ig" parameterType="map"
-		resultType="String">
+	
+
+	<select id="select_alf_group_not_in_ig" parameterType="map" resultType="String">
         <![CDATA[
 		 SELECT distinct CONCAT('GROUP_' , CBC_PROFILES.ALFRESCO_GROUP)
 			FROM CBC_PROFILES
@@ -651,8 +716,11 @@
    ]]>
 	</select>
 
-	<select id="select_cat_node_ref_by_user_name" parameterType="map"
-		resultType="String">
+	<select
+    id="select_cat_node_ref_by_user_name"
+    parameterType="map"
+    resultType="String"
+  >
         <![CDATA[
 		 select CBC_CATEGORIES.NODE_REF
 			FROM CBC_CATEGORIES
@@ -663,8 +731,11 @@
 			WHERE CBC_USERS.USER_NAME = #{userName}
    ]]>
 	</select>
-	<select id="select_ig_node_ref_by_user_name" parameterType="map"
-		resultType="UserIGMembership">
+	<select
+    id="select_ig_node_ref_by_user_name"
+    parameterType="map"
+    resultType="UserIGMembership"
+  >
         <![CDATA[
 		 select CBC_CATEGORIES.NODE_REF as catNodeRef,
   			CBC_INTEREST_GROUPS.NODE_REF as igNodeRef,
@@ -684,8 +755,7 @@
 			WHERE CBC_USERS.USER_NAME    = #{userName}
    ]]>
 	</select>
-	<select id="select_cat_id_by_node_ref" parameterType="String"
-		resultType="long">
+	<select id="select_cat_id_by_node_ref" parameterType="String" resultType="long">
 		select id from cbc_categories where node_ref = #{value}
 	</select>
 	<select id="select_all_user_node_ref" resultType="String">
@@ -710,8 +780,11 @@
 		headerNodeRef,categoryNodeRef
 	</select>
 
-	<select id="select_profiles_by_ig_id_and_locale_id"
-		parameterType="map" resultType="ProfileWithUsersCount">
+	<select
+    id="select_profiles_by_ig_id_and_locale_id"
+    parameterType="map"
+    resultType="ProfileWithUsersCount"
+  >
         <![CDATA[
     	SELECT CBC_PROFILES.ID id,
 		  CBC_PROFILES.ALFRESCO_GROUP alfrescoGroup,
@@ -757,14 +830,20 @@
 		  PROFILE_TITLE.TRANSLATION
    ]]>
 	</select>
-	<select id="select_locale_id_by_user_name" parameterType="String"
-		resultType="long">
+	<select
+    id="select_locale_id_by_user_name"
+    parameterType="String"
+    resultType="long"
+  >
 		SELECT ALF_LOCALE_ID FROM CBC_USERS WHERE USER_NAME=
 		#{value}
 	</select>
 
-	<select id="select_users_by_ig_id_and_locale_id_alf_group_like_text"
-		parameterType="map" resultType="UserWithProfile">
+	<select
+    id="select_users_by_ig_id_and_locale_id_alf_group_like_text"
+    parameterType="map"
+    resultType="UserWithProfile"
+  >
 		SELECT CBC_PROFILES.NAME profileName,
 		CASE WHEN
 		CBC_PROFILES.IS_IMPORTED = 1 THEN
@@ -829,12 +908,84 @@
     <if test="firstName != null">
       AND LOWER(CBC_USERS.FIRST_NAME) LIKE #{firstName,jdbcType=VARCHAR}
     </if>
-    <if test="lastName != null">
+	<if test="lastName != null">
       AND LOWER(CBC_USERS.LAST_NAME) LIKE #{lastName,jdbcType=VARCHAR}
     </if>
 		<if test="orderByColumn != null">
 			ORDER BY LOWER(${orderByColumn}) ${orderByType}
 		</if>
+	</select>
+
+		<select
+    id="select_users_by_ig_id_and_locale_id_alf_group_like_firstname_lastname_email"
+    parameterType="map"
+    resultType="UserWithProfile"
+  >
+		SELECT CBC_PROFILES.NAME profileName,
+		CASE WHEN
+		CBC_PROFILES.IS_IMPORTED = 1 THEN
+		CONCAT(SUBSTR(CBC_PROFILES.NAME,1,INSTR(CBC_PROFILES.NAME, '_')-1) ,':', CBC_PROFILES.TITLE)
+		ELSE COALESCE(PROFILE_TITLE.TRANSLATION,
+		CBC_PROFILES.TITLE)
+		END profileTitle,
+		CBC_USERS.NODE_REF nodeRef ,
+		CBC_USERS.USER_NAME userName,
+		CBC_USERS.FIRST_NAME firstName,
+		CBC_USERS.LAST_NAME lastName,
+		CBC_USERS.EMAIL email,
+		CBC_PROFILES.IS_IMPORTED isImported,
+		CBC_PROFILES.DIR_PERM
+		directoryPermission,
+		CBC_PROFILES.INF_PERM informationPermission,
+		CBC_PROFILES.LIB_PERM libraryPermission,
+		CBC_PROFILES.NWS_PERM
+		newsgroupPermission,
+		CBC_PROFILES.EVE_PERM eventPermission,
+		CBC_PROFILES.ALFRESCO_GROUP alfrescoGroup,
+		  CBC_PROFILES.ID profileId,
+		  CBC_PROFILES.NODE_REF profileNodeRef
+		FROM CBC_PROFILES
+		INNER JOIN
+		CBC_PROFILE_USERS
+		ON CBC_PROFILES.ALFRESCO_GROUP =
+		CBC_PROFILE_USERS.ALFRESCO_GROUP
+		LEFT JOIN
+		(SELECT
+		CBC_PROFILE_TITLE_TRANS.PROFILE_ID,
+		CBC_PROFILE_TITLE_TRANS.ALF_LOCALE_ID,
+		CBC_PROFILE_TITLE_TRANS.TRANSLATION
+		FROM CBC_PROFILE_TITLE_TRANS
+		WHERE
+		CBC_PROFILE_TITLE_TRANS.ALF_LOCALE_ID = #{localeID}
+		) PROFILE_TITLE
+		ON
+		CBC_PROFILES.ID = PROFILE_TITLE.PROFILE_ID
+		INNER JOIN CBC_USERS
+		ON
+		CBC_USERS.ID = CBC_PROFILE_USERS.USER_ID
+		WHERE CBC_PROFILES.IG_ID =
+		#{igID}
+		<if test="alfrescoGroup != null">
+			AND CBC_PROFILES.ALFRESCO_GROUP =
+			#{alfrescoGroup,jdbcType=VARCHAR}
+		</if>
+
+    <if test="firstName != null">
+      AND LOWER(CBC_USERS.FIRST_NAME) LIKE #{firstName,jdbcType=VARCHAR}
+    </if>
+
+    <if test="lastName != null">
+      AND LOWER(CBC_USERS.LAST_NAME) LIKE #{lastName,jdbcType=VARCHAR}
+    </if>
+
+    <if test="email != null">
+      AND LOWER(CBC_USERS.EMAIL) LIKE #{email,jdbcType=VARCHAR}
+    </if>
+
+	<if test="orderByColumn != null">
+	  ORDER BY LOWER(${orderByColumn}) ${orderByType}
+	</if>
+
 	</select>
 
 	<select id="count_users_in_ig" parameterType="long" resultType="int">
@@ -856,8 +1007,11 @@
 		WHERE cbc_profiles.IG_ID = #{value}
 	</select>
 	
-	<select id="select_profile_alf_group_title_by_ig_id"
-		parameterType="map" resultType="Profile">
+	<select
+    id="select_profile_alf_group_title_by_ig_id"
+    parameterType="map"
+    resultType="Profile"
+  >
 		SELECT
 		CBC_PROFILES.ALFRESCO_GROUP alfrescoGroup,
 		CBC_PROFILES.NAME
@@ -894,8 +1048,7 @@
 			AND LOWER(CBC_PROFILES.NAME) LIKE #{text,jdbcType=VARCHAR}
 		</if>
 	</select>
-	<select id="select_admin_count_by_ig_id" parameterType="long"
-		resultType="int">
+	<select id="select_admin_count_by_ig_id" parameterType="long" resultType="int">
 		SELECT COUNT(DISTINCT CBC_PROFILE_USERS.USER_ID)
 		ADMIN_COUNT
 		FROM CBC_PROFILE_USERS
@@ -913,8 +1066,11 @@
 		CBC_PROFILES.EVE_PERM = 'EveAdmin'
 	</select>
 
-	<select id="select_count_cat_admin_by_username_ig"
-		parameterType="map" resultType="int">
+	<select
+    id="select_count_cat_admin_by_username_ig"
+    parameterType="map"
+    resultType="int"
+  >
 		SELECT
 		COUNT(*)
 		FROM
@@ -931,8 +1087,7 @@
 		#{username,jdbcType=VARCHAR}
 	</select>
 
-	<select id="select_counter_username_in_ig" parameterType="map"
-		resultType="int">
+	<select id="select_counter_username_in_ig" parameterType="map" resultType="int">
 		select count(*)
 		from CBC_PROFILES, CBC_PROFILE_USERS,
 		CBC_USERS
@@ -944,8 +1099,11 @@
 		and CBC_USERS.ID =
 		CBC_PROFILE_USERS.USER_ID
 	</select>
-	<select id="select_counter_username_in_category" parameterType="map"
-		resultType="int">
+	<select
+    id="select_counter_username_in_category"
+    parameterType="map"
+    resultType="int"
+  >
 		SELECT
 		count(*)
 		FROM
@@ -958,8 +1116,11 @@
 		cbc_users.user_name
 		= #{username,jdbcType=VARCHAR}
 	</select>
-	<select id="select_counter_username_in_circabc" parameterType="map"
-		resultType="int">
+	<select
+    id="select_counter_username_in_circabc"
+    parameterType="map"
+    resultType="int"
+  >
 		SELECT
 		count(*)
 		FROM
@@ -981,8 +1142,11 @@
 		FROM
 		cbc_headers
 	</select>
-	<select id="select_categories_by_header_locale" parameterType="map"
-		resultType="Category">
+	<select
+    id="select_categories_by_header_locale"
+    parameterType="map"
+    resultType="Category"
+  >
 		SELECT
 		cbc_categories.header_id as headerID,
 		cbc_categories.id as id ,
@@ -1007,8 +1171,11 @@
 		cbc_categories.header_id =
 		#{headerID}
 	</select>
-	<select id="select_titles_by_profile_id" parameterType="map"
-		resultType="TranslationEntry">
+	<select
+    id="select_titles_by_profile_id"
+    parameterType="map"
+    resultType="TranslationEntry"
+  >
         <![CDATA[
 		select CBC_PROFILE_TITLE_TRANS.profile_id as id, 
 			CBC_PROFILE_TITLE_TRANS.ALF_LOCALE_ID as alfLocaleId,
@@ -1018,15 +1185,17 @@
    ]]>
 	</select>
 
-	<select id="select_category_admins" parameterType="map"
-		resultType="String">
+	<select id="select_category_admins" parameterType="map" resultType="String">
 		select user_name from cbc_users, cbc_category_admins
 		where cbc_users.id = cbc_category_admins.user_id
 		and cbc_category_admins.category_id = #{categID}
 	</select>
 
-	<select id="select_user_profile_in_group" parameterType="map"
-		resultType="ProfileUser">
+	<select
+    id="select_user_profile_in_group"
+    parameterType="map"
+    resultType="ProfileUser"
+  >
 		select CBC_PROFILES.ALFRESCO_GROUP as alfrescoGroup, CBC_USERS.ID as userId
 		from CBC_PROFILES, CBC_PROFILE_USERS, CBC_USERS
 		where
@@ -1053,7 +1222,11 @@
 		update cbc_interest_groups set logo_ref = #{logoId, jdbcType=VARCHAR} where id = #{igId}
 	</update>
 	
-	<select id="select_group_titles" parameterType="map" resultType="KeyValueString">
+	<select
+    id="select_group_titles"
+    parameterType="map"
+    resultType="KeyValueString"
+  >
 		SELECT 
 			LOCALE_STR as 'key',
 			TITLE_TRANSLATION as value
@@ -1062,7 +1235,11 @@
 		AND alf_locale.id = cbc_ig_trans.alf_locale_id
 	</select>
 	
-	<select id="select_profile_titles" parameterType="map" resultType="keyValueString">
+	<select
+    id="select_profile_titles"
+    parameterType="map"
+    resultType="keyValueString"
+  >
 		SELECT 
 			LOCALE_STR as 'key',
 			TRANSLATION as value
@@ -1079,7 +1256,11 @@
 		INSERT INTO CBC_PROFILE_TITLE_TRANS VALUES (#{profileID}, #{localeId}, #{titleTrans, jdbcType=VARCHAR})
 	</insert>
 	
-	<select id="select_category_titles" parameterType="map" resultType="keyValueString">
+	<select
+    id="select_category_titles"
+    parameterType="map"
+    resultType="keyValueString"
+  >
 		SELECT 
 			LOCALE_STR as 'key',
 			TRANSLATION as value
@@ -1092,7 +1273,7 @@
 		INSERT INTO CBC_CAT_TITLE_TRANS VALUES (#{categoryId}, #{localeId}, #{titleTrans, jdbcType=VARCHAR})
 	</insert>
 
-  <delete id="delete_all" >
+  <delete id="delete_all">
 		DELETE FROM CBC_CIRCABC_ADMINS;
 		DELETE FROM CBC_CAT_TITLE_TRANS;
 		DELETE FROM CBC_CATEGORY_ADMINS;
@@ -1105,8 +1286,11 @@
 		DELETE FROM CBC_HEADERS;
 		DELETE FROM CBC_USERS;
 	</delete>
-	<select id="select_count_admin_by_user_name" parameterType="String"
-		resultType="long">
+	<select
+    id="select_count_admin_by_user_name"
+    parameterType="String"
+    resultType="long"
+  >
 		SELECT
      		COUNT(*)
  		FROM

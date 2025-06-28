@@ -9,62 +9,68 @@ import java.util.Objects;
  */
 public class I18nProperty extends HashMap<String, String> {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = -3027818284745604594L;
+  /**
+   *
+   */
+  private static final long serialVersionUID = -3027818284745604594L;
 
-    public I18nProperty() {
-        super();
+  public I18nProperty() {
+    super();
+  }
+
+  public I18nProperty(String language, String value) {
+    super();
+    super.put(language, value);
+  }
+
+  @Override
+  public boolean equals(java.lang.Object o) {
+    if (this == o) {
+      return true;
     }
-
-    public I18nProperty(String language, String value) {
-        super();
-        super.put(language, value);
+    if (o == null || getClass() != o.getClass()) {
+      return false;
     }
+    return Objects.equals(this, o);
+  }
 
-    @Override
-    public boolean equals(java.lang.Object o) {
-        if (this == o) {
-            return true;
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode());
+  }
+
+  @Override
+  public String toString() {
+    return (
+      "class I18nProperty {\n" +
+      "    " +
+      toIndentedString(super.toString()) +
+      "\n" +
+      "}"
+    );
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces (except the first line).
+   */
+  private String toIndentedString(java.lang.Object o) {
+    return Util.toIndentedString(o);
+  }
+
+  public String getDefaultValue() {
+    String res = "";
+
+    if (!this.keySet().isEmpty() && !"".equals(this.get("en"))) {
+      res = this.get("en");
+    } else if (!this.keySet().isEmpty() && "".equals(this.get("en"))) {
+      for (String value : this.values()) {
+        if (!"".equals(value)) {
+          res = value;
+          break;
         }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        return Objects.equals(this, o);
+      }
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode());
-    }
-
-    @Override
-    public String toString() {
-        return "class I18nProperty {\n" + "    " + toIndentedString(super.toString()) + "\n" + "}";
-    }
-
-    /**
-     * Convert the given object to string with each line indented by 4 spaces (except the first line).
-     */
-    private String toIndentedString(java.lang.Object o) {
-        return Util.toIndentedString(o);
-    }
-
-    public String getDefaultValue() {
-        String res = "";
-
-        if (!this.keySet().isEmpty() && !"".equals(this.get("en"))) {
-            res = this.get("en");
-        } else if (!this.keySet().isEmpty() && "".equals(this.get("en"))) {
-            for (String value : this.values()) {
-                if (!"".equals(value)) {
-                    res = value;
-                    break;
-                }
-            }
-        }
-
-        return res;
-    }
+    return res;
+  }
 }

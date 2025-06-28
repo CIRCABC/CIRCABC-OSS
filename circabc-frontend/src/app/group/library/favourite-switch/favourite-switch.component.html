@@ -1,6 +1,11 @@
-<span class="favourite-container" *ngIf="shaw">
-  <a (click)="toggleFav()">
-    <img src="img/star-empty.png" *ngIf="!isFavourite()" />
-    <img src="img/star-full-yellow.png" *ngIf="isFavourite()" />
+@if (shaw) {
+<span class="favourite-container">
+  <a tabindex="0" (click)="toggleFav()">
+    @if (!isFavourite()) {
+    <img src="img/star-empty.png" alt="Empty star" />
+    } @if (isFavourite()) {
+    <img src="img/star-full-yellow.png" alt="Full yellow star" />
+    }
   </a>
 </span>
+}

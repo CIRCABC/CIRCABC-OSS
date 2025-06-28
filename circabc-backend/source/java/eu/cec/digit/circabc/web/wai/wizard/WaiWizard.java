@@ -23,12 +23,9 @@ package eu.cec.digit.circabc.web.wai.wizard;
 import eu.cec.digit.circabc.web.wai.dialog.WaiDialog;
 import org.alfresco.web.bean.wizard.IWizardBean;
 
-
 /**
  * Base interface of each bean that want to back a wizard of the Circabc WAI webclient
  *
  * @author yanick pignot
  */
-public interface WaiWizard extends IWizardBean, WaiDialog {
-
-}
+public interface WaiWizard extends IWizardBean, WaiDialog {}

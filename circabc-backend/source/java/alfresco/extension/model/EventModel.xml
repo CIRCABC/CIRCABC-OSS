@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
+<?xml version="1.0" encoding="UTF-8" ?>
 <!--
   Copyright 2006 European Community
   
@@ -20,8 +19,10 @@
    See the Licence for the specific language governing
    permissions and limitations under the Licence.
 -->
-<model name="ce:CalendarEventModel"
-	xmlns="http://www.alfresco.org/model/dictionary/1.0">
+<model
+  name="ce:CalendarEventModel"
+  xmlns="http://www.alfresco.org/model/dictionary/1.0"
+>
 
 	<!-- Optional meta-data about the model -->
 	<description>Circabc Event Service Model</description>
@@ -29,18 +30,14 @@
 	<version>1.0</version>
 
 	<imports>
-		<import uri="http://www.alfresco.org/model/dictionary/1.0"
-			prefix="d" />
-		<import uri="http://www.alfresco.org/model/content/1.0"
-			prefix="cm" />
-		<import uri="http://www.alfresco.org/model/system/1.0"
-			prefix="sys" />
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.alfresco.org/model/system/1.0" prefix="sys" />
 	</imports>
 
 	<!-- Introduction of new namespaces defined by this model -->
 	<namespaces>
-		<namespace uri="http://www.cc.cec/circabc/model/events/1.0"
-			prefix="ce" />
+		<namespace uri="http://www.cc.cec/circabc/model/events/1.0" prefix="ce" />
 	</namespaces>
 
 	<constraints>

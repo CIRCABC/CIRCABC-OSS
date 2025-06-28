@@ -27,24 +27,25 @@ package eu.cec.digit.circabc.web.wai.dialog.profile;
  */
 public class CreateAccessProfileDialog extends EditAccessProfileDialog {
 
-    private static final long serialVersionUID = -457333397844453605L;
+  private static final long serialVersionUID = -457333397844453605L;
 
-    private static final String MSG_CONTAINER_TITLE = "create_access_profile_dialog_page_title";
+  private static final String MSG_CONTAINER_TITLE =
+    "create_access_profile_dialog_page_title";
 
-    //private static final Log logger = LogFactory.getLog(CreateAccessProfileDialog.class);
+  //private static final Log logger = LogFactory.getLog(CreateAccessProfileDialog.class);
 
-    @Override
-    public String getBrowserTitle() {
-        return translate("create_access_profile_dialog_browser_title");
-    }
+  @Override
+  public String getBrowserTitle() {
+    return translate("create_access_profile_dialog_browser_title");
+  }
 
-    @Override
-    public String getPageIconAltText() {
-        return translate("create_access_profile_dialog_icon_tooltip");
-    }
+  @Override
+  public String getPageIconAltText() {
+    return translate("create_access_profile_dialog_icon_tooltip");
+  }
 
-    @Override
-    public String getContainerTitle() {
-        return translate(MSG_CONTAINER_TITLE);
-    }
+  @Override
+  public String getContainerTitle() {
+    return translate(MSG_CONTAINER_TITLE);
+  }
 }

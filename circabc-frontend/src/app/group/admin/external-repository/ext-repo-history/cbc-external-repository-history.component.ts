@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import { AresBridgeHelperService } from 'app/core/ares-bridge-helper.service';
 import { ExternalRepositoryData } from 'app/core/generated/circabc';
 import { LoginService } from 'app/core/login.service';
@@ -9,6 +10,7 @@ import { environment } from 'environments/environment';
   selector: 'cbc-external-repository-history',
   templateUrl: './cbc-external-repository-history.component.html',
   preserveWhitespaces: true,
+  imports: [TranslocoModule],
 })
 export class ExternalRepositoryHistoryComponent implements OnInit {
   public groupLog: ExternalRepositoryData[] = [];
@@ -37,9 +39,7 @@ export class ExternalRepositoryHistoryComponent implements OnInit {
   }
 
   public aresDocumentLink(id: string | undefined): string {
-    return (
-      `${environment.aresBridgeServer}/Ares/document/show.do?documentId=` + id
-    );
+    return `${environment.aresBridgeServer}/Ares/document/show.do?documentId=${id}`;
   }
 
   public circabcDocumentLink(nodeId: string): string {

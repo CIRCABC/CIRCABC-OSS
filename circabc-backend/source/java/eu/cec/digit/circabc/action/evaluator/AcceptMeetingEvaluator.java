@@ -27,11 +27,9 @@ import eu.cec.digit.circabc.service.event.MeetingRequestStatus;
 import eu.cec.digit.circabc.web.Beans;
 import eu.cec.digit.circabc.web.bean.override.CircabcNavigationBean;
 import eu.cec.digit.circabc.web.wai.bean.navigation.event.AppointmentDetailsBean;
+import java.util.HashMap;
 import org.alfresco.web.action.evaluator.BaseActionEvaluator;
 import org.alfresco.web.bean.repository.Node;
-
-import java.util.HashMap;
-
 
 /**
  * Evaluate if the current user can accept a meeting. It means check if it is not already done.
@@ -40,44 +38,51 @@ import java.util.HashMap;
  */
 public class AcceptMeetingEvaluator extends BaseActionEvaluator {
 
-    private static final long serialVersionUID = 216436852785621419L;
+  private static final long serialVersionUID = 216436852785621419L;
 
-    public boolean evaluate(final Node node) {
-        final MeetingRequestStatus userStatus = getCurrentUserStatusOnMeeting(node);
+  public boolean evaluate(final Node node) {
+    final MeetingRequestStatus userStatus = getCurrentUserStatusOnMeeting(node);
 
-        if (userStatus == null) {
-            return false;
-        } else {
-            return !userStatus.equals(MeetingRequestStatus.Accepted);
-        }
+    if (userStatus == null) {
+      return false;
+    } else {
+      return !userStatus.equals(MeetingRequestStatus.Accepted);
     }
+  }
 
-    protected MeetingRequestStatus getCurrentUserStatusOnMeeting(Node node) {
-        final Appointment appointment = (Appointment) node.getProperties()
-                .get(AppointmentDetailsBean.PROPERTY_APPOINTEMENT_OBJECT);
+  protected MeetingRequestStatus getCurrentUserStatusOnMeeting(Node node) {
+    final Appointment appointment = (Appointment) node
+      .getProperties()
+      .get(AppointmentDetailsBean.PROPERTY_APPOINTEMENT_OBJECT);
 
-        if (isClosedMeeting(appointment)) {
-            final HashMap<String, MeetingRequestStatus> statuses = appointment.getAudience();
-            final String userName = getCurrentUserName();
+    if (isClosedMeeting(appointment)) {
+      final HashMap<String, MeetingRequestStatus> statuses =
+        appointment.getAudience();
+      final String userName = getCurrentUserName();
 
-            if (userName == null || !statuses.containsKey(userName)) {
-                return null;
-            } else {
-                return statuses.get(userName);
-            }
-        } else {
-            return null;
-        }
+      if (userName == null || !statuses.containsKey(userName)) {
+        return null;
+      } else {
+        return statuses.get(userName);
+      }
+    } else {
+      return null;
     }
+  }
 
-    private String getCurrentUserName() {
-        final CircabcNavigationBean navigator = Beans.getWaiNavigator();
+  private String getCurrentUserName() {
+    final CircabcNavigationBean navigator = Beans.getWaiNavigator();
 
-        return (navigator.isGuest()) ? null : navigator.getCurrentUser().getUserName();
-    }
+    return (navigator.isGuest())
+      ? null
+      : navigator.getCurrentUser().getUserName();
+  }
 
-    private boolean isClosedMeeting(Appointment appointment) {
-        return appointment != null && appointment instanceof Meeting && AudienceStatus.Closed
-                .equals(appointment.getAudienceStatus());
-    }
+  private boolean isClosedMeeting(Appointment appointment) {
+    return (
+      appointment != null &&
+      appointment instanceof Meeting &&
+      AudienceStatus.Closed.equals(appointment.getAudienceStatus())
+    );
+  }
 }

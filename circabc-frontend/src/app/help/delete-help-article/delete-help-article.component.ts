@@ -1,26 +1,31 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input, output } from '@angular/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
   ActionType,
 } from 'app/action-result';
 import { HelpService } from 'app/core/generated/circabc';
+import { ModalComponent } from 'app/shared/modal/modal.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-delete-help-article',
   templateUrl: './delete-help-article.component.html',
   preserveWhitespaces: true,
+  imports: [ModalComponent, TranslocoModule],
 })
 export class DeleteHelpArticleComponent {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   showModal = false;
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   articleId: string | undefined;
-  @Output()
-  readonly showModalChange = new EventEmitter();
-  @Output()
-  readonly articleDeleted = new EventEmitter<ActionEmitterResult>();
+  readonly showModalChange = output<boolean>();
+  readonly articleDeleted = output<ActionEmitterResult>();
 
   public deleting = false;
 

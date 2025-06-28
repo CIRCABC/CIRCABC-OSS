@@ -1,13 +1,15 @@
 import { Location } from '@angular/common';
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, OnInit, output } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
   FormGroup,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
+import { TranslocoModule } from '@jsverse/transloco';
 import { PermissionEvaluatorService } from 'app/core/evaluator/permission-evaluator.service';
 import {
   ForumService,
@@ -17,17 +19,31 @@ import {
   UserService,
 } from 'app/core/generated/circabc';
 import { UiMessageService } from 'app/core/message/ui-message.service';
-import { ValidationService } from 'app/core/validation.service';
+import {
+  fileNameValidator,
+  maxLengthTitleValidator,
+  titleValidator,
+} from 'app/core/validation.service';
+import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
+import { MultilingualInputComponent } from 'app/shared/input/multilingual-input.component';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-view-edit-details-forum',
   templateUrl: './view-edit-details-forum.component.html',
   preserveWhitespaces: true,
+  imports: [
+    RouterLink,
+    ReactiveFormsModule,
+    MultilingualInputComponent,
+    ControlMessageComponent,
+    SpinnerComponent,
+    TranslocoModule,
+  ],
 })
 export class ViewEditDetailsForumComponent implements OnInit {
-  @Output()
-  public readonly forumUpdated = new EventEmitter();
+  public readonly forumUpdated = output();
 
   public forumId!: string;
   public forum!: ModelNode;
@@ -58,14 +74,12 @@ export class ViewEditDetailsForumComponent implements OnInit {
           '',
           [
             Validators.required,
-            (control: AbstractControl) =>
-              ValidationService.titleValidator(control),
-            (control: AbstractControl) =>
-              ValidationService.maxLengthTitleValidator(control, 50),
+            (control: AbstractControl) => titleValidator(control),
+            (control: AbstractControl) => maxLengthTitleValidator(control, 50),
           ],
         ],
         description: [''],
-        name: ['', [Validators.required, ValidationService.fileNameValidator]],
+        name: ['', [Validators.required, fileNameValidator]],
       },
       {
         updateOn: 'change',
@@ -103,8 +117,8 @@ export class ViewEditDetailsForumComponent implements OnInit {
         );
       }
     } catch (error) {
-      const jsonError = JSON.parse(error._body);
-      if (jsonError) {
+      const jsonError = JSON.parse(error._body) as Record<string, string>;
+      if (jsonError && 'message' in jsonError) {
         this.uiMessageService.addErrorMessage(jsonError.message);
       }
     }
@@ -169,32 +183,28 @@ export class ViewEditDetailsForumComponent implements OnInit {
   get versionLabel(): string {
     if (this.forum.properties) {
       return this.forum.properties.versionLabel;
-    } else {
-      return '';
     }
+    return '';
   }
 
   get created(): string {
     if (this.forum.properties) {
       return this.cutDate(this.forum.properties.created);
-    } else {
-      return '';
     }
+    return '';
   }
 
   get modified(): string {
     if (this.forum.properties) {
       return this.cutDate(this.forum.properties.modified);
-    } else {
-      return '';
     }
+    return '';
   }
 
   get ismoderated(): string {
     if (this.forum.properties) {
       return this.forum.properties.ismoderated;
-    } else {
-      return 'false';
     }
+    return 'false';
   }
 }

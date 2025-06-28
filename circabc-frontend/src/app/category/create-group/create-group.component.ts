@@ -1,11 +1,13 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, Input, OnInit, output } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
   FormGroup,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
@@ -17,20 +19,35 @@ import {
   User,
   UserService,
 } from 'app/core/generated/circabc';
-import { ValidationService } from 'app/core/validation.service';
+import { fileNameValidator, titleValidator } from 'app/core/validation.service';
+import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
+import { DataCyDirective } from 'app/shared/directives/data-cy.directive';
+import { MultilingualInputComponent } from 'app/shared/input/multilingual-input.component';
+import { ModalComponent } from 'app/shared/modal/modal.component';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-create-group',
   templateUrl: './create-group.component.html',
-  styleUrls: ['./create-group.component.scss'],
+  styleUrl: './create-group.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    ModalComponent,
+    ReactiveFormsModule,
+    DataCyDirective,
+    ControlMessageComponent,
+    MultilingualInputComponent,
+    SpinnerComponent,
+    TranslocoModule,
+  ],
 })
 export class CreateGroupComponent implements OnInit {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   showModal = false;
-  @Output()
-  readonly modalClosed = new EventEmitter<ActionEmitterResult>();
+  readonly modalClosed = output<ActionEmitterResult>();
 
   public showDetailsForm = true;
   public showLeadersForm = false;
@@ -55,12 +72,14 @@ export class CreateGroupComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.route.params.subscribe((params) => (this.categoryId = params.id));
+    this.route.params.subscribe((params) => {
+      this.categoryId = params.id;
+    });
 
     this.groupDetailsForm = this.fb.group(
       {
-        name: ['', [Validators.required, ValidationService.fileNameValidator]],
-        title: [{}, [Validators.required, ValidationService.titleValidator]],
+        name: ['', [Validators.required, fileNameValidator]],
+        title: [{}, [Validators.required, titleValidator]],
         description: [{}, Validators.required],
         contact: [{}, Validators.required],
       },
@@ -164,7 +183,10 @@ export class CreateGroupComponent implements OnInit {
     if (!this.searchExpressionEmpty()) {
       this.searchingUsers = true;
       this.availableUsers = await firstValueFrom(
-        this.userService.getUsers(this.groupLeadersForm.controls.search.value)
+        this.userService.getUsers(
+          this.groupLeadersForm.controls.search.value,
+          false
+        )
       );
       this.searchingUsers = false;
     }
@@ -235,9 +257,8 @@ export class CreateGroupComponent implements OnInit {
             this.futureMembers.find((member) => {
               if (member && memberTmp) {
                 return member.userId === memberTmp.userId;
-              } else {
-                return true;
               }
+              return true;
             }) === undefined
           );
         })
@@ -261,17 +282,15 @@ export class CreateGroupComponent implements OnInit {
   public areFormsValid(): boolean {
     if (this.showDetailsForm || this.showLeadersForm) {
       return true;
-    } else {
-      return this.futureMembers.length > 0 && this.groupDetailsForm.valid;
     }
+    return this.futureMembers.length > 0 && this.groupDetailsForm.valid;
   }
 
   public getOkLabel() {
     if (this.showDetailsForm || this.showLeadersForm) {
       return 'label.next';
-    } else {
-      return 'label.create';
     }
+    return 'label.create';
   }
 
   public async okAction() {

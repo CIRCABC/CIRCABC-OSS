@@ -21,24 +21,26 @@
 
 package eu.cec.digit.circabc.web.servlet;
 
+import java.util.concurrent.locks.ReentrantLock;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class CircabcSessionListener implements HttpSessionListener {
 
-    @Override
-    public void sessionCreated(HttpSessionEvent event) {
-        event.getSession().setAttribute(
-                CircabcSessionSynchronizedFilter.SESSION_LOCK_ATTRIBUTE,
-                new ReentrantLock());
+  @Override
+  public void sessionCreated(HttpSessionEvent event) {
+    event
+      .getSession()
+      .setAttribute(
+        CircabcSessionSynchronizedFilter.SESSION_LOCK_ATTRIBUTE,
+        new ReentrantLock()
+      );
+  }
 
-    }
-
-    @Override
-    public void sessionDestroyed(HttpSessionEvent event) {
-        event.getSession().removeAttribute(
-                CircabcSessionSynchronizedFilter.SESSION_LOCK_ATTRIBUTE);
-    }
-
+  @Override
+  public void sessionDestroyed(HttpSessionEvent event) {
+    event
+      .getSession()
+      .removeAttribute(CircabcSessionSynchronizedFilter.SESSION_LOCK_ATTRIBUTE);
+  }
 }

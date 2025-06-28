@@ -2,7 +2,7 @@
   <shortname>edit the help link</shortname>
   <description>edit the help link the help link</description>
   <url>/circabc/help/links/{id}</url>
-  <format default="json"/>
+  <format default="json" />
   <authentication>user</authentication>
   <transaction>required</transaction>
 </webscript>

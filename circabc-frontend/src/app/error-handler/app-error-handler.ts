@@ -1,6 +1,6 @@
 import { ErrorHandler, Injectable, Injector } from '@angular/core';
+import { AnalyticsService } from 'app/core/analytics.service';
 import { UiMessageService } from 'app/core/message/ui-message.service';
-import { AnalyticsService } from 'app/core//analytics.service';
 import { environment } from 'environments/environment';
 
 @Injectable()

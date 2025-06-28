@@ -20,39 +20,38 @@
  ******************************************************************************/
 package eu.cec.digit.circabc.web.ui.repo.tag;
 
-import org.alfresco.web.ui.repo.tag.ContentSelectorTag;
-
 import javax.faces.component.UIComponent;
+import org.alfresco.web.ui.repo.tag.ContentSelectorTag;
 
 public class CircabcContentSelectorTag extends ContentSelectorTag {
 
-    private String interestGroupNodeRef;
+  private String interestGroupNodeRef;
 
-    public String getComponentType() {
-        return "eu.cec.digit.circabc.faces.CircabcContentSelector";
-    }
+  public String getComponentType() {
+    return "eu.cec.digit.circabc.faces.CircabcContentSelector";
+  }
 
+  /**
+   * @see javax.faces.webapp.UIComponentTag#setProperties(javax.faces.component.UIComponent)
+   */
+  protected void setProperties(UIComponent component) {
+    super.setProperties(component);
+    setStringBindingProperty(
+      component,
+      "interestGroupNodeRef",
+      this.interestGroupNodeRef
+    );
+  }
 
-    /**
-     * @see javax.faces.webapp.UIComponentTag#setProperties(javax.faces.component.UIComponent)
-     */
-    protected void setProperties(UIComponent component) {
-        super.setProperties(component);
-        setStringBindingProperty(component, "interestGroupNodeRef", this.interestGroupNodeRef);
+  /**
+   * @see javax.faces.webapp.UIComponentTag#release()
+   */
+  public void release() {
+    this.interestGroupNodeRef = null;
+    super.release();
+  }
 
-    }
-
-
-    /**
-     * @see javax.faces.webapp.UIComponentTag#release()
-     */
-    public void release() {
-        this.interestGroupNodeRef = null;
-        super.release();
-    }
-
-    public void setInterestGroupNodeRef(String value) {
-        this.interestGroupNodeRef = value;
-    }
-
+  public void setInterestGroupNodeRef(String value) {
+    this.interestGroupNodeRef = value;
+  }
 }

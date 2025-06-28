@@ -1,16 +1,19 @@
-{{ 'label.help' | transloco | cbcSetTitle }}
-<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
-
-<header class="actions" *ngIf="isAdminOrSupport()">
-  <a (click)="showCreateLinkModal = true">{{ 'help.add.link' | transloco }}</a>
-  <a class="cta" (click)="showCreateModal = true"
-    >{{ 'help.add.category' | transloco }}</a
+{{ 'label.help' | transloco | cbcSetTitle }} @if (loading) {
+<cbc-horizontal-loader />
+} @if (isAdminOrSupport()) {
+<header class="actions">
+  <a tabindex="0" (click)="showCreateLinkModal = true"
+    >{{ 'help.add.link' | transloco }}</a
+  >
+  <a tabindex="0" class="cta" (click)="showCreateModal = true"
+    >{{ 'help.add.section' | transloco }}</a
   >
 </header>
+}
 
 <header class="help-header">
   <div class="help-header-container">
-    <img src="img/help-message.png" />
+    <img src="img/help-message.png" alt="Help message" />
     <h1> {{ 'help.header.title' | transloco }}</h1>
   </div>
 </header>
@@ -18,7 +21,8 @@
 <section class="start-container">
   <section class="contact-section">
     <a [routerLink]="['/help/contact']"
-      >{{ 'label.contact' | transloco }} <img src="img/email.png"
+      >{{ 'label.contact' | transloco }}
+      <img src="img/email.png" alt="Email icon"
     /></a>
   </section>
 
@@ -29,25 +33,28 @@
   <section class="help-categories">
     <h2>{{ 'help.faq' | transloco }}</h2>
     <ul>
-      <li *ngFor="let category of categories">
+      @for (category of categories; track category.id) {
+      <li>
         <a [routerLink]="['../category', category.id]">
           <span class="number-article">
-            <img src="img/icon-forums-grey.png" />{{ category.numberOfArticles
-            }} {{ (category.numberOfArticles === 1 ? 'help.article' :
-            'help.articles' ) | transloco }} </span
+            <img src="img/icon-forums-grey.png" alt="Forum icon" />{{
+            category.numberOfArticles }} {{ (category.numberOfArticles === 1 ?
+            'help.article' : 'help.articles' ) | transloco }} </span
           >{{ category.title | cbcI18n }}</a
         >
       </li>
-      <li *ngIf="categories.length === 0">
-        <a>{{ 'help.no.categories' | transloco }}</a>
+      } @if (categories.length === 0) {
+      <li>
+        <a>{{ 'help.no.sections' | transloco }}</a>
       </li>
+      }
     </ul>
   </section>
 
   <section class="help-links">
     <cbc-help-links
       [links]="links"
-      (linkDeleted)="refreshLinks($event)"
+      (linkDeleted)="refreshLinks()"
       (clickedForEdition)="openForEdit($event)"
     >
     </cbc-help-links>
@@ -57,10 +64,9 @@
 <cbc-add-help-category
   [(showModal)]="showCreateModal"
   (categoryCreated)="refresh($event)"
-></cbc-add-help-category>
+/>
 <cbc-add-link
   [(showModal)]="showCreateLinkModal"
   (linkCreated)="refreshLinks($event)"
   [(linkId)]="linkId"
->
-</cbc-add-link>
+/>

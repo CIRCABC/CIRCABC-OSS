@@ -1,11 +1,11 @@
 import {
   Directive,
-  Input,
   OnChanges,
   OnInit,
   SimpleChanges,
   TemplateRef,
   ViewContainerRef,
+  input,
 } from '@angular/core';
 import { PermissionEvaluator } from 'app/core/evaluator/permission-evaluator';
 import { AllPermission } from 'app/core/evaluator/permissions';
@@ -19,10 +19,12 @@ import { Node as ModelNode } from 'app/core/generated/circabc';
  *  show <div> bla bla </div> if node has permission LibAdmin or LibManageOwn
  *
  */
-@Directive({ selector: '[cbcIfRoles]' })
+@Directive({
+  selector: '[cbcIfRoles]',
+})
 export class IfRolesDirective implements OnInit, OnChanges {
-  @Input()
-  cbcIfRoles!: [ModelNode, AllPermission[], AllPermission[]];
+  readonly cbcIfRoles =
+    input.required<[ModelNode, AllPermission[], AllPermission[]]>();
 
   constructor(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -35,9 +37,9 @@ export class IfRolesDirective implements OnInit, OnChanges {
     this.viewContainer.clear();
     if (
       this.permissionEvaluator.hasAnyOfPermissions(
-        this.cbcIfRoles[0],
-        this.cbcIfRoles[1],
-        this.cbcIfRoles[2]
+        this.cbcIfRoles()[0],
+        this.cbcIfRoles()[1],
+        this.cbcIfRoles()[2]
       )
     ) {
       this.viewContainer.createEmbeddedView(this.templateRef);

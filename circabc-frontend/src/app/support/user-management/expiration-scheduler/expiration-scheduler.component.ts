@@ -1,25 +1,36 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit, output, input, OnDestroy } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   HistoryService,
   UserMembershipsExpirationRequest,
 } from 'app/core/generated/circabc';
+import { setupCalendarDateHandling } from 'app/core/util/date-calendar-util';
+import { ModalComponent } from 'app/shared/modal/modal.component';
 import { UsersMembershipsModel } from 'app/support/user-management/users-memberships-model';
-import { firstValueFrom } from 'rxjs';
+import { DatePicker } from 'primeng/datepicker';
+import { firstValueFrom, Subscription } from 'rxjs';
 
 @Component({
   selector: 'cbc-expiration-scheduler',
   templateUrl: './expiration-scheduler.component.html',
-  styleUrls: ['./expiration-scheduler.component.scss'],
+  styleUrl: './expiration-scheduler.component.scss',
+  imports: [ModalComponent, ReactiveFormsModule, DatePicker, TranslocoModule],
 })
-export class ExpirationSchedulerComponent implements OnInit {
-  @Input() showModal = false;
-  @Input() requests: UsersMembershipsModel[] = [];
-  @Output() readonly scheduled = new EventEmitter();
-  @Output() readonly canceled = new EventEmitter();
+export class ExpirationSchedulerComponent implements OnInit, OnDestroy {
+  readonly showModal = input(false);
+  readonly requests = input<UsersMembershipsModel[]>([]);
+  readonly scheduled = output();
+  readonly canceled = output();
 
   public scheduleForm!: FormGroup;
   public processing = false;
+  private dateSubscription!: Subscription;
 
   constructor(
     private historyService: HistoryService,
@@ -30,6 +41,16 @@ export class ExpirationSchedulerComponent implements OnInit {
     this.scheduleForm = this.fb.group({
       scheduleDate: [new Date(), Validators.required],
     });
+
+    this.dateSubscription = setupCalendarDateHandling(
+      this.scheduleForm.controls.scheduleDate
+    );
+  }
+
+  ngOnDestroy() {
+    if (this.dateSubscription) {
+      this.dateSubscription.unsubscribe();
+    }
   }
 
   public async schedule() {
@@ -37,7 +58,7 @@ export class ExpirationSchedulerComponent implements OnInit {
     try {
       const body: UserMembershipsExpirationRequest[] = [];
 
-      this.requests.forEach((item) => {
+      this.requests().forEach((item) => {
         const futureExpirations = item.memberships.filter((membership) => {
           return membership.selected;
         });

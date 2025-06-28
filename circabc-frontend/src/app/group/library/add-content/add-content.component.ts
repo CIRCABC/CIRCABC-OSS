@@ -1,13 +1,14 @@
 import {
   Component,
-  EventEmitter,
   Input,
   OnChanges,
   OnInit,
-  Output,
   SimpleChanges,
+  output,
+  input,
 } from '@angular/core';
 
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
@@ -16,6 +17,9 @@ import {
 import { Node as ModelNode } from 'app/core/generated/circabc';
 import { UiMessageService } from 'app/core/message/ui-message.service';
 import { UploadService } from 'app/core/upload.service';
+import { SizePipe } from 'app/shared/pipes/size.pipe';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
+import { FileDetailsComponent } from './file-details/file-details.component';
 
 interface FileWithId {
   id: number;
@@ -24,16 +28,17 @@ interface FileWithId {
 @Component({
   selector: 'cbc-add-content',
   templateUrl: './add-content.component.html',
-  styleUrls: ['./add-content.component.scss'],
+  styleUrl: './add-content.component.scss',
   preserveWhitespaces: true,
+  imports: [SpinnerComponent, FileDetailsComponent, SizePipe, TranslocoModule],
 })
 export class AddContentComponent implements OnInit, OnChanges {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   public showWizard = false;
-  @Input()
-  public parentNode!: ModelNode;
-  @Output()
-  public readonly modalHide = new EventEmitter<ActionEmitterResult>();
+  public readonly parentNode = input.required<ModelNode>();
+  public readonly modalHide = output<ActionEmitterResult>();
 
   public showAddWizardStep1 = false;
   public showAddWizardStep2 = false;
@@ -84,9 +89,10 @@ export class AddContentComponent implements OnInit, OnChanges {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public fileChangeEvent(fileInput: any) {
-    const filesList = fileInput.target.files as FileList;
+  public fileChangeEvent(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const filesList = input.files as FileList;
+
     this.handleFiles(filesList);
   }
 
@@ -114,7 +120,8 @@ export class AddContentComponent implements OnInit, OnChanges {
   }
 
   private async uploadFilesOneByOne() {
-    if (this.parentNode.id === undefined) {
+    const parentNode = this.parentNode();
+    if (parentNode.id === undefined) {
       return;
     }
     this.progressMax = this.filesToUpload.length;
@@ -124,11 +131,11 @@ export class AddContentComponent implements OnInit, OnChanges {
       try {
         const nodeId = await this.uploadService.uploadNewFile(
           file,
-          this.parentNode.id
+          parentNode.id
         );
         this.nodesID.push(nodeId);
         this.filesUploaded.push(file);
-      } catch (error) {
+      } catch (_error) {
         this.uiMessageService.addErrorMessage('Error during file upload');
       }
       this.progressValue += 1;

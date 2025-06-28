@@ -2,7 +2,7 @@
   <shortname>CIRCABC groups</shortname>
   <description>Get all visited CIRCABC groups</description>
   <url>/circabc/groups/visited</url>
-  <format default="json"/>
+  <format default="json" />
   <authentication>user</authentication>
   <transaction>required</transaction>
 </webscript>

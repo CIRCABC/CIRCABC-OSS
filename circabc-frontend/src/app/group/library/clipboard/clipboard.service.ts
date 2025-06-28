@@ -21,7 +21,7 @@ export class ClipboardService {
       const json = sessionStorage.getItem(`cbc-clipboard${groupId}`);
 
       if (json !== null) {
-        nodes = JSON.parse(json);
+        nodes = JSON.parse(json) as Node[];
       }
 
       if (nodes.find((a) => a.id === node.id)) {

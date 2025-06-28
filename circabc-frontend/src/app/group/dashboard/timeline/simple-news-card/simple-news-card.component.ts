@@ -1,17 +1,36 @@
 import { Component, Input } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 
+import { DatePipe } from '@angular/common';
+import { TranslocoModule } from '@jsverse/transloco';
 import { News } from 'app/core/generated/circabc';
 import { SaveAsService } from 'app/core/save-as.service';
 import { urlWellFormed } from 'app/core/util';
+import { DownloadPipe } from 'app/shared/pipes/download.pipe';
+import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
+import { SafePipe } from 'app/shared/pipes/safe.pipe';
+import { SecurePipe } from 'app/shared/pipes/secure.pipe';
+import { UserCardComponent } from 'app/shared/user-card/user-card.component';
 
 @Component({
   selector: 'cbc-simple-news-card',
   templateUrl: './simple-news-card.component.html',
-  styleUrls: ['./simple-news-card.component.scss'],
+  styleUrl: './simple-news-card.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    UserCardComponent,
+    DatePipe,
+    DownloadPipe,
+    I18nPipe,
+    SafePipe,
+    SecurePipe,
+    TranslocoModule,
+  ],
 })
 export class SimpleNewsCardComponent {
+  // TODO: Skipped for migration because:
+  //  This input is used in a control flow expression (e.g. `@if` or `*ngIf`)
+  //  and migrating would break narrowing currently.
   @Input()
   news: News | undefined;
 
@@ -25,21 +44,21 @@ export class SimpleNewsCardComponent {
   }
 
   isImportant(): boolean {
-    if (this.news && this.news.properties && this.news.properties.newsLayout) {
+    if (this.news?.properties?.newsLayout) {
       return this.news.properties.newsLayout === 'important';
     }
     return false;
   }
 
   isReminder(): boolean {
-    if (this.news && this.news.properties && this.news.properties.newsLayout) {
+    if (this.news?.properties?.newsLayout) {
       return this.news.properties.layout === 'reminder';
     }
     return false;
   }
 
   private isNewsPattern(pattern: 'image' | 'document' | 'date'): boolean {
-    if (this.news && this.news.properties && this.news.properties.newsPattern) {
+    if (this.news?.properties?.newsPattern) {
       return this.news.properties.newsPattern === pattern;
     }
     return false;
@@ -58,7 +77,7 @@ export class SimpleNewsCardComponent {
   }
 
   isIframe(): boolean {
-    if (this.news && this.news.properties && this.news.properties.newsPattern) {
+    if (this.news?.properties?.newsPattern) {
       return this.news.properties.newsPattern === 'iframe';
     }
     return false;
@@ -82,17 +101,16 @@ export class SimpleNewsCardComponent {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   prepareUrl(url: any) {
-    if (url && url.changingThisBreaksApplicationSecurity) {
+    if (url?.changingThisBreaksApplicationSecurity) {
       return this.sanitizer.bypassSecurityTrustStyle(
         `url(${url.changingThisBreaksApplicationSecurity})`
       );
-    } else {
-      return undefined;
     }
+    return undefined;
   }
 
   getSafeUrl() {
-    if (this.news && this.news.url) {
+    if (this.news?.url) {
       return this.news.url;
     }
 
@@ -100,7 +118,7 @@ export class SimpleNewsCardComponent {
   }
 
   getSanitizedContent() {
-    if (this.news && this.news.properties && this.news.properties.newsContent) {
+    if (this.news?.properties?.newsContent) {
       return this.sanitizer.bypassSecurityTrustHtml(
         this.news.properties.newsContent
       );
@@ -112,16 +130,13 @@ export class SimpleNewsCardComponent {
   getNewsSize(): number {
     if (this?.news?.size !== undefined) {
       return +this.news.size;
-    } else {
-      return 1;
     }
+    return 1;
   }
 
   public hasValidUrl(): boolean {
     return (
-      this.news !== undefined &&
-      this.news.properties !== undefined &&
-      this.news.properties.newsUrl !== undefined &&
+      this.news?.properties?.newsUrl !== undefined &&
       this.news.properties.newsUrl !== '' &&
       urlWellFormed(this.news.properties.newsUrl)
     );
@@ -130,16 +145,14 @@ export class SimpleNewsCardComponent {
   public getAuthor(): string {
     if (this?.news?.modifier !== undefined) {
       return this.news.modifier;
-    } else {
-      return 'John Doe';
     }
+    return 'John Doe';
   }
 
   public getDate(): Date {
     if (this?.news?.modified !== undefined) {
       return new Date(this.news.modified);
-    } else {
-      return new Date();
     }
+    return new Date();
   }
 }

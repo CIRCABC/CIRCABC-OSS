@@ -21,47 +21,49 @@
 package eu.cec.digit.circabc.business.api.link;
 
 import eu.cec.digit.circabc.business.acl.AclAwareWrapper;
-import org.alfresco.service.cmr.repository.NodeRef;
-
 import java.io.Serializable;
+import org.alfresco.service.cmr.repository.NodeRef;
 
 /**
  * @author Slobodan Filipovic
  */
 public final class InterestGroupItem implements Serializable, AclAwareWrapper {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 2898619656671170057L;
+  /**
+   *
+   */
+  private static final long serialVersionUID = 2898619656671170057L;
 
-    private final NodeRef id;
-    private final String name;
-    private final String title;
-    private final String permission;
+  private final NodeRef id;
+  private final String name;
+  private final String title;
+  private final String permission;
 
-    public InterestGroupItem(final NodeRef id, final String name, final String permission,
-                             final String title) {
-        this.id = id;
-        this.name = name;
-        this.permission = permission;
-        this.title = title;
-    }
+  public InterestGroupItem(
+    final NodeRef id,
+    final String name,
+    final String permission,
+    final String title
+  ) {
+    this.id = id;
+    this.name = name;
+    this.permission = permission;
+    this.title = title;
+  }
 
-    public NodeRef getNodeRef() {
-        return id;
-    }
+  public NodeRef getNodeRef() {
+    return id;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public String getPermission() {
-        return permission;
-    }
+  public String getPermission() {
+    return permission;
+  }
 
-    public final String getTitle() {
-        return title;
-    }
-
+  public final String getTitle() {
+    return title;
+  }
 }

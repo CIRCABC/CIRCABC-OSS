@@ -18,67 +18,67 @@ package eu.cec.digit.circabc.repo.translation;
 
 public class SearchResult {
 
-    private String requestID;
-    private String targetLang;
-    private String targetPath;
-    private String translatedText;
-    private String username;
-    private String documentID;
-    private String propertyQName;
+  private String requestID;
+  private String targetLang;
+  private String targetPath;
+  private String translatedText;
+  private String username;
+  private String documentID;
+  private String propertyQName;
 
-    public String getRequestID() {
-        return requestID;
-    }
+  public String getRequestID() {
+    return requestID;
+  }
 
-    public void setRequestID(String requestID) {
-        this.requestID = requestID;
-    }
+  public void setRequestID(String requestID) {
+    this.requestID = requestID;
+  }
 
-    public String getTargetLang() {
-        return targetLang;
-    }
+  public String getTargetLang() {
+    return targetLang;
+  }
 
-    public void setTargetLang(String targetLang) {
-        this.targetLang = targetLang;
-    }
+  public void setTargetLang(String targetLang) {
+    this.targetLang = targetLang;
+  }
 
-    public String getTranslatedText() {
-        return translatedText;
-    }
+  public String getTranslatedText() {
+    return translatedText;
+  }
 
-    public void setTranslatedText(String translatedText) {
-        this.translatedText = translatedText;
-    }
+  public void setTranslatedText(String translatedText) {
+    this.translatedText = translatedText;
+  }
 
-    public String getUsername() {
-        return username;
-    }
+  public String getUsername() {
+    return username;
+  }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+  public void setUsername(String username) {
+    this.username = username;
+  }
 
-    public String getDocumentID() {
-        return documentID;
-    }
+  public String getDocumentID() {
+    return documentID;
+  }
 
-    public void setDocumentID(String documentID) {
-        this.documentID = documentID;
-    }
+  public void setDocumentID(String documentID) {
+    this.documentID = documentID;
+  }
 
-    public String getPropertyQName() {
-        return propertyQName;
-    }
+  public String getPropertyQName() {
+    return propertyQName;
+  }
 
-    public void setPropertyQName(String propertyQName) {
-        this.propertyQName = propertyQName;
-    }
+  public void setPropertyQName(String propertyQName) {
+    this.propertyQName = propertyQName;
+  }
 
-    public String getTargetPath() {
-        return targetPath;
-    }
+  public String getTargetPath() {
+    return targetPath;
+  }
 
-    public void setTargetPath(String targetPath) {
-        this.targetPath = targetPath;
-    }
+  public void setTargetPath(String targetPath) {
+    this.targetPath = targetPath;
+  }
 }

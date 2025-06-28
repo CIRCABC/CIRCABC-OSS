@@ -13,44 +13,49 @@
       step="1"
     />
     <span>
+      @if (isGuestVisible()) {
       <img
         class="hint-icon"
         src="img/earth-medium-grey.png"
-        *ngIf="isGuestVisible()"
+        alt="Guest visibility icon"
       />
+      } @if (isRegisteredVisible()) {
       <img
         class="hint-icon"
         src="img/multiple-users-silhouette.png"
-        *ngIf="isRegisteredVisible()"
+        alt="Registered visibility icon"
       />
+      } @if (isPrivateVisible()) {
       <img
         class="hint-icon"
         src="img/invisible-medium-grey.png"
-        *ngIf="isPrivateVisible()"
+        alt="Private visibility icon"
       />
-      {{ getVisibilityLabel() | transloco }}
+      } {{ getVisibilityLabel() | transloco }}
     </span>
+    @if (isGuestVisible()) {
     <p
       class="field--hint"
       [innerHtml]="'admin.security.visibility.guest.help.on' | transloco"
-      *ngIf="isGuestVisible()"
     >
     </p>
+    } @if (isRegisteredVisible()) {
     <p
       class="field--hint"
       [innerHtml]="'admin.security.visibility.registered.help.on' | transloco"
-      *ngIf="isRegisteredVisible()"
     >
     </p>
+    } @if (isPrivateVisible()) {
     <p
       class="field--hint"
       [innerHtml]="'admin.security.visibility.private.help.on' | transloco"
-      *ngIf="isPrivateVisible()"
     >
     </p>
+    }
   </div>
   <div class="field--separator"></div>
-  <div class="field switch" *ngIf="isRegisteredVisible() || isGuestVisible()">
+  @if (isRegisteredVisible() || isGuestVisible()) {
+  <div class="field switch">
     <div class="label">{{ 'admin.security.applicants' | transloco }}</div>
     <input
       id="cmn-toggle-3"
@@ -59,7 +64,9 @@
       formControlName="applicants"
     />
     <label for="cmn-toggle-3" class="nonBlockLabel"></label>
-    <span *ngIf="ig">{{ getApplicantsYesNoLabel() | transloco }}</span>
+    @if (ig) {
+    <span>{{ getApplicantsYesNoLabel() | transloco }}</span>
+    }
     <p
       class="field--hint"
       [innerHtml]="
@@ -69,14 +76,22 @@
     >
     </p>
   </div>
-  <div class="field" *ngIf="saving">
-    <label
+  } @if (saving) {
+  <div class="field">
+    <div
       >{{ 'label.saving' | transloco }}...
       <cbc-spinner></cbc-spinner>
-    </label>
+    </div>
   </div>
+  }
 </form>
-<div class="buttons-group" *ngIf="!saving">
-  <a class="cta" (click)="save()">{{ 'label.save' | transloco }}</a>
-  <a class="button" (click)="cancel()">{{ 'label.cancel' | transloco }}</a>
+@if (!saving) {
+<div class="buttons-group">
+  <a tabindex="0" class="cta" (click)="save()"
+    >{{ 'label.save' | transloco }}</a
+  >
+  <a tabindex="0" class="button" (click)="cancel()"
+    >{{ 'label.cancel' | transloco }}</a
+  >
 </div>
+}

@@ -21,45 +21,52 @@ import eu.cec.digit.circabc.service.bulk.indexes.IndexRecord;
 import eu.cec.digit.circabc.service.bulk.indexes.message.ValidationMessage;
 import eu.cec.digit.circabc.service.bulk.indexes.message.ValidationMessageImpl;
 import eu.cec.digit.circabc.service.bulk.validation.ErrorType;
-import org.alfresco.service.ServiceRegistry;
-import org.springframework.extensions.surf.util.I18NUtil;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import org.alfresco.service.ServiceRegistry;
+import org.springframework.extensions.surf.util.I18NUtil;
 
 public class ExpirDateValidator extends AbstractIndexValidator {
 
-    private static final ThreadLocal<DateFormat> sdf =
-            new ThreadLocal<DateFormat>() {
-                @Override
-                protected DateFormat initialValue() {
-                    return new SimpleDateFormat(BulkService.INDEX_DATE_FORMAT);
-                }
-            };
-    private static final String ERROR_DESCRIPTION = "bulk_upload_expir_date_error";
-
-    public ExpirDateValidator(final ServiceRegistry serviceRegistry) {
-        super(serviceRegistry);
+  private static final ThreadLocal<DateFormat> sdf = new ThreadLocal<
+    DateFormat
+  >() {
+    @Override
+    protected DateFormat initialValue() {
+      return new SimpleDateFormat(BulkService.INDEX_DATE_FORMAT);
     }
+  };
+  private static final String ERROR_DESCRIPTION =
+    "bulk_upload_expir_date_error";
 
-    public void validate(final IndexRecord indexRecord, final List<ValidationMessage> messages) {
+  public ExpirDateValidator(final ServiceRegistry serviceRegistry) {
+    super(serviceRegistry);
+  }
 
-        if (indexRecord.getExpirationDate() != null && indexRecord.getExpirationDate().length() > 0) {
-            try {
-                @SuppressWarnings("unused") final Date parsed = sdf.get().parse(indexRecord.getExpirationDate());
-            } catch (final ParseException pe) {
-                final String errorDescription = I18NUtil.getMessage(ERROR_DESCRIPTION);
-                final ValidationMessage validationMessage =
-                        new ValidationMessageImpl(
-                                indexRecord.getRowNumber(),
-                                indexRecord.getName(),
-                                errorDescription,
-                                ErrorType.Warning);
-                messages.add(validationMessage);
-            }
-        }
+  public void validate(
+    final IndexRecord indexRecord,
+    final List<ValidationMessage> messages
+  ) {
+    if (
+      indexRecord.getExpirationDate() != null &&
+      indexRecord.getExpirationDate().length() > 0
+    ) {
+      try {
+        @SuppressWarnings("unused")
+        final Date parsed = sdf.get().parse(indexRecord.getExpirationDate());
+      } catch (final ParseException pe) {
+        final String errorDescription = I18NUtil.getMessage(ERROR_DESCRIPTION);
+        final ValidationMessage validationMessage = new ValidationMessageImpl(
+          indexRecord.getRowNumber(),
+          indexRecord.getName(),
+          errorDescription,
+          ErrorType.Warning
+        );
+        messages.add(validationMessage);
+      }
     }
+  }
 }

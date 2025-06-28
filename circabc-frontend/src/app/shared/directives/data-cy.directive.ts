@@ -6,8 +6,7 @@ import { environment } from 'environments/environment';
   selector: '[data-cy]',
 })
 export class DataCyDirective {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  constructor(private el: ElementRef, private renderer: Renderer2) {
+  constructor(el: ElementRef, renderer: Renderer2) {
     if (environment.environmentType === 'prod') {
       renderer.removeAttribute(el.nativeElement, 'data-cy');
     }

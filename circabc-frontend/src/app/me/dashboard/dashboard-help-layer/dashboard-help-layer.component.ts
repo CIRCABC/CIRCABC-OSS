@@ -1,9 +1,12 @@
 import { Component, OnInit } from '@angular/core';
+import { TranslocoModule } from '@jsverse/transloco';
+import { OverlayerComponent } from 'app/shared/overlayer/overlayer.component';
 
 @Component({
   selector: 'cbc-dashboard-help-layer',
   templateUrl: './dashboard-help-layer.component.html',
-  styleUrls: ['./dashboard-help-layer.component.scss'],
+  styleUrl: './dashboard-help-layer.component.scss',
+  imports: [OverlayerComponent, TranslocoModule],
 })
 export class DashboardHelpLayerComponent implements OnInit {
   public showOverlayHelp = true;

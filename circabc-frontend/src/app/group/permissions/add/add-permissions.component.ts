@@ -5,9 +5,10 @@ import {
   transition,
   trigger,
 } from '@angular/animations';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { Component, Input, OnInit, output, input } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
@@ -27,13 +28,16 @@ import {
   AuthConfig,
   PermDef,
 } from 'app/group/permissions/add/permission-definition-model';
+import { InlineSelectComponent } from 'app/shared/inline-select/inline-select.component';
+import { ModalComponent } from 'app/shared/modal/modal.component';
 import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
+import { UsersPickerComponent } from 'app/shared/users/users-picker.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-add-permissions',
   templateUrl: './add-permissions.component.html',
-  styleUrls: ['./add-permissions.component.scss'],
+  styleUrl: './add-permissions.component.scss',
   preserveWhitespaces: true,
   animations: [
     trigger('helpLayoutVisibility', [
@@ -55,18 +59,23 @@ import { firstValueFrom } from 'rxjs';
       transition('active => inactive', animate('100ms ease-out')),
     ]),
   ],
+  imports: [
+    ModalComponent,
+    ReactiveFormsModule,
+    UsersPickerComponent,
+    InlineSelectComponent,
+    TranslocoModule,
+  ],
 })
 export class AddPermissionsComponent implements OnInit {
-  @Input()
-  node!: ModelNode;
-  @Input()
-  ig!: string;
+  readonly node = input.required<ModelNode>();
+  readonly ig = input.required<string>();
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   showModal = false;
-  @Input()
-  inherited = true;
-  @Output()
-  readonly finished = new EventEmitter<ActionEmitterResult>();
+  readonly inherited = input(true);
+  readonly finished = output<ActionEmitterResult>();
 
   public perms!: PermissionDefinition;
   public newPermissionsForm!: FormGroup;
@@ -85,6 +94,7 @@ export class AddPermissionsComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
+    this.permissionCache = [];
     this.newPermissionsForm = this.fb.group(
       {
         invitedUsersOrProfiles: [],
@@ -97,9 +107,10 @@ export class AddPermissionsComponent implements OnInit {
     this.configModel = [];
     this.options = this.determineNodePermissionSet();
 
-    if (this.node && this.node.id) {
+    const node = this.node();
+    if (node?.id) {
       this.perms = await firstValueFrom(
-        this.permissionService.getPermissions(this.node.id)
+        this.permissionService.getPermissions(node.id)
       );
     }
   }
@@ -114,9 +125,9 @@ export class AddPermissionsComponent implements OnInit {
   }
 
   determineNodePermissionSet(): string[] {
-    if (this.node.permissions && this.permissionCache.length === 0) {
-      const keys = Object.keys(this.node.permissions);
-      const isInLibrary = keys.length > 0 && keys[0].indexOf('Lib') !== -1;
+    const node = this.node();
+    if (node.permissions && this.permissionCache.length === 0) {
+      const isInLibrary = node.service === 'library';
 
       if (isInLibrary) {
         if (this.isContent()) {
@@ -134,7 +145,7 @@ export class AddPermissionsComponent implements OnInit {
   }
 
   isContent(): boolean {
-    return this.node.type !== undefined && this.node.type.endsWith('}content');
+    return this.node().type?.endsWith('}content') === true;
   }
 
   assign() {
@@ -172,16 +183,12 @@ export class AddPermissionsComponent implements OnInit {
       return `${(authority as User).firstname}  ${
         (authority as User).lastname
       }`;
-    } else {
-      const profileTitle = this.i18nPipe.transform(
-        (authority as Profile).title
-      );
-      if (profileTitle !== '' && profileTitle !== undefined) {
-        return profileTitle;
-      } else {
-        return (authority as Profile).name as string;
-      }
     }
+    const profileTitle = this.i18nPipe.transform((authority as Profile).title);
+    if (profileTitle !== '' && profileTitle !== undefined) {
+      return profileTitle;
+    }
+    return (authority as Profile).name as string;
   }
 
   removePerm(key: string) {
@@ -199,7 +206,7 @@ export class AddPermissionsComponent implements OnInit {
 
     try {
       const body: PermissionDefinition = {
-        inherited: this.inherited,
+        inherited: this.inherited(),
         permissions: {
           profiles: [],
           users: [],
@@ -212,27 +219,28 @@ export class AddPermissionsComponent implements OnInit {
           const pdpu: PermissionDefinitionPermissionsUsers = {};
           pdpu.permission = this.newPermsModel[newPermKey].permission;
           pdpu.user = authTmp as User;
-          if (body && body.permissions && body.permissions.users) {
+          if (body?.permissions?.users) {
             body.permissions.users.push(pdpu);
           }
         } else {
           const pdpp: PermissionDefinitionPermissionsProfiles = {};
           pdpp.permission = this.newPermsModel[newPermKey].permission;
           pdpp.profile = authTmp as Profile;
-          if (body && body.permissions && body.permissions.profiles) {
+          if (body?.permissions?.profiles) {
             body.permissions.profiles.push(pdpp);
           }
         }
       }
-      if (this.node.id) {
+      const node = this.node();
+      if (node.id) {
         this.perms = await firstValueFrom(
-          this.permissionService.putPermission(this.node.id, body)
+          this.permissionService.putPermission(node.id, body)
         );
         res.result = ActionResult.SUCCEED;
         this.newPermissionsForm.reset();
         this.newPermsModel = {};
       }
-    } catch (error) {
+    } catch (_error) {
       res.result = ActionResult.FAILED;
     }
     this.adding = false;

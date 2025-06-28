@@ -1,19 +1,30 @@
+import { Observable, Subscription, firstValueFrom } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import { firstValueFrom, Observable, Subscription } from 'rxjs';
 
-import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 
-import { getBrowserLang, TranslocoService } from '@ngneat/transloco';
+import { TranslocoService, getBrowserLang } from '@jsverse/transloco';
 
-import { AnalyticsService } from 'app/core//analytics.service';
+import { AnalyticsService } from 'app/core/analytics.service';
 
-import { PrimeNGConfig } from 'primeng/api';
 import { DOCUMENT } from '@angular/common';
+import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
+import { UiMessageService } from 'app/core/message/ui-message.service';
+import { UiMessageSystemComponent } from 'app/core/message/ui-message.system.component';
+import { FooterComponent } from 'app/footer/footer.component';
+import { TicketValidatorComponent } from 'app/shared/ticket-validator/ticket-validator.component';
+import { PrimeNG } from 'primeng/config';
 @Component({
   selector: 'cbc-app',
   templateUrl: './app.component.html',
   preserveWhitespaces: true,
+  imports: [
+    UiMessageSystemComponent,
+    RouterOutlet,
+    FooterComponent,
+    TicketValidatorComponent,
+  ],
 })
 export class AppComponent implements OnInit, OnDestroy {
   navEnd$: Observable<NavigationEnd>;
@@ -21,12 +32,30 @@ export class AppComponent implements OnInit, OnDestroy {
   languageChangeSubscription!: Subscription;
 
   public constructor(
-    private translateService: TranslocoService,
     router: Router,
+    swUpdate: SwUpdate,
+    private translateService: TranslocoService,
     private analyticsService: AnalyticsService,
-    private primeNGConfig: PrimeNGConfig,
+    private primeNGConfig: PrimeNG,
+    private uiMessageService: UiMessageService,
     @Inject(DOCUMENT) private document: Document
   ) {
+    if (swUpdate.isEnabled) {
+      swUpdate.versionUpdates
+        .pipe(
+          filter(
+            (evt): evt is VersionReadyEvent => evt.type === 'VERSION_READY'
+          )
+        )
+        .subscribe((_evt) => {
+          const infoMessage = translateService.translate('automatic.update');
+          this.uiMessageService.addInfoMessage(infoMessage, true, 4);
+          setTimeout(() => {
+            window.location.reload();
+          }, 5000);
+        });
+    }
+
     this.navEnd$ = router.events.pipe(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       filter((evt: any) => evt instanceof NavigationEnd)
@@ -65,14 +94,15 @@ export class AppComponent implements OnInit, OnDestroy {
     this.languageChangeSubscription.unsubscribe();
   }
   ngOnInit(): void {
+    const themeStored = localStorage.getItem('theme');
+    if (themeStored === 'dark') {
+      document.documentElement.setAttribute('theme', themeStored);
+    }
+
     this.analyticsService.init();
     this.trackAnalytics();
 
-    // tab sessionStorage replication
-    //  https://stackoverflow.com/questions/20325763/browser-sessionstorage-share-between-tabs
-
-    // transfers sessionStorage from one tab to another
-    this.transferSessionStorage();
+    // tab sessionStorage replication is now handled in APP_INITIALIZER
   }
 
   private trackAnalytics() {
@@ -83,46 +113,5 @@ export class AppComponent implements OnInit, OnDestroy {
         }, 1000);
       }
     );
-  }
-
-  private transferSessionStorage() {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const sessionStorage_transfer = (event: any) => {
-      if (!event) {
-        // eslint-disable-next-line
-        event = window.event;
-      } // ie suq
-      if (!event.newValue) {
-        return;
-      } // do nothing if no value to work with
-      if (event.key === 'getSessionStorage') {
-        // another tab asked for the sessionStorage -> send it
-        localStorage.setItem('sessionStorage', JSON.stringify(sessionStorage));
-        // the other tab should now have it, so we're done with it.
-        localStorage.removeItem('sessionStorage'); // <- could do short timeout as well.
-      } else if (event.key === 'sessionStorage' && !sessionStorage.length) {
-        // another tab sent data <- get it
-        const data = JSON.parse(event.newValue);
-        // eslint-disable-next-line guard-for-in
-        for (const key in data) {
-          // eslint-disable-next-line no-restricted-syntax
-          sessionStorage.setItem(key, data[key]);
-        }
-      }
-    };
-
-    // listen for changes to localStorage
-    if (window.addEventListener) {
-      window.addEventListener('storage', sessionStorage_transfer, false);
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (window as any).attachEvent('onstorage', sessionStorage_transfer);
-    }
-
-    // Ask other tabs for session storage (this is ONLY to trigger event)
-    if (!sessionStorage.length) {
-      localStorage.setItem('getSessionStorage', 'dummy');
-      localStorage.removeItem('getSessionStorage');
-    }
   }
 }
