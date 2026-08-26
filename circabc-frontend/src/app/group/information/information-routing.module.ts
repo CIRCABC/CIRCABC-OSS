@@ -1,18 +1,31 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { ServiceAccessGuard } from 'app/group/guards/service-guard.service';
-import { AddNewsComponent } from 'app/group/information/add-news/add-news.component';
-import { InformationComponent } from 'app/group/information/information.component';
+import { canActivateService } from 'app/group/guards/service-guard.service';
 
-const informationRoutes: Routes = [
+export const informationRoutes: Routes = [
   {
     path: '',
-    component: InformationComponent,
-    canActivate: [ServiceAccessGuard],
+    loadComponent: () =>
+      import('app/group/information/information.component').then(
+        (m) => m.InformationComponent
+      ),
+    canActivate: [canActivateService],
   },
-  { path: 'add/:infoId', component: AddNewsComponent },
-  { path: ':newsId/edit', component: AddNewsComponent },
+  {
+    path: 'add/:infoId',
+    loadComponent: () =>
+      import('app/group/information/add-news/add-news.component').then(
+        (m) => m.AddNewsComponent
+      ),
+  },
+  {
+    path: ':newsId/edit',
+    loadComponent: () =>
+      import('app/group/information/add-news/add-news.component').then(
+        (m) => m.AddNewsComponent
+      ),
+  },
 ];
 
 @NgModule({

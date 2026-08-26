@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
+<?xml version="1.0" encoding="UTF-8" ?>
 <!--
   Copyright 2006 European Community
   
@@ -20,8 +19,10 @@
    See the Licence for the specific language governing
    permissions and limitations under the Licence.
 -->
-    
-<model name="sm:systemMessageModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+<model
+  name="sm:systemMessageModel"
+  xmlns="http://www.alfresco.org/model/dictionary/1.0"
+>
 
   <!-- Optional meta-data about the model -->
   <description>Circabc System Message Model</description>
@@ -35,7 +36,10 @@
 	</imports>
 
 	<namespaces>
-		<namespace uri="http://www.cc.cec/circabc/model/systemmessage/1.0" prefix="sm" />
+		<namespace
+      uri="http://www.cc.cec/circabc/model/systemmessage/1.0"
+      prefix="sm"
+    />
 	</namespaces>
 
 	<types>

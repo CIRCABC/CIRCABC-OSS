@@ -20,7 +20,6 @@
  ******************************************************************************/
 package eu.cec.digit.circabc.business.api.security;
 
-
 /**
  * Business service to manage permissions.
  *
@@ -31,6 +30,4 @@ package eu.cec.digit.circabc.business.api.security;
  * code that should populate this class are in theses two ones. TODO remove AccessProfileWrapper,
  * ServicePermissionWrapper, InviteCircabcUsersWizard.UserGroupProfile, ... (in jsf part)
  */
-public interface PermissionsBusinessSrv {
-
-}
+public interface PermissionsBusinessSrv {}

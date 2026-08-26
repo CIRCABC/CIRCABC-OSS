@@ -1,15 +1,29 @@
 import { Component, OnInit } from '@angular/core';
 
+import { DatePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import { DashboardService, UserActionLog } from 'app/core/generated/circabc';
 import { LoginService } from 'app/core/login.service';
 import { removeDuplicates } from 'app/core/util';
+import { FileExtensionIconComponent } from 'app/shared/file-extension-icon/file-extension-icon.component';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
+import { UserCardComponent } from 'app/shared/user-card/user-card.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-recent-consultation',
   templateUrl: './recent-consultation.component.html',
-  styleUrls: ['./recent-consultation.component.scss'],
+  styleUrl: './recent-consultation.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    HorizontalLoaderComponent,
+    FileExtensionIconComponent,
+    RouterLink,
+    UserCardComponent,
+    DatePipe,
+    TranslocoModule,
+  ],
 })
 export class RecentConsultationComponent implements OnInit {
   public lastDownloads: UserActionLog[] = [];

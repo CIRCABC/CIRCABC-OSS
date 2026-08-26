@@ -1,34 +1,36 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { Component, Input, OnInit, output, input } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
   ActionType,
 } from 'app/action-result';
 import {
-  MembershipPostDefinition,
   MembersService,
+  MembershipPostDefinition,
   Profile,
   ProfileService,
   UserProfile,
 } from 'app/core/generated/circabc';
 import { SelectableUserProfile } from 'app/core/ui-model';
+import { ModalComponent } from 'app/shared/modal/modal.component';
 import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-change-profiles-multiple',
   templateUrl: './change-profiles-multiple.component.html',
+  imports: [ModalComponent, ReactiveFormsModule, I18nPipe, TranslocoModule],
 })
 export class ChangeProfilesMultipleComponent implements OnInit {
-  @Input()
-  users!: SelectableUserProfile[];
-  @Input()
-  groupId!: string;
+  readonly users = input.required<SelectableUserProfile[]>();
+  readonly groupId = input.required<string>();
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   showModal!: boolean;
-  @Output()
-  public readonly modalHide = new EventEmitter<ActionEmitterResult>();
+  public readonly modalHide = output<ActionEmitterResult>();
 
   public profiles: Profile[] = [];
   public changeProfileForm!: FormGroup;
@@ -57,9 +59,10 @@ export class ChangeProfilesMultipleComponent implements OnInit {
   }
 
   private async loadProfiles() {
-    if (this.groupId) {
+    const groupId = this.groupId();
+    if (groupId) {
       const profilesUnclean = await firstValueFrom(
-        this.profileService.getProfiles(this.groupId)
+        this.profileService.getProfiles(groupId)
       );
       for (const profile of profilesUnclean) {
         if (profile.name !== 'guest' && profile.name !== 'EVERYONE') {
@@ -77,7 +80,7 @@ export class ChangeProfilesMultipleComponent implements OnInit {
     body.userNotifications = this.changeProfileForm.value.userNotifications;
     body.memberships = [];
 
-    for (const user of this.users) {
+    for (const user of this.users()) {
       const newMember = user;
       newMember.profile = this.getProfile();
       body.memberships.push(newMember);
@@ -87,9 +90,9 @@ export class ChangeProfilesMultipleComponent implements OnInit {
     res.type = ActionType.CHANGE_PROFILE;
 
     try {
-      await firstValueFrom(this.membersService.putMember(this.groupId, body));
+      await firstValueFrom(this.membersService.putMember(this.groupId(), body));
       res.result = ActionResult.SUCCEED;
-    } catch (error) {
+    } catch (_error) {
       console.error('Error while updating the users profiles');
       res.result = ActionResult.FAILED;
     }

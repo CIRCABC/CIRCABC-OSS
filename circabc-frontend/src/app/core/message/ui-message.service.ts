@@ -72,7 +72,8 @@ export class UiMessageService {
     autoclose = false,
     displayTime?: number
   ): void {
-    let finalDisplayTime;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let finalDisplayTime: any;
     if (displayTime !== undefined) {
       finalDisplayTime = displayTime;
     }

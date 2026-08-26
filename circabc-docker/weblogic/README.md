@@ -1,19 +1,16 @@
-Example of Image with WLS Domain
-================================
-This Dockerfile extends the Oracle WebLogic image by creating a sample empty domain.
+# pull an image from the Oracle Container Registry
 
-Util scripts are copied into the image enabling users to plug NodeManager automatically into the AdminServer running on another container.
+In a web browser, navigate to https://container-registry.oracle.com and login via the Oracle Single Sign-On authentication service.
 
-# How to build and run
-First make sure you have built **oracle/weblogic:12.1.3-developer**. Now to build this sample, run:
+Use the web interface to accept the Oracle Standard Terms and Restrictions for the Oracle software images that you intend to deploy. Your acceptance of these terms are stored in a database that links the software images to your Oracle Single Sign-On login credentials. Your acceptance of the Oracle Standard Terms and Restrictions is valid only for 8 hours from the time you last accepted it. This is subject to change without notice. If you have not pulled the image within the valid period for acceptance, you need to repeat the process before you attempt to pull the image.
 
-        $ docker build -t 1213-domain --build-arg ADMIN_PASSWORD=<define> .
+Use the web interface to browse or search for Oracle software images.
 
-To start the Admin Server, run:
+On the host system, use the docker login command to authenticate against the Oracle Container Registry using the same credentials that you used to log into the web interface:
 
-        $ docker run -d --name wlsadmin --hostname wlsadmin -p 7001:7001 1213-domain
+# docker login container-registry.oracle.com
+The command prompts you for your username and password.
 
-To start a Managed Server to self-register with the Admin Server above, run:
+ docker-compose -f docker-compose-weblogic.yml build
 
-        $ docker run -d --link wlsadmin:wlsadmin -p 7002:7002 1213-domain createServer.sh
-
+  docker-compose -f docker-compose-weblogic.yml up

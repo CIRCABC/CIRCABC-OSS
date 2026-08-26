@@ -1,8 +1,9 @@
+import { DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
-import { ActivatedRoute, Router } from '@angular/router';
-import { TranslocoService } from '@ngneat/transloco';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { ActionEmitterResult, ActionResult } from 'app/action-result';
 import {
   HelpArticle,
@@ -10,12 +11,28 @@ import {
   HelpService,
 } from 'app/core/generated/circabc';
 import { LoginService } from 'app/core/login.service';
+import { AddHelpArticleComponent } from 'app/help/add-help-article/add-help-article.component';
+import { DeleteHelpArticleComponent } from 'app/help/delete-help-article/delete-help-article.component';
+import { ArticleListSelectComponent } from 'app/help/help-article/article-list-select/article-list-select.component';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
+import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-help-article',
   templateUrl: './help-article.component.html',
-  styleUrls: ['./help-article.component.scss'],
+  styleUrl: './help-article.component.scss',
+  imports: [
+    HorizontalLoaderComponent,
+    ReactiveFormsModule,
+    RouterLink,
+    ArticleListSelectComponent,
+    DeleteHelpArticleComponent,
+    AddHelpArticleComponent,
+    DatePipe,
+    I18nPipe,
+    TranslocoModule,
+  ],
 })
 export class HelpArticleComponent implements OnInit {
   public categories: HelpCategory[] = [];
@@ -80,7 +97,7 @@ export class HelpArticleComponent implements OnInit {
       this.articles = await firstValueFrom(
         this.helpService.getCategoryArticles(id, true)
       );
-    } catch (error) {
+    } catch (_error) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.router.navigate(['/help']);
     }
@@ -89,7 +106,7 @@ export class HelpArticleComponent implements OnInit {
   async loadArticle(id: string) {
     try {
       this.article = await firstValueFrom(this.helpService.getHelpArticle(id));
-    } catch (error) {
+    } catch (_error) {
       this.loadingError = true;
     }
   }

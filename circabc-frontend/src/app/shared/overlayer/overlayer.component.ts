@@ -1,22 +1,23 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { Component, Input, OnInit, output, input } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
   selector: 'cbc-overlayer',
   templateUrl: './overlayer.component.html',
-  styleUrls: ['./overlayer.component.scss'],
+  styleUrl: './overlayer.component.scss',
   preserveWhitespaces: true,
+  imports: [ReactiveFormsModule, TranslocoModule],
 })
 export class OverlayerComponent implements OnInit {
-  @Input()
-  enabledClose = true;
-  @Input()
-  useKeepDisplay = false;
+  readonly enabledClose = input(true);
+  readonly useKeepDisplay = input(false);
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   visible = false;
 
-  @Output()
-  public readonly closed = new EventEmitter();
+  public readonly closed = output<boolean>();
 
   public form!: FormGroup;
 

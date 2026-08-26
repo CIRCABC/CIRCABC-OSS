@@ -27,72 +27,88 @@ import org.apache.commons.logging.LogFactory;
 /**
  * @author filipsl
  */
-public class NotificationManagerServiceImpl implements NotificationManagerService {
+public class NotificationManagerServiceImpl
+  implements NotificationManagerService {
 
-    private static final Log logger = LogFactory.getLog(NotificationManagerServiceImpl.class);
+  private static final Log logger = LogFactory.getLog(
+    NotificationManagerServiceImpl.class
+  );
 
-    // the services to inject
-    private NodeService nodeService;
+  // the services to inject
+  private NodeService nodeService;
 
-    /**
-     * @return the nodeService
-     */
-    private NodeService getNodeService() {
-        return nodeService;
+  /**
+   * @return the nodeService
+   */
+  private NodeService getNodeService() {
+    return nodeService;
+  }
+
+  /**
+   * @param nodeService the nodeService to set
+   */
+  public final void setNodeService(NodeService nodeService) {
+    this.nodeService = nodeService;
+  }
+
+  public boolean isPasteAllNotificationEnabled(NodeRef igNodeRef) {
+    validateNode(igNodeRef);
+    return getNodeService()
+      .hasAspect(igNodeRef, CircabcModel.ASPECT_NOTIFY_PASTE_ALL);
+  }
+
+  public boolean isPasteNotificationEnabled(NodeRef igNodeRef) {
+    validateNode(igNodeRef);
+    return getNodeService()
+      .hasAspect(igNodeRef, CircabcModel.ASPECT_NOTIFY_PASTE);
+  }
+
+  public void setPasteAllNotificationEnabled(NodeRef igNodeRef, boolean value) {
+    validateNode(igNodeRef);
+    checkNotificationAspect(
+      igNodeRef,
+      value,
+      CircabcModel.ASPECT_NOTIFY_PASTE_ALL
+    );
+  }
+
+  /**
+   * @param igNodeRef
+   * @param value
+   * @param aspectName
+   */
+  private void checkNotificationAspect(
+    NodeRef igNodeRef,
+    boolean value,
+    QName aspectName
+  ) {
+    if (!getNodeService().hasAspect(igNodeRef, aspectName)) {
+      if (value) {
+        getNodeService().addAspect(igNodeRef, aspectName, null);
+      }
+    } else {
+      if (!value) {
+        getNodeService().removeAspect(igNodeRef, aspectName);
+      }
     }
+  }
 
-    /**
-     * @param nodeService the nodeService to set
-     */
-    public final void setNodeService(NodeService nodeService) {
-        this.nodeService = nodeService;
+  public void setPasteNotificationEnabled(NodeRef igNodeRef, boolean value) {
+    validateNode(igNodeRef);
+    checkNotificationAspect(igNodeRef, value, CircabcModel.ASPECT_NOTIFY_PASTE);
+  }
+
+  /**
+   * @param igNodeRef
+   */
+  private void validateNode(NodeRef igNodeRef) {
+    if (!nodeService.hasAspect(igNodeRef, CircabcModel.ASPECT_IGROOT)) {
+      throw new IllegalArgumentException(
+        "Node " +
+        igNodeRef +
+        " does not have requied aspect " +
+        CircabcModel.ASPECT_IGROOT
+      );
     }
-
-    public boolean isPasteAllNotificationEnabled(NodeRef igNodeRef) {
-        validateNode(igNodeRef);
-        return getNodeService().hasAspect(igNodeRef, CircabcModel.ASPECT_NOTIFY_PASTE_ALL);
-    }
-
-    public boolean isPasteNotificationEnabled(NodeRef igNodeRef) {
-        validateNode(igNodeRef);
-        return getNodeService().hasAspect(igNodeRef, CircabcModel.ASPECT_NOTIFY_PASTE);
-    }
-
-    public void setPasteAllNotificationEnabled(NodeRef igNodeRef, boolean value) {
-        validateNode(igNodeRef);
-        checkNotificationAspect(igNodeRef, value, CircabcModel.ASPECT_NOTIFY_PASTE_ALL);
-    }
-
-    /**
-     * @param igNodeRef
-     * @param value
-     * @param aspectName
-     */
-    private void checkNotificationAspect(NodeRef igNodeRef, boolean value, QName aspectName) {
-        if (!getNodeService().hasAspect(igNodeRef, aspectName)) {
-            if (value) {
-                getNodeService().addAspect(igNodeRef, aspectName, null);
-            }
-        } else {
-            if (!value) {
-                getNodeService().removeAspect(igNodeRef, aspectName);
-            }
-        }
-    }
-
-    public void setPasteNotificationEnabled(NodeRef igNodeRef, boolean value) {
-        validateNode(igNodeRef);
-        checkNotificationAspect(igNodeRef, value, CircabcModel.ASPECT_NOTIFY_PASTE);
-    }
-
-    /**
-     * @param igNodeRef
-     */
-    private void validateNode(NodeRef igNodeRef) {
-
-        if (!nodeService.hasAspect(igNodeRef, CircabcModel.ASPECT_IGROOT)) {
-            throw new IllegalArgumentException(
-                    "Node " + igNodeRef + " does not have requied aspect " + CircabcModel.ASPECT_IGROOT);
-        }
-    }
+  }
 }

@@ -2,7 +2,7 @@
   <shortname>CIRCABC categories group request list</shortname>
   <description>get the list of all request group</description>
   <url>/circabc/categories/{id}/requests/group</url>
-  <format default="json"/>
+  <format default="json" />
   <authentication>user</authentication>
   <transaction>required</transaction>
 </webscript>

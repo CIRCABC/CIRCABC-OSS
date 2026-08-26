@@ -1,14 +1,16 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { ApplicantsComponent } from 'app/group/applicants/applicants.component';
-import { ServiceAccessGuard } from 'app/group/guards/service-guard.service';
+import { canActivateService } from 'app/group/guards/service-guard.service';
 
-const applicantsRoutes: Routes = [
+export const applicantsRoutes: Routes = [
   {
     path: '',
-    component: ApplicantsComponent,
-    canActivate: [ServiceAccessGuard],
+    loadComponent: () =>
+      import('app/group/applicants/applicants.component').then(
+        (m) => m.ApplicantsComponent
+      ),
+    canActivate: [canActivateService],
   },
 ];
 

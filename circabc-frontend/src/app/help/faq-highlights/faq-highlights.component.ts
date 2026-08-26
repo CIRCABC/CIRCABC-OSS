@@ -1,11 +1,14 @@
 import { Component, OnInit } from '@angular/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { HelpArticle, HelpService } from 'app/core/generated/circabc';
 import { firstValueFrom } from 'rxjs';
+import { ArticleCardComponent } from './article-card/article-card.component';
 
 @Component({
   selector: 'cbc-faq-highlights',
   templateUrl: './faq-highlights.component.html',
-  styleUrls: ['./faq-highlights.component.scss'],
+  styleUrl: './faq-highlights.component.scss',
+  imports: [ArticleCardComponent, TranslocoModule],
 })
 export class FaqHighlightsComponent implements OnInit {
   public highlightedArticles: HelpArticle[] = [];

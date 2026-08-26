@@ -1,15 +1,24 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
   ActionType,
 } from 'app/action-result';
-import { DirectoryPermissions } from 'app/core/evaluator/directory-permissions';
-import { LibraryPermissions } from 'app/core/evaluator/library-permissions';
-import { NewsgroupsPermissions } from 'app/core/evaluator/newsgroups-permissions';
+import {
+  directoryPermissionKeys,
+  DirectoryPermissions,
+} from 'app/core/evaluator/directory-permissions';
+import {
+  libraryPermissionKeys,
+  LibraryPermissions,
+} from 'app/core/evaluator/library-permissions';
+import {
+  newsGroupPermissionKeys,
+  NewsgroupsPermissions,
+} from 'app/core/evaluator/newsgroups-permissions';
 import {
   InterestGroup,
   InterestGroupService,
@@ -27,13 +36,39 @@ import {
 } from 'app/core/generated/circabc';
 import { UiMessageService } from 'app/core/message/ui-message.service';
 import { getErrorTranslation, getSuccessTranslation } from 'app/core/util';
+import { ShareSpaceComponent } from 'app/group/library/manage-space-sharing/share-space/share-space.component';
+import { InlineDeleteComponent } from 'app/shared/delete/inline-delete.component';
+import { ModalDeleteComponent } from 'app/shared/delete/modal-delete/modal-delete.component';
+import { IfRoleGEDirective } from 'app/shared/directives/ifrolege.directive';
+import { HintComponent } from 'app/shared/hint/hint.component';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
+import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
+import { ReponsiveSubMenuComponent } from 'app/shared/reponsive-sub-menu/reponsive-sub-menu.component';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { firstValueFrom } from 'rxjs';
+import { AddPermissionsComponent } from './add/add-permissions.component';
+import { DropdownComponent } from './dropdown/dropdown.component';
 
 @Component({
   selector: 'cbc-permissions',
   templateUrl: './permissions.component.html',
-  styleUrls: ['./permissions.component.scss'],
+  styleUrl: './permissions.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    HorizontalLoaderComponent,
+    ReponsiveSubMenuComponent,
+    RouterLink,
+    IfRoleGEDirective,
+    DropdownComponent,
+    HintComponent,
+    SpinnerComponent,
+    InlineDeleteComponent,
+    AddPermissionsComponent,
+    ShareSpaceComponent,
+    ModalDeleteComponent,
+    I18nPipe,
+    TranslocoModule,
+  ],
 })
 export class PermissionsComponent implements OnInit {
   public loading = false;
@@ -98,7 +133,7 @@ export class PermissionsComponent implements OnInit {
         this.profiles = await firstValueFrom(
           this.profileService.getProfiles(params.id)
         );
-      } catch (error) {
+      } catch (_error) {
         this.profiles = [];
       }
 
@@ -145,13 +180,32 @@ export class PermissionsComponent implements OnInit {
     if (this.currentIg === undefined) {
       return false;
     }
+
+    // Find the key name for the DirNoAccess value
+    const dirNoAccessKey = directoryPermissionKeys.find(
+      (key) =>
+        DirectoryPermissions[key as keyof typeof DirectoryPermissions] ===
+        DirectoryPermissions.DirNoAccess
+    );
+
+    // Find the key name for the LibManageOwn value
+    const libManageOwnKey = libraryPermissionKeys.find(
+      (key) =>
+        LibraryPermissions[key as keyof typeof LibraryPermissions] ===
+        LibraryPermissions.LibManageOwn
+    );
+
+    // Find the key name for the NwsPost value
+    const nwsPostKey = newsGroupPermissionKeys.find(
+      (key) =>
+        NewsgroupsPermissions[key as keyof typeof NewsgroupsPermissions] ===
+        NewsgroupsPermissions.NwsPost
+    );
+
     return (
-      this.currentIg.permissions.directory ===
-        DirectoryPermissions[DirectoryPermissions.DirNoAccess] &&
-      (this.currentIg.permissions.library >=
-        LibraryPermissions[LibraryPermissions.LibManageOwn] ||
-        this.currentIg.permissions.newsgroup >=
-          NewsgroupsPermissions[NewsgroupsPermissions.NwsPost])
+      this.currentIg.permissions.directory === dirNoAccessKey &&
+      (this.currentIg.permissions.library === libManageOwnKey ||
+        this.currentIg.permissions.newsgroup === nwsPostKey)
     );
   }
 
@@ -162,7 +216,7 @@ export class PermissionsComponent implements OnInit {
     };
 
     this.processing = true;
-    if (this.currentNode && this.currentNode.id) {
+    if (this.currentNode?.id) {
       this.perms = await firstValueFrom(
         this.permissionService.putPermission(this.currentNode.id, body)
       );
@@ -222,7 +276,7 @@ export class PermissionsComponent implements OnInit {
         getSuccessTranslation(ActionType.DELETE_PERMISSION)
       );
       this.uiMessageService.addSuccessMessage(text, true);
-    } catch (error) {
+    } catch (_error) {
       const text = this.translateService.translate(
         getErrorTranslation(ActionType.DELETE_PERMISSION)
       );
@@ -311,11 +365,10 @@ export class PermissionsComponent implements OnInit {
   }
 
   public hasUserPermissionDeletable(userId: string): boolean {
-    if (this.perms.permissions && this.perms.permissions.users) {
+    if (this.perms.permissions?.users) {
       const result = this.perms.permissions.users.find(
         (userEntry) =>
-          userEntry !== undefined &&
-          userEntry.user !== undefined &&
+          userEntry?.user !== undefined &&
           userEntry.user.userId === userId &&
           userEntry.inherited !== true
       );
@@ -329,11 +382,10 @@ export class PermissionsComponent implements OnInit {
   }
 
   public hasProfilePermissionDeletable(groupName: string): boolean {
-    if (this.perms.permissions && this.perms.permissions.profiles) {
+    if (this.perms.permissions?.profiles) {
       const result = this.perms.permissions.profiles.find(
         (profileEntry) =>
-          profileEntry !== undefined &&
-          profileEntry.profile !== undefined &&
+          profileEntry?.profile !== undefined &&
           profileEntry.profile.groupName === groupName &&
           profileEntry.inherited !== true
       );
@@ -366,8 +418,10 @@ export class PermissionsComponent implements OnInit {
   }
 
   public async goBackToFolder() {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.router.navigate(['../../library', this.currentNode.parentId], {
+    const nodeId = this.isFile()
+      ? this.currentNode.parentId
+      : this.currentNode.id;
+    this.router.navigate(['../../library', nodeId], {
       relativeTo: this.route,
     });
   }
@@ -396,8 +450,7 @@ export class PermissionsComponent implements OnInit {
           const permType = perm;
 
           if (
-            permType &&
-            permType.profile &&
+            permType?.profile &&
             permType.permission &&
             permType.profile.groupName
           ) {
@@ -434,12 +487,7 @@ export class PermissionsComponent implements OnInit {
         ) {
           const permType = perm;
 
-          if (
-            permType &&
-            permType.user &&
-            permType.permission &&
-            permType.user.userId
-          ) {
+          if (permType?.user && permType.permission && permType.user.userId) {
             if (
               Object.keys(this.userPermissionMap).indexOf(
                 permType.user.userId
@@ -460,7 +508,7 @@ export class PermissionsComponent implements OnInit {
 
   public isFile(): boolean {
     let result = false;
-    if (this.currentNode !== undefined && this.currentNode.type !== undefined) {
+    if (this.currentNode?.type !== undefined) {
       result = this.currentNode.type.indexOf('folder') === -1;
     }
     return result;
@@ -468,30 +516,24 @@ export class PermissionsComponent implements OnInit {
 
   public isFolder(): boolean {
     let result = false;
-    if (this.currentNode !== undefined && this.currentNode.type !== undefined) {
+    if (this.currentNode?.type !== undefined) {
       result = this.currentNode.type.indexOf('folder') !== -1;
     }
     return result;
   }
 
   public isLink(): boolean {
-    if (
-      this.currentNode !== undefined &&
-      this.currentNode.type &&
-      this.currentNode.properties
-    ) {
+    if (this.currentNode?.type && this.currentNode.properties) {
       return this.currentNode.properties.isUrl === 'true';
-    } else {
-      return false;
     }
+    return false;
   }
 
   isSharedSpaceLink(): boolean {
-    if (this.currentNode !== undefined && this.currentNode.type) {
+    if (this.currentNode?.type) {
       return this.currentNode.type.indexOf('folderlink') !== -1;
-    } else {
-      return false;
     }
+    return false;
   }
 
   // shared spaces
@@ -560,41 +602,34 @@ export class PermissionsComponent implements OnInit {
   }
 
   public getProfileTitle(groupName: string) {
-    if (this.perms.permissions && this.perms.permissions.profiles) {
+    if (this.perms.permissions?.profiles) {
       const result = this.perms.permissions.profiles.find(
         (profileEntry) =>
-          profileEntry !== undefined &&
-          profileEntry.profile !== undefined &&
+          profileEntry?.profile !== undefined &&
           profileEntry.profile.groupName === groupName
       );
 
-      if (result && result.profile) {
+      if (result?.profile) {
         return result.profile.title;
-      } else {
-        return undefined;
       }
-    } else {
       return undefined;
     }
+    return undefined;
   }
 
   public getDisplayUser(userid: string) {
-    if (this.perms.permissions && this.perms.permissions.users) {
+    if (this.perms.permissions?.users) {
       const result = this.perms.permissions.users.find(
         (userEntry) =>
-          userEntry !== undefined &&
-          userEntry.user !== undefined &&
-          userEntry.user.userId === userid
+          userEntry?.user !== undefined && userEntry.user.userId === userid
       );
 
-      if (result && result.user) {
+      if (result?.user) {
         return `${result.user.firstname} ${result.user.lastname}`;
-      } else {
-        return undefined;
       }
-    } else {
       return undefined;
     }
+    return undefined;
   }
 
   public splitProfilePermissions(groupName: string) {
@@ -608,9 +643,8 @@ export class PermissionsComponent implements OnInit {
   public splitPermissions(permissions: string) {
     if (permissions.indexOf('-') > -1) {
       return permissions.split('-');
-    } else {
-      return [permissions];
     }
+    return [permissions];
   }
 
   isForumNewsgroupsName(name: string, type: string) {

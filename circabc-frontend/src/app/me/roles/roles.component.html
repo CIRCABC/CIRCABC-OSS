@@ -1,36 +1,42 @@
 {{ 'label.my.roles' | transloco | cbcSetTitle }}
-<cbc-horizontal-loader
-  *ngIf="loadingMemberships || loadingCategories"
-></cbc-horizontal-loader>
+<h1>{{ 'label.my.roles' | transloco}}</h1>
+@if (loadingMemberships || loadingCategories) {
+<cbc-horizontal-loader />
+}
 <div class="wrap page-container">
-  <h1 *ngIf="isAdmin">
+  @if (isAdmin) {
+  <h1>
     {{ 'label.alfresco' | transloco }} {{ 'label.administrator' | transloco }}
   </h1>
-
-  <div *ngIf="isCicabcAdmin" class="flex">
+  } @if (isCicabcAdmin) {
+  <div class="flex">
     <div>
       <h1>
         {{ 'label.circabc' | transloco }} {{ 'label.administrator' | transloco
         }}
       </h1>
     </div>
-    <div>
-      <a
-        data-cy="create-user"
-        type="submit"
-        class="cta cta--plus"
-        (click)="showWizard = true"
-      >
-        {{ 'user.create.action' | transloco }}
-      </a>
-    </div>
   </div>
+  } @if (isAdmin || isCicabcAdmin) {
+  <div>
+    <a
+      tabindex="0"
+      data-cy="create-user"
+      type="submit"
+      class="cta cta--plus"
+      (click)="showWizard = true"
+    >
+      {{ 'user.create.action' | transloco }}
+    </a>
+  </div>
+  }
   <cbc-create-user
     [showWizard]="showWizard"
     (modalHide)="createUserWizardClosed($event)"
   ></cbc-create-user>
 
-  <section class="box box--alternate-lines" *ngIf="categories.length > 0">
+  @if (categories.length > 0) {
+  <section class="box box--alternate-lines">
     <header class="header">
       <span class="title"> {{ 'explorer.categories' | transloco }} </span>
     </header>
@@ -38,11 +44,8 @@
       <h3>{{ 'user.categories.roles.help' | transloco }}</h3>
       <ul>
         <li class="row"></li>
-        <li
-          data-cy="categories"
-          *ngFor="let category of categories"
-          class="row"
-        >
+        @for (category of categories; track category.id) {
+        <li data-cy="categories" class="row">
           <div class="profile">{{ 'label.administrator' | transloco }}</div>
           <span class="group-title"
             ><a [routerLink]="['/category', category.id, 'details']"
@@ -52,9 +55,11 @@
           <br />
           <span class="grey-name"> {{ category.name }} </span>
         </li>
+        }
       </ul>
     </div>
   </section>
+  }
   <section class="box box--alternate-lines">
     <header class="header">
       <span class="title"> {{ 'explorer.groups' | transloco }} </span>
@@ -63,10 +68,12 @@
       <h3>{{ 'user.groups.roles.help' | transloco }}</h3>
       <ul>
         <li class="row"></li>
-        <li data-cy="groups" *ngFor="let membership of memberships" class="row">
+        @for (membership of memberships; track membership) {
+        <li data-cy="groups" class="row">
           <div class="profile">
             {{ getNameOrTitle(membership.profile) }} &nbsp;|&nbsp;
             <a
+              tabindex="0"
               title="{{ 'label.leave' | transloco }}"
               (click)="showConfirmation(membership.interestGroup)"
             ></a>
@@ -79,9 +86,11 @@
           <br />
           <span class="grey-name"> {{ membership.interestGroup?.name }} </span>
         </li>
-        <li *ngIf="memberships.length === 0" class="row">
+        } @if (memberships.length === 0) {
+        <li class="row">
           <p>{{ 'label.nothing.to.display' | transloco }}</p>
         </li>
+        }
       </ul>
     </div>
   </section>
@@ -92,4 +101,4 @@
   [group]="selectedGroup"
   [username]="username"
   (membershipRemoved)="refresh()"
-></cbc-quit-group>
+/>

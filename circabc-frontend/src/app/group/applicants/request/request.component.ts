@@ -1,48 +1,56 @@
 import {
   Component,
-  EventEmitter,
-  Input,
   OnChanges,
   OnInit,
-  Output,
   SimpleChanges,
+  output,
+  input,
 } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
   FormGroup,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 
-import { TranslocoService } from '@ngneat/transloco';
+import { DatePipe } from '@angular/common';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { ActionType } from 'app/action-result';
 import {
-  Applicant,
+  type Applicant,
   ApplicantAction,
-  MembershipPostDefinition,
   MembersService,
+  MembershipPostDefinition,
   Profile,
   UserProfile,
 } from 'app/core/generated/circabc';
 import { UiMessageService } from 'app/core/message/ui-message.service';
 import { getErrorTranslation } from 'app/core/util';
+import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
+import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-request',
   templateUrl: './request.component.html',
-  styleUrls: ['./request.component.scss'],
+  styleUrl: './request.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    ReactiveFormsModule,
+    ControlMessageComponent,
+    SpinnerComponent,
+    DatePipe,
+    I18nPipe,
+    TranslocoModule,
+  ],
 })
 export class RequestComponent implements OnInit, OnChanges {
-  @Input()
-  applicant!: Applicant;
-  @Input()
-  availableProfiles: Profile[] = [];
-  @Input()
-  groupId!: string;
-  @Output()
-  readonly requestProcessed = new EventEmitter<Applicant>();
+  readonly applicant = input.required<Applicant>();
+  readonly availableProfiles = input<Profile[]>([]);
+  readonly groupId = input.required<string>();
+  readonly requestProcessed = output<Applicant>();
 
   public showAcceptForm = false;
   public showDeclineForm = false;
@@ -96,13 +104,14 @@ export class RequestComponent implements OnInit, OnChanges {
 
   prepareAccept() {
     this.showAcceptForm = true;
+    const availableProfiles = this.availableProfiles();
     if (
       this.inviteForm.controls.selectedProfile.value === '' &&
-      this.availableProfiles &&
-      this.availableProfiles.length > 0
+      availableProfiles &&
+      availableProfiles.length > 0
     ) {
       this.inviteForm.controls.selectedProfile.setValue(
-        this.availableProfiles[0].id
+        availableProfiles[0].id
       );
     }
   }
@@ -122,8 +131,8 @@ export class RequestComponent implements OnInit, OnChanges {
     const body: MembershipPostDefinition = {};
     body.userNotifications = this.inviteForm.value.notifyUser;
 
-    let profileTmp: Profile = this.availableProfiles[0];
-    for (const prof of this.availableProfiles) {
+    let profileTmp: Profile = this.availableProfiles()[0];
+    for (const prof of this.availableProfiles()) {
       if (prof.id === this.inviteForm.value.selectedProfile) {
         profileTmp = prof;
       }
@@ -131,25 +140,27 @@ export class RequestComponent implements OnInit, OnChanges {
 
     const up: UserProfile = {};
     up.profile = profileTmp;
-    up.user = this.applicant.user;
+    up.user = this.applicant().user;
 
     body.memberships = [up];
 
     const appAction: ApplicantAction = {};
     appAction.action = 'clean';
-    if (up && up.user) {
+    if (up?.user) {
       appAction.username = up.user.userId;
     }
 
     try {
-      await firstValueFrom(this.membersService.postMember(this.groupId, body));
-
       await firstValueFrom(
-        this.membersService.putApplicant(this.groupId, appAction, 'clean')
+        this.membersService.postMember(this.groupId(), body)
       );
 
-      this.requestProcessed.emit(this.applicant);
-    } catch (error) {
+      await firstValueFrom(
+        this.membersService.putApplicant(this.groupId(), appAction, 'clean')
+      );
+
+      this.requestProcessed.emit(this.applicant());
+    } catch (_error) {
       const res = this.translateService.translate(
         getErrorTranslation(ActionType.ADD_MEMBERSHIPS)
       );
@@ -164,37 +175,37 @@ export class RequestComponent implements OnInit, OnChanges {
 
     const appAction: ApplicantAction = {};
     appAction.action = 'decline';
-    if (this.applicant && this.applicant.user) {
-      appAction.username = this.applicant.user.userId;
+    const applicant = this.applicant();
+    if (applicant?.user) {
+      appAction.username = applicant.user.userId;
     }
     appAction.message = this.declineForm.value.declineText;
     await firstValueFrom(
-      this.membersService.putApplicant(this.groupId, appAction, 'decline')
+      this.membersService.putApplicant(this.groupId(), appAction, 'decline')
     );
-    this.requestProcessed.emit(this.applicant);
+    this.requestProcessed.emit(applicant);
     this.processing = false;
   }
   get firstname(): string {
-    if (
-      this.applicant &&
-      this.applicant.user &&
-      this.applicant.user.firstname
-    ) {
-      return this.applicant.user.firstname;
+    const applicant = this.applicant();
+    if (applicant?.user?.firstname) {
+      return applicant.user.firstname;
     }
     return '';
   }
 
   get lastname(): string {
-    if (this.applicant && this.applicant.user && this.applicant.user.lastname) {
-      return this.applicant.user.lastname;
+    const applicant = this.applicant();
+    if (applicant?.user?.lastname) {
+      return applicant.user.lastname;
     }
     return '';
   }
 
   get email(): string {
-    if (this.applicant && this.applicant.user && this.applicant.user.email) {
-      return this.applicant.user.email;
+    const applicant = this.applicant();
+    if (applicant?.user?.email) {
+      return applicant.user.email;
     }
     return '';
   }

@@ -47,4 +47,8 @@
 		<error-code>404</error-code>
 		<location>/index.html</location>
 	</error-page>
+	<mime-mapping>
+		<extension>mjs</extension>
+		<mime-type>application/javascript</mime-type>
+	</mime-mapping>
 </web-app>

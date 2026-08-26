@@ -180,17 +180,13 @@ export class PermissionEvaluator {
     const result = this.strongerPermissions.get(permission);
     if (result) {
       return result;
-    } else {
-      throw new Error(`unsupported permission type ${permission}`);
     }
+    throw new Error(`unsupported permission type ${permission}`);
   }
 
   private isOwner(node: ModelNode): boolean {
     const userName = this.loginService.getCurrentUsername();
-    if (node && node.properties && node.properties.owner) {
-      return userName === node.properties.owner;
-    } else {
-      return false;
-    }
+
+    return userName === node?.properties?.owner;
   }
 }

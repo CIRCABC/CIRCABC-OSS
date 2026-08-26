@@ -1,65 +1,67 @@
 import {
   Component,
   ElementRef,
-  EventEmitter,
   HostListener,
-  Input,
   OnInit,
-  Output,
+  output,
+  input,
 } from '@angular/core';
 
 import { User, UserService } from 'app/core/generated/circabc';
+import { DownloadPipe } from 'app/shared/pipes/download.pipe';
+import { SecurePipe } from 'app/shared/pipes/secure.pipe';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-user-card',
   templateUrl: './user-card.component.html',
-  styleUrls: ['./user-card.component.scss'],
+  styleUrl: './user-card.component.scss',
   preserveWhitespaces: true,
+  imports: [DownloadPipe, SecurePipe],
 })
 export class UserCardComponent implements OnInit {
-  @Input()
-  userId: string | undefined | null;
-  @Input()
-  rightSide = false;
-  @Input()
-  disabled = false;
-  @Output()
-  public readonly clickOutside = new EventEmitter<MouseEvent>();
+  readonly userId = input<string | null>();
+  readonly rightSide = input(false);
+  readonly disabled = input(false);
+  public readonly clickOutside = output<MouseEvent>();
 
   public user!: User;
   public visible = false;
   private elementRef: ElementRef;
   public fullName = '';
 
-  constructor(private userService: UserService, myElement: ElementRef) {
+  constructor(
+    private userService: UserService,
+    myElement: ElementRef
+  ) {
     this.elementRef = myElement;
   }
 
   async ngOnInit() {
-    if (this.userId === undefined || this.userId === null) {
+    const userId = this.userId();
+    if (userId === undefined || userId === null) {
       this.fullName = 'unknown';
       return;
     }
-    if (this.userId !== 'System') {
+    if (userId !== 'System') {
       try {
-        this.user = await firstValueFrom(this.userService.getUser(this.userId));
+        this.user = await firstValueFrom(this.userService.getUser(userId));
         if (this.user.firstname !== '' && this.user.lastname !== '') {
           this.fullName = `${this.user.firstname} ${this.user.lastname}`;
         } else {
-          this.fullName = `[${this.userId}]`;
+          this.fullName = `[${userId}]`;
         }
       } catch (error) {
         console.error(
-          `Error getting info about user '${this.userId}'. User card will not be displayed.`
+          `Error getting info about user '${userId}'. User card will not be displayed.`
         );
         console.error(error);
-        if (this.userId) {
-          this.fullName = this.userId;
+        if (userId) {
+          this.fullName = userId;
         }
       }
     } else {
-      this.fullName = this.userId;
+      this.fullName = userId;
     }
   }
 
@@ -77,7 +79,7 @@ export class UserCardComponent implements OnInit {
   }
 
   public toggleVisible() {
-    if (!this.disabled) {
+    if (!this.disabled()) {
       this.visible = !this.visible;
     }
   }

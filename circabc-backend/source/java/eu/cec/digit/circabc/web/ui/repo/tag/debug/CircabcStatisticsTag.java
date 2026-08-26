@@ -29,10 +29,10 @@ import org.alfresco.web.ui.common.tag.debug.BaseDebugTag;
  */
 public class CircabcStatisticsTag extends BaseDebugTag {
 
-    /**
-     * @see javax.faces.webapp.UIComponentTag#getComponentType()
-     */
-    public String getComponentType() {
-        return "eu.cec.digit.circabc.faces.debug.CircabcStatistics";
-    }
+  /**
+   * @see javax.faces.webapp.UIComponentTag#getComponentType()
+   */
+  public String getComponentType() {
+    return "eu.cec.digit.circabc.faces.debug.CircabcStatistics";
+  }
 }

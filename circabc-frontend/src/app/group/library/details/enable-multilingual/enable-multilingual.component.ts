@@ -1,12 +1,13 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, Input, OnInit, output, input } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
   FormGroup,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
 import {
   ActionEmitterResult,
@@ -20,22 +21,31 @@ import {
 } from 'app/core/generated/circabc';
 import { UiMessageService } from 'app/core/message/ui-message.service';
 import { getErrorTranslation } from 'app/core/util';
+import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
+import { LangSelectorComponent } from 'app/shared/lang/lang-selector.component';
+import { ModalComponent } from 'app/shared/modal/modal.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-enable-multilingual',
   templateUrl: './enable-multilingual.component.html',
   preserveWhitespaces: true,
+  imports: [
+    ModalComponent,
+    ReactiveFormsModule,
+    ControlMessageComponent,
+    LangSelectorComponent,
+    TranslocoModule,
+  ],
 })
 export class EnableMultilingualComponent implements OnInit {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   showModal = false;
-  @Input()
-  targetNode!: ModelNode;
-  @Output()
-  readonly modalCanceled = new EventEmitter<ActionEmitterResult>();
-  @Output()
-  readonly mutlilingualEnabled = new EventEmitter<ActionEmitterResult>();
+  readonly targetNode = input.required<ModelNode>();
+  readonly modalCanceled = output<ActionEmitterResult>();
+  readonly mutlilingualEnabled = output<ActionEmitterResult>();
 
   public enableMultilingualForm!: FormGroup;
   public processing = false;
@@ -60,7 +70,8 @@ export class EnableMultilingualComponent implements OnInit {
   }
 
   async enableMultilingual() {
-    if (this.targetNode.id) {
+    const targetNode = this.targetNode();
+    if (targetNode.id) {
       this.processing = true;
       const data: MultilingualAspectMetadata = {};
       data.pivotLang = this.enableMultilingualForm.value.lang;
@@ -71,10 +82,10 @@ export class EnableMultilingualComponent implements OnInit {
 
       try {
         await firstValueFrom(
-          this.contentService.postMultilingualAspect(this.targetNode.id, data)
+          this.contentService.postMultilingualAspect(targetNode.id, data)
         );
         result.result = ActionResult.SUCCEED;
-      } catch (error) {
+      } catch (_error) {
         result.result = ActionResult.FAILED;
         const txt = this.translateService.translate(
           getErrorTranslation(ActionType.ENABLE_MULTILINGUAL)

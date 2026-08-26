@@ -10,52 +10,52 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "member")
 public class BulkImportUser {
 
-    String userName = null;
-    String lastName = null;
-    String email = null;
-    String profile = null;
+  String userName = null;
+  String lastName = null;
+  String email = null;
+  String profile = null;
 
-    /** @return the userName */
-    public String getUserName() {
-        return userName;
-    }
+  /** @return the userName */
+  public String getUserName() {
+    return userName;
+  }
 
-    /** @param userName the userName to set */
-    @XmlAttribute(name = "username")
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
+  /** @param userName the userName to set */
+  @XmlAttribute(name = "username")
+  public void setUserName(String userName) {
+    this.userName = userName;
+  }
 
-    /** @return the lastName */
-    public String getLastName() {
-        return lastName;
-    }
+  /** @return the lastName */
+  public String getLastName() {
+    return lastName;
+  }
 
-    /** @param lastName the lastName to set */
-    @XmlAttribute(name = "lastname")
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
+  /** @param lastName the lastName to set */
+  @XmlAttribute(name = "lastname")
+  public void setLastName(String lastName) {
+    this.lastName = lastName;
+  }
 
-    /** @return the email */
-    public String getEmail() {
-        return email;
-    }
+  /** @return the email */
+  public String getEmail() {
+    return email;
+  }
 
-    /** @param email the email to set */
-    @XmlAttribute(name = "email")
-    public void setEmail(String email) {
-        this.email = email;
-    }
+  /** @param email the email to set */
+  @XmlAttribute(name = "email")
+  public void setEmail(String email) {
+    this.email = email;
+  }
 
-    /** @return the profile */
-    public String getProfile() {
-        return profile;
-    }
+  /** @return the profile */
+  public String getProfile() {
+    return profile;
+  }
 
-    /** @param profile the profile to set */
-    @XmlAttribute(name = "profile")
-    public void setProfile(String profile) {
-        this.profile = profile;
-    }
+  /** @param profile the profile to set */
+  @XmlAttribute(name = "profile")
+  public void setProfile(String profile) {
+    this.profile = profile;
+  }
 }

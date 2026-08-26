@@ -1,0 +1,143 @@
+Index: src/test/java/org/apache/commons/validator/routines/DomainValidatorTest.java
+===================================================================
+--- src/test/java/org/apache/commons/validator/routines/DomainValidatorTest.java	(revision 1082238)
++++ src/test/java/org/apache/commons/validator/routines/DomainValidatorTest.java	(working copy)
+@@ -45,6 +45,9 @@
+         assertTrue("single-character domain label should validate", validator.isValid("z.com"));
+ 
+         assertTrue("i.have.an-example.domain.name should validate", validator.isValid("i.have.an-example.domain.name"));
++        
++        assertTrue("localhost.localdomain should validate", validator.isValid("localhost.localdomain"));
++        assertTrue("localhost should validate", validator.isValid("localhost"));
+     }
+ 
+     public void testInvalidDomains() {
+Index: src/test/java/org/apache/commons/validator/routines/EmailValidatorTest.java
+===================================================================
+--- src/test/java/org/apache/commons/validator/routines/EmailValidatorTest.java	(revision 1082238)
++++ src/test/java/org/apache/commons/validator/routines/EmailValidatorTest.java	(working copy)
+@@ -21,6 +21,8 @@
+ import junit.framework.TestSuite;
+ 
+ import org.apache.commons.validator.ResultPair;
++import org.apache.commons.validator.ValidatorException;
++import org.apache.commons.validator.ValueBean;
+ 
+ /**
+  * Performs Validation Test for e-mail validations.
+@@ -188,6 +190,21 @@
+         }
+         assertFalse("Test control char 127", validator.isValid("foo" + ((char)127) + "bar@domain.com"));
+     }
++    
++    /**
++     * Test that @localhost and @localhost.localdomain
++     *  addresses are correctly declared as valid. 
++     */
++    public void testEmailLocalhost() throws ValidatorException {
++       assertTrue(
++             "@localhost.localdomain should be accepted but wasn't",
++             validator.isValid("joe@localhost.localdomain")
++       );
++       assertTrue(
++             "@localhost should be accepted but wasn't",
++             validator.isValid("joe@localhost")
++       );
++    }
+ 
+     /**
+      * Write this test according to parts of RFC, as opposed to the type of character
+Index: src/test/java/org/apache/commons/validator/EmailTest.java
+===================================================================
+--- src/test/java/org/apache/commons/validator/EmailTest.java	(revision 1082238)
++++ src/test/java/org/apache/commons/validator/EmailTest.java	(working copy)
+@@ -313,6 +313,18 @@
+     }
+ 
+     /**
++     * Test that @localhost and @localhost.localdomain
++     *  addresses are correctly declared as valid. 
++     */
++    public void testEmailLocalhost() throws ValidatorException {
++       ValueBean info = new ValueBean();
++       info.setValue("joe@localhost");
++       valueTest(info, true);
++       info.setValue("joe@localhost.localdomain");
++       valueTest(info, true);
++    }
++
++    /**
+      * These test values derive directly from RFC 822 &
+      * Mail::RFC822::Address & RFC::RFC822::Address perl test.pl
+      * For traceability don't combine these test values with other tests.
+@@ -385,9 +397,9 @@
+         new ResultPair("abigail@", false),
+         new ResultPair("@example.com", false),
+         new ResultPair("phrase: abigail@example.com abigail@example.com ;", false),
+-        new ResultPair("invalid£char@example.com", false)
++        new ResultPair("invalidï¿½char@example.com", false)
+     };
+-
++    
+     /**
+      * Write this test based on perl Mail::RFC822::Address
+      * which takes its example email address directly from RFC822
+Index: src/main/java/org/apache/commons/validator/routines/DomainValidator.java
+===================================================================
+--- src/main/java/org/apache/commons/validator/routines/DomainValidator.java	(revision 1082238)
++++ src/main/java/org/apache/commons/validator/routines/DomainValidator.java	(working copy)
+@@ -102,7 +102,11 @@
+         if (groups != null && groups.length > 0) {
+             return isValidTld(groups[0]);
+         } else {
+-            return false;
++            if ("localhost".equals(domain)) {
++               return true;
++            } else {
++               return false;
++            }
+         }
+     }
+ 
+@@ -116,7 +120,8 @@
+     public boolean isValidTld(String tld) {
+         return isValidInfrastructureTld(tld)
+                 || isValidGenericTld(tld)
+-                || isValidCountryCodeTld(tld);
++                || isValidCountryCodeTld(tld)
++                || isValidLocalTld(tld);
+     }
+ 
+     /**
+@@ -152,6 +157,17 @@
+         return COUNTRY_CODE_TLD_LIST.contains(chompLeadingDot(ccTld.toLowerCase()));
+     }
+ 
++    /**
++     * Returns true if the specified <code>String</code> matches any
++     * widely used "local" domains (localhost or localdomain). Leading dots are
++     *  ignored if present. The search is case-sensitive.
++     * @param iTld the parameter to check for local TLD status
++     * @return true if the parameter is an local TLD
++     */
++    public boolean isValidLocalTld(String iTld) {
++        return LOCAL_TLD_LIST.contains(chompLeadingDot(iTld.toLowerCase()));
++    }
++
+     private String chompLeadingDot(String str) {
+         if (str.startsWith(".")) {
+             return str.substring(1);
+@@ -445,7 +461,13 @@
+         "zw",                 // Zimbabwe
+     };
+ 
++    private static final String[] LOCAL_TLDS = new String[] {
++       "localhost",           // RFC2606 defined
++       "localdomain"          // Also widely used as localhost.localdomain
++   };
++
+     private static final List INFRASTRUCTURE_TLD_LIST = Arrays.asList(INFRASTRUCTURE_TLDS);
+     private static final List GENERIC_TLD_LIST = Arrays.asList(GENERIC_TLDS);
+     private static final List COUNTRY_CODE_TLD_LIST = Arrays.asList(COUNTRY_CODE_TLDS);
++    private static final List LOCAL_TLD_LIST = Arrays.asList(LOCAL_TLDS);
+ }

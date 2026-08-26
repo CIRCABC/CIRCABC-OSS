@@ -1,8 +1,10 @@
-<span class="hint" [class.no-float]="!floatEnable">
-  <a (click)="shown = !shown"
+<span class="hint" [class.no-float]="!floatEnable()">
+  <a tabindex="0" (click)="shown = !shown"
     ><img src="img/icon-help-blue.png" alt="Help"
   /></a>
   <span class="hinttext" [class.show]="shown"
-    ><h4 *ngIf="title">{{ title }}</h4> <span [innerHtml]="text"></span
+    >@if (title) {
+    <h4>{{ title }}</h4>
+    } <span [innerHtml]="text()"></span
   ></span>
 </span>

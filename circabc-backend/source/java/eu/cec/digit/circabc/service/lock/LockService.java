@@ -20,58 +20,56 @@ package eu.cec.digit.circabc.service.lock;
  *
  */
 public interface LockService {
+  /**
+   * Lock item in case of error unlike tryLock method it throw IllegalStateException
+   *
+   * @param item
+   */
+  void lock(String item);
 
-    /**
-     * Lock item in case of error unlike tryLock method it throw IllegalStateException
-     *
-     * @param item
-     */
-    void lock(String item);
+  /**
+   * Lock item in way that is not removed by UnlockJob,
+   * in case of error unlike tryLock method it throw IllegalStateException
+   *
+   * @param item
+   */
+  void lockForever(String item);
 
-    /**
-     * Lock item in way that is not removed by UnlockJob,
-     * in case of error unlike tryLock method it throw IllegalStateException
-     *
-     * @param item
-     */
-    void lockForever(String item);
+  /**
+   * Unlock item if it is locked , otherwise do nothing
+   *
+   * @param item case insensitive name of lock item
+   */
+  void unlock(String item);
 
-    /**
-     * Unlock item if it is locked , otherwise do nothing
-     *
-     * @param item case insensitive name of lock item
-     */
-    void unlock(String item);
+  /**
+   * Check if item is already locked
+   *
+   * @param item case insensitive name of lock item
+   * @return true if item is already locked false otherwise
+   */
+  boolean isLocked(String item);
 
-    /**
-     * Check if item is already locked
-     *
-     * @param item case insensitive name of lock item
-     * @return true if item is already locked false otherwise
-     */
-    boolean isLocked(String item);
+  /**
+   * Try to lock item
+   *
+   * @param item case insensitive name of lock item
+   * @return true if item cuseed to locked item false otherwise
+   */
+  boolean tryLock(String item);
 
-    /**
-     * Try to lock item
-     *
-     * @param item case insensitive name of lock item
-     * @return true if item cuseed to locked item false otherwise
-     */
-    boolean tryLock(String item);
+  /**
+   * Try to lock item in way that is not removed by UnlockJob
+   *
+   * @param item case insensitive name of lock item
+   * @return true if item cuseed to locked item false otherwise
+   */
+  boolean tryLockForever(String item);
 
-
-    /**
-     * Try to lock item in way that is not removed by UnlockJob
-     *
-     * @param item case insensitive name of lock item
-     * @return true if item cuseed to locked item false otherwise
-     */
-    boolean tryLockForever(String item);
-
-    /**
-     * Unlock all locks that are older then @param hours
-     *
-     * @param hours nomber of hours
-     */
-    void unlockAll(int hours);
+  /**
+   * Unlock all locks that are older then @param hours
+   *
+   * @param hours nomber of hours
+   */
+  void unlockAll(int hours);
 }

@@ -1,39 +1,70 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
   FormControl,
   FormGroup,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import {
   ContentService,
   DynamicPropertiesService,
   DynamicPropertyDefinition,
   Node as ModelNode,
   NodesService,
+  PermissionDefinition,
+  PermissionService,
   SpaceService,
 } from 'app/core/generated/circabc';
-import { ValidationService } from 'app/core/validation.service';
-import { firstValueFrom } from 'rxjs';
+import { fileNameValidator } from 'app/core/validation.service';
+import { EncodingInputComponent } from 'app/group/library/input/encoding-input.component';
+import { MimetypeInputComponent } from 'app/group/library/input/mimetype-input.component';
+import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
+import { MultilingualInputComponent } from 'app/shared/input/multilingual-input.component';
+import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
+import { environment } from 'environments/environment';
+import { SharedModule } from 'primeng/api';
+import { DatePicker } from 'primeng/datepicker';
+import { EditorModule } from 'primeng/editor';
+import { firstValueFrom, Subscription } from 'rxjs';
+import { ConfirmDialogComponent } from 'app/shared/confirm-dialog/confirm-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
+import { setupCalendarDateHandling } from 'app/core/util/date-calendar-util';
 
 @Component({
   selector: 'cbc-edit-node',
   templateUrl: './edit-node.component.html',
-  styleUrls: ['./edit-node.component.scss'],
+  styleUrl: './edit-node.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    ReactiveFormsModule,
+    ControlMessageComponent,
+    MultilingualInputComponent,
+    MatSlideToggleModule,
+    DatePicker,
+    MimetypeInputComponent,
+    EncodingInputComponent,
+    EditorModule,
+    SharedModule,
+    RouterLink,
+    I18nPipe,
+    TranslocoModule,
+  ],
 })
-export class EditNodeComponent implements OnInit {
+export class EditNodeComponent implements OnInit, OnDestroy {
   public node!: ModelNode;
   public editNodeForm!: FormGroup;
   public dynamicPropertiesModel: DynamicPropertyDefinition[] = [];
-
+  public notify = new FormControl(true, { nonNullable: true });
   public selectedTab = 'GeneralInformation';
+  private dateSubscription!: Subscription;
 
   constructor(
     private fb: FormBuilder,
@@ -43,13 +74,15 @@ export class EditNodeComponent implements OnInit {
     private spaceService: SpaceService,
     private contentService: ContentService,
     private translateService: TranslocoService,
-    private dynamicPropertiesService: DynamicPropertiesService
+    private dynamicPropertiesService: DynamicPropertiesService,
+    private permissionService: PermissionService,
+    private dialog: MatDialog
   ) {}
 
   public ngOnInit() {
     this.editNodeForm = this.fb.group(
       {
-        name: ['', [Validators.required, ValidationService.fileNameValidator]],
+        name: ['', [Validators.required, fileNameValidator]],
         title: [{ EN: '' }],
         description: [{ EN: '' }],
         author: [],
@@ -67,10 +100,25 @@ export class EditNodeComponent implements OnInit {
         updateOn: 'change',
       }
     );
+
+    this.dateSubscription = setupCalendarDateHandling(
+      this.editNodeForm.controls.expirationDate
+    );
+
+    if (environment.circabcRelease === 'olaf') {
+      this.editNodeForm.controls.expirationDateActived.disable();
+    }
+
     this.route.params.subscribe(async (params) => {
       await this.loadDynamicPropertiesModel(params.id);
       await this.loadNode(params.nodeId);
     });
+  }
+
+  ngOnDestroy() {
+    if (this.dateSubscription) {
+      this.dateSubscription.unsubscribe();
+    }
   }
 
   public async loadDynamicPropertiesModel(groupId: string) {
@@ -169,21 +217,20 @@ export class EditNodeComponent implements OnInit {
 
   public isFile(): boolean {
     let result = false;
-    if (this.node !== undefined && this.node.type !== undefined) {
+    if (this.node?.type !== undefined) {
       result = this.node.type.indexOf('folder') === -1;
     }
     return result;
   }
 
   public isLink(): boolean {
-    if (this.node !== undefined && this.node.type && this.node.properties) {
+    if (this.node?.type && this.node.properties) {
       return (
         this.node.properties.mimetype === 'text/html' &&
         this.node.properties.url !== ''
       );
-    } else {
-      return false;
     }
+    return false;
   }
 
   public get currentLanguage(): string {
@@ -191,6 +238,19 @@ export class EditNodeComponent implements OnInit {
   }
 
   public async updateProperties() {
+    if (this.isExpired() && this.editNodeForm.controls.expirationDateActived) {
+      return;
+    }
+    if (
+      environment.circabcRelease === 'echa' &&
+      (this.editNodeForm.value.security === 'SENSITIVE' ||
+        this.editNodeForm.value.security === 'SPECIAL_HANDLING')
+    ) {
+      if (!(await this.showDialogConfirmMsg())) {
+        return;
+      }
+    }
+
     const tmpNode: ModelNode = {
       id: this.node.id,
       name: this.editNodeForm.value.name,
@@ -200,23 +260,16 @@ export class EditNodeComponent implements OnInit {
     };
     const isFile = this.isFile();
 
-    if (!isFile) {
+    if (isFile) {
       tmpNode.properties = {
         expiration_date:
-          this.editNodeForm.value.expirationDate === undefined ||
-          this.editNodeForm.value.expirationDate === '' ||
-          !this.editNodeForm.value.expirationDateActived
-            ? 'null'
-            : this.editNodeForm.value.expirationDate,
-      };
-    } else {
-      tmpNode.properties = {
-        expiration_date:
-          this.editNodeForm.value.expirationDate === undefined ||
-          this.editNodeForm.value.expirationDate === '' ||
-          !this.editNodeForm.value.expirationDateActived
-            ? 'null'
-            : this.editNodeForm.value.expirationDate,
+          environment.circabcRelease === 'olaf'
+            ? this.editNodeForm.value.expirationDate
+            : this.editNodeForm.value.expirationDate === undefined ||
+                this.editNodeForm.value.expirationDate === '' ||
+                !this.editNodeForm.value.expirationDateActived
+              ? 'null'
+              : this.editNodeForm.value.expirationDate,
         issue_date:
           this.editNodeForm.value.issueDate === undefined
             ? ''
@@ -265,16 +318,44 @@ export class EditNodeComponent implements OnInit {
           }
         }
       }
+    } else {
+      tmpNode.properties = {
+        expiration_date:
+          !this.editNodeForm.value.expirationDateActived ||
+          this.editNodeForm.value.expirationDate === undefined ||
+          this.editNodeForm.value.expirationDate === '' ||
+          !this.editNodeForm.value.expirationDateActived
+            ? null
+            : this.editNodeForm.value.expirationDate,
+      };
     }
 
     if (isFile) {
       await firstValueFrom(
-        this.contentService.putContent(this.node.id as string, tmpNode)
+        this.contentService.putContent(
+          this.node.id as string,
+          tmpNode,
+          this.notify.value
+        )
       );
     } else {
       await firstValueFrom(
-        this.spaceService.putSpace(this.node.id as string, tmpNode)
+        this.spaceService.putSpace(
+          this.node.id as string,
+          tmpNode,
+          this.notify.value
+        )
       );
+    }
+
+    if (
+      environment.circabcRelease === 'echa' &&
+      (this.editNodeForm.value.security === 'SENSITIVE' ||
+        this.editNodeForm.value.security === 'SPECIAL_HANDLING')
+    ) {
+      if (this.node.id) {
+        await this.cutInheritance(this.node.id);
+      }
     }
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -350,20 +431,59 @@ export class EditNodeComponent implements OnInit {
     const controlValue = this.editNodeForm.value[`dynAttr${dynprop.index}`];
     if (controlValue) {
       return controlValue.indexOf(prop) !== -1;
-    } else {
-      return false;
     }
+    return false;
   }
 
   public compareFn(optionOne?: string, optionTwo?: string): boolean {
     if (optionOne && optionTwo) {
       return optionOne === optionTwo;
-    } else {
-      return false;
     }
+    return false;
   }
 
   public isExpired() {
-    return this.editNodeForm.value.expirationDate < Date.now();
+    if (
+      this.editNodeForm.controls.expirationDateActived.value &&
+      this.editNodeForm.controls.expirationDate.value < Date.now()
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  public expirationDateRequired() {
+    return (
+      this.editNodeForm.controls.expirationDateActived.value &&
+      (this.editNodeForm.controls.expirationDate.value === null ||
+        this.editNodeForm.controls.expirationDate.value === undefined)
+    );
+  }
+
+  private async cutInheritance(nodeRef: string) {
+    const body: PermissionDefinition = {
+      inherited: false,
+      permissions: {},
+    };
+
+    await firstValueFrom(this.permissionService.putPermission(nodeRef, body));
+  }
+
+  private async showDialogConfirmMsg() {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        messageTranslated: this.translateService.translate(
+          'label.dialog.alert.snc.edit',
+          {
+            link: `<a href="https://ec.europa.eu/transparency/documents-register/detail?ref=C(2019)1904&lang=en" target="_blank">C(2019)1904</a>`,
+          }
+        ),
+        labelOK: 'label.confirm',
+        title: 'label.dialog.alert.snc.edit.title',
+        layoutStyle: 'SNCNotification',
+      },
+    });
+
+    return firstValueFrom(dialogRef.afterClosed());
   }
 }

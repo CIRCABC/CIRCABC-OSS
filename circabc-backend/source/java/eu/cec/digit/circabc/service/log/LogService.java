@@ -17,70 +17,90 @@
 package eu.cec.digit.circabc.service.log;
 
 import eu.cec.digit.circabc.repo.log.*;
-import org.alfresco.service.cmr.repository.NodeRef;
-
 import java.util.Date;
 import java.util.List;
+import org.alfresco.service.cmr.repository.NodeRef;
 
 // Logger
 
 public interface LogService {
+  void log(LogRecord logRecord);
 
-    void log(LogRecord logRecord);
+  void logRest(LogRestRecord logRestRecord);
 
-    void logRest(LogRestRecord logRestRecord);
+  void logBatch(List<LogRecord> logRecords);
 
-    void logBatch(List<LogRecord> logRecords);
+  List<LogActivityDAO> getActivities();
 
-    List<LogActivityDAO> getActivities();
+  List<LogActivityDAO> getActivitiesById(long igID);
 
-    List<LogActivityDAO> getActivitiesById(long igID);
+  List<LogSearchResultDAO> search(
+    long igID,
+    String user,
+    String service,
+    String method,
+    Date fromDate,
+    Date toDate
+  );
 
-    List<LogSearchResultDAO> search(
-            long igID, String user, String service, String method, Date fromDate, Date toDate);
+  int searchCount(
+    long igID,
+    String user,
+    String service,
+    String method,
+    Date fromDate,
+    Date toDate
+  );
 
-    int searchCount(
-            long igID, String user, String service, String method, Date fromDate, Date toDate);
+  List<LogSearchResultDAO> searchPage(
+    long igID,
+    String user,
+    String service,
+    String method,
+    Date fromDate,
+    Date toDate,
+    int startRecord,
+    int pageSize
+  );
 
-    List<LogSearchResultDAO> searchPage(
-            long igID,
-            String user,
-            String service,
-            String method,
-            Date fromDate,
-            Date toDate,
-            int startRecord,
-            int pageSize);
+  List<LogSearchResultDAO> getHistory(long itemID, String uuid);
 
-    List<LogSearchResultDAO> getHistory(long itemID, String uuid);
+  long countHistory(long itemID, String uuid);
 
-    long countHistory(long itemID , String uuid);
+  List<LogSearchResultDAO> getHistory(
+    long itemID,
+    String uuid,
+    long startRecord,
+    long pageSize
+  );
 
-    List<LogSearchResultDAO> getHistory(long itemID, String uuid, long startRecord, long pageSize);
+  void deleteInterestgroupLog(long igID);
 
-    void deleteInterestgroupLog(long igID);
+  Date getLastLoginDateOfUser(String username);
 
-    Date getLastLoginDateOfUser(String username);
+  List<LogCountResultDAO> getNumberOfActionsYesterdayPerHour();
 
-    List<LogCountResultDAO> getNumberOfActionsYesterdayPerHour();
+  List<ActivityCountDAO> getListOfActivityCountForInterestGroup(Long igDbNode);
 
-    List<ActivityCountDAO> getListOfActivityCountForInterestGroup(Long igDbNode);
+  Date getLastAccessOnInterestGroup(long igID);
 
-    Date getLastAccessOnInterestGroup(long igID);
+  Date getLastUpdateOnInterestGroup(long igID);
 
-    Date getLastUpdateOnInterestGroup(long igID);
+  Date getLastUpdateDateOnInterestGroupForStatistics(long igID);
 
-    List<UserActionLogDAO> getRecentUserDownloads(String userId, int i);
+  List<UserActionLogDAO> getRecentUserDownloads(String userId, int i);
 
-    List<UserActionLogDAO> getRecentUserUploads(String userId, int i);
+  List<UserActionLogDAO> getRecentUserUploads(String userId, int i);
 
-    List<Long> getUserDashboardActivityIds();
+  List<Long> getUserDashboardActivityIds();
 
-    List<UserActionLogDAO> getUserDashboardActivities(UserNewsFeedRequest request);
+  List<UserActionLogDAO> getUserDashboardActivities(
+    UserNewsFeedRequest request
+  );
 
-    List<String> getVisitedIGRestLogs(String username);
+  List<String> getVisitedIGRestLogs(String username);
 
-    void processRestLog();
+  void processRestLog();
 
-    LogRecord prepareLogUploadRequest(NodeRef nodeRef, String originalFileName);
+  LogRecord prepareLogUploadRequest(NodeRef nodeRef, String originalFileName);
 }

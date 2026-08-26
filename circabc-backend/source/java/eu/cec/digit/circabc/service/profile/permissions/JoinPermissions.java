@@ -26,58 +26,59 @@ import java.util.HashSet;
  * @author Yanick Pignot
  */
 public enum JoinPermissions {
-    JOIN("Join"),
-    NOJOIN("NoJoin");
+  JOIN("Join"),
+  NOJOIN("NoJoin");
 
-    static HashSet<JoinPermissions> joinPermissions = null;
+  static HashSet<JoinPermissions> joinPermissions = null;
 
-    String joinPermissionString;
+  String joinPermissionString;
 
-    JoinPermissions(String permission) {
-        joinPermissionString = permission;
+  JoinPermissions(String permission) {
+    joinPermissionString = permission;
+  }
+
+  protected static void init() {
+    joinPermissions = new HashSet<>();
+    Collections.addAll(joinPermissions, JoinPermissions.values());
+  }
+
+  public static JoinPermissions withPermissionString(String permiString) {
+    JoinPermissions match = null;
+
+    for (JoinPermissions permission : getPermissions()) {
+      if (permission.joinPermissionString.equals(permiString)) {
+        match = permission;
+        break;
+      }
     }
-
-    protected static void init() {
-        joinPermissions = new HashSet<>();
-        Collections.addAll(joinPermissions, JoinPermissions.values());
+    if (match == null) {
+      throw new IllegalArgumentException(
+        "No enum const class with permission string " + permiString
+      );
+    } else {
+      return match;
     }
+  }
 
-    public static JoinPermissions withPermissionString(String permiString) {
-        JoinPermissions match = null;
-
-        for (JoinPermissions permission : getPermissions()) {
-            if (permission.joinPermissionString.equals(permiString)) {
-                match = permission;
-                break;
-            }
-        }
-        if (match == null) {
-            throw new IllegalArgumentException(
-                    "No enum const class with permission string " + permiString);
-        } else {
-            return match;
-        }
+  /**
+   * return an List representing the permission list.
+   *
+   * @return List of JoinPermissions
+   */
+  public static HashSet<JoinPermissions> getPermissions() {
+    if (joinPermissions == null) {
+      init();
     }
+    return (HashSet<JoinPermissions>) joinPermissions.clone();
+  }
 
-    /**
-     * return an List representing the permission list.
-     *
-     * @return List of JoinPermissions
-     */
-    public static HashSet<JoinPermissions> getPermissions() {
-        if (joinPermissions == null) {
-            init();
-        }
-        return (HashSet<JoinPermissions>) joinPermissions.clone();
+  /**
+   * Return the string value associated to the permission
+   */
+  public String toString() {
+    if (joinPermissions == null) {
+      init();
     }
-
-    /**
-     * Return the string value associated to the permission
-     */
-    public String toString() {
-        if (joinPermissions == null) {
-            init();
-        }
-        return joinPermissionString;
-    }
+    return joinPermissionString;
+  }
 }

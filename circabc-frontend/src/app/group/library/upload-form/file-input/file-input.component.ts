@@ -1,16 +1,28 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, output, input } from '@angular/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { FileUploadItem } from 'app/group/library/upload-form/file-upload-item';
+import { DataCyDirective } from 'app/shared/directives/data-cy.directive';
+import { NotificationMessageComponent } from 'app/shared/notification-message/notification-message.component';
+import { SizePipe } from 'app/shared/pipes/size.pipe';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 
 @Component({
   selector: 'cbc-file-input',
   templateUrl: './file-input.component.html',
-  styleUrls: ['./file-input.component.scss'],
+  styleUrl: './file-input.component.scss',
+  imports: [
+    NotificationMessageComponent,
+    DataCyDirective,
+    SpinnerComponent,
+    SizePipe,
+    TranslocoModule,
+  ],
 })
 export class FileInputComponent {
-  @Output() readonly fileSelected = new EventEmitter<FileUploadItem[]>();
-  @Input() disable = false;
-  @Input() maxFileUpload = 300 * 1000 * 1000;
-  @Input() hasGuestAccess: boolean | undefined;
+  readonly fileSelected = output<FileUploadItem[]>();
+  readonly disable = input(false);
+  readonly maxFileUpload = input(300 * 1000 * 1000);
+  readonly hasGuestAccess = input<boolean>();
 
   public filesToUpload: FileUploadItem[] = [];
 
@@ -35,9 +47,10 @@ export class FileInputComponent {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public fileChangeEvent(fileInput: any) {
-    const filesList = fileInput.target.files as FileList;
+  public fileChangeEvent(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const filesList = input.files as FileList;
+
     this.handleFiles(filesList);
   }
 

@@ -1,39 +1,40 @@
 <div class="personal-menu">
   <span class="personal-menu__name">
-    <a
-      [routerLink]="['/login']"
-      style="color: #fff"
-      *ngIf="isGuest() && !useEULogin"
+    @if (isGuest() && !useEULogin) {
+    <a [routerLink]="['/login']" style="color: #fff"
       >{{ 'label.login' | transloco }}</a
     >
-    <a (click)="euLogin()" style="color: #fff" *ngIf="isGuest() && useEULogin"
+    } @if (isGuest() && useEULogin) {
+    <a tabindex="0" (click)="euLogin()" style="color: #fff"
       >{{ 'label.login' | transloco }}</a
     >
-    <span style="color: #fff" *ngIf="isUser()"
-      >{{ user.firstname + ' ' + user.lastname }}</span
-    >
+    } @if (isUser()) {
+    <span style="color: #fff">{{ user.firstname + ' ' + user.lastname }}</span>
+    }
   </span>
-  <span *ngIf="isGuest()" class="ctn-img">
+  @if (isGuest()) {
+  <span class="ctn-img">
     <img src="img/thumbnail-profile.png" alt="Guest" class="img-default" />
-    <a (click)="euLogin()" style="color: #fff" *ngIf="isGuest() && useEULogin"
+    @if (isGuest() && useEULogin) {
+    <a tabindex="0" (click)="euLogin()" style="color: #fff"
       ><img src="img/thumbnail-profile.png" alt="Guest"
     /></a>
-    <a
-      [routerLink]="['/login']"
-      style="color: #fff"
-      *ngIf="isGuest() && !useEULogin"
+    } @if (isGuest() && !useEULogin) {
+    <a [routerLink]="['/login']" style="color: #fff"
       ><img src="img/thumbnail-profile.png" alt="Guest"
     /></a>
+    }
   </span>
-  <span *ngIf="isUser()" class="ctn-img">
-    <img
-      *ngIf="user.lastname"
-      [attr.src]="user.avatar | cbcDownload | cbcSecure"
-      alt="Guest"
-    />
+  } @if (isUser()) {
+  <span class="ctn-img">
+    @if (user.lastname) {
+    <img [attr.src]="user.avatar | cbcDownload | cbcSecure" alt="Guest" />
+    }
   </span>
+  }
   <!-- DEMO DROPDOWN MENU -->
-  <div class="dropdown dropdown--personal-menu" *ngIf="!isGuest()">
+  @if (!isGuest()) {
+  <div class="dropdown dropdown--personal-menu">
     <section class="dropdown--personal-menu__sidebar">
       <nav>
         <div class="links-group">
@@ -48,6 +49,10 @@
             >{{ 'personal-menu.calendar' | transloco }}</a
           >
           <a [routerLink]="['/me/roles']">{{ 'label.my.roles' | transloco }}</a>
+          <a tabindex="0" (click)="setScreenMode()"
+            >{{ theme === 'dark' ? ('label.theme.light' | transloco) :
+            ('label.theme.dark' | transloco) }}</a
+          >
         </div>
 
         <div class="links-group">
@@ -58,4 +63,5 @@
       </nav>
     </section>
   </div>
+  }
 </div>

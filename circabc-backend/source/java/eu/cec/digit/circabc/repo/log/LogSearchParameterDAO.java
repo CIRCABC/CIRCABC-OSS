@@ -23,94 +23,94 @@ import java.util.Date;
  */
 public class LogSearchParameterDAO {
 
-    private Long igID;
-    private Date fromDate;
-    private Date toDate;
-    private String activityDescription;
-    private String serviceDescription;
-    private String userName;
+  private Long igID;
+  private Date fromDate;
+  private Date toDate;
+  private String activityDescription;
+  private String serviceDescription;
+  private String userName;
 
-    /**
-     * @return the igID
-     */
-    public Long getIgID() {
-        return igID;
-    }
+  /**
+   * @return the igID
+   */
+  public Long getIgID() {
+    return igID;
+  }
 
-    /**
-     * @param igID the igID to set
-     */
-    public void setIgID(Long igID) {
-        this.igID = igID;
-    }
+  /**
+   * @param igID the igID to set
+   */
+  public void setIgID(Long igID) {
+    this.igID = igID;
+  }
 
-    /**
-     * @return the fromDate
-     */
-    public Date getFromDate() {
-        return fromDate;
-    }
+  /**
+   * @return the fromDate
+   */
+  public Date getFromDate() {
+    return fromDate;
+  }
 
-    /**
-     * @param fromDate the fromDate to set
-     */
-    public void setFromDate(Date dateFrom) {
-        this.fromDate = dateFrom;
-    }
+  /**
+   * @param fromDate the fromDate to set
+   */
+  public void setFromDate(Date dateFrom) {
+    this.fromDate = dateFrom;
+  }
 
-    /**
-     * @return the toDate
-     */
-    public Date getToDate() {
-        return toDate;
-    }
+  /**
+   * @return the toDate
+   */
+  public Date getToDate() {
+    return toDate;
+  }
 
-    /**
-     * @param toDate the toDate to set
-     */
-    public void setToDate(Date dateTo) {
-        this.toDate = dateTo;
-    }
+  /**
+   * @param toDate the toDate to set
+   */
+  public void setToDate(Date dateTo) {
+    this.toDate = dateTo;
+  }
 
-    /**
-     * @return the activityDescription
-     */
-    public String getActivityDescription() {
-        return activityDescription;
-    }
+  /**
+   * @return the activityDescription
+   */
+  public String getActivityDescription() {
+    return activityDescription;
+  }
 
-    /**
-     * @param activityDescription the activityDescription to set
-     */
-    public void setActivityDescription(String activityDescription) {
-        this.activityDescription = activityDescription;
-    }
+  /**
+   * @param activityDescription the activityDescription to set
+   */
+  public void setActivityDescription(String activityDescription) {
+    this.activityDescription = activityDescription;
+  }
 
-    /**
-     * @return the serviceDescription
-     */
-    public String getServiceDescription() {
-        return serviceDescription;
-    }
+  /**
+   * @return the serviceDescription
+   */
+  public String getServiceDescription() {
+    return serviceDescription;
+  }
 
-    /**
-     * @param serviceDescription the serviceDescription to set
-     */
-    public void setServiceDescription(String serviceDescription) {
-        this.serviceDescription = serviceDescription;
-    }
+  /**
+   * @param serviceDescription the serviceDescription to set
+   */
+  public void setServiceDescription(String serviceDescription) {
+    this.serviceDescription = serviceDescription;
+  }
 
-    /**
-     * @return the userName
-     */
-    public String getUserName() {
-        return userName;
-    }
+  /**
+   * @return the userName
+   */
+  public String getUserName() {
+    return userName;
+  }
 
-    /**
-     * @param userName the userName to set
-     */
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
+  /**
+   * @param userName the userName to set
+   */
+  public void setUserName(String userName) {
+    this.userName = userName;
+  }
 }

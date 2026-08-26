@@ -1,22 +1,28 @@
-<a (click)="showModal = true" class="delete"
+<a tabindex="0" (click)="showModal = true" class="delete"
   >{{ 'label.delete' | transloco }}</a
 >
 
 <!-- MODAL BOX -->
+@if (showModal) {
 <div
   class="black-overlayer"
-  *ngIf="showModal"
   [class.overlayer-shown]="showModal"
   [class.overlayer-hidden]="!showModal"
 ></div>
+} @if (showModal) {
 <section
   class="modal"
-  *ngIf="showModal"
   [class.modal-shown]="showModal"
   [class.modal-hidden]="!showModal"
   style="margin-top: 0"
 >
-  <a class="close-icon" (click)="cancelWizard('close')"></a>
+  <a
+    tabindex="0"
+    role="button"
+    class="close-icon"
+    aria-label="Cancel wizard"
+    (click)="cancelWizard('close')"
+  ></a>
   <header>
     <h2 class="title">{{ 'label.delete' | transloco }}</h2>
   </header>
@@ -24,22 +30,31 @@
   <section class="modal-content">
     {{ 'keyword.delete.confirmation' | transloco }}
     <br /><br />
-    <cbc-keyword-tag [keyword]="keyword" *ngIf="keyword"></cbc-keyword-tag>
+    @if (keyword) {
+    <cbc-keyword-tag [keyword]="keyword"></cbc-keyword-tag>
+    }
     <br /><br />
-    <div class="field deletingBox" *ngIf="deleting">
+    @if (deleting) {
+    <div class="field deletingBox">
       <label
         >{{ 'label.deleting' | transloco }}... <cbc-spinner></cbc-spinner
       ></label>
     </div>
+    }
   </section>
 
   <section class="modal-footer">
     <!-- Buttons -->
-    <div class="buttons-group" *ngIf="!deleting">
-      <a class="cta" (click)="delete()">{{ 'label.delete' | transloco }}</a>
-      <a class="button" (click)="cancelWizard('close')"
+    @if (!deleting) {
+    <div class="buttons-group">
+      <a tabindex="0" class="cta" (click)="delete()"
+        >{{ 'label.delete' | transloco }}</a
+      >
+      <a tabindex="0" class="button" (click)="cancelWizard('close')"
         >{{ 'label.cancel' | transloco }}</a
       >
     </div>
+    }
   </section>
 </section>
+}

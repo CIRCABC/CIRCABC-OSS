@@ -1,4 +1,7 @@
-<a class="cta cta--plus cta--upload" (click)="showUploadModal = true"
+<a
+  tabindex="0"
+  class="cta cta--plus cta--upload"
+  (click)="showUploadModal = true"
   >{{ 'admin.upload.logo.action' | transloco }}</a
 >
 
@@ -17,19 +20,27 @@
       <tr>
         <td colspan="3"></td>
       </tr>
-      <tr *ngFor="let logo of logos" class="row">
+      @for (logo of logos; track logo.id) {
+      <tr class="row">
         <td class="logoCell">
-          <img [attr.src]="logo.id | cbcOldDownload: logo.name | cbcSecure" />
+          <img
+            [attr.src]="logo.id | cbcOldDownload: logo.name | cbcSecure"
+            [attr.alt]="logo.name"
+          />
         </td>
         <td> {{ logo.name }} </td>
         <td>
           <a
+            tabindex="0"
             (click)="select(logo.id)"
             class="selectAction"
             title="{{ 'label.select' | transloco }}"
           >
-            <img src="img/check.png" *ngIf="isSelected(logo.id)" />
-            <img src="img/check-grey.png" *ngIf="!isSelected(logo.id)" />
+            @if (isSelected(logo.id)) {
+            <img src="img/check.png" alt="Selected" />
+            } @if (!isSelected(logo.id)) {
+            <img src="img/check-grey.png" alt="Not Selected" />
+            }
           </a>
 
           <cbc-inline-delete
@@ -39,6 +50,7 @@
           ></cbc-inline-delete>
         </td>
       </tr>
+      }
     </tbody>
   </table>
 </section>
@@ -46,4 +58,4 @@
   [categoryId]="categoryId"
   [showModal]="showUploadModal"
   (modalHide)="refresh($event)"
-></cbc-add-category-logo>
+/>

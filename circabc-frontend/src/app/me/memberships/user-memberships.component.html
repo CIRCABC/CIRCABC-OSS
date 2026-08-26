@@ -5,17 +5,23 @@
       <cbc-hint [text]="'memberships.yours.help.text' | transloco"></cbc-hint>
     </span>
   </header>
-  <cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+  @if (loading()) {
+  <cbc-horizontal-loader></cbc-horizontal-loader>
+  }
   <div class="main main--listing limit-height">
-    <ul *ngIf="memberships">
-      <li class="row" *ngFor="let member of memberships">
+    @if (memberships) {
+    <ul>
+      @for (member of memberships; track member) {
+      <li class="row">
         <span class="date">{{ getProfileDisplay(member.profile) }}</span>
         {{ 'label.on' | transloco }}
         <a [routerLink]="['/group', member.interestGroup?.id]"
           >{{ getGroupDisplay(member.interestGroup) }}</a
         >
       </li>
+      }
     </ul>
+    }
   </div>
   <div class="footer">
     <a class="footer__button" [routerLink]="['/explore']"

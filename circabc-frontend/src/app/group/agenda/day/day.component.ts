@@ -1,11 +1,8 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
-} from '@angular/core';
+import { Component, OnChanges, output, input } from '@angular/core';
 
+import { NgStyle } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import { AgendaHelperService } from 'app/core/agenda-helper.service';
 import {
   EventItemDefinition,
@@ -43,26 +40,19 @@ interface ViewRowElement {
 @Component({
   selector: 'cbc-day',
   templateUrl: './day.component.html',
-  styleUrls: ['./day.component.scss'],
+  styleUrl: './day.component.scss',
   preserveWhitespaces: true,
+  imports: [RouterLink, NgStyle, TranslocoModule],
 })
 export class DayComponent implements OnChanges {
-  @Input()
-  public date!: Date;
-  @Input()
-  public id!: string;
-  @Input()
-  public meMode = false;
+  public readonly date = input.required<Date>();
+  public readonly id = input<string>();
+  public readonly meMode = input(false);
   // property used to fire the ngOnChanges event when toggled for redisplay (new event/meeting has been added)
-  // property used to fire the ngOnChanges event when toggled for redisplay (new event/meeting has been added)
-  @Input()
-  public redisplay!: boolean;
-  @Input()
-  public displayFromHour!: number;
-  @Input()
-  public displayToHour!: number;
-  @Output()
-  public readonly processingEventEmitter = new EventEmitter<string>();
+  public readonly redisplay = input<boolean>();
+  public readonly displayFromHour = input.required<number>();
+  public readonly displayToHour = input.required<number>();
+  public readonly processingEventEmitter = output<string>();
 
   public viewRowElements: ViewRowElement[] = [];
 
@@ -89,22 +79,25 @@ export class DayComponent implements OnChanges {
   }
 
   public async getEvents() {
-    if (this.meMode) {
+    if (this.meMode()) {
       this.events = await firstValueFrom(
         this.userService.getUserEventsPeriod(
           this.getUserId(),
-          getFullDate(this.date),
+          getFullDate(this.date()),
           'Exact'
         )
       );
     } else {
-      this.events = await firstValueFrom(
-        this.eventsService.getInterestGroupEvents(
-          this.id,
-          getFullDate(this.date),
-          getFullDate(this.date)
-        )
-      );
+      const id = this.id();
+      if (id !== undefined) {
+        this.events = await firstValueFrom(
+          this.eventsService.getInterestGroupEvents(
+            id,
+            getFullDate(this.date()),
+            getFullDate(this.date())
+          )
+        );
+      }
     }
 
     this.events = this.timeZoneHelperService.toLocalDateTime(this.events);
@@ -148,8 +141,8 @@ export class DayComponent implements OnChanges {
     this.viewRowElements = [];
     const multiplicity: Map<string, number> = new Map<string, number>();
     for (
-      let hour: number = this.displayFromHour;
-      hour < this.displayToHour + 1;
+      let hour: number = this.displayFromHour();
+      hour < this.displayToHour() + 1;
       hour += 1
     ) {
       this.viewRowElements.push({
@@ -286,17 +279,16 @@ export class DayComponent implements OnChanges {
         'border-bottom': '4px solid transparent',
         'border-left': `4px solid ${item.assignedColor}`,
       };
-    } else {
-      let portion = 0;
-      if (item.endTime - item.currentTime > 14) {
-        portion = 14;
-      } else {
-        portion = item.endTime - item.currentTime;
-      }
-      // x percentage of 14 (minutes) * (try and error scaling factor to adjust the size to the container)
-      const width = `${(portion * 100) / 14}%`;
-      return { 'background-color': item.assignedColor, width: width };
     }
+    let portion = 0;
+    if (item.endTime - item.currentTime > 14) {
+      portion = 14;
+    } else {
+      portion = item.endTime - item.currentTime;
+    }
+    // x percentage of 14 (minutes) * (try and error scaling factor to adjust the size to the container)
+    const width = `${(portion * 100) / 14}%`;
+    return { 'background-color': item.assignedColor, width: width };
   }
 
   public toggleRibbons() {
@@ -305,8 +297,7 @@ export class DayComponent implements OnChanges {
   public getValueAsArray(itemValue: string | ShowableEventItemDefinition[]) {
     if (typeof itemValue === 'string') {
       return [];
-    } else {
-      return itemValue;
     }
+    return itemValue;
   }
 }

@@ -1,7 +1,7 @@
 import { Component, Inject, Input, OnInit, Optional } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { TranslocoService } from '@ngneat/transloco';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { PermissionEvaluatorService } from 'app/core/evaluator/permission-evaluator.service';
 import {
   BASE_PATH,
@@ -23,16 +23,37 @@ import { SaveAsService } from 'app/core/save-as.service';
 import { SelectableBulkImportUserData } from 'app/core/ui-model';
 import { truncate } from 'app/core/util';
 import { ListingOptions } from 'app/group/listing-options/listing-options';
+import { InlineDeleteComponent } from 'app/shared/delete/inline-delete.component';
+import { ItemMultiselectorComponent } from 'app/shared/item-multiselector/item-multiselector.component';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
+import { NumberBadgeComponent } from 'app/shared/number-badge/number-badge.component';
+import { PagerComponent } from 'app/shared/pager/pager.component';
 import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
+import { ReponsiveSubMenuComponent } from 'app/shared/reponsive-sub-menu/reponsive-sub-menu.component';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-bulk-invite',
   templateUrl: './bulk-invite.component.html',
-  styleUrls: ['./bulk-invite.component.scss'],
+  styleUrl: './bulk-invite.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    HorizontalLoaderComponent,
+    ReponsiveSubMenuComponent,
+    RouterLink,
+    ReactiveFormsModule,
+    ItemMultiselectorComponent,
+    PagerComponent,
+    NumberBadgeComponent,
+    InlineDeleteComponent,
+    SpinnerComponent,
+    TranslocoModule,
+  ],
 })
 export class BulkInviteComponent implements OnInit {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   public igId!: string;
 
@@ -128,8 +149,7 @@ export class BulkInviteComponent implements OnInit {
         );
         for (const profile of this.currentUserMemberships) {
           if (
-            profile &&
-            profile.interestGroup &&
+            profile?.interestGroup &&
             this.currentGroup &&
             profile.interestGroup.id === this.currentGroup.id
           ) {
@@ -202,12 +222,11 @@ export class BulkInviteComponent implements OnInit {
             this.fileToUpload
           )
         );
-        // add members from file, but ignore duplicates
+        // add members from file
+        // we do not need to check for duplicates because it is already tested in the backend
         for (const member of allMembersFromFile) {
-          if (!this.containsMember(this.allMembers, member)) {
-            this.extractProfile(member);
-            this.allMembers.push(member);
-          }
+          this.extractProfile(member);
+          this.allMembers.push(member);
         }
       } catch (error) {
         const theError: string = error.error.message;
@@ -279,18 +298,6 @@ export class BulkInviteComponent implements OnInit {
     if (tempProfile !== undefined) {
       this.availableProfiles.unshift(tempProfile);
     }
-  }
-
-  private containsMember(
-    members: SelectableBulkImportUserData[],
-    theMember: SelectableBulkImportUserData
-  ): boolean {
-    for (const member of members) {
-      if (member.username === theMember.username) {
-        return true;
-      }
-    }
-    return false;
   }
 
   public isMember(): boolean {
@@ -410,10 +417,16 @@ export class BulkInviteComponent implements OnInit {
   }
 
   public selectAll() {
-    if (this.allMembers === undefined || this.allMembers === []) {
+    if (this.allMembers === undefined || this.allMembers.length === 0) {
       return;
     }
-    if (!this.allSelected) {
+    if (this.allSelected) {
+      this.allSelected = false;
+      this.selectedMembers = [];
+      this.members.forEach((member) => {
+        member.selected = false;
+      });
+    } else {
       this.selectedMembers = [];
       this.allSelected = true;
       this.members.forEach((member) => {
@@ -421,12 +434,6 @@ export class BulkInviteComponent implements OnInit {
           member.selected = true;
           this.selectedMembers.push(member);
         }
-      });
-    } else {
-      this.allSelected = false;
-      this.selectedMembers = [];
-      this.members.forEach((member) => {
-        member.selected = false;
       });
     }
   }
@@ -500,9 +507,10 @@ export class BulkInviteComponent implements OnInit {
     return false;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public async fileChangeEvent(fileInput: any) {
-    const filesList = fileInput.target.files as FileList;
+  public async fileChangeEvent(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const filesList = input.files as FileList;
+
     this.fileToUpload = filesList[0];
     await this.loadMembers();
   }

@@ -30,43 +30,43 @@ import java.util.Locale;
  */
 public class DynPropertyWrapper implements Serializable {
 
-    private static final long serialVersionUID = -3433352998092218189L;
+  private static final long serialVersionUID = -3433352998092218189L;
 
-    private String value;
-    private Locale locale;
+  private String value;
+  private Locale locale;
 
-    /**
-     * Instanciate a Dynamic property
-     */
-    public DynPropertyWrapper(String value, Locale locale) {
-        super();
-        this.value = value;
-        this.locale = locale;
-    }
+  /**
+   * Instanciate a Dynamic property
+   */
+  public DynPropertyWrapper(String value, Locale locale) {
+    super();
+    this.value = value;
+    this.locale = locale;
+  }
 
-    /**
-     * @return the value
-     */
-    public String getValue() {
-        return value;
-    }
+  /**
+   * @return the value
+   */
+  public String getValue() {
+    return value;
+  }
 
-    /**
-     * @return the Locale
-     */
-    public Locale getLocale() {
-        return locale;
-    }
+  /**
+   * @return the Locale
+   */
+  public Locale getLocale() {
+    return locale;
+  }
 
-    /**
-     * @return the Language
-     */
-    public String getLanguage() {
-        return locale == null ? "" : locale.getLanguage();
-    }
+  /**
+   * @return the Language
+   */
+  public String getLanguage() {
+    return locale == null ? "" : locale.getLanguage();
+  }
 
-    @Override
-    public String toString() {
-        return getValue();
-    }
+  @Override
+  public String toString() {
+    return getValue();
+  }
 }

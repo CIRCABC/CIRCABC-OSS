@@ -1,13 +1,14 @@
 <cbc-modal
   [title]="'label.delete'"
   (ok)="delete()"
-  (cancel)="cancelWizard()"
+  (cancelModal)="cancelWizard()"
   [okLabel]="'label.delete'"
   [(visible)]="showModal"
   [(executing)]="deleting"
   [executingLabel]="'label.deleting'"
 >
-  <p *ngIf="profile">
+  @if (profile) {
+  <p>
     {{ 'profile.delete.confirmation' | transloco }}
     <br />
     <br />
@@ -18,4 +19,5 @@
       >{{ 'profile.delete.more.information' | transloco }}</span
     >
   </p>
+  }
 </cbc-modal>

@@ -1,20 +1,38 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, Input, OnInit, output } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   AppMessageService,
   DistributionMail,
 } from 'app/core/generated/circabc';
+import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
+import { ModalComponent } from 'app/shared/modal/modal.component';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-add-distribution-email',
   templateUrl: './add-distribution-email.component.html',
-  styleUrls: ['./add-distribution-email.component.scss'],
+  styleUrl: './add-distribution-email.component.scss',
+  imports: [
+    ModalComponent,
+    ReactiveFormsModule,
+    ControlMessageComponent,
+    SpinnerComponent,
+    TranslocoModule,
+  ],
 })
 export class AddDistributionEmailComponent implements OnInit {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input() showModal = false;
-  @Output() readonly showModalChange = new EventEmitter<boolean>();
-  @Output() readonly modalClosed = new EventEmitter();
+  readonly showModalChange = output<boolean>();
+  readonly modalClosed = output();
 
   public emailForm!: FormGroup;
   public emailCreated: DistributionMail[] = [];

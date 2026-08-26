@@ -21,10 +21,9 @@
 package eu.cec.digit.circabc.web.ui.tag;
 
 import eu.cec.digit.circabc.web.ui.component.UIDisplayer;
-import org.springframework.extensions.webscripts.ui.common.tag.BaseComponentTag;
-
 import javax.faces.component.UIComponent;
 import javax.servlet.jsp.JspException;
+import org.springframework.extensions.webscripts.ui.common.tag.BaseComponentTag;
 
 /**
  * @author Guillaume
@@ -34,41 +33,41 @@ import javax.servlet.jsp.JspException;
  */
 public class DisplayerTag extends BaseComponentTag {
 
-    /**
-     * @see javax.faces.webapp.UIComponentTag#getComponentType()
-     */
-    public String getComponentType() {
-        return "eu.cec.digit.circabc.faces.Displayer";
-    }
+  /**
+   * @see javax.faces.webapp.UIComponentTag#getComponentType()
+   */
+  public String getComponentType() {
+    return "eu.cec.digit.circabc.faces.Displayer";
+  }
 
-    /**
-     * @see javax.faces.webapp.UIComponentTag#getRendererType()
-     */
-    public String getRendererType() {
-        // the component is self renderering
-        return null;
-    }
+  /**
+   * @see javax.faces.webapp.UIComponentTag#getRendererType()
+   */
+  public String getRendererType() {
+    // the component is self renderering
+    return null;
+  }
 
-    /**
-     * Override this to allow the displayer component to control whether child components are rendered
-     * by the JSP tag framework. This is a nasty solution as it requires a reference to the
-     * UIDisplayer instance and also specific knowledge of the component type that is created by the
-     * framework for this tag.
-     * <p>
-     * The reason for this solution is to allow any child content (including HTML tags) to be
-     * displayed inside the UIDisplayer component without having to resort to the awful JSF Component
-     * getRendersChildren() mechanism - as this would force the use of the verbatim tags for ALL
-     * non-JSF child content!
-     */
-    protected int getDoStartValue() throws JspException {
-        UIComponent component = getComponentInstance();
-        if (component instanceof UIDisplayer) {
-            if (component.isRendered() == true) {
-                return EVAL_BODY_INCLUDE;
-            } else {
-                return SKIP_BODY;
-            }
-        }
+  /**
+   * Override this to allow the displayer component to control whether child components are rendered
+   * by the JSP tag framework. This is a nasty solution as it requires a reference to the
+   * UIDisplayer instance and also specific knowledge of the component type that is created by the
+   * framework for this tag.
+   * <p>
+   * The reason for this solution is to allow any child content (including HTML tags) to be
+   * displayed inside the UIDisplayer component without having to resort to the awful JSF Component
+   * getRendersChildren() mechanism - as this would force the use of the verbatim tags for ALL
+   * non-JSF child content!
+   */
+  protected int getDoStartValue() throws JspException {
+    UIComponent component = getComponentInstance();
+    if (component instanceof UIDisplayer) {
+      if (component.isRendered() == true) {
         return EVAL_BODY_INCLUDE;
+      } else {
+        return SKIP_BODY;
+      }
     }
+    return EVAL_BODY_INCLUDE;
+  }
 }

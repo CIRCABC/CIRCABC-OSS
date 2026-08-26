@@ -1,28 +1,24 @@
-import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, Router } from '@angular/router';
+import { inject } from '@angular/core';
+import { ActivatedRouteSnapshot, CanActivateFn, Router } from '@angular/router';
 
 import { InterestGroupService } from 'app/core/generated/circabc';
 import { firstValueFrom } from 'rxjs';
 
-@Injectable()
-export class GroupDeleteGuard implements CanActivate {
-  constructor(
-    private router: Router,
-    private groupService: InterestGroupService
-  ) {}
-
-  async canActivate(route: ActivatedRouteSnapshot) {
-    const groupId = route.paramMap.get('id');
-    if (groupId) {
-      const group = await firstValueFrom(
-        this.groupService.getInterestGroup(groupId)
-      );
-      if (group && group.permissions && group.permissions.IgDelete === 'true') {
-        return true;
-      }
+export const canActivateGroupDelete: CanActivateFn = async (
+  route: ActivatedRouteSnapshot
+) => {
+  const interestGroupService = inject(InterestGroupService);
+  const routeService = inject(Router);
+  const groupId = route.paramMap.get('id');
+  if (groupId) {
+    const group = await firstValueFrom(
+      interestGroupService.getInterestGroup(groupId)
+    );
+    if (group?.permissions && group.permissions.IgDelete === 'true') {
+      return true;
     }
-
-    this.router.navigate(['/denied']);
-    return false;
   }
-}
+
+  routeService.navigate(['/denied']);
+  return false;
+};

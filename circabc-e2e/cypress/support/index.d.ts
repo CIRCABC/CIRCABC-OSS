@@ -10,5 +10,10 @@ declare namespace Cypress {
      */
     setPassword(username: string, password: string): Chainable<Element>;
     login(username: string, password: string): Chainable<Element>;
+    logout(): Chainable<Element>;
+    checkA11yWithLogging(
+      context?: undefined,
+      options?: undefined
+    ): Chainable<Element>;
   }
 }

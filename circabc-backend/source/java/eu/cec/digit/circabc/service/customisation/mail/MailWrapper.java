@@ -16,10 +16,9 @@
  */
 package eu.cec.digit.circabc.service.customisation.mail;
 
-import org.alfresco.service.cmr.repository.NodeRef;
-
 import java.util.Locale;
 import java.util.Map;
+import org.alfresco.service.cmr.repository.NodeRef;
 
 /**
  * The base mail wrapper
@@ -27,44 +26,43 @@ import java.util.Map;
  * @author yanick pignot
  */
 public interface MailWrapper {
+  /**
+   * @return the name of the template
+   */
+  String getName();
 
-    /**
-     * @return the name of the template
-     */
-    String getName();
+  /**
+   * @return the subject of the mail by applying the given model
+   */
+  String getSubject(final Map<String, Object> model);
 
-    /**
-     * @return the subject of the mail by applying the given model
-     */
-    String getSubject(final Map<String, Object> model);
+  /**
+   * @return the subject of the mail by applying the given model
+   */
+  String getSubject(final Map<String, Object> model, final Locale language);
 
-    /**
-     * @return the subject of the mail by applying the given model
-     */
-    String getSubject(final Map<String, Object> model, final Locale language);
+  /**
+   * @return the body of the mail by applying the given model
+   */
+  String getBody(final Map<String, Object> model);
 
-    /**
-     * @return the body of the mail by applying the given model
-     */
-    String getBody(final Map<String, Object> model);
+  /**
+   * @return the body of the mail by applying the given model
+   */
+  String getBody(final Map<String, Object> model, final Locale language);
 
-    /**
-     * @return the body of the mail by applying the given model
-     */
-    String getBody(final Map<String, Object> model, final Locale language);
+  /**
+   * return if this mail is the default one
+   */
+  boolean isOriginalTemplate();
 
-    /**
-     * return if this mail is the default one
-     */
-    boolean isOriginalTemplate();
+  /**
+   * @return the template type of the mail.
+   */
+  MailTemplate getMailTemplate();
 
-    /**
-     * @return the template type of the mail.
-     */
-    MailTemplate getMailTemplate();
-
-    /**
-     * @return the nodereference of the mail template
-     */
-    NodeRef getTemplateNodeRef();
+  /**
+   * @return the nodereference of the mail template
+   */
+  NodeRef getTemplateNodeRef();
 }

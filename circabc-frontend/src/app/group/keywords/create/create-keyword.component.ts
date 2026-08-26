@@ -1,13 +1,18 @@
 import {
   Component,
-  EventEmitter,
   Input,
   OnChanges,
   OnInit,
-  Output,
   SimpleChanges,
+  output,
+  input,
 } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+} from '@angular/forms';
 
 import {
   ActionEmitterResult,
@@ -15,23 +20,34 @@ import {
   ActionType,
 } from 'app/action-result';
 import { KeywordDefinition, KeywordsService } from 'app/core/generated/circabc';
-import { ValidationService } from 'app/core/validation.service';
+import { nonEmptyTitle } from 'app/core/validation.service';
+import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
+import { MultilingualInputComponent } from 'app/shared/input/multilingual-input.component';
+import { ModalComponent } from 'app/shared/modal/modal.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-create-keyword',
   templateUrl: './create-keyword.component.html',
   preserveWhitespaces: true,
+  imports: [
+    ModalComponent,
+    ReactiveFormsModule,
+    MultilingualInputComponent,
+    ControlMessageComponent,
+  ],
 })
 export class CreateKeywordComponent implements OnInit, OnChanges {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   showModal!: boolean;
-  @Input()
-  parentIgId!: string;
+  readonly parentIgId = input.required<string>();
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   keyword: KeywordDefinition | undefined;
-  @Output()
-  public readonly modalHide = new EventEmitter<ActionEmitterResult>();
+  public readonly modalHide = output<ActionEmitterResult>();
 
   public createKeywordForm!: FormGroup;
   public creating = false;
@@ -43,13 +59,13 @@ export class CreateKeywordComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.createKeywordForm = this.fb.group({
-      title: ['', [ValidationService.nonEmptyTitle]],
+      title: ['', [nonEmptyTitle]],
     });
   }
 
   ngOnChanges(changes: SimpleChanges) {
     const chng = changes.keyword;
-    if (chng && chng.currentValue) {
+    if (chng?.currentValue) {
       this.createKeywordForm.controls.title.setValue(chng.currentValue.title);
     }
   }
@@ -62,7 +78,7 @@ export class CreateKeywordComponent implements OnInit, OnChanges {
     };
 
     await firstValueFrom(
-      this.keywordsService.postKeywordDefinition(this.parentIgId, kTmp)
+      this.keywordsService.postKeywordDefinition(this.parentIgId(), kTmp)
     );
 
     const result: ActionEmitterResult = {};

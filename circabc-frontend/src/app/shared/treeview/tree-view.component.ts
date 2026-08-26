@@ -1,10 +1,4 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-  ViewChild,
-} from '@angular/core';
+import { Component, viewChild, output, input } from '@angular/core';
 import { Node as ModelNode } from 'app/core/generated/circabc';
 import { TreeNode } from 'app/shared/treeview/tree-node';
 import { TreeNodeComponent } from 'app/shared/treeview/tree-node.component';
@@ -13,32 +7,24 @@ import { TreeNodeComponent } from 'app/shared/treeview/tree-node.component';
   selector: 'cbc-tree-view',
   templateUrl: './tree-view.component.html',
   preserveWhitespaces: true,
+  imports: [TreeNodeComponent],
 })
 export class TreeViewComponent {
-  @ViewChild(TreeNodeComponent)
-  treeNodeComponent!: TreeNodeComponent;
-  @Input()
-  root!: TreeNode;
-  @Input()
-  displayedPath: ModelNode[] = [];
-  @Input()
-  service: 'library' | 'newsgroups' = 'library';
-  @Input()
-  folderId: string | undefined;
-  @Input()
-  disabled = false;
-  @Input()
-  showSelector = true;
-  @Input()
-  flagNewDays = -1;
-  @Output()
-  readonly selectedNodeEmitter = new EventEmitter<TreeNode>();
-  @Output()
-  readonly clickedNodeEmitter = new EventEmitter<TreeNode>();
+  readonly treeNodeComponent = viewChild.required(TreeNodeComponent);
+  readonly root = input.required<TreeNode>();
+  readonly displayedPath = input<ModelNode[]>([]);
+  readonly service = input<'library' | 'newsgroups'>('library');
+  readonly folderId = input<string>();
+  readonly disabled = input(false);
+  readonly showSelector = input(true);
+  readonly flagNewDays = input(-1);
+  readonly selectedNodeEmitter = output<TreeNode>();
+  readonly clickedNodeEmitter = output<TreeNode>();
 
   async reload() {
-    if (this.treeNodeComponent) {
-      await this.treeNodeComponent.reload();
+    const treeNodeComponent = this.treeNodeComponent();
+    if (treeNodeComponent) {
+      await treeNodeComponent.reload();
     }
   }
 

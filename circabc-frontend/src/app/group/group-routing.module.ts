@@ -1,120 +1,97 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { NotificationStatusComponent } from 'app/group/admin/notification-status/notification-status.component';
-import { DashboardComponent } from 'app/group/dashboard/dashboard.component';
-import { GroupComponent } from 'app/group/group.component';
 import { GroupResolver } from 'app/group/group.resolver';
-import { AdminGuard } from 'app/group/guards/admin-guard.service';
-import { GroupGuard } from 'app/group/guards/group-guard.service';
-import { GroupMembersAdminGuard } from 'app/group/guards/group-members-admin-guard.service';
+import { canActivateAdmin } from 'app/group/guards/admin-guard.service';
+import { canActivateGroup } from 'app/group/guards/group-guard.service';
+import { canActivateGroupMembersAdmin } from 'app/group/guards/group-members-admin-guard.service';
+import { libraryRoutes } from './library/library-routing.module';
+import { membersRoutes } from './members/members-routing.module';
+import { forumRoutes } from './forum/forum-routing.module';
+import { agendaRoutes } from './agenda/agenda-routing.module';
+import { informationRoutes } from './information/information-routing.module';
+import { keywordsRoutes } from './keywords/keywords-routing.module';
+import { dynPropRoutes } from './dynamic-properties/dynamic-properties-routing.module';
+import { groupAdminRoutes } from './admin/group-admin-routing.module';
+import { applicantsRoutes } from './applicants/applicants-routing.module';
+import { profilesRoutes } from './profiles/profiles-routing.module';
+import { permissionsRoutes } from './permissions/permissions-routing.module';
+import { notificationsRoutes } from './notifications/notifications-routing.module';
 
-const groupRoutes: Routes = [
+export const groupRoutes: Routes = [
   {
     path: ':id',
-    component: GroupComponent,
+    loadComponent: () => import('app/group/group.component').then(m => m.GroupComponent),
     resolve: {
       group: GroupResolver,
     },
     runGuardsAndResolvers: 'always',
     children: [
 
-    { path: '', component: DashboardComponent , canActivate: [GroupGuard] },
+    { path: '', loadComponent: () => import('app/group/dashboard/dashboard.component').then(m => m.DashboardComponent) , canActivate: [canActivateGroup] },
       {
         path: 'library',
-        loadChildren: () =>
-          import('app/group/library/library.module').then(
-            m => m.LibraryModule
-          ),
+        children: libraryRoutes
       },
       {
         path: 'members',
-        canActivate: [GroupGuard],
-        loadChildren: () =>
-          import('app/group/members/members.module').then(
-            m => m.MembersModule
-          ),
+        canActivate: [canActivateGroup],
+        children: membersRoutes,
       },
       {
         path: 'forum',
-        canActivate: [GroupGuard],
-        loadChildren: () =>
-          import('app/group/forum/forum.module').then(m => m.ForumModule),
+        canActivate: [canActivateGroup],
+        children: forumRoutes,
       },
       {
         path: 'agenda',
-        canActivate: [GroupGuard],
-        loadChildren: () =>
-          import('app/group/agenda/agenda.module').then(m => m.AgendaModule),
+        canActivate: [canActivateGroup],
+        children: agendaRoutes
       },
       {
         path: 'information',
-        canActivate: [GroupGuard],
-        loadChildren: () =>
-          import('app/group/information/information.module').then(
-            m => m.InformationModule
-          ),
+        canActivate: [canActivateGroup],
+        children: informationRoutes
       },
       {
         path: 'keywords',
-        loadChildren: () =>
-          import('app/group/keywords/keywords.module').then(
-            m => m.KeywordsModule
-          ),
-        canActivate: [GroupGuard,AdminGuard],
+        canActivate: [canActivateGroup,canActivateAdmin],
+        children: keywordsRoutes
       },
       {
         path: 'profiles',
-        loadChildren: () =>
-          import('app/group/profiles/profiles.module').then(
-            m => m.ProfilesModule
-          ),
-        canActivate: [GroupGuard,GroupMembersAdminGuard],
+        canActivate: [canActivateGroup,canActivateGroupMembersAdmin],
+        children: profilesRoutes
+        
       },
       {
         path: 'dynamic-properties',
-        loadChildren: () =>
-          import('app/group/dynamic-properties/dynamic-properties.module').then(
-            m => m.DynamicPropertiesModule
-          ),
-        canActivate: [GroupGuard,AdminGuard],
+        canActivate: [canActivateGroup,canActivateAdmin],
+        children: dynPropRoutes,
       },
       {
         path: 'admin',
-        loadChildren: () =>
-          import('app/group/admin/group-admin.module').then(
-            m => m.GroupAdminModule
-          ),
-        canActivate: [GroupGuard,AdminGuard],
+        canActivate: [canActivateGroup,canActivateAdmin],
+        children: groupAdminRoutes,
       },
       {
         path: 'applicants',
-        canActivate: [GroupGuard],
-
-        loadChildren: () =>
-          import('app/group/applicants/applicants.module').then(
-            m => m.ApplicantsModule
-          ),
+        canActivate: [canActivateGroup],
+        children: applicantsRoutes
       },
       {
         path: 'permissions',
-        canActivate: [GroupGuard],
-        loadChildren: () =>
-          import('app/group/permissions/permissions.module').then(
-            m => m.PermissionsModule
-          ),
+        canActivate: [canActivateGroup],
+        children: permissionsRoutes
       },
       {
         path: 'notifications',
-        canActivate: [GroupGuard],
-        loadChildren: () =>
-          import('app/group/notifications/notifications.module').then(
-            m => m.NotificationsModule
-          ),
+        canActivate: [canActivateGroup],
+        children: notificationsRoutes
       },
       {
         path: 'notification-status/:nodeId',
-        component: NotificationStatusComponent,
-        canActivate: [GroupGuard]
+        loadComponent: () => import('app/group/admin/notification-status/notification-status.component').then(m => m.NotificationStatusComponent),
+        canActivate: [canActivateGroup]
       },
     ],
   },

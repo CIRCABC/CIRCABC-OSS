@@ -1,7 +1,7 @@
 <cbc-modal
   [title]="'admin.deleted.items.purge.title'"
   (ok)="purge()"
-  (cancel)="onCancel()"
+  (cancelModal)="onCancel()"
   [okLabel]="'label.delete'"
   [(executing)]="processing"
   [executingLabel]="'label.purging'"
@@ -14,10 +14,14 @@
   <br />
   <br />
   <ul class="archive-list">
-    <li *ngFor="let archNode of purgeableNodes">
-      {{ archNode.name }} (
-      <span *ngIf="isFolder(archNode)">{{ 'label.folder' | transloco }}</span>
-      <span *ngIf="!isFolder(archNode)">{{ 'label.file' | transloco }}</span> )
+    @for (archNode of purgeableNodes(); track archNode.id) {
+    <li>
+      {{ archNode.name }} ( @if (isFolder(archNode)) {
+      <span>{{ 'label.folder' | transloco }}</span>
+      } @if (!isFolder(archNode)) {
+      <span>{{ 'label.file' | transloco }}</span>
+      } )
     </li>
+    }
   </ul>
 </cbc-modal>

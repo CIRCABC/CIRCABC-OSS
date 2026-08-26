@@ -20,10 +20,9 @@
  ******************************************************************************/
 package eu.cec.digit.circabc.web.wai.dialog.keywords;
 
-import org.alfresco.service.cmr.repository.NodeRef;
-
 import java.io.Serializable;
 import java.util.Locale;
+import org.alfresco.service.cmr.repository.NodeRef;
 
 /**
  * Light weight object that represent a single keyword in the User Interface
@@ -32,86 +31,91 @@ import java.util.Locale;
  */
 public class KeywordWrapper implements Serializable {
 
-    private static final long serialVersionUID = -3491052998092218189L;
+  private static final long serialVersionUID = -3491052998092218189L;
 
-    private NodeRef id;
-    private String value;
-    private Locale locale;
-    private Boolean selected;
+  private NodeRef id;
+  private String value;
+  private Locale locale;
+  private Boolean selected;
 
-    /**
-     * Instanciate a non multilingual keyword
-     */
-    public KeywordWrapper(NodeRef id, String value) {
-        this(id, value, null, false);
-    }
+  /**
+   * Instanciate a non multilingual keyword
+   */
+  public KeywordWrapper(NodeRef id, String value) {
+    this(id, value, null, false);
+  }
 
-    /**
-     * Instanciate a multilingual keyword
-     */
-    public KeywordWrapper(NodeRef id, String value, Locale locale) {
-        super();
-        this.id = id;
-        this.value = value;
-        this.locale = locale;
-        this.selected = false;
-    }
+  /**
+   * Instanciate a multilingual keyword
+   */
+  public KeywordWrapper(NodeRef id, String value, Locale locale) {
+    super();
+    this.id = id;
+    this.value = value;
+    this.locale = locale;
+    this.selected = false;
+  }
 
-    /**
-     * Instanciate a multilingual keyword
-     */
-    public KeywordWrapper(NodeRef id, String value, Locale locale, Boolean selected) {
-        super();
-        this.id = id;
-        this.value = value;
-        this.locale = locale;
-        this.selected = selected;
-    }
+  /**
+   * Instanciate a multilingual keyword
+   */
+  public KeywordWrapper(
+    NodeRef id,
+    String value,
+    Locale locale,
+    Boolean selected
+  ) {
+    super();
+    this.id = id;
+    this.value = value;
+    this.locale = locale;
+    this.selected = selected;
+  }
 
-    /**
-     * @return the id
-     */
-    public NodeRef getId() {
-        return id;
-    }
+  /**
+   * @return the id
+   */
+  public NodeRef getId() {
+    return id;
+  }
 
-    /**
-     * @return the value
-     */
-    public String getValue() {
-        return value;
-    }
+  /**
+   * @return the value
+   */
+  public String getValue() {
+    return value;
+  }
 
-    /**
-     * @return the Locale
-     */
-    public Locale getLocale() {
-        return locale;
-    }
+  /**
+   * @return the Locale
+   */
+  public Locale getLocale() {
+    return locale;
+  }
 
-    /**
-     * @return the Language
-     */
-    public String getLanguage() {
-        return locale == null ? "" : locale.getLanguage();
-    }
+  /**
+   * @return the Language
+   */
+  public String getLanguage() {
+    return locale == null ? "" : locale.getLanguage();
+  }
 
-    @Override
-    public String toString() {
-        return getValue();
-    }
+  @Override
+  public String toString() {
+    return getValue();
+  }
 
-    /**
-     * @return the selected
-     */
-    public Boolean getSelected() {
-        return selected;
-    }
+  /**
+   * @return the selected
+   */
+  public Boolean getSelected() {
+    return selected;
+  }
 
-    /**
-     * @param selected the selected to set
-     */
-    public void setSelected(Boolean selected) {
-        this.selected = selected;
-    }
+  /**
+   * @param selected the selected to set
+   */
+  public void setSelected(Boolean selected) {
+    this.selected = selected;
+  }
 }

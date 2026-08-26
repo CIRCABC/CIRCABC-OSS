@@ -20,12 +20,11 @@ import org.alfresco.service.ServiceRegistry;
 
 public abstract class AbstractIndexValidator implements IndexValidator {
 
-    protected ServiceRegistry serviceRegistry;
+  protected ServiceRegistry serviceRegistry;
 
-    private AbstractIndexValidator() {
-    }
+  private AbstractIndexValidator() {}
 
-    public AbstractIndexValidator(final ServiceRegistry serviceRegistry) {
-        this.serviceRegistry = serviceRegistry;
-    }
+  public AbstractIndexValidator(final ServiceRegistry serviceRegistry) {
+    this.serviceRegistry = serviceRegistry;
+  }
 }

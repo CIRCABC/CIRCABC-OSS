@@ -32,34 +32,33 @@ package eu.cec.digit.circabc.service.admin.debug;
  * @see org.quartz.JobDetail
  */
 public interface JobReport {
+  /**
+   * The Full name of a job is the result of the concatenation of its group and its name.
+   *
+   * @return the full name of the job.
+   */
+  String getFullname();
 
-    /**
-     * The Full name of a job is the result of the concatenation of its group and its name.
-     *
-     * @return the full name of the job.
-     */
-    String getFullname();
+  /**
+   * Since the most of jobs are in located in the group called <i><b>DEFAULT</b></i>, this method
+   * return a user friendly unique name whitout the group if this last is named <i>DEFAULT</i>
+   */
+  String getSimpleName();
 
-    /**
-     * Since the most of jobs are in located in the group called <i><b>DEFAULT</b></i>, this method
-     * return a user friendly unique name whitout the group if this last is named <i>DEFAULT</i>
-     */
-    String getSimpleName();
+  /**
+   * @return the description of the job (if setted)
+   */
+  String getDescrition();
 
-    /**
-     * @return the description of the job (if setted)
-     */
-    String getDescrition();
+  /**
+   * @return the class instance where the job is defined
+   */
+  String getJobClass();
 
-    /**
-     * @return the class instance where the job is defined
-     */
-    String getJobClass();
-
-    /**
-     * Whether or not the Job implements the interface StatefulJob
-     *
-     * @return if the job is statefull
-     */
-    boolean isStatefull();
+  /**
+   * Whether or not the Job implements the interface StatefulJob
+   *
+   * @return if the job is statefull
+   */
+  boolean isStatefull();
 }

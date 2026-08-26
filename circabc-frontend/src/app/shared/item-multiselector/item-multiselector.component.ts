@@ -1,23 +1,22 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { Component, Input, OnInit, output, input } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NameValue } from 'app/core/generated/circabc';
 
 @Component({
   selector: 'cbc-item-multiselector',
   templateUrl: './item-multiselector.component.html',
-  styleUrls: ['./item-multiselector.component.scss'],
+  styleUrl: './item-multiselector.component.scss',
   preserveWhitespaces: true,
+  imports: [ReactiveFormsModule],
 })
 export class ItemMultiselectorComponent implements OnInit {
-  @Input()
-  public availableItems!: NameValue[];
+  public readonly availableItems = input.required<NameValue[]>();
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   public selectedItems!: NameValue[];
-  @Output()
-  public readonly selectedItemsChange: EventEmitter<NameValue[]> =
-    new EventEmitter();
-  @Output()
-  public readonly itemsChanged: EventEmitter<void> = new EventEmitter();
+  public readonly selectedItemsChange = output<NameValue[]>();
+  public readonly itemsChanged = output();
 
   public multiSelectForm!: FormGroup;
 
@@ -40,7 +39,7 @@ export class ItemMultiselectorComponent implements OnInit {
     }
     for (const availableSelectedItem of this.multiSelectForm.controls
       .availableSelectedItems.value) {
-      for (const availableItem of this.availableItems) {
+      for (const availableItem of this.availableItems()) {
         if (
           availableSelectedItem === availableItem.value &&
           !this.itemExists(this.selectedItems, availableItem)
@@ -75,7 +74,7 @@ export class ItemMultiselectorComponent implements OnInit {
       }
     }
     this.multiSelectForm.controls.availableSelectedItems.patchValue(
-      this.availableItems
+      this.availableItems()
     );
     this.selectedItemsChange.emit(this.selectedItems);
     this.itemsChanged.emit();

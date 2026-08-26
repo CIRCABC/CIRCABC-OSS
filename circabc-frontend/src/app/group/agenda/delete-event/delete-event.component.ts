@@ -1,21 +1,27 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { Component, Input, OnInit, output } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { TranslocoModule } from '@jsverse/transloco';
 import { EventItemDefinition, EventsService } from 'app/core/generated/circabc';
+import { ModalComponent } from 'app/shared/modal/modal.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-delete-event',
   templateUrl: './delete-event.component.html',
-  styleUrls: ['./delete-event.component.scss'],
+  styleUrl: './delete-event.component.scss',
   preserveWhitespaces: true,
+  imports: [ModalComponent, ReactiveFormsModule, TranslocoModule],
 })
 export class DeleteEventComponent implements OnInit {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   public showModal = false;
-  @Output()
-  public readonly modalHide = new EventEmitter();
-  @Output()
-  public readonly eventMeetingDeleted = new EventEmitter();
+  public readonly modalHide = output();
+  public readonly eventMeetingDeleted = output();
+  // TODO: Skipped for migration because:
+  //  This input is used in a control flow expression (e.g. `@if` or `*ngIf`)
+  //  and migrating would break narrowing currently.
   @Input()
   public event!: EventItemDefinition;
   public form!: FormGroup;
@@ -44,11 +50,7 @@ export class DeleteEventComponent implements OnInit {
   }
 
   public isSingleEvent() {
-    return (
-      this.event !== undefined &&
-      this.event.occurrenceRate !== undefined &&
-      this.event.occurrenceRate.startsWith('OnlyOnce|')
-    );
+    return this.event?.occurrenceRate?.startsWith('OnlyOnce|');
   }
 
   public async delete() {

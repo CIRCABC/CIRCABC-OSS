@@ -1,0 +1,81 @@
+<form [formGroup]="decliningForm">
+  <div style="display: flex">
+    <div style="padding-right: 15px">
+      <img
+        src="img/Rejected.png"
+        alt="refuse"
+        style="float: left; margin-right: 25px"
+      />
+    </div>
+    <div style="flex: 1">
+      <b>
+        <span
+          [innerHTML]="'group.delete.request.declining.title' | transloco"
+        ></span>
+      </b>
+    </div>
+  </div>
+
+  <div class="field">
+    <div class="flexLabel">
+      <label for="argument">{{ 'label.justification' | transloco }}</label>
+    </div>
+    <div class="flexField editor-container">
+      <p-editor
+        id="argument"
+        formControlName="argument"
+        [style]="{ height: '250px' }"
+      >
+        <p-header>
+          <span class="ql-formats">
+            <select class="ql-header">
+              <option value="1"></option>
+              <option value="2"></option>
+              <option value="3"></option>
+              <option selected></option>
+              <option value="4"></option>
+              <option value="5"></option>
+              <option value="6"></option>
+            </select>
+          </span>
+          <span class="ql-formats">
+            <button class="ql-bold" aria-label="Bold"></button>
+            <button class="ql-italic" aria-label="Italic"></button>
+            <button class="ql-underline" aria-label="Underline"></button>
+            <button class="ql-strike" aria-label="Strike"></button>
+          </span>
+          <span class="ql-formats">
+            <button class="ql-list" aria-label="list" value="ordered"></button>
+            <button class="ql-list" aria-label="list" value="bullet"></button>
+          </span>
+          <span class="ql-formats">
+            <button class="ql-blockquote" aria-label="Strike"></button>
+            <button class="ql-link" aria-label="link"></button>
+          </span>
+        </p-header>
+      </p-editor>
+    </div>
+  </div>
+
+  @if (processing) {
+  <div class="actions">
+    <p>
+      {{ 'label.processing' | transloco }}...
+      <cbc-spinner></cbc-spinner>
+    </p>
+  </div>
+  } @if (!processing) {
+  <div class="actions buttons-group">
+    <a
+      tabindex="0"
+      class="cta"
+      (click)="!decliningForm.valid ? '' : reject()"
+      [class.disabled]="!decliningForm.valid"
+      >{{ 'label.send' | transloco }}</a
+    >
+    <a tabindex="0" class="button" (click)="dialogRef.close(false)"
+      >{{ 'label.cancel' | transloco }}</a
+    >
+  </div>
+  }
+</form>

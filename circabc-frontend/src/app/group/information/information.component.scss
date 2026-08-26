@@ -1,4 +1,4 @@
-@use '~css/global/variables-mixins-keyframes';
+@use 'css/global/variables-mixins-keyframes';
 
 .information--container {
   .pager {
@@ -136,6 +136,10 @@
     display: flex;
     flex: 1;
     max-width: 800px;
+  }
+
+  .span-column-max-window {
+    max-width: unset;
   }
 }
 

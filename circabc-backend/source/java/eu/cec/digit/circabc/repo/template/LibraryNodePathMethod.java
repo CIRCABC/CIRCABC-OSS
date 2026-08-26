@@ -22,13 +22,14 @@ import freemarker.template.TemplateModelException;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.Path;
 
-public class LibraryNodePathMethod extends NodeRefBaseTemplateProcessorExtension
-        implements TemplateMethodModelEx {
+public class LibraryNodePathMethod
+  extends NodeRefBaseTemplateProcessorExtension
+  implements TemplateMethodModelEx {
 
-    @Override
-    public String getResult(NodeRef nodeRef) throws TemplateModelException {
-        Path path = getNodeService().getPath(nodeRef);
-        boolean includeFirstSlash = true;
-        return PathUtils.getLibraryPath(path, includeFirstSlash);
-    }
+  @Override
+  public String getResult(NodeRef nodeRef) throws TemplateModelException {
+    Path path = getNodeService().getPath(nodeRef);
+    boolean includeFirstSlash = true;
+    return PathUtils.getLibraryPath(path, includeFirstSlash);
+  }
 }

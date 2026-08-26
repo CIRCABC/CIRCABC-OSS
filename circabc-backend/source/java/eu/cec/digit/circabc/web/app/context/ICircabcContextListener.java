@@ -32,41 +32,39 @@ package eu.cec.digit.circabc.web.app.context;
  * @author yanick pignot
  */
 public interface ICircabcContextListener {
+  /**
+   * Method called by UICircabcContextService.circabcLeaved() to inform all registered beans that
+   * the user don't longer navigate into circabc
+   */
+  void circabcLeaved();
 
-    /**
-     * Method called by UICircabcContextService.circabcLeaved() to inform all registered beans that
-     * the user don't longer navigate into circabc
-     */
-    void circabcLeaved();
+  /**
+   * Method called by UICircabcContextService.circabcEntered() to inform all registered beans that
+   * the user was not in circabc and now it enters into.
+   */
+  void circabcEntered();
 
-    /**
-     * Method called by UICircabcContextService.circabcEntered() to inform all registered beans that
-     * the user was not in circabc and now it enters into.
-     */
-    void circabcEntered();
+  /**
+   * Method called by UICircabcContextService.categoryHeaderChanged() to inform all registered beans
+   * that the user change of Category Header
+   */
+  void categoryHeaderChanged();
 
-    /**
-     * Method called by UICircabcContextService.categoryHeaderChanged() to inform all registered beans
-     * that the user change of Category Header
-     */
-    void categoryHeaderChanged();
+  /**
+   * Method called by UICircabcContextService.categoryChanged() to inform all registered beans that
+   * the user change of Category
+   */
+  void categoryChanged();
 
-    /**
-     * Method called by UICircabcContextService.categoryChanged() to inform all registered beans that
-     * the user change of Category
-     */
-    void categoryChanged();
+  /**
+   * Method called by UICircabcContextService.igRootChanged() to inform all registered beans that
+   * the user change of IG root
+   */
+  void igRootChanged();
 
-    /**
-     * Method called by UICircabcContextService.igRootChanged() to inform all registered beans that
-     * the user change of IG root
-     */
-    void igRootChanged();
-
-    /**
-     * Method called by UICircabcContextService.igServiceChanged() to inform all registered beans that
-     * the user change of IG Service
-     */
-    void igServiceChanged();
-
+  /**
+   * Method called by UICircabcContextService.igServiceChanged() to inform all registered beans that
+   * the user change of IG Service
+   */
+  void igServiceChanged();
 }

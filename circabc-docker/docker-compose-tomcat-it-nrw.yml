@@ -1,0 +1,40 @@
+version: "3"
+services:
+  mariadb:
+    container_name: mariadb
+    image: mariadb:5
+    ports:
+      - "3306:3306"  
+    environment:
+        - MYSQL_ROOT_PASSWORD=password
+    volumes:
+        - ./mysql/init:/docker-entrypoint-initdb.d/:ro
+    command: --lower_case_table_names=1 --transaction-isolation=READ-COMMITTED --innodb_flush_method=O_DSYNC --innodb_log_file_size=48M
+  tomcat:
+    build: tomcat-it-nrw
+    image: tomcat-circabc-it-nrw
+    ports:
+      - "81:8080"
+    container_name: tomcat
+    depends_on:
+      - mariadb
+    volumes:
+      - ./tomcat/license:/usr/local/tomcat/lib/license
+  angular:
+    build: angular
+    image: angular-circabc
+    ports:
+        - "82:80"
+    container_name: angular
+    depends_on:
+      - tomcat
+  proxy: 
+    image: nginx:alpine
+    container_name: proxy-circabc
+    depends_on:
+      - angular
+    volumes:
+      - ./proxy/conf:/etc/nginx
+    ports:
+      - 80:80
+      - 443:443

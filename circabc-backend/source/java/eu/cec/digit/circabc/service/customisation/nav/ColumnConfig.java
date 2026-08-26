@@ -22,34 +22,33 @@ package eu.cec.digit.circabc.service.customisation.nav;
  * @author Yanick Pignot
  */
 public interface ColumnConfig {
+  /**
+   * @return the converter
+   */
+  String getConverter();
 
-    /**
-     * @return the converter
-     */
-    String getConverter();
+  /**
+   * @return the label
+   */
+  String getLabel();
 
-    /**
-     * @return the label
-     */
-    String getLabel();
+  /**
+   * @param value
+   */
+  void setLabel(String value);
 
-    /**
-     * @param value
-     */
-    void setLabel(String value);
+  /**
+   * @return the name
+   */
+  String getName();
 
-    /**
-     * @return the name
-     */
-    String getName();
+  /**
+   * @return the resolver
+   */
+  String getResolver();
 
-    /**
-     * @return the resolver
-     */
-    String getResolver();
-
-    /**
-     * @return true if column is dynamic property otherwise false
-     */
-    boolean isDynamicProperty();
+  /**
+   * @return true if column is dynamic property otherwise false
+   */
+  boolean isDynamicProperty();
 }

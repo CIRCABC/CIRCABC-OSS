@@ -1,20 +1,21 @@
-<?xml version='1.0' encoding='UTF-8'?>
-
+<?xml version='1.0' encoding='UTF-8' ?>
 <!--+
     |     Copyright European Community 2006 - Licensed under the EUPL V.1.0
     |
     |  		   http://ec.europa.eu/idabc/en/document/6523
     |
     +-->
-
-<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
-
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN'
+  'http://www.springframework.org/dtd/spring-beans.dtd'>
 <beans>
 
   <!-- Task scheduler -->
   <!-- Alfresco Triggers should not appear here - the scheduler should be injected into the trigger definition -->
   <!-- This bean should not need to apear else where in extension configuration -->
-  <bean id="schedulerFactory" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+  <bean
+    id="schedulerFactory"
+    class="org.springframework.scheduling.quartz.SchedulerFactoryBean"
+  >
       <!-- Property to allow Jobs to be viewed and managed in Javamelody -->
    	  <property name="exposeSchedulerInRepository" value="true" />
       <property name="waitForJobsToCompleteOnShutdown">
@@ -57,7 +58,10 @@
 
 	<bean id="emailListenersTrigger" class="org.alfresco.util.TriggerBean">
 		<property name="jobDetail">
-			<bean id="emailListenersJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
+			<bean
+        id="emailListenersJobDetail"
+        class="org.springframework.scheduling.quartz.JobDetailBean"
+      >
 				<property name="jobClass">
 					<value>eu.cec.digit.circabc.service.event.MeetingResponseListener</value>
 				</property>
@@ -84,11 +88,18 @@
 		</property>
 	</bean>
 
-   	<bean id="plannedGlobalStatisticsTrigger" class="org.alfresco.util.CronTriggerBean">
+   	<bean
+    id="plannedGlobalStatisticsTrigger"
+    class="org.alfresco.util.CronTriggerBean"
+  >
 		<property name="jobDetail">
-			<bean id="plannedGlobalStatisticsJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
+			<bean
+        id="plannedGlobalStatisticsJobDetail"
+        class="org.springframework.scheduling.quartz.JobDetailBean"
+      >
 				<property name="jobClass">
-					<value>eu.cec.digit.circabc.service.statistics.global.GlobalStatisticsJobListener</value>
+					<value
+          >eu.cec.digit.circabc.service.statistics.global.GlobalStatisticsJobListener</value>
 				</property>
 				<property name="jobDataAsMap">
 					<map>
@@ -115,9 +126,13 @@
 	
 	<bean id="autoUploadFtpTrigger" class="org.alfresco.util.CronTriggerBean">
 		<property name="jobDetail">
-			<bean id="autoUploadFtpJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
+			<bean
+        id="autoUploadFtpJobDetail"
+        class="org.springframework.scheduling.quartz.JobDetailBean"
+      >
 				<property name="jobClass">
-					<value>eu.cec.digit.circabc.service.config.auto.upload.AutoUploadJobListener</value>
+					<value
+          >eu.cec.digit.circabc.service.config.auto.upload.AutoUploadJobListener</value>
 				</property>
 				<property name="jobDataAsMap">
 					<map>
@@ -141,7 +156,10 @@
 -->
   <bean id="machineTranslationTrigger" class="org.alfresco.util.TriggerBean">
 		<property name="jobDetail">
-			<bean id="machineTranslationJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
+			<bean
+        id="machineTranslationJobDetail"
+        class="org.springframework.scheduling.quartz.JobDetailBean"
+      >
 				<property name="jobClass">
 					<value>eu.cec.digit.circabc.repo.translation.MachineTranslationJob</value>
 				</property>
@@ -174,7 +192,10 @@
 	<!-- Restart after 2 hours -->
 	<bean id="previewPDFRenditionTrigger" class="org.alfresco.util.TriggerBean">
 		<property name="jobDetail">
-			<bean id="previewPDFRenditionJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
+			<bean
+        id="previewPDFRenditionJobDetail"
+        class="org.springframework.scheduling.quartz.JobDetailBean"
+      >
 				<property name="jobClass">
 					<value>eu.cec.digit.circabc.service.rendition.job.PreviewPDFRenditionJob</value>
 				</property>
@@ -208,7 +229,10 @@
 	
 	<bean id="renderTrigger" class="org.alfresco.util.TriggerBean">
 		<property name="jobDetail">
-			<bean id="renderJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
+			<bean
+        id="renderJobDetail"
+        class="org.springframework.scheduling.quartz.JobDetailBean"
+      >
 				<property name="jobClass">
 					<value>eu.cec.digit.circabc.service.rendition.job.RenderJob</value>
 				</property>
@@ -248,9 +272,15 @@
 	Cron that checking machine translations
 	and update repository
 -->
-  <bean id="machineTranslationCleanTrigger" class="org.alfresco.util.CronTriggerBean">
+  <bean
+    id="machineTranslationCleanTrigger"
+    class="org.alfresco.util.CronTriggerBean"
+  >
 		<property name="jobDetail">
-			<bean id="machineTranslationCleanJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
+			<bean
+        id="machineTranslationCleanJobDetail"
+        class="org.springframework.scheduling.quartz.JobDetailBean"
+      >
 				<property name="jobClass">
 					<value>eu.cec.digit.circabc.repo.translation.MachineTranslationCleanJob</value>
 				</property>
@@ -278,7 +308,10 @@
 
 <bean id="ldapSyncJobTrigger" class="org.alfresco.util.CronTriggerBean">
 		<property name="jobDetail">
-			<bean id="ldapSyncJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
+			<bean
+        id="ldapSyncJobDetail"
+        class="org.springframework.scheduling.quartz.JobDetailBean"
+      >
 				<property name="jobClass">
 					<value>eu.cec.digit.circabc.repo.user.LdapSyncJob</value>
 				</property>
@@ -314,7 +347,10 @@
 
 	<bean id="logJobTrigger" class="org.alfresco.util.TriggerBean">
 		<property name="jobDetail">
-			<bean id="logJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
+			<bean
+        id="logJobDetail"
+        class="org.springframework.scheduling.quartz.JobDetailBean"
+      >
 				<property name="jobClass">
 					<value>eu.cec.digit.circabc.repo.log.LogJob</value>
 				</property>

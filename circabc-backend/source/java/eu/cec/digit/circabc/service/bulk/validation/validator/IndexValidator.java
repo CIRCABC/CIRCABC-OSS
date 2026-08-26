@@ -18,10 +18,11 @@ package eu.cec.digit.circabc.service.bulk.validation.validator;
 
 import eu.cec.digit.circabc.service.bulk.indexes.IndexRecord;
 import eu.cec.digit.circabc.service.bulk.indexes.message.ValidationMessage;
-
 import java.util.List;
 
 public interface IndexValidator {
-
-    void validate(final IndexRecord indexRecord, final List<ValidationMessage> messages);
+  void validate(
+    final IndexRecord indexRecord,
+    final List<ValidationMessage> messages
+  );
 }

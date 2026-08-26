@@ -1,0 +1,1039 @@
+Index: pom.xml
+===================================================================
+--- pom.xml	(revision 48)
++++ pom.xml	(working copy)
+@@ -181,7 +181,7 @@
+                     -->
+           <sourceEncoding>utf-8</sourceEncoding>
+           <minimumTokens>100</minimumTokens>
+-          <targetJdk>1.5</targetJdk>
++          <targetJdk>1.6</targetJdk>
+         </configuration>
+       </plugin>
+       
+@@ -245,8 +245,8 @@
+         <!-- http://maven.apache.org/plugins/maven-compile-plugin/plugin-info.html -->
+         <artifactId>maven-compiler-plugin</artifactId>
+         <configuration>
+-          <source>1.4</source>
+-          <target>1.4</target>
++          <source>1.6</source>
++          <target>1.6</target>
+           <debug>true</debug>
+         </configuration>
+       </plugin>
+@@ -276,7 +276,7 @@
+         <configuration>
+           <downloadSources>true</downloadSources>
+           <linkModules>true</linkModules>
+-          <jdkLevel>1.4</jdkLevel>
++          <jdkLevel>1.6</jdkLevel>
+         </configuration>
+       </plugin>
+       <plugin>
+Index: src/java/com/icegreen/greenmail/AbstractServer.java
+===================================================================
+--- src/java/com/icegreen/greenmail/AbstractServer.java	(revision 48)
++++ src/java/com/icegreen/greenmail/AbstractServer.java	(working copy)
+@@ -2,6 +2,9 @@
+  * Copyright (c) 2006 Wael Chatila / Icegreen Technologies. All Rights Reserved.
+  * This software is released under the LGPL which is available at http://www.gnu.org/copyleft/lesser.html
+  *
++ * 2012 - Alfresco Software, Ltd.
++ * Alfresco Software has modified source of this file
++ * The details of changes as svn diff can be found in svn at location root/projects/3rd-party/src
+  */
+ package com.icegreen.greenmail;
+ 
+@@ -66,6 +69,10 @@
+         return setup;
+     }
+ 
++    public void deregisterHandler(Object handler){
++        this.handlers.remove(handler);
++    }
++
+     public String toString() {
+         return null!=setup? setup.getProtocol()+':'+setup.getPort() : super.toString();
+     }
+Index: src/java/com/icegreen/greenmail/imap/commands/CommandParser.java
+===================================================================
+--- src/java/com/icegreen/greenmail/imap/commands/CommandParser.java	(revision 48)
++++ src/java/com/icegreen/greenmail/imap/commands/CommandParser.java	(working copy)
+@@ -3,6 +3,10 @@
+  * This software is released under the LGPL which is available at http://www.gnu.org/copyleft/lesser.html
+  * This file has been modified by the copyright holder. Original file can be found at http://james.apache.org
+  * -------------------------------------------------------------------
++ * 
++ * 2011 - Alfresco Software, Ltd.
++ * Alfresco Software has modified source of this file
++ * The details of changes as svn diff can be found in svn at location root/projects/3rd-party/src 
+  */
+ package com.icegreen.greenmail.imap.commands;
+ 
+@@ -17,14 +21,21 @@
+ import java.text.SimpleDateFormat;
+ import java.util.ArrayList;
+ import java.util.Date;
++import java.util.Locale;
+ 
++import org.slf4j.Logger;
++import org.slf4j.LoggerFactory;
++
+ /**
+  * @author Darrell DeBoer <darrell@apache.org>
+- * @version $Revision: 109034 $
++ * @version $Revision: 109034 $ QuickFix: Additional date parsing procedures was added in the dateTime method (2009-02-04)
+  */
+ public class CommandParser {
+     private static final char[] EMPTY_CHAR_ARRAY = new char[0];
+ 
++    /** New logger. */
++    protected final Logger log = LoggerFactory.getLogger(getClass());
++    
+     /**
+      * Reads an argument of type "atom" from the request.
+      */
+@@ -106,13 +117,37 @@
+         } else {
+             throw new ProtocolException("DateTime values must be quoted.");
+         }
+-
++        // Quick fix for DateTime parsing.
++        // 
+         DateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy hh:mm:ss zzzz");
+-        try {
+-            return dateFormat.parse(dateString);
+-        } catch (ParseException e) {
++        Date result = null;
++        try
++        {
++            result = dateFormat.parse(dateString);
++        }
++        catch (ParseException e)
++        {
++            String message = String.format("Unparseble date '%s'. Pattern used: 'dd-MMM-yyyy hh:mm:ss zzzz'", dateString);
++            log.warn(message);
++        }
++        if (result == null)
++        {
++            dateFormat = new SimpleDateFormat("dd-MMM-yyyy hh:mm:ss Z", Locale.ENGLISH);
++            try
++            {
++                result = dateFormat.parse(dateString);
++            }
++            catch (ParseException e)
++            {
++                String message = String.format("Unparseble date '%s'. Pattern used: 'dd-MMM-yyyy hh:mm:ss Z'", dateString);
++                log.warn(message);
++            }
++        }
++        if (result == null)
++        {
+             throw new ProtocolException("Invalid date format.");
+         }
++        return result;
+     }
+ 
+     /**
+@@ -200,7 +235,7 @@
+         }
+ 
+         int size = Integer.parseInt(digits.toString());
+-        byte[] buffer = new byte[size];
++        char[] buffer = new char[size];
+         request.read(buffer);
+ 
+         return new String(buffer);
+@@ -276,18 +311,30 @@
+     public Flags flagList(ImapRequestLineReader request) throws ProtocolException {
+         Flags flags = new Flags();
+         request.nextWordChar();
+-        consumeChar(request, '(');
+-        CharacterValidator validator = new NoopCharValidator();
+-        String nextWord = consumeWord(request, validator);
+-        while (!nextWord.endsWith(")")) {
+-            setFlag(nextWord, flags);
+-            nextWord = consumeWord(request, validator);
++        char nextChar = request.consume();
++        if (nextChar == '\\') {
++            // limit this to only one flag that is not enclosed to braces 
++            CharacterValidator validator = new NoopCharValidator();
++            String nextWord = consumeWord(request, validator);
++            if (nextWord.length() == 0) {
++                throw new ProtocolException("Invalid fag list");
++            }
++            setFlag('\\' + nextWord, flags);
++        } else if (nextChar == '('){
++            //consumeChar(request, '(');
++            CharacterValidator validator = new NoopCharValidator();
++            String nextWord = consumeWord(request, validator);
++            while (!nextWord.endsWith(")")) {
++                setFlag(nextWord, flags);
++                nextWord = consumeWord(request, validator);
++            }
++            // Got the closing ")", may be attached to a word.
++            if (nextWord.length() > 1) {
++                setFlag(nextWord.substring(0, nextWord.length() - 1), flags);
++            }
++        } else {
++            throw new ProtocolException("Invalid fag list");
+         }
+-        // Got the closing ")", may be attached to a word.
+-        if (nextWord.length() > 1) {
+-            setFlag(nextWord.substring(0, nextWord.length() - 1), flags);
+-        }
+-
+         return flags;
+     }
+ 
+Index: src/java/com/icegreen/greenmail/imap/commands/FetchCommand.java
+===================================================================
+--- src/java/com/icegreen/greenmail/imap/commands/FetchCommand.java	(revision 48)
++++ src/java/com/icegreen/greenmail/imap/commands/FetchCommand.java	(working copy)
+@@ -3,22 +3,41 @@
+  * This software is released under the LGPL which is available at http://www.gnu.org/copyleft/lesser.html
+  * This file has been modified by the copyright holder. Original file can be found at http://james.apache.org
+  * -------------------------------------------------------------------
++ * 
++ * 2010 - Alfresco Software, Ltd.
++ * Alfresco Software has modified source of this file
++ * The details of changes as svn diff can be found in svn at location root/projects/3rd-party/src 
+  */
+ package com.icegreen.greenmail.imap.commands;
+ 
+-import com.icegreen.greenmail.util.GreenMailUtil;
+-import com.icegreen.greenmail.imap.*;
+-import com.icegreen.greenmail.store.FolderException;
+-import com.icegreen.greenmail.store.MessageFlags;
+-import com.icegreen.greenmail.store.SimpleStoredMessage;
++import java.io.ByteArrayOutputStream;
++import java.io.InputStream;
++import java.io.UnsupportedEncodingException;
++import java.nio.charset.Charset;
++import java.nio.charset.UnsupportedCharsetException;
++import java.util.ArrayList;
++import java.util.Collection;
++import java.util.Enumeration;
++import java.util.HashSet;
++import java.util.Iterator;
++import java.util.List;
++import java.util.Set;
+ 
+ import javax.mail.Flags;
+ import javax.mail.internet.MimeMessage;
+ import javax.mail.internet.MimeMultipart;
+-import java.io.ByteArrayOutputStream;
+-import java.util.*;
+ 
++import com.icegreen.greenmail.imap.ImapRequestLineReader;
++import com.icegreen.greenmail.imap.ImapResponse;
++import com.icegreen.greenmail.imap.ImapSession;
++import com.icegreen.greenmail.imap.ImapSessionFolder;
++import com.icegreen.greenmail.imap.ProtocolException;
++import com.icegreen.greenmail.store.FolderException;
++import com.icegreen.greenmail.store.MessageFlags;
++import com.icegreen.greenmail.store.SimpleStoredMessage;
++import com.icegreen.greenmail.util.GreenMailUtil;
+ 
++
+ /**
+  * Handles processeing for the FETCH imap command.
+  *
+@@ -203,8 +222,47 @@
+             addLiteral(bytes, response);
+         } else {
+             int partNumber = Integer.parseInt(sectionSpecifier) - 1;
+-            MimeMultipart mp = (MimeMultipart) mimeMessage.getContent();
+-            byte[] bytes = GreenMailUtil.getBodyAsBytes(mp.getBodyPart(partNumber));
++            /*
++            * JavaDoc of MimeMessage.getContent() says:
++            * 
++            * Return the content as a Java object. The type of this
++            * object is dependent on the content itself. For 
++            * example, the native format of a "text/plain" content
++            * is usually a String object. The native format for a "multipart"
++            * message is always a Multipart subclass. For content types that are
++            * unknown to the DataHandler system, an input stream is returned
++            * as the content. <p>
++            * 
++            * So we cannot just cast to MimeMultipart, we should check if
++            * it can be String at least.
++            */
++            Object content =  mimeMessage.getContent();
++            byte[] bytes = null;
++            if (content instanceof String) {
++                if (partNumber == 0) {
++                    try {
++                        bytes = ((String) content).getBytes(EIGHT_BIT_ENCODING);
++                    } catch (UnsupportedEncodingException e) {
++                        bytes = ((String) content).getBytes();
++                    }
++                } else {
++                    bytes = new byte[0];
++                }
++            } else if (content instanceof MimeMultipart) {
++                MimeMultipart mp = (MimeMultipart) mimeMessage.getContent();
++                bytes = GreenMailUtil.getBodyAsBytes(mp.getBodyPart(partNumber));
++            } else if (content instanceof InputStream) {
++                ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
++                InputStream input = (InputStream) content;
++                byte buffer[] = new byte[4096];
++                for(int n = 0; -1 != (n = input.read(buffer));)
++                {
++                    baos.write(buffer, 0, n);
++                }
++                bytes = baos.toByteArray();
++            } else {
++                bytes = new byte[0];
++            }
+             bytes = doPartial(partial, bytes, response);
+             addLiteral(bytes, response);
+         }
+@@ -237,11 +295,13 @@
+         response.append(bytes.length);
+         response.append('}');
+         response.append("\r\n");
+-
+-        for (int i = 0; i < bytes.length; i++) {
+-            byte b = bytes[i];
+-            response.append((char) b);
++        String encodedBytes = null;
++        try {
++            encodedBytes = new String(bytes, Charset.forName(EIGHT_BIT_ENCODING));
++        } catch (UnsupportedCharsetException ex) {
++            encodedBytes = new String(bytes);
+         }
++        response.append(encodedBytes);
+     }
+ 
+     // TODO should do this at parse time.
+@@ -311,14 +371,27 @@
+             FetchRequest fetch = new FetchRequest();
+ 
+             char next = nextNonSpaceChar(request);
++            if ('(' == next)
++            {
+             consumeChar(request, '(');
+ 
+             next = nextNonSpaceChar(request);
+-            while (next != ')') {
++            }
++            boolean a = true;
++            try
++            {
++
++                while (true && next != ')')
++                {
+                 addNextElement(request, fetch);
+                 next = nextNonSpaceChar(request);
+             }
+-
++            }
++            catch (ProtocolException e)
++            {
++                a = false;
++            }
++            if (a)
+             consumeChar(request, ')');
+ 
+             return fetch;
+@@ -328,11 +401,20 @@
+                 throws ProtocolException {
+             char next = nextCharInLine(command);
+             StringBuffer element = new StringBuffer();
+-            while (next != ' ' && next != '[' && next != ')') {
++            try
++            {
++
++                while (next != ' ' && next != '[' && next != ')')
++                {
+                 element.append(next);
+                 command.consume();
+                 next = nextCharInLine(command);
+             }
++            }
++            catch (ProtocolException e)
++            {
++                next = ')';
++            }
+             String name = element.toString();
+             // Simple elements with no '[]' parameters.
+             if (next == ' ' || next == ')') {
+@@ -389,8 +471,16 @@
+                 String parameter = sectionIdentifier.toString();
+ 
+                 String partial = null;
++                try
++                {
+                 next = nextCharInLine(command);
+-                if ('<' == next) {
++                }
++                catch (ProtocolException e)
++                {
++                    next = ')';
++                }
++                if ('<' == next)
++                {
+                     partial = "";
+                     consumeChar(command, '<');
+                     next = nextCharInLine(command);
+Index: src/java/com/icegreen/greenmail/imap/commands/ListCommand.java
+===================================================================
+--- src/java/com/icegreen/greenmail/imap/commands/ListCommand.java	(revision 48)
++++ src/java/com/icegreen/greenmail/imap/commands/ListCommand.java	(working copy)
+@@ -3,6 +3,10 @@
+  * This software is released under the LGPL which is available at http://www.gnu.org/copyleft/lesser.html
+  * This file has been modified by the copyright holder. Original file can be found at http://james.apache.org
+  * -------------------------------------------------------------------
++ * 
++ * 2011 - Alfresco Software, Ltd.
++ * Alfresco Software has modified source of this file
++ * The details of changes as svn diff can be found in svn at location root/projects/3rd-party/src 
+  */
+ package com.icegreen.greenmail.imap.commands;
+ 
+@@ -104,6 +108,9 @@
+             if (!folder.isSelectable()) {
+                 message.append("\\Noselect");
+             }
++            else {
++                message.append(folder.isMarked()? "\\Marked" : "\\Unmarked");
++            }
+             message.append(") \"");
+             message.append(HIERARCHY_DELIMITER_CHAR);
+             message.append("\" ");
+@@ -117,12 +124,9 @@
+                 }
+             }
+ 
+-            // TODO: need to check if the mailbox name needs quoting.
+-            if (mailboxName.length() == 0) {
+-                message.append("\"\"");
+-            } else {
+-                message.append(mailboxName);
+-            }
++            message.append('"');
++            message.append(mailboxName);
++            message.append('"');
+ 
+             response.commandResponse(this, message.toString());
+         }
+Index: src/java/com/icegreen/greenmail/imap/commands/SelectCommand.java
+===================================================================
+--- src/java/com/icegreen/greenmail/imap/commands/SelectCommand.java	(revision 48)
++++ src/java/com/icegreen/greenmail/imap/commands/SelectCommand.java	(working copy)
+@@ -3,12 +3,17 @@
+  * This software is released under the LGPL which is available at http://www.gnu.org/copyleft/lesser.html
+  * This file has been modified by the copyright holder. Original file can be found at http://james.apache.org
+  * -------------------------------------------------------------------
++ * 
++ * 2011 - Alfresco Software, Ltd.
++ * Alfresco Software has modified source of this file
++ * The details of changes as svn diff can be found in svn at location root/projects/3rd-party/src 
+  */
+ package com.icegreen.greenmail.imap.commands;
+ 
+ import com.icegreen.greenmail.imap.*;
+ import com.icegreen.greenmail.store.FolderException;
+ import com.icegreen.greenmail.store.MailFolder;
++import com.icegreen.greenmail.store.MessageFlags;
+ 
+ /**
+  * Handles processeing for the SELECT imap command.
+@@ -36,11 +41,9 @@
+         selectMailbox(mailboxName, session, isExamine);
+ 
+         ImapSessionFolder mailbox = session.getSelected();
+-        response.flagsResponse(mailbox.getPermanentFlags());
+         response.existsResponse(mailbox.getMessageCount());
+         final boolean resetRecent = !isExamine;
+         response.recentResponse(mailbox.getRecentCount(resetRecent));
+-        response.okResponse("UIDVALIDITY " + mailbox.getUidValidity(), null);
+ 
+         int firstUnseen = mailbox.getFirstUnseen();
+         if (firstUnseen > 0) {
+@@ -50,7 +53,10 @@
+             response.okResponse(null, "No messages unseen");
+         }
+ 
+-        response.permanentFlagsResponse(mailbox.getPermanentFlags());
++        response.okResponse("UIDVALIDITY " + mailbox.getUidValidity(), "UIDs valid");
++        response.okResponse("UIDNEXT " + mailbox.getUidNext(), "Predicted next UID");
++        response.flagsResponse(mailbox.getPermanentFlags());
++        response.okResponse("PERMANENTFLAGS " + MessageFlags.format(mailbox.getPermanentFlags()), "Limited");
+ 
+         if (mailbox.isReadonly()) {
+             response.commandComplete(this, "READ-ONLY");
+Index: src/java/com/icegreen/greenmail/imap/commands/StatusCommand.java
+===================================================================
+--- src/java/com/icegreen/greenmail/imap/commands/StatusCommand.java	(revision 48)
++++ src/java/com/icegreen/greenmail/imap/commands/StatusCommand.java	(working copy)
+@@ -3,6 +3,10 @@
+  * This software is released under the LGPL which is available at http://www.gnu.org/copyleft/lesser.html
+  * This file has been modified by the copyright holder. Original file can be found at http://james.apache.org
+  * -------------------------------------------------------------------
++ * 
++ * 2010 - Alfresco Software, Ltd.
++ * Alfresco Software has modified source of this file
++ * The details of changes as svn diff can be found in svn at location root/projects/3rd-party/src 
+  */
+ package com.icegreen.greenmail.imap.commands;
+ 
+@@ -44,7 +48,8 @@
+ 
+         MailFolder folder = getMailbox(mailboxName, session, true);
+ 
+-        StringBuffer buffer = new StringBuffer(mailboxName);
++        // Quotes mailboxName, for correct representation of name with whitespaces
++        StringBuffer buffer = new StringBuffer("\"" + mailboxName + "\"");
+         buffer.append(SP);
+         buffer.append("(");
+ 
+Index: src/java/com/icegreen/greenmail/imap/ImapConstants.java
+===================================================================
+--- src/java/com/icegreen/greenmail/imap/ImapConstants.java	(revision 48)
++++ src/java/com/icegreen/greenmail/imap/ImapConstants.java	(working copy)
+@@ -3,6 +3,10 @@
+  * This software is released under the LGPL which is available at http://www.gnu.org/copyleft/lesser.html
+  * This file has been modified by the copyright holder. Original file can be found at http://james.apache.org
+  * -------------------------------------------------------------------
++ * 
++ * 2010 - Alfresco Software, Ltd.
++ * Alfresco Software has modified source of this file
++ * The details of changes as svn diff can be found in svn at location root/projects/3rd-party/src 
+  */
+ package com.icegreen.greenmail.imap;
+ 
+@@ -20,10 +24,12 @@
+ 
+     String USER_NAMESPACE = "#mail";
+ 
+-    char HIERARCHY_DELIMITER_CHAR = '.';
++    char HIERARCHY_DELIMITER_CHAR = '/';
+     char NAMESPACE_PREFIX_CHAR = '#';
+     String HIERARCHY_DELIMITER = String.valueOf(HIERARCHY_DELIMITER_CHAR);
+     String NAMESPACE_PREFIX = String.valueOf(NAMESPACE_PREFIX_CHAR);
+ 
+     String INBOX_NAME = "INBOX";
++    
++    String EIGHT_BIT_ENCODING = "ISO-8859-1";
+ }
+Index: src/java/com/icegreen/greenmail/imap/ImapHandler.java
+===================================================================
+--- src/java/com/icegreen/greenmail/imap/ImapHandler.java	(revision 48)
++++ src/java/com/icegreen/greenmail/imap/ImapHandler.java	(working copy)
+@@ -3,15 +3,25 @@
+ * This software is released under the LGPL which is available at http://www.gnu.org/copyleft/lesser.html
+ * This file has been modified by the copyright holder. Original file can be found at http://james.apache.org
+ * -------------------------------------------------------------------
++* 
++* 2012 - Alfresco Software, Ltd.
++* Alfresco Software has modified source of this file
++* The details of changes as svn diff can be found in svn at location root/projects/3rd-party/src 
+ */
+ package com.icegreen.greenmail.imap;
+ 
++import java.io.BufferedOutputStream;
++import java.io.BufferedReader;
++import java.io.IOException;
++import java.io.InputStream;
++import java.io.InputStreamReader;
++import java.io.OutputStream;
++import java.net.Socket;
++
++import com.icegreen.greenmail.AbstractServer;
+ import com.icegreen.greenmail.user.UserManager;
+ import com.icegreen.greenmail.util.InternetPrintWriter;
+ 
+-import java.io.*;
+-import java.net.Socket;
+-
+ /**
+  * The handler class for IMAP connections.
+  * TODO: This is a quick cut-and-paste hack from POP3Handler. This, and the ImapServer
+@@ -53,6 +63,7 @@
+ 
+     UserManager userManager;
+     private ImapHostManager imapHost;
++    private AbstractServer server;
+ 
+     public ImapHandler(UserManager userManager, ImapHostManager imapHost, Socket socket) {
+         this.userManager = userManager;
+@@ -60,6 +71,11 @@
+         this.socket = socket;
+     }
+ 
++    public ImapHandler(UserManager userManager, ImapHostManager imapHost, Socket socket, AbstractServer server){
++        this(userManager, imapHost, socket);
++        this.server = server;
++    }
++
+     public void forceConnectionClose(final String message) {
+         ImapResponse response = new ImapResponse(outs);
+         response.byeResponse(message);
+@@ -73,7 +89,7 @@
+ 
+         try {
+             ins = socket.getInputStream();
+-            in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "ASCII"), 512);
++            in = new BufferedReader(new InputStreamReader(socket.getInputStream(), EIGHT_BIT_ENCODING), 4096);
+             remoteIP = socket.getInetAddress().getHostAddress();
+             remoteHost = socket.getInetAddress().getHostName();
+         } catch (IOException e) {
+@@ -169,6 +185,11 @@
+ //            }
+ //        }
+ 
++        // de-register from server
++        if (this.server != null){
++            this.server.deregisterHandler(this);
++        }
++
+         // Clear user data
+         session = null;
+     }
+Index: src/java/com/icegreen/greenmail/imap/ImapRequestLineReader.java
+===================================================================
+--- src/java/com/icegreen/greenmail/imap/ImapRequestLineReader.java	(revision 48)
++++ src/java/com/icegreen/greenmail/imap/ImapRequestLineReader.java	(working copy)
+@@ -3,6 +3,10 @@
+  * This software is released under the LGPL which is available at http://www.gnu.org/copyleft/lesser.html
+  * This file has been modified by the copyright holder. Original file can be found at http://james.apache.org
+  * -------------------------------------------------------------------
++ * 
++ * 2011 - Alfresco Software, Ltd.
++ * Alfresco Software has modified source of this file
++ * The details of changes as svn diff can be found in svn at location root/projects/3rd-party/src 
+  */
+ package com.icegreen.greenmail.imap;
+ 
+@@ -134,16 +138,20 @@
+      * @param holder A char array which will be filled with chars read from the underlying reader.
+      * @throws ProtocolException If a char can't be read into each array element.
+      */
+-    public void read(byte[] holder) throws ProtocolException {
++    public void read(char[] holder) throws ProtocolException {
+         int readTotal = 0;
+         try {
++            byte[] bytes = new byte[holder.length];
+             while (readTotal < holder.length) {
+                 int count = 0;
+-                count = input.read(holder, readTotal, holder.length - readTotal);
++                count = input.read(bytes, 0, holder.length - readTotal);
+                 if (count == -1) {
+-                    throw new ProtocolException("Unexpectd end of stream.");
++                    throw new ProtocolException("Unexpected end of stream.");
+                 }
+-                readTotal += count;
++                for (int i=0; i< count; i++)
++                {
++                    holder[readTotal++] = (char) ((int) bytes[i] & 0xff);
++                }
+             }
+             // Unset the next char.
+             nextSeen = false;
+@@ -162,6 +170,7 @@
+             throws ProtocolException {
+         try {
+             output.write('+');
++            output.write(' ');			
+             output.write('\r');
+             output.write('\n');
+             output.flush();
+Index: src/java/com/icegreen/greenmail/imap/ImapResponse.java
+===================================================================
+--- src/java/com/icegreen/greenmail/imap/ImapResponse.java	(revision 48)
++++ src/java/com/icegreen/greenmail/imap/ImapResponse.java	(working copy)
+@@ -6,13 +6,16 @@
+  */
+ package com.icegreen.greenmail.imap;
+ 
+-import com.icegreen.greenmail.util.InternetPrintWriter;
++import java.io.OutputStream;
++import java.io.OutputStreamWriter;
++import java.io.UnsupportedEncodingException;
++
++import javax.mail.Flags;
++
+ import com.icegreen.greenmail.imap.commands.ImapCommand;
+ import com.icegreen.greenmail.store.MessageFlags;
++import com.icegreen.greenmail.util.InternetPrintWriter;
+ 
+-import javax.mail.Flags;
+-import java.io.OutputStream;
+-
+ /**
+  * Class providing methods to send response messages from the server
+  * to the client.
+@@ -22,7 +25,11 @@
+     private String tag = UNTAGGED;
+ 
+     public ImapResponse(OutputStream output) {
+-        this.writer = new InternetPrintWriter(output, true);
++        try {
++            this.writer = new InternetPrintWriter(new OutputStreamWriter(output, ImapConstants.EIGHT_BIT_ENCODING), true);
++        } catch (UnsupportedEncodingException e) {
++            this.writer = new InternetPrintWriter(new OutputStreamWriter(output), true);
++        }
+     }
+ 
+     public void setTag(String tag) {
+Index: src/java/com/icegreen/greenmail/imap/ImapServer.java
+===================================================================
+--- src/java/com/icegreen/greenmail/imap/ImapServer.java	(revision 48)
++++ src/java/com/icegreen/greenmail/imap/ImapServer.java	(working copy)
+@@ -3,33 +3,60 @@
+ * This software is released under the LGPL which is available at http://www.gnu.org/copyleft/lesser.html
+ * This file has been modified by the copyright holder. Original file can be found at http://james.apache.org
+ * -------------------------------------------------------------------
++*
++* 2012 - Alfresco Software, Ltd.
++* Alfresco Software has modified source of this file
++* The details of changes as svn diff can be found in svn at location root/projects/3rd-party/src
+ */
+ package com.icegreen.greenmail.imap;
+ 
+ import com.icegreen.greenmail.AbstractServer;
+ import com.icegreen.greenmail.Managers;
++import com.icegreen.greenmail.util.DummySSLServerSocketFactory;
+ import com.icegreen.greenmail.util.ServerSetup;
+ 
+ import java.io.IOException;
+ import java.net.BindException;
++import java.net.ServerSocket;
+ import java.net.Socket;
++import java.util.ArrayList;
++import java.util.List;
+ import java.util.Vector;
+ import java.util.Iterator;
+ 
+-public final class ImapServer extends AbstractServer {
++import javax.net.ssl.SSLServerSocket;
+ 
++public class ImapServer extends AbstractServer {
++
+     public ImapServer(ServerSetup setup, Managers managers) {
+         super(setup, managers);
+     }
++    
++    protected synchronized ServerSocket openServerSocket() throws IOException {
++        ServerSocket ret;
++        if (setup.isSecure()) {
++            ret = (SSLServerSocket) DummySSLServerSocketFactory.getDefault().createServerSocket(
++                    setup.getPort(), 0, bindTo);
++        } else {
++            ret = new ServerSocket(setup.getPort(), 0, bindTo);
++        }
++        return ret;
++    }
+ 
+ 
+-
+     public synchronized void quit() {
+         try {
+-            for (Iterator iterator = handlers.iterator(); iterator.hasNext();) {
++            List copyOfData = new ArrayList(handlers);
++            for (Iterator iterator = copyOfData.iterator(); iterator.hasNext();)
++            {
+                 ImapHandler imapHandler = (ImapHandler) iterator.next();
+                 imapHandler.resetHandler();
+             }
++            handlers.clear();
+         } catch (Exception e) {
+             throw new RuntimeException(e);
+         }
+@@ -56,7 +79,7 @@
+             while (keepOn()) {
+                 try {
+                     Socket clientSocket = serverSocket.accept();
+-                    ImapHandler imapHandler = new ImapHandler(managers.getUserManager(), managers.getImapHostManager(), clientSocket);
++                    ImapHandler imapHandler = new ImapHandler(managers.getUserManager(), managers.getImapHostManager(), clientSocket, this);
+                     handlers.add(imapHandler);
+                     imapHandler.start();
+                 } catch (IOException ignored) {
+Index: src/java/com/icegreen/greenmail/imap/ImapSessionFolder.java
+===================================================================
+--- src/java/com/icegreen/greenmail/imap/ImapSessionFolder.java	(revision 48)
++++ src/java/com/icegreen/greenmail/imap/ImapSessionFolder.java	(working copy)
+@@ -3,6 +3,10 @@
+  * This software is released under the LGPL which is available at http://www.gnu.org/copyleft/lesser.html
+  * This file has been modified by the copyright holder. Original file can be found at http://james.apache.org
+  * -------------------------------------------------------------------
++ * 
++ * 2010 - Alfresco Software, Ltd.
++ * Alfresco Software has modified source of this file
++ * The details of changes as svn diff can be found in svn at location root/projects/3rd-party/src 
+  */
+ package com.icegreen.greenmail.imap;
+ 
+@@ -40,15 +44,9 @@
+         _folder = null;
+     }
+ 
+-    public int getMsn(long uid) throws FolderException {
+-        long[] uids = _folder.getMessageUids();
+-        for (int i = 0; i < uids.length; i++) {
+-            long messageUid = uids[i];
+-            if (uid == messageUid) {
+-                return i + 1;
+-            }
+-        }
+-        throw new FolderException("No such message.");
++    public int getMsn(long uid) throws FolderException
++    {
++        return _folder.getMsn(uid);
+     }
+ 
+     public void signalDeletion() {
+@@ -167,6 +165,10 @@
+         return _folder.isSelectable();
+     }
+ 
++    public boolean isMarked() {
++        return _folder.isMarked();
++    }
++
+     public long getUidNext() {
+         return _folder.getUidNext();
+     }
+@@ -175,7 +177,8 @@
+         return _folder.getUnseenCount();
+     }
+ 
+-    public long appendMessage(MimeMessage message, Flags flags, Date internalDate) {
++    public long appendMessage(MimeMessage message, Flags flags, Date internalDate) throws FolderException
++    {
+         return _folder.appendMessage(message, flags, internalDate);
+     }
+ 
+@@ -227,7 +230,8 @@
+         _folder.replaceFlags(flags, uid, silentListener, addUid);
+     }
+ 
+-    public void deleteAllMessages() {
++    public void deleteAllMessages() throws FolderException
++    {
+         _folder.deleteAllMessages();
+     }
+ 
+Index: src/java/com/icegreen/greenmail/store/InMemoryStore.java
+===================================================================
+--- src/java/com/icegreen/greenmail/store/InMemoryStore.java	(revision 48)
++++ src/java/com/icegreen/greenmail/store/InMemoryStore.java	(working copy)
+@@ -332,6 +332,10 @@
+         public boolean isSelectable() {
+             return isSelectable;
+         }
++        
++        public boolean isMarked() {
++            return true;
++        }
+ 
+         public void setSelectable(boolean selectable) {
+             isSelectable = selectable;
+Index: src/java/com/icegreen/greenmail/store/MailFolder.java
+===================================================================
+--- src/java/com/icegreen/greenmail/store/MailFolder.java	(revision 48)
++++ src/java/com/icegreen/greenmail/store/MailFolder.java	(working copy)
+@@ -3,6 +3,10 @@
+  * This software is released under the LGPL which is available at http://www.gnu.org/copyleft/lesser.html
+  * This file has been modified by the copyright holder. Original file can be found at http://james.apache.org
+  * -------------------------------------------------------------------
++ * 
++ * 2010 - Alfresco Software, Ltd.
++ * Alfresco Software has modified source of this file
++ * The details of changes as svn diff can be found in svn at location root/projects/3rd-party/src 
+  */
+ package com.icegreen.greenmail.store;
+ 
+@@ -44,12 +48,14 @@
+     int getUnseenCount();
+ 
+     boolean isSelectable();
++    
++    boolean isMarked();
+ 
+     long getUidNext();
+ 
+-    long appendMessage(MimeMessage message, Flags flags, Date internalDate);
++    long appendMessage(MimeMessage message, Flags flags, Date internalDate) throws FolderException;
+ 
+-    void deleteAllMessages();
++    void deleteAllMessages() throws FolderException;
+ 
+     void expunge() throws FolderException;
+ 
+Index: src/java/com/icegreen/greenmail/store/SimpleMessageAttributes.java
+===================================================================
+--- src/java/com/icegreen/greenmail/store/SimpleMessageAttributes.java	(revision 48)
++++ src/java/com/icegreen/greenmail/store/SimpleMessageAttributes.java	(working copy)
+@@ -3,6 +3,10 @@
+  * This software is released under the LGPL which is available at http://www.gnu.org/copyleft/lesser.html
+  * This file has been modified by the copyright holder. Original file can be found at http://james.apache.org
+  * -------------------------------------------------------------------
++ * 
++ * 2010 - Alfresco Software, Ltd.
++ * Alfresco Software has modified source of this file
++ * The details of changes as svn diff can be found in svn at location root/projects/3rd-party/src 
+  */
+ package com.icegreen.greenmail.store;
+ 
+@@ -13,6 +17,7 @@
+ import java.util.HashSet;
+ import java.util.Iterator;
+ import java.util.List;
++import java.util.Locale;
+ import java.util.Set;
+ 
+ import javax.mail.BodyPart;
+@@ -101,7 +106,11 @@
+             internalDate = new Date();
+         }
+ 
+-        internalDateString = new SimpleDateFormat("dd-MMM-yyyy hh:mm:ss Z").format(internalDate);
++        /*  
++         * mrogers
++         * Internal Date Format must conform to RFC 3501
++         */
++        internalDateString = new SimpleDateFormat("dd-MMM-yyyy hh:mm:ss Z", Locale.ENGLISH).format(internalDate);
+         interalDateEnvelopeString = new MailDateFormat().format(internalDate);
+         parseMimePart(msg);
+         envelope = null;
+@@ -120,10 +129,17 @@
+         size = GreenMailUtil.getBody(part).length();
+ 
+         // Section 1 - Message Headers
+-        if (part instanceof MimeMessage) {
+-            try {
+-                subject = ((MimeMessage) part).getSubject();
+-            } catch (MessagingException me) {
++        if (part instanceof MimeMessage)
++        {
++            try
++            {
++                // We need subject field with encoding information (like "=?koi8-r?B?097N097J083J?=")
++                // for multilanguage support.
++                subject = ((MimeMessage) part).getHeader("Subject")[0];
++                // subject = ((MimeMessage) part).getSubject();
++            }
++            catch (MessagingException me)
++            {
+ //                if (DEBUG) getLogger().debug("Messaging Exception for getSubject: " + me);
+             }
+         }
+@@ -411,8 +427,11 @@
+             buf.append(SP);
+             buf.append(NIL); // should add route-addr
+             buf.append(SP);
+-            try {
+-                MailAddress mailAddr = new MailAddress(netAddr.getAddress());
++            try
++            {
++                // remove quotes from address to avoid double quoating
++                String formatedAddress = netAddr.getAddress().replaceAll("\"", "");
++                MailAddress mailAddr = new MailAddress(formatedAddress);
+                 buf.append(Q + mailAddr.getUser() + Q);
+                 buf.append(SP);
+                 buf.append(Q + mailAddr.getHost() + Q);
+Index: src/java/com/icegreen/greenmail/util/GreenMailUtil.java
+===================================================================
+--- src/java/com/icegreen/greenmail/util/GreenMailUtil.java	(revision 48)
++++ src/java/com/icegreen/greenmail/util/GreenMailUtil.java	(working copy)
+@@ -2,10 +2,22 @@
+ * Copyright (c) 2006 Wael Chatila / Icegreen Technologies. All Rights Reserved.
+ * This software is released under the LGPL which is available at http://www.gnu.org/copyleft/lesser.html
+ *
++* 
++* 2010 - Alfresco Software, Ltd.
++* Alfresco Software has modified source of this file
++* The details of changes as svn diff can be found in svn at location root/projects/3rd-party/src 
+ */
+ package com.icegreen.greenmail.util;
+ 
+-import java.io.*;
++import java.io.BufferedReader;
++import java.io.ByteArrayInputStream;
++import java.io.ByteArrayOutputStream;
++import java.io.IOException;
++import java.io.InputStream;
++import java.io.OutputStream;
++import java.io.StringReader;
++import java.io.UnsupportedEncodingException;
++import java.nio.charset.Charset;
+ import java.util.Properties;
+ import java.util.Random;
+ 
+@@ -22,10 +34,12 @@
+ import javax.mail.internet.MimeMessage;
+ import javax.mail.internet.MimeMultipart;
+ 
++import com.icegreen.greenmail.imap.ImapConstants;
++
+ /**
+  * @author Wael Chatila
+  * @version $Id: $
+- * @since Jan 29, 2006
++ * @since Jan 29, 2006 Changed newMimeMessage(String param) for UTF-8 support.
+  */
+ public class GreenMailUtil {
+     /**
+@@ -74,13 +88,15 @@
+      *
+      * @throws MessagingException
+      */
+-    public static MimeMessage newMimeMessage(String mailString) throws MessagingException {
++    public static MimeMessage newMimeMessage(String mailString) throws MessagingException
++    {
++        byte[] bytes = null;
+         try {
+-            byte[] bytes = mailString.getBytes("US-ASCII");
+-            return newMimeMessage(new ByteArrayInputStream(bytes));
++            bytes = mailString.getBytes(ImapConstants.EIGHT_BIT_ENCODING);
+         } catch (UnsupportedEncodingException e) {
+-            throw new RuntimeException(e);
++            bytes = mailString.getBytes();
+         }
++        return newMimeMessage(new ByteArrayInputStream(bytes));
+     }
+ 
+     public static boolean hasNonTextAttachments(Part m) {
+@@ -144,19 +160,31 @@
+         try {
+             ByteArrayOutputStream bodyOut = new ByteArrayOutputStream();
+             msg.writeTo(bodyOut);
+-            return bodyOut.toString("US-ASCII").trim();
++            try {
++                return bodyOut.toString(ImapConstants.EIGHT_BIT_ENCODING).trim();
++            } catch (UnsupportedEncodingException e) {
++                return bodyOut.toString().trim();
++            }
+         } catch (Exception e) {
+             throw new RuntimeException(e);
+         }
+     }
+ 
+     public static byte[] getBodyAsBytes(Part msg) {
++        try {
++            return getBody(msg).getBytes(ImapConstants.EIGHT_BIT_ENCODING);
++        } catch (UnsupportedEncodingException e) {
+         return getBody(msg).getBytes();
+     }
++    }
+ 
+     public static  byte[] getHeaderAsBytes(Part part) {
++        try {
++            return getHeaders(part).getBytes(ImapConstants.EIGHT_BIT_ENCODING);
++        } catch (UnsupportedEncodingException e) {
+         return getHeaders(part).getBytes();
+     }
++    }
+ 
+     /**
+      * @return same as {@link #getWholeMessage(javax.mail.Part)} }
+@@ -296,4 +324,5 @@
+         mimeMessage.setContent(multiPart);
+         Transport.send(mimeMessage, tos);
+     }
++
+ }

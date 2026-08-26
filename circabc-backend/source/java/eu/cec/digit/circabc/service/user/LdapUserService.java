@@ -24,10 +24,9 @@ package eu.cec.digit.circabc.service.user;
 +--*/
 
 import eu.cec.digit.circabc.util.CircabcUserDataBean;
-import org.alfresco.service.Auditable;
-
 import java.util.List;
 import java.util.Map;
+import org.alfresco.service.Auditable;
 
 /**
  * It is a spring bean that manages basic operations on User over LDAP
@@ -38,48 +37,61 @@ import java.util.Map;
  */
 // @PublicService
 public interface LdapUserService {
+  @Auditable(/*key = Auditable.Key.NO_KEY, */parameters = { "pLdapUserID" })
+  CircabcUserDataBean getLDAPUserDataByUid(final String pLdapUserID);
 
-    @Auditable(/*key = Auditable.Key.NO_KEY, */ parameters = {"pLdapUserID"})
-    CircabcUserDataBean getLDAPUserDataByUid(final String pLdapUserID);
+  CircabcUserDataBean getLDAPUserDataNoFilterByUid(final String userID);
 
-    CircabcUserDataBean getLDAPUserDataNoFilterByUid(final String userID);
+  @Auditable(
+    /*key = Auditable.Key.NO_KEY, */parameters = {
+      "uid", "moniker", "email", "cn", "conjunction",
+    }
+  )
+  List<String> getLDAPUserIDByIdMonikerEmailCn(
+    final String uid,
+    final String moniker,
+    final String email,
+    final String cn,
+    final boolean conjunction
+  );
 
-    @Auditable(
-            /*key = Auditable.Key.NO_KEY, */ parameters = {
-            "uid",
-            "moniker",
-            "email",
-            "cn",
-            "conjunction"
-    })
-    List<String> getLDAPUserIDByIdMonikerEmailCn(
-            final String uid,
-            final String moniker,
-            final String email,
-            final String cn,
-            final boolean conjunction);
+  @Auditable(/*key = Auditable.Key.NO_KEY, */parameters = { "pMail" })
+  List<String> getLDAPUserIDByMail(String mail);
 
-    @Auditable(/*key = Auditable.Key.NO_KEY, */ parameters = {"pMail"})
-    List<String> getLDAPUserIDByMail(String mail);
+  @Auditable(/*key = Auditable.Key.NO_KEY, */parameters = { "mail", "domain" })
+  List<String> getLDAPUserIDByMailDomain(
+    final String mail,
+    final String domain
+  );
 
-    @Auditable(/*key = Auditable.Key.NO_KEY, */ parameters = {"mail", "domain"})
-    List<String> getLDAPUserIDByMailDomain(final String mail, final String domain);
+  @Auditable(
+    /*key = Auditable.Key.NO_KEY, */parameters = {
+      "pDomain", "pCriteria", "filter",
+    }
+  )
+  List<SearchResultRecord> getUsersByDomainFirstNameLastNameEmail(
+    final String pDomain,
+    final String pCriteria,
+    boolean filter
+  );
 
-    @Auditable(/*key = Auditable.Key.NO_KEY, */ parameters = {"pDomain", "pCriteria", "filter"})
-    List<SearchResultRecord> getUsersByDomainFirstNameLastNameEmail(
-            final String pDomain, final String pCriteria, boolean filter);
+  @Auditable(
+    /*key = Auditable.Key.NO_KEY, */parameters = { "mail", "domain", "filter" }
+  )
+  List<SearchResultRecord> getUsersByMailDomain(
+    final String mail,
+    final String domain,
+    boolean filter
+  );
 
-    @Auditable(/*key = Auditable.Key.NO_KEY, */ parameters = {"mail", "domain", "filter"})
-    List<SearchResultRecord> getUsersByMailDomain(final String mail, final String domain, boolean filter);
+  @Auditable
+  Map<String, String> getEcasUserDomains();
 
-    @Auditable(/*key = Auditable.Key.NO_KEY*/)
-    Map<String, String> getEcasUserDomains();
+  @Auditable
+  Boolean userExists(String uid);
 
-    @Auditable(/*key = Auditable.Key.NO_KEY*/)
-    Boolean userExists(String uid);
-
-    /**
-     * Initialise method
-     */
-    void init();
+  /**
+   * Initialise method
+   */
+  void init();
 }

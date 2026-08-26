@@ -46,9 +46,8 @@ export class SecurePipe implements PipeTransform, OnDestroy {
     if (url) {
       const obj = this.internalTransform(url);
       return this.asyncTransform(obj);
-    } else {
-      return {};
     }
+    return {};
   }
 
   private internalTransform(url: string): Observable<SafeUrl> {
@@ -93,8 +92,7 @@ export class SecurePipe implements PipeTransform, OnDestroy {
     this._obj = obj;
 
     this._subscription = obj.subscribe({
-      // eslint-disable-next-line @typescript-eslint/ban-types
-      next(value: Object) {
+      next(value: object) {
         return _this._updateLatestValue(obj, value);
       },
       error: (e: {}) => {
@@ -118,8 +116,7 @@ export class SecurePipe implements PipeTransform, OnDestroy {
     this._obj = null;
   }
 
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  private _updateLatestValue(async: {}, value: Object) {
+  private _updateLatestValue(async: {}, value: object) {
     if (async === this._obj) {
       this._latestValue = value;
       this._ref.markForCheck();

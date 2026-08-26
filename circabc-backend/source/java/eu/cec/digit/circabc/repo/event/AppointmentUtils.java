@@ -19,97 +19,114 @@ package eu.cec.digit.circabc.repo.event;
 
 import com.google.ical.values.DateValue;
 import com.google.ical.values.DateValueImpl;
-import org.joda.time.DateTime;
-import org.joda.time.LocalTime;
-
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
+import org.joda.time.DateTime;
+import org.joda.time.LocalTime;
 
 /** */
 public abstract class AppointmentUtils {
 
-    private static final String GMT = "GMT";
-    private static final String DATE_FORMAT = "yyyyMMdd'T'HHmmss";
+  private static final String GMT = "GMT";
+  private static final String DATE_FORMAT = "yyyyMMdd'T'HHmmss";
 
-    private AppointmentUtils() {
-    }
+  private AppointmentUtils() {}
 
-    public static Date convertLocalTimeToDate(LocalTime LocalTime) {
-        // from Joda to JDK
-        DateTime dt = new DateTime();
-        dt =
-                dt.withTime(
-                        LocalTime.getHourOfDay(),
-                        LocalTime.getMinuteOfHour(),
-                        LocalTime.getSecondOfMinute(),
-                        0);
+  public static Date convertLocalTimeToDate(LocalTime LocalTime) {
+    // from Joda to JDK
+    DateTime dt = new DateTime();
+    dt = dt.withTime(
+      LocalTime.getHourOfDay(),
+      LocalTime.getMinuteOfHour(),
+      LocalTime.getSecondOfMinute(),
+      0
+    );
 
-        return dt.toDate();
-    }
+    return dt.toDate();
+  }
 
-    public static Date convertDateValueToDate(DateValue dateValue) {
-        DateTime d = new DateTime();
-        d = d.withDate(dateValue.year(), dateValue.month(), dateValue.day());
+  public static Date convertDateValueToDate(DateValue dateValue) {
+    DateTime d = new DateTime();
+    d = d.withDate(dateValue.year(), dateValue.month(), dateValue.day());
 
-        return d.toDate();
-    }
+    return d.toDate();
+  }
 
-    public static LocalTime convertDateToLocalTime(Date date) {
-        DateTime dt = new DateTime(date);
-        return dt.toLocalTime();
-    }
+  public static LocalTime convertDateToLocalTime(Date date) {
+    DateTime dt = new DateTime(date);
+    return dt.toLocalTime();
+  }
 
-    public static DateValue convertDateToDateValue(Date date) {
-        DateTime dt = new DateTime(date);
-        return new DateValueImpl(dt.getYear(), dt.getMonthOfYear(), dt.getDayOfMonth());
-    }
+  public static DateValue convertDateToDateValue(Date date) {
+    DateTime dt = new DateTime(date);
+    return new DateValueImpl(
+      dt.getYear(),
+      dt.getMonthOfYear(),
+      dt.getDayOfMonth()
+    );
+  }
 
-    public static Date convertLocalTimeDateValueToDate(LocalTime LocalTime, DateValue dateValue) {
-        DateTime d = new DateTime();
-        d = d.withDate(dateValue.year(), dateValue.month(), dateValue.day());
-        d =
-                d.withTime(
-                        LocalTime.getHourOfDay(),
-                        LocalTime.getMinuteOfHour(),
-                        LocalTime.getSecondOfMinute(),
-                        0);
+  public static Date convertLocalTimeDateValueToDate(
+    LocalTime LocalTime,
+    DateValue dateValue
+  ) {
+    DateTime d = new DateTime();
+    d = d.withDate(dateValue.year(), dateValue.month(), dateValue.day());
+    d = d.withTime(
+      LocalTime.getHourOfDay(),
+      LocalTime.getMinuteOfHour(),
+      LocalTime.getSecondOfMinute(),
+      0
+    );
 
-        return d.toDate();
-    }
+    return d.toDate();
+  }
 
-    public static String convertLocalTimeDateValueTimezoneToGMTString(
-            LocalTime LocalTime, DateValue dateValue, String timezoneID) {
+  public static String convertLocalTimeDateValueTimezoneToGMTString(
+    LocalTime LocalTime,
+    DateValue dateValue,
+    String timezoneID
+  ) {
+    GregorianCalendar gregorianCalendar = new GregorianCalendar(
+      TimeZone.getTimeZone(timezoneID)
+    );
 
-        GregorianCalendar gregorianCalendar = new GregorianCalendar(TimeZone.getTimeZone(timezoneID));
+    gregorianCalendar.set(Calendar.YEAR, dateValue.year());
+    gregorianCalendar.set(Calendar.MONTH, dateValue.month() - 1);
+    gregorianCalendar.set(Calendar.DAY_OF_MONTH, dateValue.day());
+    gregorianCalendar.set(Calendar.HOUR_OF_DAY, LocalTime.getHourOfDay());
+    gregorianCalendar.set(Calendar.MINUTE, LocalTime.getMinuteOfHour());
+    gregorianCalendar.set(Calendar.SECOND, LocalTime.getSecondOfMinute());
+    GregorianCalendar gmtCalendar = new GregorianCalendar(
+      TimeZone.getTimeZone(GMT)
+    );
+    gmtCalendar.setTimeInMillis(gregorianCalendar.getTimeInMillis());
+    SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+    sdf.setTimeZone(TimeZone.getTimeZone(GMT));
+    return sdf.format(gmtCalendar.getTime());
+  }
 
-        gregorianCalendar.set(Calendar.YEAR, dateValue.year());
-        gregorianCalendar.set(Calendar.MONTH, dateValue.month() - 1);
-        gregorianCalendar.set(Calendar.DAY_OF_MONTH, dateValue.day());
-        gregorianCalendar.set(Calendar.HOUR_OF_DAY, LocalTime.getHourOfDay());
-        gregorianCalendar.set(Calendar.MINUTE, LocalTime.getMinuteOfHour());
-        gregorianCalendar.set(Calendar.SECOND, LocalTime.getSecondOfMinute());
-        GregorianCalendar gmtCalendar = new GregorianCalendar(TimeZone.getTimeZone(GMT));
-        gmtCalendar.setTimeInMillis(gregorianCalendar.getTimeInMillis());
-        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
-        sdf.setTimeZone(TimeZone.getTimeZone(GMT));
-        return sdf.format(gmtCalendar.getTime());
-    }
-
-    public static String convertLocalTimeDateTimezoneToGMTString(
-            LocalTime LocalTime, Date date, String timezoneID) {
-
-        GregorianCalendar gregorianCalendar = new GregorianCalendar(TimeZone.getTimeZone(timezoneID));
-        gregorianCalendar.setTime(date);
-        gregorianCalendar.set(Calendar.HOUR_OF_DAY, LocalTime.getHourOfDay());
-        gregorianCalendar.set(Calendar.MINUTE, LocalTime.getMinuteOfHour());
-        gregorianCalendar.set(Calendar.SECOND, LocalTime.getSecondOfMinute());
-        GregorianCalendar gmtCalendar = new GregorianCalendar(TimeZone.getTimeZone(GMT));
-        gmtCalendar.setTimeInMillis(gregorianCalendar.getTimeInMillis());
-        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
-        sdf.setTimeZone(TimeZone.getTimeZone(GMT));
-        return sdf.format(gmtCalendar.getTime());
-    }
+  public static String convertLocalTimeDateTimezoneToGMTString(
+    LocalTime LocalTime,
+    Date date,
+    String timezoneID
+  ) {
+    GregorianCalendar gregorianCalendar = new GregorianCalendar(
+      TimeZone.getTimeZone(timezoneID)
+    );
+    gregorianCalendar.setTime(date);
+    gregorianCalendar.set(Calendar.HOUR_OF_DAY, LocalTime.getHourOfDay());
+    gregorianCalendar.set(Calendar.MINUTE, LocalTime.getMinuteOfHour());
+    gregorianCalendar.set(Calendar.SECOND, LocalTime.getSecondOfMinute());
+    GregorianCalendar gmtCalendar = new GregorianCalendar(
+      TimeZone.getTimeZone(GMT)
+    );
+    gmtCalendar.setTimeInMillis(gregorianCalendar.getTimeInMillis());
+    SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+    sdf.setTimeZone(TimeZone.getTimeZone(GMT));
+    return sdf.format(gmtCalendar.getTime());
+  }
 }

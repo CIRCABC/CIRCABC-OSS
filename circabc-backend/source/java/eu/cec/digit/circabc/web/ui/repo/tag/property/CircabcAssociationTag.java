@@ -20,41 +20,42 @@
  ******************************************************************************/
 package eu.cec.digit.circabc.web.ui.repo.tag.property;
 
-import org.alfresco.web.ui.repo.tag.property.AssociationTag;
-
 import javax.faces.component.UIComponent;
+import org.alfresco.web.ui.repo.tag.property.AssociationTag;
 
 public class CircabcAssociationTag extends AssociationTag {
 
-    private String interestGroupNodeRef;
+  private String interestGroupNodeRef;
 
-    public String getRendererType() {
-        return "eu.cec.digit.circabc.faces.CircabcAssociationRenderer";
-    }
+  public String getRendererType() {
+    return "eu.cec.digit.circabc.faces.CircabcAssociationRenderer";
+  }
 
-    public String getComponentType() {
-        return "eu.cec.digit.circabc.faces.CircabcAssociation";
-    }
+  public String getComponentType() {
+    return "eu.cec.digit.circabc.faces.CircabcAssociation";
+  }
 
-    /**
-     * @see javax.faces.webapp.UIComponentTag#setProperties(javax.faces.component.UIComponent)
-     */
-    protected void setProperties(UIComponent component) {
-        super.setProperties(component);
-        setStringBindingProperty(component, "interestGroupNodeRef", this.interestGroupNodeRef);
+  /**
+   * @see javax.faces.webapp.UIComponentTag#setProperties(javax.faces.component.UIComponent)
+   */
+  protected void setProperties(UIComponent component) {
+    super.setProperties(component);
+    setStringBindingProperty(
+      component,
+      "interestGroupNodeRef",
+      this.interestGroupNodeRef
+    );
+  }
 
-    }
+  /**
+   * @see javax.faces.webapp.UIComponentTag#release()
+   */
+  public void release() {
+    this.interestGroupNodeRef = null;
+    super.release();
+  }
 
-
-    /**
-     * @see javax.faces.webapp.UIComponentTag#release()
-     */
-    public void release() {
-        this.interestGroupNodeRef = null;
-        super.release();
-    }
-
-    public void setInterestGroupNodeRef(String value) {
-        this.interestGroupNodeRef = value;
-    }
+  public void setInterestGroupNodeRef(String value) {
+    this.interestGroupNodeRef = value;
+  }
 }

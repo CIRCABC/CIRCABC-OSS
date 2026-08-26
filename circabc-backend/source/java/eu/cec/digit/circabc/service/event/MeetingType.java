@@ -15,9 +15,10 @@
  * ****************************************************************************
  */
 package eu.cec.digit.circabc.service.event;
+
 @Deprecated
 public enum MeetingType {
-    FaceToFace,
-    VirtualMeeting,
-    Other
+  FaceToFace,
+  VirtualMeeting,
+  Other,
 }

@@ -1,10 +1,20 @@
 import { Component } from '@angular/core';
+import { TranslocoModule } from '@jsverse/transloco';
+import { SetTitlePipe } from 'app/shared/pipes/set-title.pipe';
+import { ExternalRepositoryHistoryComponent } from './ext-repo-history/cbc-external-repository-history.component';
+import { ExternalRepositoryPropertiesComponent } from './ext-repo-properties/external-repository-properties.component';
 
 @Component({
   selector: 'cbc-external-repository',
   templateUrl: './external-repository.component.html',
-  styleUrls: ['./external-repository.component.scss'],
+  styleUrl: './external-repository.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    ExternalRepositoryPropertiesComponent,
+    ExternalRepositoryHistoryComponent,
+    SetTitlePipe,
+    TranslocoModule,
+  ],
 })
 export class ExternalRepositoryComponent {
   public showPropertiesItems = true;

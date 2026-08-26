@@ -3,6 +3,7 @@ export interface Environment {
   alfrescoURL: string;
   circabcURL: string;
   serverURL: string;
+  alfrescoHost: string;
   baseHref: string;
   nodeName: string;
   showUiSwitch: boolean;
@@ -14,14 +15,19 @@ export interface Environment {
     | 'test'
     | 'local'
     | 'training';
-  circabcRelease: 'ent' | 'oss' | 'echa';
+  circabcRelease: 'ent' | 'oss' | 'echa' | 'olaf';
   aresBridgeEnabled: boolean;
   aresBridgeServer: string;
   aresBridgeURL: string;
   aresBridgeKey: string;
   aresBridgeUiURL: string;
   analyticsURL: string;
-  analyticsSiteId: number;
+  analyticsSiteId: string;
+  analyticsInstance: string;
   officeClientId: string;
   shareURL: string;
+  captchaURL: string;
+  euloginUrl: string;
+  eulogoutUrl: string;
+  useAlfrescoAPI: boolean;
 }

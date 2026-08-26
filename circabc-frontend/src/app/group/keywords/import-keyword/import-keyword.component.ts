@@ -1,24 +1,28 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input, output, input } from '@angular/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
   ActionType,
 } from 'app/action-result';
 import { KeywordsService } from 'app/core/generated/circabc';
+import { ModalComponent } from 'app/shared/modal/modal.component';
+import { SizePipe } from 'app/shared/pipes/size.pipe';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-import-keyword',
   templateUrl: './import-keyword.component.html',
   preserveWhitespaces: true,
+  imports: [ModalComponent, SizePipe, TranslocoModule],
 })
 export class ImportKeywordComponent {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   showModal = false;
-  @Input()
-  parentIgId!: string;
-  @Output()
-  public readonly modalHide = new EventEmitter<ActionEmitterResult>();
+  readonly parentIgId = input.required<string>();
+  public readonly modalHide = output<ActionEmitterResult>();
 
   public fileToUpload: File | undefined;
   public uploading = false;
@@ -55,9 +59,10 @@ export class ImportKeywordComponent {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public fileChangeEvent(fileInput: any) {
-    const filesList = fileInput.target.files as FileList;
+  public fileChangeEvent(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const filesList = input.files as FileList;
+
     this.fileToUpload = filesList[0];
   }
 
@@ -70,7 +75,7 @@ export class ImportKeywordComponent {
       if (this.fileToUpload) {
         await firstValueFrom(
           this.keywordsService.postBulkKeywordDefinitions(
-            this.parentIgId,
+            this.parentIgId(),
             this.fileToUpload
           )
         );
@@ -80,7 +85,7 @@ export class ImportKeywordComponent {
       this.fileToUpload = undefined;
 
       result.result = ActionResult.SUCCEED;
-    } catch (error) {
+    } catch (_error) {
       result.result = ActionResult.FAILED;
     } finally {
       this.modalHide.emit(result);

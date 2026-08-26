@@ -1,13 +1,21 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Data } from '@angular/router';
+import { ActivatedRoute, Data, RouterLink } from '@angular/router';
 
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { TranslocoService } from '@ngneat/transloco';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
   ActionType,
 } from 'app/action-result';
+import { assertDefined } from 'app/core/asserts';
 import { PermissionEvaluatorService } from 'app/core/evaluator/permission-evaluator.service';
 import {
   Attachment,
@@ -19,15 +27,28 @@ import {
   NotificationService,
   PagedNodes,
   PostService,
-  UserService,
   TopicService,
+  UserService,
 } from 'app/core/generated/circabc';
 import { LoginService } from 'app/core/login.service';
 import { UiMessageService } from 'app/core/message/ui-message.service';
 import { Quote } from 'app/core/ui-model/index';
 import { getSuccessTranslation, getUserFullName } from 'app/core/util';
+import { BreadcrumbComponent } from 'app/group/breadcrumb/breadcrumb.component';
+import { PostComponent } from 'app/group/forum/post/post.component';
 import { ListingOptions } from 'app/group/listing-options/listing-options';
-import { assertDefined } from 'app/core/asserts';
+import { InlineDeleteComponent } from 'app/shared/delete/inline-delete.component';
+import { IfRoleGEDirective } from 'app/shared/directives/ifrolege.directive';
+import { FilePickerComponent } from 'app/shared/file-picker/file-picker.component';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
+import { NotificationMessageComponent } from 'app/shared/notification-message/notification-message.component';
+import { PagerComponent } from 'app/shared/pager/pager.component';
+import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
+import { TaggedToPlainTextPipe } from 'app/shared/pipes/taggedtoplaintext.pipe';
+import { ReponsiveSubMenuComponent } from 'app/shared/reponsive-sub-menu/reponsive-sub-menu.component';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
+import { SharedModule } from 'primeng/api';
+import { EditorModule } from 'primeng/editor';
 import { firstValueFrom } from 'rxjs';
 
 interface FileWithId {
@@ -37,11 +58,31 @@ interface FileWithId {
 @Component({
   selector: 'cbc-topic',
   templateUrl: './topic.component.html',
-  styleUrls: ['./topic.component.scss'],
+  styleUrl: './topic.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    HorizontalLoaderComponent,
+    RouterLink,
+    ReponsiveSubMenuComponent,
+    BreadcrumbComponent,
+    PagerComponent,
+    PostComponent,
+    IfRoleGEDirective,
+    ReactiveFormsModule,
+    NotificationMessageComponent,
+    EditorModule,
+    SharedModule,
+    SpinnerComponent,
+    InlineDeleteComponent,
+    FilePickerComponent,
+    MatSlideToggleModule,
+    I18nPipe,
+    TaggedToPlainTextPipe,
+    TranslocoModule,
+  ],
 })
 export class TopicComponent implements OnInit {
-  public topicNode: ModelNode | undefined;
+  public topicNode?: ModelNode;
   public posts!: PagedNodes;
   public futureQuote!: Quote;
   public editPost: ModelNode | undefined;
@@ -71,6 +112,7 @@ export class TopicComponent implements OnInit {
   public linkPickerOpen = false;
   public loadingPicker = false;
   public pickedNodes: string[] = [];
+  public notify = new FormControl(true, { nonNullable: true });
 
   public constructor(
     private fb: FormBuilder,
@@ -120,7 +162,7 @@ export class TopicComponent implements OnInit {
         this.totalItems =
           this.posts.total > 0 ? this.posts.total : this.listingOptions.limit;
       }
-    } catch (error) {
+    } catch (_error) {
       this.posts = { data: [], total: 0 };
     }
 
@@ -134,7 +176,7 @@ export class TopicComponent implements OnInit {
   public async prepareQuote(post: Quote) {
     this.futureQuote = post;
     this.attachmentRemainingSize = await firstValueFrom(
-      this.postService.getAttachmentsRemainingSize('')
+      this.postService.getAttachmentsRemainingSize('null')
     );
     const quoting = this.translateService.translate('label.quoting');
     const authorFullName = await getUserFullName(
@@ -218,11 +260,10 @@ export class TopicComponent implements OnInit {
   }
 
   isSubscribedToNotifications(): boolean {
-    if (this.topicNode && this.topicNode.notifications !== undefined) {
+    if (this.topicNode?.notifications !== undefined) {
       return this.topicNode.notifications === 'ALLOWED';
-    } else {
-      return false;
     }
+    return false;
   }
 
   public async changeNotificationSubscription(value: string) {
@@ -274,7 +315,7 @@ export class TopicComponent implements OnInit {
       return;
     }
     this.attachmentRemainingSize = await firstValueFrom(
-      this.postService.getAttachmentsRemainingSize('')
+      this.postService.getAttachmentsRemainingSize('null')
     );
     this.openPost();
   }
@@ -314,6 +355,7 @@ export class TopicComponent implements OnInit {
           await firstValueFrom(
             this.topicService.postReply(
               this.topicNode.id,
+              this.notify.value,
               body,
               this.filesToUpload.map((fileWithId) => fileWithId.file),
               this.pickedNodes
@@ -346,13 +388,14 @@ export class TopicComponent implements OnInit {
       const result: ActionEmitterResult = {};
       result.type = ActionType.EDIT_POST;
 
-      if (this.editPost && this.editPost.properties) {
+      if (this.editPost?.properties) {
         this.editPost.properties.message = this.addPostForm.value.text;
         try {
           if (this.editPost.id) {
             await firstValueFrom(
               this.postService.putPost(
                 this.editPost.id,
+                this.notify.value,
                 this.editPost,
                 this.filesToUpload.map((fileWithId) => fileWithId.file),
                 this.pickedNodes,
@@ -395,10 +438,10 @@ export class TopicComponent implements OnInit {
 
   // file attachment
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public fileChangeEvent(fileInput: any) {
-    const filesList = fileInput.target.files as FileList;
+  public fileChangeEvent(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const filesList = input.files as FileList;
+
     this.addFiles(filesList);
   }
 
@@ -422,21 +465,6 @@ export class TopicComponent implements OnInit {
       }
       index += 1;
     }
-  }
-
-  /* eslint-disable @typescript-eslint/no-unused-vars */
-  private async deleteAttachments() {
-    if (this.editPost && this.editPost.id) {
-      for (const attachment of this.attachmentsAndLinksToDelete) {
-        await firstValueFrom(
-          this.postService.deleteAttachment(
-            this.editPost.id,
-            attachment.id as string
-          )
-        );
-      }
-    }
-    this.attachmentsAndLinksToDelete = [];
   }
 
   public displayName(text: string | undefined): string {
@@ -512,9 +540,5 @@ export class TopicComponent implements OnInit {
       );
     }
     return 0;
-  }
-
-  public trackById(_index: number, item: { id?: string | number }) {
-    return item.id;
   }
 }

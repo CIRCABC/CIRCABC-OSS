@@ -7,33 +7,34 @@
       <img class="header-icon" src="img/star.png" alt="star.png" />
     </span>
   </header>
-  <cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+  @if (loading) {
+  <cbc-horizontal-loader></cbc-horizontal-loader>
+  }
   <div class="main main--listing">
-    <ul *ngIf="totalItems > 0" id="listOfFavourites">
-      <li
-        class="row"
-        *ngFor="let favourite of pagedFavourites.data; trackBy: trackById"
-      >
-        <a (click)="openLink(favourite)">{{ favourite.name }}</a>
-        <span class="favouriteType" *ngIf="isFile(favourite)"
-          >{{ 'label.file' | transloco }}</span
-        >
-        <span class="favouriteType" *ngIf="!isFile(favourite)"
-          >{{ 'label.folder' | transloco }}</span
-        >
+    @if (totalItems > 0) {
+    <ul id="listOfFavourites">
+      @for (favourite of pagedFavourites.data; track favourite.id) {
+      <li class="row">
+        <a tabindex="0" (click)="openLink(favourite)">{{ favourite.name }}</a>
+        @if (isFile(favourite)) {
+        <span class="favouriteType">{{ 'label.file' | transloco }}</span>
+        } @if (!isFile(favourite)) {
+        <span class="favouriteType">{{ 'label.folder' | transloco }}</span>
+        }
       </li>
-      <li *ngIf="totalItems === 0" class="row">
-        {{ 'label.nothing.to.display' | transloco }}
-      </li>
+      } @if (totalItems === 0) {
+      <li class="row">{{ 'label.nothing.to.display' | transloco }}</li>
+      }
     </ul>
-
-    <div class="footer" *ngIf="isPagerVisible()">
+    } @if (isPagerVisible()) {
+    <div class="footer">
       <cbc-pager
         [length]="totalItems"
         [pageSize]="listingOptions.limit"
-        [pageIndex]="listingOptions.page"
-        (pageChanged)="changePage($event)"
+        [page]="listingOptions.page"
+        (pageChange)="changePage($event)"
       ></cbc-pager>
     </div>
+    }
   </div>
 </section>

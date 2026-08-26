@@ -26,36 +26,36 @@ package eu.cec.digit.circabc.business.api.nav;
  * @author Yanick Pignot
  */
 public enum InterestGroupServices {
-    /**
-     * This kind of WEB space helps users present information about their interest group in HTML
-     * format.
-     **/
-    INFORMATION,
+  /**
+   * This kind of WEB space helps users present information about their interest group in HTML
+   * format.
+   **/
+  INFORMATION,
 
-    /**
-     * In the Library service, users manage and share their documents.
-     **/
-    LIBRARY,
+  /**
+   * In the Library service, users manage and share their documents.
+   **/
+  LIBRARY,
 
-    /**
-     * Directory service gives users the opportunity of view and interact with other circvabc users.
-     **/
-    DIRECTORY,
+  /**
+   * Directory service gives users the opportunity of view and interact with other circvabc users.
+   **/
+  DIRECTORY,
 
-    /**
-     * The Newsgroups service allows the members of the Interest Group to create forums and hold
-     * discussions with one another.
-     **/
-    NEWSGROUP,
+  /**
+   * The Newsgroups service allows the members of the Interest Group to create forums and hold
+   * discussions with one another.
+   **/
+  NEWSGROUP,
 
-    /**
-     * Event service gives users the opportunity of scheduling, publicising and managing events.
-     **/
-    EVENTS,
+  /**
+   * Event service gives users the opportunity of scheduling, publicising and managing events.
+   **/
+  EVENTS,
 
-    /**
-     * With <b>optional</b> survey service, users can build and follow up surveys through the
-     * integration of CIRCABC with IPM (Interactive Policy-Making).
-     **/
-    SURVEY
+  /**
+   * With <b>optional</b> survey service, users can build and follow up surveys through the
+   * integration of CIRCABC with IPM (Interactive Policy-Making).
+   **/
+  SURVEY,
 }

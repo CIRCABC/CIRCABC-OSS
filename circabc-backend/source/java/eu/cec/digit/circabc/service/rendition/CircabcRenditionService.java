@@ -8,9 +8,8 @@ import org.alfresco.service.cmr.repository.NodeRef;
  * @author schwerr
  */
 public interface CircabcRenditionService {
-
-    /**
-     * Adds a new document nodeRef to render (asynchronous rendering)
-     */
-    void addRequest(NodeRef nodeRef);
+  /**
+   * Adds a new document nodeRef to render (asynchronous rendering)
+   */
+  void addRequest(NodeRef nodeRef);
 }

@@ -20,10 +20,9 @@
  ******************************************************************************/
 package eu.cec.digit.circabc.action;
 
+import java.io.IOException;
 import org.alfresco.service.cmr.repository.ContentReader;
 import org.springframework.core.io.InputStreamSource;
-
-import java.io.IOException;
 
 /**
  * @author Ph Dubois
@@ -33,28 +32,27 @@ import java.io.IOException;
  */
 public class InputSourceWrapper implements InputStreamSource {
 
-    ContentReader cr = null;
+  ContentReader cr = null;
 
-    /**
-     * constructor.
-     *
-     * @param cr ContentReader
-     */
-    public InputSourceWrapper(final ContentReader cr) {
-        this.cr = cr;
+  /**
+   * constructor.
+   *
+   * @param cr ContentReader
+   */
+  public InputSourceWrapper(final ContentReader cr) {
+    this.cr = cr;
+  }
+
+  /**
+   * @see org.springframework.core.io.InputStreamSource#getInputStream()
+   */
+  public java.io.InputStream getInputStream() throws IOException {
+    if (cr.exists()) {
+      if (cr.isClosed()) {
+        cr = cr.getReader();
+      }
+      return cr.getContentInputStream();
     }
-
-
-    /**
-     * @see org.springframework.core.io.InputStreamSource#getInputStream()
-     */
-    public java.io.InputStream getInputStream() throws IOException {
-        if (cr.exists()) {
-            if (cr.isClosed()) {
-                cr = cr.getReader();
-            }
-            return cr.getContentInputStream();
-        }
-        return null;
-    }
+    return null;
+  }
 }

@@ -1,6 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   AdminContactRequest,
   Category,
@@ -8,14 +14,29 @@ import {
   Header,
   HeaderService,
 } from 'app/core/generated/circabc';
+import { HeaderComponent } from 'app/shared/header/header.component';
+import { NavigatorComponent } from 'app/shared/navigator/navigator.component';
 import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
+import { SharedModule } from 'primeng/api';
+import { EditorModule } from 'primeng/editor';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-contact-category',
   templateUrl: './contact-category.component.html',
-  styleUrls: ['./contact-category.component.scss'],
+  styleUrl: './contact-category.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    HeaderComponent,
+    NavigatorComponent,
+    ReactiveFormsModule,
+    EditorModule,
+    SharedModule,
+    SpinnerComponent,
+    RouterLink,
+    TranslocoModule,
+  ],
 })
 export class ContactCategoryComponent implements OnInit {
   public form!: FormGroup;
@@ -101,9 +122,8 @@ export class ContactCategoryComponent implements OnInit {
   getNameOrTitle(category: Category): string {
     if (category.title && Object.keys(category.title).length > 0) {
       return this.i18nPipe.transform(category.title);
-    } else {
-      return category.name;
     }
+    return category.name;
   }
 
   async contact() {

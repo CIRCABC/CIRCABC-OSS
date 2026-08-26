@@ -35,72 +35,68 @@ import org.apache.commons.logging.LogFactory;
  * <p>
  * 24-juil.-07 - 09:26:59
  */
-public class MLDocumentAspect extends AbstractAspect implements
-        NodeServicePolicies.OnAddAspectPolicy,
-        NodeServicePolicies.BeforeDeleteNodePolicy {
+public class MLDocumentAspect
+  extends AbstractAspect
+  implements
+    NodeServicePolicies.OnAddAspectPolicy,
+    NodeServicePolicies.BeforeDeleteNodePolicy {
 
-    /**
-     * bean name
-     */
-    public static final String NAME = "mLDocumentAspect";
-    private static final Log LOGGER = LogFactory.getLog(MLDocumentAspect.class);
+  /**
+   * bean name
+   */
+  public static final String NAME = "mLDocumentAspect";
+  private static final Log LOGGER = LogFactory.getLog(MLDocumentAspect.class);
 
-    @Override
-    public ComparatorType getComparator() {
-        return ComparatorType.ASPECT;
+  @Override
+  public ComparatorType getComparator() {
+    return ComparatorType.ASPECT;
+  }
+
+  @Override
+  public QName getComparatorQName() {
+    return ContentModel.ASPECT_MULTILINGUAL_DOCUMENT;
+  }
+
+  /**
+   * Initialise the Multilingual Aspect.
+   * <p>
+   * Ensures that the {@link ContentModel#ASPECT_MULTILINGUAL_DOCUMENT ml document aspect}
+   */
+
+  @Override
+  public void initialise() {
+    if (LOGGER.isInfoEnabled()) {
+      LOGGER.info("policy bind (onAddAspect)");
     }
 
-    @Override
-    public QName getComparatorQName() {
-        return ContentModel.ASPECT_MULTILINGUAL_DOCUMENT;
+    this.policyComponent.bindClassBehaviour(
+        QName.createQName(NamespaceService.ALFRESCO_URI, "onAddAspect"),
+        ContentModel.ASPECT_MULTILINGUAL_DOCUMENT,
+        new JavaBehaviour(this, "onAddAspect")
+      );
+
+    this.policyComponent.bindClassBehaviour(
+        QName.createQName(NamespaceService.ALFRESCO_URI, "beforeDeleteNode"),
+        ContentModel.ASPECT_MULTILINGUAL_EMPTY_TRANSLATION,
+        new JavaBehaviour(this, "beforeDeleteNode")
+      );
+  }
+
+  public void onAddAspect(final NodeRef nodeRef, final QName aspectTypeQName) {
+    //	check if exist
+    if (!this.nodeService.exists(nodeRef)) {
+      return;
     }
 
+    nodeService.removeAspect(nodeRef, DocumentModel.ASPECT_BPROPERTIES);
+    //add CProperties Aspect
+    nodeService.addAspect(nodeRef, DocumentModel.ASPECT_CPROPERTIES, null);
+  }
 
-    /**
-     * Initialise the Multilingual Aspect.
-     * <p>
-     * Ensures that the {@link ContentModel#ASPECT_MULTILINGUAL_DOCUMENT ml document aspect}
-     */
+  public void beforeDeleteNode(final NodeRef nodeRef) {
+    // add temporary aspect to force a complete deletion of the empty translation
+    nodeService.addAspect(nodeRef, ContentModel.ASPECT_TEMPORARY, null);
 
-    @Override
-    public void initialise() {
-
-        if (LOGGER.isInfoEnabled()) {
-            LOGGER.info("policy bind (onAddAspect)");
-        }
-
-        this.policyComponent.bindClassBehaviour(
-                QName.createQName(NamespaceService.ALFRESCO_URI, "onAddAspect"),
-                ContentModel.ASPECT_MULTILINGUAL_DOCUMENT,
-                new JavaBehaviour(this, "onAddAspect"));
-
-        this.policyComponent.bindClassBehaviour(
-                QName.createQName(NamespaceService.ALFRESCO_URI, "beforeDeleteNode"),
-                ContentModel.ASPECT_MULTILINGUAL_EMPTY_TRANSLATION,
-                new JavaBehaviour(this, "beforeDeleteNode"));
-
-
-    }
-
-    public void onAddAspect(final NodeRef nodeRef, final QName aspectTypeQName) {
-
-        //	check if exist
-        if (!this.nodeService.exists(nodeRef)) {
-            return;
-        }
-
-        nodeService.removeAspect(nodeRef, DocumentModel.ASPECT_BPROPERTIES);
-        //add CProperties Aspect
-        nodeService.addAspect(nodeRef, DocumentModel.ASPECT_CPROPERTIES, null);
-
-    }
-
-    public void beforeDeleteNode(final NodeRef nodeRef) {
-        // add temporary aspect to force a complete deletion of the empty translation
-        nodeService.addAspect(nodeRef, ContentModel.ASPECT_TEMPORARY, null);
-
-        super.beforeDeleteNode(nodeRef);
-    }
-
-
+    super.beforeDeleteNode(nodeRef);
+  }
 }

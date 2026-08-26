@@ -1,36 +1,41 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { User } from 'app/core/generated/circabc';
+import { Component, Input, output, input } from '@angular/core';
+import { TranslocoModule } from '@jsverse/transloco';
+import { type User } from 'app/core/generated/circabc';
 
 @Component({
   selector: 'cbc-user-result-box',
   templateUrl: './user-result-box.component.html',
-  styleUrls: ['./user-result-box.component.scss'],
+  styleUrl: './user-result-box.component.scss',
+  imports: [TranslocoModule],
 })
 export class UserResultBoxComponent {
-  @Input() user!: User;
+  readonly user = input.required<User>();
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input() focusedUserId = '';
-  @Input() showSelect = true;
-  @Input() showRemove = true;
-  @Output() readonly focusedUserIdChange = new EventEmitter<string>();
-  @Output() readonly selectionTriggered = new EventEmitter<User>();
-  @Output() readonly removeTriggered = new EventEmitter<User>();
+  readonly showSelect = input(true);
+  readonly showRemove = input(true);
+  readonly focusedUserIdChange = output<string>();
+  readonly selectionTriggered = output<User>();
+  readonly removeTriggered = output<User>();
 
   public toggleFocus() {
-    if (this.focusedUserId === this.user.userId) {
+    const user = this.user();
+    if (this.focusedUserId === user.userId) {
       this.focusedUserId = '';
-    } else if (this.user.userId) {
-      this.focusedUserId = this.user.userId;
+    } else if (user.userId) {
+      this.focusedUserId = user.userId;
     }
     this.focusedUserIdChange.emit(this.focusedUserId);
   }
 
   public triggerSelect(event: Event) {
-    this.selectionTriggered.emit(this.user);
+    this.selectionTriggered.emit(this.user());
     event.stopPropagation();
   }
 
   public triggerRemove(event: Event) {
-    this.removeTriggered.emit(this.user);
+    this.removeTriggered.emit(this.user());
     event.stopPropagation();
   }
 }

@@ -1,12 +1,14 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit, input } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
   FormGroup,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   Category,
   CategoryService,
@@ -17,18 +19,32 @@ import {
   UserService,
 } from 'app/core/generated/circabc';
 import { LoginService } from 'app/core/login.service';
+import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
+import { HeaderComponent } from 'app/shared/header/header.component';
+import { NavigatorComponent } from 'app/shared/navigator/navigator.component';
 import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { firstValueFrom } from 'rxjs';
+import { LeaderCardComponent } from './leader-card/leader-card.component';
 
 @Component({
   selector: 'cbc-request-group',
   templateUrl: './request-group.component.html',
-  styleUrls: ['./request-group.component.scss'],
+  styleUrl: './request-group.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    HeaderComponent,
+    NavigatorComponent,
+    ReactiveFormsModule,
+    ControlMessageComponent,
+    SpinnerComponent,
+    LeaderCardComponent,
+    RouterLink,
+    TranslocoModule,
+  ],
 })
 export class RequestGroupComponent implements OnInit {
-  @Input()
-  showModal = false;
+  readonly showModal = input(false);
 
   public form!: FormGroup;
   public processing = false;
@@ -144,9 +160,8 @@ export class RequestGroupComponent implements OnInit {
   getNameOrTitle(category: Category): string {
     if (category.title && Object.keys(category.title).length > 0) {
       return this.i18nPipe.transform(category.title);
-    } else {
-      return category.name;
     }
+    return category.name;
   }
 
   async requestGroup() {
@@ -162,7 +177,7 @@ export class RequestGroupComponent implements OnInit {
       leaders: this.futureMembers,
     };
 
-    if (this.selectedCategory && this.selectedCategory.id) {
+    if (this.selectedCategory?.id) {
       await firstValueFrom(
         this.categoryService.postRequestInterestGroup(
           this.selectedCategory.id,
@@ -218,9 +233,8 @@ export class RequestGroupComponent implements OnInit {
           this.futureMembers.find((member) => {
             if (member && memberTmp) {
               return member.userId === memberTmp.userId;
-            } else {
-              return true;
             }
+            return true;
           }) === undefined
         );
       })

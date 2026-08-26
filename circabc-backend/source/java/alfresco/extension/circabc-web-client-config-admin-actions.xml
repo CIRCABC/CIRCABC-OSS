@@ -4,9 +4,7 @@
     |  		   http://ec.europa.eu/idabc/en/document/6523
     |
     +-->
-
 <!-- Here Only the new Circabc specific WAI (and not Alfresco native) actions and action groups -->
-
 <alfresco-config>
 
 	<config>
@@ -1109,7 +1107,7 @@
 				<action idref="deleteCategoryAction" />
     			<action idref="cleanCategoryAction" />
     			<action idref="customiseCategoryAction" />
-				<action idref="view_category_group_statistics"/>
+				<action idref="view_category_group_statistics" />
 			</action-group>
 
 			<!-- Administrative task available for the Category admin (look and feel part) -->

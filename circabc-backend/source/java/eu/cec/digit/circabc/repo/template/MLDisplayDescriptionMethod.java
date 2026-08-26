@@ -27,24 +27,25 @@ import org.alfresco.service.cmr.repository.NodeRef;
  *
  * @author Pierre Beauregard
  */
-public class MLDisplayDescriptionMethod extends NodeRefBaseTemplateProcessorExtension
-        implements TemplateMethodModelEx {
+public class MLDisplayDescriptionMethod
+  extends NodeRefBaseTemplateProcessorExtension
+  implements TemplateMethodModelEx {
 
-    @Override
-    public String getResult(NodeRef nodeRef) throws TemplateModelException {
+  @Override
+  public String getResult(NodeRef nodeRef) throws TemplateModelException {
+    String result = "";
 
-        String result = "";
+    if (nodeRef != null) {
+      Object descObj = getNodeService()
+        .getProperty(nodeRef, ContentModel.PROP_DESCRIPTION);
 
-        if (nodeRef != null) {
-            Object descObj = getNodeService().getProperty(nodeRef, ContentModel.PROP_DESCRIPTION);
-
-            if (descObj instanceof String) {
-                result = (String) descObj;
-            } else if (descObj instanceof MLText) {
-                result = ((MLText) descObj).getDefaultValue();
-            }
-        }
-
-        return result;
+      if (descObj instanceof String) {
+        result = (String) descObj;
+      } else if (descObj instanceof MLText) {
+        result = ((MLText) descObj).getDefaultValue();
+      }
     }
+
+    return result;
+  }
 }

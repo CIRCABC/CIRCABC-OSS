@@ -1,6 +1,12 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, Input, OnInit, output, input } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
@@ -13,20 +19,23 @@ import {
   Profile,
   ProfileService,
 } from 'app/core/generated/circabc';
+import { ModalComponent } from 'app/shared/modal/modal.component';
+import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-import-profile',
   templateUrl: './import-profile.component.html',
   preserveWhitespaces: true,
+  imports: [ModalComponent, ReactiveFormsModule, I18nPipe, TranslocoModule],
 })
 export class ImportProfileComponent implements OnInit {
-  @Input()
-  igNodeId!: string;
+  readonly igNodeId = input.required<string>();
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   showModal = false;
-  @Output()
-  readonly profileImported = new EventEmitter<ActionEmitterResult>();
+  readonly profileImported = output<ActionEmitterResult>();
 
   public importing = false;
   public ig!: ModelNode;
@@ -50,8 +59,9 @@ export class ImportProfileComponent implements OnInit {
       }
     );
 
-    if (this.igNodeId) {
-      this.ig = await firstValueFrom(this.nodesService.getNode(this.igNodeId));
+    const igNodeId = this.igNodeId();
+    if (igNodeId) {
+      this.ig = await firstValueFrom(this.nodesService.getNode(igNodeId));
 
       if (this.ig.parentId) {
         this.exportedProfiles = await firstValueFrom(
@@ -82,11 +92,11 @@ export class ImportProfileComponent implements OnInit {
         const body: Profile = profile;
         try {
           await firstValueFrom(
-            this.profileService.postImportedProfile(this.igNodeId, body)
+            this.profileService.postImportedProfile(this.igNodeId(), body)
           );
           result.result = ActionResult.SUCCEED;
           this.importProfileForm.reset();
-        } catch (error) {
+        } catch (_error) {
           result.result = ActionResult.FAILED;
         }
       }

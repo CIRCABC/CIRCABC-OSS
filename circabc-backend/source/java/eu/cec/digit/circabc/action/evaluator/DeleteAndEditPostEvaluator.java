@@ -33,16 +33,15 @@ import org.alfresco.web.bean.repository.Node;
  */
 public class DeleteAndEditPostEvaluator extends BaseActionEvaluator {
 
-    private static final long serialVersionUID = 6422283424092384446L;
+  private static final long serialVersionUID = 6422283424092384446L;
 
-    public boolean evaluate(final Node node) {
-        if (node.hasAspect(CircabcModel.ASPECT_NEWSGROUP)) {
-            return node.hasPermission(NewsGroupPermissions.NWSMODERATE.toString());
-        } else if (node.hasAspect(CircabcModel.ASPECT_LIBRARY)) {
-            return node.hasPermission(LibraryPermissions.LIBADMIN.toString());
-        } else {
-            return false;
-        }
+  public boolean evaluate(final Node node) {
+    if (node.hasAspect(CircabcModel.ASPECT_NEWSGROUP)) {
+      return node.hasPermission(NewsGroupPermissions.NWSMODERATE.toString());
+    } else if (node.hasAspect(CircabcModel.ASPECT_LIBRARY)) {
+      return node.hasPermission(LibraryPermissions.LIBADMIN.toString());
+    } else {
+      return false;
     }
-
+  }
 }

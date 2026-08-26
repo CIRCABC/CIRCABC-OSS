@@ -3,4 +3,5 @@ export enum ContactReasons {
   UPLOAD_DOWNLOAD = 'help.reason.upload.or.download',
   ACCESS_PERMISSION = 'help.reason.access.or.permission',
   ADMINISTER_GROUP = 'help.reason.administer.my.group',
+  ACCESSIBILITY_ENQUIRY = 'help.reason.accessibility-enquiry',
 }

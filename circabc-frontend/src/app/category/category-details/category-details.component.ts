@@ -3,9 +3,11 @@ import {
   AbstractControl,
   FormBuilder,
   FormGroup,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ActionEmitterResult } from 'app/action-result';
 import { ActionResult } from 'app/action-result/action-result';
 import { ActionType } from 'app/action-result/action-type';
@@ -15,13 +17,23 @@ import {
   CategoryService,
   NodesService,
 } from 'app/core/generated/circabc';
+import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
+import { MultilingualInputComponent } from 'app/shared/input/multilingual-input.component';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-category-details',
   templateUrl: './category-details.component.html',
-  styleUrls: ['./category-details.component.scss'],
+  styleUrl: './category-details.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    ReactiveFormsModule,
+    ControlMessageComponent,
+    MultilingualInputComponent,
+    SpinnerComponent,
+    TranslocoModule,
+  ],
 })
 export class CategoryDetailsComponent implements OnInit {
   public header!: string | null;
@@ -49,7 +61,8 @@ export class CategoryDetailsComponent implements OnInit {
 
     const headerSession = sessionStorage.getItem('currentHeader');
     if (headerSession) {
-      this.header = JSON.parse(headerSession).name;
+      const parsed = JSON.parse(headerSession) as { name: string };
+      this.header = parsed.name;
     }
   }
 
@@ -68,7 +81,7 @@ export class CategoryDetailsComponent implements OnInit {
       if (this.categoryForm) {
         this.categoryForm.patchValue(this.category);
       }
-    } catch (error) {
+    } catch (_error) {
       console.error('impossible to get the category');
     }
     this.loading = false;
@@ -85,7 +98,7 @@ export class CategoryDetailsComponent implements OnInit {
   }
 
   public async update() {
-    if (this.category && this.category.id) {
+    if (this.category?.id) {
       try {
         const result: ActionEmitterResult = {
           type: ActionType.UPDATE_CATEGORY,

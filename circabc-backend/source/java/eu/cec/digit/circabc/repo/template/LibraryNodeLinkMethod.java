@@ -26,34 +26,38 @@ import org.alfresco.service.cmr.repository.NodeRef;
  *
  * @author Pierre Beauregard
  */
-public class LibraryNodeLinkMethod extends NodeRefBaseTemplateProcessorExtension
-        implements TemplateMethodModelEx {
+public class LibraryNodeLinkMethod
+  extends NodeRefBaseTemplateProcessorExtension
+  implements TemplateMethodModelEx {
 
-    @Override
-    public String getResult(NodeRef nodeRef) {
+  @Override
+  public String getResult(NodeRef nodeRef) {
+    NodeRef groupRef = findInterestGroupRoot(nodeRef);
+    return (
+      CircabcConfiguration.getProperty(CircabcConfiguration.NEW_UI_URL) +
+      CircabcConfiguration.getProperty(CircabcConfiguration.NEW_UI_CONTEXT) +
+      (CircabcConfiguration.getProperty(
+            CircabcConfiguration.NEW_UI_CONTEXT
+          ).endsWith("/")
+          ? "group/"
+          : "/group/") +
+      (groupRef != null ? groupRef.getId() : "") +
+      "/library/" +
+      nodeRef.getId() +
+      "/details"
+    );
+  }
 
-        NodeRef groupRef = findInterestGroupRoot(nodeRef);
-        return CircabcConfiguration.getProperty(CircabcConfiguration.NEW_UI_URL)
-                + CircabcConfiguration.getProperty(CircabcConfiguration.NEW_UI_CONTEXT)
-                + (CircabcConfiguration.getProperty(CircabcConfiguration.NEW_UI_CONTEXT).endsWith("/")
-                ? "group/"
-                : "/group/")
-                + (groupRef != null ? groupRef.getId() : "")
-                + "/library/"
-                + nodeRef.getId()
-                + "/details";
+  private NodeRef findInterestGroupRoot(NodeRef nodeRef) {
+    NodeRef parent = null;
+
+    if (getNodeService().hasAspect(nodeRef, CircabcModel.ASPECT_LIBRARY)) {
+      parent = getNodeService().getPrimaryParent(nodeRef).getParentRef();
+      while (!getNodeService().hasAspect(parent, CircabcModel.ASPECT_IGROOT)) {
+        parent = getNodeService().getPrimaryParent(parent).getParentRef();
+      }
     }
 
-    private NodeRef findInterestGroupRoot(NodeRef nodeRef) {
-        NodeRef parent = null;
-
-        if (getNodeService().hasAspect(nodeRef, CircabcModel.ASPECT_LIBRARY)) {
-            parent = getNodeService().getPrimaryParent(nodeRef).getParentRef();
-            while (!getNodeService().hasAspect(parent, CircabcModel.ASPECT_IGROOT)) {
-                parent = getNodeService().getPrimaryParent(parent).getParentRef();
-            }
-        }
-
-        return parent;
-    }
+    return parent;
+  }
 }

@@ -34,7 +34,13 @@
     >
   </div>
 </form>
-<div class="buttons-group" *ngIf="!saving">
-  <a class="cta" (click)="save()">{{ 'label.save' | transloco }}</a>
-  <a class="button" (click)="cancel()">{{ 'label.cancel' | transloco }}</a>
+@if (!saving) {
+<div class="buttons-group">
+  <a tabindex="0" class="cta" (click)="save()"
+    >{{ 'label.save' | transloco }}</a
+  >
+  <a tabindex="0" class="button" (click)="cancel()"
+    >{{ 'label.cancel' | transloco }}</a
+  >
 </div>
+}

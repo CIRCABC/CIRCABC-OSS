@@ -1,6 +1,9 @@
 {{ 'label.appearance.title' | transloco: { groupName: group?.name } |
 cbcSetTitle }}
-<a class="cta cta--plus cta--upload" (click)="showUploadModal = true"
+<a
+  tabindex="0"
+  class="cta cta--plus cta--upload"
+  (click)="showUploadModal = true"
   >{{ 'admin.upload.logo.action' | transloco }}</a
 >
 
@@ -19,21 +22,29 @@ cbcSetTitle }}
       <tr>
         <td colspan="3"></td>
       </tr>
-      <tr *ngFor="let logo of logos" class="row">
+      @for (logo of logos; track logo.id) {
+      <tr class="row">
         <td class="logoCell fixedWidth">
-          <img [attr.src]="logo.id | cbcDownload | cbcSecure" />
+          <img
+            [attr.src]="logo.id | cbcDownload | cbcSecure"
+            [attr.alt]="logo.name"
+          />
         </td>
         <td class="fixedWidth"> {{ logo.name }} </td>
         <td class="fixedWidth">
           <ul style="display: flex">
             <li>
               <a
+                tabindex="0"
                 (click)="select(logo.id)"
                 class="selectAction"
                 title="{{ 'label.select' | transloco }}"
               >
-                <img src="img/check.png" *ngIf="isSelected(logo.id)" />
-                <img src="img/check-grey.png" *ngIf="!isSelected(logo.id)" />
+                @if (isSelected(logo.id)) {
+                <img src="img/check.png" alt="Selected" />
+                } @if (!isSelected(logo.id)) {
+                <img src="img/check-grey.png" alt="Not Selected" />
+                }
               </a>
             </li>
             <li>
@@ -46,13 +57,15 @@ cbcSetTitle }}
           </ul>
         </td>
       </tr>
+      }
     </tbody>
   </table>
 </section>
 
+@if (group) {
 <cbc-add-group-logo
-  *ngIf="group"
   [groupId]="group.id"
   [showModal]="showUploadModal"
   (modalHide)="refresh($event)"
-></cbc-add-group-logo>
+/>
+}

@@ -1,0 +1,117 @@
+<form [formGroup]="addUserForm" class="flexForm" style="gap: unset">
+  <div class="flexLabel">
+    <label for="name">{{ label() | transloco }}</label>
+  </div>
+  <div class="flexGroupField formBorder">
+    @if(!userSelected) {
+    <div class="flexGroupField">
+      @if (isExternalUser){
+      <div class="flex1">
+        <input
+          type="text"
+          id="name"
+          value=""
+          placeholder="{{'label.user.email' | transloco }}"
+          formControlName="name"
+        />
+      </div>
+      <div class="flex0">
+        <a
+          tabindex="0"
+          class="button"
+          value="Search"
+          (click)="searchUsers()"
+          [class.disabled]="!isValidEmail()"
+          >{{ 'label.search' | transloco }}</a
+        >
+      </div>
+      } @else {
+      <div class="flex1">
+        <input
+          type="text"
+          id="name"
+          value=""
+          placeholder="User name / email / ..."
+          formControlName="name"
+        />
+      </div>
+      <div class="flex0">
+        <a
+          tabindex="0"
+          class="button"
+          value="Search"
+          (click)="searchUsers()"
+          [class.disabled]="isSearchEmpty()"
+          >{{ 'label.search' | transloco }}</a
+        >
+      </div>
+      }
+      <div class="flex0">
+        <a tabindex="0" (click)="resetForm()"
+          >{{ 'label.clear' | transloco }}</a
+        >
+      </div>
+    </div>
+
+    @if (searchingUsers) {
+    <div class="flexGroupField">
+      <cbc-spinner></cbc-spinner>
+    </div>
+
+    } @if(availableUsers.length > 0 ){
+    <div class="flexGroupField">
+      <div class="flexLabel">
+        <label>{{ 'label.results' | transloco }}</label>
+      </div>
+
+      <div class="flexField">
+        <div class="custom-select select--multiple">
+          @for (user of availableUsers; track user.userId) {
+          <div tabindex="0" (click)="selectUser(user)" class="userOption">
+            {{ user!.firstname! + ' ' + user!.lastname! + ' (' + user!.email! +
+            ')' }}
+          </div>
+          }
+        </div>
+      </div>
+    </div>
+    } @if(availableUsers.length <= 0 && !noAvailableUsers) {
+    <div class="flexField">
+      @if(noAccess){
+      <div>
+        <span>{{'label.user.noAccess' | transloco }}</span>
+      </div>
+      }@else {
+      <div>
+        <span>{{'label.user.noselected' | transloco }}</span>
+      </div>
+      }
+    </div>
+    } @if(noAvailableUsers) {
+    <div class="flexField">
+      <div>
+        <p [innerHTML]="'label.no.user.found' | transloco "></p>
+      </div>
+    </div>
+    } @if(availableUsers.length === 5) {
+    <div class="flexField">
+      <div>
+        <p [innerHTML]="'label.to.many.user.found' | transloco "></p>
+      </div>
+    </div>
+    } } @if (userSelected) {
+    <div class="flexGroupField" style="justify-content: space-between">
+      <div>
+        <span>{{userSelected!.firstname + ' ' + userSelected!.lastname}}</span>
+        <span style="font-size: 0.8em">{{userSelected!.email}}</span>
+      </div>
+
+      <div matTooltip="{{ 'label.remove' | transloco }}">
+        <a tabindex="0" (click)="removeUser()">
+          <img src="img/icon-garbage-blue.svg" alt="remove" width="16px" />
+        </a>
+      </div>
+    </div>
+    }
+  </div>
+</form>

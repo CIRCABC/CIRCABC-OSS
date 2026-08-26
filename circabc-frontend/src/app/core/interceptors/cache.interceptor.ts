@@ -40,9 +40,8 @@ function isCachable(req: HttpRequest<any>) {
   const matches: RegExpMatchArray | null = req.url.match(urlRegex);
   if (matches !== null) {
     return req.method === 'GET' && req.url.endsWith(matches[1]);
-  } else {
-    return false;
   }
+  return false;
 }
 
 function sendRequest(

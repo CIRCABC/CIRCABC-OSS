@@ -13,3 +13,36 @@
   border: 1px solid #757575;
   background-color: #fff;
 }
+
+.main {
+  opacity: 0;
+}
+
+.alert {
+  opacity: 0;
+  display: flex;
+  background-color: white;
+  align-items: center;
+  margin-bottom: 10px;
+  box-shadow: 0 0 15px #aaa;
+  flex-wrap: wrap;
+  justify-content: center;
+
+  .alert-icon {
+    flex: 0;
+  }
+
+  .message {
+    font-size: 16px;
+    flex: 1;
+  }
+
+  .alertButtonBox {
+    flex: 0;
+
+    .button {
+      width: 175px;
+      margin: 10px;
+    }
+  }
+}

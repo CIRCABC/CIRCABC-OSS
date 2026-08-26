@@ -44,6 +44,9 @@
  */
 package eu.cec.digit.circabc.web.wai.dialog.trashcan;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.faces.context.FacesContext;
 import net.sf.acegisecurity.Authentication;
 import org.alfresco.repo.node.archive.RestoreNodeReport;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
@@ -51,84 +54,88 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.web.app.Application;
 import org.alfresco.web.bean.repository.Node;
 
-import javax.faces.context.FacesContext;
-import java.util.ArrayList;
-import java.util.List;
-
 public class TrashcanRecoverListedItemsDialog extends TrashcanDialog {
 
+  /**
+   *
+   */
+  private static final long serialVersionUID = 5411308031085449647L;
+  private static final String OUTCOME_RECOVERY_REPORT =
+    "wai:dialog:circabcRecoveryReport";
+  private static final String MSG_NO = "no";
+  private static final String MSG_YES = "yes";
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 5411308031085449647L;
-    private static final String OUTCOME_RECOVERY_REPORT = "wai:dialog:circabcRecoveryReport";
-    private static final String MSG_NO = "no";
-    private static final String MSG_YES = "yes";
-
-    private String recoverListedItems() {
-        if (property.isInProgress()) {
-            return null;
-        }
-
-        property.setInProgress(true);
-
-        try {
-
-            // restore the nodes - the user may have requested a restore to a
-            // different parent
-            List<NodeRef> nodeRefs = new ArrayList<>(property.getListedItems().size());
-            for (Node node : property.getListedItems()) {
-                nodeRefs.add(node.getNodeRef());
-            }
-            List<RestoreNodeReport> reports;
-            if (property.getDestination() == null) {
-                reports = property.getNodeArchiveService().restoreArchivedNodes(nodeRefs);
-            } else {
-                reports = property.getNodeArchiveService()
-                        .restoreArchivedNodes(nodeRefs, property.getDestination(), null, null);
-            }
-
-            saveReportDetail(reports);
-
-        } finally {
-            property.setInProgress(false);
-        }
-
-        return OUTCOME_RECOVERY_REPORT;
+  private String recoverListedItems() {
+    if (property.isInProgress()) {
+      return null;
     }
 
-    @Override
-    protected String finishImpl(FacesContext context, String outcome) throws Exception {
-        Authentication originalFullAuthentication = AuthenticationUtil.getFullAuthentication();
-        String userName = AuthenticationUtil.getRunAsUser();
-        try {
-            AuthenticationUtil.setRunAsUserSystem();
-            return recoverListedItems();
-        } finally {
-            if (originalFullAuthentication == null) {
-                AuthenticationUtil.clearCurrentSecurityContext();
-            } else {
-                AuthenticationUtil.setFullAuthentication(originalFullAuthentication);
-                AuthenticationUtil.setRunAsUser(userName);
-            }
-        }
+    property.setInProgress(true);
 
+    try {
+      // restore the nodes - the user may have requested a restore to a
+      // different parent
+      List<NodeRef> nodeRefs = new ArrayList<>(
+        property.getListedItems().size()
+      );
+      for (Node node : property.getListedItems()) {
+        nodeRefs.add(node.getNodeRef());
+      }
+      List<RestoreNodeReport> reports;
+      if (property.getDestination() == null) {
+        reports = property
+          .getNodeArchiveService()
+          .restoreArchivedNodes(nodeRefs);
+      } else {
+        reports = property
+          .getNodeArchiveService()
+          .restoreArchivedNodes(
+            nodeRefs,
+            property.getDestination(),
+            null,
+            null
+          );
+      }
+
+      saveReportDetail(reports);
+    } finally {
+      property.setInProgress(false);
     }
 
-    @Override
-    public String getCancelButtonLabel() {
-        return Application.getMessage(FacesContext.getCurrentInstance(), MSG_NO);
-    }
+    return OUTCOME_RECOVERY_REPORT;
+  }
 
-    @Override
-    public boolean getFinishButtonDisabled() {
-        return false;
+  @Override
+  protected String finishImpl(FacesContext context, String outcome)
+    throws Exception {
+    Authentication originalFullAuthentication =
+      AuthenticationUtil.getFullAuthentication();
+    String userName = AuthenticationUtil.getRunAsUser();
+    try {
+      AuthenticationUtil.setRunAsUserSystem();
+      return recoverListedItems();
+    } finally {
+      if (originalFullAuthentication == null) {
+        AuthenticationUtil.clearCurrentSecurityContext();
+      } else {
+        AuthenticationUtil.setFullAuthentication(originalFullAuthentication);
+        AuthenticationUtil.setRunAsUser(userName);
+      }
     }
+  }
 
-    @Override
-    public String getFinishButtonLabel() {
-        return Application.getMessage(FacesContext.getCurrentInstance(), MSG_YES);
-    }
+  @Override
+  public String getCancelButtonLabel() {
+    return Application.getMessage(FacesContext.getCurrentInstance(), MSG_NO);
+  }
 
+  @Override
+  public boolean getFinishButtonDisabled() {
+    return false;
+  }
+
+  @Override
+  public String getFinishButtonLabel() {
+    return Application.getMessage(FacesContext.getCurrentInstance(), MSG_YES);
+  }
 }

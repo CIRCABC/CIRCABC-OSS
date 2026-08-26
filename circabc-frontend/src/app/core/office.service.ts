@@ -16,11 +16,11 @@ export class OfficeService {
   ): Promise<boolean> {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const result = await graphClient
+      const _result = await graphClient
         .api(`/me/drive/root:/${folderName}`)
         .get();
       return true;
-    } catch (error) {
+    } catch (_error) {
       return false;
     }
   }
@@ -31,7 +31,7 @@ export class OfficeService {
       '@microsoft.graph.conflictBehavior': 'fail',
     };
     const result = await graphClient
-      .api(`/me/drive/root/children`)
+      .api('/me/drive/root/children')
       .post(driveItem);
     return result.value;
   }

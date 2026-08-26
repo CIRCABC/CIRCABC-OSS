@@ -33,14 +33,14 @@ import org.alfresco.repo.security.authentication.AuthenticationServiceImpl;
  */
 public class EcasAuthenticationServiceImpl extends AuthenticationServiceImpl {
 
-    /**
-     * Must always return false since the authentication must always exist in Alfresco to determine if
-     * it should be created.
-     *
-     * @see org.alfresco.repo.security.authentication.AuthenticationServiceImpl#authenticationExists(java.lang.String)
-     */
-    @Override
-    public boolean authenticationExists(String userName) {
-        return false;
-    }
+  /**
+   * Must always return false since the authentication must always exist in Alfresco to determine if
+   * it should be created.
+   *
+   * @see org.alfresco.repo.security.authentication.AuthenticationServiceImpl#authenticationExists(java.lang.String)
+   */
+  @Override
+  public boolean authenticationExists(String userName) {
+    return false;
+  }
 }

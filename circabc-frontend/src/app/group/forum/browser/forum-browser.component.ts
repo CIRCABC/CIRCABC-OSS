@@ -5,49 +5,87 @@ import {
   OnDestroy,
   OnInit,
   SimpleChange,
-  ViewChild,
+  viewChild,
+  input,
 } from '@angular/core';
 
-import { ActivatedRoute, Router } from '@angular/router';
+import { DatePipe } from '@angular/common';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
   ActionType,
 } from 'app/action-result';
 import { ActionService } from 'app/action-result/action.service';
+import { assertDefined } from 'app/core/asserts';
 import { PermissionEvaluatorService } from 'app/core/evaluator/permission-evaluator.service';
 import {
   ForumService,
-  GroupConfiguration,
-  InterestGroup,
+  type GroupConfiguration,
+  type InterestGroup,
   Node as ModelNode,
   NodesService,
   NotificationService,
+  PagedNodes,
 } from 'app/core/generated/circabc';
 import { LoginService } from 'app/core/login.service';
-import { TreeNode } from 'app/shared/treeview/tree-node';
-import { TreeViewComponent } from 'app/shared/treeview/tree-view.component';
-import { firstValueFrom, Subscription } from 'rxjs';
 import { UiMessage } from 'app/core/message/ui-message';
 import { UiMessageLevel } from 'app/core/message/ui-message-level';
-import { TranslocoService } from '@ngneat/transloco';
-import { assertDefined } from 'app/core/asserts';
+import { BreadcrumbComponent } from 'app/group/breadcrumb/breadcrumb.component';
+import { DeleteForumComponent } from 'app/group/forum/delete-forum.component';
+import { ModerateComponent } from 'app/group/forum/moderate/moderate.component';
+import { DeleteTopicComponent } from 'app/group/forum/topic/delete-topic.component';
+import { ListingOptions } from 'app/group/listing-options/listing-options';
+import { IfRoleGEDirective } from 'app/shared/directives/ifrolege.directive';
+import { HintComponent } from 'app/shared/hint/hint.component';
+import { NotificationMessageComponent } from 'app/shared/notification-message/notification-message.component';
+import { PagerComponent } from 'app/shared/pager/pager.component';
+import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
+import { ShareComponent } from 'app/shared/share/share.component';
+import { TreeNode } from 'app/shared/treeview/tree-node';
+import { TreeViewComponent } from 'app/shared/treeview/tree-view.component';
+import { UserCardComponent } from 'app/shared/user-card/user-card.component';
+import { TooltipModule } from 'primeng/tooltip';
+import { Subscription, firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-forum-browser',
   templateUrl: './forum-browser.component.html',
-  styleUrls: ['./forum-browser.component.scss'],
+  styleUrl: './forum-browser.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    TreeViewComponent,
+    BreadcrumbComponent,
+    RouterLink,
+    ShareComponent,
+    HintComponent,
+    NotificationMessageComponent,
+    TooltipModule,
+    IfRoleGEDirective,
+    UserCardComponent,
+    DeleteTopicComponent,
+    DeleteForumComponent,
+    ModerateComponent,
+    DatePipe,
+    I18nPipe,
+    TranslocoModule,
+    PagerComponent,
+  ],
 })
 export class ForumBrowserComponent implements OnChanges, OnInit, OnDestroy {
   public content!: ModelNode[];
   public path: ModelNode[] = [];
   public root!: TreeNode;
 
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   public forum: ModelNode | undefined;
-  @Input()
-  public group!: InterestGroup;
+  public readonly group = input.required<InterestGroup>();
+  // TODO: Skipped for migration because:
+  //  This input is used in a control flow expression (e.g. `@if` or `*ngIf`)
+  //  and migrating would break narrowing currently.
   @Input()
   public groupConfiguration!: GroupConfiguration;
 
@@ -57,16 +95,13 @@ export class ForumBrowserComponent implements OnChanges, OnInit, OnDestroy {
   public heightMain!: string;
 
   // topic deletion variables
-  // topic deletion variables
   public currentDeletedTopic!: ModelNode;
   public showDeleteTopic = false;
 
   // forum deletion variables
-  // forum deletion variables
   public currentDeletedForum!: ModelNode;
   public showDeleteForum = false;
 
-  // forum moderation variables
   // forum moderation variables
   public currentModerateForum!: ModelNode;
   public showModerateForum = false;
@@ -74,8 +109,7 @@ export class ForumBrowserComponent implements OnChanges, OnInit, OnDestroy {
   public searchedNodeId!: string;
 
   private actionFinishedSubscription$!: Subscription;
-  @ViewChild(TreeViewComponent)
-  treeViewComponent!: TreeViewComponent;
+  readonly treeViewComponent = viewChild.required(TreeViewComponent);
 
   uiMessage = new UiMessage(
     UiMessageLevel.WARNING,
@@ -83,6 +117,13 @@ export class ForumBrowserComponent implements OnChanges, OnInit, OnDestroy {
     false,
     0
   );
+
+  public listingOptions: ListingOptions = { page: 1, limit: 10, sort: '' };
+  public pages: number[] = [];
+  public totalItems = 10;
+  public forumsPagedModel!: PagedNodes;
+
+  private readonly forumBrowserListingOptionsKey = 'forumBrowserListingOptions';
 
   constructor(
     private forumService: ForumService,
@@ -97,8 +138,25 @@ export class ForumBrowserComponent implements OnChanges, OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    this.loadListingOptions();
     this.subscribe();
     this.init();
+  }
+  // save listing options into session storage
+  private saveListingOptions() {
+    sessionStorage.setItem(
+      this.forumBrowserListingOptionsKey,
+      JSON.stringify(this.listingOptions)
+    );
+  }
+  // load listing options from session storage
+  private loadListingOptions() {
+    const listingOptions = sessionStorage.getItem(
+      this.forumBrowserListingOptionsKey
+    );
+    if (listingOptions) {
+      this.listingOptions = JSON.parse(listingOptions) as ListingOptions;
+    }
   }
 
   private subscribe() {
@@ -110,14 +168,15 @@ export class ForumBrowserComponent implements OnChanges, OnInit, OnDestroy {
               action.type === ActionType.DELETE_FORUM) &&
             action.result === ActionResult.SUCCEED
           ) {
-            await this.treeViewComponent.reload();
+            await this.treeViewComponent().reload();
           }
         }
       );
   }
   private init() {
-    if (this.group && this.group.newsgroupId) {
-      this.root = new TreeNode('Newsgroups', this.group.newsgroupId);
+    const group = this.group();
+    if (group?.newsgroupId) {
+      this.root = new TreeNode('Newsgroups', group.newsgroupId);
       this.root.expanded = true;
     }
   }
@@ -135,9 +194,9 @@ export class ForumBrowserComponent implements OnChanges, OnInit, OnDestroy {
     if (this.forum === undefined) {
       return;
     }
-    const chng = changes.forum;
-    if (chng) {
-      const cur = JSON.stringify(chng.currentValue);
+    const forumChanges = changes.forum;
+    if (forumChanges) {
+      const cur = JSON.stringify(forumChanges.currentValue);
       if (cur !== undefined) {
         if (this.forum.id) {
           this.searchedNodeId = this.forum.id;
@@ -150,23 +209,51 @@ export class ForumBrowserComponent implements OnChanges, OnInit, OnDestroy {
   public getSearchedNodeId() {
     if (this.searchedNodeId) {
       return this.searchedNodeId;
-    } else if (this.path && this.path.length > 0) {
-      return this.path[this.path.length - 1].id;
-    } else {
-      return undefined;
     }
+    if (this.path && this.path.length > 0) {
+      return this.path[this.path.length - 1].id;
+    }
+    return undefined;
   }
 
-  public async getCurrentForum() {
+  private async getCurrentForum() {
     assertDefined(this.forum);
     if (this.forum.id) {
       this.path = await firstValueFrom(
         this.nodesService.getPath(this.forum.id)
       );
 
-      this.content = await firstValueFrom(
-        this.forumService.getForumContent(this.forum.id)
+      this.forumsPagedModel = await firstValueFrom(
+        this.forumService.getForumContent(
+          this.forum.id,
+          undefined,
+          this.listingOptions.limit,
+          this.listingOptions.page,
+          this.listingOptions.sort
+        )
       );
+      if (
+        1 < this.listingOptions.page &&
+        this.forumsPagedModel.data.length === 0
+      ) {
+        this.listingOptions.page = 1;
+        this.saveListingOptions();
+        this.forumsPagedModel = await firstValueFrom(
+          this.forumService.getForumContent(
+            this.forum.id,
+            undefined,
+            this.listingOptions.limit,
+            this.listingOptions.page,
+            this.listingOptions.sort
+          )
+        );
+      }
+      this.content = this.forumsPagedModel.data;
+      this.totalItems =
+        this.forumsPagedModel.total > 0
+          ? this.forumsPagedModel.total
+          : this.listingOptions.limit;
+
       this.extractData(this.content);
     }
   }
@@ -344,13 +431,13 @@ export class ForumBrowserComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   public isNewTopic(node: ModelNode): boolean {
-    if (this.groupConfiguration && this.groupConfiguration.newsgroups) {
+    if (this.groupConfiguration?.newsgroups) {
       const newsConf = this.groupConfiguration.newsgroups;
       if (newsConf.enableFlagNewTopic === true) {
         const comparableDate = new Date();
         const day = comparableDate.getDate() - newsConf.ageFlagNewTopic;
         comparableDate.setDate(day);
-        if (node && node.properties && node.properties.created) {
+        if (node?.properties?.created) {
           const nodeDate = new Date(node.properties.created);
           return nodeDate >= comparableDate;
         }
@@ -360,13 +447,13 @@ export class ForumBrowserComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   public isNewForum(node: ModelNode): boolean {
-    if (this.groupConfiguration && this.groupConfiguration.newsgroups) {
+    if (this.groupConfiguration?.newsgroups) {
       const newsConf = this.groupConfiguration.newsgroups;
       if (newsConf.enableFlagNewForum === true) {
         const comparableDate = new Date();
         const day = comparableDate.getDate() - newsConf.ageFlagNewForum;
         comparableDate.setDate(day);
-        if (node && node.properties && node.properties.created) {
+        if (node?.properties?.created) {
           const nodeDate = new Date(node.properties.created);
           return nodeDate >= comparableDate;
         }
@@ -386,9 +473,25 @@ export class ForumBrowserComponent implements OnChanges, OnInit, OnDestroy {
 
   public isNewsgroupAdmin(): boolean {
     assertDefined(this.forum);
-    if (this.group.permissions.newsgroup === 'NwsAdmin') {
+    if (this.group().permissions.newsgroup === 'NwsAdmin') {
       return true;
     }
     return this.permEvalService.isNewsgroupAdmin(this.forum);
+  }
+
+  public async changePage(p: number) {
+    assertDefined(this.forum);
+    if (this.forum.id) {
+      this.listingOptions.page = p;
+      this.saveListingOptions();
+      await this.getCurrentForum();
+    }
+  }
+
+  public async changeLimit(limit: number) {
+    this.listingOptions.limit = limit;
+    this.listingOptions.page = 1;
+    this.saveListingOptions();
+    await this.getCurrentForum();
   }
 }

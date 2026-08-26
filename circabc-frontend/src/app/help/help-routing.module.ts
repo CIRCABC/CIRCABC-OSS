@@ -1,30 +1,60 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { ContactSupportComponent } from 'app/help/contact-support/contact-support.component';
-import { HelpArticleComponent } from 'app/help/help-article/help-article.component';
-import { HelpCategoryComponent } from 'app/help/help-category/help-category.component';
-import { HelpComponent } from 'app/help/help.component';
-import { LegalNoticeComponent } from 'app/help/legal-notice/legal-notice.component';
-import { StartComponent } from 'app/help/start/start.component';
-import { AboutComponent } from './about/about.component';
-
-const helpRoutes: Routes = [
+export const helpRoutes: Routes = [
   {
     path: '',
-    component: HelpComponent,
+    loadComponent: () =>
+      import('app/help/help.component').then((m) => m.HelpComponent),
     children: [
       { path: '', redirectTo: 'start', pathMatch: 'full' },
-      { path: 'start', component: StartComponent },
-      { path: 'about', component: AboutComponent },
-      { path: 'category/:categoryId', component: HelpCategoryComponent },
+      {
+        path: 'start',
+        loadComponent: () =>
+          import('app/help/start/start.component').then(
+            (m) => m.StartComponent
+          ),
+      },
+      {
+        path: 'about',
+        loadComponent: () =>
+          import('./about/about.component').then((m) => m.AboutComponent),
+      },
+      {
+        path: 'category/:categoryId',
+        loadComponent: () =>
+          import('app/help/help-category/help-category.component').then(
+            (m) => m.HelpCategoryComponent
+          ),
+      },
       {
         path: 'category/:categoryId/article/:articleId',
-        component: HelpArticleComponent,
+        loadComponent: () =>
+          import('app/help/help-article/help-article.component').then(
+            (m) => m.HelpArticleComponent
+          ),
       },
-      { path: 'contact', component: ContactSupportComponent },
-      { path: 'legal-notice', component: LegalNoticeComponent },
-      { path: 'legal-notice/:link', component: LegalNoticeComponent },
+      {
+        path: 'contact',
+        loadComponent: () =>
+          import('app/help/contact-support/contact-support.component').then(
+            (m) => m.ContactSupportComponent
+          ),
+      },
+      {
+        path: 'legal-notice',
+        loadComponent: () =>
+          import('app/help/legal-notice/legal-notice.component').then(
+            (m) => m.LegalNoticeComponent
+          ),
+      },
+      {
+        path: 'legal-notice/:link',
+        loadComponent: () =>
+          import('app/help/legal-notice/legal-notice.component').then(
+            (m) => m.LegalNoticeComponent
+          ),
+      },
     ],
   },
 ];

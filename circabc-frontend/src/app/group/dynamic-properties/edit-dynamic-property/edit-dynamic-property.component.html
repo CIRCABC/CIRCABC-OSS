@@ -1,4 +1,6 @@
-<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+@if (loading) {
+<cbc-horizontal-loader />
+}
 <div class="wrap page-container">
   <div class="page-header">
     <span class="page-header__title"
@@ -12,18 +14,21 @@
     </header>
     <div class="main">
       <a
+        tabindex="0"
         class="step-link"
         [class.step-link-selected]="showDefinition"
         (click)="showDefinition = true"
         >{{ 'label.definition' | transloco }}</a
       >
+      @if (hasValues()) {
       <a
+        tabindex="0"
         class="step-link"
         [class.step-link-selected]="!showDefinition"
         (click)="showDefinition = false"
-        *ngIf="hasValues()"
         >{{ 'label.values' | transloco }}</a
       >
+      }
       <br /><br />
       <section [class.hidden]="!showDefinition">
         <form [formGroup]="editDynPropForm">
@@ -37,9 +42,9 @@
             <label for="type">{{ 'label.type' | transloco }}</label>
             <div class="custom-select select--form reset-width select-align">
               <select id="type" formControlName="type">
-                <option *ngFor="let t of getTypes()" value="{{ t.type }}"
-                  >{{ t.display }}</option
-                >
+                @for (t of getTypes(); track t) {
+                <option value="{{ t.type }}">{{ t.display }}</option>
+                }
               </select>
             </div>
             <p class="hint"
@@ -62,7 +67,7 @@
               [disabled]="!newValueFormValid()"
               [class.disabled]="!newValueFormValid()"
             />
-            <a class="button" (click)="cancelAddValue()"
+            <a tabindex="0" class="button" (click)="cancelAddValue()"
               >{{ 'label.cancel' | transloco }}</a
             >
           </div>
@@ -76,54 +81,82 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let item of values" class="row">
+            @for (item of values; track item) {
+            <tr class="row">
               <td class="cell-left-border"></td>
               <td class="first-cell">
-                <span class="tag" *ngIf="item.status === 'deleted'"
-                  >{{ 'label.removed' | transloco }}</span
-                >
-                <span class="tag" *ngIf="item.status === 'new'"
-                  >{{ 'label.new' | transloco }}</span
-                >
-                <span class="tag" *ngIf="item.status === 'edited'"
-                  >{{ 'label.edited' | transloco }}</span
-                >
+                @if (item.status === 'deleted') {
+                <span class="tag">{{ 'label.removed' | transloco }}</span>
+                } @if (item.status === 'new') {
+                <span class="tag">{{ 'label.new' | transloco }}</span>
+                } @if (item.status === 'edited') {
+                <span class="tag">{{ 'label.edited' | transloco }}</span>
+                }
                 <span [class.striked]="item.status === 'deleted'"
                   >{{ item._new }}</span
                 >
               </td>
               <td class="row-actions">
-                <a><img src="img/sort-up.png" (click)="moveUp(item)" /></a>
-                <a><img src="img/sort-down.png" (click)="moveDown(item)" /></a>
+                <a
+                  ><img
+                    tabindex="0"
+                    src="img/sort-up.png"
+                    alt="Move up"
+                    (click)="moveUp(item)"
+                /></a>
+                <a
+                  ><img
+                    tabindex="0"
+                    src="img/sort-down.png"
+                    alt="Move down"
+                    (click)="moveDown(item)"
+                /></a>
                 &nbsp;&nbsp;
                 <a
                   ><img
+                    tabindex="0"
                     src="img/icon-edit-20x20.png"
+                    alt="Edit"
                     (click)="tagAsEdited(item)"
                 /></a>
                 <a
-                  ><img
+                  >@if (item.status === 'edited') {
+                  <img
+                    tabindex="0"
                     src="img/icon-autoupload-20x20.png"
+                    alt="Reset edit"
                     (click)="resetEdited(item)"
-                    *ngIf="item.status === 'edited'"
-                /></a>
+                  />
+                  }</a
+                >
                 <a
                   ><img
+                    tabindex="0"
                     src="img/icon-close-20x20.png"
+                    alt="Remove"
                     (click)="tagAsRemoved(item)"
                 /></a>
               </td>
             </tr>
+            }
           </tbody>
         </table>
       </section>
-      <div *ngIf="executing">
+      @if (executing) {
+      <div>
         {{ 'label.updating' | transloco }}... <cbc-spinner></cbc-spinner>
       </div>
+      }
     </div>
-    <footer class="modal-footer" *ngIf="!executing">
-      <a class="cta" (click)="ok()"> {{ 'label.update' | transloco }}</a>
-      <a class="button" (click)="cancel()">{{ 'label.cancel' | transloco }}</a>
+    @if (!executing) {
+    <footer class="modal-footer">
+      <a tabindex="0" class="cta" (click)="ok()">
+        {{ 'label.update' | transloco }}</a
+      >
+      <a tabindex="0" class="button" (click)="cancel()"
+        >{{ 'label.cancel' | transloco }}</a
+      >
     </footer>
+    }
   </section>
 </div>

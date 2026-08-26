@@ -2,12 +2,14 @@ import { Component, OnDestroy } from '@angular/core';
 import { UiMessage } from 'app/core/message/ui-message';
 import { UiMessageService } from 'app/core/message/ui-message.service';
 import { Subscription } from 'rxjs';
+import { UiMessageRendererComponent } from './ui-message.renderer.component';
 
 @Component({
   selector: 'cbc-ui-message-system',
   templateUrl: './ui-message.system.component.html',
-  styleUrls: ['./ui-message.system.component.scss'],
+  styleUrl: './ui-message.system.component.scss',
   preserveWhitespaces: true,
+  imports: [UiMessageRendererComponent],
 })
 export class UiMessageSystemComponent implements OnDestroy {
   public messages: UiMessage[] = [];

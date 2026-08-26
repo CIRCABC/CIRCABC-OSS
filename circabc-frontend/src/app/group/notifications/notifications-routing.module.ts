@@ -1,13 +1,15 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AdminGuard } from 'app/group/guards/admin-guard.service';
-import { NotificationsComponent } from 'app/group/notifications/notifications.component';
+import { canActivateAdmin } from 'app/group/guards/admin-guard.service';
 
-const notificationsRoutes: Routes = [
+export const notificationsRoutes: Routes = [
   {
     path: ':nodeId',
-    component: NotificationsComponent,
-    canActivate: [AdminGuard],
+    loadComponent: () =>
+      import('app/group/notifications/notifications.component').then(
+        (m) => m.NotificationsComponent
+      ),
+    canActivate: [canActivateAdmin],
   },
 ];
 

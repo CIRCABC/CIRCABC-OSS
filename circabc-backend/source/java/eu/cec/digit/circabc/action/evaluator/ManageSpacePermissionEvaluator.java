@@ -20,10 +20,10 @@
  ******************************************************************************/
 package eu.cec.digit.circabc.action.evaluator;
 
+import static eu.cec.digit.circabc.web.bean.navigation.NavigableNodeType.*;
+
 import org.alfresco.web.action.evaluator.BaseActionEvaluator;
 import org.alfresco.web.bean.repository.Node;
-
-import static eu.cec.digit.circabc.web.bean.navigation.NavigableNodeType.*;
 
 /**
  * Evaluate if the user can manage the permission of the current space
@@ -32,16 +32,17 @@ import static eu.cec.digit.circabc.web.bean.navigation.NavigableNodeType.*;
  */
 public class ManageSpacePermissionEvaluator extends BaseActionEvaluator {
 
-    private static final long serialVersionUID = 308051234539899525L;
+  private static final long serialVersionUID = 308051234539899525L;
 
-    /**
-     * Return true if the given node is a library space and not if libarry root
-     */
-    public boolean evaluate(final Node node) {
-        return LIBRARY_CHILD.isNodeFromType(node) ||
-                NEWSGROUP_CHILD.isNodeFromType(node) ||
-                INFORMATION_CHILD.isNodeFromType(node) ||
-                SURVEY_CHILD.isNodeFromType(node);
-
-    }
+  /**
+   * Return true if the given node is a library space and not if libarry root
+   */
+  public boolean evaluate(final Node node) {
+    return (
+      LIBRARY_CHILD.isNodeFromType(node) ||
+      NEWSGROUP_CHILD.isNodeFromType(node) ||
+      INFORMATION_CHILD.isNodeFromType(node) ||
+      SURVEY_CHILD.isNodeFromType(node)
+    );
+  }
 }

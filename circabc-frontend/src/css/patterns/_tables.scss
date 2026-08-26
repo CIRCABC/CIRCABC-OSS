@@ -229,11 +229,11 @@
     }
 
     tbody > *:nth-of-type(even) {
-      background-color: #eef5f4;
+      background-color: var(--theme-table-container-backgroundcolor);
     }
 
     .row {
-      background: #fff;
+      background: var(--theme-table-container-alt-row);
 
       td {
         padding: 15px 0;
@@ -340,6 +340,23 @@
         }
       }
 
+      .cell-title {
+        .actions {
+          display: block;
+          opacity: 0;
+          margin-top: 8px;
+
+          li {
+            display: inline-block;
+            font-size: 11px;
+
+            a {
+              margin-right: 10px;
+            }
+          }
+        }
+      }
+
       .cell-name {
         padding-right: 15px;
 
@@ -393,7 +410,7 @@
       }
 
       .cell-firstname {
-        width: 120px;
+        min-width: 120px;
         position: relative;
         padding-top: 0;
         font-size: 14px;
@@ -421,11 +438,16 @@
         position: relative;
         padding-top: 0;
         font-size: 14px;
-        width: 200px;
+        min-width: 200px;
       }
 
       .cell-email {
-        width: 300px;
+        min-width: 300px;
+      }
+
+      .cell-dateTime {
+        width: 200px;
+        padding: 5px;
       }
 
       // -- --  In Saved searches

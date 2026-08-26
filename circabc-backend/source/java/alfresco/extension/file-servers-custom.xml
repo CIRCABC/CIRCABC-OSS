@@ -4,14 +4,12 @@
     |          http://ec.europa.eu/idabc/en/document/6523
     |     
     +-->
-
-
 <alfresco-config area="file-servers">
 
    <config evaluator="string-compare" condition="CIFS Server">
-      <serverEnable enabled="${cifs.enabled}"/>
+      <serverEnable enabled="${cifs.enabled}" />
       
-      <host name="${cifs.localname}A" domain="${cifs.domain}"/>
+      <host name="${cifs.localname}A" domain="${cifs.domain}" />
       <comment>Alfresco CIFS Server</comment>
 
       <!-- Set to the broadcast mask for the subnet -->
@@ -21,8 +19,8 @@
       <bindto>${cifs.bindto}</bindto>
 
       <!-- Use Java socket based NetBIOS over TCP/IP and native SMB on linux -->
-      <tcpipSMB ipv6="${cifs.ipv6}" platforms="linux,solaris,macosx"/>
-      <netBIOSSMB bindto="${cifs.bindto}" platforms="linux,solaris,macosx"/>
+      <tcpipSMB ipv6="${cifs.ipv6}" platforms="linux,solaris,macosx" />
+      <netBIOSSMB bindto="${cifs.bindto}" platforms="linux,solaris,macosx" />
       
 	   <!-- Can be mapped to non-privileged ports, then use firewall rules to forward
 		    requests from the standard ports -->
@@ -33,7 +31,7 @@
 	    
       <!-- Announce the server to the workgroup/domain -->
       <!-- Use enabled="false" attribute to disable announcements -->              
-      <hostAnnounce interval="5" enabled="${cifs.hostannounce}"/>
+      <hostAnnounce interval="5" enabled="${cifs.hostannounce}" />
 
       <!-- Use Win32 NetBIOS interface on Windows -->
       <!-- disable by circabc
@@ -41,11 +39,11 @@
       -->
       <!-- Announce the server to the workgroup/domain -->
       <!-- Use enabled="false" attribute to disable announcements -->              
-      <Win32Announce interval="5" enabled="${cifs.hostannounce}"/>
+      <Win32Announce interval="5" enabled="${cifs.hostannounce}" />
 
       <!-- CIFS authentication -->
       <!-- Available types are 'alfresco', 'passthru' and 'enterprise' -->
-      <authenticator type="enterprise"/>
+      <authenticator type="enterprise" />
             
       <!-- CIFS Passthru authentication sample -->
       <!-- Also see the <DomainMappings> config in the 'Filesystem Security' section below -->
@@ -98,36 +96,36 @@
       <!-- CIFS server debug settings -->
       <!-- Enable 'log4j.logger.org.alfresco.fileserver=debug' in log4j.properties file -->
       
-      <sessionDebug flags="Negotiate,Socket"/>
+      <sessionDebug flags="Negotiate,Socket" />
       
    </config>
 
    <config evaluator="string-compare" condition="FTP Server">
-      <serverEnable enabled="${ftp.enabled}"/>
+      <serverEnable enabled="${ftp.enabled}" />
 
     <!-- Run on a non-privileged port -->      
     <port>${ftp.port}</port>
       
 
 	  <!-- IPv6 support -->
-	  <IPv6 state="${ftp.ipv6}"/>
+	  <IPv6 state="${ftp.ipv6}" />
 	  
       <!-- FTP authentication -->
       <!-- Available types are 'alfresco' and 'passthru' -->
-      <authenticator type="alfresco"/>
+      <authenticator type="alfresco" />
             
       <!-- FTP server debug settings -->
       <!-- Enable 'log4j.logger.org.alfresco.fileserver=debug' in log4j.properties file -->
-      <debug flags="File,Search,Error,Directory,Info,DataPort"/>
+      <debug flags="File,Search,Error,Directory,Info,DataPort" />
    </config>
    
    <config evaluator="string-compare" condition="NFS Server">
-      <serverEnable enabled="${nfs.enabled}"/>
+      <serverEnable enabled="${nfs.enabled}" />
 
       <!-- Map NFS user/group ids to Alfresco users -->      
       <rpcAuthenticator>
          <userMappings>
-            <user name="admin" uid="0" gid="0"/>
+            <user name="admin" uid="0" gid="0" />
          </userMappings>
       </rpcAuthenticator>
    </config>
@@ -147,7 +145,7 @@
             </urlFile>
 
 			<!-- Mark locked files as offline --> 
-		    <offlineFiles/>
+		    <offlineFiles />
 
 			<!-- Desktop actions -->
 			<!-- Uses a client-side application to trigger a server-side action                         -->
@@ -224,12 +222,12 @@
            <!-- AVM virtualization view of all stores/versions for WCM -->
            <!-- virtual view stores filter can be any of the following: normal, site, staging, author, preview -->
          <avmfilesystem name="AVM">
-            <virtualView stores="site,staging,author"/>
+            <virtualView stores="site,staging,author" />
          </avmfilesystem>
            
       </filesystems>
       
-      <homeFolder/>
+      <homeFolder />
    </config>
 
    <config evaluator="string-compare" condition="Filesystem Security">

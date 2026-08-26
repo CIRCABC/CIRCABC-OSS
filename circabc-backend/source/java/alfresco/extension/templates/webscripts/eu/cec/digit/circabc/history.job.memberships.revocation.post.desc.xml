@@ -2,7 +2,7 @@
   <shortname>Plan a new user revocation</shortname>
   <description>>Plan a new user revocation</description>
     <url>/circabc/history/job/memberships/revocation</url>
-  <format default="json"/>
+  <format default="json" />
   <authentication>user</authentication>
   <transaction>required</transaction>
 </webscript>

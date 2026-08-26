@@ -3,11 +3,12 @@ import {
   AbstractControl,
   FormBuilder,
   FormGroup,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { ActionType } from 'app/action-result';
 import {
   AutoUploadConfiguration,
@@ -16,13 +17,24 @@ import {
 } from 'app/core/generated/circabc';
 import { UiMessageService } from 'app/core/message/ui-message.service';
 import { getSuccessTranslation } from 'app/core/util';
-import { ValidationService } from 'app/core/validation.service';
+import { emailsValidator, portValidator } from 'app/core/validation.service';
+import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-library-auto-upload',
   templateUrl: './auto-upload-library.component.html',
   preserveWhitespaces: true,
+  imports: [
+    HorizontalLoaderComponent,
+    RouterLink,
+    SpinnerComponent,
+    ReactiveFormsModule,
+    ControlMessageComponent,
+    TranslocoModule,
+  ],
 })
 export class AutoUploadLibraryComponent implements OnInit {
   public configuration!: AutoUploadConfiguration;
@@ -49,7 +61,7 @@ export class AutoUploadLibraryComponent implements OnInit {
     this.autoUploadForm = this.formBuilder.group(
       {
         ftpHost: ['', Validators.required],
-        ftpPort: ['', [Validators.required, ValidationService.portValidator]],
+        ftpPort: ['', [Validators.required, portValidator]],
         pathToFile: [''],
         username: [''],
         password: [''],
@@ -57,7 +69,7 @@ export class AutoUploadLibraryComponent implements OnInit {
         uploadHour: ['-1'],
         autoExtractZip: [false],
         jobNotifications: [false],
-        emailRecipients: ['', ValidationService.emailsValidator],
+        emailRecipients: ['', emailsValidator],
       },
       {
         updateOn: 'change',
@@ -236,9 +248,6 @@ export class AutoUploadLibraryComponent implements OnInit {
   }
 
   get isUpdate(): boolean {
-    return (
-      this.configuration !== undefined &&
-      this.configuration.idConfiguration !== undefined
-    );
+    return this.configuration?.idConfiguration !== undefined;
   }
 }

@@ -58,36 +58,58 @@
       [pivots]="pivotDocuments"
       [translations]="translations"
     ></cbc-file-metadata>
+
+    @if (!uploading && !uploadFinished && filesToUpload.length > 0) {
+    <div class="upload-configurations">
+      <div class="notify-label">
+        <label for="cmn-toggle-1">
+          {{ 'label.send.email.notification' | transloco }}</label
+        >
+      </div>
+
+      <div class="toggle">
+        <mat-slide-toggle
+          id="cmn-toggle-1"
+          [formControl]="notify"
+        ></mat-slide-toggle>
+      </div>
+      <div class="notify-label">
+        <span>{{ notify.value ? 'Yes' : 'No' }}</span>
+      </div>
+
+      <div class="notify-message">
+        <span>
+          <i>
+            ({{ notify.value ? ("label.notifications.send" | transloco):
+            "label.notifications.no-send" | transloco }})</i
+          >
+        </span>
+      </div>
+    </div>
+    }
   </div>
 </section>
+
 <div class="upload-actions">
   <div class="buttons-group">
-    <a
-      data-cy="upload"
-      class="cta"
-      *ngIf="!uploading && !uploadFinished && filesToUpload.length > 0"
-      (click)="uploadFiles()"
-    >
+    @if (!uploading && !uploadFinished && filesToUpload.length > 0) {
+    <a tabindex="0" data-cy="upload" class="cta" (click)="uploadFiles()">
       {{ 'label.upload' | transloco }}</a
     >
-    <a
-      class="button"
-      (click)="cancelOrClose()"
-      *ngIf="!uploading && !uploadFinished"
+    } @if (!uploading && !uploadFinished) {
+    <a tabindex="0" class="button" (click)="cancelOrClose()"
       >{{ 'label.cancel' | transloco }}</a
     >
-    <span *ngIf="uploading"
-      >{{ 'label.uploading' | transloco }}<cbc-spinner></cbc-spinner
-    ></span>
-    <a
-      data-cy="finish"
-      class="cta"
-      (click)="cancelOrClose()"
-      *ngIf="uploadFinished"
+    } @if (uploading) {
+    <span>{{ 'label.uploading' | transloco }}<cbc-spinner></cbc-spinner></span>
+    } @if (uploadFinished) {
+    <a tabindex="0" data-cy="finish" class="cta" (click)="cancelOrClose()"
       >{{ 'label.finish' | transloco }}</a
     >
-    <a (click)="startNewUpload()" *ngIf="uploadFinished" class="button"
+    } @if (uploadFinished) {
+    <a tabindex="0" (click)="startNewUpload()" class="button"
       >{{ 'label.upload.finished.start.new' | transloco }}</a
     >
+    }
   </div>
 </div>

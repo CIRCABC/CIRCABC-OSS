@@ -10,7 +10,7 @@
   margin: 25px 0;
 
   .header {
-    background: rgb(255 255 255 / 0.5);
+    background: var(--theme-box-header-background);
     border-radius: 5px 5px 0 0;
     padding: 12px 25px;
 
@@ -19,7 +19,7 @@
       font-weight: 700;
       font-size: 16px;
       text-transform: uppercase;
-      color: variables-mixins-keyframes.$textAA;
+      color: var(--theme-header-text);
     }
 
     .filter {
@@ -46,7 +46,7 @@
   }
 
   .main {
-    background: #fff;
+    background: var(--theme-box-background);
     color: variables-mixins-keyframes.$textAA;
     font-size: 14px;
     box-shadow: 0 0 2px rgb(0 0 0 / 0.1);
@@ -293,7 +293,7 @@
     }
 
     .row:nth-of-type(even) {
-      background-color: #eef5f4;
+      background-color: var(--theme-table-alternative-lines);
     }
   }
 }
@@ -470,7 +470,7 @@
       }
     }
 
-    @media screen and (max-width: 1200px) {
+    @media screen and (max-width: 600px) {
       img {
         margin-right: 0;
       }

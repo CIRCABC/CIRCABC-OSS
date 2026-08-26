@@ -2,7 +2,7 @@
   <shortname>Get the keywords definition of an IG</shortname>
   <description>Get the keywords definition of an IG</description>
     <url>/circabc/groups/{igId}/keywords</url>
-  <format default="json"/>
+  <format default="json" />
   <authentication>guest</authentication>
   <transaction>required</transaction>
 </webscript>

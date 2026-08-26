@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-
 <!-- Copyright 2006 European Community Licensed under the EUPL, Version 1.1 
 	or – as soon they will be approved by the European Commission - subsequent 
 	versions of the EUPL (the "Licence"); You may not use this work except in 
@@ -8,9 +7,8 @@
 	under the Licence is distributed on an "AS IS" basis, WITHOUT WARRANTIES 
 	OR CONDITIONS OF ANY KIND, either express or implied. See the Licence for 
 	the specific language governing permissions and limitations under the Licence. -->
-	
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="AppMessage">
 
 	<select id="select_app_messages" resultType="AppMessageDAO" parameterType="map">
@@ -42,8 +40,7 @@
 		cbc_app_messages
 	</select>
 
-	<select id="select_app_message" resultType="AppMessageDAO"
-		parameterType="map">
+	<select id="select_app_message" resultType="AppMessageDAO" parameterType="map">
 		SELECT
 		id,
 		message_content as messageContent,
@@ -86,8 +83,11 @@
 		WHERE id=#{id, jdbcType=NUMERIC}
 	</update>
 
-	<select id="select_distribution_emails"
-		resultType="DistributionEmailDAO" parameterType="map">
+	<select
+    id="select_distribution_emails"
+    resultType="DistributionEmailDAO"
+    parameterType="map"
+  >
 		SELECT id, email as emailAddress
 		FROM
 			(SELECT
@@ -125,8 +125,7 @@
 		jdbcType=VARCHAR})
 	</insert>
 
-	<select id="count_distribution_email" resultType="int"
-		parameterType="map">
+	<select id="count_distribution_email" resultType="int" parameterType="map">
 		SELECT
 		count(*)
 		FROM cbc_distribution_list
@@ -134,8 +133,11 @@
 		#{email, jdbcType=VARCHAR}
 	</select>
 	
-	<select id="get_distribution_email" resultType="DistributionEmailDAO"
-		parameterType="map">
+	<select
+    id="get_distribution_email"
+    resultType="DistributionEmailDAO"
+    parameterType="map"
+  >
 		SELECT
 		id, email as emailAddress
 		FROM cbc_distribution_list

@@ -20,9 +20,8 @@
  ******************************************************************************/
 package eu.cec.digit.circabc.web.ui.tag;
 
-import org.springframework.extensions.webscripts.ui.common.tag.BaseComponentTag;
-
 import javax.faces.component.UIComponent;
+import org.springframework.extensions.webscripts.ui.common.tag.BaseComponentTag;
 
 /**
  * The CalendarTag provides a simple and easy way to generate an interactive calendar in your java
@@ -50,206 +49,209 @@ import javax.faces.component.UIComponent;
  */
 public class CalendarTag extends BaseComponentTag {
 
-    private String dayWidth;
-    private String dayHeight;
-    private String id;
-    private String cssPrefix;
-    private String weekStart;
-    private String day;
-    private String month;
-    private String year;
-    private String action;
-    private String actionListener;
-    private String viewMode;
-    private String date;
-    private String startDate;
-    private String endDate;
-    private String decorator;
-    private String showPreviousNextLinks;
-    private String beyond;
+  private String dayWidth;
+  private String dayHeight;
+  private String id;
+  private String cssPrefix;
+  private String weekStart;
+  private String day;
+  private String month;
+  private String year;
+  private String action;
+  private String actionListener;
+  private String viewMode;
+  private String date;
+  private String startDate;
+  private String endDate;
+  private String decorator;
+  private String showPreviousNextLinks;
+  private String beyond;
 
-    /**
-     * @see javax.faces.webapp.UIComponentTag#getComponentType()
-     */
-    public String getComponentType() {
-        return "eu.cec.digit.circabc.faces.Calendar";
-    }
+  /**
+   * @see javax.faces.webapp.UIComponentTag#getComponentType()
+   */
+  public String getComponentType() {
+    return "eu.cec.digit.circabc.faces.Calendar";
+  }
 
-    /**
-     * @see javax.faces.webapp.UIComponentTag#getRendererType()
-     */
-    public String getRendererType() {
-        // the component is self renderering
-        return null;
-    }
+  /**
+   * @see javax.faces.webapp.UIComponentTag#getRendererType()
+   */
+  public String getRendererType() {
+    // the component is self renderering
+    return null;
+  }
 
-    /**
-     * @see javax.faces.webapp.UIComponentTag#setProperties(javax.faces.component.UIComponent)
-     */
-    protected void setProperties(UIComponent component) {
-        super.setProperties(component);
+  /**
+   * @see javax.faces.webapp.UIComponentTag#setProperties(javax.faces.component.UIComponent)
+   */
+  protected void setProperties(UIComponent component) {
+    super.setProperties(component);
 
-        setIntProperty(component, "dayWidth", this.dayWidth);
-        setIntProperty(component, "dayHeight", this.dayHeight);
-        setStringProperty(component, "id", this.id);
-        setStringProperty(component, "cssPrefix", this.cssPrefix);
-        setStringProperty(component, "weekStart", this.weekStart);
-        setIntProperty(component, "day", this.day);
-        setIntProperty(component, "month", this.month);
-        setIntProperty(component, "year", this.year);
-        setStringProperty(component, "action", this.action);
-        setStringProperty(component, "actionListener", this.actionListener);
-        setStringBindingProperty(component, "viewMode", this.viewMode);
-        setStringBindingProperty(component, "date", this.date);
-        setStringBindingProperty(component, "startDate", this.startDate);
-        setStringBindingProperty(component, "endDate", this.endDate);
-        setStringProperty(component, "decorator", this.decorator);
-        setBooleanProperty(component, "showPreviousNextLinks", this.showPreviousNextLinks);
-        setBooleanProperty(component, "beyond", this.beyond);
+    setIntProperty(component, "dayWidth", this.dayWidth);
+    setIntProperty(component, "dayHeight", this.dayHeight);
+    setStringProperty(component, "id", this.id);
+    setStringProperty(component, "cssPrefix", this.cssPrefix);
+    setStringProperty(component, "weekStart", this.weekStart);
+    setIntProperty(component, "day", this.day);
+    setIntProperty(component, "month", this.month);
+    setIntProperty(component, "year", this.year);
+    setStringProperty(component, "action", this.action);
+    setStringProperty(component, "actionListener", this.actionListener);
+    setStringBindingProperty(component, "viewMode", this.viewMode);
+    setStringBindingProperty(component, "date", this.date);
+    setStringBindingProperty(component, "startDate", this.startDate);
+    setStringBindingProperty(component, "endDate", this.endDate);
+    setStringProperty(component, "decorator", this.decorator);
+    setBooleanProperty(
+      component,
+      "showPreviousNextLinks",
+      this.showPreviousNextLinks
+    );
+    setBooleanProperty(component, "beyond", this.beyond);
+  }
 
-    }
+  /**
+   * @see org.alfresco.web.ui.common.tag.HtmlComponentTag#release()
+   */
+  public void release() {
+    super.release();
 
-    /**
-     * @see org.alfresco.web.ui.common.tag.HtmlComponentTag#release()
-     */
-    public void release() {
-        super.release();
+    this.dayWidth = null;
+    this.dayHeight = null;
+    this.id = null;
+    this.cssPrefix = null;
+    this.weekStart = null;
+    this.day = null;
+    this.month = null;
+    this.year = null;
+    this.action = null;
+    this.actionListener = null;
+    this.viewMode = null;
+    this.date = null;
+    this.startDate = null;
+    this.endDate = null;
+    this.decorator = null;
+    this.showPreviousNextLinks = null;
+    this.beyond = null;
+  }
 
-        this.dayWidth = null;
-        this.dayHeight = null;
-        this.id = null;
-        this.cssPrefix = null;
-        this.weekStart = null;
-        this.day = null;
-        this.month = null;
-        this.year = null;
-        this.action = null;
-        this.actionListener = null;
-        this.viewMode = null;
-        this.date = null;
-        this.startDate = null;
-        this.endDate = null;
-        this.decorator = null;
-        this.showPreviousNextLinks = null;
-        this.beyond = null;
-    }
+  /**
+   * @param cssPrefix the cssPrefix to set
+   */
+  public void setCssPrefix(String cssPrefix) {
+    this.cssPrefix = cssPrefix;
+  }
 
-    /**
-     * @param cssPrefix the cssPrefix to set
-     */
-    public void setCssPrefix(String cssPrefix) {
-        this.cssPrefix = cssPrefix;
-    }
+  /**
+   * @param date the date to set
+   */
+  public void setDate(String date) {
+    this.date = date;
+  }
 
-    /**
-     * @param date the date to set
-     */
-    public void setDate(String date) {
-        this.date = date;
-    }
+  /**
+   * @param day the day to set
+   */
+  public void setDay(String day) {
+    this.day = day;
+  }
 
-    /**
-     * @param day the day to set
-     */
-    public void setDay(String day) {
-        this.day = day;
-    }
+  /**
+   * @param dayHeight the dayHeight to set
+   */
+  public void setDayHeight(String dayHeight) {
+    this.dayHeight = dayHeight;
+  }
 
-    /**
-     * @param dayHeight the dayHeight to set
-     */
-    public void setDayHeight(String dayHeight) {
-        this.dayHeight = dayHeight;
-    }
+  /**
+   * @param dayWidth the dayWidth to set
+   */
+  public void setDayWidth(String dayWidth) {
+    this.dayWidth = dayWidth;
+  }
 
-    /**
-     * @param dayWidth the dayWidth to set
-     */
-    public void setDayWidth(String dayWidth) {
-        this.dayWidth = dayWidth;
-    }
+  /**
+   * @param decorator the decorator to set
+   */
+  public void setDecorator(String decorator) {
+    this.decorator = decorator;
+  }
 
-    /**
-     * @param decorator the decorator to set
-     */
-    public void setDecorator(String decorator) {
-        this.decorator = decorator;
-    }
+  /**
+   * @param endDate the endDate to set
+   */
+  public void setEndDate(String endDate) {
+    this.endDate = endDate;
+  }
 
-    /**
-     * @param endDate the endDate to set
-     */
-    public void setEndDate(String endDate) {
-        this.endDate = endDate;
-    }
+  /**
+   * @param id the id to set
+   */
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    /**
-     * @param id the id to set
-     */
-    public void setId(String id) {
-        this.id = id;
-    }
+  /**
+   * @param month the month to set
+   */
+  public void setMonth(String month) {
+    this.month = month;
+  }
 
-    /**
-     * @param month the month to set
-     */
-    public void setMonth(String month) {
-        this.month = month;
-    }
+  /**
+   * @param action the action to set
+   */
+  public void setAction(String action) {
+    this.action = action;
+  }
 
-    /**
-     * @param action the action to set
-     */
-    public void setAction(String action) {
-        this.action = action;
-    }
+  /**
+   * @param actionListener the actionListener to set
+   */
+  public void setActionListener(String actionListener) {
+    this.actionListener = actionListener;
+  }
 
-    /**
-     * @param actionListener the actionListener to set
-     */
-    public void setActionListener(String actionListener) {
-        this.actionListener = actionListener;
-    }
+  /**
+   * @param viewMode the viewMode to set
+   */
+  public void setViewMode(String viewMode) {
+    this.viewMode = viewMode;
+  }
 
-    /**
-     * @param viewMode the viewMode to set
-     */
-    public void setViewMode(String viewMode) {
-        this.viewMode = viewMode;
-    }
+  /**
+   * @param showPreviousNextLinks the showPreviousNextLinks to set
+   */
+  public void setShowPreviousNextLinks(String showPreviousNextLinks) {
+    this.showPreviousNextLinks = showPreviousNextLinks;
+  }
 
-    /**
-     * @param showPreviousNextLinks the showPreviousNextLinks to set
-     */
-    public void setShowPreviousNextLinks(String showPreviousNextLinks) {
-        this.showPreviousNextLinks = showPreviousNextLinks;
-    }
+  /**
+   * @param startDate the startDate to set
+   */
+  public void setStartDate(String startDate) {
+    this.startDate = startDate;
+  }
 
-    /**
-     * @param startDate the startDate to set
-     */
-    public void setStartDate(String startDate) {
-        this.startDate = startDate;
-    }
+  /**
+   * @param weekStart the weekStart to set
+   */
+  public void setWeekStart(String weekStart) {
+    this.weekStart = weekStart;
+  }
 
-    /**
-     * @param weekStart the weekStart to set
-     */
-    public void setWeekStart(String weekStart) {
-        this.weekStart = weekStart;
-    }
+  /**
+   * @param year the year to set
+   */
+  public void setYear(String year) {
+    this.year = year;
+  }
 
-    /**
-     * @param year the year to set
-     */
-    public void setYear(String year) {
-        this.year = year;
-    }
-
-    /**
-     * @param beyond the beyond to set
-     */
-    public void setBeyond(String beyond) {
-        this.beyond = beyond;
-    }
+  /**
+   * @param beyond the beyond to set
+   */
+  public void setBeyond(String beyond) {
+    this.beyond = beyond;
+  }
 }

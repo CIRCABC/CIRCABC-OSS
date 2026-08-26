@@ -61,16 +61,18 @@
       </div>
       <div class="field field--with-icon field--date">
         <label>{{ 'label.auto.close.date' | transloco }}</label>
-        <p-calendar
+        <p-datepicker
           formControlName="dateClosure"
           [dateFormat]="'dd/mm/yy'"
           [placeholder]="'dd/mm/yyyy HH:MM'"
           [showTime]="true"
           [hourFormat]="'24'"
           [showIcon]="true"
-        ></p-calendar>
+        ></p-datepicker>
 
-        <a (click)="cleanClosure()">{{ 'label.remove' | transloco }}</a>
+        <a tabindex="0" (click)="cleanClosure()"
+          >{{ 'label.remove' | transloco }}</a
+        >
       </div>
       <div class="field">
         <label for="displayTime">{{ 'label.display.time' | transloco }}</label>
@@ -109,7 +111,8 @@
         <label for="enabled" class="nonBlockLabel"></label>
         <span>{{ (isEnabled() ? 'label.yes' : 'label.no') | transloco }}</span>
       </div>
-      <div class="field switch" *ngIf="isEnabled()">
+      @if (isEnabled()) {
+      <div class="field switch">
         <div class="label">
           {{ 'label.notify.distribution.list' | transloco }}
         </div>
@@ -122,21 +125,28 @@
         <label for="notification" class="nonBlockLabel"></label>
         <span>{{ (isNotified() ? 'label.yes' : 'label.no') | transloco }}</span>
       </div>
-      <div class="field" *ngIf="processing">
-        <label
+      } @if (processing) {
+      <div class="field">
+        <div
           >{{ 'label.processing' | transloco }}...
           <cbc-spinner></cbc-spinner>
-        </label>
+        </div>
       </div>
+      }
     </form>
-    <section class="buttons-group" *ngIf="!processing">
+    @if (!processing) {
+    <section class="buttons-group">
       <a
+        tabindex="0"
         class="cta"
         (click)="isFormValid() ? saveOrUpdateTemplate() : ''"
         [class.disabled]="!isFormValid()"
         >{{ 'label.save' | transloco }}</a
       >
-      <a class="button" (click)="cancel()">{{ 'label.cancel' | transloco }}</a>
+      <a tabindex="0" class="button" (click)="cancel()"
+        >{{ 'label.cancel' | transloco }}</a
+      >
     </section>
+    }
   </section>
 </div>

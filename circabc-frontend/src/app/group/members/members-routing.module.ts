@@ -1,17 +1,38 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { ServiceAccessGuard } from 'app/group/guards/service-guard.service';
-import { BulkInviteComponent } from 'app/group/members/bulk-invite/bulk-invite.component';
-import { ContactComponent } from 'app/group/members/contact/contact.component';
-import { MemberAccountComponent } from 'app/group/members/member-account/member-account.component';
-import { MembersComponent } from 'app/group/members/members.component';
+import { canActivateService } from 'app/group/guards/service-guard.service';
 
-const membersRoutes: Routes = [
-  { path: '', component: MembersComponent, canActivate: [ServiceAccessGuard] },
-  { path: 'contact', component: ContactComponent },
-  { path: 'account/:userid', component: MemberAccountComponent },
-  { path: 'bulk-invite/:igId', component: BulkInviteComponent },
+export const membersRoutes: Routes = [
+  {
+    path: '',
+    loadComponent: () =>
+      import('app/group/members/members.component').then(
+        (m) => m.MembersComponent
+      ),
+    canActivate: [canActivateService],
+  },
+  {
+    path: 'contact',
+    loadComponent: () =>
+      import('app/group/members/contact/contact.component').then(
+        (m) => m.ContactComponent
+      ),
+  },
+  {
+    path: 'account/:userid',
+    loadComponent: () =>
+      import('app/group/members/member-account/member-account.component').then(
+        (m) => m.MemberAccountComponent
+      ),
+  },
+  {
+    path: 'bulk-invite/:igId',
+    loadComponent: () =>
+      import('app/group/members/bulk-invite/bulk-invite.component').then(
+        (m) => m.BulkInviteComponent
+      ),
+  },
 ];
 
 @NgModule({

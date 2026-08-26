@@ -1,31 +1,44 @@
+@if (!mustConfirm && !deleting) {
 <a
+  tabindex="0"
+  data-cy="delete-inline"
   class="question"
   (click)="deleteAskConfirmation()"
-  *ngIf="!mustConfirm && !deleting"
 >
+  @if (image !== '') {
   <img
-    *ngIf="image !== ''"
     [src]="image"
-    [height]="imageHeightWidth"
-    [width]="imageHeightWidth"
+    [height]="imageHeightWidth()"
+    [width]="imageHeightWidth()"
     alt="delete icon"
   />
+  } @if (useIcon() && image === '') {
   <img
-    *ngIf="useIcon && image === ''"
     src="img/rubbish-bin-blue-small.png"
     alt="delete"
-    title="{{ deleteLabel | transloco }}"
+    title="{{ deleteLabel() | transloco }}"
   />
-  <span *ngIf="useText">{{ deleteLabel | transloco }}</span>
+  } @if (useText()) {
+  <span>{{ deleteLabel() | transloco }}</span>
+  }
 </a>
-<span *ngIf="mustConfirm && !deleting" class="confirmation">
-  <span>{{ deleteLabel | transloco }}</span>:&nbsp;
-  <a id="confirmDeletePerm" (click)="confirm()"
+} @if (mustConfirm && !deleting) {
+<span class="confirmation">
+  <span>{{ deleteLabel() | transloco }}</span>:&nbsp;
+  <a
+    tabindex="0"
+    data-cy="delete-inline-confirm"
+    id="confirmDeletePerm"
+    (click)="confirm()"
     >{{ 'label.yes' | transloco }}</a
   >
   &nbsp;|&nbsp;
-  <a id="cancelDeletePerm" (click)="cancel()">{{ 'label.no' | transloco }}</a>
+  <a tabindex="0" id="cancelDeletePerm" (click)="cancel()"
+    >{{ 'label.no' | transloco }}</a
+  >
 </span>
-<span *ngIf="deleteInline && mustConfirm && deleting">
+} @if (deleteInline() && mustConfirm && deleting) {
+<span>
   <img src="img/ajax-loader.gif" alt="deleting" />
 </span>
+}

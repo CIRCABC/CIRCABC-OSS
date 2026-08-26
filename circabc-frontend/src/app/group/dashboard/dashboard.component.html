@@ -1,45 +1,30 @@
-{{ group?.name | cbcSetTitle }}
-<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+{{ group?.name | cbcSetTitle }} @if (loading) {
+<cbc-horizontal-loader />
+}
 <div class="fluid page-container dashboard-container">
-  <section class="dahsboard-section-left" id="description" *ngIf="group">
+  @if (group) {
+  <section class="dahsboard-section-left" id="description">
     <cbc-group-location [group]="group"></cbc-group-location>
 
     <cbc-group-desciptor [group]="group"></cbc-group-desciptor>
 
-    <cbc-contact-description
-      [group]="group"
-      *ngIf="!(displayMembersBox || displayForumsBox || displayEventsBox)"
-    ></cbc-contact-description>
-
-    <cbc-timeline
-      [entries]="timeline.entries"
-      [group]="group"
-      *ngIf="group && displayWhatsnewBox && timeline"
-    ></cbc-timeline>
+    @if (!(displayMembersBox || displayForumsBox || displayEventsBox)) {
+    <cbc-contact-description [group]="group"></cbc-contact-description>
+    } @if (group && displayWhatsnewBox && timeline) {
+    <cbc-timeline [entries]="timeline.entries" [group]="group"></cbc-timeline>
+    }
   </section>
-
-  <section
-    class="dahsboard-section-right add-top-margin"
-    *ngIf="group && (displayMembersBox || displayForumsBox || displayEventsBox)"
-  >
-    <cbc-contact-description
-      [group]="group"
-      *ngIf="displayMembersBox || displayForumsBox || displayEventsBox"
-    ></cbc-contact-description>
-
-    <cbc-members-dashlet
-      [group]="group"
-      *ngIf="displayMembersBox"
-    ></cbc-members-dashlet>
-
-    <cbc-events-dashlet
-      [igId]="igId"
-      *ngIf="displayForumsBox"
-    ></cbc-events-dashlet>
-
-    <cbc-recent-discussions
-      [igId]="igId"
-      *ngIf="displayEventsBox"
-    ></cbc-recent-discussions>
+  } @if (group && (displayMembersBox || displayForumsBox || displayEventsBox)) {
+  <section class="dahsboard-section-right add-top-margin">
+    @if (displayMembersBox || displayForumsBox || displayEventsBox) {
+    <cbc-contact-description [group]="group"></cbc-contact-description>
+    } @if (displayMembersBox) {
+    <cbc-members-dashlet [group]="group"></cbc-members-dashlet>
+    } @if (displayForumsBox) {
+    <cbc-events-dashlet [igId]="igId"></cbc-events-dashlet>
+    } @if (displayEventsBox) {
+    <cbc-recent-discussions [igId]="igId"></cbc-recent-discussions>
+    }
   </section>
+  }
 </div>

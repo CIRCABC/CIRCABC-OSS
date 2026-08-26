@@ -26,10 +26,12 @@ import org.alfresco.web.bean.repository.Node;
 
 public class CategoryHeaderEvaluator extends BaseActionEvaluator {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    public boolean evaluate(final Node node) {
-        return (NavigableNodeType.CATEGORY_HEADER.isNodeFromType(node) && !node.getName()
-                .equals("CircaBCHeader"));
-    }
+  public boolean evaluate(final Node node) {
+    return (
+      NavigableNodeType.CATEGORY_HEADER.isNodeFromType(node) &&
+      !node.getName().equals("CircaBCHeader")
+    );
+  }
 }

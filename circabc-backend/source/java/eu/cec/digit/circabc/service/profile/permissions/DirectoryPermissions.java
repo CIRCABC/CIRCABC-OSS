@@ -26,64 +26,65 @@ import java.util.HashSet;
  * @author Philippe Dubois
  */
 public enum DirectoryPermissions {
-    DIRADMIN("DirAdmin"),
-    DIRMANAGEMEMBERS("DirManageMembers"),
-    DIRACCESS("DirAccess"),
-    DIRNOACCESS("DirNoAccess");
+  DIRADMIN("DirAdmin"),
+  DIRMANAGEMEMBERS("DirManageMembers"),
+  DIRACCESS("DirAccess"),
+  DIRNOACCESS("DirNoAccess");
 
-    static HashSet<DirectoryPermissions> dirPermissions = null;
+  static HashSet<DirectoryPermissions> dirPermissions = null;
 
-    String dirPermissionString;
+  String dirPermissionString;
 
-    DirectoryPermissions(String permission) {
-        dirPermissionString = permission;
+  DirectoryPermissions(String permission) {
+    dirPermissionString = permission;
+  }
+
+  public static DirectoryPermissions withPermissionString(String permiString) {
+    DirectoryPermissions match = null;
+
+    for (DirectoryPermissions permission : getPermissions()) {
+      if (permission.dirPermissionString.equals(permiString)) {
+        match = permission;
+        break;
+      }
     }
-
-    public static DirectoryPermissions withPermissionString(String permiString) {
-        DirectoryPermissions match = null;
-
-        for (DirectoryPermissions permission : getPermissions()) {
-            if (permission.dirPermissionString.equals(permiString)) {
-                match = permission;
-                break;
-            }
-        }
-        if (match == null) {
-            throw new IllegalArgumentException(
-                    "No enum const class with permission string " + permiString);
-        } else {
-            return match;
-        }
+    if (match == null) {
+      throw new IllegalArgumentException(
+        "No enum const class with permission string " + permiString
+      );
+    } else {
+      return match;
     }
+  }
 
-    protected static void init() {
-        dirPermissions = new HashSet<>();
-        Collections.addAll(dirPermissions, DirectoryPermissions.values());
-    }
+  protected static void init() {
+    dirPermissions = new HashSet<>();
+    Collections.addAll(dirPermissions, DirectoryPermissions.values());
+  }
 
-    /**
-     * return an Set representing the permission list.
-     *
-     * @return Set of LibraryPermissions
-     */
-    public static HashSet<DirectoryPermissions> getPermissions() {
-        if (dirPermissions == null) {
-            init();
-        }
-        return (HashSet<DirectoryPermissions>) dirPermissions.clone();
+  /**
+   * return an Set representing the permission list.
+   *
+   * @return Set of LibraryPermissions
+   */
+  public static HashSet<DirectoryPermissions> getPermissions() {
+    if (dirPermissions == null) {
+      init();
     }
+    return (HashSet<DirectoryPermissions>) dirPermissions.clone();
+  }
 
-    public static DirectoryPermissions[] minimalValues() {
-        return new DirectoryPermissions[]{DIRACCESS, DIRNOACCESS};
-    }
+  public static DirectoryPermissions[] minimalValues() {
+    return new DirectoryPermissions[] { DIRACCESS, DIRNOACCESS };
+  }
 
-    /**
-     * Return the string value associated to the permission
-     */
-    public String toString() {
-        if (dirPermissions == null) {
-            init();
-        }
-        return dirPermissionString;
+  /**
+   * Return the string value associated to the permission
+   */
+  public String toString() {
+    if (dirPermissions == null) {
+      init();
     }
+    return dirPermissionString;
+  }
 }

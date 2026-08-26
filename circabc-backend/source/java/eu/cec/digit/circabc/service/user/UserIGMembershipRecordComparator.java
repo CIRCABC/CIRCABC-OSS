@@ -20,29 +20,33 @@ import java.io.Serializable;
 import java.util.Comparator;
 
 public class UserIGMembershipRecordComparator
-        implements Comparator<UserIGMembershipRecord>, Serializable {
+  implements Comparator<UserIGMembershipRecord>, Serializable {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = -8330903237674384518L;
+  /**
+   *
+   */
+  private static final long serialVersionUID = -8330903237674384518L;
 
-    private UserIGMembershipRecordComparator() {
-    }
+  private UserIGMembershipRecordComparator() {}
 
-    public static Comparator<UserIGMembershipRecord> getInstance() {
-        return UserIGMembershipRecordComparatorHolder.INSTANCE;
-    }
+  public static Comparator<UserIGMembershipRecord> getInstance() {
+    return UserIGMembershipRecordComparatorHolder.INSTANCE;
+  }
 
-    public int compare(UserIGMembershipRecord first, UserIGMembershipRecord second) {
-        final String firstString = first.getCategoryTitle() + first.getInterestGroupTitle();
-        final String secondString = second.getCategoryTitle() + second.getInterestGroupTitle();
-        return firstString.compareToIgnoreCase(secondString);
-    }
+  public int compare(
+    UserIGMembershipRecord first,
+    UserIGMembershipRecord second
+  ) {
+    final String firstString =
+      first.getCategoryTitle() + first.getInterestGroupTitle();
+    final String secondString =
+      second.getCategoryTitle() + second.getInterestGroupTitle();
+    return firstString.compareToIgnoreCase(secondString);
+  }
 
-    private static class UserIGMembershipRecordComparatorHolder {
+  private static class UserIGMembershipRecordComparatorHolder {
 
-        public static final UserIGMembershipRecordComparator INSTANCE =
-                new UserIGMembershipRecordComparator();
-    }
+    public static final UserIGMembershipRecordComparator INSTANCE =
+      new UserIGMembershipRecordComparator();
+  }
 }

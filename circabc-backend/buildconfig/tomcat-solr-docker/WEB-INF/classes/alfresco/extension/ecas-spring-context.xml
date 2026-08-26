@@ -30,7 +30,7 @@
     <bean id="ProxyChainTrustHandler" class="eu.cec.digit.ecas.client.validation.FirstParentProxyChainTrustHandler">
         <constructor-arg index="0">
             <list>
-                <value>https://d02di1637770dit.net1.cec.eu.int:7002/new/login/cas/proxyreceptor</value>
+                <value>https://localhost:7002/new/login/cas/proxyreceptor</value>
             </list>
         </constructor-arg>
     </bean>
@@ -46,7 +46,7 @@
     -->
     <bean id="EcasConfiguration" class="eu.cec.digit.ecas.client.configuration.ChainableSpringConfiguration">
         <property name="configurationId" value="eu.cec.digit.circabc.verifyProxyTicket"/>
-        <property name="serverName" value="d02di1637770dit.net1.cec.eu.int"/>
+        <property name="serverName" value="localhost"/>
         <property name="ecasBaseUrl" value="https://192.168.99.100:7002"/>
         <property name="initLoginUrl" value="/cas/login/init"/>
         <property name="loginUrl" value="https://192.168.99.100:7002/cas/login"/>
@@ -56,7 +56,7 @@
         <!-- for ECAS proxy clients only: -->
         <property name="authorizedProxies">
             <list>
-                <value>https://d02di1637770dit.net1.cec.eu.int:7002/new/login/cas/proxyreceptor</value>
+                <value>https://localhost:7002/new/login/cas/proxyreceptor</value>
             </list>
         </property>
         <property name="proxyChainTrustHandler" ref="ProxyChainTrustHandler"/>

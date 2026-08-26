@@ -4,9 +4,7 @@
     |  		   http://ec.europa.eu/idabc/en/document/6523
     |
     +-->
-
 <!-- Here Only the new Circabc specific WAI (and not Alfresco native) actions and action groups -->
-
 <alfresco-config>
 
 	<config>
@@ -16,7 +14,8 @@
 				<permissions>
 					<permission allow="true">LibEditOnly</permission>
 				</permissions>
-				<evaluator>org.alfresco.web.action.evaluator.CreateForumNodeEvaluator</evaluator>
+				<evaluator
+        >org.alfresco.web.action.evaluator.CreateForumNodeEvaluator</evaluator>
 				<label-id>start_discussion_action_wai</label-id>
 				<tooltip-id>start_discussion_action_tooltip_wai</tooltip-id>
 				<image>/images/icons/create_forum.gif</image>
@@ -49,7 +48,7 @@
 				</params>
 			</action>
 
-			<action id="newsgroup_view_forum_details_wai" >
+			<action id="newsgroup_view_forum_details_wai">
 				<label-id>view_forum_details_wai</label-id>
 				<tooltip-id>view_forum_details_tooltip_wai</tooltip-id>
 				<image>/images/icons/View_details.gif</image>
@@ -59,11 +58,13 @@
 				</action-listener>
 				<params>
 					<param name="id">#{actionContext.id}</param>
-					<param name="imageName">newsgroup_view_forum_details_wai_#{actionContext.name}</param>
+					<param
+            name="imageName"
+          >newsgroup_view_forum_details_wai_#{actionContext.name}</param>
 				</params>
 			</action>
 
-			<action id="newsgroup_edit_forum_details_wai" >
+			<action id="newsgroup_edit_forum_details_wai">
 				<evaluator>
 					eu.cec.digit.circabc.action.evaluator.DeleteAndEditForumEvaluator
 				</evaluator>
@@ -76,7 +77,9 @@
 				</action-listener>
 				<params>
 					<param name="id">#{actionContext.id}</param>
-					<param name="imageName">newsgroup_edit_forum_details_wai_#{actionContext.name}</param>
+					<param
+            name="imageName"
+          >newsgroup_edit_forum_details_wai_#{actionContext.name}</param>
 					<param name="service">Newsgroup</param>
 				  	<param name="activity">EditForumProperties</param>
 				</params>
@@ -111,11 +114,13 @@
 				</action-listener>
 				<params>
 					<param name="id">#{actionContext.id}</param>
-					<param name="imageName">newsgroup_view_topic_details_wai_#{actionContext.name}</param>
+					<param
+            name="imageName"
+          >newsgroup_view_topic_details_wai_#{actionContext.name}</param>
 				</params>
 			</action>
 
-			<action id="newsgroup_edit_topic_details_wai" >
+			<action id="newsgroup_edit_topic_details_wai">
 				<evaluator>
 					eu.cec.digit.circabc.action.evaluator.DeleteAndEditTopicEvaluator
 				</evaluator>
@@ -128,13 +133,15 @@
 				</action-listener>
 				<params>
 					<param name="id">#{actionContext.id}</param>
-					<param name="imageName">newsgroup_edit_topic_details_wai_#{actionContext.name}</param>
+					<param
+            name="imageName"
+          >newsgroup_edit_topic_details_wai_#{actionContext.name}</param>
 					<param name="service">Newsgroup</param>
 				  	<param name="activity">EditTopicDetails</param>
 				</params>
 			</action>
 
-			<action id="newsgroup_delete_topic_wai" >
+			<action id="newsgroup_delete_topic_wai">
 				<evaluator>
 					eu.cec.digit.circabc.action.evaluator.DeleteAndEditTopicEvaluator
 				</evaluator>
@@ -167,13 +174,15 @@
 				</action-listener>
 				<params>
 					<param name="id">#{actionContext.id}</param>
-					<param name="imageName">newsgroup_post_reply_wai_#{actionContext.creator}</param>
+					<param
+            name="imageName"
+          >newsgroup_post_reply_wai_#{actionContext.creator}</param>
 					<param name="service">Newsgroup</param>
 				  	<param name="activity">PostReply</param>
 				</params>
 			</action>
 
-			<action id="newsgroup_edit_post_wai" >
+			<action id="newsgroup_edit_post_wai">
 				<evaluator>
 					eu.cec.digit.circabc.action.evaluator.DeleteAndEditPostEvaluator
 				</evaluator>
@@ -192,7 +201,7 @@
 				</params>
 			</action>
 
-			<action id="newsgroup_delete_post_wai" >
+			<action id="newsgroup_delete_post_wai">
 				<evaluator>
 					eu.cec.digit.circabc.action.evaluator.DeleteAndEditPostEvaluator
 				</evaluator>
@@ -205,13 +214,15 @@
 				</action-listener>
 				<params>
 					<param name="id">#{actionContext.id}</param>
-					<param name="imageName">newsgroup_delete_post_wai_#{actionContext.creator}</param>
+					<param
+            name="imageName"
+          >newsgroup_delete_post_wai_#{actionContext.creator}</param>
 					<param name="service">Newsgroup</param>
 					<param name="activity">DeletePost</param>
 				</params>
 			</action>
 
-			<action id="newsgroup_accept_post_wai" >
+			<action id="newsgroup_accept_post_wai">
 				<evaluator>
 					eu.cec.digit.circabc.action.evaluator.ModerateNodeEvaluator
 				</evaluator>
@@ -223,13 +234,15 @@
 				</action-listener>
 				<params>
 					<param name="id">#{actionContext.id}</param>
-					<param name="imageName">newsgroup_accept_post_wai_#{actionContext.creator}</param>
+					<param
+            name="imageName"
+          >newsgroup_accept_post_wai_#{actionContext.creator}</param>
 					<param name="service">Newsgroup</param>
 					<param name="activity">AcceptPost</param>
 				</params>
 			</action>
 
-			<action id="newsgroup_reject_post_wai" >
+			<action id="newsgroup_reject_post_wai">
 				<evaluator>
 					eu.cec.digit.circabc.action.evaluator.ModerateNodeEvaluator
 				</evaluator>
@@ -242,13 +255,15 @@
 				</action-listener>
 				<params>
 					<param name="id">#{actionContext.id}</param>
-					<param name="imageName">newsgroup_reject_post_wai_#{actionContext.creator}</param>
+					<param
+            name="imageName"
+          >newsgroup_reject_post_wai_#{actionContext.creator}</param>
 					<param name="service">Newsgroup</param>
 					<param name="activity">RejectPost</param>
 				</params>
 			</action>
 
-			<action id="newsgroup_signal_abuse_wai" >
+			<action id="newsgroup_signal_abuse_wai">
 				<evaluator>
 					eu.cec.digit.circabc.action.evaluator.NotGuestEvaluator
 				</evaluator>
@@ -261,13 +276,15 @@
 				</action-listener>
 				<params>
 					<param name="id">#{actionContext.id}</param>
-					<param name="imageName">newsgroup_signal_post_wai_#{actionContext.creator}</param>
+					<param
+            name="imageName"
+          >newsgroup_signal_post_wai_#{actionContext.creator}</param>
 					<param name="service">Newsgroup</param>
 					<param name="activity">SignalAbusePost</param>
 				</params>
 			</action>
 
-			<action id="newsgroup_not_abuse_wai" >
+			<action id="newsgroup_not_abuse_wai">
 				<evaluator>
 					eu.cec.digit.circabc.action.evaluator.RemoveAbuseEvaluator
 				</evaluator>
@@ -279,13 +296,15 @@
 				</action-listener>
 				<params>
 					<param name="id">#{actionContext.id}</param>
-					<param name="imageName">newsgroup_nott_abuse_post_wai_#{actionContext.creator}</param>
+					<param
+            name="imageName"
+          >newsgroup_nott_abuse_post_wai_#{actionContext.creator}</param>
 					<param name="service">Newsgroup</param>
 					<param name="activity">SignalNotAbusePost</param>
 				</params>
 			</action>
 			
-			<action id="newsgroup_not_abuse_wai" >
+			<action id="newsgroup_not_abuse_wai">
 				<evaluator>
 					eu.cec.digit.circabc.action.evaluator.RemoveAbuseEvaluator
 				</evaluator>
@@ -297,7 +316,9 @@
 				</action-listener>
 				<params>
 					<param name="id">#{actionContext.id}</param>
-					<param name="imageName">newsgroup_nott_abuse_post_wai_#{actionContext.creator}</param>
+					<param
+            name="imageName"
+          >newsgroup_nott_abuse_post_wai_#{actionContext.creator}</param>
 					<param name="service">Newsgroup</param>
 					<param name="activity">SignalNotAbusePost</param>
 				</params>
@@ -315,7 +336,9 @@
 				</action-listener>
 	            <params>
 				   <param name="id">#{actionContext.id}</param>
-					<param name="imageName">newsgroup_switch_forum_moderation_wai_#{actionContext.creator}</param>
+					<param
+            name="imageName"
+          >newsgroup_switch_forum_moderation_wai_#{actionContext.creator}</param>
 					<param name="service">Newsgroup</param>
 					<param name="activity">SwitchModeration</param>
 	            </params>
@@ -335,7 +358,7 @@
 				<show-link>false</show-link>
 				<style-class>inlineAction</style-class>
 				<action idref="newsgroup_view_forum_details_wai" />
-				<action idref="history"/>
+				<action idref="history" />
 			</action-group>
 
 			<!-- Actions for forums in Forum details (for the newsgroup service)-->
@@ -346,7 +369,7 @@
 				<action idref="newsgroup_delete_forum_wai" />
 				<action idref="edit_own_notification_status" />
 				<action idref="switch_forum_moderation" />
-				<action idref="history"/>
+				<action idref="history" />
 			</action-group>
 
 			<!-- ??? to delete ??? -->
@@ -355,7 +378,7 @@
 				<show-link>false</show-link>
 				<style-class>inlineAction</style-class>
 				<action idref="newsgroup_view_topic_details_wai" />
-				<action idref="history"/>
+				<action idref="history" />
 			</action-group>
 
 			<!-- Actions for topics in Topic details (for the newsgroup service)-->
@@ -365,7 +388,7 @@
 				<action idref="newsgroup_edit_topic_details_wai" />
 				<action idref="newsgroup_delete_topic_wai" />
 				<action idref="edit_own_notification_status" />
-				<action idref="history"/>
+				<action idref="history" />
 			</action-group>
 
 			<!-- Traditional Actions for posts and replies in Post view (for the newsgroup service)-->
@@ -378,7 +401,7 @@
 				<action idref="newsgroup_post_reply_wai" />
 				<action idref="newsgroup_edit_post_wai" />
 				<action idref="newsgroup_delete_post_wai" />
-				<action idref="history"/>
+				<action idref="history" />
 			</action-group>
 
 			<!-- Moderation Actions for posts and replies in Post view (for the newsgroup service)-->
@@ -400,7 +423,7 @@
 				<action idref="newsgroup_post_reply_wai" />
 				<action idref="newsgroup_edit_post_wai" />
 				<action idref="newsgroup_delete_post_wai" />
-				<action idref="history"/>
+				<action idref="history" />
 			</action-group>
 
 
@@ -443,7 +466,7 @@
 				<action idref="newsgroup_delete_forum_wai" />
 				<action idref="edit_own_notification_status" />
 				
-				<action idref="history"/>
+				<action idref="history" />
 			</action-group>
 
 			<action-group id="custom-action-list-newsgroup-topic">
@@ -452,7 +475,7 @@
 				<action idref="newsgroup_edit_topic_details_wai" />
 				<action idref="newsgroup_delete_topic_wai" />
 				<action idref="edit_own_notification_status" />
-				<action idref="history"/>
+				<action idref="history" />
 			</action-group>
 
 		</actions>

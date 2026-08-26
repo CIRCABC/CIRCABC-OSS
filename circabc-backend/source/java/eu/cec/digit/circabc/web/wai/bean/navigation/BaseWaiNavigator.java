@@ -31,6 +31,8 @@ import eu.cec.digit.circabc.web.WebClientHelper;
 import eu.cec.digit.circabc.web.WebClientHelper.ExtendedURLMode;
 import eu.cec.digit.circabc.web.bean.override.CircabcBrowseBean;
 import eu.cec.digit.circabc.web.bean.override.CircabcNavigationBean;
+import java.util.Map;
+import javax.faces.context.FacesContext;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.model.FileFolderService;
@@ -41,9 +43,6 @@ import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.web.bean.repository.Node;
 import org.owasp.esapi.ESAPI;
 
-import javax.faces.context.FacesContext;
-import java.util.Map;
-
 /**
  * Base bean that backs the navigation inside the wai part of Circabc
  *
@@ -51,324 +50,342 @@ import java.util.Map;
  */
 public abstract class BaseWaiNavigator implements WaiNavigator {
 
-    public static final String NAVIGATION_JSP_FOLDER = "/jsp/extension/wai/navigation/";
-    private static final long serialVersionUID = 8465549602453406044L;
-    // bean common to most dialogs
-    private CircabcBrowseBean browseBean;
-    private CircabcNavigationBean navigator;
-    // services common to most dialogs
-    transient private ManagementService managementService;
-    transient private NodeService nodeService;
-    transient private FileFolderService fileFolderService;
-    transient private SearchService searchService;
-    transient private DictionaryService dictionaryService;
-    transient private NamespaceService namespaceService;
-    transient private PermissionService permissionService;
-    transient private ProfileManagerServiceFactory profileManagerServiceFactory;
-    transient private NavigationPreferencesService navigationPreferencesService;
+  public static final String NAVIGATION_JSP_FOLDER =
+    "/jsp/extension/wai/navigation/";
+  private static final long serialVersionUID = 8465549602453406044L;
+  // bean common to most dialogs
+  private CircabcBrowseBean browseBean;
+  private CircabcNavigationBean navigator;
+  // services common to most dialogs
+  private transient ManagementService managementService;
+  private transient NodeService nodeService;
+  private transient FileFolderService fileFolderService;
+  private transient SearchService searchService;
+  private transient DictionaryService dictionaryService;
+  private transient NamespaceService namespaceService;
+  private transient PermissionService permissionService;
+  private transient ProfileManagerServiceFactory profileManagerServiceFactory;
+  private transient NavigationPreferencesService navigationPreferencesService;
 
-    private CircabcFileFolderService circabcFileFolderService;
+  private CircabcFileFolderService circabcFileFolderService;
 
-    private transient BusinessRegistry businessRegistry;
+  private transient BusinessRegistry businessRegistry;
 
-    private Map<String, String> parameters;
+  private Map<String, String> parameters;
 
-    //public BaseWaiNavigator(){UIContextService.getInstance(FacesContext.getCurrentInstance()).registerBean(this);}
+  //public BaseWaiNavigator(){UIContextService.getInstance(FacesContext.getCurrentInstance()).registerBean(this);}
 
-    public boolean getInit() {
-        init(parameters);
-        return false;
+  public boolean getInit() {
+    init(parameters);
+    return false;
+  }
+
+  public void setParamsToApply(Map<String, String> parameters) {
+    this.parameters = parameters;
+  }
+
+  public Node getCurrentNode() {
+    return navigator.getCurrentNode();
+  }
+
+  public Node getCurrentInterstGroup() {
+    return navigator.getCurrentIGRoot();
+  }
+
+  public Node getCurrentCategory() {
+    return navigator.getCurrentCategory();
+  }
+
+  public void areaChanged() {
+    // TODO do somtehing generic?
+  }
+
+  public void contextUpdated() {
+    // TODO do somtehing generic?
+  }
+
+  public void spaceChanged() {
+    // TODO do somtehing generic?
+  }
+
+  public String getPageIcon() {
+    // the most of the pages doesn't need an icon
+    return null;
+  }
+
+  public String getPageIconAltText() {
+    //	the most of the pages doesn't need an icon ...
+    return null;
+  }
+
+  public void restored() {}
+
+  public String getHttpUrl() {
+    return WebClientHelper.getGeneratedWaiRelativeUrl(
+      getCurrentNode(),
+      ExtendedURLMode.HTTP_WAI_BROWSE
+    );
+  }
+
+  public String getPreviousHttpUrl() {
+    return WebClientHelper.getGeneratedWaiRelativeUrl(
+      getPreviousNode(),
+      ExtendedURLMode.HTTP_WAI_BROWSE
+    );
+  }
+
+  private Node getPreviousNode() {
+    return navigator.getPreviousNode();
+  }
+
+  public String getWebdavUrl() {
+    // Functionally not asked but ready to run. Only uncomment the following line
+    //return WebClientHelper.getGeneratedWaiRelativeUrl(getCurrentNode(), ExtendedURLMode.WEBDAV);
+
+    return null;
+  }
+
+  public String getBrowserTitle() {
+    String titleOrName = null;
+
+    final String propertyTitle = ContentModel.PROP_TITLE.toString();
+    final Object title = getCurrentNode().getProperties().get(propertyTitle);
+    if (title != null) {
+      ESAPI.encoder()
+        .encodeForHTML(
+          titleOrName = (title.toString().length() > 0
+              ? title.toString()
+              : getCurrentNode().getName())
+        );
     }
 
-    public void setParamsToApply(Map<String, String> parameters) {
-        this.parameters = parameters;
+    return titleOrName;
+  }
+
+  public int getListPageSize() {
+    return getBrowseBean().getListElementNumber();
+  }
+
+  protected String translate(final String key, final Object... params) {
+    return WebClientHelper.translate(key, params);
+  }
+
+  /**
+   * @return the navigator
+   */
+  protected final CircabcNavigationBean getNavigator() {
+    if (this.navigator == null) {
+      this.navigator = Beans.getWaiNavigator();
     }
+    return navigator;
+  }
 
-    public Node getCurrentNode() {
-        return navigator.getCurrentNode();
+  /**
+   * @param navigator the navigator to set
+   */
+  public final void setNavigator(CircabcNavigationBean navigator) {
+    this.navigator = navigator;
+  }
+
+  /**
+   * @return the browse bean
+   */
+  protected final CircabcBrowseBean getBrowseBean() {
+    if (this.browseBean == null) {
+      this.browseBean = Beans.getWaiBrowseBean();
     }
+    return this.browseBean;
+  }
 
-    public Node getCurrentInterstGroup() {
-        return navigator.getCurrentIGRoot();
+  /**
+   * @param browseBean The BrowseBean to set.
+   */
+  public final void setBrowseBean(CircabcBrowseBean browseBean) {
+    this.browseBean = browseBean;
+  }
+
+  protected final ManagementService getManagementService() {
+    if (this.managementService == null) {
+      this.managementService = Services.getCircabcServiceRegistry(
+        FacesContext.getCurrentInstance()
+      ).getManagementService();
     }
+    return this.managementService;
+  }
 
-    public Node getCurrentCategory() {
-        return navigator.getCurrentCategory();
+  /**
+   * @param managementService The Management Service to set.
+   */
+  public final void setManagementService(ManagementService managementService) {
+    this.managementService = managementService;
+  }
+
+  protected final NodeService getNodeService() {
+    if (this.nodeService == null) {
+      this.nodeService = Services.getAlfrescoServiceRegistry(
+        FacesContext.getCurrentInstance()
+      ).getNodeService();
     }
+    return this.nodeService;
+  }
 
-    public void areaChanged() {
-        // TODO do somtehing generic?
+  /**
+   * @param nodeService The nodeService to set.
+   */
+  public final void setNodeService(NodeService nodeService) {
+    this.nodeService = nodeService;
+  }
+
+  protected final FileFolderService getFileFolderService() {
+    if (this.fileFolderService == null) {
+      this.fileFolderService = Services.getAlfrescoServiceRegistry(
+        FacesContext.getCurrentInstance()
+      ).getFileFolderService();
     }
+    return this.fileFolderService;
+  }
 
-    public void contextUpdated() {
-        // TODO do somtehing generic?
+  /**
+   * @param fileFolderService used to manipulate folder/folder model nodes
+   */
+  public final void setFileFolderService(FileFolderService fileFolderService) {
+    this.fileFolderService = fileFolderService;
+  }
+
+  protected final SearchService getSearchService() {
+    if (this.searchService == null) {
+      this.searchService = Services.getAlfrescoServiceRegistry(
+        FacesContext.getCurrentInstance()
+      ).getSearchService();
     }
+    return this.searchService;
+  }
 
-    public void spaceChanged() {
-        // TODO do somtehing generic?
+  /**
+   * @param searchService the service used to find nodes
+   */
+  public final void setSearchService(SearchService searchService) {
+    this.searchService = searchService;
+  }
+
+  protected final DictionaryService getDictionaryService() {
+    if (this.dictionaryService == null) {
+      this.dictionaryService = Services.getAlfrescoServiceRegistry(
+        FacesContext.getCurrentInstance()
+      ).getDictionaryService();
     }
+    return this.dictionaryService;
+  }
 
+  /**
+   * Sets the dictionary service
+   *
+   * @param dictionaryService the dictionary service
+   */
+  public final void setDictionaryService(DictionaryService dictionaryService) {
+    this.dictionaryService = dictionaryService;
+  }
 
-    public String getPageIcon() {
-        // the most of the pages doesn't need an icon
-        return null;
+  protected final NamespaceService getNamespaceService() {
+    if (this.namespaceService == null) {
+      this.namespaceService = Services.getAlfrescoServiceRegistry(
+        FacesContext.getCurrentInstance()
+      ).getNamespaceService();
     }
+    return this.namespaceService;
+  }
 
-    public String getPageIconAltText() {
-        //	the most of the pages doesn't need an icon ...
-        return null;
+  /**
+   * @param namespaceService The NamespaceService
+   */
+  public final void setNamespaceService(NamespaceService namespaceService) {
+    this.namespaceService = namespaceService;
+  }
+
+  protected final PermissionService getPermissionService() {
+    if (this.permissionService == null) {
+      this.permissionService = Services.getAlfrescoServiceRegistry(
+        FacesContext.getCurrentInstance()
+      ).getPermissionService();
     }
+    return this.permissionService;
+  }
 
-    public void restored() {
+  /**
+   * @param permissionService The permission Service to set.
+   */
+  public final void setPermissionService(PermissionService permissionService) {
+    this.permissionService = permissionService;
+  }
 
+  /**
+   * @return the profileManagerServiceFactory
+   */
+  protected final ProfileManagerServiceFactory getProfileManagerServiceFactory() {
+    if (profileManagerServiceFactory == null) {
+      profileManagerServiceFactory = Services.getCircabcServiceRegistry(
+        FacesContext.getCurrentInstance()
+      ).getProfileManagerServiceFactory();
     }
+    return profileManagerServiceFactory;
+  }
 
-    public String getHttpUrl() {
-        return WebClientHelper
-                .getGeneratedWaiRelativeUrl(getCurrentNode(), ExtendedURLMode.HTTP_WAI_BROWSE);
+  /**
+   * @param profileManagerServiceFactory the profileManagerServiceFactory to set
+   */
+  public final void setProfileManagerServiceFactory(
+    ProfileManagerServiceFactory profileManagerServiceFactory
+  ) {
+    this.profileManagerServiceFactory = profileManagerServiceFactory;
+  }
+
+  /**
+   * @return the navigationPreferencesService
+   */
+  protected final NavigationPreferencesService getNavigationPreferencesService() {
+    if (navigationPreferencesService == null) {
+      navigationPreferencesService = Services.getCircabcServiceRegistry(
+        FacesContext.getCurrentInstance()
+      ).getNavigationPreferencesService();
     }
+    return navigationPreferencesService;
+  }
 
-    public String getPreviousHttpUrl() {
-        return WebClientHelper
-                .getGeneratedWaiRelativeUrl(getPreviousNode(), ExtendedURLMode.HTTP_WAI_BROWSE);
+  /**
+   * @param navigationPreferencesService the navigationPreferencesService to set
+   */
+  public final void setNavigationPreferencesService(
+    NavigationPreferencesService navigationPreferencesService
+  ) {
+    this.navigationPreferencesService = navigationPreferencesService;
+  }
+
+  /**
+   * @return the businessRegistry
+   */
+  protected final BusinessRegistry getBusinessRegistry() {
+    if (businessRegistry == null) {
+      businessRegistry = Services.getBusinessRegistry(
+        FacesContext.getCurrentInstance()
+      );
     }
+    return businessRegistry;
+  }
 
-    private Node getPreviousNode() {
-        return navigator.getPreviousNode();
-    }
+  /**
+   * @param businessRegistry the businessRegistry to set
+   */
+  public final void setBusinessRegistry(BusinessRegistry businessRegistry) {
+    this.businessRegistry = businessRegistry;
+  }
 
-    public String getWebdavUrl() {
-        // Functionally not asked but ready to run. Only uncomment the following line
-        //return WebClientHelper.getGeneratedWaiRelativeUrl(getCurrentNode(), ExtendedURLMode.WEBDAV);
+  public CircabcFileFolderService getCircabcFileFolderService() {
+    return circabcFileFolderService;
+  }
 
-        return null;
-    }
-
-    public String getBrowserTitle() {
-        String titleOrName = null;
-
-        final String propertyTitle = ContentModel.PROP_TITLE.toString();
-        final Object title = getCurrentNode().getProperties().get(propertyTitle);
-        if (title != null) {
-            ESAPI.encoder().encodeForHTML(titleOrName = (title.toString().length() > 0 ? title.toString()
-                    : getCurrentNode().getName()));
-        }
-
-        return titleOrName;
-    }
-
-    public int getListPageSize() {
-        return getBrowseBean().getListElementNumber();
-    }
-
-    protected String translate(final String key, final Object... params) {
-        return WebClientHelper.translate(key, params);
-    }
-
-    /**
-     * @return the navigator
-     */
-    protected final CircabcNavigationBean getNavigator() {
-        if (this.navigator == null) {
-            this.navigator = Beans.getWaiNavigator();
-        }
-        return navigator;
-    }
-
-    /**
-     * @param navigator the navigator to set
-     */
-    public final void setNavigator(CircabcNavigationBean navigator) {
-        this.navigator = navigator;
-    }
-
-    /**
-     * @return the browse bean
-     */
-    protected final CircabcBrowseBean getBrowseBean() {
-        if (this.browseBean == null) {
-            this.browseBean = Beans.getWaiBrowseBean();
-        }
-        return this.browseBean;
-    }
-
-    /**
-     * @param browseBean The BrowseBean to set.
-     */
-    public final void setBrowseBean(CircabcBrowseBean browseBean) {
-        this.browseBean = browseBean;
-    }
-
-    protected final ManagementService getManagementService() {
-        if (this.managementService == null) {
-            this.managementService = Services.getCircabcServiceRegistry(FacesContext.getCurrentInstance())
-                    .getManagementService();
-        }
-        return this.managementService;
-    }
-
-    /**
-     * @param managementService The Management Service to set.
-     */
-    public final void setManagementService(ManagementService managementService) {
-        this.managementService = managementService;
-    }
-
-    protected final NodeService getNodeService() {
-        if (this.nodeService == null) {
-            this.nodeService = Services.getAlfrescoServiceRegistry(FacesContext.getCurrentInstance())
-                    .getNodeService();
-        }
-        return this.nodeService;
-    }
-
-    /**
-     * @param nodeService The nodeService to set.
-     */
-    public final void setNodeService(NodeService nodeService) {
-        this.nodeService = nodeService;
-    }
-
-    protected final FileFolderService getFileFolderService() {
-        if (this.fileFolderService == null) {
-            this.fileFolderService = Services
-                    .getAlfrescoServiceRegistry(FacesContext.getCurrentInstance()).getFileFolderService();
-        }
-        return this.fileFolderService;
-    }
-
-    /**
-     * @param fileFolderService used to manipulate folder/folder model nodes
-     */
-    public final void setFileFolderService(FileFolderService fileFolderService) {
-        this.fileFolderService = fileFolderService;
-    }
-
-    protected final SearchService getSearchService() {
-        if (this.searchService == null) {
-            this.searchService = Services.getAlfrescoServiceRegistry(FacesContext.getCurrentInstance())
-                    .getSearchService();
-        }
-        return this.searchService;
-    }
-
-    /**
-     * @param searchService the service used to find nodes
-     */
-    public final void setSearchService(SearchService searchService) {
-        this.searchService = searchService;
-    }
-
-    protected final DictionaryService getDictionaryService() {
-        if (this.dictionaryService == null) {
-            this.dictionaryService = Services
-                    .getAlfrescoServiceRegistry(FacesContext.getCurrentInstance()).getDictionaryService();
-        }
-        return this.dictionaryService;
-    }
-
-    /**
-     * Sets the dictionary service
-     *
-     * @param dictionaryService the dictionary service
-     */
-    public final void setDictionaryService(DictionaryService dictionaryService) {
-        this.dictionaryService = dictionaryService;
-    }
-
-    protected final NamespaceService getNamespaceService() {
-        if (this.namespaceService == null) {
-            this.namespaceService = Services.getAlfrescoServiceRegistry(FacesContext.getCurrentInstance())
-                    .getNamespaceService();
-        }
-        return this.namespaceService;
-    }
-
-    /**
-     * @param namespaceService The NamespaceService
-     */
-    public final void setNamespaceService(NamespaceService namespaceService) {
-        this.namespaceService = namespaceService;
-    }
-
-    protected final PermissionService getPermissionService() {
-        if (this.permissionService == null) {
-            this.permissionService = Services
-                    .getAlfrescoServiceRegistry(FacesContext.getCurrentInstance()).getPermissionService();
-        }
-        return this.permissionService;
-    }
-
-    /**
-     * @param permissionService The permission Service to set.
-     */
-    public final void setPermissionService(PermissionService permissionService) {
-        this.permissionService = permissionService;
-    }
-
-    /**
-     * @return the profileManagerServiceFactory
-     */
-    protected final ProfileManagerServiceFactory getProfileManagerServiceFactory() {
-        if (profileManagerServiceFactory == null) {
-            profileManagerServiceFactory = Services
-                    .getCircabcServiceRegistry(FacesContext.getCurrentInstance())
-                    .getProfileManagerServiceFactory();
-        }
-        return profileManagerServiceFactory;
-    }
-
-    /**
-     * @param profileManagerServiceFactory the profileManagerServiceFactory to set
-     */
-    public final void setProfileManagerServiceFactory(
-            ProfileManagerServiceFactory profileManagerServiceFactory) {
-        this.profileManagerServiceFactory = profileManagerServiceFactory;
-    }
-
-    /**
-     * @return the navigationPreferencesService
-     */
-    protected final NavigationPreferencesService getNavigationPreferencesService() {
-        if (navigationPreferencesService == null) {
-            navigationPreferencesService = Services
-                    .getCircabcServiceRegistry(FacesContext.getCurrentInstance())
-                    .getNavigationPreferencesService();
-        }
-        return navigationPreferencesService;
-    }
-
-    /**
-     * @param navigationPreferencesService the navigationPreferencesService to set
-     */
-    public final void setNavigationPreferencesService(
-            NavigationPreferencesService navigationPreferencesService) {
-        this.navigationPreferencesService = navigationPreferencesService;
-    }
-
-    /**
-     * @return the businessRegistry
-     */
-    protected final BusinessRegistry getBusinessRegistry() {
-        if (businessRegistry == null) {
-            businessRegistry = Services.getBusinessRegistry(FacesContext.getCurrentInstance());
-        }
-        return businessRegistry;
-    }
-
-    /**
-     * @param businessRegistry the businessRegistry to set
-     */
-    public final void setBusinessRegistry(BusinessRegistry businessRegistry) {
-        this.businessRegistry = businessRegistry;
-    }
-
-    public CircabcFileFolderService getCircabcFileFolderService() {
-        return circabcFileFolderService;
-    }
-
-    public void setCircabcFileFolderService(CircabcFileFolderService circabcFileFolderService) {
-        this.circabcFileFolderService = circabcFileFolderService;
-    }
-
+  public void setCircabcFileFolderService(
+    CircabcFileFolderService circabcFileFolderService
+  ) {
+    this.circabcFileFolderService = circabcFileFolderService;
+  }
 }

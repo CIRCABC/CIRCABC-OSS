@@ -1,18 +1,24 @@
 <!-- MODAL BOX -->
+@if (showWizard) {
 <div
   class="black-overlayer"
-  *ngIf="showWizard"
   [class.overlayer-shown]="showWizard"
   [class.overlayer-hidden]="!showWizard"
 ></div>
+} @if (showCreateWizard) {
 <section
   class="modal modal--select-files"
-  *ngIf="showCreateWizard"
   [class.modal-shown]="showCreateWizard"
   [class.modal-hidden]="!showCreateWizard"
   style="margin-top: 0"
 >
-  <a class="close-icon" (click)="cancelWizard()"></a>
+  <a
+    tabindex="0"
+    role="button"
+    class="close-icon"
+    aria-label="Cancel wizard"
+    (click)="cancelWizard()"
+  ></a>
   <header>
     <h2 class="title">{{ 'user.create' | transloco }}</h2>
   </header>
@@ -172,39 +178,47 @@
           [control]="passwordVerifyControl"
         ></cbc-control-message>
       </div>
-      <div *ngIf="creating">
+      @if (creating) {
+      <div>
         <label
           >{{ 'label.creating' | transloco }}...
           <cbc-spinner></cbc-spinner>
         </label>
       </div>
+      }
     </form>
   </section>
   <section class="modal-footer">
     <!-- Buttons -->
     <div class="buttons-group">
       <a
+        tabindex="0"
         data-cy="create"
         class="cta"
         (click)="submitNewUser()"
         [class.disabled]="!addUserForm.valid"
         >{{ 'label.create' | transloco }}</a
       >
-      <a class="button" data-cy="cancel" (click)="cancelWizard()"
+      <a tabindex="0" class="button" data-cy="cancel" (click)="cancelWizard()"
         >{{ 'label.cancel' | transloco }}</a
       >
     </div>
   </section>
 </section>
-
+} @if (showInviteWizard) {
 <section
   class="modal modal--select-files"
-  *ngIf="showInviteWizard"
   [class.modal-shown]="showInviteWizard"
   [class.modal-hidden]="!showInviteWizard"
   style="margin-top: 0"
 >
-  <a class="close-icon" (click)="cancelWizard()"></a>
+  <a
+    tabindex="0"
+    role="button"
+    class="close-icon"
+    aria-label="Cancel wizard"
+    (click)="cancelWizard()"
+  ></a>
   <header>
     <h2 class="title">{{ 'user.invite' | transloco }}</h2>
   </header>
@@ -219,11 +233,11 @@
             id="profileName"
             formControlName="selectedProfile"
           >
-            <option
-              *ngFor="let profile of availableProfiles"
-              value="{{ profile.id }}"
-              >{{ profile.title | cbcI18n }}
+            @for (profile of availableProfiles; track profile.id) {
+            <option value="{{ profile.id }}">
+              {{ profile.title | cbcI18n }}
             </option>
+            }
           </select>
         </div>
       </div>
@@ -244,23 +258,22 @@
           'label.no' ) | transloco }}</span
         >
       </div>
-      <div
-        class="field field--with-icon field--date"
-        *ngIf="notificationForm.value.expiration"
-      >
+      @if (notificationForm.value.expiration) {
+      <div class="field field--with-icon field--date">
         <label for="date">{{ 'label.when' | transloco }}</label>
-        <p-calendar
+        <p-datepicker
           formControlName="expirationDateTime"
           [showTime]="true"
           [dateFormat]="'dd/mm/yy'"
           [placeholder]="'dd/mm/yyyy'"
           [showIcon]="true"
-        ></p-calendar>
+        ></p-datepicker>
 
         <cbc-control-message
           [control]="expirationDateTimeControl"
         ></cbc-control-message>
       </div>
+      }
       <div class="field--separator"></div>
       <div class="field switch">
         <div class="label" style="width: 340px">
@@ -296,27 +309,33 @@
         >
       </div>
 
-      <div *ngIf="inviting">
+      @if (inviting) {
+      <div>
         <label
           >{{ 'label.inviting' | transloco }}...
           <cbc-spinner></cbc-spinner>
         </label>
       </div>
+      }
     </form>
   </section>
 
   <section class="modal-footer">
     <!-- Buttons -->
-    <div class="buttons-group" *ngIf="!inviting">
+    @if (!inviting) {
+    <div class="buttons-group">
       <a
+        tabindex="0"
         class="cta"
         (click)="hasSelectedProfile() ? submitMembers() : ''"
         [class.disabled]="!hasSelectedProfile()"
         >{{ 'label.invite' | transloco }}</a
       >
-      <a class="button" (click)="cancelWizard()"
+      <a tabindex="0" class="button" (click)="cancelWizard()"
         >{{ 'label.cancel' | transloco }}</a
       >
     </div>
+    }
   </section>
 </section>
+}

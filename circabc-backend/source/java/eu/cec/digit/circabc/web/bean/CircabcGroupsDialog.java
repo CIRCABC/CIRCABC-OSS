@@ -20,11 +20,10 @@
  ******************************************************************************/
 package eu.cec.digit.circabc.web.bean;
 
+import java.util.*;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.AuthorityType;
 import org.alfresco.web.bean.groups.GroupsDialog;
-
-import java.util.*;
 
 /**
  * Gets all root groups in addition to Alresco's normal get groups behaviour.
@@ -33,80 +32,81 @@ import java.util.*;
  */
 public class CircabcGroupsDialog extends GroupsDialog {
 
-    private static final long serialVersionUID = 8400018839652467976L;
-    private static final ThreadLocal<Boolean> rootGroups = new ThreadLocal<Boolean>() {
-        /**
-         * @see java.lang.ThreadLocal#initialValue()
-         */
-        @Override
-        protected Boolean initialValue() {
-            return false;
-        }
-    };
-    transient private AuthorityService authorityService = null;
-
-    public CircabcGroupsDialog() {
-        super();
-        rootGroups.set(false);
-    }
-
+  private static final long serialVersionUID = 8400018839652467976L;
+  private static final ThreadLocal<Boolean> rootGroups = new ThreadLocal<
+    Boolean
+  >() {
     /**
-     * Action handler to show all the root groups
-     *
-     * @return The outcome
+     * @see java.lang.ThreadLocal#initialValue()
      */
-    public String showRootGroups() {
+    @Override
+    protected Boolean initialValue() {
+      return false;
+    }
+  };
+  private transient AuthorityService authorityService = null;
 
-        group = null;
-        groupsRichList.setValue(null);
+  public CircabcGroupsDialog() {
+    super();
+    rootGroups.set(false);
+  }
 
-        Set<String> results = authorityService.getAllRootAuthoritiesInZone(
-                AuthorityService.ZONE_APP_DEFAULT, AuthorityType.GROUP);
+  /**
+   * Action handler to show all the root groups
+   *
+   * @return The outcome
+   */
+  public String showRootGroups() {
+    group = null;
+    groupsRichList.setValue(null);
 
-        List<String> authorities = new ArrayList<>(results);
+    Set<String> results = authorityService.getAllRootAuthoritiesInZone(
+      AuthorityService.ZONE_APP_DEFAULT,
+      AuthorityType.GROUP
+    );
 
-        groups = new ArrayList<>(authorities.size());
+    List<String> authorities = new ArrayList<>(results);
 
-        for (String authority : authorities) {
+    groups = new ArrayList<>(authorities.size());
 
-            Map<String, String> authMap = new HashMap<>(8);
+    for (String authority : authorities) {
+      Map<String, String> authMap = new HashMap<>(8);
 
-            String name = authorityService.getAuthorityDisplayName(authority);
-            if (name == null) {
-                name = authorityService.getShortName(authority);
-            }
-            authMap.put("name", name);
-            authMap.put("id", authority);
-            authMap.put("group", authority);
-            authMap.put("groupName", name);
+      String name = authorityService.getAuthorityDisplayName(authority);
+      if (name == null) {
+        name = authorityService.getShortName(authority);
+      }
+      authMap.put("name", name);
+      authMap.put("id", authority);
+      authMap.put("group", authority);
+      authMap.put("groupName", name);
 
-            groups.add(authMap);
-        }
-
-        rootGroups.set(true);
-
-        return null;
+      groups.add(authMap);
     }
 
-    /**
-     * @return The list of group objects to display. Returns the list of root groups if set.
-     */
-    public List<Map<String, String>> getGroups() {
+    rootGroups.set(true);
 
-        if (!rootGroups.get()) {
-            return super.getGroups();
-        }
+    return null;
+  }
 
-        rootGroups.set(false);
-
-        return groups;
+  /**
+   * @return The list of group objects to display. Returns the list of root groups if set.
+   */
+  public List<Map<String, String>> getGroups() {
+    if (!rootGroups.get()) {
+      return super.getGroups();
     }
 
-    /**
-     * @param authorityService the authorityService to set
-     */
-    public void setAuthService(AuthorityService authorityService) {
-        this.authorityService = authorityService;
-        super.setAuthService(authorityService);
-    }
+    rootGroups.set(false);
+
+    return groups;
+  }
+
+  /**
+   * @param authorityService the authorityService to set
+   */
+  public void setAuthService(AuthorityService authorityService) {
+    this.authorityService = authorityService;
+    super.setAuthService(authorityService);
+  }
 }

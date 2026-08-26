@@ -23,24 +23,23 @@ import java.util.Set;
  * @author Slobodan Filipovic
  */
 public interface LdapEcasDomainService {
+  /**
+   * Init spring bean
+   */
+  void init();
 
-    /**
-     * Init spring bean
-     */
-    void init();
+  /**
+   * @return Set of ECAS domains keys
+   */
+  Set<String> getAllEcasDomains();
 
-    /**
-     * @return Set of ECAS domains keys
-     */
-    Set<String> getAllEcasDomains();
+  /**
+   * @return map of ECAS domains keys and default description (english)
+   */
+  Map<String, String> getDefaultEcasDomains();
 
-    /**
-     * @return map of ECAS domains keys and default description (english)
-     */
-    Map<String, String> getDefaultEcasDomains();
-
-    /**
-     * @param language language for example en,fr,
-     */
-    Map<String, String> getEcasDomains(String language);
+  /**
+   * @param language language for example en,fr,
+   */
+  Map<String, String> getEcasDomains(String language);
 }

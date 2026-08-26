@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Data, Router } from '@angular/router';
+import { ActivatedRoute, Data, Router, RouterLink } from '@angular/router';
 
-import { TranslocoService } from '@ngneat/transloco';
+import { DatePipe } from '@angular/common';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
   ActionType,
 } from 'app/action-result';
+import { assertDefined } from 'app/core/asserts';
 import {
   InformationPage,
   InformationService,
@@ -21,24 +23,47 @@ import { LoginService } from 'app/core/login.service';
 import { UiMessageService } from 'app/core/message/ui-message.service';
 import { getErrorTranslation } from 'app/core/util';
 import { ListingOptions } from 'app/group/listing-options/listing-options';
-import { assertDefined } from 'app/core/asserts';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
+import { NotificationMessageComponent } from 'app/shared/notification-message/notification-message.component';
+import { PagerComponent } from 'app/shared/pager/pager.component';
+import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
+import { IfRolePipe } from 'app/shared/pipes/if-role.pipe';
+import { SetTitlePipe } from 'app/shared/pipes/set-title.pipe';
+import { ShareComponent } from 'app/shared/share/share.component';
 import { firstValueFrom } from 'rxjs';
+import { ConfigureInformationComponent } from './configure-information/configure-information.component';
+import { NewsCardComponent } from './news-card/news-card.component';
 
 @Component({
   selector: 'cbc-information',
   templateUrl: './information.component.html',
-  styleUrls: ['./information.component.scss'],
+  styleUrl: './information.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    HorizontalLoaderComponent,
+    NotificationMessageComponent,
+    RouterLink,
+    ShareComponent,
+    PagerComponent,
+    NewsCardComponent,
+    ConfigureInformationComponent,
+    DatePipe,
+    I18nPipe,
+    IfRolePipe,
+    SetTitlePipe,
+    TranslocoModule,
+  ],
 })
 export class InformationComponent implements OnInit {
   public groupId!: string;
-  public group!: InterestGroup;
-  public informationNode: ModelNode | undefined;
+  public group?: InterestGroup;
+  public informationNode?: ModelNode;
   public informationPage!: InformationPage;
   public loading = false;
   public infoNews: PagedNews = { data: [], total: 0 };
   public highlightedNews: News | undefined;
   public highlightedMode = false;
+  public highlightedMaxWindow = false;
   public highlightedIframeMode = false;
   public showConfigureModal = false;
   public listingOptions: ListingOptions = { page: 1, limit: 10, sort: '' };
@@ -72,7 +97,7 @@ export class InformationComponent implements OnInit {
       this.groupId = params.id;
     }
 
-    if (this.groupId && this.group.informationId) {
+    if (this.groupId && this.group && this.group.informationId) {
       this.informationNode = await firstValueFrom(
         this.nodesService.getNode(this.group.informationId)
       );
@@ -111,8 +136,7 @@ export class InformationComponent implements OnInit {
 
   hasOldInformation(): boolean {
     if (
-      this.informationPage &&
-      this.informationPage.url &&
+      this.informationPage?.url &&
       this.informationPage.displayOldInformation
     ) {
       return true;
@@ -123,8 +147,7 @@ export class InformationComponent implements OnInit {
 
   getOldInformation(): News | undefined {
     if (
-      this.informationPage &&
-      this.informationPage.url &&
+      this.informationPage?.url &&
       this.informationPage.displayOldInformation
     ) {
       const news: News = {};
@@ -141,11 +164,10 @@ export class InformationComponent implements OnInit {
   }
 
   public checkTicket(): string {
-    if (!this.loginService.isGuest()) {
-      return `?ticket=${this.loginService.getTicket()}`;
-    } else {
+    if (this.loginService.isGuest()) {
       return '';
     }
+    return `?ticket=${this.loginService.getTicket()}`;
   }
 
   public hasCards(): boolean {
@@ -185,7 +207,7 @@ export class InformationComponent implements OnInit {
   }
 
   canAddNews(): boolean {
-    if (this.informationPage && this.informationPage.permissions) {
+    if (this.informationPage?.permissions) {
       return (
         this.informationPage.permissions.InfManage === 'ALLOWED' ||
         this.informationPage.permissions.InfFullEdit === 'ALLOWED'
@@ -254,7 +276,7 @@ export class InformationComponent implements OnInit {
         this.informationNode = await firstValueFrom(
           this.nodesService.getNode(this.informationNode.id)
         );
-      } catch (error) {
+      } catch (_error) {
         const text = this.translateService.translate(
           getErrorTranslation(ActionType.CHANGE_SUBSCRIPTION)
         );
@@ -276,7 +298,8 @@ export class InformationComponent implements OnInit {
       this.highlightedIframeMode = true;
     }
   }
-  public trackById(_index: number, item: { id?: string | number }) {
-    return item.id;
+
+  maxWindowHighlighted(value: boolean) {
+    this.highlightedMaxWindow = value;
   }
 }

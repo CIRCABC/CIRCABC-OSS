@@ -20,27 +20,30 @@ package eu.cec.digit.circabc.repo.report;
 /** @author beaurpi */
 public class ContentNumberParametersDAO {
 
-    private Integer contentQnameID;
-    private Integer versionStoreID;
+  private Integer contentQnameID;
+  private Integer versionStoreID;
 
-    public ContentNumberParametersDAO(Integer contentQnameID, Integer versionStoreID) {
-        this.contentQnameID = contentQnameID;
-        this.versionStoreID = versionStoreID;
-    }
+  public ContentNumberParametersDAO(
+    Integer contentQnameID,
+    Integer versionStoreID
+  ) {
+    this.contentQnameID = contentQnameID;
+    this.versionStoreID = versionStoreID;
+  }
 
-    public Integer getContentQnameID() {
-        return contentQnameID;
-    }
+  public Integer getContentQnameID() {
+    return contentQnameID;
+  }
 
-    public void setContentQnameID(Integer contentQnameID) {
-        this.contentQnameID = contentQnameID;
-    }
+  public void setContentQnameID(Integer contentQnameID) {
+    this.contentQnameID = contentQnameID;
+  }
 
-    public Integer getVersionStoreID() {
-        return versionStoreID;
-    }
+  public Integer getVersionStoreID() {
+    return versionStoreID;
+  }
 
-    public void setVersionStoreID(Integer versionStoreID) {
-        this.versionStoreID = versionStoreID;
-    }
+  public void setVersionStoreID(Integer versionStoreID) {
+    this.versionStoreID = versionStoreID;
+  }
 }

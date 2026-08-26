@@ -1,8 +1,9 @@
 <webscript>
   <shortname>Admin GUARD</shortname>
-  <description>return if the admin is granted to the current authority user</description>
+  <description
+  >return if the admin is granted to the current authority user</description>
   <url>/circabc/guards/administration/{id}</url>
-  <format default="json"/>
+  <format default="json" />
   <authentication>user</authentication>
   <transaction>required</transaction>
 </webscript>

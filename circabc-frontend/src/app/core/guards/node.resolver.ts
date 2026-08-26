@@ -4,7 +4,7 @@ import {
   RouterStateSnapshot,
 } from '@angular/router';
 
-import { catchError, Observable, of } from 'rxjs';
+import { Observable, catchError, of } from 'rxjs';
 
 import { Injectable } from '@angular/core';
 import { Node as ModelNode, NodesService } from 'app/core/generated/circabc';

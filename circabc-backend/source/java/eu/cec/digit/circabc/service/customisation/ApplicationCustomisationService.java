@@ -4,53 +4,52 @@
 package eu.cec.digit.circabc.service.customisation;
 
 import eu.cec.digit.circabc.error.CircabcRuntimeException;
-import org.alfresco.service.cmr.repository.NodeRef;
-
 import java.io.File;
 import java.util.List;
+import org.alfresco.service.cmr.repository.NodeRef;
 
 /** @author beaurpi */
 public interface ApplicationCustomisationService {
+  NodeRef getDefaultLogoNodeRef();
 
-    NodeRef getDefaultLogoNodeRef();
+  void updateDefaultLogo(File gif) throws CircabcRuntimeException;
 
-    void updateDefaultLogo(File gif) throws CircabcRuntimeException;
+  List<NodeRef> getListOfTemplates();
 
-    List<NodeRef> getListOfTemplates();
+  void updateTemplate(File tempFile, NodeRef templateRef)
+    throws CircabcRuntimeException;
 
-    void updateTemplate(File tempFile, NodeRef templateRef) throws CircabcRuntimeException;
+  NodeRef getDefaultLogoDisclaimerNodeRef();
 
-    NodeRef getDefaultLogoDisclaimerNodeRef();
+  void updateDefaultLogoDisclaimer(File gif) throws CircabcRuntimeException;
 
-    void updateDefaultLogoDisclaimer(File gif) throws CircabcRuntimeException;
+  void updateContactLink(String link);
 
-    void updateContactLink(String link);
+  String getContactlink();
 
-    String getContactlink();
+  NodeRef getBannerLogoRef();
 
-    NodeRef getBannerLogoRef();
+  void updateBannerLogoRef(File png);
 
-    void updateBannerLogoRef(File png);
+  void removeBannerLogoRef();
 
-    void removeBannerLogoRef();
+  Boolean getDisplaySearchLink();
 
-    Boolean getDisplaySearchLink();
+  void setDisplaySearchLink(Boolean b);
 
-    void setDisplaySearchLink(Boolean b);
+  Boolean getDisplayLegalLink();
 
-    Boolean getDisplayLegalLink();
+  void setDisplayLegalLink(Boolean b);
 
-    void setDisplayLegalLink(Boolean b);
+  String geteLearningLink();
 
-    String geteLearningLink();
+  void seteLearningLink(String s);
 
-    void seteLearningLink(String s);
+  Boolean getDisplayeLearningLink();
 
-    Boolean getDisplayeLearningLink();
+  void setDisplayeLearningLink(Boolean b);
 
-    void setDisplayeLearningLink(Boolean b);
+  String getErrorMessageContent();
 
-    String getErrorMessageContent();
-
-    void setErrorMessageContent(String s);
+  void setErrorMessageContent(String s);
 }

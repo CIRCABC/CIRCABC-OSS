@@ -25,7 +25,6 @@ import eu.cec.digit.circabc.web.bean.navigation.NavigableNodeType;
 import eu.cec.digit.circabc.web.wai.bean.navigation.LibraryBean;
 import eu.cec.digit.circabc.web.wai.bean.navigation.news.PostBean;
 import eu.cec.digit.circabc.web.wai.menu.ActionWrapper;
-
 import java.util.List;
 
 /**
@@ -35,53 +34,55 @@ import java.util.List;
  */
 public class DiscussionPostBean extends PostBean {
 
-    public static final String BEAN_NAME = "LibPostBean";
-    private static final long serialVersionUID = -5757464931958052246L;
-    private DiscussionForumBean libForumBean;
-    private LibraryBean libraryBean;
+  public static final String BEAN_NAME = "LibPostBean";
+  private static final long serialVersionUID = -5757464931958052246L;
+  private DiscussionForumBean libForumBean;
+  private LibraryBean libraryBean;
 
-    public NavigableNodeType getManagedNodeType() {
-        return NavigableNodeType.LIBRARY_POST;
+  public NavigableNodeType getManagedNodeType() {
+    return NavigableNodeType.LIBRARY_POST;
+  }
+
+  @Override
+  public List<ActionWrapper> getActions() {
+    return getLibraryBean().getActions();
+  }
+
+  /**
+   * @return the libForumBean
+   */
+  protected final DiscussionForumBean getLibForumBean() {
+    if (libForumBean == null) {
+      libForumBean = (DiscussionForumBean) Beans.getWaiBrosableBean(
+        DiscussionForumBean.BEAN_NAME
+      );
     }
+    return libForumBean;
+  }
 
-    @Override
-    public List<ActionWrapper> getActions() {
-        return getLibraryBean().getActions();
+  /**
+   * @param libForumBean the libForumBean to set
+   */
+  public final void setLibForumBean(DiscussionForumBean libForumBean) {
+    this.libForumBean = libForumBean;
+  }
+
+  /**
+   * @return the libraryBean
+   */
+  protected final LibraryBean getLibraryBean() {
+    if (libraryBean == null) {
+      libraryBean = (LibraryBean) Beans.getWaiBrosableBean(
+        LibraryBean.BEAN_NAME
+      );
     }
+    return libraryBean;
+  }
 
-    /**
-     * @return the libForumBean
-     */
-    protected final DiscussionForumBean getLibForumBean() {
-        if (libForumBean == null) {
-            libForumBean = (DiscussionForumBean) Beans.getWaiBrosableBean(DiscussionForumBean.BEAN_NAME);
-        }
-        return libForumBean;
-    }
-
-    /**
-     * @param libForumBean the libForumBean to set
-     */
-    public final void setLibForumBean(DiscussionForumBean libForumBean) {
-        this.libForumBean = libForumBean;
-    }
-
-    /**
-     * @return the libraryBean
-     */
-    protected final LibraryBean getLibraryBean() {
-        if (libraryBean == null) {
-            libraryBean = (LibraryBean) Beans.getWaiBrosableBean(LibraryBean.BEAN_NAME);
-        }
-        return libraryBean;
-    }
-
-    /**
-     * @param libraryBean the libraryBean to set
-     */
-    public final void setLibraryBean(LibraryBean libraryBean) {
-        this.libraryBean = libraryBean;
-    }
-
-
+  /**
+   * @param libraryBean the libraryBean to set
+   */
+  public final void setLibraryBean(LibraryBean libraryBean) {
+    this.libraryBean = libraryBean;
+  }
 }

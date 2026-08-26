@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
+<?xml version="1.0" encoding="UTF-8" ?>
 <!--
   Copyright 2006 European Community
   
@@ -20,10 +19,11 @@
    See the Licence for the specific language governing
    permissions and limitations under the Licence.
 -->
-
 <!-- Definition of new Model for circabc -->
-<model name="ci:circamodel"
-  xmlns="http://www.alfresco.org/model/dictionary/1.0">
+<model
+  name="ci:circamodel"
+  xmlns="http://www.alfresco.org/model/dictionary/1.0"
+>
 
   <!-- Optional meta-data about the model -->
   <description>Circabc Model</description>
@@ -40,7 +40,10 @@
     <!--  Import the keyword model to set an assocition from the ig to the keyword container-->
     <import uri="http://www.cc.cec/circabc/model/keyword/1.0" prefix="kw" />
     <!--  Import the dynamic properties to set an assocition from the ig to the dynamic properties container-->
-    <import uri="http://www.cc.cec/circabc/model/dynamicproperties/1.0" prefix="dp" />
+    <import
+      uri="http://www.cc.cec/circabc/model/dynamicproperties/1.0"
+      prefix="dp"
+    />
     <!--  Import Circabc Event Service Model-->
     <import uri="http://www.cc.cec/circabc/model/events/1.0" prefix="ce" />
     <!--  Import Circabc Share Space Service Model-->
@@ -610,8 +613,8 @@
 			<property name="ci:infAdapt">
 				<title>Adapt the welcome page to screen</title>
 				<type>d:boolean</type>
-          		<mandatory>false</mandatory>
-				<default>yes</default>
+        <mandatory>false</mandatory>
+				<default>true</default>
 			</property>
 	        <property name="ci:infIndexPage">
 				<title>The name of the index page</title>
@@ -831,7 +834,8 @@
     </aspect>
     
     <aspect name="ci:helpArticleHighlighted">
-      <title>An article for the new help service, which is displayed in the help center homepage</title>
+      <title
+      >An article for the new help service, which is displayed in the help center homepage</title>
     </aspect>
     
     <aspect name="ci:helpLink">

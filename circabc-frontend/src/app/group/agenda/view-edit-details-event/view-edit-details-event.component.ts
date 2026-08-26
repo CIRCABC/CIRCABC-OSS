@@ -1,13 +1,15 @@
 import { Location } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, OnInit, output, input } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
   FormGroup,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
+import { TranslocoModule } from '@jsverse/transloco';
 import { PermissionEvaluatorService } from 'app/core/evaluator/permission-evaluator.service';
 import {
   AudienceEntry,
@@ -23,9 +25,25 @@ import {
 } from 'app/core/generated/circabc';
 import { LoginService } from 'app/core/login.service';
 import { UiMessageService } from 'app/core/message/ui-message.service';
-import { emailWellFormed } from 'app/core/util';
-import { ValidationService } from 'app/core/validation.service';
+import { emailWellFormed, getFormattedDate } from 'app/core/util';
+import {
+  attendantsValidator,
+  emailValidator,
+  emailsValidator,
+  phoneValidator,
+  repeatsSelectedValidator,
+  timeInfoValidator,
+} from 'app/core/validation.service';
+import { TimezoneSelectorComponent } from 'app/group/agenda/timezone/timezone-selector.component';
+import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
+import { HistoryComponent } from 'app/shared/history/history.component';
+import { LangSelectorComponent } from 'app/shared/lang/lang-selector.component';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { TreeNode } from 'app/shared/treeview/tree-node';
+import { TreeViewComponent } from 'app/shared/treeview/tree-view.component';
+import { UserCardComponent } from 'app/shared/user-card/user-card.component';
+import { UsersPickerComponent } from 'app/shared/users/users-picker.component';
+import { DatePicker } from 'primeng/datepicker';
 import { firstValueFrom } from 'rxjs';
 
 interface AudienceDetails {
@@ -36,14 +54,26 @@ interface AudienceDetails {
 @Component({
   selector: 'cbc-view-edit-details-event',
   templateUrl: './view-edit-details-event.component.html',
-  styleUrls: ['./view-edit-details-event.component.scss'],
+  styleUrl: './view-edit-details-event.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    ReactiveFormsModule,
+    ControlMessageComponent,
+    LangSelectorComponent,
+    UserCardComponent,
+    UsersPickerComponent,
+    RouterLink,
+    TreeViewComponent,
+    SpinnerComponent,
+    HistoryComponent,
+    TranslocoModule,
+    DatePicker,
+    TimezoneSelectorComponent,
+  ],
 })
 export class ViewEditDetailsEventComponent implements OnInit {
-  @Output()
-  public readonly eventMeetingUpdated = new EventEmitter();
-  @Input()
-  public defaultDate!: Date;
+  public readonly eventMeetingUpdated = output();
+  public readonly defaultDate = input.required<Date>();
   public eventId!: string;
   public igId!: string;
   public formReady = false;
@@ -74,6 +104,7 @@ export class ViewEditDetailsEventComponent implements OnInit {
   public audience: AudienceDetails[] = [];
 
   public libraryRoot!: TreeNode;
+  public minDate = new Date();
 
   public constructor(
     private route: ActivatedRoute,
@@ -152,11 +183,11 @@ export class ViewEditDetailsEventComponent implements OnInit {
           meetingType: [eventDefinition.meetingType, Validators.required],
           dateInfo: this.formBuilder.group(
             {
-              date: [eventDefinition.dateInfo.date],
+              date: [new Date(eventDefinition.dateInfo.date)],
               startTime: [eventDefinition.dateInfo.startTime],
               endTime: [eventDefinition.dateInfo.endTime],
             },
-            { validators: ValidationService.timeInfoValidator }
+            { validators: timeInfoValidator }
           ),
           language: [eventDefinition.language],
           timezone: [eventDefinition.timezone],
@@ -187,7 +218,7 @@ export class ViewEditDetailsEventComponent implements OnInit {
               everyTime: [eventDefinition.repeatsInfo.everyTime],
               times: [eventDefinition.repeatsInfo.times],
             },
-            { validators: ValidationService.repeatsSelectedValidator }
+            { validators: repeatsSelectedValidator }
           ),
           attendantsInfo: this.formBuilder.group(
             {
@@ -201,20 +232,17 @@ export class ViewEditDetailsEventComponent implements OnInit {
                 this.emailsToEnterString(
                   eventDefinition.attendantsInfo.invitedExternalEmails
                 ),
-                ValidationService.emailsValidator,
+                emailsValidator,
               ],
             },
-            { validators: ValidationService.attendantsValidator }
+            { validators: attendantsValidator }
           ),
           enableNotification: [eventDefinition.enableNotification],
           contactName: [eventDefinition.contactName, Validators.required],
-          contactPhone: [
-            eventDefinition.contactPhone,
-            [ValidationService.phoneValidator],
-          ],
+          contactPhone: [eventDefinition.contactPhone, [phoneValidator]],
           contactEmail: [
             eventDefinition.contactEmail,
-            [Validators.required, ValidationService.emailValidator],
+            [Validators.required, emailValidator],
           ],
           contactURL: [eventDefinition.contactUrl],
         },
@@ -270,7 +298,7 @@ export class ViewEditDetailsEventComponent implements OnInit {
 
     // if I don't check for this.libraryRoot === undefined it will destroy the tree, as the root has already been set
     // (onInit will not run again on the tree)
-    if (this.ig && this.ig.libraryId && this.libraryRoot === undefined) {
+    if (this.ig?.libraryId && this.libraryRoot === undefined) {
       const root = new TreeNode('Library', this.ig.libraryId);
       this.libraryRoot = root;
 
@@ -444,15 +472,20 @@ export class ViewEditDetailsEventComponent implements OnInit {
     try {
       this.processing = true;
 
-      // uncoment when angular fix problem https://github.com/angular/angular-cli/issues/4178
+      const myDate = getFormattedDate(this.updateEventForm.value.dateInfo.date);
+
+      if (myDate) {
+        this.updateEventForm.controls.dateInfo.patchValue({ date: myDate });
+      }
+
+      // uncoment when angular fix problem https://github.comissues/4178
       const eventDefinition: EventDefinition = {
         ...this.updateEventForm.value,
       };
 
       // retrieve only the ids to send
       if (
-        eventDefinition.attendantsInfo !== undefined &&
-        eventDefinition.attendantsInfo.invitedUsersOrProfiles !== undefined
+        eventDefinition.attendantsInfo?.invitedUsersOrProfiles !== undefined
       ) {
         eventDefinition.attendantsInfo.invitedUsersOrProfiles =
           eventDefinition.attendantsInfo.invitedUsersOrProfiles
@@ -506,7 +539,7 @@ export class ViewEditDetailsEventComponent implements OnInit {
   }
 
   get isMeetingViewDetails(): boolean {
-    return !this.appointmentTypeEvent && !this.isEveAdmin();
+    return !(this.appointmentTypeEvent || this.isEveAdmin());
   }
 
   get isEventEditDetails(): boolean {
@@ -514,7 +547,7 @@ export class ViewEditDetailsEventComponent implements OnInit {
   }
 
   get isMeetingEditDetails(): boolean {
-    return !this.appointmentTypeEvent && !this.viewing && this.isEveAdmin();
+    return !(this.appointmentTypeEvent || this.viewing) && this.isEveAdmin();
   }
 
   get repeatsControl(): AbstractControl {

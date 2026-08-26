@@ -23,7 +23,6 @@ package eu.cec.digit.circabc.action.evaluator;
 import org.alfresco.web.action.evaluator.BaseActionEvaluator;
 import org.alfresco.web.bean.repository.Node;
 
-
 /**
  * Test if the document editable (locked or not)
  *
@@ -31,10 +30,9 @@ import org.alfresco.web.bean.repository.Node;
  */
 public class NodeEditableEvaluator extends BaseActionEvaluator {
 
-    private static final long serialVersionUID = 2888369999290163419L;
+  private static final long serialVersionUID = 2888369999290163419L;
 
-    public boolean evaluate(final Node node) {
-        return !node.isLocked();
-    }
-
+  public boolean evaluate(final Node node) {
+    return !node.isLocked();
+  }
 }

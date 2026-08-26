@@ -1,10 +1,14 @@
-export enum AgendaPermissions {
-  EveNoAccess,
-  EveAccess,
-  EveAdmin,
-}
+export const AgendaPermissions = {
+  EveNoAccess: 0,
+  EveAccess: 1,
+  EveAdmin: 2,
+} as const;
 
-export const agendaPermissionKeys = Object.keys(AgendaPermissions).filter(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (k) => typeof AgendaPermissions[k as any] === 'number'
-);
+export type AgendaPermissions =
+  (typeof AgendaPermissions)[keyof typeof AgendaPermissions];
+
+/**
+ * Array of string keys from the AgendaPermissions object
+ * Used for permission lookups and UI components
+ */
+export const agendaPermissionKeys: string[] = Object.keys(AgendaPermissions);

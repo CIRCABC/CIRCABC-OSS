@@ -1,60 +1,32 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { NgClass, NgStyle } from '@angular/common';
+import { Component, output, input, model } from '@angular/core';
+import { TranslocoModule } from '@jsverse/transloco';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 
 @Component({
   selector: 'cbc-preview',
   templateUrl: './preview.component.html',
-  styleUrls: ['./preview.component.scss'],
+  styleUrl: './preview.component.scss',
   preserveWhitespaces: true,
+  imports: [NgStyle, NgClass, SpinnerComponent, TranslocoModule],
 })
 export class PreviewComponent {
-  @Input()
-  title = '';
-  @Input()
-  okLabel = 'label.ok';
-  @Input()
-  cancelLabel = 'label.cancel';
-  @Input()
-  executingLabel = '';
-  @Input()
-  showOkButton = true;
-  @Input()
-  displayCloseButton = true;
-  @Input()
-  contentClass = 'modal-content';
+  readonly title = input('');
+  readonly okLabel = input('label.ok');
+  readonly cancelLabel = input('label.cancel');
+  readonly executingLabel = input('');
+  readonly showOkButton = input(true);
+  readonly displayCloseButton = input(true);
+  readonly contentClass = input('modal-content');
 
-  @Output()
-  readonly ok: EventEmitter<void> = new EventEmitter<void>();
-  @Output()
-  readonly cancel: EventEmitter<void> = new EventEmitter<void>();
+  readonly ok = output<void>();
+  readonly cancelPreview = output<void>();
 
-  private visibleValue = false;
-  @Output()
-  readonly visibleChange = new EventEmitter<boolean>();
-  @Input()
-  get visible() {
-    return this.visibleValue;
-  }
-  set visible(value: boolean) {
-    this.visibleValue = value;
-    this.visibleChange.emit(this.visibleValue);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/member-ordering
-  private executingValue = false;
-  // eslint-disable-next-line @typescript-eslint/member-ordering
-  @Output()
-  readonly executingChange = new EventEmitter();
-  @Input()
-  get executing() {
-    return this.executingValue;
-  }
-  set executing(value: boolean) {
-    this.executingValue = value;
-    this.executingChange.emit(this.executingValue);
-  }
+  public visible = model<boolean>(false);
+  public executing = model<boolean>(false);
 
   onCancel() {
-    this.cancel.emit();
+    this.cancelPreview.emit();
   }
 
   onOk() {

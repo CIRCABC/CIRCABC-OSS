@@ -19,18 +19,26 @@
    See the Licence for the specific language governing
    permissions and limitations under the Licence.
 -->
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="AutoUploadConfiguration">
 
 	<!-- get all configuration for one interest Group -->
-   <select id="select_all_configurations" parameterType="String" resultType="Configuration" >
+   <select
+    id="select_all_configurations"
+    parameterType="String"
+    resultType="Configuration"
+  >
 		 select id_config as idConfiguration, ig_source as igName, file_ref as fileNodeRef, destination_ref as parentNodeRef, ftp_host as ftpHost, ftp_port as ftpPort, ftp_username as ftpUsername, ftp_password as ftpPassword, ftp_path as ftpPath, notify as jobNotifications, emails, auto_extract as autoExtract, date_restriction as dateRestriction, status as status
 		 from auto_upload_config
 		 where ig_source = #{value,jdbcType=VARCHAR}
    </select>
    
-   <select id="select_all_configurations_all" parameterType="String" resultType="Configuration" >
+   <select
+    id="select_all_configurations_all"
+    parameterType="String"
+    resultType="Configuration"
+  >
 		 select id_config as idConfiguration, ig_source as igName, file_ref as fileNodeRef, destination_ref as parentNodeRef, ftp_host as ftpHost, ftp_port as ftpPort, ftp_username as ftpUsername, ftp_password as ftpPassword, ftp_path as ftpPath, notify as jobNotifications, emails, auto_extract as autoExtract, date_restriction as dateRestriction, status as status
 		 from auto_upload_config
    </select>
@@ -52,13 +60,21 @@
    		delete from auto_upload_config where id_config=#{idConfiguration,jdbcType=NUMERIC}
    </delete>
    
-    <select id="select_configuration_by_id" parameterType="String" resultType="Configuration" >
+    <select
+    id="select_configuration_by_id"
+    parameterType="String"
+    resultType="Configuration"
+  >
 		 select id_config as idConfiguration, ig_source as igName, file_ref as fileNodeRef, destination_ref as parentNodeRef, ftp_host as ftpHost, ftp_port as ftpPort, ftp_username as ftpUsername, ftp_password as ftpPassword, ftp_path as ftpPath, notify as jobNotifications, emails, auto_extract as autoExtract, date_restriction as dateRestriction, status as status
 		 from auto_upload_config
 		 where id_config = #{value,jdbcType=NUMERIC}
    </select>
    
-    <select id="select_configuration_by_file_ref" parameterType="String" resultType="Configuration" >
+    <select
+    id="select_configuration_by_file_ref"
+    parameterType="String"
+    resultType="Configuration"
+  >
 		 select id_config as idConfiguration, ig_source as igName, file_ref as fileNodeRef, destination_ref as parentNodeRef, ftp_host as ftpHost, ftp_port as ftpPort, ftp_username as ftpUsername, ftp_password as ftpPassword, ftp_path as ftpPath, notify as jobNotifications, emails, auto_extract as autoExtract, date_restriction as dateRestriction, status as status
 		 from auto_upload_config
 		 where file_ref = #{value,jdbcType=VARCHAR}

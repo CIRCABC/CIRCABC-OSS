@@ -22,7 +22,6 @@ package eu.cec.digit.circabc.web.wai.dialog.applicant;
 
 import eu.cec.digit.circabc.repo.applicant.Applicant;
 import eu.cec.digit.circabc.web.PermissionUtils;
-
 import java.io.Serializable;
 import java.util.Date;
 
@@ -33,72 +32,72 @@ import java.util.Date;
  */
 public class WebApplicant implements Serializable {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = -9120647048820773893L;
+  /**
+   *
+   */
+  private static final long serialVersionUID = -9120647048820773893L;
 
-    private final Applicant applicant;
-    private final String login;
+  private final Applicant applicant;
+  private final String login;
 
-    /*package*/ WebApplicant(final Applicant applicant) {
-        this.applicant = applicant;
-        login = PermissionUtils.computeUserLogin(applicant.getUserName());
-    }
+  /*package*/WebApplicant(final Applicant applicant) {
+    this.applicant = applicant;
+    login = PermissionUtils.computeUserLogin(applicant.getUserName());
+  }
 
-    /**
-     * @see eu.cec.digit.circabc.repo.applicant.Applicant#getDate()
-     */
-    public Date getDate() {
-        return applicant.getDate();
-    }
+  /**
+   * @see eu.cec.digit.circabc.repo.applicant.Applicant#getDate()
+   */
+  public Date getDate() {
+    return applicant.getDate();
+  }
 
-    /**
-     * @see eu.cec.digit.circabc.repo.applicant.Applicant#getDisplayName()
-     */
-    public String getDisplayName() {
-        return applicant.getDisplayName();
-    }
+  /**
+   * @see eu.cec.digit.circabc.repo.applicant.Applicant#getDisplayName()
+   */
+  public String getDisplayName() {
+    return applicant.getDisplayName();
+  }
 
-    /**
-     * @see eu.cec.digit.circabc.repo.applicant.Applicant#getFirstName()
-     */
-    public String getFirstName() {
-        return applicant.getFirstName();
-    }
+  /**
+   * @see eu.cec.digit.circabc.repo.applicant.Applicant#getFirstName()
+   */
+  public String getFirstName() {
+    return applicant.getFirstName();
+  }
 
-    /**
-     * @see eu.cec.digit.circabc.repo.applicant.Applicant#getLastName()
-     */
-    public String getLastName() {
-        return applicant.getLastName();
-    }
+  /**
+   * @see eu.cec.digit.circabc.repo.applicant.Applicant#getLastName()
+   */
+  public String getLastName() {
+    return applicant.getLastName();
+  }
 
-    /**
-     * @see eu.cec.digit.circabc.repo.applicant.Applicant#getMessage()
-     */
-    public String getMessage() {
-        return applicant.getMessage();
-    }
+  /**
+   * @see eu.cec.digit.circabc.repo.applicant.Applicant#getMessage()
+   */
+  public String getMessage() {
+    return applicant.getMessage();
+  }
 
-    /**
-     * @see eu.cec.digit.circabc.repo.applicant.Applicant#getUserName()
-     */
-    public String getUserName() {
-        return applicant.getUserName();
-    }
+  /**
+   * @see eu.cec.digit.circabc.repo.applicant.Applicant#getUserName()
+   */
+  public String getUserName() {
+    return applicant.getUserName();
+  }
 
-    /**
-     * @return the login
-     */
-    public final String getLogin() {
-        return login;
-    }
+  /**
+   * @return the login
+   */
+  public final String getLogin() {
+    return login;
+  }
 
-    /**
-     * @return the applicant
-     */
-    public final Applicant getApplicant() {
-        return applicant;
-    }
+  /**
+   * @return the applicant
+   */
+  public final Applicant getApplicant() {
+    return applicant;
+  }
 }

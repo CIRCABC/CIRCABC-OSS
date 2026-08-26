@@ -28,6 +28,10 @@ import eu.cec.digit.circabc.web.bean.override.CircabcNavigationBean;
 import eu.cec.digit.circabc.web.repository.CategoryNode;
 import eu.cec.digit.circabc.web.wai.dialog.BaseWaiDialog;
 import eu.cec.digit.circabc.web.wai.dialog.WaiDialog;
+import java.util.ArrayList;
+import java.util.List;
+import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
 import org.alfresco.repo.workflow.BPMEngineRegistry;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -38,219 +42,217 @@ import org.alfresco.web.bean.repository.Repository;
 import org.alfresco.web.bean.workflow.WorkflowBean;
 import org.alfresco.web.ui.common.component.data.UIRichList;
 
-import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.List;
-
 public class CircabcWorkflowBean extends BaseWaiDialog implements WaiDialog {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = -8787169968098627140L;
+  /**
+   *
+   */
+  private static final long serialVersionUID = -8787169968098627140L;
 
-    private WorkflowBean workflowBean;
+  private WorkflowBean workflowBean;
 
-    private WorkflowService workflowService;
+  private WorkflowService workflowService;
 
-    private String engineId;
+  private String engineId;
 
-    private UIRichList packageItemsRichList;
+  private UIRichList packageItemsRichList;
 
+  @Override
+  public String getCancelButtonLabel() {
+    return WebClientHelper.translate("close");
+  }
 
-    @Override
-    public String getCancelButtonLabel() {
-        return WebClientHelper.translate("close");
-    }
+  @Override
+  public String getPageIconAltText() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
+  @Override
+  public String getBrowserTitle() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
-    @Override
-    public String getPageIconAltText() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+  @Override
+  protected String finishImpl(FacesContext context, String outcome)
+    throws Throwable {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
-    @Override
-    public String getBrowserTitle() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+  public WorkflowBean getWorkflowBean() {
+    return workflowBean;
+  }
 
-    @Override
-    protected String finishImpl(FacesContext context, String outcome)
-            throws Throwable {
-        // TODO Auto-generated method stub
-        return null;
-    }
+  public void setWorkflowBean(WorkflowBean workflowBean) {
+    this.workflowBean = workflowBean;
+  }
 
-    public WorkflowBean getWorkflowBean() {
-        return workflowBean;
-    }
+  /**
+   * Returns a list of nodes representing the "all" active tasks.
+   *
+   * @return List of all active tasks
+   */
+  public List<Node> getAllActiveTasks() {
+    return workflowBean.getAllActiveTasks();
+  }
 
-    public void setWorkflowBean(WorkflowBean workflowBean) {
-        this.workflowBean = workflowBean;
-    }
+  /**
+   * Returns a list of nodes representing the "all" active tasks.
+   *
+   * @return List of interest group active tasks
+   */
+  public List<Node> getInterestGroupActiveTasks() {
+    List<Node> allActiveTasks = workflowBean.getAllActiveTasks();
+    List<Node> result = new ArrayList<>();
 
-
-    /**
-     * Returns a list of nodes representing the "all" active tasks.
-     *
-     * @return List of all active tasks
-     */
-    public List<Node> getAllActiveTasks() {
-
-        return workflowBean.getAllActiveTasks();
-    }
-
-
-    /**
-     * Returns a list of nodes representing the "all" active tasks.
-     *
-     * @return List of interest group active tasks
-     */
-    public List<Node> getInterestGroupActiveTasks() {
-
-        List<Node> allActiveTasks = workflowBean.getAllActiveTasks();
-        List<Node> result = new ArrayList<>();
-
-        CircabcNavigationBean navigator = Beans.getWaiNavigator();
-        if (navigator != null) {
-            NavigableNode currentIGRoot = navigator.getCurrentIGRoot();
-            if (currentIGRoot != null) {
-                for (Node node : allActiveTasks) {
-                    final Long taskId = (Long) node.getProperties().get(
-                            WorkflowModel.PROP_TASK_ID.toString());
-                    final WorkflowTask task = this.getWorkflowService()
-                            .getTaskById(BPMEngineRegistry.createGlobalId(engineId, taskId.toString()));
-                    final NodeRef workflowPackage = (NodeRef) task.properties
-                            .get(WorkflowModel.ASSOC_PACKAGE);
-                    if (getNodeService().hasAspect(workflowPackage,
-                            CircabcModel.ASPECT_BELONG_TO_INTEREST_GROUP)) {
-                        NodeRef igNodeRef = (NodeRef) getNodeService()
-                                .getProperty(
-                                        workflowPackage,
-                                        CircabcModel.PROP_INTEREST_GROUP_NODE_REF);
-                        if (currentIGRoot.getNodeRef().equals(igNodeRef)) {
-                            result.add(node);
-                        }
-                    }
-
-                }
+    CircabcNavigationBean navigator = Beans.getWaiNavigator();
+    if (navigator != null) {
+      NavigableNode currentIGRoot = navigator.getCurrentIGRoot();
+      if (currentIGRoot != null) {
+        for (Node node : allActiveTasks) {
+          final Long taskId = (Long) node
+            .getProperties()
+            .get(WorkflowModel.PROP_TASK_ID.toString());
+          final WorkflowTask task =
+            this.getWorkflowService()
+              .getTaskById(
+                BPMEngineRegistry.createGlobalId(engineId, taskId.toString())
+              );
+          final NodeRef workflowPackage = (NodeRef) task.properties.get(
+            WorkflowModel.ASSOC_PACKAGE
+          );
+          if (
+            getNodeService()
+              .hasAspect(
+                workflowPackage,
+                CircabcModel.ASPECT_BELONG_TO_INTEREST_GROUP
+              )
+          ) {
+            NodeRef igNodeRef = (NodeRef) getNodeService()
+              .getProperty(
+                workflowPackage,
+                CircabcModel.PROP_INTEREST_GROUP_NODE_REF
+              );
+            if (currentIGRoot.getNodeRef().equals(igNodeRef)) {
+              result.add(node);
             }
+          }
         }
-        return result;
-
+      }
     }
+    return result;
+  }
 
-    /**
-     * Returns a list of nodes representing the "category" active tasks.
-     *
-     * @return List of interest group active tasks
-     */
-    public List<Node> getCategoryActiveTasks() {
+  /**
+   * Returns a list of nodes representing the "category" active tasks.
+   *
+   * @return List of interest group active tasks
+   */
+  public List<Node> getCategoryActiveTasks() {
+    final CategoryNode cat = (CategoryNode) Beans.getWaiNavigator()
+      .getCurrentCategory();
+    List<Node> result = new ArrayList<>();
+    if (cat != null) {
+      List<Node> allActiveTasks = workflowBean.getAllActiveTasks();
+      List<NodeRef> interestGroups = cat
+        .getManagementService()
+        .getInterestGroups(cat.getNodeRef());
 
-        final CategoryNode cat = (CategoryNode) Beans.getWaiNavigator()
-                .getCurrentCategory();
-        List<Node> result = new ArrayList<>();
-        if (cat != null) {
-            List<Node> allActiveTasks = workflowBean.getAllActiveTasks();
-            List<NodeRef> interestGroups = cat.getManagementService()
-                    .getInterestGroups(cat.getNodeRef());
-
-            CircabcNavigationBean navigator = Beans.getWaiNavigator();
-            if (navigator != null) {
-                for (Node node : allActiveTasks) {
-                    final Long taskId = (Long) node.getProperties().get(
-                            WorkflowModel.PROP_TASK_ID.toString());
-                    final WorkflowTask task = this.getWorkflowService()
-                            .getTaskById(
-                                    BPMEngineRegistry.createGlobalId(engineId,
-                                            taskId.toString()));
-                    final NodeRef workflowPackage = (NodeRef) task.properties
-                            .get(WorkflowModel.ASSOC_PACKAGE);
-                    if (getNodeService().hasAspect(workflowPackage,
-                            CircabcModel.ASPECT_BELONG_TO_INTEREST_GROUP)) {
-                        NodeRef igNodeRef = (NodeRef) getNodeService()
-                                .getProperty(
-                                        workflowPackage,
-                                        CircabcModel.PROP_INTEREST_GROUP_NODE_REF);
-                        if (interestGroups.contains(igNodeRef)) {
-                            result.add(node);
-                        }
-
-                    }
-                }
+      CircabcNavigationBean navigator = Beans.getWaiNavigator();
+      if (navigator != null) {
+        for (Node node : allActiveTasks) {
+          final Long taskId = (Long) node
+            .getProperties()
+            .get(WorkflowModel.PROP_TASK_ID.toString());
+          final WorkflowTask task =
+            this.getWorkflowService()
+              .getTaskById(
+                BPMEngineRegistry.createGlobalId(engineId, taskId.toString())
+              );
+          final NodeRef workflowPackage = (NodeRef) task.properties.get(
+            WorkflowModel.ASSOC_PACKAGE
+          );
+          if (
+            getNodeService()
+              .hasAspect(
+                workflowPackage,
+                CircabcModel.ASPECT_BELONG_TO_INTEREST_GROUP
+              )
+          ) {
+            NodeRef igNodeRef = (NodeRef) getNodeService()
+              .getProperty(
+                workflowPackage,
+                CircabcModel.PROP_INTEREST_GROUP_NODE_REF
+              );
+            if (interestGroups.contains(igNodeRef)) {
+              result.add(node);
             }
+          }
         }
-        return result;
-
+      }
     }
+    return result;
+  }
 
-
-    private WorkflowService getWorkflowService() {
-        if (this.workflowService == null) {
-            this.workflowService = Repository.getServiceRegistry(FacesContext.getCurrentInstance())
-                    .getWorkflowService();
-        }
-        return this.workflowService;
+  private WorkflowService getWorkflowService() {
+    if (this.workflowService == null) {
+      this.workflowService = Repository.getServiceRegistry(
+        FacesContext.getCurrentInstance()
+      ).getWorkflowService();
     }
+    return this.workflowService;
+  }
 
+  /**
+   * Returns a list of nodes representing the "pooled" to do tasks the current user has.
+   *
+   * @return List of to do tasks
+   */
+  public List<Node> getPooledTasks() {
+    return workflowBean.getPooledTasks();
+  }
 
-    /**
-     * Returns a list of nodes representing the "pooled" to do tasks the current user has.
-     *
-     * @return List of to do tasks
-     */
-    public List<Node> getPooledTasks() {
+  /**
+   * Returns a list of nodes representing the to do tasks the current user has.
+   *
+   * @return List of to do tasks
+   */
+  public List<Node> getTasksToDo() {
+    return workflowBean.getTasksToDo();
+  }
 
-        return workflowBean.getPooledTasks();
-    }
+  /**
+   * Returns a list of nodes representing the completed tasks the current user has.
+   *
+   * @return List of completed tasks
+   */
+  public List<Node> getTasksCompleted() {
+    return workflowBean.getTasksCompleted();
+  }
 
-    /**
-     * Returns a list of nodes representing the to do tasks the current user has.
-     *
-     * @return List of to do tasks
-     */
-    public List<Node> getTasksToDo() {
-        return workflowBean.getTasksToDo();
-    }
+  public void setupTaskDialog(ActionEvent event) {
+    workflowBean.setupTaskDialog(event);
+  }
 
-    /**
-     * Returns a list of nodes representing the completed tasks the current user has.
-     *
-     * @return List of completed tasks
-     */
-    public List<Node> getTasksCompleted() {
-        return workflowBean.getTasksCompleted();
-    }
+  public void setupTaskDialog(String id, String type) {
+    workflowBean.setupTaskDialog(id, type);
+  }
 
-    public void setupTaskDialog(ActionEvent event) {
-        workflowBean.setupTaskDialog(event);
-    }
+  public String getEngineId() {
+    return engineId;
+  }
 
-    public void setupTaskDialog(String id, String type) {
-        workflowBean.setupTaskDialog(id, type);
-    }
+  public void setEngineId(String engineId) {
+    this.engineId = engineId;
+  }
 
+  public UIRichList getPackageItemsRichList() {
+    return packageItemsRichList;
+  }
 
-    public String getEngineId() {
-        return engineId;
-    }
-
-
-    public void setEngineId(String engineId) {
-        this.engineId = engineId;
-    }
-
-
-    public UIRichList getPackageItemsRichList() {
-        return packageItemsRichList;
-    }
-
-
-    public void setPackageItemsRichList(UIRichList packageItemsRichList) {
-        this.packageItemsRichList = packageItemsRichList;
-    }
-
+  public void setPackageItemsRichList(UIRichList packageItemsRichList) {
+    this.packageItemsRichList = packageItemsRichList;
+  }
 }

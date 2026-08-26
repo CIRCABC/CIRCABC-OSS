@@ -21,6 +21,12 @@ import eu.cec.digit.circabc.service.customisation.mail.MailTemplate;
 import eu.cec.digit.circabc.service.lock.LockService;
 import eu.cec.digit.circabc.service.notification.NotificationService;
 import io.swagger.api.AppMessageApi;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.util.TempFileProvider;
 import org.apache.commons.logging.Log;
@@ -30,109 +36,123 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-
 public class DistributionListSenderJob implements Job {
 
-    private static final String SEND_DISTRIBUTION_LIST = "SEND_DISTRIBUTION_LIST";
+  private static final String SEND_DISTRIBUTION_LIST = "SEND_DISTRIBUTION_LIST";
 
-    private static Log logger =
-            LogFactory.getLog(eu.cec.digit.circabc.service.app.DistributionListSenderJob.class);
+  private static Log logger = LogFactory.getLog(
+    eu.cec.digit.circabc.service.app.DistributionListSenderJob.class
+  );
 
-    private LockService lockService;
-    private AppMessageApi appMessageApi;
-    private NotificationService notificationService;
+  private LockService lockService;
+  private AppMessageApi appMessageApi;
+  private NotificationService notificationService;
 
-    @Override
-    public void execute(JobExecutionContext context) throws JobExecutionException {
-        initialize(context);
+  @Override
+  public void execute(JobExecutionContext context)
+    throws JobExecutionException {
+    initialize(context);
+    try {
+      AuthenticationUtil.setRunAsUser(AuthenticationUtil.getSystemUserName());
+      initialize(context);
+      boolean isLocked = false;
+      if (!lockService.isLocked(SEND_DISTRIBUTION_LIST)) {
+        ByteArrayOutputStream bos = null;
+        InputStream is = null;
+        File tempFile = null;
+
         try {
-            AuthenticationUtil.setRunAsUser(AuthenticationUtil.getSystemUserName());
-            initialize(context);
-            boolean isLocked = false;
-            if (!lockService.isLocked(SEND_DISTRIBUTION_LIST)) {
+          lockService.lock(SEND_DISTRIBUTION_LIST);
+          isLocked = true;
+          Workbook wb = appMessageApi.getdistributionListAsExcel();
 
-                ByteArrayOutputStream bos = null;
-                InputStream is = null;
-                File tempFile = null;
-
-                try {
-                    lockService.lock(SEND_DISTRIBUTION_LIST);
-                    isLocked = true;
-                    Workbook wb = appMessageApi.getdistributionListAsExcel();
-
-                    bos = new ByteArrayOutputStream();
-                    wb.write(bos);
-                    is = new ByteArrayInputStream(bos.toByteArray());
-                    tempFile = TempFileProvider.createTempFile(is, "distrib-mail-", ".xlsx");
-                    List<File> files = new ArrayList<>();
-                    files.add(tempFile);
-                    List<String> mails = new ArrayList<>();
-                    mails.add(CircabcConfiguration.getProperty("mail.from.circabc.support"));
-                    notificationService.notify(null, mails, MailTemplate.ADMIN_DISTRIBUTION_LIST, files);
-
-                } catch (Exception e) {
-                    logger.error("Exception when running the SEND_DISTRIBUTION_LIST job.", e);
-                } finally {
-                    if (isLocked) {
-                        lockService.unlock(SEND_DISTRIBUTION_LIST);
-                    }
-
-                    if (bos != null) {
-                        bos.close();
-                    }
-
-                    if (is != null) {
-                        is.close();
-                    }
-                }
-            }
-        } catch (final Exception e) {
-            logger.error("Can not run job ExpiredMembersJob", e);
+          bos = new ByteArrayOutputStream();
+          wb.write(bos);
+          is = new ByteArrayInputStream(bos.toByteArray());
+          tempFile = TempFileProvider.createTempFile(
+            is,
+            "distrib-mail-",
+            ".xlsx"
+          );
+          List<File> files = new ArrayList<>();
+          files.add(tempFile);
+          List<String> mails = new ArrayList<>();
+          mails.add(
+            CircabcConfiguration.getProperty("mail.from.circabc.support")
+          );
+          notificationService.notify(
+            null,
+            mails,
+            MailTemplate.ADMIN_DISTRIBUTION_LIST,
+            files
+          );
+        } catch (Exception e) {
+          logger.error(
+            "Exception when running the SEND_DISTRIBUTION_LIST job.",
+            e
+          );
         } finally {
-            AuthenticationUtil.clearCurrentSecurityContext();
+          if (isLocked) {
+            lockService.unlock(SEND_DISTRIBUTION_LIST);
+          }
+
+          if (bos != null) {
+            bos.close();
+          }
+
+          if (is != null) {
+            is.close();
+          }
         }
+      }
+    } catch (final Exception e) {
+      logger.error("Can not run job ExpiredMembersJob", e);
+    } finally {
+      AuthenticationUtil.clearCurrentSecurityContext();
     }
+  }
 
-    /**
-     * @return the lockService
-     */
-    public LockService getLockService() {
-        return lockService;
-    }
+  /**
+   * @return the lockService
+   */
+  public LockService getLockService() {
+    return lockService;
+  }
 
-    /**
-     * @param lockService the lockService to set
-     */
-    public void setLockService(LockService lockService) {
-        this.lockService = lockService;
-    }
+  /**
+   * @param lockService the lockService to set
+   */
+  public void setLockService(LockService lockService) {
+    this.lockService = lockService;
+  }
 
-    private void initialize(final JobExecutionContext context) {
-        setNotificationService(
-                (NotificationService) context.getMergedJobDataMap().get("notificationService"));
-        setAppMessageApi((AppMessageApi) context.getMergedJobDataMap().get("appMessageApi"));
-        setLockService((LockService) context.getMergedJobDataMap().get("lockService"));
-    }
+  private void initialize(final JobExecutionContext context) {
+    setNotificationService(
+      (NotificationService) context
+        .getMergedJobDataMap()
+        .get("notificationService")
+    );
+    setAppMessageApi(
+      (AppMessageApi) context.getMergedJobDataMap().get("appMessageApi")
+    );
+    setLockService(
+      (LockService) context.getMergedJobDataMap().get("lockService")
+    );
+  }
 
-    public AppMessageApi getAppMessageApi() {
-        return appMessageApi;
-    }
+  public AppMessageApi getAppMessageApi() {
+    return appMessageApi;
+  }
 
-    public void setAppMessageApi(AppMessageApi appMessageApi) {
-        this.appMessageApi = appMessageApi;
-    }
+  public void setAppMessageApi(AppMessageApi appMessageApi) {
+    this.appMessageApi = appMessageApi;
+  }
 
-    public NotificationService getNotificationService() {
-        return notificationService;
-    }
+  public NotificationService getNotificationService() {
+    return notificationService;
+  }
 
-    public void setNotificationService(NotificationService notificationService) {
-        this.notificationService = notificationService;
-    }
+  public void setNotificationService(NotificationService notificationService) {
+    this.notificationService = notificationService;
+  }
 }

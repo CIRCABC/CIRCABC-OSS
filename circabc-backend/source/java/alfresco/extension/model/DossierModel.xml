@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
+<?xml version="1.0" encoding="UTF-8" ?>
 <!--
   Copyright 2006 European Community
   
@@ -20,9 +19,11 @@
    See the Licence for the specific language governing
    permissions and limitations under the Licence.
 -->
-
 <!-- Definition of Dossier Model. It extends the cm:folder contentModel -->
-<model name="do:dossiermodel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+<model
+  name="do:dossiermodel"
+  xmlns="http://www.alfresco.org/model/dictionary/1.0"
+>
 
    <!-- Optional meta-data about the model -->
    <description>Dossier Model</description>
@@ -32,12 +33,15 @@
    <!-- Imports are required to allow references to definitions in other models -->
    <imports>
       <!-- Import Alfresco Content Domain Model Definitions -->
-      <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+      <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
    </imports>
 
    <!-- Introduction of new namespaces defined by this model -->
    <namespaces>
-      <namespace uri="http://www.cc.cec/circabc/model/dossier/1.0" prefix="do"/>
+      <namespace
+      uri="http://www.cc.cec/circabc/model/dossier/1.0"
+      prefix="do"
+    />
    </namespaces>
 
    <types>

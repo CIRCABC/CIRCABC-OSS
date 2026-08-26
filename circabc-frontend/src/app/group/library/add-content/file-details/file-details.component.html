@@ -5,12 +5,12 @@
       <div class="col-left">
         <div class="field">
           <label for="text">{{ 'label.name' | transloco }}</label>
-          {{ file.name }}
+          {{ file().name }}
         </div>
         <div class="field">
           <label for="text">{{ 'label.type' | transloco }}</label>
-          {{ file.type }} {{ 'label.of' | transloco }}
-          <span>{{ file.size | cbcSize: true }}</span>
+          {{ file().type }} {{ 'label.of' | transloco }}
+          <span>{{ file().size | cbcSize: true }}</span>
         </div>
       </div>
     </div>

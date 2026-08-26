@@ -1,7 +1,7 @@
 <cbc-modal
   [title]="keyword === undefined ? 'keywords.add' : 'keywords.update'"
   (ok)="keyword === undefined ? create() : update()"
-  (cancel)="cancelWizard()"
+  (cancelModal)="cancelWizard()"
   [okLabel]="keyword === undefined ? 'label.add' : 'label.update'"
   [(visible)]="showModal"
   [executing]="creating"

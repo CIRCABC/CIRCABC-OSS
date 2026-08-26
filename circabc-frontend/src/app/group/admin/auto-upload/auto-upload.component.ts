@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
 import {
   AutoUploadConfiguration,
@@ -10,13 +10,28 @@ import {
 } from 'app/core/generated/circabc';
 import { changeSort } from 'app/core/util';
 import { ListingOptions } from 'app/group/listing-options/listing-options';
+import { InlineDeleteComponent } from 'app/shared/delete/inline-delete.component';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
+import { PagerConfigurationComponent } from 'app/shared/pager-configuration/pager-configuration.component';
+import { PagerComponent } from 'app/shared/pager/pager.component';
+import { SetTitlePipe } from 'app/shared/pipes/set-title.pipe';
 import { firstValueFrom } from 'rxjs';
+import { AddConfigurationComponent } from './add-configuration/add-configuration.component';
 
 @Component({
   selector: 'cbc-auto-upload',
   templateUrl: './auto-upload.component.html',
-  styleUrls: ['./auto-upload.component.scss'],
+  styleUrl: './auto-upload.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    HorizontalLoaderComponent,
+    PagerComponent,
+    PagerConfigurationComponent,
+    InlineDeleteComponent,
+    AddConfigurationComponent,
+    SetTitlePipe,
+    TranslocoModule,
+  ],
 })
 export class AutoUploadComponent implements OnInit {
   public configurations!: AutoUploadConfiguration[];
@@ -163,12 +178,5 @@ export class AutoUploadComponent implements OnInit {
       return [hour, dayNum];
     }
     return [configuration.dateRestriction];
-  }
-
-  public trackById(
-    _index: number,
-    item: { idConfiguration?: string | number }
-  ) {
-    return item.idConfiguration;
   }
 }

@@ -1,0 +1,136 @@
+<section
+  class="g-request"
+  [class.waiting]="request.agreement === 0"
+  [class.approved]="request.agreement === 1"
+  [class.rejected]="request.agreement === -1"
+>
+  <div>
+    <table class="request-details">
+      <tr class="bordered-row">
+        <td colspan="2">{{ ('label.request.create' | transloco)}}</td>
+      </tr>
+      <tr>
+        <td class="label big-label">
+          {{ ('label.request' | transloco) + ' ' + ('label.by' | transloco) }}
+        </td>
+        <td>
+          <cbc-user-card
+            [userId]="request.from.userId"
+            [rightSide]="true"
+          ></cbc-user-card>
+          <strong>{{ 'label.on' | transloco }}</strong>
+          {{ request.requestDate | date: 'dd/MM/yyyy - HH:mm' }}
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <span class="label">{{ 'label.justification' | transloco }}</span>
+        </td>
+        <td [innerHTML]="request.justification"></td>
+      </tr>
+
+      <tr>
+        <td>
+          <span class="label big-label">{{ 'label.name' | transloco }}</span>
+        </td>
+        @if (request.interestGroupId) {
+        <td>
+          <a tabindex="0" [routerLink]="['/group', request.interestGroupId]"
+            >{{ request.proposedName }}</a
+          >
+        </td>
+        } @if (!request.interestGroupId) {
+        <td>{{ request.proposedName }}</td>
+        }
+      </tr>
+
+      <tr>
+        <td>
+          <span class="label big-label">{{ 'label.title' | transloco }}</span>
+        </td>
+        <td>
+          {{ request.proposedTitle ? (request.proposedTitle | cbcI18n) : '' }}
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <span class="label big-label"
+            >{{ 'label.description' | transloco }}</span
+          >
+        </td>
+        <td
+          [innerHTML]="
+            request.proposedDescription
+              ? (request.proposedDescription | cbcI18n)
+              : ''
+          "
+        ></td>
+      </tr>
+
+      <tr>
+        <td>
+          <span class="label">{{ 'label.leaders' | transloco }}</span>
+        </td>
+        <td>
+          @for (user of request.leaders; track user.userId) {
+
+          <div>
+            <span>- {{user?.firstname! + ' ' + user?.lastname!}} </span>
+            <span style="font-size: 0.8em"> ({{user?.email!}})</span>
+          </div>
+
+          }
+        </td>
+      </tr>
+    </table>
+
+    <aside class="actions">
+      @if (request.agreement === 0) {
+      <a tabindex="0" class="cta" (click)="acceptDialog()" data-cy="approve"
+        >{{ 'label.approve' | transloco }}</a
+      >
+      } @if (request.agreement === 0) {
+      <a tabindex="0" class="button" (click)="rejectDialog()"
+        >{{ 'label.reject' | transloco }}</a
+      >
+      }
+    </aside>
+    @if (request.agreement === -1) {
+    <aside class="actions">
+      <h4 class="rejected">
+        <img src="img/Rejected-white.png" alt="rejected" /> {{ 'label.rejected'
+        | transloco }}
+      </h4>
+      <span class="label big-label">{{ 'label.by' | transloco }}</span>
+      @if (request.reviewer && request.reviewer.userId) {
+      <cbc-user-card
+        [userId]="request.reviewer.userId"
+        [rightSide]="false"
+      ></cbc-user-card>
+      }
+      <br />
+      <span class="label big-label">{{ 'label.on' | transloco }}</span>{{
+      request.agreementDate | date: 'dd/MM/yyy : HH:mm' }}
+    </aside>
+    } @if (request.agreement === 1) {
+    <aside class="actions">
+      <h4 class="approved">
+        <img src="img/Accepted-white.png" alt="accepted" />{{ 'label.approved' |
+        transloco }}
+      </h4>
+      <span class="label big-label">{{ 'label.by' | transloco }}</span>
+      @if (request.reviewer && request.reviewer.userId) {
+      <cbc-user-card
+        [userId]="request.reviewer.userId"
+        [rightSide]="false"
+      ></cbc-user-card>
+      }
+      <br />
+      <span class="label big-label">{{ 'label.on' | transloco }}</span>{{
+      request.agreementDate | date: 'dd/MM/yyy : HH:mm' }}
+    </aside>
+    }
+  </div>
+</section>

@@ -17,10 +17,9 @@
 package eu.cec.digit.circabc.service.bulk.indexes;
 
 public interface IndexEntry {
+  String getHeaderName();
 
-    String getHeaderName();
+  String getValue();
 
-    String getValue();
-
-    void setValue(final String value);
+  void setValue(final String value);
 }

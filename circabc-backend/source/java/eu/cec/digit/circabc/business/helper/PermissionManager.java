@@ -25,7 +25,6 @@ import org.alfresco.service.cmr.security.AccessStatus;
 import org.alfresco.service.cmr.security.PermissionService;
 import org.apache.commons.lang.NotImplementedException;
 
-
 /**
  * Business manager to perform permission related common tasks.
  *
@@ -33,101 +32,105 @@ import org.apache.commons.lang.NotImplementedException;
  */
 public class PermissionManager {
 
-    private PermissionService permissionService;
+  private PermissionService permissionService;
 
-    //--------------
-    //-- public methods
+  //--------------
+  //-- public methods
 
-    /**
-     * Return if the current authenticated user can read the given node.
-     *
-     * @param nodeRef The noderef
-     */
-    public boolean canRead(final NodeRef nodeRef) {
-        return hasPermission(nodeRef, PermissionService.READ);
+  /**
+   * Return if the current authenticated user can read the given node.
+   *
+   * @param nodeRef The noderef
+   */
+  public boolean canRead(final NodeRef nodeRef) {
+    return hasPermission(nodeRef, PermissionService.READ);
+  }
+
+  /**
+   * Return if the current authenticated user can delete the given node.
+   *
+   * @param nodeRef The noderef
+   */
+  public boolean canDelete(final NodeRef nodeRef) {
+    return hasPermission(nodeRef, PermissionService.DELETE);
+  }
+
+  /**
+   * Return if the current authenticated user can edit the content of the given node;
+   *
+   * @param nodeRef The noderef
+   */
+  public boolean canEditContent(final NodeRef nodeRef) {
+    return hasPermission(nodeRef, PermissionService.WRITE_CONTENT);
+  }
+
+  /**
+   * Return if the current authenticated user can edit the given node properties.
+   *
+   * @param nodeRef The noderef
+   */
+  public boolean canEditProperties(final NodeRef nodeRef) {
+    return hasPermission(nodeRef, PermissionService.WRITE_PROPERTIES);
+  }
+
+  /**
+   * Return if the current authenticated user can add/create a child to the given node.
+   *
+   * @param nodeRef The noderef
+   */
+  public boolean canAddChild(final NodeRef nodeRef) {
+    return hasPermission(nodeRef, PermissionService.CREATE_CHILDREN);
+  }
+
+  /**
+   * Return if the current authenticated in adminsitrator in all services of the interest group.
+   *
+   * @param nodeRef An interest group or any of its child.
+   */
+  public boolean isAdminInAllService(final NodeRef nodeRef) {
+    throw new NotImplementedException();
+  }
+
+  /**
+   * Return if the current authenticated in adminsitrator in at least one service of the interest
+   * group.
+   *
+   * @param nodeRef An interest group or any of its child.
+   */
+  public boolean isAdminInOneService(final NodeRef nodeRef) {
+    throw new NotImplementedException();
+  }
+
+  //--------------
+  //-- private helpers
+
+  private boolean hasPermission(
+    final NodeRef nodeRef,
+    final String permission
+  ) {
+    if (nodeRef == null) {
+      return false;
+    } else {
+      return AccessStatus.ALLOWED.equals(
+        getPermissionService().hasPermission(nodeRef, permission)
+      );
     }
+  }
 
-    /**
-     * Return if the current authenticated user can delete the given node.
-     *
-     * @param nodeRef The noderef
-     */
-    public boolean canDelete(final NodeRef nodeRef) {
-        return hasPermission(nodeRef, PermissionService.DELETE);
-    }
+  //--------------
+  //-- IOC
 
-    /**
-     * Return if the current authenticated user can edit the content of the given node;
-     *
-     * @param nodeRef The noderef
-     */
-    public boolean canEditContent(final NodeRef nodeRef) {
-        return hasPermission(nodeRef, PermissionService.WRITE_CONTENT);
-    }
+  /**
+   * @return the permissionService
+   */
+  protected final PermissionService getPermissionService() {
+    return permissionService;
+  }
 
-    /**
-     * Return if the current authenticated user can edit the given node properties.
-     *
-     * @param nodeRef The noderef
-     */
-    public boolean canEditProperties(final NodeRef nodeRef) {
-        return hasPermission(nodeRef, PermissionService.WRITE_PROPERTIES);
-    }
-
-    /**
-     * Return if the current authenticated user can add/create a child to the given node.
-     *
-     * @param nodeRef The noderef
-     */
-    public boolean canAddChild(final NodeRef nodeRef) {
-        return hasPermission(nodeRef, PermissionService.CREATE_CHILDREN);
-    }
-
-
-    /**
-     * Return if the current authenticated in adminsitrator in all services of the interest group.
-     *
-     * @param nodeRef An interest group or any of its child.
-     */
-    public boolean isAdminInAllService(final NodeRef nodeRef) {
-        throw new NotImplementedException();
-    }
-
-    /**
-     * Return if the current authenticated in adminsitrator in at least one service of the interest
-     * group.
-     *
-     * @param nodeRef An interest group or any of its child.
-     */
-    public boolean isAdminInOneService(final NodeRef nodeRef) {
-        throw new NotImplementedException();
-    }
-
-    //--------------
-    //-- private helpers
-
-    private boolean hasPermission(final NodeRef nodeRef, final String permission) {
-        if (nodeRef == null) {
-            return false;
-        } else {
-            return AccessStatus.ALLOWED.equals(getPermissionService().hasPermission(nodeRef, permission));
-        }
-    }
-
-    //--------------
-    //-- IOC
-
-    /**
-     * @return the permissionService
-     */
-    protected final PermissionService getPermissionService() {
-        return permissionService;
-    }
-
-    /**
-     * @param permissionService the permissionService to set
-     */
-    public final void setPermissionService(PermissionService permissionService) {
-        this.permissionService = permissionService;
-    }
+  /**
+   * @param permissionService the permissionService to set
+   */
+  public final void setPermissionService(PermissionService permissionService) {
+    this.permissionService = permissionService;
+  }
 }

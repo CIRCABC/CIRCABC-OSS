@@ -27,57 +27,56 @@ import org.alfresco.service.cmr.repository.NodeRef;
  * @author Yanick Pignot
  */
 public interface Attachement extends AclAwareWrapper {
+  /**
+   * AclAware wrapper method contract to allow permission check on this wrapper
+   *
+   * @see eu.cec.digit.circabc.business.acl.AclAwareWrapper#getNodeRef()
+   */
+  NodeRef getNodeRef();
 
-    /**
-     * AclAware wrapper method contract to allow permission check on this wrapper
-     *
-     * @see eu.cec.digit.circabc.business.acl.AclAwareWrapper#getNodeRef()
-     */
-    NodeRef getNodeRef();
+  /**
+   * Get the node on wich the node is attached
+   */
+  NodeRef getAttachedOn();
 
-    /**
-     * Get the node on wich the node is attached
-     */
-    NodeRef getAttachedOn();
+  /**
+   * Get the name of the attachement node
+   */
+  String getName();
 
-    /**
-     * Get the name of the attachement node
-     */
-    String getName();
+  /**
+   * Get the title of the attachement node
+   */
+  String getTitle();
 
-    /**
-     * Get the title of the attachement node
-     */
-    String getTitle();
+  /**
+   * Get the type of the attachement.
+   */
+  AttachementType geType();
 
-    /**
-     * Get the type of the attachement.
-     */
-    AttachementType geType();
+  long getSize();
 
-    long getSize();
+  void setSize(long size);
 
-    void setSize(long size);
+  String getMimetype();
 
-    String getMimetype();
+  void setMimetype(String mimetype);
 
-    void setMimetype(String mimetype);
+  String getEncoding();
 
-    String getEncoding();
+  void setEncoding(String encoding);
 
-    void setEncoding(String encoding);
+  /**
+   * Represent the kind of attachement.
+   * <p>
+   * A attachement can be either -	a link in the repository. -	a content hidden under the node where
+   * it is attached.
+   *
+   * @author Yanick Pignot
+   */
+  enum AttachementType {
+    REPO_LINK,
 
-    /**
-     * Represent the kind of attachement.
-     * <p>
-     * A attachement can be either -	a link in the repository. -	a content hidden under the node where
-     * it is attached.
-     *
-     * @author Yanick Pignot
-     */
-    enum AttachementType {
-        REPO_LINK,
-
-        HIDDEN_FILE
-    }
+    HIDDEN_FILE,
+  }
 }

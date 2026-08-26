@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
+import { I18nSelectPipe } from '@angular/common';
+import { TranslocoModule } from '@jsverse/transloco';
 import { AgendaHelperService } from 'app/core/agenda-helper.service';
 import { PermissionEvaluatorService } from 'app/core/evaluator/permission-evaluator.service';
 import {
@@ -13,20 +15,44 @@ import {
 } from 'app/core/generated/circabc';
 import { LocalizationService } from 'app/core/localization.service';
 import { getFormattedDate as getFormattedDateGlobal } from 'app/core/util';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
+import { SetTitlePipe } from 'app/shared/pipes/set-title.pipe';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
+import { DatePicker } from 'primeng/datepicker';
 import { firstValueFrom } from 'rxjs';
+import { CalendarComponent } from './calendar/calendar.component';
+import { CreateEventComponent } from './create-event/create-event.component';
+import { DayComponent } from './day/day.component';
+import { DeleteEventComponent } from './delete-event/delete-event.component';
+import { WeekComponent } from './week/week.component';
 
 @Component({
   selector: 'cbc-agenda',
   templateUrl: './agenda.component.html',
-  styleUrls: ['./agenda.component.scss'],
+  styleUrl: './agenda.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    HorizontalLoaderComponent,
+    RouterLink,
+    ReactiveFormsModule,
+    DatePicker,
+    SpinnerComponent,
+    CalendarComponent,
+    DayComponent,
+    WeekComponent,
+    CreateEventComponent,
+    DeleteEventComponent,
+    I18nSelectPipe,
+    SetTitlePipe,
+    TranslocoModule,
+  ],
 })
 export class AgendaComponent implements OnInit {
   public createEventShowModal = false;
   public deleteEventShowModal = false;
   public currentDate!: Date;
   public igId!: string;
-  public ig!: InterestGroup;
+  public ig?: InterestGroup;
   public eventRootNode!: ModelNode;
   public eventToDelete!: EventItemDefinition;
   public redisplayCalendar = false;

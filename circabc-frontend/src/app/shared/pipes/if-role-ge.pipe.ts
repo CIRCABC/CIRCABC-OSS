@@ -1,9 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
+import { assertDefined } from 'app/core/asserts';
 import { PermissionEvaluator } from 'app/core/evaluator/permission-evaluator';
 import { AllPermission } from 'app/core/evaluator/permissions';
 import { Node as ModelNode } from 'app/core/generated/circabc';
-import { assertDefined } from 'app/core/asserts';
 
 /**
  * This Pipe has to be used only in *ngIf directives

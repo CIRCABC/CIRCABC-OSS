@@ -32,85 +32,83 @@ import org.alfresco.service.namespace.QName;
  */
 public class AlfrescoObjectsManager {
 
-    private NamespaceService namespaceService;
+  private NamespaceService namespaceService;
 
-    //	--------------
-    //-- public methods
+  //	--------------
+  //-- public methods
 
+  /**
+   * Convert an Alfresco QName to a String using prefix (ie: cm:name)
+   *
+   * @return qname.toPrefixString
+   */
+  public String asString(final QName qname) {
+    return qname.toPrefixString(getNamespaceService());
+  }
 
-    /**
-     * Convert an Alfresco QName to a String using prefix (ie: cm:name)
-     *
-     * @return qname.toPrefixString
-     */
-    public String asString(final QName qname) {
-        return qname.toPrefixString(getNamespaceService());
+  /**
+   * Convert an Alfresco NodeRef to a String using nodeRef id only (ie: 16589965656565565)
+   *
+   * @return nodeRef.getId
+   */
+  public String asString(final NodeRef nodeRef) {
+    return nodeRef.getId();
+  }
+
+  /**
+   * Convert an Alfresco QName to a String using prefix (ie: {http://www.alfresco.org/model/content/1.0}name)
+   *
+   * @return qname.toPrefixString
+   */
+  public String asFullString(final QName qname) {
+    return qname.toString();
+  }
+
+  /**
+   * Convert an Alfresco NodeRef to a String using nodeRef id only (ie:
+   * workspace://SpacesStore/16589965656565565)
+   *
+   * @return nodeRef.getId
+   */
+  public String asFullString(final NodeRef nodeRef) {
+    return nodeRef.toString();
+  }
+
+  /**
+   * Convert a name space string to an Alfresco qname (accept prefixed namespace or long namespace)
+   */
+  public QName asQName(final String string) {
+    return QName.resolveToQName(getNamespaceService(), string);
+  }
+
+  /**
+   * Convert a nodeRef string to an Alfresco NodeRef (accpet nodeId and nodeRef.toString)
+   */
+  public NodeRef asNodeRef(final String string) {
+    if (NodeRef.isNodeRef(string)) {
+      return new NodeRef(string);
+    } else {
+      return new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, string);
     }
+  }
 
-    /**
-     * Convert an Alfresco NodeRef to a String using nodeRef id only (ie: 16589965656565565)
-     *
-     * @return nodeRef.getId
-     */
-    public String asString(final NodeRef nodeRef) {
-        return nodeRef.getId();
-    }
+  //--------------
+  //-- private helpers
 
-    /**
-     * Convert an Alfresco QName to a String using prefix (ie: {http://www.alfresco.org/model/content/1.0}name)
-     *
-     * @return qname.toPrefixString
-     */
-    public String asFullString(final QName qname) {
-        return qname.toString();
-    }
+  //	--------------
+  //-- IOC
 
-    /**
-     * Convert an Alfresco NodeRef to a String using nodeRef id only (ie:
-     * workspace://SpacesStore/16589965656565565)
-     *
-     * @return nodeRef.getId
-     */
-    public String asFullString(final NodeRef nodeRef) {
-        return nodeRef.toString();
-    }
+  /**
+   * @return the namespaceService
+   */
+  protected final NamespaceService getNamespaceService() {
+    return namespaceService;
+  }
 
-
-    /**
-     * Convert a name space string to an Alfresco qname (accept prefixed namespace or long namespace)
-     */
-    public QName asQName(final String string) {
-        return QName.resolveToQName(getNamespaceService(), string);
-    }
-
-    /**
-     * Convert a nodeRef string to an Alfresco NodeRef (accpet nodeId and nodeRef.toString)
-     */
-    public NodeRef asNodeRef(final String string) {
-        if (NodeRef.isNodeRef(string)) {
-            return new NodeRef(string);
-        } else {
-            return new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, string);
-        }
-    }
-
-    //--------------
-    //-- private helpers
-
-    //	--------------
-    //-- IOC
-
-    /**
-     * @return the namespaceService
-     */
-    protected final NamespaceService getNamespaceService() {
-        return namespaceService;
-    }
-
-    /**
-     * @param namespaceService the namespaceService to set
-     */
-    public final void setNamespaceService(NamespaceService namespaceService) {
-        this.namespaceService = namespaceService;
-    }
+  /**
+   * @param namespaceService the namespaceService to set
+   */
+  public final void setNamespaceService(NamespaceService namespaceService) {
+    this.namespaceService = namespaceService;
+  }
 }

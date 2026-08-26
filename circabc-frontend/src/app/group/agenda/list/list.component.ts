@@ -1,6 +1,7 @@
-import { Component, Inject, OnInit, Optional, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { Component, Inject, OnInit, Optional, viewChild } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import { PermissionEvaluatorService } from 'app/core/evaluator/permission-evaluator.service';
 import {
   BASE_PATH,
@@ -14,19 +15,35 @@ import {
 } from 'app/core/generated/circabc';
 import { SaveAsService } from 'app/core/save-as.service';
 import { changeSort, getFormattedDate, getFullDate } from 'app/core/util';
+import { DeleteEventComponent } from 'app/group/agenda/delete-event/delete-event.component';
 import { ListingOptions } from 'app/group/listing-options/listing-options';
+import { HintComponent } from 'app/shared/hint/hint.component';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
+import { PagerComponent } from 'app/shared/pager/pager.component';
+import { ReponsiveSubMenuComponent } from 'app/shared/reponsive-sub-menu/reponsive-sub-menu.component';
+import { DatePicker } from 'primeng/datepicker';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-agenda-list',
   templateUrl: './list.component.html',
-  styleUrls: ['./list.component.scss'],
+  styleUrl: './list.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    HorizontalLoaderComponent,
+    ReponsiveSubMenuComponent,
+    RouterLink,
+    PagerComponent,
+    HintComponent,
+    ReactiveFormsModule,
+    DatePicker,
+    DeleteEventComponent,
+    TranslocoModule,
+  ],
 })
 export class ListComponent implements OnInit {
-  @ViewChild('datePicker')
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  datePicker: any;
+  readonly datePicker = viewChild<any>('datePicker');
 
   public appointments: EventItemDefinition[] = [];
   public igId!: string;
@@ -200,9 +217,5 @@ export class ListComponent implements OnInit {
     const name = `Events.${exportCode}`;
     this.saveAsService.saveUrlAs(url, name);
     return false;
-  }
-
-  public trackById(_index: number, item: { id?: string | number }) {
-    return item.id;
   }
 }

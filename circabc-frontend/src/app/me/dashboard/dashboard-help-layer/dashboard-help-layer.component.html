@@ -4,7 +4,8 @@
   [enabledClose]="showClose"
   [useKeepDisplay]="true"
 >
-  <div *ngIf="step === 0" class="welcome">
+  @if (step === 0) {
+  <div class="welcome">
     <h1>{{ 'splash.help.welcome' | transloco }}</h1>
     <p>
       {{ 'splash.help.intro.1' | transloco }}
@@ -13,16 +14,17 @@
       <br />
     </p>
     <p style="padding: 50px">
-      <img src="img/help/route-help-welcome.png" />
+      <img src="img/help/route-help-welcome.png" alt="Welcome help route" />
     </p>
 
     <section class="section-end">
-      <a class="button" (click)="toStep(1)"
+      <a tabindex="0" class="button" (click)="toStep(1)"
         >{{ 'label.continue' | transloco }}</a
       >
     </section>
   </div>
-  <div *ngIf="step === 1">
+  } @if (step === 1) {
+  <div>
     <h1
       >{{ 'splash.help.explore.title' | transloco }} {{ step }}/{{ maxStep
       }}</h1
@@ -30,7 +32,11 @@
     <p>
       {{ 'splash.help.explore.intro' | transloco }}
       <br />
-      <img src="img/help/dashboard-help-screen-1.jpg" class="img-float-right" />
+      <img
+        src="img/help/dashboard-help-screen-1.jpg"
+        class="img-float-right"
+        alt="Dashboard help screen"
+      />
     </p>
     <ol>
       <li [innerHTML]="'splash.help.explore.content.1' | transloco"> </li>
@@ -44,13 +50,16 @@
       <li [innerHTML]="'splash.help.explore.content.9' | transloco"> </li>
     </ol>
     <section class="section-end">
-      <a class="button" (click)="toStep(2)"
+      <a tabindex="0" class="button" (click)="toStep(2)"
         >{{ 'label.continue' | transloco }}</a
       >
-      <a class="back" (click)="toStep(0)">{{ 'label.back' | transloco }}</a>
+      <a tabindex="0" class="back" (click)="toStep(0)"
+        >{{ 'label.back' | transloco }}</a
+      >
     </section>
   </div>
-  <div *ngIf="step === 2">
+  } @if (step === 2) {
+  <div>
     <h1
       >{{ 'splash.help.information.title' | transloco }} {{ step }}/{{ maxStep
       }}</h1
@@ -61,6 +70,7 @@
       <img
         src="img/help/information-help-screen-1.jpg"
         class="img-float-left"
+        alt="Information help screen"
       />
     </p>
     <ol>
@@ -71,18 +81,25 @@
       <li [innerHTML]="'splash.help.information.content.5' | transloco"> </li>
     </ol>
     <section class="section-end">
-      <a class="button" (click)="toStep(3)"
+      <a tabindex="0" class="button" (click)="toStep(3)"
         >{{ 'label.continue' | transloco }}</a
       >
-      <a class="back" (click)="toStep(1)">{{ 'label.back' | transloco }}</a>
+      <a tabindex="0" class="back" (click)="toStep(1)"
+        >{{ 'label.back' | transloco }}</a
+      >
     </section>
   </div>
-  <div *ngIf="step === 3">
+  } @if (step === 3) {
+  <div>
     <h1>{{ 'splash.help.help.title' | transloco }} {{ step }}/{{ maxStep }}</h1>
     <p>
       {{ 'splash.help.help.intro' | transloco }}
       <br />
-      <img src="img/help/help-help-screen-1.jpg" class="img-float-left" />
+      <img
+        src="img/help/help-help-screen-1.jpg"
+        class="img-float-left"
+        alt="Help help screen"
+      />
     </p>
     <ol>
       <li [innerHTML]="'splash.help.help.content.1' | transloco"> </li>
@@ -92,7 +109,10 @@
       <li [innerHTML]="'splash.help.help.content.5' | transloco"> </li>
     </ol>
     <section class="section-end">
-      <a class="back" (click)="toStep(2)">{{ 'label.back' | transloco }}</a>
+      <a tabindex="0" class="back" (click)="toStep(2)"
+        >{{ 'label.back' | transloco }}</a
+      >
     </section>
   </div>
+  }
 </cbc-overlayer>

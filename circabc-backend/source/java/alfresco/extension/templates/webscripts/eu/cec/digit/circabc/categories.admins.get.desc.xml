@@ -1,8 +1,9 @@
 <webscript>
   <shortname>CIRCABC category adminss</shortname>
-  <description>Get all CIRCABC category administrator of the category</description>
+  <description
+  >Get all CIRCABC category administrator of the category</description>
   <url>/circabc/categories/{id}/admins</url>
-  <format default="json"/>
+  <format default="json" />
   <authentication>user</authentication>
   <transaction>required</transaction>
 </webscript>

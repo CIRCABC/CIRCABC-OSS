@@ -1,70 +1,73 @@
 <section class="modal-content table-container">
   <div class="wrapping scroll-body">
-    <p *ngIf="groupLog !== undefined && groupLog.length > 0">
-      {{ 'label.records.found' | transloco: { total: groupLog.length } }}
-    </p>
+    @if (groupLog !== undefined && groupLog.length > 0) {
+    <p> {{ 'label.records.found' | transloco: { total: groupLog.length } }} </p>
+    }
     <table class="main no-border-spacing">
       <thead style="color: #035">
         <tr>
           <th>
-            <label>{{ 'label.areslog.repository' | transloco }}</label>
+            <div>{{ 'label.areslog.repository' | transloco }}</div>
           </th>
           <th>
-            <label>{{ 'label.areslog.registrationnumber' | transloco }}</label>
+            <div>{{ 'label.areslog.registrationnumber' | transloco }}</div>
           </th>
           <th>
-            <label>{{ 'label.areslog.savenumber' | transloco }}</label>
+            <div>{{ 'label.areslog.savenumber' | transloco }}</div>
           </th>
           <th>
-            <label>{{ 'label.name' | transloco }}</label>
+            <div>{{ 'label.name' | transloco }}</div>
           </th>
           <th>
-            <label>{{ 'label.areslog.versionlabel' | transloco }}</label>
+            <div>{{ 'label.areslog.versionlabel' | transloco }}</div>
           </th>
           <th>
-            <label>{{ 'label.areslog.action' | transloco }}</label>
+            <div>{{ 'label.areslog.action' | transloco }}</div>
           </th>
         </tr>
       </thead>
 
       <tbody>
-        <tr class="row empty-row" *ngIf="groupLog !== undefined">
-          <td colspan="6" *ngIf="groupLog.length === 0">
-            {{ 'label.nothing.to.display' | transloco }}
-          </td>
+        @if (groupLog !== undefined) {
+        <tr class="row empty-row">
+          @if (groupLog.length === 0) {
+          <td colspan="6"> {{ 'label.nothing.to.display' | transloco }} </td>
+          }
         </tr>
-        <tr class="row left-text" *ngFor="let item of groupLog">
+        } @for (item of groupLog; track item) {
+        <tr class="row left-text">
           <td>ARES</td>
           <td>
-            <a
-              *ngIf="!isExternalUser"
-              href="{{aresDocumentLink(item.documentId)}}"
-              target="_blank"
+            @if (!isExternalUser) {
+            <a href="{{aresDocumentLink(item.documentId)}}" target="_blank"
               >{{ item.registrationNumber }}</a
             >
-            <span *ngIf="isExternalUser">{{ item.registrationNumber }}</span>
+            } @if (isExternalUser) {
+            <span>{{ item.registrationNumber }}</span>
+            }
           </td>
           <td>
-            <a
-              *ngIf="!isExternalUser"
-              href="{{aresDocumentLink(item.documentId)}}"
-              target="_blank"
+            @if (!isExternalUser) {
+            <a href="{{aresDocumentLink(item.documentId)}}" target="_blank"
               >{{ item.saveNumber }}</a
             >
-            <span *ngIf="isExternalUser">{{ item.saveNumber }}</span>
+            } @if (isExternalUser) {
+            <span>{{ item.saveNumber }}</span>
+            }
           </td>
           <td>
-            <a
-              *ngIf="!isExternalUser"
-              href="{{circabcDocumentLink(item.nodeId)}}"
-              target="_blank"
+            @if (!isExternalUser) {
+            <a href="{{circabcDocumentLink(item.nodeId)}}" target="_blank"
               >{{ item.nodeName }}</a
             >
-            <span *ngIf="isExternalUser">{{ item.nodeName }}</span>
+            } @if (isExternalUser) {
+            <span>{{ item.nodeName }}</span>
+            }
           </td>
           <td>{{ item.versionLabel }}</td>
           <td>{{ item.requestType }}</td>
         </tr>
+        }
       </tbody>
     </table>
   </div>

@@ -1,4 +1,5 @@
-<section *ngIf="template" class="template">
+@if (template) {
+<section class="template">
   <aside class="side-information">
     <span class="label"
       >{{ 'admin.system.message.autoclose' | transloco }}:</span
@@ -17,16 +18,21 @@
     {{ template.displayTime }}
   </aside>
 
-  <div class="template-content" [innerHTML]="template.content"> </div>
+  <div class="template-content" [innerHTML]="template.content"></div>
 
   <div class="actions">
-    <a [routerLink]="['update', template.id]">{{ 'label.edit' | transloco }}</a>
+    <a data-cy="update-message" [routerLink]="['update', template.id]"
+      >{{ 'label.edit' | transloco }}</a
+    >
 
     <cbc-inline-delete (deletionConfirmed)="onDelete()"></cbc-inline-delete>
 
     <span>
       &nbsp;|&nbsp; {{ 'admin.system.message.show.in.old' | transloco }} &nbsp;
-      <a (click)="useAsOldMessage()">{{ 'label.apply' | transloco }}</a>
+      <a tabindex="0" (click)="useAsOldMessage()"
+        >{{ 'label.apply' | transloco }}</a
+      >
     </span>
   </div>
 </section>
+}

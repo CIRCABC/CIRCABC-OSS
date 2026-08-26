@@ -43,15 +43,13 @@
   .main {
     min-width: 1024px;
     background: url(^img/background-home.jpg) no-repeat center center;
-
-    @include variables-mixins-keyframes.background-cover;
-
     color: #fff;
     font-family: variables-mixins-keyframes.$titling;
     font-size: 15px;
     padding: 58px 33px;
     padding: 7vw 33px;
 
+    @include variables-mixins-keyframes.background-cover();
     @include variables-mixins-keyframes.responsive-break-medium();
 
     .logo-circabc {

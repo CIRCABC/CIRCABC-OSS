@@ -2,11 +2,12 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  Input,
   NgZone,
   OnDestroy,
   OnInit,
+  input,
 } from '@angular/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import { AppMessage, AppMessageService } from 'app/core/generated/circabc';
 import { UiMessageService } from 'app/core/message/ui-message.service';
 import { firstValueFrom } from 'rxjs';
@@ -16,10 +17,10 @@ import { firstValueFrom } from 'rxjs';
   templateUrl: './system-message-indicator.component.html',
   preserveWhitespaces: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [TranslocoModule],
 })
 export class SystemMessageIndicatorComponent implements OnInit, OnDestroy {
-  @Input()
-  useBlueIcon = false;
+  readonly useBlueIcon = input(false);
   public listOfMessages: AppMessage[] = [];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private interval: any;
@@ -34,7 +35,6 @@ export class SystemMessageIndicatorComponent implements OnInit, OnDestroy {
       const fiveMinutesInMiliSeconds = 300000;
       this.interval = window.setInterval(async () => {
         await this.getMessages();
-        // eslint-disable-next-line @typescript-eslint/indent
       }, fiveMinutesInMiliSeconds);
     });
   }
@@ -68,7 +68,7 @@ export class SystemMessageIndicatorComponent implements OnInit, OnDestroy {
   }
 
   private isAutoCloseDatePassed(message: AppMessage): boolean {
-    if (message && message.dateClosure) {
+    if (message?.dateClosure) {
       const today = new Date();
       const dateClosure = new Date(message.dateClosure);
       if (today > dateClosure) {

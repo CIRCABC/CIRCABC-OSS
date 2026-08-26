@@ -30,71 +30,71 @@ import org.apache.commons.logging.LogFactory;
  */
 public class FirstNameValidator {
 
-    /**
-     * The minimum permit length (not tested if value equals -1)
-     */
-    protected static final int minLength = 1;
-    /**
-     * The maximum permit length (not tested if value equals -1)
-     */
-    protected static final int maxLength = 50;
-    /**
-     * The message if the minimum length is wrong
-     */
-    protected static final String err_minimum_length = "err_minimum_length";
-    /**
-     * The message if the maximum length is wrong
-     */
-    protected static final String err_maximum_length = "err_maximum_length";
-    /**
-     * Logger
-     */
-    private static final Log logger = LogFactory.getLog(FirstNameValidator.class);
+  /**
+   * The minimum permit length (not tested if value equals -1)
+   */
+  protected static final int minLength = 1;
+  /**
+   * The maximum permit length (not tested if value equals -1)
+   */
+  protected static final int maxLength = 50;
+  /**
+   * The message if the minimum length is wrong
+   */
+  protected static final String err_minimum_length = "err_minimum_length";
+  /**
+   * The message if the maximum length is wrong
+   */
+  protected static final String err_maximum_length = "err_maximum_length";
+  /**
+   * Logger
+   */
+  private static final Log logger = LogFactory.getLog(FirstNameValidator.class);
 
-    /**
-     * Check if the object contains a valid phone number
-     *
-     * @param firstName The string to test
-     * @throws Exception Launch an exception with the corresponding message
-     */
-    public static void evaluate(String firstName) throws Exception {
-        firstName = firstName.trim();
+  /**
+   * Check if the object contains a valid phone number
+   *
+   * @param firstName The string to test
+   * @throws Exception Launch an exception with the corresponding message
+   */
+  public static void evaluate(String firstName) throws Exception {
+    firstName = firstName.trim();
 
-        // Test the minimum length
-        if ((minLength > -1) && (firstName.length() < minLength)) {
-            throw new Exception(err_minimum_length);
-        }
-
-        // Test the minimum length
-        if ((maxLength > -1) && (firstName.length() > maxLength)) {
-            throw new Exception(err_maximum_length);
-        }
-
-        // All is good
-        if (logger.isInfoEnabled()) {
-            logger.info("All clear");
-        }
+    // Test the minimum length
+    if ((minLength > -1) && (firstName.length() < minLength)) {
+      throw new Exception(err_minimum_length);
     }
 
-    public static String getErrorMinimumLength() {
-        return err_minimum_length;
+    // Test the minimum length
+    if ((maxLength > -1) && (firstName.length() > maxLength)) {
+      throw new Exception(err_maximum_length);
     }
 
-    public static String getErrorMaximumLength() {
-        return err_maximum_length;
+    // All is good
+    if (logger.isInfoEnabled()) {
+      logger.info("All clear");
     }
+  }
 
-    /**
-     * @return the maxLength
-     */
-    public static int getMaxLength() {
-        return maxLength;
-    }
+  public static String getErrorMinimumLength() {
+    return err_minimum_length;
+  }
 
-    /**
-     * @return the minLength
-     */
-    public static int getMinLength() {
-        return minLength;
-    }
+  public static String getErrorMaximumLength() {
+    return err_maximum_length;
+  }
+
+  /**
+   * @return the maxLength
+   */
+  public static int getMaxLength() {
+    return maxLength;
+  }
+
+  /**
+   * @return the minLength
+   */
+  public static int getMinLength() {
+    return minLength;
+  }
 }

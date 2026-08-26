@@ -8,18 +8,17 @@ import io.swagger.model.PagedNews;
  * @author beaurpi
  */
 public interface InformationApi {
+  InformationPage groupsIdInformationGet(String id);
 
-    InformationPage groupsIdInformationGet(String id);
+  PagedNews groupsIdInformationNewsGet(String id, Integer limit, Integer page);
 
-    PagedNews groupsIdInformationNewsGet(String id, Integer limit, Integer page);
+  News groupsIdInformationNewsPost(String id, News news);
 
-    News groupsIdInformationNewsPost(String id, News news);
+  void newsIdDelete(String id);
 
-    void newsIdDelete(String id);
+  News newsIdGet(String id);
 
-    News newsIdGet(String id);
+  News newsIdPut(String id, News news);
 
-    News newsIdPut(String id, News news);
-
-    void groupsIdInformationPut(String id, InformationPage body);
+  void groupsIdInformationPut(String id, InformationPage body);
 }

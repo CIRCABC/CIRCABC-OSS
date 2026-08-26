@@ -41,8 +41,18 @@
 	
 	"attendantsInfo": {
 		"audienceStatusOpen": ${(appointment.invitedUsers?size == 0)?string},
-		"invitedUsersOrProfiles": [<#if appointment.invitedUsers?size &gt; 0><#list 0..appointment.invitedUsers?size - 1 as index><#if !appointment.invitedUsers[index]?contains("@") && appointment.invitedUsers[index]?length &gt; 0>"${appointment.invitedUsers[index]}"<#if index &lt; appointment.invitedUsers?size - 1 && !appointment.invitedUsers[index + 1]?contains("@")>, </#if></#if></#list></#if>],
-		"invitedExternalEmails": [<#if appointment.invitedUsers?size &gt; 0><#list 0..appointment.invitedUsers?size - 1 as index><#if appointment.invitedUsers[index]?contains("@") && appointment.invitedUsers[index]?length &gt; 0>"${appointment.invitedUsers[index]}"<#if index &lt; appointment.invitedUsers?size - 1 && appointment.invitedUsers[index + 1]?contains("@")>, </#if></#if></#list></#if>],
+		"invitedUsersOrProfiles": [
+			<#list invitedUsersOrProfiles as user>
+				"${user}"
+			<#if (user_has_next)>, </#if>
+			</#list>
+		],
+		"invitedExternalEmails": [
+			<#list invitedExternalEmails as email>
+				"${email}"
+			<#if (email_has_next)>, </#if>
+			</#list>
+		],
 		"audience": [<#assign keys = appointment.audience?keys><#list keys as k>{ "userId": "${k}", "status": "${appointment.audience[k]}" }<#if (k_has_next)>, </#if></#list>]
 	}
 }

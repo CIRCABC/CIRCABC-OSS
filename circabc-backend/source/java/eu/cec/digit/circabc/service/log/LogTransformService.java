@@ -4,5 +4,5 @@ import eu.cec.digit.circabc.repo.log.LogRecordDAO;
 import eu.cec.digit.circabc.repo.log.LogRestDAO;
 
 public interface LogTransformService {
-    LogRecordDAO transform (LogRestDAO logRestDAO);
+  LogRecordDAO transform(LogRestDAO logRestDAO);
 }

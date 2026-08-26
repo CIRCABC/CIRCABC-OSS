@@ -6,18 +6,18 @@ import {
   StoreDocumentResponse,
 } from 'app/core/generated/ares-bridge';
 
+import { TranslocoService } from '@jsverse/transloco';
 import { DownloadService } from 'app/core/download.service';
 import {
-  ExternalRepositoryService,
   ExternalRepoTransaction,
+  ExternalRepositoryService,
   Node as ModelNode,
   TicketRequestInfo,
 } from 'app/core/generated/circabc';
 import { LoginService } from 'app/core/login.service';
-import { environment } from 'environments/environment';
 import { UiMessageService } from 'app/core/message/ui-message.service';
-import { TranslocoService } from '@ngneat/transloco';
 import { RedirectionService } from 'app/core/redirection.service';
+import { environment } from 'environments/environment';
 import { firstValueFrom } from 'rxjs';
 import { ExternalRepositoryData } from './generated/circabc';
 
@@ -95,9 +95,7 @@ export class AresBridgeHelperService {
           'AresBridge'
         )
       );
-      if (logs.length === 0) {
-        continue;
-      } else {
+      if (logs.length !== 0) {
         logs.forEach((log) => {
           if (
             log.nodeId === node.id &&
@@ -116,12 +114,11 @@ export class AresBridgeHelperService {
     this.redirectionService.mustRedirect();
 
     let nodeArray: ModelNode[];
-    if (nodeOrNodes instanceof Array) {
+    if (Array.isArray(nodeOrNodes)) {
       if (nodeOrNodes.length === 0) {
         return;
-      } else {
-        nodeArray = nodeOrNodes;
       }
+      nodeArray = nodeOrNodes;
     } else {
       nodeArray = [nodeOrNodes];
     }
@@ -136,7 +133,7 @@ export class AresBridgeHelperService {
     const hasUserAccessRequestDate = new Date().toUTCString();
     const hasUserAccessTicket = await this.getAresBridgeTicket(
       hasUserAccessRequestDate,
-      '/user/access/' + username,
+      `/user/access/${username}`,
       'GET'
     );
     if (!hasUserAccessTicket) {
@@ -222,9 +219,8 @@ export class AresBridgeHelperService {
 
   private setTicket(ticket: string) {
     if (this.aresBridgeService.configuration.apiKeys) {
-      this.aresBridgeService.configuration.apiKeys[
-        'Authorization'
-      ] = `AresBridge ${environment.aresBridgeKey}:${ticket}`;
+      this.aresBridgeService.configuration.apiKeys['Authorization'] =
+        `AresBridge ${environment.aresBridgeKey}:${ticket}`;
     }
   }
 
@@ -309,7 +305,6 @@ function getLanguageEnumFromLocale(
     return Attachment.LanguageEnum[
       language as keyof typeof Attachment.LanguageEnum
     ];
-  } else {
-    return 'NS';
   }
+  return 'NS';
 }

@@ -4,7 +4,7 @@
   <url>/circabc/groups/{id}/summary/statistics</url>
   <url>/circabc/groups/{id}/summary/timeline</url>
   <url>/circabc/groups/{id}/summary/structure</url>
-  <format default="json"/>
+  <format default="json" />
   <authentication>user</authentication>
   <transaction>required</transaction>
 </webscript>

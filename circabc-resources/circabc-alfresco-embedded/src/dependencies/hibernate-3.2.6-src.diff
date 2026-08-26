@@ -1,0 +1,1117 @@
+Index: src/org/hibernate/action/AmalgamatedCleanupAction.java
+===================================================================
+--- src/org/hibernate/action/AmalgamatedCleanupAction.java	(revision 0)
++++ src/org/hibernate/action/AmalgamatedCleanupAction.java	(working copy)
+@@ -0,0 +1,139 @@
++package org.hibernate.action;
++
++import java.io.Serializable;
++import java.util.ArrayList;
++import java.util.HashSet;
++import java.util.Iterator;
++import java.util.List;
++import java.util.Set;
++
++import org.hibernate.HibernateException;
++import org.hibernate.engine.SessionImplementor;
++
++public class AmalgamatedCleanupAction implements Executable, Serializable
++{
++    private final SessionImplementor session;
++
++    private final Set affectedEntityNames = new HashSet();
++
++    private final Set affectedCollectionRoles = new HashSet();
++
++    private final Set spaces = new HashSet();
++
++    public AmalgamatedCleanupAction(SessionImplementor session)
++    {
++        super();
++        this.session = session;
++    }
++
++    public void addExecutable(Executable executable)
++    {
++        if (executable instanceof EntityAction)
++        {
++            EntityAction entityAction = (EntityAction) executable;
++            String entityName = entityAction.getEntityName();
++            if (!affectedEntityNames.contains(entityName))
++            {
++                affectedEntityNames.add(entityName);
++                Serializable[] toAdd = entityAction.getPropertySpaces();
++                for(int i = 0; i < toAdd.length; i++)
++                {
++                    spaces.add(toAdd[i]);
++                }
++            }
++        }
++        else if (executable instanceof CollectionAction)
++        {
++            CollectionAction collectionAction = (CollectionAction) executable;
++            String collectionRole = collectionAction.getCollectionRole();
++            if(!affectedCollectionRoles.contains(collectionRole))
++            {
++                affectedCollectionRoles.add(collectionRole);
++                Serializable[] toAdd = collectionAction.getPropertySpaces();
++                for(int i = 0; i < toAdd.length; i++)
++                {
++                    spaces.add(toAdd[i]);
++                }
++            }
++        }
++        else
++        {
++            // Invalid or ignore ??
++        }
++    }
++
++    public void afterTransactionCompletion(boolean success) throws HibernateException
++    {
++        evictEntityRegions();
++        evictCollectionRegions();
++    }
++
++    public void beforeExecutions() throws HibernateException
++    {
++        // nothing to do
++    }
++
++    public void execute() throws HibernateException
++    {
++        // nothing to do
++    }
++
++    public Serializable[] getPropertySpaces()
++    {
++        Serializable[] answer = new Serializable[spaces.size()];
++        int position = 0;
++        for(Iterator it = spaces.iterator(); it.hasNext(); /**/)
++        {
++            Serializable s = (Serializable) it.next();
++            answer[position++] = s;
++        }
++        return answer;
++        
++    }
++
++    public boolean hasAfterTransactionCompletion()
++    {
++        return true;
++    }
++
++    public boolean hasCache()
++    {
++        return true;
++    }
++
++    public boolean hasPostCommitEventListeners()
++    {
++        return false;
++    }
++
++    public boolean isBulkAction()
++    {
++        return true;
++    }
++
++    private void evictEntityRegions()
++    {
++        if (affectedEntityNames != null)
++        {
++            Iterator itr = affectedEntityNames.iterator();
++            while (itr.hasNext())
++            {
++                final String entityName = (String) itr.next();
++                session.getFactory().evictEntity(entityName);
++            }
++        }
++    }
++
++    private void evictCollectionRegions()
++    {
++        if (affectedCollectionRoles != null)
++        {
++            Iterator itr = affectedCollectionRoles.iterator();
++            while (itr.hasNext())
++            {
++                final String roleName = (String) itr.next();
++                session.getFactory().evictCollection(roleName);
++            }
++        }
++    }
++}
+Index: src/org/hibernate/action/BulkOperationCleanupAction.java
+===================================================================
+--- src/org/hibernate/action/BulkOperationCleanupAction.java	(revision 15795)
++++ src/org/hibernate/action/BulkOperationCleanupAction.java	(working copy)
+@@ -1,3 +1,9 @@
++/*
++ * 2010 - Alfresco Software, Ltd.
++ * Alfresco Software has modified source of this file
++ * The details of changes as svn diff can be found in svn at location root/projects/3rd-party/src 
++ */
++
+ // $Id$
+ package org.hibernate.action;
+ 
+@@ -148,4 +154,20 @@
+ 			}
+ 		}
+ 	}
++
++    public boolean hasCache()
++    {
++        return true;
++    }
++
++    public boolean hasPostCommitEventListeners()
++    {
++        return false;
++    }
++    
++    public boolean isBulkAction()
++    {
++        return true;
++    }
++    
+ }
+Index: src/org/hibernate/action/CollectionAction.java
+===================================================================
+--- src/org/hibernate/action/CollectionAction.java	(revision 15795)
++++ src/org/hibernate/action/CollectionAction.java	(working copy)
+@@ -1,3 +1,9 @@
++/*
++ * 2010 - Alfresco Software, Ltd.
++ * Alfresco Software has modified source of this file
++ * The details of changes as svn diff can be found in svn at location root/projects/3rd-party/src 
++ */
++
+ //$Id$
+ package org.hibernate.action;
+ 
+@@ -66,6 +72,16 @@
+ 	public boolean hasAfterTransactionCompletion() {
+ 		return persister.hasCache();
+ 	}
++    
++    public boolean hasCache()
++    {
++        return persister.hasCache();
++    }
++    
++    public boolean hasPostCommitEventListeners()
++    {
++        return false;
++    }
+ 
+ 	public Serializable[] getPropertySpaces() {
+ 		return persister.getCollectionSpaces();
+@@ -142,6 +158,16 @@
+ 					.compare( key, action.key, session.getEntityMode() );
+ 		}
+ 	}
++    
++    public boolean isBulkAction()
++    {
++        return false;
++    }
++    
++    public String getCollectionRole()
++    {
++        return collectionRole;
++    }
+ }
+ 
+ 
+Index: src/org/hibernate/action/EntityAction.java
+===================================================================
+--- src/org/hibernate/action/EntityAction.java	(revision 15795)
++++ src/org/hibernate/action/EntityAction.java	(working copy)
+@@ -1,3 +1,9 @@
++/*
++ * 2010 - Alfresco Software, Ltd.
++ * Alfresco Software has modified source of this file
++ * The details of changes as svn diff can be found in svn at location root/projects/3rd-party/src 
++ */
++
+ //$Id$
+ package org.hibernate.action;
+ 
+@@ -42,7 +48,12 @@
+ 		this.persister = persister;
+ 	}
+ 
+-	protected abstract boolean hasPostCommitEventListeners();
++        public boolean hasCache()
++        {
++            return persister.hasCache();
++        }
++     
++ 	public abstract boolean hasPostCommitEventListeners();
+ 
+ 	/**
+ 	 * entity name accessor
+@@ -132,5 +143,11 @@
+ 		ois.defaultReadObject();
+ 		persister = session.getFactory().getEntityPersister( entityName );
+ 	}
++
++ 	public boolean isBulkAction()
++     	{
++       		return false;
++     	}
++     
+ }
+ 
+Index: src/org/hibernate/action/EntityDeleteAction.java
+===================================================================
+--- src/org/hibernate/action/EntityDeleteAction.java	(revision 15795)
++++ src/org/hibernate/action/EntityDeleteAction.java	(working copy)
+@@ -1,3 +1,9 @@
++/*
++ * 2010 - Alfresco Software, Ltd.
++ * Alfresco Software has modified source of this file
++ * The details of changes as svn diff can be found in svn at location root/projects/3rd-party/src 
++ */
++
+ //$Id$
+ package org.hibernate.action;
+ 
+@@ -163,7 +169,7 @@
+ 		postCommitDelete();
+ 	}
+ 
+-	protected boolean hasPostCommitEventListeners() {
++	public boolean hasPostCommitEventListeners() {
+ 		return getSession().getListeners().getPostCommitDeleteEventListeners().length>0;
+ 	}
+ 
+Index: src/org/hibernate/action/EntityIdentityInsertAction.java
+===================================================================
+--- src/org/hibernate/action/EntityIdentityInsertAction.java	(revision 15795)
++++ src/org/hibernate/action/EntityIdentityInsertAction.java	(working copy)
+@@ -1,3 +1,9 @@
++/*
++ * 2010 - Alfresco Software, Ltd.
++ * Alfresco Software has modified source of this file
++ * The details of changes as svn diff can be found in svn at location root/projects/3rd-party/src 
++ */
++
+ //$Id$
+ package org.hibernate.action;
+ 
+@@ -141,7 +147,7 @@
+ 		return hasPostCommitEventListeners();
+ 	}
+ 
+-	protected boolean hasPostCommitEventListeners() {
++	public boolean hasPostCommitEventListeners() {
+ 		return getSession().getListeners().getPostCommitInsertEventListeners().length>0;
+ 	}
+ 	
+Index: src/org/hibernate/action/EntityInsertAction.java
+===================================================================
+--- src/org/hibernate/action/EntityInsertAction.java	(revision 15795)
++++ src/org/hibernate/action/EntityInsertAction.java	(working copy)
+@@ -184,7 +184,7 @@
+ 		postCommitInsert();
+ 	}
+ 
+-	protected boolean hasPostCommitEventListeners() {
++	public boolean hasPostCommitEventListeners() {
+ 		return getSession().getListeners().getPostCommitInsertEventListeners().length>0;
+ 	}
+ 	
+Index: src/org/hibernate/action/EntityUpdateAction.java
+===================================================================
+--- src/org/hibernate/action/EntityUpdateAction.java	(revision 15795)
++++ src/org/hibernate/action/EntityUpdateAction.java	(working copy)
+@@ -1,3 +1,9 @@
++/*
++ * 2010 - Alfresco Software, Ltd.
++ * Alfresco Software has modified source of this file
++ * The details of changes as svn diff can be found in svn at location root/projects/3rd-party/src 
++ */
++
+ //$Id$
+ package org.hibernate.action;
+ 
+@@ -251,7 +257,7 @@
+ 		postCommitUpdate();
+ 	}
+ 
+-	protected boolean hasPostCommitEventListeners() {
++	public boolean hasPostCommitEventListeners() {
+ 		return getSession().getListeners().getPostCommitUpdateEventListeners().length>0;
+ 	}
+ 	
+Index: src/org/hibernate/action/Executable.java
+===================================================================
+--- src/org/hibernate/action/Executable.java	(revision 15795)
++++ src/org/hibernate/action/Executable.java	(working copy)
+@@ -1,3 +1,9 @@
++/*
++ * 2010 - Alfresco Software, Ltd.
++ * Alfresco Software has modified source of this file
++ * The details of changes as svn diff can be found in svn at location root/projects/3rd-party/src 
++ */
++
+ //$Id$
+ package org.hibernate.action;
+ 
+@@ -6,34 +12,43 @@
+ import java.io.Serializable;
+ 
+ /**
+- * An operation which may be scheduled for later execution.
+- * Usually, the operation is a database insert/update/delete,
++ * An operation which may be scheduled for later execution. Usually, the operation is a database insert/update/delete,
+  * together with required second-level cache management.
+  * 
+  * @author Gavin King
+  */
+-public interface Executable {
+-	/**
+-	 * Called before executing any actions
+-	 */
+-	public void beforeExecutions() throws HibernateException;
+-	/**
+-	 * Execute this action
+-	 */
+-	public void execute() throws HibernateException;
+-	/**
+-	 * Do we need to retain this instance until after the
+-	 * transaction completes?
+-	 * @return false if this class defines a no-op
+-	 * <tt>hasAfterTransactionCompletion()</tt>
+-	 */
+-	public boolean hasAfterTransactionCompletion();
+-	/**
+-	 * Called after the transaction completes
+-	 */
+-	public void afterTransactionCompletion(boolean success) throws HibernateException;
+-	/**
+-	 * What spaces (tables) are affected by this action?
+-	 */
+-	public Serializable[] getPropertySpaces();
++public interface Executable
++{
++    /**
++     * Called before executing any actions
++     */
++    public void beforeExecutions() throws HibernateException;
++
++    /**
++     * Execute this action
++     */
++    public void execute() throws HibernateException;
++
++    /**
++     * Do we need to retain this instance until after the transaction completes?
++     * 
++     * @return false if this class defines a no-op <tt>hasAfterTransactionCompletion()</tt>
++     */
++    public boolean hasAfterTransactionCompletion();
++
++    /**
++     * Called after the transaction completes
++     */
++    public void afterTransactionCompletion(boolean success) throws HibernateException;
++
++    /**
++     * What spaces (tables) are affected by this action?
++     */
++    public Serializable[] getPropertySpaces();
++
++    public boolean hasCache();
++
++    public boolean hasPostCommitEventListeners();
++    
++    public boolean isBulkAction();
+ }
+Index: src/org/hibernate/cache/ReadWriteCache.java
+===================================================================
+--- src/org/hibernate/cache/ReadWriteCache.java	(revision 15795)
++++ src/org/hibernate/cache/ReadWriteCache.java	(working copy)
+@@ -3,6 +3,7 @@
+ 
+ import java.io.Serializable;
+ import java.util.Comparator;
++import java.util.concurrent.locks.ReentrantReadWriteLock;
+ 
+ import org.apache.commons.logging.Log;
+ import org.apache.commons.logging.LogFactory;
+@@ -29,6 +30,7 @@
+ 
+ 	private Cache cache;
+ 	private int nextLockId;
++	private ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+ 
+ 	public ReadWriteCache() {}
+ 
+@@ -70,8 +72,10 @@
+ 	 * problem would be caught by the update-time version-checking, if
+ 	 * the data is versioned or timestamped.
+ 	 */
+-	public synchronized Object get(Object key, long txTimestamp) throws CacheException {
+-
++	public Object get(Object key, long txTimestamp) throws CacheException {
++	    readWriteLock.readLock().lock();
++	    try
++	    {
+ 		if ( log.isTraceEnabled() ) log.trace("Cache lookup: " + key);
+ 
+ 		/*try {
+@@ -100,6 +104,11 @@
+ 		finally {
+ 			cache.unlock(key);
+ 		}*/
++	    }
++	    finally
++	    {
++	        readWriteLock.readLock().unlock();
++	    }
+ 	}
+ 
+ 	/**
+@@ -109,7 +118,10 @@
+ 	 * locks of transactions which simultaneously attempt to write to an
+ 	 * item.
+ 	 */
+-	public synchronized SoftLock lock(Object key, Object version) throws CacheException {
++	public SoftLock lock(Object key, Object version) throws CacheException {
++	    readWriteLock.writeLock().lock();
++	    try
++	    {
+ 		if ( log.isTraceEnabled() ) log.trace("Invalidating: " + key);
+ 
+ 		try {
+@@ -126,6 +138,11 @@
+ 		finally {
+ 			cache.unlock(key);
+ 		}
++	    }
++	    finally
++	    {
++	        readWriteLock.writeLock().unlock();
++	    }
+ 
+ 	}
+ 
+@@ -137,7 +154,7 @@
+ 	 * For versioned data, don't add the item unless it is the later
+ 	 * version.
+ 	 */
+-	public synchronized boolean put(
++	public boolean put(
+ 			Object key, 
+ 			Object value, 
+ 			long txTimestamp, 
+@@ -145,6 +162,9 @@
+ 			Comparator versionComparator,
+ 			boolean minimalPut) 
+ 	throws CacheException {
++	    readWriteLock.writeLock().lock();
++	    try
++	    {
+ 		if ( log.isTraceEnabled() ) log.trace("Caching: " + key);
+ 
+ 		try {
+@@ -175,6 +195,10 @@
+ 		finally {
+ 			cache.unlock(key);
+ 		}
++	    }
++	    finally {
++	        readWriteLock.writeLock().unlock();
++	    }
+ 	}
+ 
+ 	/**
+@@ -191,7 +215,10 @@
+ 	 * re-cache the item (assuming that no other transaction holds a
+ 	 * simultaneous lock).
+ 	 */
+-	public synchronized void release(Object key, SoftLock clientLock) throws CacheException {
++	public void release(Object key, SoftLock clientLock) throws CacheException {
++	    readWriteLock.writeLock().lock();
++	    try
++	    {
+ 		if ( log.isTraceEnabled() ) log.trace("Releasing: " + key);
+ 
+ 		try {
+@@ -208,6 +235,11 @@
+ 		finally {
+ 			cache.unlock(key);
+ 		}
++	    }
++	    finally
++	    {
++	        readWriteLock.writeLock().unlock();
++	    }
+ 	}
+ 
+ 	void handleLockExpiry(Object key) throws CacheException {
+@@ -240,9 +272,11 @@
+ 	 * Re-cache the updated state, if and only if there there are
+ 	 * no other concurrent soft locks. Release our lock.
+ 	 */
+-	public synchronized boolean afterUpdate(Object key, Object value, Object version, SoftLock clientLock) 
++	public boolean afterUpdate(Object key, Object value, Object version, SoftLock clientLock) 
+ 	throws CacheException {
+-		
++		readWriteLock.writeLock().lock();
++		try
++		{
+ 		if ( log.isTraceEnabled() ) log.trace("Updating: " + key);
+ 
+ 		try {
+@@ -273,15 +307,23 @@
+ 		finally {
+ 			cache.unlock(key);
+ 		}
++		}
++		finally
++		{
++		    readWriteLock.writeLock().unlock();
++		}
+ 	}
+ 
+ 	/**
+ 	 * Add the new item to the cache, checking that no other transaction has
+ 	 * accessed the item.
+ 	 */
+-	public synchronized boolean afterInsert(Object key, Object value, Object version) 
++	public boolean afterInsert(Object key, Object value, Object version) 
+ 	throws CacheException {
+ 	
++	    readWriteLock.writeLock().lock();
++	    try
++	    {
+ 		if ( log.isTraceEnabled() ) log.trace("Inserting: " + key);
+ 		try {
+ 			cache.lock(key);
+@@ -299,6 +341,11 @@
+ 		finally {
+ 			cache.unlock(key);
+ 		}
++	    }
++	    finally
++	    {
++	        readWriteLock.writeLock().unlock();
++	    }
+ 	}
+ 
+ 	/**
+Index: src/org/hibernate/cfg/Configuration.java
+===================================================================
+--- src/org/hibernate/cfg/Configuration.java	(revision 15795)
++++ src/org/hibernate/cfg/Configuration.java	(working copy)
+@@ -1,3 +1,9 @@
++/*
++ * 2010 - Alfresco Software, Ltd.
++ * Alfresco Software has modified source of this file
++ * The details of changes as svn diff can be found in svn at location root/projects/3rd-party/src 
++ */
++
+ //$Id$
+ package org.hibernate.cfg;
+ 
+@@ -996,8 +1002,8 @@
+ 
+ 				TableMetadata tableInfo = databaseMetadata.getTableMetadata(
+ 						table.getName(),
+-						table.getSchema(),
+-						table.getCatalog(),
++						( table.getSchema() == null ) ? defaultSchema : table.getSchema(),
++						( table.getCatalog() == null ) ? defaultCatalog : table.getCatalog(),
+ 						table.isQuoted()
+ 					);
+ 
+Index: src/org/hibernate/dialect/DialectFactory.java
+===================================================================
+--- src/org/hibernate/dialect/DialectFactory.java	(revision 15795)
++++ src/org/hibernate/dialect/DialectFactory.java	(working copy)
+@@ -1,3 +1,9 @@
++/*
++ * 2010 - Alfresco Software, Ltd.
++ * Alfresco Software has modified source of this file
++ * The details of changes as svn diff can be found in svn at location root/projects/3rd-party/src 
++ */
++
+ // $Id$
+ package org.hibernate.dialect;
+ 
+@@ -7,150 +13,168 @@
+ 
+ import org.hibernate.HibernateException;
+ import org.hibernate.cfg.Environment;
++import org.hibernate.dialect.Dialect;
+ import org.hibernate.util.ReflectHelper;
+ 
+ /**
+  * A factory for generating Dialect instances.
+  *
+  * @author Steve Ebersole
++ * @author Alfresco
+  */
+ public class DialectFactory {
+ 
+-	/**
+-	 * Builds an appropriate Dialect instance.
+-	 * <p/>
+-	 * If a dialect is explicitly named in the incoming properties, it is used. Otherwise, the database name and version
+-	 * (obtained from connection metadata) are used to make the dertemination.
+-	 * <p/>
+-	 * An exception is thrown if a dialect was not explicitly set and the database name is not known.
+-	 *
+-	 * @param props The configuration properties.
+-	 * @param databaseName The name of the database product (obtained from metadata).
+-	 * @param databaseMajorVersion The major version of the database product (obtained from metadata).
+-	 *
+-	 * @return The appropriate dialect.
+-	 *
+-	 * @throws HibernateException No dialect specified and database name not known.
+-	 */
+-	public static Dialect buildDialect(Properties props, String databaseName, int databaseMajorVersion)
+-	        throws HibernateException {
+-		String dialectName = props.getProperty( Environment.DIALECT );
+-		if ( dialectName == null ) {
+-			return determineDialect( databaseName, databaseMajorVersion );
+-		}
+-		else {
+-			return buildDialect( dialectName );
+-		}
+-	}
++    /**
++     * Builds an appropriate Dialect instance.
++     * <p/>
++     * If a dialect is explicitly named in the incoming properties, it is used. Otherwise, the database name and version
++     * (obtained from connection metadata) are used to make the dertemination.
++     * <p/>
++     * An exception is thrown if a dialect was not explicitly set and the database name is not known.
++     *
++     * @param props The configuration properties.
++     * @param databaseName The name of the database product (obtained from metadata).
++     * @param databaseMajorVersion The major version of the database product (obtained from metadata).
++     *
++     * @return The appropriate dialect.
++     *
++     * @throws HibernateException No dialect specified and database name not known.
++     */
++    public static Dialect buildDialect(Properties props, String databaseName, int databaseMajorVersion)
++            throws HibernateException {
++        String dialectName = props.getProperty( Environment.DIALECT );
++        if ( dialectName == null || dialectName.length() == 0) {
++            return determineDialect( databaseName, databaseMajorVersion );
++        }
++        else {
++            // Push the dialect onto the system properties
++            System.setProperty(Environment.DIALECT, dialectName);
++            return buildDialect( dialectName );
++        }
++    }
+ 
+-	/**
+-	 * Determine the appropriate Dialect to use given the database product name
+-	 * and major version.
+-	 *
+-	 * @param databaseName The name of the database product (obtained from metadata).
+-	 * @param databaseMajorVersion The major version of the database product (obtained from metadata).
+-	 *
+-	 * @return An appropriate dialect instance.
+-	 */
+-	public static Dialect determineDialect(String databaseName, int databaseMajorVersion) {
+-		if ( databaseName == null ) {
+-			throw new HibernateException( "Hibernate Dialect must be explicitly set" );
+-		}
++    /**
++     * Determine the appropriate Dialect to use given the database product name
++     * and major version.
++     *
++     * @param databaseName The name of the database product (obtained from metadata).
++     * @param databaseMajorVersion The major version of the database product (obtained from metadata).
++     *
++     * @return An appropriate dialect instance.
++     */
++    public static Dialect determineDialect(String databaseName, int databaseMajorVersion) {
++        if ( databaseName == null ) {
++            throw new HibernateException( "Hibernate Dialect must be explicitly set" );
++        }
+ 
+-		DatabaseDialectMapper mapper = ( DatabaseDialectMapper ) MAPPERS.get( databaseName );
+-		if ( mapper == null ) {
+-			throw new HibernateException( "Hibernate Dialect must be explicitly set for database: " + databaseName );
+-		}
++        DatabaseDialectMapper mapper = ( DatabaseDialectMapper ) MAPPERS.get( databaseName );
++        if ( mapper == null ) {
++            throw new HibernateException( "Hibernate Dialect must be explicitly set for database: " + databaseName );
++        }
+ 
+-		String dialectName = mapper.getDialectClass( databaseMajorVersion );
+-		return buildDialect( dialectName );
+-	}
++        String dialectName = mapper.getDialectClass( databaseMajorVersion );
++        // Push the dialect onto the system properties
++        System.setProperty(Environment.DIALECT, dialectName);
++        return buildDialect( dialectName );
++    }
+ 
+-	/**
+-	 * Returns a dialect instance given the name of the class to use.
+-	 *
+-	 * @param dialectName The name of the dialect class.
+-	 *
+-	 * @return The dialect instance.
+-	 */
+-	public static Dialect buildDialect(String dialectName) {
+-		try {
+-			return ( Dialect ) ReflectHelper.classForName( dialectName ).newInstance();
+-		}
+-		catch ( ClassNotFoundException cnfe ) {
+-			throw new HibernateException( "Dialect class not found: " + dialectName );
+-		}
+-		catch ( Exception e ) {
+-			throw new HibernateException( "Could not instantiate dialect class", e );
+-		}
+-	}
++    /**
++     * Returns a dialect instance given the name of the class to use.
++     *
++     * @param dialectName The name of the dialect class.
++     *
++     * @return The dialect instance.
++     */
++    public static Dialect buildDialect(String dialectName) {
++        try {
++            return ( Dialect ) ReflectHelper.classForName( dialectName ).newInstance();
++        }
++        catch ( ClassNotFoundException cnfe ) {
++            throw new HibernateException( "Dialect class not found: " + dialectName );
++        }
++        catch ( Exception e ) {
++            throw new HibernateException( "Could not instantiate dialect class", e );
++        }
++    }
+ 
+-	/**
+-	 * For a given database product name, instances of
+-	 * DatabaseDialectMapper know which Dialect to use for different versions.
+-	 */
+-	public static interface DatabaseDialectMapper {
+-		public String getDialectClass(int majorVersion);
+-	}
++    /**
++     * For a given database product name, instances of
++     * DatabaseDialectMapper know which Dialect to use for different versions.
++     */
++    public static interface DatabaseDialectMapper {
++        public String getDialectClass(int majorVersion);
++    }
+ 
+-	/**
+-	 * A simple DatabaseDialectMapper for dialects which are independent
+-	 * of the underlying database product version.
+-	 */
+-	public static class VersionInsensitiveMapper implements DatabaseDialectMapper {
+-		private String dialectClassName;
++    /**
++     * A simple DatabaseDialectMapper for dialects which are independent
++     * of the underlying database product version.
++     */
++    public static class VersionInsensitiveMapper implements DatabaseDialectMapper {
++        private String dialectClassName;
+ 
+-		public VersionInsensitiveMapper(String dialectClassName) {
+-			this.dialectClassName = dialectClassName;
+-		}
++        public VersionInsensitiveMapper(String dialectClassName) {
++            this.dialectClassName = dialectClassName;
++        }
+ 
+-		public String getDialectClass(int majorVersion) {
+-			return dialectClassName;
+-		}
+-	}
++        public String getDialectClass(int majorVersion) {
++            return dialectClassName;
++        }
++    }
+ 
+ 	// TODO : this is the stuff it'd be nice to move to a properties file or some other easily user-editable place
+ 	private static final Map MAPPERS = new HashMap();
+-	static {
+-		// detectors...
+-		MAPPERS.put( "HSQL Database Engine", new VersionInsensitiveMapper( "org.hibernate.dialect.HSQLDialect" ) );
+-		MAPPERS.put( "H2", new VersionInsensitiveMapper( "org.hibernate.dialect.H2Dialect" ) );
+-		MAPPERS.put( "MySQL", new VersionInsensitiveMapper( "org.hibernate.dialect.MySQLDialect" ) );
+-		MAPPERS.put( "PostgreSQL", new VersionInsensitiveMapper( "org.hibernate.dialect.PostgreSQLDialect" ) );
+-		MAPPERS.put( "Apache Derby", new VersionInsensitiveMapper( "org.hibernate.dialect.DerbyDialect" ) );
++    static {
++        // detectors...
++        MAPPERS.put( "HSQL Database Engine", new VersionInsensitiveMapper( "org.hibernate.dialect.HSQLDialect" ) );
++        MAPPERS.put( "H2", new VersionInsensitiveMapper( "org.hibernate.dialect.H2Dialect" ) );
++        MAPPERS.put( "MySQL", new VersionInsensitiveMapper( "org.hibernate.dialect.MySQLDialect" ) );
++        MAPPERS.put( "PostgreSQL", new VersionInsensitiveMapper( "org.hibernate.dialect.PostgreSQLDialect" ) );
++        MAPPERS.put( "Apache Derby", new VersionInsensitiveMapper( "org.hibernate.dialect.DerbyDialect" ) );
+ 
+-		MAPPERS.put( "Ingres", new VersionInsensitiveMapper( "org.hibernate.dialect.IngresDialect" ) );
+-		MAPPERS.put( "ingres", new VersionInsensitiveMapper( "org.hibernate.dialect.IngresDialect" ) );
+-		MAPPERS.put( "INGRES", new VersionInsensitiveMapper( "org.hibernate.dialect.IngresDialect" ) );
++        MAPPERS.put( "Ingres", new VersionInsensitiveMapper( "org.hibernate.dialect.IngresDialect" ) );
++        MAPPERS.put( "ingres", new VersionInsensitiveMapper( "org.hibernate.dialect.IngresDialect" ) );
++        MAPPERS.put( "INGRES", new VersionInsensitiveMapper( "org.hibernate.dialect.IngresDialect" ) );
+ 
+-		MAPPERS.put( "Microsoft SQL Server Database", new VersionInsensitiveMapper( "org.hibernate.dialect.SQLServerDialect" ) );
+-		MAPPERS.put( "Microsoft SQL Server", new VersionInsensitiveMapper( "org.hibernate.dialect.SQLServerDialect" ) );
+-		MAPPERS.put( "Sybase SQL Server", new VersionInsensitiveMapper( "org.hibernate.dialect.SybaseDialect" ) );
+-		MAPPERS.put( "Adaptive Server Enterprise", new VersionInsensitiveMapper( "org.hibernate.dialect.SybaseDialect" ) );
++        MAPPERS.put( "Microsoft SQL Server Database", new VersionInsensitiveMapper( "org.hibernate.dialect.SQLServerDialect" ) );
++        MAPPERS.put( "Microsoft SQL Server", new VersionInsensitiveMapper( "org.hibernate.dialect.SQLServerDialect" ) );
++        MAPPERS.put( "Sybase SQL Server", new VersionInsensitiveMapper( "org.hibernate.dialect.SybaseDialect" ) );
++        MAPPERS.put( "Adaptive Server Enterprise", new VersionInsensitiveMapper( "org.hibernate.dialect.SybaseDialect" ) );
+ 
+-		MAPPERS.put( "Informix Dynamic Server", new VersionInsensitiveMapper( "org.hibernate.dialect.InformixDialect" ) );
++        MAPPERS.put( "Informix Dynamic Server", new VersionInsensitiveMapper( "org.hibernate.dialect.InformixDialect" ) );
+ 
+-		// thanks goodness for "universal" databases...
+-		MAPPERS.put( "DB2/NT", new VersionInsensitiveMapper( "org.hibernate.dialect.DB2Dialect" ) );
+-		MAPPERS.put( "DB2/LINUX", new VersionInsensitiveMapper( "org.hibernate.dialect.DB2Dialect" ) );
+-		MAPPERS.put( "DB2/6000", new VersionInsensitiveMapper( "org.hibernate.dialect.DB2Dialect" ) );
+-		MAPPERS.put( "DB2/HPUX", new VersionInsensitiveMapper( "org.hibernate.dialect.DB2Dialect" ) );
+-		MAPPERS.put( "DB2/SUN", new VersionInsensitiveMapper( "org.hibernate.dialect.DB2Dialect" ) );
+-		MAPPERS.put( "DB2/LINUX390", new VersionInsensitiveMapper( "org.hibernate.dialect.DB2Dialect" ) );
+-		MAPPERS.put( "DB2/AIX64", new VersionInsensitiveMapper( "org.hibernate.dialect.DB2Dialect" ) );
++        MAPPERS.put( "DB2/NT", new VersionInsensitiveMapper( "org.hibernate.dialect.DB2Dialect" ) );
++        MAPPERS.put( "DB2/LINUX", new VersionInsensitiveMapper( "org.hibernate.dialect.DB2Dialect" ) );
++        MAPPERS.put( "DB2/6000", new VersionInsensitiveMapper( "org.hibernate.dialect.DB2Dialect" ) );
++        MAPPERS.put( "DB2/HPUX", new VersionInsensitiveMapper( "org.hibernate.dialect.DB2Dialect" ) );
++        MAPPERS.put( "DB2/SUN", new VersionInsensitiveMapper( "org.hibernate.dialect.DB2Dialect" ) );
++        MAPPERS.put( "DB2/LINUX390", new VersionInsensitiveMapper( "org.hibernate.dialect.DB2Dialect" ) );
++        MAPPERS.put( "DB2/AIX64", new VersionInsensitiveMapper( "org.hibernate.dialect.DB2Dialect" ) );
++        MAPPERS.put( "DB2",new VersionInsensitiveMapper( "org.hibernate.dialect.DB2Dialect" ));
++        MAPPERS.put( "DB2",new VersionInsensitiveMapper( "org.hibernate.dialect.DB2Dialect" ));
++        MAPPERS.put( "DB2/NT",new VersionInsensitiveMapper( "org.hibernate.dialect.DB2Dialect" ));
++        MAPPERS.put( "DB2/NT64",new VersionInsensitiveMapper( "org.hibernate.dialect.DB2Dialect" ));
++        MAPPERS.put( "DB2 UDP",new VersionInsensitiveMapper( "org.hibernate.dialect.DB2Dialect" ));
++        MAPPERS.put( "DB2/LINUX",new VersionInsensitiveMapper( "org.hibernate.dialect.DB2Dialect" ));
++        MAPPERS.put( "DB2/LINUX390",new VersionInsensitiveMapper( "org.hibernate.dialect.DB2Dialect" ));
++        MAPPERS.put( "DB2/LINUXZ64",new VersionInsensitiveMapper( "org.hibernate.dialect.DB2Dialect" ));
++        MAPPERS.put( "DB2/400 SQL",new VersionInsensitiveMapper( "org.hibernate.dialect.DB2Dialect" ));
++        MAPPERS.put( "DB2/6000",new VersionInsensitiveMapper( "org.hibernate.dialect.DB2Dialect" ));
++        MAPPERS.put( "DB2 UDB iSeries",new VersionInsensitiveMapper( "org.hibernate.dialect.DB2Dialect" ));
++        MAPPERS.put( "DB2/AIX64",new VersionInsensitiveMapper( "org.hibernate.dialect.DB2Dialect" ));
++        MAPPERS.put( "DB2/HPUX",new VersionInsensitiveMapper( "org.hibernate.dialect.DB2Dialect" ));
++        MAPPERS.put( "DB2/HP64",new VersionInsensitiveMapper( "org.hibernate.dialect.DB2Dialect" ));
++        MAPPERS.put( "DB2/SUN",new VersionInsensitiveMapper( "org.hibernate.dialect.DB2Dialect" ));
++        MAPPERS.put( "DB2/SUN64",new VersionInsensitiveMapper( "org.hibernate.dialect.DB2Dialect" ));
++        MAPPERS.put( "DB2/PTX",new VersionInsensitiveMapper( "org.hibernate.dialect.DB2Dialect" ));
++        MAPPERS.put( "DB2/2",new VersionInsensitiveMapper( "org.hibernate.dialect.DB2Dialect" ));
++        MAPPERS.put( "DB2/LINUXX8664",new VersionInsensitiveMapper( "org.hibernate.dialect.DB2Dialect" ));
+ 
+-		MAPPERS.put(
+-		        "Oracle",
+-		        new DatabaseDialectMapper() {
+-			        public String getDialectClass(int majorVersion) {
+-						switch ( majorVersion ) {
+-							case 8: return Oracle8iDialect.class.getName();
+-							case 9: return Oracle9iDialect.class.getName();
+-							case 10: return Oracle10gDialect.class.getName();
+-							default: throw new HibernateException( "unknown Oracle major version [" + majorVersion + "]" );
+-						}
+-			        }
+-		        }
+-		);
+-	}
++        MAPPERS.put( "MySQL", new VersionInsensitiveMapper( "org.hibernate.dialect.MySQLInnoDBDialect" ) );
++        MAPPERS.put( "DB2/NT64", new VersionInsensitiveMapper( "org.hibernate.dialect.DB2Dialect" ) );
++        MAPPERS.put( "DB2/LINUX", new VersionInsensitiveMapper( "org.hibernate.dialect.DB2Dialect" ) );
++        MAPPERS.put( "Microsoft SQL Server Database", new VersionInsensitiveMapper( "org.alfresco.repo.domain.hibernate.dialect.AlfrescoSQLServerDialect" ) );
++        MAPPERS.put( "Microsoft SQL Server", new VersionInsensitiveMapper( "org.alfresco.repo.domain.hibernate.dialect.AlfrescoSQLServerDialect" ) );
++        MAPPERS.put( "Sybase SQL Server", new VersionInsensitiveMapper( "org.alfresco.repo.domain.hibernate.dialect.AlfrescoSybaseAnywhereDialect" ) );
++        MAPPERS.put( "Oracle", new VersionInsensitiveMapper( "org.alfresco.repo.domain.hibernate.dialect.AlfrescoOracle9Dialect" ) );
++    }
+ }
+Index: src/org/hibernate/engine/ActionQueue.java
+===================================================================
+--- src/org/hibernate/engine/ActionQueue.java	(revision 15795)
++++ src/org/hibernate/engine/ActionQueue.java	(working copy)
+@@ -21,6 +21,9 @@
+  * 51 Franklin Street, Fifth Floor
+  * Boston, MA  02110-1301  USA
+  *
++ * 2010 - Alfresco Software, Ltd.
++ * Alfresco Software has modified source of this file
++ * The details of changes as svn diff can be found in svn at location root/projects/3rd-party/src 
+  */
+ package org.hibernate.engine;
+ 
+@@ -40,6 +43,7 @@
+ 
+ import org.hibernate.AssertionFailure;
+ import org.hibernate.HibernateException;
++import org.hibernate.action.AmalgamatedCleanupAction;
+ import org.hibernate.action.BulkOperationCleanupAction;
+ import org.hibernate.action.CollectionRecreateAction;
+ import org.hibernate.action.CollectionRemoveAction;
+@@ -62,7 +66,9 @@
+  * @author Steve Ebersole
+  */
+ public class ActionQueue {
++        private static volatile int MAX_EXECUTIONS_SIZE = 20000;
+ 
++
+ 	private static final Log log = LogFactory.getLog( ActionQueue.class );
+ 	private static final int INIT_QUEUE_LIST_SIZE = 5;
+ 
+@@ -84,6 +90,8 @@
+ 
+ 	private ArrayList executions;
+ 
++        AmalgamatedCleanupAction finalExecutable = null;
++
+ 	/**
+ 	 * Constructs an action queue bound to the given session.
+ 	 *
+@@ -94,6 +102,16 @@
+ 		init();
+ 	}
+ 
++        public static int getMAX_EXECUTIONS_SIZE()
++        {
++                return MAX_EXECUTIONS_SIZE;
++        }
++
++        public static void setMAX_EXECUTIONS_SIZE(int max_executions_size)
++        {
++                MAX_EXECUTIONS_SIZE = max_executions_size;
++        }
++
+ 	private void init() {
+ 		insertions = new ArrayList( INIT_QUEUE_LIST_SIZE );
+ 		deletions = new ArrayList( INIT_QUEUE_LIST_SIZE );
+@@ -146,7 +164,7 @@
+ 
+ 	public void addAction(BulkOperationCleanupAction cleanupAction) {
+ 		// Add these directly to the executions queue
+-		executions.add( cleanupAction );
++		addExecution(cleanupAction);
+ 	}
+ 
+ 	/**
+@@ -212,6 +230,34 @@
+ 			}
+ 		}
+ 		executions.clear();
++
++		if (finalExecutable != null)
++               	{
++            		try
++            		{
++                		try
++                		{
++                    			finalExecutable.afterTransactionCompletion(success);
++                		}
++                		finally
++                		{
++                    			if (invalidateQueryCache)
++                    			{
++                        			session.getFactory().getUpdateTimestampsCache().invalidate(finalExecutable.getPropertySpaces());
++                    			}
++                    			finalExecutable = null;
++                		}
++            		}
++            		catch (CacheException ce)
++            		{
++                		log.error("could not release a cache lock", ce);
++                		// continue loop
++            		}
++            		catch (Exception e)
++            		{
++                		throw new AssertionFailure("Exception releasing cache locks", e);
++            		}
++        	}
+ 	}
+ 
+ 	/**
+@@ -269,7 +315,7 @@
+ 	public void execute(Executable executable) {
+ 		final boolean lockQueryCache = session.getFactory().getSettings().isQueryCacheEnabled();
+ 		if ( executable.hasAfterTransactionCompletion() || lockQueryCache ) {
+-			executions.add( executable );
++			addExecution(executable);
+ 		}
+ 		if ( lockQueryCache ) {
+ 			session.getFactory()
+@@ -279,6 +325,46 @@
+ 		executable.execute();
+ 	}
+ 
++        private void addExecution(Executable executable)
++    	{
++        	if (finalExecutable == null)
++        	{
++            		executions.add(executable);
++            		if (executions.size() > MAX_EXECUTIONS_SIZE)
++            		{
++                		// Merge as much as possible into a bulk action
++                		finalExecutable = new AmalgamatedCleanupAction(session);
++                		ArrayList newExecutions = new ArrayList(executions.size());
++                		for (int i = 0; i < executions.size(); i++)
++                		{
++                    			Executable current = (Executable) executions.get(i);
++                    			if (current.isBulkAction() || current.hasPostCommitEventListeners())
++                    			{
++                        			newExecutions.add(current);
++                    			}
++                    			else
++                    			{
++                        			finalExecutable.addExecutable(current);
++                    			}
++                		}
++                		executions = newExecutions;
++            		}
++        	}
++        	else
++        	{
++            		if (executable.hasPostCommitEventListeners())
++            		{
++                		executions.add(executable);
++            		}
++            		else
++            		{
++                		finalExecutable.addExecutable(executable);
++            		}
++        	}
++
++    	}
++
++
+ 	private void prepareActions(List queue) throws HibernateException {
+ 		int size = queue.size();
+ 		for ( int i = 0; i < size; i++ ) {
+Index: src/org/hibernate/jdbc/BorrowedConnectionProxy.java
+===================================================================
+--- src/org/hibernate/jdbc/BorrowedConnectionProxy.java	(revision 15795)
++++ src/org/hibernate/jdbc/BorrowedConnectionProxy.java	(working copy)
+@@ -1,3 +1,9 @@
++/*
++ * 2010 - Alfresco Software, Ltd.
++ * Alfresco Software has modified source of this file
++ * The details of changes as svn diff can be found in svn at location root/projects/3rd-party/src 
++ */
++
+ package org.hibernate.jdbc;
+ 
+ import org.hibernate.HibernateException;
+@@ -65,7 +71,7 @@
+ 	public static Connection generateProxy(ConnectionManager connectionManager) {
+ 		BorrowedConnectionProxy handler = new BorrowedConnectionProxy( connectionManager );
+ 		return ( Connection ) Proxy.newProxyInstance(
+-				getProxyClassLoader(),
++				BorrowedConnectionProxy.class.getClassLoader(),
+ 		        PROXY_INTERFACES,
+ 		        handler
+ 		);

@@ -1,13 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Component, forwardRef, Input, OnInit } from '@angular/core';
+import { Component, OnInit, forwardRef, input } from '@angular/core';
 import {
   ControlValueAccessor,
   FormBuilder,
   FormGroup,
   NG_VALUE_ACCESSOR,
+  ReactiveFormsModule,
 } from '@angular/forms';
 
-import { SupportedMimetypes } from 'app/group/library/mimetypes/supported-mimetypes';
+import { TranslocoModule } from '@jsverse/transloco';
+import { mimetypes } from 'app/group/library/mimetypes/supported-mimetypes';
 
 @Component({
   selector: 'cbc-mimetype-input',
@@ -21,10 +23,10 @@ import { SupportedMimetypes } from 'app/group/library/mimetypes/supported-mimety
     },
   ],
   preserveWhitespaces: true,
+  imports: [ReactiveFormsModule, TranslocoModule],
 })
 export class MimetypeInputComponent implements OnInit, ControlValueAccessor {
-  @Input()
-  disabled = false;
+  readonly disabled = input(false);
   form!: FormGroup;
 
   // impement ControlValueAccessor interface
@@ -68,12 +70,12 @@ export class MimetypeInputComponent implements OnInit, ControlValueAccessor {
       }
     });
 
-    if (this.disabled) {
+    if (this.disabled()) {
       this.form.controls.mimetype.disable();
     }
   }
 
   getAvailableMimetypes() {
-    return SupportedMimetypes.mimetypes;
+    return mimetypes;
   }
 }

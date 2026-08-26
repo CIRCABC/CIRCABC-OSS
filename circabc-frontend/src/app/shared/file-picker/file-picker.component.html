@@ -1,19 +1,24 @@
-<section *ngIf="content" class="explorer">
+@if (content) {
+<section class="explorer">
   <header>
+    @if (!isLibrary()) {
     <a
+      tabindex="0"
       class="backButton"
-      *ngIf="!isLibrary()"
       (click)="getContent(currentNode.parentId)"
-      ><img src="img/arrow-previous.png" /> </a
-    >&nbsp;
+      ><img src="img/arrow-previous.png" alt="Previous" />
+    </a>
+    }&nbsp; @if (targetFolderMode()) {
     <input
       type="checkbox"
-      *ngIf="targetFolderMode"
       (click)="toggleSelect(currentNode.id)"
       [checked]="isSelected(currentNode.id)"
     />
-    <img src="img/icon-library-blue.png" /> &nbsp; {{ currentNode.name }}
-    <cbc-spinner *ngIf="loading"></cbc-spinner>
+    }
+    <img src="img/icon-library-blue.png" alt="Library Icon" /> &nbsp; {{
+    currentNode.name }} @if (loading) {
+    <cbc-spinner></cbc-spinner>
+    }
   </header>
   <section>
     <table>
@@ -25,31 +30,43 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let node of content.data">
+        @for (node of content.data; track node.id) {
+        <tr>
           <td
-            ><input
+            >@if (!isFolder(node) || targetFolderMode() || canSelectFolders()) {
+            <input
               type="checkbox"
-              *ngIf="!isFolder(node) || targetFolderMode || canSelectFolders"
               (click)="toggleSelect(node.id)"
               [checked]="isSelected(node.id)"
-          /></td>
-          <td class="width-2-3" *ngIf="!isFolder(node)"
-            ><img src="img/icon-file-blue.png" /> {{ node.name }}</td
+            />
+            }</td
           >
-          <td class="width-2-3" *ngIf="isFolder(node)"
-            ><img src="img/icon-library-blue.png" />
-            <a (click)="getContent(node.id)">{{ node.name }}</a></td
+          @if (!isFolder(node)) {
+          <td class="width-2-3"
+            ><img src="img/icon-file-blue.png" alt="File Icon" /> {{ node.name
+            }}</td
           >
+          } @if (isFolder(node)) {
+          <td class="width-2-3"
+            ><img src="img/icon-library-blue.png" alt="Folder Icon" />
+            <a tabindex="0" (click)="getContent(node.id)"
+              >{{ node.name }}</a
+            ></td
+          >
+          }
           <td class="width-1-3"
             >{{ getModified(node) | date: 'y MMM d, H:mm' }}</td
           >
         </tr>
-        <tr *ngIf="isEmpty()">
+        } @if (isEmpty()) {
+        <tr>
           <td class="empty" colspan="3"
             >{{ 'label.empty.library' | transloco }}</td
           >
         </tr>
+        }
       </tbody>
     </table>
   </section>
 </section>
+}

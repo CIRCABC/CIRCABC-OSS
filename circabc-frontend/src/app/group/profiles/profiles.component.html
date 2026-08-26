@@ -1,4 +1,6 @@
-<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+@if (loading) {
+<cbc-horizontal-loader />
+}
 <div class="wrap page-container">
   <div class="page-header">
     <span
@@ -8,21 +10,19 @@
     <div class="page-header__actions">
       <ul class="links">
         <cbc-reponsive-sub-menu>
-          <a
-            *ngIf="currentGroup && (isDirAdmin() || isDirManageMembers())"
-            [routerLink]="['../members/bulk-invite', currentGroup.id]"
+          @if (currentGroup && (isDirAdmin() || isDirManageMembers())) {
+          <a [routerLink]="['../members/bulk-invite', currentGroup.id]"
             >{{ 'label.bulk.invite' | transloco }}</a
           >
-          <a
-            *ngIf="currentGroup && isMember()"
-            [routerLink]="['../members/contact']"
+          } @if (currentGroup && isMember()) {
+          <a [routerLink]="['../members/contact']"
             >{{ 'label.send.email' | transloco }}</a
           >
-          <a
-            *ngIf="currentGroup && (isDirAdmin() || isDirManageMembers())"
-            [routerLink]="['../applicants']"
+          } @if (currentGroup && (isDirAdmin() || isDirManageMembers())) {
+          <a [routerLink]="['../applicants']"
             >{{ 'label.member.requests' | transloco }}</a
           >
+          }
           <a [routerLink]="['../members']">{{ 'label.members' | transloco }}</a>
           <a [routerLink]="['.']" class="selected"
             >{{ 'label.profiles' | transloco }}</a
@@ -30,7 +30,7 @@
         </cbc-reponsive-sub-menu>
 
         <li>
-          <a class="cta cta--plus" (click)="showAddProfile()"
+          <a tabindex="0" class="cta cta--plus" (click)="showAddProfile()"
             >{{ 'label.add.profile' | transloco }}</a
           >
         </li>
@@ -66,57 +66,60 @@
       </thead>
 
       <tbody>
-        <tr class="row empty-row" *ngIf="profiles !== undefined">
-          <td colspan="7" *ngIf="profiles.length === 0"
-            >{{ 'label.nothing.to.display' | transloco }}</td
-          >
+        @if (profiles !== undefined) {
+        <tr class="row empty-row">
+          @if (profiles.length === 0) {
+          <td colspan="7">{{ 'label.nothing.to.display' | transloco }}</td>
+          }
         </tr>
-
-        <tr class="row" *ngFor="let profile of profiles">
+        } @for (profile of profiles; track profile.id) {
+        <tr class="row">
           <td class="cell-left-border"></td>
           <td class="cell-profile-icon">
+            @if (profile.imported) {
             <img
-              *ngIf="profile.imported"
               src="img/download-to-storage-drive.png"
               alt="imported"
               title="imported"
             />
-            <img
-              *ngIf="profile.exported"
-              src="img/rss-symbol.png"
-              alt="exported"
-              title="exported"
-            />
+            } @if (profile.exported) {
+            <img src="img/rss-symbol.png" alt="exported" title="exported" />
+            }
           </td>
           <td class="cell-name cell-profile-name">
-            <div class="file-name text-capitalize" *ngIf="profile.title">
+            @if (profile.title) {
+            <div class="file-name text-capitalize">
               {{ profile.title | cbcI18n }}
             </div>
-            <div class="file-name text-capitalize" *ngIf="!profile.title">
-              {{ profile.name }}
-            </div>
+            } @if (!profile.title) {
+            <div class="file-name text-capitalize"> {{ profile.name }} </div>
+            }
             <ul class="actions">
               <li></li>
               <li>
-                <a (click)="prepareEdit(profile)"
+                <a tabindex="0" (click)="prepareEdit(profile)"
                   >{{ 'label.edit' | transloco }}</a
                 >
               </li>
-              <li *ngIf="isDeletable(profile)">
-                <a (click)="prepareDelete(profile)"
+              @if (isDeletable(profile)) {
+              <li>
+                <a tabindex="0" (click)="prepareDelete(profile)"
                   >{{ 'label.delete' | transloco }}</a
                 >
               </li>
-              <li *ngIf="isExportable(profile)">
-                <a (click)="export(profile)"
+              } @if (isExportable(profile)) {
+              <li>
+                <a tabindex="0" (click)="export(profile)"
                   >{{ 'label.export' | transloco }}</a
                 >
               </li>
-              <li *ngIf="isUnexportable(profile)">
-                <a (click)="unexport(profile)"
+              } @if (isUnexportable(profile)) {
+              <li>
+                <a tabindex="0" (click)="unexport(profile)"
                   >{{ 'label.export.stop' | transloco }}</a
                 >
               </li>
+              }
             </ul>
           </td>
           <td
@@ -137,6 +140,7 @@
             }}</td
           >
         </tr>
+        }
       </tbody>
     </table>
 
@@ -151,14 +155,14 @@
   (profileCreated)="onProfileCreated($event)"
   (profileUpdated)="onProfileEdited($event)"
   (canceled)="onModalCancel()"
-></cbc-create-profile>
+/>
 <cbc-delete-profile
   [profile]="selectedProfile"
   [showModal]="showDeleteModal"
   (profileDeleted)="onProfileDeleted($event)"
-></cbc-delete-profile>
+/>
 <cbc-import-profile
   [igNodeId]="nodeId"
   [showModal]="showImportModal"
   (profileImported)="onProfileImport($event)"
-></cbc-import-profile>
+/>

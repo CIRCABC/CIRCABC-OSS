@@ -22,104 +22,103 @@ package eu.cec.digit.circabc.service.admin.debug;
  * @author Yanick Pignot
  */
 public interface CacheReport {
+  /**
+   * @return the size
+   */
+  long getSize();
 
-    /**
-     * @return the size
-     */
-    long getSize();
+  /**
+   * @return the Estimated Max Size
+   */
+  double getEstimatedMaxSize();
 
-    /**
-     * @return the Estimated Max Size
-     */
-    double getEstimatedMaxSize();
+  /**
+   * @return the currentSize
+   */
+  String getCurrentSize();
 
-    /**
-     * @return the currentSize
-     */
-    String getCurrentSize();
+  /**
+   * @return the estMaxSize
+   */
+  String getEstMaxSize();
 
-    /**
-     * @return the estMaxSize
-     */
-    String getEstMaxSize();
+  /**
+   * @return the hitCount
+   */
+  String getHitCount();
 
-    /**
-     * @return the hitCount
-     */
-    String getHitCount();
+  /**
+   * @return the hitRatio
+   */
+  String getHitRatio();
 
-    /**
-     * @return the hitRatio
-     */
-    String getHitRatio();
+  /**
+   * @return the maxSize
+   */
+  String getMaxSize();
 
-    /**
-     * @return the maxSize
-     */
-    String getMaxSize();
+  /**
+   * @return the percentageFull
+   */
+  String getPercentageFull();
 
-    /**
-     * @return the percentageFull
-     */
-    String getPercentageFull();
+  /**
+   * @return the sizeMB
+   */
+  String getSizeMB();
 
-    /**
-     * @return the sizeMB
-     */
-    String getSizeMB();
+  /**
+   * @return the totalMissCount
+   */
+  String getTotalMissCount();
 
-    /**
-     * @return the totalMissCount
-     */
-    String getTotalMissCount();
+  /**
+   * @return the name
+   */
+  String getName();
 
-    /**
-     * @return the name
-     */
-    String getName();
+  /**
+   * @return the memoryStoreEvictionPolicy
+   */
+  String getMemoryStoreEvictionPolicy();
 
-    /**
-     * @return the memoryStoreEvictionPolicy
-     */
-    String getMemoryStoreEvictionPolicy();
+  /**
+   * @return the timeToIdleSeconds
+   */
+  String getTimeToIdleSeconds();
 
-    /**
-     * @return the timeToIdleSeconds
-     */
-    String getTimeToIdleSeconds();
+  /**
+   * @return the timeToLiveSeconds
+   */
+  String getTimeToLiveSeconds();
 
-    /**
-     * @return the timeToLiveSeconds
-     */
-    String getTimeToLiveSeconds();
+  /**
+   * @return the txMaxItems
+   */
+  String getTxMaxItems();
 
-    /**
-     * @return the txMaxItems
-     */
-    String getTxMaxItems();
+  /**
+   * @return the clusterType
+   */
+  String getClusterType();
 
-    /**
-     * @return the clusterType
-     */
-    String getClusterType();
+  /**
+   * @return the backupCount
+   */
+  String getBackupCount();
 
-    /**
-     * @return the backupCount
-     */
-    String getBackupCount();
+  /**
+   * @return the evictionPercentage
+   */
+  String getEvictionPercentage();
 
-    /**
-     * @return the evictionPercentage
-     */
-    String getEvictionPercentage();
+  /**
+   * @return the mergePolicy
+   */
+  String getMergePolicy();
 
-    /**
-     * @return the mergePolicy
-     */
-    String getMergePolicy();
-
-    /**
-     * @return the dirtyEntryCount
-     */
-    String getDirtyEntryCount();
+  /**
+   * @return the dirtyEntryCount
+   */
+  String getDirtyEntryCount();
 }

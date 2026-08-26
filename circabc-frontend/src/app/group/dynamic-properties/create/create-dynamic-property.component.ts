@@ -1,19 +1,21 @@
 import {
   Component,
-  EventEmitter,
   Input,
   OnChanges,
   OnInit,
-  Output,
   SimpleChanges,
+  output,
+  input,
 } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
   FormGroup,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
@@ -24,26 +26,37 @@ import {
   DynamicPropertyDefinition,
   DynamicPropertyDefinitionUpdatedValues,
 } from 'app/core/generated/circabc';
-import { ValidationService } from 'app/core/validation.service';
+import { nonEmptyTitle } from 'app/core/validation.service';
 import { DynamicPropertyType } from 'app/group/dynamic-properties/type/dynamic-property-type';
-import { DynamicPropertyTypes } from 'app/group/dynamic-properties/type/dynamic-property-types';
+import { getDynamicPropertyTypes } from 'app/group/dynamic-properties/type/dynamic-property-types';
+import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
+import { MultilingualInputComponent } from 'app/shared/input/multilingual-input.component';
+import { ModalComponent } from 'app/shared/modal/modal.component';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-create-dynamic-property',
   templateUrl: './create-dynamic-property.component.html',
-  styleUrls: ['./create-dynamic-property.component.scss'],
+  styleUrl: './create-dynamic-property.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    ModalComponent,
+    ReactiveFormsModule,
+    ControlMessageComponent,
+    MultilingualInputComponent,
+    SpinnerComponent,
+    TranslocoModule,
+  ],
 })
 export class CreateDynamicPropertyComponent implements OnChanges, OnInit {
-  @Input()
-  groupId!: string;
+  readonly groupId = input.required<string>();
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   showModal = false;
-  @Input()
-  property: DynamicPropertyDefinition | undefined;
-  @Output()
-  readonly modalHide = new EventEmitter<ActionEmitterResult>();
+  readonly property = input<DynamicPropertyDefinition>();
+  readonly modalHide = output<ActionEmitterResult>();
 
   public creating = false;
   public createForm!: FormGroup;
@@ -64,7 +77,7 @@ export class CreateDynamicPropertyComponent implements OnChanges, OnInit {
   ngOnInit() {
     this.createForm = this.fb.group(
       {
-        title: ['', ValidationService.nonEmptyTitle],
+        title: ['', nonEmptyTitle],
         propertyType: ['', Validators.required],
         possibleValues: [''],
       },
@@ -95,8 +108,9 @@ export class CreateDynamicPropertyComponent implements OnChanges, OnInit {
 
   async ngOnChanges(_changes: SimpleChanges) {
     this.cleanForms();
-    if (this.property !== undefined) {
-      await this.loadDynamicProperty(this.property.id as string);
+    const property = this.property();
+    if (property !== undefined) {
+      await this.loadDynamicProperty(property.id as string);
     }
   }
 
@@ -141,7 +155,7 @@ export class CreateDynamicPropertyComponent implements OnChanges, OnInit {
 
     const res = await firstValueFrom(
       this.dynamicPropertiesService.postPropertyDefinition(
-        this.groupId,
+        this.groupId(),
         newProp
       )
     );
@@ -176,11 +190,10 @@ export class CreateDynamicPropertyComponent implements OnChanges, OnInit {
   }
 
   public canCreateOrUpdate(): boolean {
+    const property = this.property();
     return (
-      (this.createForm.valid &&
-        !this.creating &&
-        this.property === undefined) ||
-      (!this.creating && this.property !== undefined)
+      (this.createForm.valid && !this.creating && property === undefined) ||
+      (!this.creating && property !== undefined)
     );
   }
 
@@ -190,18 +203,19 @@ export class CreateDynamicPropertyComponent implements OnChanges, OnInit {
     res.type = ActionType.UPDATE_DYNAMIC_PROPERTIES;
 
     try {
-      if (this.property && this.property.id) {
-        this.property.updatedValues = this.values;
-        this.property.title = this.editDynPropForm.value.title;
+      const property = this.property();
+      if (property?.id) {
+        property.updatedValues = this.values;
+        property.title = this.editDynPropForm.value.title;
         await firstValueFrom(
           this.dynamicPropertiesService.putDynamicPropertyDefinition(
-            this.property.id,
-            this.property
+            property.id,
+            property
           )
         );
         res.result = ActionResult.SUCCEED;
       }
-    } catch (error) {
+    } catch (_error) {
       res.result = ActionResult.FAILED;
     }
 
@@ -227,7 +241,7 @@ export class CreateDynamicPropertyComponent implements OnChanges, OnInit {
   }
 
   public getTypes(): DynamicPropertyType[] {
-    return DynamicPropertyTypes.getTypes();
+    return getDynamicPropertyTypes();
   }
 
   public hasValues(): boolean {
@@ -350,7 +364,7 @@ export class CreateDynamicPropertyComponent implements OnChanges, OnInit {
     this.showModal = false;
     this.showDefinition = true;
     const result: ActionEmitterResult = {};
-    if (this.property === undefined) {
+    if (this.property() === undefined) {
       result.type = ActionType.CREATE_DYNAMIC_PROPERTY;
     } else {
       result.type = ActionType.UPDATE_DYNAMIC_PROPERTIES;

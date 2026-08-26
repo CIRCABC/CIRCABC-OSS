@@ -17,6 +17,10 @@
 package eu.cec.digit.circabc.service.user;
 
 import eu.cec.digit.circabc.util.CircabcUserDataBean;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.alfresco.repo.security.authentication.AuthenticationException;
 import org.alfresco.service.Auditable;
 import org.alfresco.service.NotAuditable;
@@ -24,11 +28,6 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.web.bean.users.UserPreferencesBean;
-
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * It is a spring bean that manages basic operations over CircabcUsers like reading, updating,
@@ -41,294 +40,357 @@ import java.util.Set;
  */
 // @PublicService
 public interface UserService {
-
-    QName PREF_CONTENT_FILTER_LANGUAGE =
-            QName.createQName(NamespaceService.APP_MODEL_1_0_URI, "content-filter-language");
-    QName PREF_INTERFACE_LANGUAGE =
-            QName.createQName(
-                    NamespaceService.APP_MODEL_1_0_URI, UserPreferencesBean.PREF_INTERFACELANGUAGE /*
-                     * this durty trick is
-                     * used to avoid
-                     * problems during
-                     * alfresco version
-                     * migration
-                     * "interface-language"
-                     */);
-
-    QName PREF_SIGNATURE = QName.createQName(NamespaceService.APP_MODEL_1_0_URI, "signature");
-
-    /**
-     * Creates a new User in Alfresco with the Circabc Aspect
-     *
-     * @param user id
+  QName PREF_CONTENT_FILTER_LANGUAGE = QName.createQName(
+    NamespaceService.APP_MODEL_1_0_URI,
+    "content-filter-language"
+  );
+  QName PREF_INTERFACE_LANGUAGE = QName.createQName(
+    NamespaceService.APP_MODEL_1_0_URI,
+    UserPreferencesBean.PREF_INTERFACELANGUAGE
+    /*
+     * this durty trick is
+     * used to avoid
+     * problems during
+     * alfresco version
+     * migration
+     * "interface-language"
      */
-    @Auditable(/*key = Auditable.Key.RETURN, */ parameters = {"circabcUser","enabled"})
-    NodeRef createLdapUser(final String userId,final boolean enabled);
+  );
 
-    /**
-     * Creates a new User in Alfresco with the Circabc Aspect
-     *
-     * @param pCircabcUser the data of the new user
-     */
-    @Auditable(/*key = Auditable.Key.RETURN, */ parameters = {"circabcUser"})
-    NodeRef createUser(final CircabcUserDataBean circabcUser);
+  QName PREF_SIGNATURE = QName.createQName(
+    NamespaceService.APP_MODEL_1_0_URI,
+    "signature"
+  );
 
-    /**
-     * Creates a new User in Alfresco with the Circabc Aspect
-     *
-     * @param pCircabcUser the data of the new user
-     * @param enabled      if the user should be enbled or not. If not, the user can't authenticate itself
-     */
-    @Auditable(/*key = Auditable.Key.RETURN, */ parameters = {"circabcUser", "enabled"})
-    NodeRef createUser(final CircabcUserDataBean circabcUser, final boolean enabled);
+  /**
+   * Creates a new User in Alfresco with the Circabc Aspect
+   *
+   * @param user id
+   */
+  @Auditable(
+    /*key = Auditable.Key.RETURN, */parameters = { "circabcUser", "enabled" }
+  )
+  NodeRef createLdapUser(final String userId, final boolean enabled);
 
-    /**
-     * It deletes a Circabc user on alfresco
-     *
-     * @param pCircabcUser the user to delete
-     * @throws AuthenticationException any error
-     */
-    @Auditable(/*key = Auditable.Key.NO_KEY, */ parameters = {"pUserName"})
-    void deleteUser(final String pUserName) throws AuthenticationException;
+  /**
+   * Creates a new User in Alfresco with the Circabc Aspect
+   *
+   * @param pCircabcUser the data of the new user
+   */
+  @Auditable(/*key = Auditable.Key.RETURN, */parameters = { "circabcUser" })
+  NodeRef createUser(final CircabcUserDataBean circabcUser);
 
-    /**
-     * @return the number of days in which the account will be expired if the account is not activated
-     * after the self registration process
-     */
-    @NotAuditable
-    int getAccountExpirationDays();
+  /**
+   * Creates a new User in Alfresco with the Circabc Aspect
+   *
+   * @param pCircabcUser the data of the new user
+   * @param enabled      if the user should be enbled or not. If not, the user can't authenticate itself
+   */
+  @Auditable(
+    /*key = Auditable.Key.RETURN, */parameters = { "circabcUser", "enabled" }
+  )
+  NodeRef createUser(
+    final CircabcUserDataBean circabcUser,
+    final boolean enabled
+  );
 
-    /**
-     * @return list of category, profile for given user
-     */
-    @Auditable(/*key = Auditable.Key.NO_KEY*/)
-    List<UserCategoryMembershipRecord> getCategories(final String pUserName);
+  /**
+   * It deletes a Circabc user on alfresco
+   *
+   * @param pCircabcUser the user to delete
+   * @throws AuthenticationException any error
+   */
+  @Auditable(/*key = Auditable.Key.NO_KEY, */parameters = { "pUserName" })
+  void deleteUser(final String pUserName) throws AuthenticationException;
 
-    @Auditable(/*key = Auditable.Key.NO_KEY*/)
-    CircabcUserDataBean getCircabcUserDataBean(final String userName);
+  /**
+   * @return the number of days in which the account will be expired if the account is not activated
+   * after the self registration process
+   */
+  @NotAuditable
+  int getAccountExpirationDays();
 
-    /**
-     * @return list event roots for given user
-     */
-    @Auditable(/*key = Auditable.Key.NO_KEY*/)
-    List<NodeRef> getEventRootNodes(final String pUserName);
+  /**
+   * @return list of category, profile for given user
+   */
+  @Auditable
+  List<UserCategoryMembershipRecord> getCategories(final String pUserName);
 
-    /**
-     * @return list of interest groups for given user
-     */
-    @Auditable(/*key = Auditable.Key.NO_KEY*/)
-    List<UserIGMembershipRecord> getInterestGroups(final String pUserName);
+  @Auditable
+  CircabcUserDataBean getCircabcUserDataBean(final String userName);
 
-    /**
-     * @return list of interest groups for given user and categories
-     */
-    @Auditable(/*key = Auditable.Key.NO_KEY*/)
-    List<UserIGMembershipRecord> getInterestGroups(final String userName, List<NodeRef> categories);
+  /**
+   * @return list event roots for given user
+   */
+  @Auditable
+  List<NodeRef> getEventRootNodes(final String pUserName);
 
-    /**
-     * LDAP Implementation
-     */
-    @Auditable(/*key = Auditable.Key.NO_KEY, */ parameters = {"pLdapUserID"})
-    CircabcUserDataBean getLDAPUserDataByUid(final String pLdapUserID);
+  /**
+   * @return list of interest groups for given user
+   */
+  @Auditable
+  List<UserIGMembershipRecord> getInterestGroups(final String pUserName);
 
-    @Auditable(
-            /*key = Auditable.Key.NO_KEY, */ parameters = {"mail", "uid", "moniker", "cn", "conjunction"})
-    List<String> getLDAPUserIDByIdMonikerEmailCn(
-            final String uid,
-            final String moniker,
-            final String email,
-            final String cn,
-            final boolean conjunction);
+  /**
+   * @return list of interest groups for given user and categories
+   */
+  @Auditable
+  List<UserIGMembershipRecord> getInterestGroups(
+    final String userName,
+    List<NodeRef> categories
+  );
 
-    @Auditable(/*key = Auditable.Key.NO_KEY, */ parameters = {"pMail"})
-    List<String> getLDAPUserIDByMail(final String mail);
+  /**
+   * LDAP Implementation
+   */
+  @Auditable(/*key = Auditable.Key.NO_KEY, */parameters = { "pLdapUserID" })
+  CircabcUserDataBean getLDAPUserDataByUid(final String pLdapUserID);
 
-    @Auditable(/*key = Auditable.Key.NO_KEY, */ parameters = {"mail", "domain"})
-    List<String> getLDAPUserIDByMailDomain(final String mail, final String domain);
+  @Auditable(
+    /*key = Auditable.Key.NO_KEY, */parameters = {
+      "mail", "uid", "moniker", "cn", "conjunction",
+    }
+  )
+  List<String> getLDAPUserIDByIdMonikerEmailCn(
+    final String uid,
+    final String moniker,
+    final String email,
+    final String cn,
+    final boolean conjunction
+  );
 
-    /**
-     * Get the noderef of the user
-     *
-     * @param pUserName the user
-     */
-    @Auditable(/*key = Auditable.Key.NO_KEY, */ parameters = {"pUserName"})
-    NodeRef getPerson(final String pUserName);
+  @Auditable(/*key = Auditable.Key.NO_KEY, */parameters = { "pMail" })
+  List<String> getLDAPUserIDByMail(final String mail);
 
-    /**
-     * Get a setted preference of the given user
-     */
-    @Auditable(/*key = Auditable.Key.ARG_0, */ parameters = {"person", "preferenceQname"})
-    Serializable getPreference(final NodeRef person, final QName preferenceQname);
+  @Auditable(/*key = Auditable.Key.NO_KEY, */parameters = { "mail", "domain" })
+  List<String> getLDAPUserIDByMailDomain(
+    final String mail,
+    final String domain
+  );
 
-    /**
-     * Get the user by an email
-     */
-    @Auditable(/*key = Auditable.Key.NO_KEY, */ parameters = {"email"})
-    String getUserByEmail(final String email);
+  /**
+   * Get the noderef of the user
+   *
+   * @param pUserName the user
+   */
+  @Auditable(/*key = Auditable.Key.NO_KEY, */parameters = { "pUserName" })
+  NodeRef getPerson(final String pUserName);
 
-    /**
-     * Get the domain of the user or null if it is an alfresco user.
-     *
-     * @param pUserName the user
-     */
-    @Auditable(/*key = Auditable.Key.NO_KEY, */ parameters = {"pUserName"})
-    String getUserDomain(final String pUserName);
+  /**
+   * Get a setted preference of the given user
+   */
+  @Auditable(
+    /*key = Auditable.Key.ARG_0, */parameters = { "person", "preferenceQname" }
+  )
+  Serializable getPreference(final NodeRef person, final QName preferenceQname);
 
-    /**
-     * Get email for Circabc user on alfresco
-     *
-     * @param pUserName the user
-     */
-    @Auditable(/*key = Auditable.Key.NO_KEY, */ parameters = {"pUserName"})
-    String getUserEmail(final String pUserName);
+  /**
+   * Get the user by an email
+   */
+  @Auditable(/*key = Auditable.Key.NO_KEY, */parameters = { "email" })
+  String getUserByEmail(final String email);
 
-    /**
-     * Get first and last name for Circabc user concanate with space
-     *
-     * @param pUserName the user
-     */
-    @Auditable(/*key = Auditable.Key.NO_KEY, */ parameters = {"pUserName"})
-    String getUserFullName(final String pUserName);
+  /**
+   * Get the domain of the user or null if it is an alfresco user.
+   *
+   * @param pUserName the user
+   */
+  @Auditable(/*key = Auditable.Key.NO_KEY, */parameters = { "pUserName" })
+  String getUserDomain(final String pUserName);
 
-    /**
-     * Return user name for given user email
-     *
-     * @return user name
-     */
-    @Auditable(/*key = Auditable.Key.NO_KEY*/)
-    String getUserNameByEmail(final String email);
+  /**
+   * Get email for Circabc user on alfresco
+   *
+   * @param pUserName the user
+   */
+  @Auditable(/*key = Auditable.Key.NO_KEY, */parameters = { "pUserName" })
+  String getUserEmail(final String pUserName);
 
-    @Auditable(/*key = Auditable.Key.NO_KEY, */ parameters = {"pDomain", "pCriteria", "filter"})
-    List<SearchResultRecord> getUsersByDomainFirstNameLastNameEmail(
-            final String pDomain, final String pCriteria, boolean filter);
+  /**
+   * Get first and last name for Circabc user concanate with space
+   *
+   * @param pUserName the user
+   */
+  @Auditable(/*key = Auditable.Key.NO_KEY, */parameters = { "pUserName" })
+  String getUserFullName(final String pUserName);
 
-    @Auditable(/*key = Auditable.Key.NO_KEY, */ parameters = {"mail", "domain", "filter"})
-    List<SearchResultRecord> getUsersByMailDomain(final String mail, final String domain, boolean filter);
+  /**
+   * Return user name for given user email
+   *
+   * @return user name
+   */
+  @Auditable
+  String getUserNameByEmail(final String email);
 
-    /**
-     * @param nodeRef
-     * @param service
-     * @param permission
-     * @return
-     */
-    Set<String> getUsersWithPermission(final NodeRef nodeRef, final String permission);
+  @Auditable(
+    /*key = Auditable.Key.NO_KEY, */parameters = {
+      "pDomain", "pCriteria", "filter",
+    }
+  )
+  List<SearchResultRecord> getUsersByDomainFirstNameLastNameEmail(
+    final String pDomain,
+    final String pCriteria,
+    boolean filter
+  );
 
-    /**
-     * Return if the given email is already used by another user in Circabc. This method is usefull to
-     * garentee the unicity of the email inside alfresco.
-     *
-     * @param email                              the email to test
-     * @param excludeDataInTheCurrentTransaction if the data setted in the current transaction must be
-     *                                           excluded
-     * @return true if the email is already used.
-     */
-    @NotAuditable
-    boolean isEmailExists(final String email, final boolean excludeDataInTheCurrentTransaction);
+  @Auditable(
+    /*key = Auditable.Key.NO_KEY, */parameters = { "mail", "domain", "filter" }
+  )
+  List<SearchResultRecord> getUsersByMailDomain(
+    final String mail,
+    final String domain,
+    boolean filter
+  );
 
-    /**
-     * Set password for Circabc user on alfresco
-     *
-     * @param pUserName the user
-     */
-    @Auditable(
-            /*key = Auditable.Key.NO_KEY, */ parameters = {"pUserName", "pNewPassword"},
-            recordable = {true, false})
-    void setPassword(final String pUserName, final char[] pNewPassword);
+  /**
+   * @param nodeRef
+   * @param service
+   * @param permission
+   * @return
+   */
+  Set<String> getUsersWithPermission(
+    final NodeRef nodeRef,
+    final String permission
+  );
 
-    /**
-     * set a preference of the given user
-     */
-    @Auditable(/*key = Auditable.Key.ARG_0, */ parameters = {"person", "preferenceQname", "value"})
-    void setPreference(final NodeRef person, final QName preferenceQname, final Serializable value);
+  /**
+   * Return if the given email is already used by another user in Circabc. This method is usefull to
+   * garentee the unicity of the email inside alfresco.
+   *
+   * @param email                              the email to test
+   * @param excludeDataInTheCurrentTransaction if the data setted in the current transaction must be
+   *                                           excluded
+   * @return true if the email is already used.
+   */
+  @NotAuditable
+  boolean isEmailExists(
+    final String email,
+    final boolean excludeDataInTheCurrentTransaction
+  );
 
-    @Auditable(/*key = Auditable.Key.NO_KEY*/)
-    void updateMissingLastNamePersons();
+  /**
+   * Set password for Circabc user on alfresco
+   *
+   * @param pUserName the user
+   */
+  @Auditable(
+    /*key = Auditable.Key.NO_KEY, */parameters = {
+      "pUserName", "pNewPassword",
+    },
+    recordable = { true, false }
+  )
+  void setPassword(final String pUserName, final char[] pNewPassword);
 
-    /**
-     * Update all the data of a Circabc user
-     *
-     * @param pCircabcUser Circabc user
-     */
-    @Auditable(/*key = Auditable.Key.NO_KEY, */ parameters = {"pCircabcUser"})
-    void updateUser(final CircabcUserDataBean pCircabcUser);
+  /**
+   * set a preference of the given user
+   */
+  @Auditable(
+    /*key = Auditable.Key.ARG_0, */parameters = {
+      "person", "preferenceQname", "value",
+    }
+  )
+  void setPreference(
+    final NodeRef person,
+    final QName preferenceQname,
+    final Serializable value
+  );
 
-    /**
-     * Update the data of a Circabc user
-     *
-     * @param pCircabcUser         Circabc user
-     * @param pNonAspectProperties true if you want to udpate just the NonAspect Properties (the one
-     *                             that a user is not allow change and are changed by the batch process)
-     */
-    @Auditable(/*key = Auditable.Key.NO_KEY, */ parameters = {"pCircabcUser", "pNonAspectProperties"})
-    void updateUser(final CircabcUserDataBean pCircabcUser, final boolean pNonAspectProperties);
+  @Auditable
+  void updateMissingLastNamePersons();
 
-    /**
-     * Return true if the user is connected
-     */
-    @Auditable(/*key =  Auditable.Key.NO_KEY*/)
-    boolean isUserOnline(final String user);
+  /**
+   * Update all the data of a Circabc user
+   *
+   * @param pCircabcUser Circabc user
+   */
+  @Auditable(/*key = Auditable.Key.NO_KEY, */parameters = { "pCircabcUser" })
+  void updateUser(final CircabcUserDataBean pCircabcUser);
 
-    /**
-     * @return list of online users
-     */
-    @Auditable(/*key =  Auditable.Key.NO_KEY*/)
-    Set<String> getAllOnlineUsers();
+  /**
+   * Update the data of a Circabc user
+   *
+   * @param pCircabcUser         Circabc user
+   * @param pNonAspectProperties true if you want to udpate just the NonAspect Properties (the one
+   *                             that a user is not allow change and are changed by the batch process)
+   */
+  @Auditable(
+    /*key = Auditable.Key.NO_KEY, */parameters = {
+      "pCircabcUser", "pNonAspectProperties",
+    }
+  )
+  void updateUser(
+    final CircabcUserDataBean pCircabcUser,
+    final boolean pNonAspectProperties
+  );
 
-    /**
-     * @return list of online users for a specific InterestGroup
-     */
-    @Auditable(/*key = Auditable.Key.ARG_0*/)
-    Set<String> getOnlineUsers(final NodeRef igNodeRef);
+  /**
+   * Return true if the user is connected
+   */
+  @Auditable
+  boolean isUserOnline(final String user);
 
-    /**
-     * create user newUserName copy all properties from
-     */
-    @Auditable(/*key =  Auditable.Key.NO_KEY*/)
-    void copyUser(
-            final String oldUserName,
-            final String newUserName,
-            boolean deleteOldUser,
-            boolean copyOwnership,
-            boolean copyMembership);
+  /**
+   * @return list of online users
+   */
+  @Auditable
+  Set<String> getAllOnlineUsers();
 
-    @Auditable(/*key =  Auditable.Key.NO_KEY*/)
-    Map<String, String> getEcasUserDomains();
+  /**
+   * @return list of online users for a specific InterestGroup
+   */
+  @Auditable
+  Set<String> getOnlineUsers(final NodeRef igNodeRef);
 
-    /**
-     * @return true if the user with given userName exists
-     */
-    @NotAuditable
-    boolean isUserExists(final String userName);
+  /**
+   * create user newUserName copy all properties from
+   */
+  @Auditable
+  void copyUser(
+    final String oldUserName,
+    final String newUserName,
+    boolean deleteOldUser,
+    boolean copyOwnership,
+    boolean copyMembership
+  );
 
-    /**
-     * get alfresco ticket for given user
-     *
-     * @param userName name of alfresco user
-     * @return alfresco user ticket
-     */
-    @NotAuditable
-    String getCurrentTicket(String userName);
+  @Auditable
+  Map<String, String> getEcasUserDomains();
 
-    /**
-     * delete users
-     */
-    @Auditable(/*key =  Auditable.Key.NO_KEY*/)
-    void deleteUsers(List<String> userNames);
+  /**
+   * @return true if the user with given userName exists
+   */
+  @NotAuditable
+  boolean isUserExists(final String userName);
 
-    /**
-     * get redirect url after logout from ECAS
-     */
-    @Auditable(/*key =  Auditable.Key.NO_KEY*/)
-    String getRedirectUrlAfterLogout();
+  /**
+   * get alfresco ticket for given user
+   *
+   * @param userName name of alfresco user
+   * @return alfresco user ticket
+   */
+  @NotAuditable
+  String getCurrentTicket(String userName);
 
-    @Auditable(/*key = Auditable.Key.NO_KEY*/)
-    Boolean userExists(String uid);
+  /**
+   * delete users
+   */
+  @Auditable
+  void deleteUsers(List<String> userNames);
 
-    @Auditable(/*key = Auditable.Key.NO_KEY*/)
-    void setAuthenticationEnabled(String userName, boolean enabled);
+  /**
+   * get redirect url after logout from ECAS
+   */
+  @Auditable
+  String getRedirectUrlAfterLogout();
 
-    @Auditable(/*key = Auditable.Key.NO_KEY*/)
-    boolean getAuthenticationEnabled(String userName);
+  @Auditable
+  Boolean userExists(String uid);
 
-    CircabcUserDataBean getLDAPUserDataNoFilterByUid(final String userID);
+  @Auditable
+  void setAuthenticationEnabled(String userName, boolean enabled);
+
+  @Auditable
+  boolean getAuthenticationEnabled(String userName);
+
+  CircabcUserDataBean getLDAPUserDataNoFilterByUid(final String userID);
 }

@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { LoginService } from 'app/core/login.service';
 import { environment } from 'environments/environment';
-import { MatomoInjector, MatomoTracker } from 'ngx-matomo';
-import { Title } from '@angular/platform-browser';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const $wt: any;
@@ -10,7 +8,7 @@ declare const $wt: any;
 declare const _paq: any[][];
 interface AnalyticsConfiguration {
   utility: string;
-  siteID: number;
+  siteID: string;
   sitePath: string[];
   instance: string;
   mode: string;
@@ -22,23 +20,18 @@ interface AnalyticsConfiguration {
 export class AnalyticsService {
   analyticsConfiguration: AnalyticsConfiguration = {
     utility: 'analytics',
-    siteID: 0,
+    siteID: '',
     sitePath: [],
     instance: 'europa.eu',
     mode: 'manual',
   };
 
-  public constructor(
-    private loginService: LoginService,
-    private matomoInjector: MatomoInjector,
-    private matomoTracker: MatomoTracker,
-    private title: Title
-  ) {}
+  public constructor(private loginService: LoginService) {}
 
   private readonly isAnalyticsEnabled =
-    environment.analyticsURL !== '' && environment.analyticsSiteId > 0;
+    environment.analyticsURL !== '' && environment.analyticsSiteId !== '';
 
-  private isUserEnableCookies = true;
+  public IGname = '';
 
   public isEnabled() {
     return this.isAnalyticsEnabled;
@@ -59,16 +52,11 @@ export class AnalyticsService {
   public init() {
     try {
       if (this.isEnabled()) {
-        if (this.isMatomoAnalyticsEnabled()) {
-          this.matomoInjector.init(
-            environment.analyticsURL,
-            environment.analyticsSiteId
-          );
-        }
         if (this.isWebAnalyticsEnabled()) {
           // add script analytics configuration
           this.analyticsConfiguration.siteID = environment.analyticsSiteId;
           this.analyticsConfiguration.sitePath = [environment.analyticsURL];
+          this.analyticsConfiguration.instance = environment.analyticsInstance;
           const analyticsConfigJson = document.createElement('script');
           analyticsConfigJson.type = 'application/json';
           analyticsConfigJson.innerHTML = JSON.stringify(
@@ -86,15 +74,6 @@ export class AnalyticsService {
 
   public trackError(error: Error) {
     try {
-      if (this.isMatomoAnalyticsEnabled() && this.isUserEnableCookies) {
-        this.setUser();
-        this.matomoTracker.trackEvent(
-          `error-${error.name}`,
-          error.message,
-          error.stack
-        );
-        this.matomoTracker.setUserId('');
-      }
       if (this.isWebAnalyticsEnabled()) {
         const user = this.loginService.getUser();
         const userId = user.userId ?? 'guest';
@@ -118,15 +97,6 @@ export class AnalyticsService {
     response: string
   ) {
     try {
-      if (this.isMatomoAnalyticsEnabled() && this.isUserEnableCookies) {
-        this.setUser();
-        this.matomoTracker.trackEvent(
-          `${url}`,
-          `${url}:${method}:${statusCode}`,
-          `${response}`
-        );
-        this.matomoTracker.setUserId('');
-      }
       if (this.isWebAnalyticsEnabled()) {
         const user = this.loginService.getUser();
         const userId = user.userId ?? 'guest';
@@ -145,11 +115,6 @@ export class AnalyticsService {
 
   public trackPageChange() {
     try {
-      if (this.isMatomoAnalyticsEnabled() && this.isUserEnableCookies) {
-        const title = this.title.getTitle();
-        this.matomoTracker.setDocumentTitle(title);
-        this.matomoTracker.trackPageView(title);
-      }
       if (this.isWebAnalyticsEnabled() && $wt.analytics.isActive) {
         $wt.trackPageView();
       }
@@ -164,9 +129,6 @@ export class AnalyticsService {
     resultsCount?: number
   ) {
     try {
-      if (this.isMatomoAnalyticsEnabled() && this.isUserEnableCookies) {
-        this.matomoTracker.trackSiteSearch(keyword, category, resultsCount);
-      }
       if (this.isWebAnalyticsEnabled()) {
         _paq.push(['trackSiteSearch', keyword, category, resultsCount]);
       }
@@ -175,45 +137,57 @@ export class AnalyticsService {
     }
   }
 
-  public trackDownload(url: string) {
-    try {
-      if (this.isMatomoAnalyticsEnabled() && this.isUserEnableCookies) {
-        const queryStringIndex = url.indexOf('?');
-        if (queryStringIndex > -1) {
-          this.matomoTracker.trackLink(
-            url.substring(0, queryStringIndex),
-            'download'
-          );
-        } else {
-          this.matomoTracker.trackLink(url, 'download');
-        }
-      }
+  public trackDownload(url: string, fileName: string) {
+    let localURL = url;
+    if (localURL.lastIndexOf('?ticket=') > -1) {
+      localURL = `${localURL.substring(
+        0,
+        localURL.lastIndexOf('?ticket=')
+      )}/${fileName}`;
+    } else if (localURL.lastIndexOf('&ticket=') > -1) {
+      localURL = `${localURL.substring(
+        0,
+        localURL.lastIndexOf('&ticket=')
+      )}/${fileName}`;
+    }
 
+    try {
       if (this.isWebAnalyticsEnabled()) {
-        const linkType = $wt.isDocument(url) ? 'download' : 'link';
-        _paq.push(['trackLink', url, linkType]);
+        const linkType = $wt.isDocument(localURL) ? 'download' : 'link';
+        _paq.push(['trackLink', localURL, linkType]);
       }
     } catch (error) {
       console.error(error);
     }
   }
 
-  private setUser() {
-    const user = this.loginService.getUser();
-    const userId = user.userId ?? 'guest';
-    const email = user.email ?? 'unknown';
-    this.matomoTracker.setUserId(`${userId}-${email}`);
-  }
-
-  public setAgreeWithCookies(value: boolean) {
-    this.isUserEnableCookies = value;
+  public trackCustomEvent(group: string, eventName: string) {
+    try {
+      if (this.isWebAnalyticsEnabled()) {
+        _paq.push(['trackEvent', group, eventName]);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   public getAgreeWithCookies(): boolean | null {
-    return JSON.parse($wt.cookie.get('cck1'))['cm'];
+    try {
+      return (JSON.parse($wt.cookie.get('cck1')) as { cm: boolean })['cm'];
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
   }
 
   public getAgreeWithTrack(): boolean | null {
-    return JSON.parse($wt.cookie.get('cck1'))['all1st'];
+    try {
+      return (JSON.parse($wt.cookie.get('cck1')) as { all1st: boolean })[
+        'all1st'
+      ];
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
   }
 }

@@ -13,11 +13,21 @@
 
     <div class="main" style="background: none !important">
       <div class="wrap login-form">
+        @if (circabcRelease !== 'echa') {
         <img
           class="illustration"
           src="img/logo-circabc-big.png"
           alt="CIRCABC"
         />
+        } @if (circabcRelease === 'echa') {
+        <img
+          class="illustration"
+          src="img/s-circabcLogo-white.svg"
+          alt="CIRCABC"
+          width="200px"
+        />
+        }
+
         <h1>{{ 'label.login' | transloco }}</h1>
         <form [formGroup]="loginForm" (ngSubmit)="login()">
           <div class="field">
@@ -32,10 +42,11 @@
               autocapitalize="none"
               placeholder="{{ 'label.username' | transloco }}"
             />
+            @if (submitClicked) {
             <cbc-control-message
               [control]="userNameControl"
-              *ngIf="submitClicked"
             ></cbc-control-message>
+            }
           </div>
           <div class="field">
             <label for="password">{{ 'label.password' | transloco }}</label>
@@ -46,29 +57,30 @@
               formControlName="password"
               placeholder="{{ 'label.password' | transloco }}"
             />
+            @if (submitClicked) {
             <cbc-control-message
               [control]="passwordControl"
-              *ngIf="submitClicked"
             ></cbc-control-message>
+            }
           </div>
-          <div id="idLoginInError" class="error-message" *ngIf="loginDenied">
+          @if (loginDenied) {
+          <div id="idLoginInError" class="error-message">
             {{ 'error.login.denied' | transloco }}
           </div>
-          <div id="idLoginInError" class="error-message" *ngIf="loginError">
+          } @if (loginError) {
+          <div id="idLoginInError" class="error-message">
             {{ 'error.login.impossible' | transloco }}
           </div>
-          <button
-            data-cy="login"
-            type="submit"
-            class="cta cta--homepage"
-            *ngIf="!loggingIn"
-          >
+          } @if (!loggingIn) {
+          <button data-cy="login" type="submit" class="cta cta--homepage">
             {{ 'label.login' | transloco }}
           </button>
-          <p *ngIf="loggingIn" class="loggin">
+          } @if (loggingIn) {
+          <p class="loggin">
             {{ 'label.logging.you.in' | transloco }}...
             <cbc-spinner></cbc-spinner>
           </p>
+          }
           <a class="button" routerLink="/welcome"
             >{{ 'label.cancel' | transloco }}</a
           >

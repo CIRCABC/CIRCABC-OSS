@@ -1,18 +1,24 @@
 <!-- MODAL BOX -->
+@if (showModal) {
 <div
   class="black-overlayer"
-  *ngIf="showModal"
   [class.overlayer-shown]="showModal"
   [class.overlayer-hidden]="!showModal"
 ></div>
+} @if (showModal) {
 <section
   class="modal"
-  *ngIf="showModal"
   [class.modal-shown]="showModal"
   [class.modal-hidden]="!showModal"
   style="margin-top: 0"
 >
-  <a class="close-icon" (click)="cancel('close')"></a>
+  <a
+    tabindex="0"
+    role="button"
+    class="close-icon"
+    aria-label="Cancel"
+    (click)="cancel('close')"
+  ></a>
   <header>
     <h2 class="title">{{ 'label.refuse.post' | transloco }}</h2>
   </header>
@@ -27,21 +33,28 @@
           <textarea id="rejectReason" formControlName="rejectReason"></textarea>
         </div>
       </form>
-      <div class="field" *ngIf="executing">
-        <label
-          >{{ 'label.running' | transloco }}... <cbc-spinner></cbc-spinner
-        ></label>
+      @if (executing) {
+      <div class="field">
+        <div>
+          {{ 'label.running' | transloco }}... <cbc-spinner></cbc-spinner>
+        </div>
       </div>
+      }
     </div>
   </section>
 
   <section class="modal-footer">
     <!-- Buttons -->
-    <div class="buttons-group" *ngIf="!executing">
-      <a class="cta" (click)="accept()">{{ 'label.reject' | transloco }}</a>
-      <a class="button" (click)="cancel('close')"
+    @if (!executing) {
+    <div class="buttons-group">
+      <a tabindex="0" class="cta" (click)="accept()"
+        >{{ 'label.reject' | transloco }}</a
+      >
+      <a tabindex="0" class="button" (click)="cancel('close')"
         >{{ 'label.cancel' | transloco }}</a
       >
     </div>
+    }
   </section>
 </section>
+}

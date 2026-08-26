@@ -34,17 +34,17 @@ import org.alfresco.web.bean.repository.Node;
  */
 public class RemoveAbuseEvaluator extends BaseActionEvaluator {
 
-    private static final long serialVersionUID = 6112283424092389996L;
+  private static final long serialVersionUID = 6112283424092389996L;
 
-    public boolean evaluate(final Node node) {
-        if (node.hasAspect(ModerationModel.ASPECT_ABUSE_SIGNALED)) {
-            if (node.hasAspect(CircabcModel.ASPECT_LIBRARY)) {
-                return node.hasPermission(LibraryPermissions.LIBADMIN.toString());
-            } else {
-                return node.hasPermission(NewsGroupPermissions.NWSMODERATE.toString());
-            }
-        } else {
-            return false;
-        }
+  public boolean evaluate(final Node node) {
+    if (node.hasAspect(ModerationModel.ASPECT_ABUSE_SIGNALED)) {
+      if (node.hasAspect(CircabcModel.ASPECT_LIBRARY)) {
+        return node.hasPermission(LibraryPermissions.LIBADMIN.toString());
+      } else {
+        return node.hasPermission(NewsGroupPermissions.NWSMODERATE.toString());
+      }
+    } else {
+      return false;
     }
+  }
 }

@@ -1,0 +1,133 @@
+diff -ruabB ./old/org/chiba/xml/xforms/ChibaBean.java ./new/org/chiba/xml/xforms/ChibaBean.java
+--- ./old/org/chiba/xml/xforms/ChibaBean.java	2006-10-24 11:27:20.000000000 +0300
++++ ./new/org/chiba/xml/xforms/ChibaBean.java	2009-08-07 16:09:00.000000000 +0300
+@@ -97,6 +97,7 @@
+ package org.chiba.xml.xforms;
+ 
+ import org.apache.log4j.Logger;
++import org.apache.xerces.xs.XSModel;
+ import org.chiba.xml.events.XFormsEventNames;
+ import org.chiba.xml.events.XMLEventService;
+ import org.chiba.xml.events.impl.DefaultXMLEventInitializer;
+@@ -287,6 +288,24 @@
+      * <p/>
+      * A new document container is created.
+      *
++     * @param node Either the containing document as DOM Document or the root of
++     * a DOM (sub)tree as DOM Element.
++     * @param externalSchema 
++     * @throws XFormsException if the document container could not be created.
++     */
++    public void setXMLContainer(Node node, XSModel externalSchema) throws XFormsException {
++        ensureContainerNotInitialized();
++
++        Document document = toDocument(node);
++        createContainer().setDocument(document);
++        this.container.setExternalSchema(externalSchema);
++    }
++
++    /**
++     * Sets the containing document.
++     * <p/>
++     * A new document container is created.
++     *
+      * @param uri the containing document URI.
+      * @throws XFormsException if the document container could not be created.
+      */
+diff -ruabB ./old/org/chiba/xml/xforms/Container.java ./new/org/chiba/xml/xforms/Container.java
+--- ./old/org/chiba/xml/xforms/Container.java	2006-11-25 00:14:50.000000000 +0200
++++ ./new/org/chiba/xml/xforms/Container.java	2009-08-07 16:09:42.000000000 +0300
+@@ -118,6 +118,7 @@
+ import org.apache.commons.jxpath.Pointer;
+ import org.apache.log4j.Logger;
+ import org.apache.xerces.dom.ElementImpl;
++import org.apache.xerces.xs.XSModel;
+ import org.chiba.xml.events.XFormsEventNames;
+ import org.chiba.xml.events.XMLEventService;
+ import org.chiba.xml.ns.NamespaceConstants;
+@@ -161,6 +162,7 @@
+     private ChibaBean processor;
+     private ConnectorFactory connectorFactory;
+     private Document document;
++    private XSModel schema;
+     private Element root;
+     private XMLEventService eventService;
+     private JXPathContext rootContext;
+@@ -303,6 +305,24 @@
+     }
+ 
+     /**
++     * 
++     * @param schema
++     */
++    public void setExternalSchema(XSModel schema)
++    {
++        this.schema = schema;
++    }
++    
++    /**
++     * 
++     * @return
++     */
++    public XSModel getExternalSchema()
++    {
++        return schema;
++    }
++    
++    /**
+      * returns the root JXPathContext for the whole Document
+      *
+      * @return the root JXPathContext for the whole Document
+@@ -691,6 +711,9 @@
+ 
+             model = (Model) getElementFactory().createXFormsElement(modelElement, null);
+             model.init();
++            if (this.schema != null) {
++                model.getSchemas().add(this.schema);
++            }
+ 
+             this.models.add(model);
+             dispatch(model.getTarget(), XFormsEventNames.MODEL_CONSTRUCT, null);
+diff -ruabB ./old/org/chiba/xml/xforms/core/Bind.java ./new/org/chiba/xml/xforms/core/Bind.java
+--- ./old/org/chiba/xml/xforms/core/Bind.java	2006-10-24 11:27:20.000000000 +0300
++++ ./new/org/chiba/xml/xforms/core/Bind.java	2010-05-19 18:06:26.000000000 +0300
+@@ -513,12 +513,16 @@
+         }
+ 
+         if (this.constraint != null) {
+-            if (declaration.getConstraint() != null) {
++            // do not throws exception
++            /*if (declaration.getConstraint() != null) {
+                 throw new XFormsBindingException("property 'constraint' already present at model item", this.target, this.id);
+-            }
++            }*/
+ 
++            // just leave original constraint, set parent constraint only if original was not provided
++            if (declaration.getConstraint() == null) {
+             declaration.setConstraint(this.constraint);
+         }
++        }
+ 
+         if (this.p3ptype != null) {
+             if (declaration.getP3PType() != null) {
+diff -ruabB ./old/org/chiba/xml/xforms/core/Model.java ./new/org/chiba/xml/xforms/core/Model.java
+--- ./old/org/chiba/xml/xforms/core/Model.java	2006-10-24 11:27:20.000000000 +0300
++++ ./new/org/chiba/xml/xforms/core/Model.java	2009-08-07 16:06:40.000000000 +0300
+@@ -176,7 +176,7 @@
+     private MainDependencyGraph mainGraph;
+     private Validator validator;
+     private Vector changed = new Vector();
+-    private List schemas;
++    private List schemas = new ArrayList();
+     private boolean ready;
+     private UpdateHandler updateHandler;
+     private UpdateSequencer updateSequencer;
+@@ -828,7 +828,7 @@
+         }
+ 
+         // load schemas
+-        this.schemas = new ArrayList();
++        //this.schemas = new ArrayList();
+         loadDefaultSchema(this.schemas);
+         loadLinkedSchemas(this.schemas);
+         loadInlineSchemas(this.schemas);

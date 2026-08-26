@@ -19,7 +19,9 @@ import { Node as ModelNode } from 'app/core/generated/circabc';
  * show <div> bla bla </div> if node has permission LibAdmin
  *
  */
-@Directive({ selector: '[cbcIfRole]' })
+@Directive({
+  selector: '[cbcIfRole]',
+})
 export class IfRoleDirective implements OnInit, OnChanges {
   @Input()
   cbcIfRole!: [ModelNode, AllPermission, AllPermission[]];

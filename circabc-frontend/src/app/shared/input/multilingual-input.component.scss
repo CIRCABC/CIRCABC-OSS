@@ -1,4 +1,4 @@
-@use '~css/global/variables-mixins-keyframes';
+@use 'css/global/variables-mixins-keyframes';
 
 .flexContainer {
   display: flex;
@@ -63,8 +63,12 @@ input {
     background-color: #fff;
     background-image: url(^img/sort-down.png);
     background-repeat: no-repeat, repeat;
-    background-position: right 0.8em top 50%, 0 0;
-    background-size: 0.75em auto, 100%;
+    background-position:
+      right 0.8em top 50%,
+      0 0;
+    background-size:
+      0.75em auto,
+      100%;
 
     &:hover {
       background-color: #035;

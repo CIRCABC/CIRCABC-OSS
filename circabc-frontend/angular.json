@@ -28,7 +28,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "allowedCommonJsDependencies": ["file-saver"],
+            "allowedCommonJsDependencies": ["file-saver","event-emitter","quill-delta"],
             "outputPath": "dist/circabc",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -49,12 +49,13 @@
               "src/css/main.scss",
               "./node_modules/ubuntu-fontface/ubuntu.min.css",
               "./node_modules/font-awesome/css/font-awesome.min.css",
-              "./node_modules/primeng/resources/themes/saga-green/theme.css",
-              "./node_modules/primeng/resources/primeng.min.css",
               "./node_modules/primeicons/primeicons.css",
               "./node_modules/quill/dist/quill.core.css",
               "./node_modules/quill/dist/quill.snow.css"
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": ["./src/css/scss-responsive"]
+            },
             "scripts": ["./node_modules/quill/dist/quill.js"],
             "baseHref": "/ui/",
             "deployUrl": "/ui/",
@@ -71,7 +72,7 @@
                 {
                   "type": "anyComponentStyle",
                   "maximumWarning": "2kb",
-                  "maximumError": "6kb"
+                  "maximumError": "21kb"
                 }
               ],
               "fileReplacements": [
@@ -111,6 +112,20 @@
               "sourceMap": true,
               "namedChunks": true
             },
+            "next": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.next.ts"
+                }
+              ],
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            },
             "ec2": {
               "fileReplacements": [
                 {
@@ -138,6 +153,16 @@
               ],
               "serviceWorker": true
             },
+            "localhost-serve": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.localhost-serve.ts"
+                }
+              ],
+              "serviceWorker": true,
+              "sourceMap": true
+            },
             "test": {
               "budgets": [
                 {
@@ -148,7 +173,7 @@
                 {
                   "type": "anyComponentStyle",
                   "maximumWarning": "2kb",
-                  "maximumError": "6kb"
+                  "maximumError": "21kb"
                 }
               ],
               "fileReplacements": [
@@ -178,7 +203,7 @@
                 {
                   "type": "anyComponentStyle",
                   "maximumWarning": "2kb",
-                  "maximumError": "6kb"
+                  "maximumError": "21kb"
                 }
               ],
 
@@ -285,6 +310,66 @@
               ],
               "serviceWorker": true
             },
+            "olaf-localhost": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.olaf.localhost.ts"
+                }
+              ],
+              "serviceWorker": true
+            },
+            "olaf-test": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.olaf.test.ts"
+                }
+              ],
+              "serviceWorker": true
+            },
+            "olaf-acceptance": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.olaf.acceptance.ts"
+                }
+              ],
+              "serviceWorker": true
+            },
+            "olaf-prod": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.olaf.prod.ts"
+                }
+              ],
+              "serviceWorker": true
+            },
+            "comm-acceptance": {
+              "index": "src/circabc-ewpp/index.html",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.comm.acceptance.ts"
+                }
+              ],
+              "serviceWorker": true,
+              "baseHref": "/circabc-ewpp/ui/",
+              "deployUrl": "/circabc-ewpp/ui/"
+            },
+            "comm-prod": {
+              "index": "src/circabc-ewpp/index.html",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.comm.prod.ts"
+                }
+              ],
+              "serviceWorker": true,
+              "baseHref": "/circabc-ewpp/ui/",
+              "deployUrl": "/circabc-ewpp/ui/"
+            },
             "tomcat-prod-it-nrw": {
               "assets": [
                 "src/favicon.ico",
@@ -318,43 +403,58 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "circabc:build"
+            "buildTarget": "circabc:build"
           },
           "configurations": {
             "tomcat": {
-              "browserTarget": "circabc:build:tomcat",
+              "buildTarget": "circabc:build:tomcat",
               "proxyConfig": "src/proxy.conf.js"
             },
+            "next": {
+              "buildTarget": "circabc:build:next",
+              "proxyConfig": "src/proxy.conf.json"
+            },
+            "next-docker": {
+              "buildTarget": "circabc:build:next",
+              "proxyConfig": "src/proxy.conf.docker.json"
+            },
+            "next-aws": {
+              "buildTarget": "circabc:build:next",
+              "proxyConfig": "src/proxy.conf.aws.json"
+            },
             "ec2": {
-              "browserTarget": "circabc:build:ec2"
+              "buildTarget": "circabc:build:ec2"
             },
             "localhost": {
-              "browserTarget": "circabc:build:localhost"
+              "buildTarget": "circabc:build:localhost"
+            },
+            "localhost-serve": {
+              "buildTarget": "circabc:build:localhost-serve"
             },
             "development": {
-              "browserTarget": "circabc:build:development"
+              "buildTarget": "circabc:build:development"
             },
             "test": {
-              "browserTarget": "circabc:build:test"
+              "buildTarget": "circabc:build:test"
             },
             "acceptance": {
-              "browserTarget": "circabc:build:acceptance"
+              "buildTarget": "circabc:build:acceptance"
             },
             "secure-acceptance": {
-              "browserTarget": "circabc:build:secure-acceptance"
+              "buildTarget": "circabc:build:secure-acceptance"
             },
             "stress": {
-              "browserTarget": "circabc:build:stress"
+              "buildTarget": "circabc:build:stress"
             },
             "production": {
-              "browserTarget": "circabc:build:production"
+              "buildTarget": "circabc:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "circabc:build"
+            "buildTarget": "circabc:build"
           }
         },
         "lint": {
@@ -365,6 +465,5 @@
         }
       }
     }
-  },
-  "defaultProject": "circabc"
+  }
 }

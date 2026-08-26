@@ -22,7 +22,7 @@ package eu.cec.digit.circabc.service.notification;
  * @author Yanick Pignot
  */
 public enum NotificationStatus {
-    SUBSCRIBED,
-    UNSUBSCRIBED,
-    INHERITED
+  SUBSCRIBED,
+  UNSUBSCRIBED,
+  INHERITED,
 }

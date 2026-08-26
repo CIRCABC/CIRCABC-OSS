@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { TranslocoService } from '@ngneat/transloco';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
 import {
   ActionEmitterResult,
@@ -15,13 +15,27 @@ import {
 } from 'app/core/generated/circabc';
 import { UiMessageService } from 'app/core/message/ui-message.service';
 import { getErrorTranslation } from 'app/core/util';
+import { AddNotificationsComponent } from 'app/shared/add-notifications/add-notifications.component';
+import { InlineDeleteComponent } from 'app/shared/delete/inline-delete.component';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
+import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
+import { ReponsiveSubMenuComponent } from 'app/shared/reponsive-sub-menu/reponsive-sub-menu.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-notifications',
   templateUrl: './notifications.component.html',
-  styleUrls: ['./notifications.component.scss'],
+  styleUrl: './notifications.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    HorizontalLoaderComponent,
+    ReponsiveSubMenuComponent,
+    RouterLink,
+    InlineDeleteComponent,
+    AddNotificationsComponent,
+    I18nPipe,
+    TranslocoModule,
+  ],
 })
 export class NotificationsComponent implements OnInit {
   public loading = false;
@@ -79,7 +93,7 @@ export class NotificationsComponent implements OnInit {
         this.notifs = await firstValueFrom(
           this.notificationService.getNotifications(this.currentNode.id)
         );
-      } catch (error) {
+      } catch (_error) {
         const text = this.translateService.translate(
           getErrorTranslation(ActionType.DELETE_NOTIFICATION)
         );

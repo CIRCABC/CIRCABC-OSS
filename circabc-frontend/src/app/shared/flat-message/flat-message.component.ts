@@ -1,12 +1,11 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'cbc-flat-message',
   templateUrl: './flat-message.component.html',
-  styleUrls: ['./flat-message.component.scss'],
+  styleUrl: './flat-message.component.scss',
   preserveWhitespaces: true,
 })
 export class FlatMessageComponent {
-  @Input()
-  public message!: string;
+  public readonly message = input.required<string>();
 }

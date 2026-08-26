@@ -20,13 +20,13 @@ import java.util.Date;
 
 public class Search {
 
-    private Date fromDate;
+  private Date fromDate;
 
-    public Date getFromDate() {
-        return fromDate;
-    }
+  public Date getFromDate() {
+    return fromDate;
+  }
 
-    public void setFromDate(Date fromDate) {
-        this.fromDate = fromDate;
-    }
+  public void setFromDate(Date fromDate) {
+    this.fromDate = fromDate;
+  }
 }

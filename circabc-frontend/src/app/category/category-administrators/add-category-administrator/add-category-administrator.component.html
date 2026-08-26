@@ -1,7 +1,7 @@
 <cbc-modal
   [title]="'admin.category.admins.add.modal.title'"
   (ok)="addAdmins()"
-  (cancel)="cancel()"
+  (cancelModal)="cancel()"
   [okLabel]="'label.add'"
   [(visible)]="showModal"
   [showOkButton]="futureMembers && futureMembers.length > 0"
@@ -9,7 +9,8 @@
   [executingLabel]="'label.inviting'"
 >
   <form [formGroup]="addUserForm">
-    <div *ngIf="!isOSS" class="field switch">
+    @if (!isOSS) {
+    <div class="field switch">
       <div class="label longer"> {{ 'label.search.type' | transloco }} </div>
       <input
         id="filter"
@@ -23,6 +24,7 @@
         'label.search.all.central.database' ) | transloco }}</span
       >
     </div>
+    }
     <div class="field">
       <label for="name">{{ 'label.search' | transloco }}</label>
       <input
@@ -35,8 +37,10 @@
       <button class="button" (click)="searchUsers()"
         >{{ 'label.search' | transloco }}</button
       >
-      <a (click)="resetForm()">{{ 'label.clear' | transloco }}</a>
-      <cbc-spinner *ngIf="searchingUsers"></cbc-spinner>
+      <a tabindex="0" (click)="resetForm()">{{ 'label.clear' | transloco }}</a>
+      @if (searchingUsers) {
+      <cbc-spinner></cbc-spinner>
+      }
     </div>
 
     <!-- Select Multiple-->
@@ -52,13 +56,12 @@
           style="width: 585px; height: 150px"
           formControlName="possibleUsers"
         >
-          <option
-            *ngFor="let user of availableUsers"
-            value="{{ user.userId }}"
-            [disabled]="isAlreadyAdmin(user)"
+          @for (user of availableUsers; track user.userId) {
+          <option value="{{ user.userId }}" [disabled]="isAlreadyAdmin(user)"
             >{{ user.firstname + ' ' + user.lastname + ' (' + user.email + ')'
             }}</option
           >
+          }
         </select>
       </div>
     </div>
@@ -66,25 +69,29 @@
     <!-- Select Multiple-->
     <div class="field">
       <label for="sMultiple">{{ 'label.invitations' | transloco }}</label>
+      @if (hasSelectedUser()) {
       <input
         type="button"
         value="{{ 'label.add.selection' | transloco }}"
         (click)="selectUsers()"
-        *ngIf="hasSelectedUser()"
       />
+      }
       <br />
       <br />
       <ul>
-        <li *ngFor="let futureMember of futureMembers">
+        @for (futureMember of futureMembers; track futureMember.userId) {
+        <li>
           {{ '[ Category Administrator ] ' + futureMember.firstname + ' ' +
           futureMember.lastname + ' (' + futureMember.email + ')' }}
-          <a (click)="removeFromFutureMember(futureMember)">
+          <a tabindex="0" (click)="removeFromFutureMember(futureMember)">
             <img
               src="img/icon-close-20x20.png"
               style="vertical-align: middle"
+              alt="Remove"
             />
           </a>
         </li>
+        }
       </ul>
     </div>
   </form>

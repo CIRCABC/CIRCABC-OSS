@@ -25,61 +25,61 @@ import java.util.List;
  */
 public class AssignmentTaskRequest {
 
-    private String assignmentUserName = null;
-    private String documentId = null;
-    private List<String> assigneeIds = null;
+  private String assignmentUserName = null;
+  private String documentId = null;
+  private List<String> assigneeIds = null;
 
-    /**
-     * Gets the value of the assignmentUserName
-     *
-     * @return the assignmentUserName
-     */
-    public String getAssignmentUserName() {
-        return assignmentUserName;
-    }
+  /**
+   * Gets the value of the assignmentUserName
+   *
+   * @return the assignmentUserName
+   */
+  public String getAssignmentUserName() {
+    return assignmentUserName;
+  }
 
-    /**
-     * Sets the value of the assignmentUserName
-     *
-     * @param assignmentUserName the assignmentUserName to set.
-     */
-    public void setAssignmentUserName(String assignmentUserName) {
-        this.assignmentUserName = assignmentUserName;
-    }
+  /**
+   * Sets the value of the assignmentUserName
+   *
+   * @param assignmentUserName the assignmentUserName to set.
+   */
+  public void setAssignmentUserName(String assignmentUserName) {
+    this.assignmentUserName = assignmentUserName;
+  }
 
-    /**
-     * Gets the value of the documentId
-     *
-     * @return the documentId
-     */
-    public String getDocumentId() {
-        return documentId;
-    }
+  /**
+   * Gets the value of the documentId
+   *
+   * @return the documentId
+   */
+  public String getDocumentId() {
+    return documentId;
+  }
 
-    /**
-     * Sets the value of the documentId
-     *
-     * @param documentId the documentId to set.
-     */
-    public void setDocumentId(String documentId) {
-        this.documentId = documentId;
-    }
+  /**
+   * Sets the value of the documentId
+   *
+   * @param documentId the documentId to set.
+   */
+  public void setDocumentId(String documentId) {
+    this.documentId = documentId;
+  }
 
-    /**
-     * Gets the value of the assigneeIds
-     *
-     * @return the assigneeIds
-     */
-    public List<String> getAssigneeIds() {
-        return assigneeIds;
-    }
+  /**
+   * Gets the value of the assigneeIds
+   *
+   * @return the assigneeIds
+   */
+  public List<String> getAssigneeIds() {
+    return assigneeIds;
+  }
 
-    /**
-     * Sets the value of the assigneeIds
-     *
-     * @param assigneeIds the assigneeIds to set.
-     */
-    public void setAssigneeIds(List<String> assigneeIds) {
-        this.assigneeIds = assigneeIds;
-    }
+  /**
+   * Sets the value of the assigneeIds
+   *
+   * @param assigneeIds the assigneeIds to set.
+   */
+  public void setAssigneeIds(List<String> assigneeIds) {
+    this.assigneeIds = assigneeIds;
+  }
 }

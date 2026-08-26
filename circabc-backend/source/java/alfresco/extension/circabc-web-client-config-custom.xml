@@ -4,7 +4,6 @@
     |  		   http://ec.europa.eu/idabc/en/document/6523
     |
     +-->
-
 <alfresco-config>
 
 	<config evaluator="string-compare" condition="Advanced Search">
@@ -12,7 +11,7 @@
 	     <content-types />
 	     <custom-properties>
 	     	<!-- Don't remove this, it is used for the save search dialog -->
-	        <meta-data aspect="cd:cproperties" property="cd:keyword"  />
+	        <meta-data aspect="cd:cproperties" property="cd:keyword" />
 	        <meta-data aspect="cd:cproperties" property="cd:status" />
 	        <meta-data aspect="cd:cproperties" property="cd:issue_date" />
 	        <meta-data aspect="cd:cproperties" property="cd:reference" />
@@ -38,8 +37,8 @@
 	        <meta-data aspect="cd:cproperties" property="cd:dynAttr20" />
 	        <meta-data aspect="cd:bproperties" property="cd:security_ranking" />
 	        <meta-data aspect="cd:bproperties" property="cd:expiration_date" />
-	        <meta-data aspect="cd:urlable" property="cd:url"/>
-	        <meta-data aspect="sys:localized" property="sys:locale"/>
+	        <meta-data aspect="cd:urlable" property="cd:url" />
+	        <meta-data aspect="sys:localized" property="sys:locale" />
 	     </custom-properties>
 	  </advanced-search>
 	</config>
@@ -53,10 +52,22 @@
   		</aspects>
 
 		<action-handlers>
-			<handler name="mailwithattach" class="eu.cec.digit.circabc.action.MainWithAttachActionHandler" />
-			<handler name="circabc-import" class="eu.cec.digit.circabc.action.CircabcImportHandler" />
-			<handler name="advanced-import" class="eu.cec.digit.circabc.action.AdvancedImportHandler" />
-			<handler name="circabc-render" class="eu.cec.digit.circabc.service.rendition.CircabcRenditionActionExecuter" />
+			<handler
+        name="mailwithattach"
+        class="eu.cec.digit.circabc.action.MainWithAttachActionHandler"
+      />
+			<handler
+        name="circabc-import"
+        class="eu.cec.digit.circabc.action.CircabcImportHandler"
+      />
+			<handler
+        name="advanced-import"
+        class="eu.cec.digit.circabc.action.AdvancedImportHandler"
+      />
+			<handler
+        name="circabc-render"
+        class="eu.cec.digit.circabc.service.rendition.CircabcRenditionActionExecuter"
+      />
 		</action-handlers>
 	</config>
 
@@ -139,28 +150,44 @@
 
 	<config evaluator="string-compare" condition="Space Wizards">
 	    <folder-types>
-	       <type name="do:dossier" icon="/images/icons/space-icon-star.gif" description-id="dossier_desc" />
+	       <type
+        name="do:dossier"
+        icon="/images/icons/space-icon-star.gif"
+        description-id="dossier_desc"
+      />
 	    </folder-types>
 	 </config>
 
    	<config evaluator="string-compare" condition="do:dossier icons">
       <icons>
          <icon name="space-icon-pen" path="/images/icons/space-icon-pen.gif" />
-         <icon name="space-icon-star" path="/images/icons/space-icon-star.gif" />
+         <icon
+        name="space-icon-star"
+        path="/images/icons/space-icon-star.gif"
+      />
          <icon name="space-icon-doc" path="/images/icons/space-icon-doc.gif" />
       </icons>
    </config>
 
    <config evaluator="string-compare" condition="cm:folder icons">
 		<icons>
-	         <icon name="../extension/icons/events" path="/images/extension/icons/events.gif" />
-	         <icon name="../extension/icons/information" path="/images/extension/icons/information.gif" />
+	         <icon
+        name="../extension/icons/events"
+        path="/images/extension/icons/events.gif"
+      />
+	         <icon
+        name="../extension/icons/information"
+        path="/images/extension/icons/information.gif"
+      />
 		</icons>
 	</config>
 
    <config evaluator="string-compare" condition="app:folderlink icons">
 		<icons>
-	         <icon name="space-icon-link" path="/images/extension/icons/space-icon-link.gif" />
+	         <icon
+        name="space-icon-link"
+        path="/images/extension/icons/space-icon-link.gif"
+      />
 		</icons>
 	</config>
     

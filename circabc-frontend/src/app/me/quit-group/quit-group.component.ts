@@ -1,31 +1,31 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { TranslocoService } from '@ngneat/transloco';
+import { Component, Input, output, input } from '@angular/core';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { ActionType } from 'app/action-result';
-import { InterestGroup, MembersService } from 'app/core/generated/circabc';
+import { type InterestGroup, MembersService } from 'app/core/generated/circabc';
 import { UiMessageService } from 'app/core/message/ui-message.service';
 import { getErrorTranslation, getSuccessTranslation } from 'app/core/util';
+import { ModalComponent } from 'app/shared/modal/modal.component';
 import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-quit-group',
   templateUrl: './quit-group.component.html',
+  imports: [ModalComponent, TranslocoModule],
 })
 export class QuitGroupComponent {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   public show = false;
 
-  @Input()
-  public group!: InterestGroup;
+  public readonly group = input.required<InterestGroup>();
 
-  @Input()
-  public username = '';
+  public readonly username = input('');
 
-  @Output()
-  public readonly showChange = new EventEmitter();
+  public readonly showChange = output<boolean>();
 
-  @Output()
-  public readonly membershipRemoved = new EventEmitter();
+  public readonly membershipRemoved = output();
 
   public processing = false;
 
@@ -40,9 +40,10 @@ export class QuitGroupComponent {
     this.processing = true;
 
     try {
-      if (this.group && this.group.id) {
+      const group = this.group();
+      if (group?.id) {
         await firstValueFrom(
-          this.membersService.deleteMember(this.group.id, this.username)
+          this.membersService.deleteMember(group.id, this.username())
         );
         this.show = false;
         this.showChange.emit(this.show);
@@ -52,7 +53,7 @@ export class QuitGroupComponent {
         );
         this.uiMessageService.addSuccessMessage(res, true);
       }
-    } catch (error) {
+    } catch (_error) {
       const res = this.translateService.translate(
         getErrorTranslation(ActionType.REMOVE_MEMBERSHIP)
       );
@@ -70,12 +71,13 @@ export class QuitGroupComponent {
   public getGroupLabel(): string {
     let result = '';
 
-    if (this.group.name) {
-      result = this.group.name;
+    const group = this.group();
+    if (group.name) {
+      result = group.name;
     }
 
-    if (this.group.title) {
-      const title = this.i18nPipe.transform(this.group.title);
+    if (group.title) {
+      const title = this.i18nPipe.transform(group.title);
 
       if (title !== '') {
         result = title;

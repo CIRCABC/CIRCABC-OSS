@@ -1,6 +1,6 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input, output } from '@angular/core';
 
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
 import {
   ActionEmitterResult,
@@ -10,20 +10,26 @@ import {
 import { Profile, ProfileService } from 'app/core/generated/circabc';
 import { UiMessageService } from 'app/core/message/ui-message.service';
 import { getErrorTranslation } from 'app/core/util';
+import { ModalComponent } from 'app/shared/modal/modal.component';
+import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-delete-profile',
   templateUrl: './delete-profile.component.html',
   preserveWhitespaces: true,
+  imports: [ModalComponent, I18nPipe, TranslocoModule],
 })
 export class DeleteProfileComponent {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   profile: Profile | undefined;
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   showModal = false;
-  @Output()
-  readonly profileDeleted = new EventEmitter<ActionEmitterResult>();
+  readonly profileDeleted = output<ActionEmitterResult>();
 
   public deleting = false;
 
@@ -46,7 +52,7 @@ export class DeleteProfileComponent {
 
   async delete() {
     this.deleting = true;
-    if (this.profile && this.profile.id) {
+    if (this.profile?.id) {
       const result: ActionEmitterResult = {};
       result.type = ActionType.DELETE_PROFILE;
 
@@ -58,7 +64,7 @@ export class DeleteProfileComponent {
         this.profileDeleted.emit(result);
         this.showModal = false;
         this.profile = undefined;
-      } catch (error) {
+      } catch (_error) {
         const res = this.translateService.translate(
           getErrorTranslation(ActionType.DELETE_PROFILE)
         );

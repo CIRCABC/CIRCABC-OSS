@@ -1,0 +1,7 @@
+<webscript>
+  <shortname>ping.get</shortname>
+  <description>Ping and get information about the current running instance</description>
+  <url>/circabc/ping</url>
+  <format default="json"/>
+  <authentication>none</authentication>
+</webscript>

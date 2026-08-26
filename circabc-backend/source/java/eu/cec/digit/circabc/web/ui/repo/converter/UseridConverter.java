@@ -23,7 +23,6 @@ package eu.cec.digit.circabc.web.ui.repo.converter;
 import eu.cec.digit.circabc.business.api.user.UserDetails;
 import eu.cec.digit.circabc.business.api.user.UserDetailsBusinessSrv;
 import eu.cec.digit.circabc.web.Services;
-
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
@@ -36,64 +35,66 @@ import javax.faces.convert.ConverterException;
  */
 public class UseridConverter implements Converter {
 
-    /**
-     * <p>The standard converter id for this converter.</p>
-     */
-    public static final String CONVERTER_ID = "eu.cec.digit.circabc.faces.UseridConverter";
+  /**
+   * <p>The standard converter id for this converter.</p>
+   */
+  public static final String CONVERTER_ID =
+    "eu.cec.digit.circabc.faces.UseridConverter";
 
-    public Object getAsObject(FacesContext context, UIComponent component, String value)
-            throws ConverterException {
-        return value;
+  public Object getAsObject(
+    FacesContext context,
+    UIComponent component,
+    String value
+  ) throws ConverterException {
+    return value;
+  }
+
+  @SuppressWarnings("unchecked")
+  public String getAsString(
+    FacesContext context,
+    UIComponent component,
+    Object value
+  ) throws ConverterException {
+    final String userName = getString(value);
+    if (userName != null) {
+      final UserDetailsBusinessSrv userDetServ = Services.getBusinessRegistry(
+        context
+      ).getUserDetailsBusinessSrv();
+
+      String disaplyName = null;
+
+      try {
+        final UserDetails details = userDetServ.getUserDetails(userName);
+        disaplyName = getTextContent(details);
+      } catch (Throwable t) {
+        // no problem, user doen'st exist
+      }
+
+      if (disaplyName != null) {
+        return disaplyName;
+      } else {
+        return userName;
+      }
+    } else {
+      return "";
     }
+  }
 
-    @SuppressWarnings("unchecked")
-    public String getAsString(FacesContext context, UIComponent component, Object value)
-            throws ConverterException {
-        final String userName = getString(value);
-        if (userName != null) {
+  protected String getTextContent(final UserDetails userDetails) {
+    return userDetails.getFullName();
+  }
 
-            final UserDetailsBusinessSrv userDetServ = Services.getBusinessRegistry(context)
-                    .getUserDetailsBusinessSrv();
+  private String getString(Object value) {
+    if (value != null && value instanceof String) {
+      final String str = ((String) value).trim();
 
-            String disaplyName = null;
-
-            try {
-                final UserDetails details = userDetServ.getUserDetails(userName);
-                disaplyName = getTextContent(details);
-
-            } catch (Throwable t) {
-                // no problem, user doen'st exist
-            }
-
-            if (disaplyName != null) {
-                return disaplyName;
-            } else {
-                return userName;
-            }
-        } else {
-            return "";
-        }
+      if (str.length() > 0) {
+        return str;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
     }
-
-
-    protected String getTextContent(final UserDetails userDetails) {
-        return userDetails.getFullName();
-    }
-
-
-    private String getString(Object value) {
-        if (value != null && value instanceof String) {
-            final String str = ((String) value).trim();
-
-            if (str.length() > 0) {
-                return str;
-            } else {
-                return null;
-            }
-        } else {
-            return null;
-        }
-    }
-
-
+  }
 }

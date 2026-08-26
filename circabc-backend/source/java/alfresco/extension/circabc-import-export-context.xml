@@ -1,9 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans
+  xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+>
 	
-    <bean id="circabcViewParser" class="eu.cec.digit.circabc.util.importer.ViewParser">
+    <bean
+    id="circabcViewParser"
+    class="eu.cec.digit.circabc.util.importer.ViewParser"
+  >
         <property name="namespaceService">
             <ref bean="namespaceService" />
         </property>
@@ -17,7 +22,10 @@
     
 	<!-- CIRCABC Importer -->
 	
-    <bean id="circabcImporter" class="eu.cec.digit.circabc.util.importer.CircabcImporter">
+    <bean
+    id="circabcImporter"
+    class="eu.cec.digit.circabc.util.importer.CircabcImporter"
+  >
         <property name="nodeService">
             <ref bean="NodeService" />
         </property>
@@ -34,7 +42,10 @@
 	
 	<!-- Importer Component -->
 	
-    <bean id="circabcImporterComponent" class="eu.cec.digit.circabc.util.importer.ImporterComponent">
+    <bean
+    id="circabcImporterComponent"
+    class="eu.cec.digit.circabc.util.importer.ImporterComponent"
+  >
         <!-- For now, hard-wire the view parser -->
         <property name="namespaceService">
             <ref bean="NamespaceService" />
@@ -73,22 +84,30 @@
     
     <!-- Importer Service -->
 
-    <bean id="CircabcImporterService" class="org.springframework.aop.framework.ProxyFactoryBean">
+    <bean
+    id="CircabcImporterService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
         <property name="proxyInterfaces">
-            <value>eu.cec.digit.circabc.util.importer.CircabcImporterService</value>
+            <value
+      >eu.cec.digit.circabc.util.importer.CircabcImporterService</value>
         </property>
         <property name="target">
-            <ref bean="circabcImporterComponent"/>
+            <ref bean="circabcImporterComponent" />
         </property>
         <property name="interceptorNames">
             <list>
-                <idref bean="ImporterService_transaction"/>
-                <idref bean="AuditMethodInterceptor"/>
+                <idref bean="ImporterService_transaction" />
+                <idref bean="AuditMethodInterceptor" />
             </list>
         </property>
     </bean>
 	
-	<bean id="circabc-cat-ig-importer" class="eu.cec.digit.circabc.util.importer.ImportActionExecuter" parent="action-executer">
+	<bean
+    id="circabc-cat-ig-importer"
+    class="eu.cec.digit.circabc.util.importer.ImportActionExecuter"
+    parent="action-executer"
+  >
 		<property name="circabcImporter">
 			<ref bean="circabcImporter" />
 		</property>
@@ -96,7 +115,10 @@
 	
 	<!-- CIRCABC Exporter -->
 	
-    <bean id="circabcExporter" class="eu.cec.digit.circabc.util.exporter.CircabcExporter">
+    <bean
+    id="circabcExporter"
+    class="eu.cec.digit.circabc.util.exporter.CircabcExporter"
+  >
         <property name="nodeService">
             <ref bean="NodeService" />
         </property>
@@ -116,7 +138,10 @@
 	
 	<!-- Exporter Component -->
 	
-    <bean id="circabcExporterComponent" class="eu.cec.digit.circabc.util.exporter.ExporterComponent">
+    <bean
+    id="circabcExporterComponent"
+    class="eu.cec.digit.circabc.util.exporter.ExporterComponent"
+  >
         <property name="namespaceService">
             <ref bean="NamespaceService" />
         </property>
@@ -145,22 +170,30 @@
 
     <!-- Exporter Service -->
 
-    <bean id="CircabcExporterService" class="org.springframework.aop.framework.ProxyFactoryBean">
+    <bean
+    id="CircabcExporterService"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
         <property name="proxyInterfaces">
-            <value>eu.cec.digit.circabc.util.exporter.CircabcExporterService</value>
+            <value
+      >eu.cec.digit.circabc.util.exporter.CircabcExporterService</value>
         </property>
         <property name="target">
-            <ref bean="circabcExporterComponent"/>
+            <ref bean="circabcExporterComponent" />
         </property>
         <property name="interceptorNames">
             <list>
-                <idref bean="ExporterService_transaction"/>
-                <idref bean="AuditMethodInterceptor"/>
+                <idref bean="ExporterService_transaction" />
+                <idref bean="AuditMethodInterceptor" />
             </list>
         </property>
     </bean>
 	
-	<bean id="circabc-cat-ig-exporter" class="eu.cec.digit.circabc.util.exporter.ExportActionExecuter" parent="action-executer">
+	<bean
+    id="circabc-cat-ig-exporter"
+    class="eu.cec.digit.circabc.util.exporter.ExportActionExecuter"
+    parent="action-executer"
+  >
 		<property name="circabcExporter">
 			<ref bean="circabcExporter" />
 		</property>

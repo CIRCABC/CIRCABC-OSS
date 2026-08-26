@@ -2,7 +2,7 @@
   <shortname>create a new category</shortname>
   <description>create a new category</description>
   <url>/circabc/headers/{id}/categories</url>
-  <format default="json"/>
+  <format default="json" />
   <authentication>user</authentication>
   <transaction>required</transaction>
 </webscript>

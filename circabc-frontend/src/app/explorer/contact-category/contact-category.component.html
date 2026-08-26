@@ -1,5 +1,5 @@
-<cbc-header></cbc-header>
-<cbc-navigator></cbc-navigator>
+<cbc-header />
+<cbc-navigator />
 <div class="wrap page-container my-account">
   <section class="box">
     <header class="header">
@@ -17,9 +17,9 @@
             <label for="header">{{ 'label.header' | transloco }}</label>
             <div class="custom-select select--form">
               <select name="" id="header" formControlName="header">
-                <option *ngFor="let header of headers" [value]="header.id"
-                  >{{ header.name }}</option
-                >
+                @for (header of headers; track header.id) {
+                <option [value]="header.id">{{ header.name }}</option>
+                }
               </select>
             </div>
           </div>
@@ -27,11 +27,11 @@
             <label for="category">{{ 'label.category' | transloco }}</label>
             <div class="custom-select select--form">
               <select name="" id="category" formControlName="category">
-                <option
-                  *ngFor="let category of categories"
-                  [value]="category.id"
+                @for (category of categories; track category.id) {
+                <option [value]="category.id"
                   >{{ getNameOrTitle(category) }}</option
                 >
+                }
               </select>
             </div>
           </div>
@@ -107,14 +107,17 @@
           >
         </div>
       </form>
-      <div class="actions" *ngIf="processing">
+      @if (processing) {
+      <div class="actions">
         <p
           >{{ 'label.processing' | transloco }}...
           <cbc-spinner></cbc-spinner>
         </p>
       </div>
-      <div class="actions buttons-group" *ngIf="!processing">
+      } @if (!processing) {
+      <div class="actions buttons-group">
         <a
+          tabindex="0"
           class="cta"
           (click)="!form.valid ? '' : contact()"
           [class.disabled]="!form.valid"
@@ -124,6 +127,7 @@
           >{{ 'label.cancel' | transloco }}</a
         >
       </div>
+      }
     </div>
   </section>
 </div>

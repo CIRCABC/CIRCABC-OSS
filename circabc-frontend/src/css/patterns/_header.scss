@@ -3,129 +3,70 @@
 /* HEADER */
 
 .main-header {
-  height: 65px;
-  min-width: 1024px;
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 50px;
+  width: 100%;
   background: #1f3341;
   background: url(^img/header.jpg) no-repeat center bottom;
-
-  @include variables-mixins-keyframes.background-cover;
-
+  flex-wrap: wrap;
   color: #fff;
   font-size: 11.5px;
   font-size: 1.15rem;
 
+  .header-left-side {
+    display: flex;
+    align-items: center;
+  }
+
+  .header-right-side {
+    display: flex;
+    align-items: center;
+  }
+
+  .header-search-bar {
+    flex: 1 1 400px;
+    display: flex;
+    align-items: center;
+
+    cbc-search-bar {
+      width: 100%;
+    }
+  }
+
+  @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+    padding: 12px 10px;
+    gap: 10px;
+
+    .header-search-bar {
+      flex: 0 0 100%;
+      order: 2;
+    }
+  }
+
+  @include variables-mixins-keyframes.background-cover();
   @include variables-mixins-keyframes.responsive-break-medium();
 
   .home-link {
     text-decoration: none;
   }
 
-  .logo {
-    margin-top: 8px;
-  }
-
-  .search-bar {
-    display: inline-block;
-    vertical-align: top;
-    width: 500px;
-    border: 1px solid #fff;
-    background-color: rgb(255 255 255 / 0.1);
-    background-image: url(^img/icon-search-white.png);
-    background-repeat: no-repeat;
-    background-position: 98% center;
-    border-radius: 4px;
-    color: #fff;
-    font-family: variables-mixins-keyframes.$standardText;
-    font-size: 11.5px;
-    font-size: 1.15rem;
-    padding: 10px;
-    margin: 16px;
-    margin-left: 125px;
-
-    &::-webkit-input-placeholder {
-      /* WebKit browsers */
-
-      color: #fff;
-    }
-
-    &:-moz-placeholder {
-      /* Mozilla Firefox 4 to 18 */
-
-      color: #fff;
-      opacity: 1;
-    }
-
-    &::-moz-placeholder {
-      /* Mozilla Firefox 19+ */
-
-      color: #fff;
-      opacity: 1;
-    }
-
-    &:-ms-input-placeholder {
-      /* Internet Explorer 10+ */
-
-      color: #fff;
-    }
-
-    &::after {
-      content: 'icon';
-    }
-  }
-
-  .search-bar:focus {
-    background-color: rgb(255 255 255 / 1);
-    background-image: url(^img/icon-search-blue.png);
-    outline: none;
-    color: variables-mixins-keyframes.$link;
-
-    &::-webkit-input-placeholder {
-      /* WebKit browsers */
-
-      color: variables-mixins-keyframes.$link;
-    }
-
-    &:-moz-placeholder {
-      /* Mozilla Firefox 4 to 18 */
-
-      color: variables-mixins-keyframes.$link;
-      opacity: 1;
-    }
-
-    &::-moz-placeholder {
-      /* Mozilla Firefox 19+ */
-
-      color: variables-mixins-keyframes.$link;
-      opacity: 1;
-    }
-
-    &:-ms-input-placeholder {
-      /* Internet Explorer 10+ */
-
-      color: variables-mixins-keyframes.$link;
-    }
-  }
-
   .personal-menu {
-    position: relative;
-    text-align: left;
-    display: inline-block;
-    vertical-align: top;
+    display: flex;
+    align-items: center;
+    padding-right: 10px;
     color: #fff;
     text-decoration: none;
-    margin-top: 18px;
 
     .personal-menu__name {
-      display: inline-block;
-      vertical-align: middle;
+      padding-right: 5px;
       max-width: 150px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
 
-      @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+      @media screen and (max-width: variables-mixins-keyframes.$break-small) {
         display: none;
-        visibility: hidden;
       }
     }
 
@@ -223,7 +164,10 @@
 }
 
 .main-nav {
-  background: #fff;
+  display: flex;
+  justify-content: flex-end;
+  background-color: var(--theme-menu);
+  box-shadow: 0 0 2px #0000004d;
   height: 52px;
 
   .tab {
@@ -238,7 +182,7 @@
   }
 
   .tab:hover {
-    background: #f5fafa;
+    background: var(--theme-menu-hover);
   }
 
   .tab--group-name {
@@ -274,8 +218,8 @@
       top: 8px;
       content: '';
       display: block;
-      width: 18px;
-      height: 18px;
+      width: 22px;
+      height: 22px;
     }
 
     .label {
@@ -285,36 +229,42 @@
   }
 
   .tab--info::before {
-    background: url(^img/icon-info-grey.png) no-repeat;
+    background: url(^img/icon-dashboard-grey.svg) no-repeat;
+    background-size: 19px;
   }
 
   .tab--library::before {
-    background: url(^img/icon-library-grey.png) no-repeat;
+    background: url(^img/icon-library-grey.svg) no-repeat;
+    background-size: 20px;
   }
 
   .tab--members::before {
-    background: url(^img/icon-members-grey.png) no-repeat;
+    background: url(^img/icon-members-grey.svg) no-repeat;
+    background-size: 20px;
   }
 
   .tab--agenda::before {
-    background: url(^img/icon-agenda-grey.png) no-repeat;
+    background: url(^img/icon-agenda-grey.svg) no-repeat;
+    background-size: 18px;
   }
 
   .tab--forums::before {
-    background: url(^img/icon-forums-grey.png) no-repeat;
+    background: url(^img/icon-speech-forums-grey.svg) no-repeat;
+    background-size: 22px;
   }
 
   .tab--admin::before {
-    background: url(^img/icon-admin-grey.png) no-repeat;
+    background: url(^img/icon-admin-grey.svg) no-repeat;
+    background-size: 20px;
   }
 
   .tab--roles::before {
-    background: url(^img/business-card.png) no-repeat;
-    background-size: 18px 18px;
+    background: url(^img/business-card-grey.svg) no-repeat;
+    background-size: 20px;
   }
 
   .tab--share::before {
-    background: url(^img/icon-share-grey.png) no-repeat;
+    background: url(^img/icon-circabc-share-grey.svg) no-repeat;
     background-size: 18px 18px;
   }
 
@@ -336,12 +286,13 @@
   }
 
   .tab--group-browser::before {
-    background: url(^img/icon-group-browser-grey.png) no-repeat;
-    background-size: 20px;
+    background: url(^img/icon-group-browser-grey.svg) no-repeat;
+    background-size: 21px;
   }
 
   .tab--help::before {
-    background: url(^img/icon-help-grey.png) no-repeat;
+    background: url(^img/icon-help-grey.svg) no-repeat;
+    background-size: 20px;
   }
 
   // States
@@ -394,7 +345,7 @@
   }
 
   .tab--current {
-    color: variables-mixins-keyframes.$link;
+    color: var(--theme-header-link);
     position: relative;
 
     &::after {
@@ -445,32 +396,38 @@
     }
 
     &.tab--info::before {
-      background: url(^img/icon-info-blue.png) no-repeat;
+      background: url(^img/icon-dashboard-blue.svg) no-repeat;
+      background-size: 19px;
     }
 
     &.tab--library::before {
-      background: url(^img/icon-library-blue.png) no-repeat;
+      background: url(^img/icon-library-blue.svg) no-repeat;
+      background-size: 20px;
     }
 
     &.tab--members::before {
-      background: url(^img/icon-members-blue.png) no-repeat;
+      background: url(^img/icon-members-blue.svg) no-repeat;
+      background-size: 20px;
     }
 
     &.tab--agenda::before {
-      background: url(^img/icon-agenda-blue.png) no-repeat;
+      background: url(^img/icon-agenda-blue.svg) no-repeat;
+      background-size: 18px;
     }
 
     &.tab--roles::before {
-      background: url(^img/business-card-blue.png) no-repeat;
-      background-size: 18px 18px;
+      background: url(^img/business-card-blue.svg) no-repeat;
+      background-size: 20px;
     }
 
     &.tab--forums::before {
-      background: url(^img/icon-forums-blue.png) no-repeat;
+      background: url(^img/icon-speech-forums-blue.svg) no-repeat;
+      background-size: 22px;
     }
 
     &.tab--admin::before {
-      background: url(^img/icon-admin-blue.png) no-repeat;
+      background: url(^img/icon-admin-blue.svg) no-repeat;
+      background-size: 20px;
     }
 
     &.tab--dashboard::before {
@@ -490,11 +447,13 @@
     }
 
     &.tab--group-browser::before {
-      background: url(^img/icon-group-browser-blue.png) no-repeat;
+      background: url(^img/icon-group-browser-blue.svg) no-repeat;
+      background-size: 21px;
     }
 
     &.tab--help::before {
-      background: url(^img/icon-help-blue.png) no-repeat;
+      background: url(^img/icon-help-blue.svg) no-repeat;
+      background-size: 20px;
     }
   }
 }

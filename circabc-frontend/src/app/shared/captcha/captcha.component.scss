@@ -1,0 +1,37 @@
+@use '_global';
+@use '_forms';
+@use '_boxes';
+
+.captcha-image-box {
+  width: 100%;
+
+  .captcha-img {
+    flex: 1 0 200px;
+
+    img {
+      width: 100%;
+    }
+  }
+
+  .captcha-buttons {
+    flex: 1 0 150px;
+
+    a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    div ~ div {
+      padding-top: 10px;
+    }
+  }
+}
+
+.captcha-audio {
+  width: 100%;
+
+  audio {
+    width: 100%;
+  }
+}

@@ -2,7 +2,7 @@
   <shortname>get the notifications related to one node</shortname>
   <description>get the notifications related to one node</description>
     <url>/circabc/nodes/{id}/notifications</url>
-  <format default="json"/>
+  <format default="json" />
   <authentication>user</authentication>
   <transaction>required</transaction>
 </webscript>

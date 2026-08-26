@@ -20,9 +20,8 @@
  ******************************************************************************/
 package eu.cec.digit.circabc.web.ui.tag;
 
-import org.alfresco.web.ui.common.tag.evaluator.GenericEvaluatorTag;
-
 import javax.faces.component.UIComponent;
+import org.alfresco.web.ui.common.tag.evaluator.GenericEvaluatorTag;
 
 /**
  * Tag to check if a list contains an object.
@@ -31,39 +30,39 @@ import javax.faces.component.UIComponent;
  */
 public class ListContainsEvaluatorTag extends GenericEvaluatorTag {
 
-    public static final String ATTR_LIST = "list";
-    /**
-     * list
-     */
-    private String list;
+  public static final String ATTR_LIST = "list";
+  /**
+   * list
+   */
+  private String list;
 
-    @Override
-    public String getComponentType() {
-        return "eu.cec.digit.circabc.faces.ListContainsEvaluator";
-    }
+  @Override
+  public String getComponentType() {
+    return "eu.cec.digit.circabc.faces.ListContainsEvaluator";
+  }
 
-    /**
-     * @see javax.faces.webapp.UIComponentTag#setProperties(javax.faces.component.UIComponent)
-     */
-    protected void setProperties(UIComponent component) {
-        super.setProperties(component);
-        setStringBindingProperty(component, "list", this.list);
-    }
+  /**
+   * @see javax.faces.webapp.UIComponentTag#setProperties(javax.faces.component.UIComponent)
+   */
+  protected void setProperties(UIComponent component) {
+    super.setProperties(component);
+    setStringBindingProperty(component, "list", this.list);
+  }
 
-    /**
-     * @see javax.servlet.jsp.tagext.Tag#release()
-     */
-    public void release() {
-        super.release();
-        this.list = null;
-    }
+  /**
+   * @see javax.servlet.jsp.tagext.Tag#release()
+   */
+  public void release() {
+    super.release();
+    this.list = null;
+  }
 
-    /**
-     * Set the list
-     *
-     * @param list the list value binding
-     */
-    public void setList(String list) {
-        this.list = list;
-    }
+  /**
+   * Set the list
+   *
+   * @param list the list value binding
+   */
+  public void setList(String list) {
+    this.list = list;
+  }
 }

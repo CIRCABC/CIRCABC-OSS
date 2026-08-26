@@ -1,7 +1,7 @@
 <cbc-modal
   [title]="'label.create.forum'"
   (ok)="createForum()"
-  (cancel)="cancelWizard('close')"
+  (cancelModal)="cancelWizard('close')"
   [okLabel]="'label.create'"
   [(visible)]="showWizard"
   [executing]="creating"

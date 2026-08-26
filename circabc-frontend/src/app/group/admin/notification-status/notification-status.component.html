@@ -1,185 +1,398 @@
-<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
-<div class="fluid" *ngIf="ready">
-  <span *ngIf="!fromIG">
-    <br />
-    <br />
-  </span>
-  <a class="cta cta--plus" style="float: right" (click)="showAddModal = true"
-    >{{ 'notifications.add.configuration' | transloco }}</a
-  >
-  <a *ngIf="!fromIG" (click)="goBack()" class="page-header__backlink"
-    >{{ 'label.back' | transloco }}</a
-  >
-  <h2>
-    {{ 'label.notifications.on' | transloco }}
-    {{(isForumNewsgroupsName(currentNode.name!,currentNode.type!))?
-    ('label.forum' | transloco) : currentNode.name }}
-  </h2>
-  <div class="fluid page-container">
-    <img src="img/info-signs.png" height="16" width="16" />
-    <span *ngIf="fromIG" style="color: #035"
-      >{{ 'admin.notification.status.info.ig' | transloco }}
-      <strong>'{{ 'label.UNSUBSCRIBED' | transloco }}'</strong>
-    </span>
-    <span *ngIf="!fromIG"
-      >{{ 'admin.notification.status.info.text' | transloco }}</span
-    >
-    <section class="table-container">
-      <h3>{{ 'admin.notification.status.configuration' | transloco }}</h3>
-      <header class="header">
-        <cbc-pager
-          [length]="totalConfigurations"
-          [pageSize]="listingOptionsConfigurations.limit"
-          [pageIndex]="listingOptionsConfigurations.page"
-          (pageChanged)="goToPageConfigurations($event)"
-        ></cbc-pager>
-      </header>
+@if (loading) {
+<cbc-horizontal-loader />
+}
 
-      <table class="main">
-        <thead>
-          <tr>
-            <th></th>
-            <th style="width: 22px"></th>
-            <th>{{ 'label.type' | transloco }}</th>
-            <th>{{ 'label.name' | transloco }}</th>
-            <th>{{ 'admin.tab.notification.status' | transloco }}</th>
-            <th>
-              {{ 'label.inherited' | transloco }}&nbsp;&nbsp;&nbsp;<cbc-hint
-                style="font-weight: normal"
-                [floatEnable]="false"
-                [text]="'label.notification.inherited.help' | transloco"
-              ></cbc-hint>
-            </th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr
-            class="row empty-row"
-            *ngIf="notificationConfigurations !== undefined"
-          >
-            <td
-              style="padding-left: 22px"
-              colspan="6"
-              *ngIf="notificationConfigurations.length === 0"
-            >
-              {{ 'admin.notification.status.configuration.display.none' |
-              transloco }}
-            </td>
-          </tr>
-
-          <tr
-            class="row"
-            *ngFor="let configuration of notificationConfigurations"
-          >
-            <td class="cell-left-border"></td>
-            <td class="cell-checkbox"></td>
-            <td class="cell-file-name" style="width: 30px">
-              {{ configuration.type }}
-              <ul class="actions" style="width: 80px">
-                <li>
-                  <cbc-inline-delete
-                    *ngIf="!configuration.inherited"
-                    (deletionConfirmed)="deleteConfiguration(configuration)"
-                  ></cbc-inline-delete>
-                </li>
-              </ul>
-            </td>
-            <td *ngIf="configuration.type === 'GROUP'">
-              {{ configuration.title !== undefined ? (configuration.title |
-              cbcI18n) : configuration.userName }}
-            </td>
-            <td *ngIf="configuration.type === 'USER'">
-              {{ configuration.userName }}
-            </td>
-            <td>
-              <a (click)="toggleConfigurationStatus(configuration)"
-                >{{ 'label.' + configuration.status | transloco }}</a
-              >
-            </td>
-            <td>
-              {{ (configuration.inherited ? 'label.yes' : 'label.no') |
-              transloco }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <cbc-pager
-        [length]="totalConfigurations"
-        [pageSize]="listingOptionsConfigurations.limit"
-        [pageIndex]="listingOptionsConfigurations.page"
-        (pageChanged)="goToPageConfigurations($event)"
-      ></cbc-pager>
-    </section>
-
-    <hr />
-
-    <section class="table-container">
-      <h3>{{ 'admin.notification.status.subscribed.users' | transloco }}</h3>
-      <header class="header">
-        <cbc-pager
-          [length]="totalUsers"
-          [pageSize]="listingOptionsUsers.limit"
-          [pageIndex]="listingOptionsUsers.page"
-          (pageChanged)="goToPageUsers($event)"
-        ></cbc-pager>
-      </header>
-
-      <table class="main">
-        <thead>
-          <tr>
-            <th></th>
-            <th style="width: 22px"></th>
-            <th style="padding-right: 30px">
-              {{ 'label.username' | transloco }}
-            </th>
-            <th>{{ 'label.lastname' | transloco }}</th>
-            <th>{{ 'label.firstname' | transloco }}</th>
-            <th>{{ 'label.email' | transloco }}</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr class="row empty-row" *ngIf="subscribedUsers !== undefined">
-            <td
-              style="padding-left: 22px"
-              colspan="6"
-              *ngIf="subscribedUsers.length === 0"
-            >
-              {{ 'admin.notification.status.users.display.none' | transloco }}
-            </td>
-          </tr>
-
-          <tr class="row" *ngFor="let user of subscribedUsers">
-            <td class="cell-left-border"></td>
-            <td class="cell-checkbox"></td>
-            <td class="cell-file-name" style="width: 30px">
-              {{ user.userName }}
-            </td>
-            <td>{{ user.lastName }}</td>
-            <td>{{ user.firstName }}</td>
-            <td>{{ user.emailAddress }}</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="footer">
-        <cbc-pager
-          [length]="totalUsers"
-          [pageSize]="listingOptionsUsers.limit"
-          [pageIndex]="listingOptionsUsers.page"
-          (pageChanged)="goToPageUsers($event)"
-        ></cbc-pager>
+<div class="flexPage">
+  @if (ready) {
+  <div class="page-container">
+    <section class="box">
+      <a
+        tabindex="0"
+        class="cta cta--plus"
+        style="float: right"
+        (click)="showAddModal = true"
+        >{{ 'notifications.add.configuration' | transloco }}</a
+      >
+      <a tabindex="0" (click)="goBack()" class="page-header__backlink"
+        >{{ 'label.back' | transloco }}</a
+      >
+      <div class="page_title">
+        {{ 'label.notifications.on' | transloco }}
+        {{(isForumNewsgroupsName(currentNode.name!,currentNode.type!))?
+        ('label.forum' | transloco) : currentNode.name }}
       </div>
+      <div class="fluid page-container">
+        <section class="table-container">
+          <div class="subtitle-box">
+            <div class="page_subtitle">
+              {{ 'admin.notification.status.configuration' | transloco }}
+            </div>
+            <div>
+              <img src="img/info-signs.png" height="10" width="10" alt="Info" />
+              <span style="color: #035; font-size: 13px"
+                >{{ 'option.notifications.config.info' | transloco }}
+              </span>
+            </div>
+          </div>
+
+          <header class="header">
+            <cbc-pager
+              [length]="totalConfigurations"
+              [pageSize]="listingOptionsConfigurations.limit"
+              [page]="listingOptionsConfigurations.page"
+              (pageChange)="goToPageConfigurations($event)"
+            ></cbc-pager>
+            <div class="icons col-hidable">
+              @if (!showSearchBox1) {
+              <a tabindex="0" (click)="showSearchBox1 = true">
+                <img src="img/filter.png" alt="Filter" />
+              </a>
+              } @if (showSearchBox1) {
+              <a tabindex="0" (click)="showSearchBox1 = false">
+                <img src="img/filter-filled-tool-symbol.png" alt="Filter" />
+              </a>
+              }
+              <div class="dropdown-trigger">
+                <img src="img/icon-admin-blue.png" alt="Settings" />
+                <div class="dropdown dropdown--library-settings">
+                  <div class="number-of-items">
+                    {{ 'label.show' | transloco }}:
+                    <a tabindex="0" (click)="changeLimit(10)">10</a>
+                    <a tabindex="0" (click)="changeLimit(25)">25</a>
+                    <a tabindex="0" (click)="changeLimit(50)">50</a>
+                    <a tabindex="0" (click)="changeLimit(0)">All</a>
+                  </div>
+                </div>
+              </div>
+              <img
+                src="img/icon-help-blue.png"
+                alt="Help"
+                matTooltipClass="tooltip"
+                [matTooltip]="'option.notifications.config.help.' + fromPage | transloco"
+              />
+            </div>
+          </header>
+          <form [formGroup]="searchFormConfig">
+            <table class="main">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th style="width: 22px"></th>
+                  <th>{{ 'label.type' | transloco }}</th>
+                  <th>{{ 'label.name' | transloco }}</th>
+                  <th>{{ 'admin.tab.notification.status' | transloco }}</th>
+                  <th style="text-align: center">
+                    {{ 'label.actions' | transloco }}
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody>
+                @if (showSearchBox1) {
+                <tr>
+                  <td class="cell-left-border"></td>
+                  <td class="filterActionColumn">
+                    <a
+                      tabindex="0"
+                      class="button"
+                      (click)="loadNotificationConfigurations(10)"
+                      >{{ 'label.filter' | transloco }}</a
+                    >
+                    <a tabindex="0" (click)="resetSearchConfig()"
+                      >{{ 'label.reset' | transloco }}</a
+                    >
+                  </td>
+
+                  <td class="filterColumn">
+                    <div
+                      class="custom-select select--form short-width select-align"
+                    >
+                      <select id="configType" formControlName="configType">
+                        <option value="">{{ 'label.all' | transloco }}</option>
+                        <option value="USER">
+                          {{ 'option.notifications.type.USER' | transloco }}
+                        </option>
+
+                        <option value="GROUP">
+                          {{ 'option.notifications.type.PROFILE' | transloco }}
+                        </option>
+                      </select>
+                    </div>
+                  </td>
+
+                  <td class="filterColumn">
+                    <input
+                      type="text"
+                      name="configUserName"
+                      formControlName="configUserName"
+                      class="cell-user-username inputTable"
+                    />
+                  </td>
+                  <td class="filterColumn">
+                    <div
+                      class="custom-select select--form short-width select-align"
+                    >
+                      <select id="configStatus" formControlName="configStatus">
+                        <option value="">{{ 'label.all' | transloco }}</option>
+                        <option value="SUBSCRIBED">
+                          {{ 'option.notifications.config.SUBSCRIBED' |
+                          transloco }}
+                        </option>
+                        <option value="UNSUBSCRIBED">
+                          {{ 'option.notifications.config.UNSUBSCRIBED' |
+                          transloco }}
+                        </option>
+                      </select>
+                    </div>
+                  </td>
+                </tr>
+                } @if (notificationConfigurations !== undefined) {
+                <tr class="row empty-row">
+                  @if (notificationConfigurations.length === 0) {
+                  <td style="padding-left: 22px" colspan="6">
+                    {{ 'admin.notification.status.configuration.display.none' |
+                    transloco }}
+                  </td>
+                  }
+                </tr>
+                } @for (configuration of notificationConfigurations; track
+                configuration) {
+                <tr class="row">
+                  <td class="cell-left-border"></td>
+                  <td class="cell-checkbox"></td>
+                  <td class="cell-file-name">
+                    {{ configuration.type === 'GROUP' ? 'PROFILE' :
+                    configuration.type }}
+                  </td>
+                  @if (configuration.type === 'GROUP') {
+                  <td>
+                    {{ configuration.title !== undefined ? (configuration.title
+                    | cbcI18n) : configuration.userName }}
+                  </td>
+                  } @if (configuration.type === 'USER') {
+                  <td>{{ configuration.userName }}</td>
+                  }
+                  <td>
+                    {{ 'label.' + configuration.status | transloco }} @if
+                    (configuration.inherited) {
+                    <span> ({{ 'label.inherited' | transloco }}) </span>
+                    }
+                  </td>
+                  <td class="actions">
+                    <!-- colocar um tultip aui FILTRO DE SELECT SUBCRIBE nao esta funcionando-->
+
+                    @if (!configuration.inherited) {
+                    <div>
+                      @if (configuration.status === 'UNSUBSCRIBED') {
+                      <a
+                        tabindex="0"
+                        (click)="toggleConfigurationStatus(configuration)"
+                        matTooltip="{{ 'label.subscribe'| transloco }}"
+                      >
+                        <img
+                          src="img/icon-subscribe-blue.svg"
+                          alt="Filter"
+                          height="15px"
+                      /></a>
+                      } @if (configuration.status === 'SUBSCRIBED') {
+                      <a
+                        tabindex="0"
+                        (click)="toggleConfigurationStatus(configuration)"
+                        matTooltip="{{ 'label.unsubscribe'| transloco }}"
+                      >
+                        <img
+                          src="img/icon-unsubscribe-blue.svg"
+                          alt="Filter"
+                          height="15px"
+                      /></a>
+                      }
+
+                      <a
+                        tabindex="0"
+                        (click)="deleteConfiguration(configuration)"
+                        matTooltip="{{ 'label.remove'  | transloco }}"
+                      >
+                        <img
+                          src="img/icon-garbage-blue.svg"
+                          alt="delete"
+                          height="14px"
+                      /></a>
+                    </div>
+                    }
+                  </td>
+                </tr>
+                }
+              </tbody>
+            </table>
+          </form>
+          <div class="footer">
+            <cbc-pager
+              [length]="totalConfigurations"
+              [pageSize]="listingOptionsConfigurations.limit"
+              [page]="listingOptionsConfigurations.page"
+              (pageChange)="goToPageConfigurations($event)"
+            ></cbc-pager>
+          </div>
+        </section>
+
+        <br />
+
+        <section class="table-container">
+          <div class="subtitle-box">
+            <div class="page_subtitle">
+              {{ 'admin.notification.status.subscribed.users' | transloco }}
+            </div>
+            <div>
+              <img src="img/info-signs.png" height="10" width="10" alt="Info" />
+              <span style="color: #035; font-size: 13px"
+                >{{ 'option.notifications.type.info' | transloco }}
+              </span>
+            </div>
+          </div>
+
+          <header class="header">
+            <cbc-pager
+              [length]="totalUsers"
+              [pageSize]="listingOptionsUsers.limit"
+              [page]="listingOptionsUsers.page"
+              (pageChange)="goToPageUsers($event)"
+            ></cbc-pager>
+            <div class="icons col-hidable">
+              @if (!showSearchBox2) {
+              <a tabindex="0" (click)="showSearchBox2 = true">
+                <img src="img/filter.png" alt="Filter" />
+              </a>
+              } @if (showSearchBox2) {
+              <a tabindex="0" (click)="showSearchBox2 = false">
+                <img src="img/filter-filled-tool-symbol.png" alt="Filter" />
+              </a>
+              }
+              <div class="dropdown-trigger">
+                <img src="img/icon-admin-blue.png" alt="Settings" />
+                <div class="dropdown dropdown--library-settings">
+                  <div class="number-of-items">
+                    {{ 'label.show' | transloco }}:
+                    <a tabindex="0" (click)="changeLimitResult(10)">10</a>
+                    <a tabindex="0" (click)="changeLimitResult(25)">25</a>
+                    <a tabindex="0" (click)="changeLimitResult(50)">50</a>
+                    <a tabindex="0" (click)="changeLimitResult(0)">All</a>
+                  </div>
+                </div>
+              </div>
+
+              <img
+                src="img/icon-help-blue.png"
+                alt="Help"
+                matTooltipClass="tooltip"
+                [matTooltip]="'option.notifications.type.help' | transloco"
+              />
+            </div>
+          </header>
+          <form [formGroup]="searchForm">
+            <table class="main">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th style="width: 22px"></th>
+                  <th>{{ 'label.username' | transloco }}</th>
+                  <th>{{ 'label.lastname' | transloco }}</th>
+                  <th>{{ 'label.firstname' | transloco }}</th>
+                  <th>{{ 'label.email' | transloco }}</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                @if (showSearchBox2) {
+                <tr>
+                  <td class="cell-left-border"></td>
+                  <td class="filterActionColumn">
+                    <a
+                      tabindex="0"
+                      class="button"
+                      (click)="loadSubscribedUsers(10)"
+                      >{{ 'label.filter' | transloco }}</a
+                    >
+                    <a tabindex="0" (click)="resetSearch()"
+                      >{{ 'label.reset' | transloco }}</a
+                    >
+                  </td>
+                  <td class="filterColumn">
+                    <input
+                      type="text"
+                      name="userName"
+                      formControlName="userName"
+                      class="cell-user-username inputTable"
+                    />
+                  </td>
+
+                  <td class="filterColumn">
+                    <input
+                      type="text"
+                      name="lastName"
+                      formControlName="lastName"
+                      class="cell-user-lastname inputTable"
+                    />
+                  </td>
+                  <td class="filterColumn">
+                    <input
+                      type="text"
+                      name="firstName"
+                      formControlName="firstName"
+                      class="cell-user-name inputTable"
+                    />
+                  </td>
+                  <td class="filterColumn">
+                    <input
+                      type="text"
+                      name="email"
+                      formControlName="email"
+                      class="cell-user-email inputTable"
+                    />
+                  </td>
+                </tr>
+                } @if (subscribedUsers !== undefined) {
+                <tr class="row empty-row">
+                  @if (subscribedUsers.length === 0) {
+                  <td style="padding-left: 22px" colspan="6">
+                    {{ 'admin.notification.status.users.display.none' |
+                    transloco }}
+                  </td>
+                  }
+                </tr>
+                } @for (user of subscribedUsers; track user.userName) {
+                <tr class="row">
+                  <td class="cell-left-border"></td>
+                  <td class="cell-checkbox"></td>
+                  <td class="cell-file-name">{{ user.userName }}</td>
+                  <td>{{ user.lastName }}</td>
+                  <td>{{ user.firstName }}</td>
+                  <td>{{ user.emailAddress }}</td>
+                </tr>
+                }
+              </tbody>
+            </table>
+          </form>
+
+          <div class="footer">
+            <cbc-pager
+              [length]="totalUsers"
+              [pageSize]="listingOptionsUsers.limit"
+              [page]="listingOptionsUsers.page"
+              (pageChange)="goToPageUsers($event)"
+            ></cbc-pager>
+          </div>
+        </section>
+      </div>
+
+      @if (currentNode) {
+      <cbc-add-notifications
+        [showModal]="showAddModal"
+        [node]="currentNode"
+        [ig]="igId"
+        (finished)="refresh($event)"
+      ></cbc-add-notifications>
+      }
     </section>
   </div>
-
-  <cbc-add-notifications
-    *ngIf="currentNode"
-    [showModal]="showAddModal"
-    [node]="currentNode"
-    [ig]="igId"
-    (finished)="refresh($event)"
-  ></cbc-add-notifications>
+  }
 </div>

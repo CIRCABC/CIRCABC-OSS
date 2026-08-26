@@ -17,15 +17,13 @@
  */
 package eu.cec.digit.circabc.service.report;
 
-import org.alfresco.service.cmr.repository.NodeRef;
-
 import java.util.List;
+import org.alfresco.service.cmr.repository.NodeRef;
 
 /** @author beaurpi */
 public interface ReportDaoService {
+  /** @return */
+  Integer queryDbForNumberOfDocuments();
 
-    /** @return */
-    Integer queryDbForNumberOfDocuments();
-
-    List<NodeRef> getAvailibleShareSpaces(NodeRef igNodeRef);
+  List<NodeRef> getAvailibleShareSpaces(NodeRef igNodeRef);
 }

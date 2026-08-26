@@ -1,23 +1,21 @@
-<?xml version='1.0' encoding='UTF-8'?>
-
-<!DOCTYPE hibernate-mapping PUBLIC
-    '-//Hibernate/Hibernate Mapping DTD 3.0//EN' 
-    'http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd'>
-    
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE hibernate-mapping PUBLIC '-//Hibernate/Hibernate Mapping DTD 3.0//EN'
+  'http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd'>
 <!-- Migration 3.1 -> 3.4.6 - 08/12/2011 - File can maybe be deleted after the migration -->
 <hibernate-mapping>
 
    <class
-         name="org.alfresco.repo.domain.hibernate.TransactionImpl"
-         proxy="org.alfresco.repo.domain.Transaction"
-         table="alf_transaction"
-         dynamic-update="false"
-         dynamic-insert="false"
-         select-before-update="false" 
-         lazy="true" 
-         optimistic-lock="version"  >
+    name="org.alfresco.repo.domain.hibernate.TransactionImpl"
+    proxy="org.alfresco.repo.domain.Transaction"
+    table="alf_transaction"
+    dynamic-update="false"
+    dynamic-insert="false"
+    select-before-update="false"
+    lazy="true"
+    optimistic-lock="version"
+  >
       <!-- auto-generated ID -->
-      <id name="id" column="id" type="long" >
+      <id name="id" column="id" type="long">
          	<generator class="sequence">
 			    <param name="sequence">alf_transaction_seq</param>
 			</generator>
@@ -26,34 +24,54 @@
       <version column="version" name="version" type="long" />
       <!-- forward assoc to server IP -->
       <many-to-one
-            name="server"
-            class="org.alfresco.repo.domain.hibernate.ServerImpl"
-            column="server_id"
-            foreign-key="fk_alf_txn_svr"
-            lazy="proxy"
-            fetch="select"
-            unique="false"
-            not-null="false"
-            cascade="none" />
-      <property name="changeTxnId" column="change_txn_id" type="string" length="56" not-null="true" />
-      <property name="commitTimeMs" column="commit_time_ms" type="long" not-null="false" index="idx_alf_txn_ctms" />
+      name="server"
+      class="org.alfresco.repo.domain.hibernate.ServerImpl"
+      column="server_id"
+      foreign-key="fk_alf_txn_svr"
+      lazy="proxy"
+      fetch="select"
+      unique="false"
+      not-null="false"
+      cascade="none"
+    />
+      <property
+      name="changeTxnId"
+      column="change_txn_id"
+      type="string"
+      length="56"
+      not-null="true"
+    />
+      <property
+      name="commitTimeMs"
+      column="commit_time_ms"
+      type="long"
+      not-null="false"
+      index="idx_alf_txn_ctms"
+    />
    </class>
 
    <class
-         name="org.alfresco.repo.domain.hibernate.ServerImpl"
-         proxy="org.alfresco.repo.domain.Server"
-         table="alf_server"
-         dynamic-update="false"
-         dynamic-insert="false"
-         select-before-update="false" 
-         lazy="true" 
-         optimistic-lock="version"  >
+    name="org.alfresco.repo.domain.hibernate.ServerImpl"
+    proxy="org.alfresco.repo.domain.Server"
+    table="alf_server"
+    dynamic-update="false"
+    dynamic-insert="false"
+    select-before-update="false"
+    lazy="true"
+    optimistic-lock="version"
+  >
       <!-- auto-generated ID -->
-      <id name="id" column="id" type="long" >
+      <id name="id" column="id" type="long">
          <generator class="native" />
       </id>
       <natural-id>
-         <property name="ipAddress" column="ip_address" type="string" length="39" not-null="true" />
+         <property
+        name="ipAddress"
+        column="ip_address"
+        type="string"
+        length="39"
+        not-null="true"
+      />
       </natural-id>
       <!-- Optimistic locking -->
       <version column="version" name="version" type="long" />

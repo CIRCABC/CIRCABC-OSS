@@ -2,7 +2,7 @@
   <shortname>Login ECAS</shortname>
   <description>Establish a ticket and session</description>
   <url>/circabc/ecaslogin?u={username}&amp;t={ticket}</url>
-  <format default="xml"/>
+  <format default="xml" />
   <authentication>none</authentication>
   <transaction>required</transaction>
 </webscript>

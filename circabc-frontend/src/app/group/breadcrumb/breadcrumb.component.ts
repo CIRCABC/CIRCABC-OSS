@@ -1,31 +1,38 @@
-import { Component, Input, OnChanges, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, Input, OnChanges, OnInit, input } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 
+import { NgStyle } from '@angular/common';
+import { TranslocoModule } from '@jsverse/transloco';
 import { Node, NodesService } from 'app/core/generated/circabc';
+import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
+import { TaggedToPlainTextPipe } from 'app/shared/pipes/taggedtoplaintext.pipe';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-group-breadcrumb',
   templateUrl: './breadcrumb.component.html',
-  styleUrls: ['./breadcrumb.component.scss'],
+  styleUrl: './breadcrumb.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    RouterLink,
+    NgStyle,
+    I18nPipe,
+    TaggedToPlainTextPipe,
+    TranslocoModule,
+  ],
 })
 export class BreadcrumbComponent implements OnInit, OnChanges {
-  @Input()
-  public noMarginBottom = false;
-  @Input()
-  public clickable = true;
-  @Input()
-  public node: string | undefined;
+  public readonly noMarginBottom = input(false);
+  public readonly clickable = input(true);
+  public readonly node = input<string>();
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   public path!: Node[];
   // if displayName === true, the names of the breadcrumb are displayed directly, if false, the title is tried
-  @Input()
-  public displayName = true;
-  @Input()
-  public textColor!: string;
-  @Input()
-  public showHomeIcon = true;
+  public readonly displayName = input(true);
+  public readonly textColor = input<string>();
+  public readonly showHomeIcon = input(true);
 
   public isInDetails = false;
   public isInTopic = false;
@@ -44,11 +51,16 @@ export class BreadcrumbComponent implements OnInit, OnChanges {
   }
 
   public async ngOnChanges() {
-    if (this.node === undefined) {
+    const node = this.node();
+    if (node === undefined) {
       return;
     }
-    this.path = await firstValueFrom(this.nodesService.getPath(this.node));
-
+    try {
+      this.path = await firstValueFrom(this.nodesService.getPath(node));
+    } catch (e) {
+      this.path = [];
+      console.error(e);
+    }
     if (this.path && this.path.length === 1) {
       this.clickablePath = [];
       this.lastElement = this.path.slice(0, 1);
@@ -74,11 +86,12 @@ export class BreadcrumbComponent implements OnInit, OnChanges {
   }
 
   public getStyle(): object {
-    if (this.textColor === undefined) {
+    const textColor = this.textColor();
+    if (textColor === undefined) {
       return {};
     }
     return {
-      color: `#${this.textColor}`,
+      color: `#${textColor}`,
     };
   }
 

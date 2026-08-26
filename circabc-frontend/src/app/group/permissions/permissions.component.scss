@@ -1,4 +1,4 @@
-@use '~css/global/variables-mixins-keyframes';
+@use 'css/global/variables-mixins-keyframes';
 
 .fix-margin-responsive {
   @media screen and (max-width: variables-mixins-keyframes.$break-medium) {

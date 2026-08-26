@@ -26,173 +26,174 @@ import eu.cec.digit.circabc.business.api.user.UserDetails;
 import eu.cec.digit.circabc.web.servlet.UploadFileServletConfig;
 import eu.cec.digit.circabc.web.ui.repo.component.shelf.UIClipboardShelfItem;
 import eu.cec.digit.circabc.web.wai.dialog.BaseWaiDialog;
-import org.alfresco.repo.security.authentication.TicketComponent;
-
-import javax.faces.context.FacesContext;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
+import javax.faces.context.FacesContext;
+import org.alfresco.repo.security.authentication.TicketComponent;
 
 public class SystemMonitorDialog extends BaseWaiDialog {
 
-    private static final long serialVersionUID = 6158073330963347674L;
+  private static final long serialVersionUID = 6158073330963347674L;
 
-    private UploadFileServletConfig config;
-    private ImportConfig importConfig;
-    private ClipboardConfig clipboardConfig;
+  private UploadFileServletConfig config;
+  private ImportConfig importConfig;
+  private ClipboardConfig clipboardConfig;
 
-// Migration 3.1 -> 3.4.6 - 20/12/2011 - AuthenticationServiceImpl changed because of the authentication subsystems in Alfresco 3.4.6
-// The accessed methods belong to the TicketComponent, so this was replaced instead.
-// This code suggests me that before a custom ticket component could have been implemented.
-//		private AuthenticationService authenticationService;
-//
-//		public AuthenticationService getAuthenticationService2() {
-//			return authenticationService;
-//		}
-//
-//		public void setAuthenticationService(
-//				AuthenticationService authenticationService) {
-//			this.authenticationService = authenticationService;
-//		}
+  // Migration 3.1 -> 3.4.6 - 20/12/2011 - AuthenticationServiceImpl changed because of the authentication subsystems in Alfresco 3.4.6
+  // The accessed methods belong to the TicketComponent, so this was replaced instead.
+  // This code suggests me that before a custom ticket component could have been implemented.
+  //		private AuthenticationService authenticationService;
+  //
+  //		public AuthenticationService getAuthenticationService2() {
+  //			return authenticationService;
+  //		}
+  //
+  //		public void setAuthenticationService(
+  //				AuthenticationService authenticationService) {
+  //			this.authenticationService = authenticationService;
+  //		}
 
-    private TicketComponent ticketComponent = null;
+  private TicketComponent ticketComponent = null;
 
-    //***********************************************************************
-    //                                                              OVERRIDES
-    //***********************************************************************
+  //***********************************************************************
+  //                                                              OVERRIDES
+  //***********************************************************************
 
-    @Override
-    public void init(final Map<String, String> parameters) {
-        super.init(parameters);
+  @Override
+  public void init(final Map<String, String> parameters) {
+    super.init(parameters);
+  }
+
+  @Override
+  protected String finishImpl(FacesContext context, String outcome)
+    throws Throwable {
+    return null;
+  }
+
+  @Override
+  public String getFinishButtonLabel() {
+    return this.translate("system_monitor_refresh");
+  }
+
+  @Override
+  public String getCancelButtonLabel() {
+    return this.translate("system_monitor_close");
+  }
+
+  public String getPageIconAltText() {
+    return null;
+  }
+
+  public String getBrowserTitle() {
+    return null;
+  }
+
+  //***********************************************************************
+  //                                                         PRIVATE HELPER
+  //***********************************************************************
+
+  //***********************************************************************
+  //                                                      GETTER AND SETTER
+  //***********************************************************************
+
+  /**
+   * @param ticketComponent the ticketComponent to set
+   */
+  public void setTicketComponent(TicketComponent ticketComponent) {
+    this.ticketComponent = ticketComponent;
+  }
+
+  public ArrayList<UserDetails> getUsers() {
+    //		Set<String> userNames = this.getAuthenticationService().getUsersWithTickets(true);
+    Set<String> userNames = ticketComponent.getUsersWithTickets(true);
+    ArrayList<UserDetails> users = new ArrayList<>();
+    for (String userName : userNames) {
+      if (!userName.equals("guest")) {
+        UserDetails userDets = getBusinessRegistry()
+          .getUserDetailsBusinessSrv()
+          .getUserDetails(userName);
+        users.add(userDets);
+      }
     }
+    return users;
+  }
 
-    @Override
-    protected String finishImpl(FacesContext context, String outcome)
-            throws Throwable {
-        return null;
-    }
+  public int getUserCount() {
+    //		Set<String> userNames = this.getAuthenticationService().getUsersWithTickets(true);
+    Set<String> userNames = ticketComponent.getUsersWithTickets(true);
+    return userNames.size() - 1;
+  }
 
-    @Override
-    public String getFinishButtonLabel() {
-        return this.translate("system_monitor_refresh");
-    }
+  public int getTicketCount() {
+    //		return this.getAuthenticationService().countTickets(true);
+    return ticketComponent.countTickets(true);
+  }
 
-    @Override
-    public String getCancelButtonLabel() {
-        return this.translate("system_monitor_close");
-    }
+  public void setConfig(UploadFileServletConfig config) {
+    this.config = config;
+  }
 
-    public String getPageIconAltText() {
-        return null;
-    }
+  public int getMaxFileSize() {
+    return this.config.getMaxSizeInMegaBytes();
+  }
 
-    public String getBrowserTitle() {
-        return null;
-    }
+  public void setMaxFileSize(int value) {
+    this.config.setMaxSizeInMegaBytes(value);
+  }
 
-    //***********************************************************************
-    //                                                         PRIVATE HELPER
-    //***********************************************************************
+  public int getImportMaxFileSize() {
+    return this.importConfig.getMaxSizeInMegaBytes();
+  }
 
-    //***********************************************************************
-    //                                                      GETTER AND SETTER
-    //***********************************************************************
+  public void setImportMaxFileSize(int value) {
+    this.importConfig.setMaxSizeInMegaBytes(value);
+  }
 
-    /**
-     * @param ticketComponent the ticketComponent to set
-     */
-    public void setTicketComponent(TicketComponent ticketComponent) {
-        this.ticketComponent = ticketComponent;
-    }
+  public ImportConfig getImportConfig() {
+    return importConfig;
+  }
 
-    public ArrayList<UserDetails> getUsers() {
-//		Set<String> userNames = this.getAuthenticationService().getUsersWithTickets(true);
-        Set<String> userNames = ticketComponent.getUsersWithTickets(true);
-        ArrayList<UserDetails> users = new ArrayList<>();
-        for (String userName : userNames) {
-            if (!userName.equals("guest")) {
-                UserDetails userDets = getBusinessRegistry().getUserDetailsBusinessSrv()
-                        .getUserDetails(userName);
-                users.add(userDets);
-            }
-        }
-        return users;
-    }
+  public void setImportConfig(ImportConfig importConfig) {
+    this.importConfig = importConfig;
+  }
 
-    public int getUserCount() {
-//		Set<String> userNames = this.getAuthenticationService().getUsersWithTickets(true);
-        Set<String> userNames = ticketComponent.getUsersWithTickets(true);
-        return userNames.size() - 1;
-    }
+  /**
+   * Gets the value of the clipboardConfig
+   *
+   * @return the clipboardConfig
+   */
+  public ClipboardConfig getClipboardConfig() {
+    return clipboardConfig;
+  }
 
-    public int getTicketCount() {
-//		return this.getAuthenticationService().countTickets(true);
-        return ticketComponent.countTickets(true);
-    }
+  /**
+   * Sets the value of the clipboardConfig
+   *
+   * @param clipboardConfig the clipboardConfig to set.
+   */
+  public void setClipboardConfig(ClipboardConfig clipboardConfig) {
+    this.clipboardConfig = clipboardConfig;
+  }
 
-    public void setConfig(UploadFileServletConfig config) {
-        this.config = config;
-    }
+  /**
+   * Gets the value of the downloadLimitMB
+   *
+   * @return the downloadLimitMB
+   */
+  public long getDownloadLimitMB() {
+    return clipboardConfig.getDownloadLimitMB();
+  }
 
-    public int getMaxFileSize() {
-        return this.config.getMaxSizeInMegaBytes();
-    }
-
-    public void setMaxFileSize(int value) {
-        this.config.setMaxSizeInMegaBytes(value);
-    }
-
-
-    public int getImportMaxFileSize() {
-        return this.importConfig.getMaxSizeInMegaBytes();
-    }
-
-    public void setImportMaxFileSize(int value) {
-        this.importConfig.setMaxSizeInMegaBytes(value);
-    }
-
-    public ImportConfig getImportConfig() {
-        return importConfig;
-    }
-
-    public void setImportConfig(ImportConfig importConfig) {
-        this.importConfig = importConfig;
-    }
-
-    /**
-     * Gets the value of the clipboardConfig
-     *
-     * @return the clipboardConfig
-     */
-    public ClipboardConfig getClipboardConfig() {
-        return clipboardConfig;
-    }
-
-    /**
-     * Sets the value of the clipboardConfig
-     *
-     * @param clipboardConfig the clipboardConfig to set.
-     */
-    public void setClipboardConfig(ClipboardConfig clipboardConfig) {
-        this.clipboardConfig = clipboardConfig;
-    }
-
-    /**
-     * Gets the value of the downloadLimitMB
-     *
-     * @return the downloadLimitMB
-     */
-    public long getDownloadLimitMB() {
-        return clipboardConfig.getDownloadLimitMB();
-    }
-
-    /**
-     * Sets the value of the downloadLimitMB
-     *
-     * @param downloadLimitMB the downloadLimitMB to set.
-     */
-    public void setDownloadLimitMB(long downloadLimitMB) {
-        clipboardConfig.setDownloadLimitMB(downloadLimitMB);
-        UIClipboardShelfItem.setDownloadLimitMB(clipboardConfig.getDownloadLimitMB());
-    }
+  /**
+   * Sets the value of the downloadLimitMB
+   *
+   * @param downloadLimitMB the downloadLimitMB to set.
+   */
+  public void setDownloadLimitMB(long downloadLimitMB) {
+    clipboardConfig.setDownloadLimitMB(downloadLimitMB);
+    UIClipboardShelfItem.setDownloadLimitMB(
+      clipboardConfig.getDownloadLimitMB()
+    );
+  }
 }

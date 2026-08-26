@@ -1,7 +1,7 @@
 <cbc-modal
   [title]="'label.expired.update.date'"
   (ok)="saveConfiguration()"
-  (cancel)="cancel()"
+  (cancelModal)="cancel()"
   [okLabel]="'label.save'"
   [(visible)]="showModal"
   [executing]="processing"
@@ -18,21 +18,22 @@
         >{{ 'label.expiration.date' | transloco }}</label
       >
 
-      <p-calendar
+      @if (editExpiedDateNodeForm.value.expirationDateActived) {
+      <p-datepicker
         appendTo="body"
         formControlName="expirationDate"
         [dateFormat]="'dd/mm/yy'"
         [placeholder]="'dd/mm/yyyy, HH:mm'"
         [showIcon]="true"
         [showTime]="true"
-        *ngIf="editExpiedDateNodeForm.value.expirationDateActived"
         [class.expired]="isExpired()"
-      ></p-calendar>
+      ></p-datepicker>
+      }
     </div>
-    <label
-      *ngIf="isExpired() && editExpiedDateNodeForm.value.expirationDateActived"
-      style="color: red"
-      >{{ 'label.expiration.date.alert' | transloco }}</label
+    @if (isExpired() && editExpiedDateNodeForm.value.expirationDateActived) {
+    <div style="color: red"
+      >{{ 'label.expiration.date.alert' | transloco }}</div
     >
+    }
   </form>
 </cbc-modal>

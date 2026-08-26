@@ -2,122 +2,139 @@
 <cbc-header
   (searchPropagated)="filterGroups($event)"
   [showSearchField]="isStepGroups()"
-></cbc-header>
-<cbc-navigator></cbc-navigator>
-<cbc-horizontal-loader
-  *ngIf="loadingHeaders || loadingCategories || loadingIGs || preparing"
-></cbc-horizontal-loader>
+/>
+<cbc-navigator />
+@if (loadingHeaders || loadingCategories || loadingIGs || preparing) {
+<cbc-horizontal-loader />
+}
 <div class="fluid page-container">
   <div class="page-header">
-    <span class="page-header__title"
+    <h1 class="page-header__title"
       >{{ 'text.browse.page.title.1' | transloco }} <br />{{
-      'text.browse.page.title.2' | transloco }}</span
+      'text.browse.page.title.2' | transloco }}</h1
     >
     <div class="page-header__actions">
-      <cbc-reponsive-sub-menu *ngIf="shouldDisplayMenu()">
-        <a *ngIf="isAdminOrCircabcAdmin()" [routerLink]="['/admin/headers']"
+      @if (shouldDisplayMenu()) {
+      <cbc-reponsive-sub-menu>
+        @if (isAdminOrCircabcAdmin()) {
+        <a [routerLink]="['/admin/circabc']"
+          >{{ 'label.administer.circabc' | transloco }}</a
+        >
+        } @if (isAdminOrCircabcAdmin()) {
+        <a [routerLink]="['/admin/headers']"
           >{{ 'label.administer.headers' | transloco }}</a
         >
-        <a
-          *ngIf="isCategoryAdmin() && currentCategory"
-          [routerLink]="['/category', currentCategory.id]"
+        } @if (isCategoryAdmin() && currentCategory) {
+        <a [routerLink]="['/category', currentCategory.id]"
           >{{ 'label.administer.category' | transloco }}</a
         >
+        }
       </cbc-reponsive-sub-menu>
+      } @if (isLoggedIn()) {
       <cbc-explorer-dropdown
-        *ngIf="isLoggedIn()"
         [currentHeader]="currentHeader"
         [currentCategory]="currentCategory"
       ></cbc-explorer-dropdown>
+      }
     </div>
   </div>
   <section class="top-section">
-    <div class="breadcrump" *ngIf="isStepCategories() || isStepGroups()">
-      <a (click)="reset()">
-        <img src="img/icon-dashboard-grey.png" />
+    @if (isStepCategories() || isStepGroups()) {
+    <div class="breadcrump">
+      <a tabindex="0" (click)="reset()">
+        <img src="img/icon-dashboard-grey.png" alt="" />
       </a>
-      <span *ngIf="currentHeader && (isStepCategories() || isStepGroups())">
+      @if (currentHeader && (isStepCategories() || isStepGroups())) {
+      <span>
         &gt;
-        <a (click)="listCategories(currentHeader)">{{ currentHeader.name }}</a>
+        <a tabindex="0" (click)="listCategories(currentHeader)"
+          >{{ currentHeader.name }}</a
+        >
       </span>
-      <span *ngIf="currentCategory && isStepGroups()">
+      } @if (currentCategory && isStepGroups()) {
+      <span>
         &gt;
-        <a (click)="listInterestGroups(currentCategory)"
+        <a tabindex="0" (click)="listInterestGroups(currentCategory)"
           >{{ getCategoryGroupDescription(currentCategory) }}</a
         >
       </span>
+      }
     </div>
-    <h3 *ngIf="isStepHeaders()">{{ 'explorer.select.header' | transloco }}</h3>
-    <h3 *ngIf="isStepCategories()">
-      {{ 'explorer.select.category' | transloco }}
-    </h3>
+    } @if (isStepHeaders()) {
+    <h2>{{ 'explorer.select.header' | transloco }}</h2>
+    } @if (isStepCategories()) {
+    <h2> {{ 'explorer.select.category' | transloco }} </h2>
+    }
   </section>
-  <section class="grid--container" *ngIf="isStepHeaders()">
-    <div
-      class="header-category"
-      *ngFor="let header of headers"
-      (click)="listCategories(header)"
-    >
+  @if (isStepHeaders()) {
+  <section class="grid--container">
+    @for (header of headers; track header.id) {
+    <div tabindex="0" class="header-category" (click)="listCategories(header)">
       <div class="logo-container">
         <img [src]="getHeaderImgName(header)" alt="header" />
       </div>
       <div class="link"> {{ header.name }} </div>
     </div>
+    }
   </section>
-  <section class="grid--container" *ngIf="isStepCategories()">
+  } @if (isStepCategories()) {
+  <section class="grid--container">
+    @for (category of categories; track category.id) {
     <div
+      tabindex="0"
       class="header-category"
-      *ngFor="let category of categories"
       (click)="listInterestGroups(category)"
     >
       <div class="logo-container">
-        <img
-          src="img/LOGO_circabc_category-128.png"
-          alt="header"
-          *ngIf="!hasCategoryLogo(category)"
-        />
+        @if (!hasCategoryLogo(category)) {
+        <img src="img/LOGO_circabc_category-128.png" alt="header" />
+        } @if (hasCategoryLogo(category)) {
         <img
           [attr.src]="category.logoRef | cbcDownload | cbcSecure"
-          *ngIf="hasCategoryLogo(category)"
+          alt="category logo"
         />
+        }
       </div>
       <div
         class="link"
         [innerHTML]="getCategoryGroupDescription(category)"
       ></div>
     </div>
+    }
   </section>
-  <section *ngIf="isStepGroups()">
-    <header *ngIf="currentCategory" class="category--header">
+  } @if (isStepGroups()) {
+  <section>
+    @if (currentCategory) {
+    <header class="category--header">
       <div class="logo-container">
-        <img
-          src="img/LOGO_circabc_category-128.png"
-          alt="header"
-          *ngIf="!hasModelNodeLogo(currentCategory)"
-        />
+        @if (!hasModelNodeLogo(currentCategory)) {
+        <img src="img/LOGO_circabc_category-128.png" alt="header" />
+        } @if (hasModelNodeLogo(currentCategory)) {
         <img
           [attr.src]="getLogoRef(currentCategory) | cbcDownload | cbcSecure"
-          *ngIf="hasModelNodeLogo(currentCategory)"
+          alt="interest group logo"
         />
+        }
       </div>
       <div
         class="title"
         [innerHTML]="getCategoryGroupDescription(currentCategory)"
       ></div>
     </header>
+    }
     <h3 class="list-groups">{{ 'explorer.list.groups' | transloco }}</h3>
-    <div *ngFor="let letterKey of getKeysOfGroups()">
+    @for (letterKey of getKeysOfGroups(); track letterKey) {
+    <div>
       <span class="letter">{{ letterKey }}</span>
       <section class="box box--groups">
-        <p *ngIf="getGroupInIndex(letterKey).length === 0" class="empty-list">
-          {{ 'label.nothing.to.display' | transloco }}
-        </p>
-        <cbc-group-card
-          *ngFor="let ig of getGroupInIndex(letterKey)"
-          [group]="ig"
-          [counter]="ig.index"
-        ></cbc-group-card>
+        @if (getGroupInIndex(letterKey).length === 0) {
+        <p class="empty-list"> {{ 'label.nothing.to.display' | transloco }} </p>
+        } @for (ig of getGroupInIndex(letterKey); track ig.id) {
+        <cbc-group-card [group]="ig" [counter]="ig.index"></cbc-group-card>
+        }
       </section>
     </div>
+    }
   </section>
+  }
 </div>

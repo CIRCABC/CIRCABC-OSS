@@ -16,11 +16,10 @@
  */
 package eu.cec.digit.circabc.service.newsgroup;
 
+import java.util.List;
 import org.alfresco.service.Auditable;
 import org.alfresco.service.NotAuditable;
 import org.alfresco.service.cmr.repository.NodeRef;
-
-import java.util.List;
 
 /**
  * Interface for the newsgroup moderation.
@@ -35,75 +34,81 @@ import java.util.List;
  */
 // @PublicService
 public interface ModerationService {
+  /**
+   * Set a content being accepted
+   */
+  @Auditable(/*key = Auditable.Key.ARG_0, */parameters = { "content" })
+  void accept(final NodeRef content);
 
-    /**
-     * Set a content being accepted
-     */
-    @Auditable(/*key = Auditable.Key.ARG_0, */ parameters = {"content"})
-    void accept(final NodeRef content);
+  /**
+   * Set a container and all its subcontainer being moderated. The contents will be marked as
+   * wainting for approval IF the makeContentWaiting parameter is set as TRUE.
+   */
+  @Auditable(/*key = Auditable.Key.ARG_0, */parameters = { "container" })
+  void applyModeration(
+    final NodeRef container,
+    final boolean makeContentWaiting
+  );
 
-    /**
-     * Set a container and all its subcontainer being moderated. The contents will be marked as
-     * wainting for approval IF the makeContentWaiting parameter is set as TRUE.
-     */
-    @Auditable(/*key = Auditable.Key.ARG_0, */ parameters = {"container"})
-    void applyModeration(final NodeRef container, final boolean makeContentWaiting);
+  /**
+   * Get the abuses signaled on a given node.
+   *
+   * @return An empty list if no abuse signaled.
+   */
+  @NotAuditable
+  List<AbuseReport> getAbuses(final NodeRef content);
 
-    /**
-     * Get the abuses signaled on a given node.
-     *
-     * @return An empty list if no abuse signaled.
-     */
-    @NotAuditable
-    List<AbuseReport> getAbuses(final NodeRef content);
+  /**
+   * Return if the given node is accpected
+   */
+  @NotAuditable
+  boolean isApproved(final NodeRef content);
 
-    /**
-     * Return if the given node is accpected
-     */
-    @NotAuditable
-    boolean isApproved(final NodeRef content);
+  /**
+   * Return if the given node is part of a moderation
+   */
+  @NotAuditable
+  boolean isContainerModerated(final NodeRef container);
 
-    /**
-     * Return if the given node is part of a moderation
-     */
-    @NotAuditable
-    boolean isContainerModerated(final NodeRef container);
+  /**
+   * Return if the given node is rejected
+   */
+  @NotAuditable
+  boolean isRejected(final NodeRef content);
 
-    /**
-     * Return if the given node is rejected
-     */
-    @NotAuditable
-    boolean isRejected(final NodeRef content);
+  /**
+   * Return if the given node is waiting for approval
+   */
+  @NotAuditable
+  boolean isWaitingForApproval(final NodeRef content);
 
-    /**
-     * Return if the given node is waiting for approval
-     */
-    @NotAuditable
-    boolean isWaitingForApproval(final NodeRef content);
+  /**
+   * Set a content being rejected
+   */
+  @Auditable(
+    /*key = Auditable.Key.ARG_0, */parameters = { "content", "message" }
+  )
+  void reject(final NodeRef content, final String message);
 
-    /**
-     * Set a content being rejected
-     */
-    @Auditable(/*key = Auditable.Key.ARG_0, */ parameters = {"content", "message"})
-    void reject(final NodeRef content, final String message);
+  /**
+   * Signal that an abuse is reported
+   */
+  @Auditable(
+    /*key = Auditable.Key.ARG_0, */parameters = { "content", "message" }
+  )
+  AbuseReport signalAbuse(final NodeRef content, final String message);
 
-    /**
-     * Signal that an abuse is reported
-     */
-    @Auditable(/*key = Auditable.Key.ARG_0, */ parameters = {"content", "message"})
-    AbuseReport signalAbuse(final NodeRef content, final String message);
+  /**
+   * Signal that an abuse has been dealed.
+   */
+  @Auditable(/*key = Auditable.Key.ARG_0, */parameters = { "content" })
+  void signalNotAbuse(final NodeRef content);
 
-    /**
-     * Signal that an abuse has been dealed.
-     */
-    @Auditable(/*key = Auditable.Key.ARG_0, */ parameters = {"content"})
-    void signalNotAbuse(final NodeRef content);
+  /**
+   * Set a content being waiting for approval
+   */
+  @Auditable(/*key = Auditable.Key.ARG_0, */parameters = { "content" })
+  void waitForApproval(final NodeRef content);
 
-    /**
-     * Set a content being waiting for approval
-     */
-    @Auditable(/*key = Auditable.Key.ARG_0, */ parameters = {"content"})
-    void waitForApproval(final NodeRef content);
-
-    void stopModeration(NodeRef container, String action);
+  void stopModeration(NodeRef container, String action);
 }

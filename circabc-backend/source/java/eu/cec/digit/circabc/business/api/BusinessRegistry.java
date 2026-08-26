@@ -36,145 +36,168 @@ import eu.cec.digit.circabc.business.api.user.UserDetailsBusinessSrv;
 import eu.cec.digit.circabc.service.namespace.CircabcNameSpaceService;
 import org.alfresco.service.namespace.QName;
 
-
 /**
  * This interface represents the registry of public Business Services.
  *
  * @author yanick Pignot
  */
 public interface BusinessRegistry {
+  String BUSINESS_REGISTRY = "businessRegistry";
 
-    String BUSINESS_REGISTRY = "businessRegistry";
+  /**
+   * @see eu.cec.digit.circabc.business.api.mail.MailMeContentBusinessSrv identifier
+   */
+  QName MAIL_ME_BUSINESS_SERVICE = QName.createQName(
+    CircabcNameSpaceService.CEC_DIGIT_URI,
+    "MailMeContentBusinessSrv"
+  );
+  /**
+   * @see eu.cec.digit.circabc.business.api.content.ContentBusinessSrv identifier
+   */
+  QName CONTENT_BUSINESS_SERVICE = QName.createQName(
+    CircabcNameSpaceService.CEC_DIGIT_URI,
+    "ContentBusinessSrv"
+  );
+  /**
+   * @see eu.cec.digit.circabc.business.api.content.CociContentBusinessSrv identifier
+   */
+  QName COCI_BUSINESS_SERVICE = QName.createQName(
+    CircabcNameSpaceService.CEC_DIGIT_URI,
+    "CociContentBusinessSrv"
+  );
+  /**
+   * @see eu.cec.digit.circabc.business.api.nav.NavigationBusinessSrv identifier
+   */
+  QName NAVIGATION_BUSINESS_SERVICE = QName.createQName(
+    CircabcNameSpaceService.CEC_DIGIT_URI,
+    "NavigationBusinessSrv"
+  );
+  /**
+   * @see eu.cec.digit.circabc.business.api.space.SpaceBusinessSrv identifier
+   */
+  QName SPACE_BUSINESS_SERVICE = QName.createQName(
+    CircabcNameSpaceService.CEC_DIGIT_URI,
+    "SpaceBusinessSrv"
+  );
+  /**
+   * @see eu.cec.digit.circabc.business.api.props.PropertiesBusinessSrv identifier
+   */
+  QName PROPERTIES_BUSINESS_SERVICE = QName.createQName(
+    CircabcNameSpaceService.CEC_DIGIT_URI,
+    "PropertiesBusinessSrv"
+  );
+  /**
+   * @see eu.cec.digit.circabc.business.api.space.DossierBusinessSrv identifier
+   */
+  QName DOSSIER_BUSINESS_SERVICE = QName.createQName(
+    CircabcNameSpaceService.CEC_DIGIT_URI,
+    "DossierBusinessSrv"
+  );
+  /**
+   * @see eu.cec.digit.circabc.business.api.link.LinksBusinessSrv identifier
+   */
+  QName LINKS_BUSINESS_SERVICE = QName.createQName(
+    CircabcNameSpaceService.CEC_DIGIT_URI,
+    "LinksBusinessSrv"
+  );
+  /**
+   * @see eu.cec.digit.circabc.business.api.security.ProfileBusinessSrv identifier
+   */
+  QName PROFILE_BUSINESS_SERVICE = QName.createQName(
+    CircabcNameSpaceService.CEC_DIGIT_URI,
+    "ProfileBusinessSrv"
+  );
+  /**
+   * @see eu.cec.digit.circabc.business.api.security.PermissionsBusinessSrv identifier
+   */
+  QName PERMISSIONS_BUSINESS_SERVICE = QName.createQName(
+    CircabcNameSpaceService.CEC_DIGIT_URI,
+    "PermissionsBusinessSrv"
+  );
+  /**
+   * @see eu.cec.digit.circabc.business.api.user.UserDetailsBusinessSrv identifier
+   */
+  QName USER_DETAILS_BUSINESS_SERVICE = QName.createQName(
+    CircabcNameSpaceService.CEC_DIGIT_URI,
+    "UserDetailsBusinessSrv"
+  );
+  /**
+   * @see eu.cec.digit.circabc.business.api.user.RemoteUserBusinessSrv identifier
+   */
+  QName REMOTE_USER_BUSINESS_SERVICE = QName.createQName(
+    CircabcNameSpaceService.CEC_DIGIT_URI,
+    "RemoteUserBusinessSrv"
+  );
+  /**
+   * @see eu.cec.digit.circabc.business.api.content.AttachementBusinessSrv identifier
+   */
+  QName ATTACHEMENT_BUSINESS_SERVICE = QName.createQName(
+    CircabcNameSpaceService.CEC_DIGIT_URI,
+    "AttachementBusinessSrv"
+  );
 
-    /**
-     * @see eu.cec.digit.circabc.business.api.mail.MailMeContentBusinessSrv identifier
-     */
-    QName MAIL_ME_BUSINESS_SERVICE = QName
-            .createQName(CircabcNameSpaceService.CEC_DIGIT_URI, "MailMeContentBusinessSrv");
-    /**
-     * @see eu.cec.digit.circabc.business.api.content.ContentBusinessSrv identifier
-     */
-    QName CONTENT_BUSINESS_SERVICE = QName
-            .createQName(CircabcNameSpaceService.CEC_DIGIT_URI, "ContentBusinessSrv");
-    /**
-     * @see eu.cec.digit.circabc.business.api.content.CociContentBusinessSrv identifier
-     */
-    QName COCI_BUSINESS_SERVICE = QName
-            .createQName(CircabcNameSpaceService.CEC_DIGIT_URI, "CociContentBusinessSrv");
-    /**
-     * @see eu.cec.digit.circabc.business.api.nav.NavigationBusinessSrv identifier
-     */
-    QName NAVIGATION_BUSINESS_SERVICE = QName
-            .createQName(CircabcNameSpaceService.CEC_DIGIT_URI, "NavigationBusinessSrv");
-    /**
-     * @see eu.cec.digit.circabc.business.api.space.SpaceBusinessSrv identifier
-     */
-    QName SPACE_BUSINESS_SERVICE = QName
-            .createQName(CircabcNameSpaceService.CEC_DIGIT_URI, "SpaceBusinessSrv");
-    /**
-     * @see eu.cec.digit.circabc.business.api.props.PropertiesBusinessSrv identifier
-     */
-    QName PROPERTIES_BUSINESS_SERVICE = QName
-            .createQName(CircabcNameSpaceService.CEC_DIGIT_URI, "PropertiesBusinessSrv");
-    /**
-     * @see eu.cec.digit.circabc.business.api.space.DossierBusinessSrv identifier
-     */
-    QName DOSSIER_BUSINESS_SERVICE = QName
-            .createQName(CircabcNameSpaceService.CEC_DIGIT_URI, "DossierBusinessSrv");
-    /**
-     * @see eu.cec.digit.circabc.business.api.link.LinksBusinessSrv identifier
-     */
-    QName LINKS_BUSINESS_SERVICE = QName
-            .createQName(CircabcNameSpaceService.CEC_DIGIT_URI, "LinksBusinessSrv");
-    /**
-     * @see eu.cec.digit.circabc.business.api.security.ProfileBusinessSrv identifier
-     */
-    QName PROFILE_BUSINESS_SERVICE = QName
-            .createQName(CircabcNameSpaceService.CEC_DIGIT_URI, "ProfileBusinessSrv");
-    /**
-     * @see eu.cec.digit.circabc.business.api.security.PermissionsBusinessSrv identifier
-     */
-    QName PERMISSIONS_BUSINESS_SERVICE = QName
-            .createQName(CircabcNameSpaceService.CEC_DIGIT_URI, "PermissionsBusinessSrv");
-    /**
-     * @see eu.cec.digit.circabc.business.api.user.UserDetailsBusinessSrv identifier
-     */
-    QName USER_DETAILS_BUSINESS_SERVICE = QName
-            .createQName(CircabcNameSpaceService.CEC_DIGIT_URI, "UserDetailsBusinessSrv");
-    /**
-     * @see eu.cec.digit.circabc.business.api.user.RemoteUserBusinessSrv identifier
-     */
-    QName REMOTE_USER_BUSINESS_SERVICE = QName
-            .createQName(CircabcNameSpaceService.CEC_DIGIT_URI, "RemoteUserBusinessSrv");
-    /**
-     * @see eu.cec.digit.circabc.business.api.content.AttachementBusinessSrv identifier
-     */
-    QName ATTACHEMENT_BUSINESS_SERVICE = QName
-            .createQName(CircabcNameSpaceService.CEC_DIGIT_URI, "AttachementBusinessSrv");
+  /**
+   * @return Mail Me Content Business Srv
+   */
+  MailMeContentBusinessSrv getMailMeContentBusinessSrv();
 
+  /**
+   * @return Content Business Srv
+   */
+  ContentBusinessSrv getContentBusinessSrv();
 
-    /**
-     * @return Mail Me Content Business Srv
-     */
-    MailMeContentBusinessSrv getMailMeContentBusinessSrv();
+  /**
+   * @return Coci Content Business Srv
+   */
+  CociContentBusinessSrv getCociContentBusinessSrv();
 
-    /**
-     * @return Content Business Srv
-     */
-    ContentBusinessSrv getContentBusinessSrv();
+  /**
+   * @return Navigation Business Srv
+   */
+  NavigationBusinessSrv getNavigationBusinessSrv();
 
-    /**
-     * @return Coci Content Business Srv
-     */
-    CociContentBusinessSrv getCociContentBusinessSrv();
+  /**
+   * @return Space Business Srv
+   */
+  SpaceBusinessSrv getSpaceBusinessSrv();
 
-    /**
-     * @return Navigation Business Srv
-     */
-    NavigationBusinessSrv getNavigationBusinessSrv();
+  /**
+   * @return Properties Business Srv
+   */
+  PropertiesBusinessSrv getPropertiesBusinessSrv();
 
-    /**
-     * @return Space Business Srv
-     */
-    SpaceBusinessSrv getSpaceBusinessSrv();
+  /**
+   * @return Dossier Business Srv
+   */
+  DossierBusinessSrv getDossierBusinessSrv();
 
-    /**
-     * @return Properties Business Srv
-     */
-    PropertiesBusinessSrv getPropertiesBusinessSrv();
+  /**
+   * @return Links Business Srv
+   */
+  LinksBusinessSrv getLinksBusinessSrv();
 
-    /**
-     * @return Dossier Business Srv
-     */
-    DossierBusinessSrv getDossierBusinessSrv();
+  /**
+   * @return Permissions Business Srv
+   */
+  PermissionsBusinessSrv getPermissionsBusinessSrv();
 
-    /**
-     * @return Links Business Srv
-     */
-    LinksBusinessSrv getLinksBusinessSrv();
+  /**
+   * @return Profile Business Srv
+   */
+  ProfileBusinessSrv getProfileBusinessSrv();
 
-    /**
-     * @return Permissions Business Srv
-     */
-    PermissionsBusinessSrv getPermissionsBusinessSrv();
+  /**
+   * @return User Details Business Srv
+   */
+  UserDetailsBusinessSrv getUserDetailsBusinessSrv();
 
-    /**
-     * @return Profile Business Srv
-     */
-    ProfileBusinessSrv getProfileBusinessSrv();
+  /**
+   * @return Remote User Business Srv
+   */
+  RemoteUserBusinessSrv getRemoteUserBusinessSrv();
 
-    /**
-     * @return User Details Business Srv
-     */
-    UserDetailsBusinessSrv getUserDetailsBusinessSrv();
-
-    /**
-     * @return Remote User Business Srv
-     */
-    RemoteUserBusinessSrv getRemoteUserBusinessSrv();
-
-    /**
-     * @return Attachement Business Srv
-     */
-    AttachementBusinessSrv getAttachementBusinessSrv();
+  /**
+   * @return Attachement Business Srv
+   */
+  AttachementBusinessSrv getAttachementBusinessSrv();
 }

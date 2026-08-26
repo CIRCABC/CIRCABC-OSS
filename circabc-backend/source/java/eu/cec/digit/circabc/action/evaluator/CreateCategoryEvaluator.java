@@ -33,29 +33,31 @@ import org.alfresco.web.bean.repository.Node;
  */
 public class CreateCategoryEvaluator extends BaseActionEvaluator {
 
-    private static final long serialVersionUID = 308051234539899525L;
+  private static final long serialVersionUID = 308051234539899525L;
 
-    /**
-     * Return false if the given node is a dossier
-     */
-    public boolean evaluate(final Node node) {
-        if (NavigableNodeType.CIRCABC_ROOT.isNodeFromType(node) == true
-                || NavigableNodeType.CATEGORY_HEADER.isNodeFromType(node) == true) {
-            return isSuperAdmin() || isCircabcAdmin();
-        } else {
-            return false;
-        }
+  /**
+   * Return false if the given node is a dossier
+   */
+  public boolean evaluate(final Node node) {
+    if (
+      NavigableNodeType.CIRCABC_ROOT.isNodeFromType(node) == true ||
+      NavigableNodeType.CATEGORY_HEADER.isNodeFromType(node) == true
+    ) {
+      return isSuperAdmin() || isCircabcAdmin();
+    } else {
+      return false;
     }
+  }
 
-    private boolean isSuperAdmin() {
-        final CircabcNavigationBean navigator = Beans.getWaiNavigator();
+  private boolean isSuperAdmin() {
+    final CircabcNavigationBean navigator = Beans.getWaiNavigator();
 
-        return navigator.getCurrentUser().isAdmin();
-    }
+    return navigator.getCurrentUser().isAdmin();
+  }
 
-    private boolean isCircabcAdmin() {
-        final CircabcNavigationBean navigator = Beans.getWaiNavigator();
+  private boolean isCircabcAdmin() {
+    final CircabcNavigationBean navigator = Beans.getWaiNavigator();
 
-        return navigator.getCircabcHomeNode().hasPermission("CircaBCAdmin");
-    }
+    return navigator.getCircabcHomeNode().hasPermission("CircaBCAdmin");
+  }
 }

@@ -1,47 +1,42 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, model } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
+import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
   selector: 'cbc-pager',
   templateUrl: './pager.component.html',
+  imports: [ReactiveFormsModule, TranslocoModule],
 })
 export class PagerComponent {
-  @Input()
-  pageIndex = 1;
-  @Input()
-  length = 0;
-  @Input()
-  pageSize = 0;
-  @Output()
-  readonly pageChanged: EventEmitter<number> = new EventEmitter<number>();
+  page = model<number>(1);
+  readonly length = input(0);
+  readonly pageSize = input(0);
   public previousPage() {
     if (this.canPreviousPage()) {
-      this.pageIndex--;
-      this.pageChanged.emit(this.pageIndex);
+      this.page.update((value) => value - 1);
     }
   }
   public canPreviousPage() {
-    return this.pageIndex > 1;
+    return this.page() > 1;
   }
 
   public nextPage() {
     if (this.canNextPage()) {
-      this.pageIndex++;
-      this.pageChanged.emit(this.pageIndex);
+      this.page.update((value) => value + 1);
     }
   }
   public canNextPage() {
-    return this.pageIndex < Math.ceil(this.length / this.pageSize);
+    return this.page() < Math.ceil(this.length() / this.pageSize());
   }
 
   public goToPage(page: string) {
-    this.pageIndex = Number(page);
-    this.pageChanged.emit(this.pageIndex);
+    this.page.set(Number(page));
   }
 
   public getPages(): number[] {
     const result: number[] = [];
 
-    for (let i = 1; i < this.length / this.pageSize + 1; i += 1) {
+    for (let i = 1; i < this.length() / this.pageSize() + 1; i += 1) {
       result.push(i);
     }
 

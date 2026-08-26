@@ -17,20 +17,19 @@
 package eu.cec.digit.circabc.service.bulk.upload;
 
 public interface UploadedEntry {
+  String getFilePath();
 
-    String getFilePath();
+  void setFilePath(final String filePath);
 
-    void setFilePath(final String filePath);
+  String getFileName();
 
-    String getFileName();
+  void setFileName(final String fileName);
 
-    void setFileName(final String fileName);
+  String getStatus();
 
-    String getStatus();
+  void setStatus(final String status);
 
-    void setStatus(final String status);
+  String getRemarks();
 
-    String getRemarks();
-
-    void setRemarks(final String remarks);
+  void setRemarks(final String remarks);
 }

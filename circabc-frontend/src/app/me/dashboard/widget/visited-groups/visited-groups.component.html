@@ -11,14 +11,15 @@
   </header>
   <div class="main main--listing">
     <ul>
-      <li class="row" *ngFor="let group of visitedIgs">
+      @for (group of visitedIgs; track group.id) {
+      <li class="row">
         <a [routerLink]="['/group', group.id]"
           >{{ getGroupNameOrTitle(group) }}</a
         >
       </li>
-      <li class="row" *ngIf="visitedIgs.length === 0">
-        {{ 'label.nothing.to.display' | transloco }}
-      </li>
+      } @if (visitedIgs.length === 0) {
+      <li class="row"> {{ 'label.nothing.to.display' | transloco }} </li>
+      }
     </ul>
   </div>
 </section>

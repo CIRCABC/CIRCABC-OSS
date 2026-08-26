@@ -25,21 +25,19 @@ import org.alfresco.web.bean.repository.Node;
 
 public class CircabcCancelWorkflowEvaluator extends CancelWorkflowEvaluator {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = -3622412155643855677L;
+  /**
+   *
+   */
+  private static final long serialVersionUID = -3622412155643855677L;
 
-    public boolean evaluate(Node node) {
-
-        boolean result = super.evaluate(node);
-        if (!result) {
-            IgServicesAdminEvaluator igServicesAdminEvaluator = new IgServicesAdminEvaluator();
-            result = igServicesAdminEvaluator.evaluate(node);
-        }
-
-        return result;
+  public boolean evaluate(Node node) {
+    boolean result = super.evaluate(node);
+    if (!result) {
+      IgServicesAdminEvaluator igServicesAdminEvaluator =
+        new IgServicesAdminEvaluator();
+      result = igServicesAdminEvaluator.evaluate(node);
     }
 
-
+    return result;
+  }
 }

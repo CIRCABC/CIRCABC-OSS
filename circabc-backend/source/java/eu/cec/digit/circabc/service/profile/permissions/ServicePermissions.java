@@ -22,45 +22,50 @@ import java.util.Set;
 
 public class ServicePermissions implements Serializable {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = -2568781927774798099L;
+  /**
+   *
+   */
+  private static final long serialVersionUID = -2568781927774798099L;
 
-    private String serviceName;
+  private String serviceName;
 
-    private Set<String> permissions = new HashSet<>();
+  private Set<String> permissions = new HashSet<>();
 
-    private ServicePermissions() {
-    }
+  private ServicePermissions() {}
 
-    public ServicePermissions(final String serviceName) {
-        this.serviceName = serviceName;
-    }
+  public ServicePermissions(final String serviceName) {
+    this.serviceName = serviceName;
+  }
 
-    /**
-     * @return the serviceName
-     */
-    public final String getServiceName() {
-        return serviceName;
-    }
+  /**
+   * @return the serviceName
+   */
+  public final String getServiceName() {
+    return serviceName;
+  }
 
-    @Override
-    public String toString() {
-        return "ServicePermissions [serviceName=" + serviceName + ", permissions=" + permissions + "]";
-    }
+  @Override
+  public String toString() {
+    return (
+      "ServicePermissions [serviceName=" +
+      serviceName +
+      ", permissions=" +
+      permissions +
+      "]"
+    );
+  }
 
-    /**
-     * @return the permissions
-     */
-    public final Set<String> getPermissions() {
-        return permissions;
-    }
+  /**
+   * @return the permissions
+   */
+  public final Set<String> getPermissions() {
+    return permissions;
+  }
 
-    /**
-     * Set the permissions
-     */
-    public final void setPermissions(Set<String> permissions) {
-        this.permissions = permissions;
-    }
+  /**
+   * Set the permissions
+   */
+  public final void setPermissions(Set<String> permissions) {
+    this.permissions = permissions;
+  }
 }

@@ -1,6 +1,6 @@
 <div class="flex-calendar main" style="margin-top: 5px">
+  @for (item of calendarDays; track item) {
   <div
-    *ngFor="let item of calendarDays"
     class="day flex-day"
     [class.day--previous-month]="item.type === 'previousMonth'"
     [class.day--next-month]="item.type === 'nextMonth'"
@@ -13,26 +13,44 @@
       >{{ item.date.getDate() }} {{ item.date.getDay() + '' | i18nSelect:
       dayNames }}</div
     >
-    <div class="events" *ngIf="checkIfDateAfterToday(item.date)">
+    @if (checkIfDateAfterToday(item.date)) {
+    <div class="events">
+      @if (item.events.length === 0 && isEveAdmin()) {
       <a
+        tabindex="0"
         class="empty-events"
         (click)="onPopupCreateEventWithCalendarDate(item.date)"
-        *ngIf="item.events.length === 0 && isEveAdmin()"
       >
-        <img src="img/add-plus-grey.png" />
+        <img src="img/add-plus-grey.png" alt="Add event" />
       </a>
+      }
     </div>
+    }
     <div style="overflow-y: auto; height: 80%">
-      <div *ngFor="let event of item.events" class="event-line">
-        <span *ngIf="event.appointmentType === 'Event'">
-          <img width="10" height="10" src="img/event-155D79.png" />
+      @for (event of item.events; track event.id) {
+      <div class="event-line">
+        @if (event.appointmentType === 'Event') {
+        <span>
+          <img
+            width="10"
+            height="10"
+            src="img/event-155D79.png"
+            alt="Event icon"
+          />
+          @if (isEveAdmin()) {
           <a
-            *ngIf="isEveAdmin()"
+            tabindex="0"
             (click)="deleteEvent(event)"
             title="{{ 'label.delete.appointment' | transloco }}"
           >
-            <img width="10" height="10" src="img/icon-delete-818181.png" />
+            <img
+              width="10"
+              height="10"
+              src="img/icon-delete-818181.png"
+              alt="Delete icon"
+            />
           </a>
+          }
           <a [routerLink]="[event.id, 'details']">
             <span style="color: #155d79"
               >{{ event.startTime }} {{ event.endTime }}</span
@@ -40,15 +58,28 @@
             <span style="color: black">{{ event.title }}</span>
           </a>
         </span>
-        <span *ngIf="event.appointmentType === 'Meeting'">
-          <img width="10" height="10" src="img/meeting-155D79.png" />
+        } @if (event.appointmentType === 'Meeting') {
+        <span>
+          <img
+            width="10"
+            height="10"
+            src="img/meeting-155D79.png"
+            alt="Meeting icon"
+          />
+          @if (isEveAdmin()) {
           <a
-            *ngIf="isEveAdmin()"
+            tabindex="0"
             (click)="deleteEvent(event)"
             title="{{ 'label.delete.appointment' | transloco }}"
           >
-            <img width="10" height="10" src="img/icon-delete-818181.png" />
+            <img
+              width="10"
+              height="10"
+              src="img/icon-delete-818181.png"
+              alt="Delete icon"
+            />
           </a>
+          }
           <a [routerLink]="[event.id, 'details']">
             <span style="color: #155d79"
               >{{ event.startTime }} {{ event.endTime }}</span
@@ -56,24 +87,19 @@
             <span style="color: black">{{ event.title }}</span>
           </a>
         </span>
+        }
       </div>
+      }
     </div>
     <!-- Hover popup with meeting details -->
-    <div
-      id="detailsPopup"
-      class="popup popup--calendar"
-      *ngIf="
-        !(
-          item.date.getDay() === 0 ||
-          item.date.getDay() === 5 ||
-          item.date.getDay() === 6
-        ) && item.showDetailsBox
-      "
-    >
+    @if ( !( item.date.getDay() === 0 || item.date.getDay() === 5 ||
+    item.date.getDay() === 6 ) && item.showDetailsBox ) {
+    <div id="detailsPopup" class="popup popup--calendar">
       <div class="events-of-the-day">
         <div class="title">{{ item.date | date }}</div>
         <ul class="events">
-          <li class="event" *ngFor="let event of item.events">
+          @for (event of item.events; track event.id) {
+          <li class="event">
             <div>
               <span class="hour">{{ event.startTime }}</span>
               <a [routerLink]="[event.id, 'details']" class="event-name"
@@ -92,47 +118,41 @@
                 >{{ event.location === '' ? ('label.na' | transloco) :
                 event.location }}</span
               >
-              <span
-                *ngIf="getRepetition(event.occurrenceRate).length === 1"
-                class="repetition"
+              @if (getRepetition(event.occurrenceRate).length === 1) {
+              <span class="repetition"
                 >{{ 'label.' + getRepetition(event.occurrenceRate)[0] |
                 transloco }}</span
               >
-              <span
-                *ngIf="getRepetition(event.occurrenceRate).length === 3"
-                class="repetition"
+              } @if (getRepetition(event.occurrenceRate).length === 3) {
+              <span class="repetition"
                 >{{ 'update-event.repeats.legend.when' | transloco : {
                 timesOccurrence: 'label.' +
                 getRepetition(event.occurrenceRate)[1] | transloco, times:
                 getRepetition(event.occurrenceRate)[2] } }}</span
               >
-              <span
-                *ngIf="getRepetition(event.occurrenceRate).length === 4"
-                class="repetition"
+              } @if (getRepetition(event.occurrenceRate).length === 4) {
+              <span class="repetition"
                 >{{ 'update-event.repeats.legend.every' | transloco : {
                 everyTime: getRepetition(event.occurrenceRate)[2],
                 everyTimesOccurence: getRepetition(event.occurrenceRate)[1] |
                 transloco, times: getRepetition(event.occurrenceRate)[3] }
                 }}</span
               >
+              }
             </div>
           </li>
+          }
         </ul>
       </div>
     </div>
-    <div
-      class="left-popup left-popup--calendar"
-      *ngIf="
-        (item.date.getDay() === 0 ||
-          item.date.getDay() === 5 ||
-          item.date.getDay() === 6) &&
-        item.showDetailsBox
-      "
-    >
+    } @if ( (item.date.getDay() === 0 || item.date.getDay() === 5 ||
+    item.date.getDay() === 6) && item.showDetailsBox ) {
+    <div class="left-popup left-popup--calendar">
       <div class="events-of-the-day">
         <div class="title">{{ item.date | date }}</div>
         <ul class="events">
-          <li class="event" *ngFor="let event of item.events">
+          @for (event of item.events; track event.id) {
+          <li class="event">
             <div>
               <span class="hour">{{ event.startTime }}</span>
               <a [routerLink]="[event.id, 'details']" class="event-name"
@@ -151,33 +171,34 @@
                 >{{ event.location === '' ? ('label.na' | transloco) :
                 event.location }}</span
               >
-              <span
-                *ngIf="getRepetition(event.occurrenceRate).length === 1"
-                class="repetition"
+              @if (getRepetition(event.occurrenceRate).length === 1) {
+              <span class="repetition"
                 >{{ 'label.' + getRepetition(event.occurrenceRate)[0] |
                 transloco }}</span
               >
-              <span
-                *ngIf="getRepetition(event.occurrenceRate).length === 3"
-                class="repetition"
+              } @if (getRepetition(event.occurrenceRate).length === 3) {
+              <span class="repetition"
                 >{{ 'update-event.repeats.legend.when' | transloco : {
                 timesOccurrence: 'label.' +
                 getRepetition(event.occurrenceRate)[1] | transloco, times:
                 getRepetition(event.occurrenceRate)[2] } }}</span
               >
-              <span
-                *ngIf="getRepetition(event.occurrenceRate).length === 4"
-                class="repetition"
+              } @if (getRepetition(event.occurrenceRate).length === 4) {
+              <span class="repetition"
                 >{{ 'update-event.repeats.legend.every' | transloco : {
                 everyTime: getRepetition(event.occurrenceRate)[2],
                 everyTimesOccurence: getRepetition(event.occurrenceRate)[1] |
                 transloco, times: getRepetition(event.occurrenceRate)[3] }
                 }}</span
               >
+              }
             </div>
           </li>
+          }
         </ul>
       </div>
     </div>
+    }
   </div>
+  }
 </div>

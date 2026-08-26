@@ -1,56 +1,75 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { NodeAccessGuard } from 'app/group/guards/access-guard.service';
-import { AdminGuard } from 'app/group/guards/admin-guard.service';
-import { NodeEditGuard } from 'app/group/guards/edit-guard.service';
-import { LeaveFileUploadGuard } from 'app/group/guards/leave-file-upload-guard';
-import { AddTranslationComponent } from 'app/group/library/add-translation/add-translation.component';
-import { AutoUploadLibraryComponent } from 'app/group/library/auto-upload-library/auto-upload-library.component';
-import { DetailsComponent } from 'app/group/library/details/details.component';
-import { EditNodeComponent } from 'app/group/library/edit/edit-node.component';
-import { LibraryComponent } from 'app/group/library/library.component';
-import { ManageSpaceSharingComponent } from 'app/group/library/manage-space-sharing/manage-space-sharing.component';
-import { UploadFormComponent } from 'app/group/library/upload-form/upload-form.component';
+import { canActivateNodeAccess } from 'app/group/guards/access-guard.service';
 
-const libraryRoutes: Routes = [
+import { canActivateAdmin } from 'app/group/guards/admin-guard.service';
+import { canActivateNodeEdit } from 'app/group/guards/edit-guard.service';
+import { LeaveFileUploadGuard } from 'app/group/guards/leave-file-upload-guard';
+
+export const libraryRoutes: Routes = [
   {
     path: ':nodeId',
-    component: LibraryComponent,
+    loadComponent: () =>
+      import('app/group/library/library.component').then(
+        (m) => m.LibraryComponent
+      ),
+    canActivate: [canActivateNodeAccess],
   },
   {
     path: ':nodeId/details',
-    component: DetailsComponent,
-    canActivate: [NodeAccessGuard],
+    loadComponent: () =>
+      import('app/group/library/details/details.component').then(
+        (m) => m.DetailsComponent
+      ),
+    canActivate: [canActivateNodeAccess],
   },
   {
     path: ':nodeId/details/:versionLabel',
-    component: DetailsComponent,
-    canActivate: [NodeAccessGuard],
+    loadComponent: () =>
+      import('app/group/library/details/details.component').then(
+        (m) => m.DetailsComponent
+      ),
+    canActivate: [canActivateNodeAccess],
   },
   {
     path: ':nodeId/edit',
-    component: EditNodeComponent,
-    canActivate: [NodeEditGuard],
+    loadComponent: () =>
+      import('app/group/library/edit/edit-node.component').then(
+        (m) => m.EditNodeComponent
+      ),
+    canActivate: [canActivateNodeEdit],
   },
   {
     path: ':nodeId/translations/add',
-    component: AddTranslationComponent,
-    canActivate: [NodeEditGuard],
+    loadComponent: () =>
+      import(
+        'app/group/library/add-translation/add-translation.component'
+      ).then((m) => m.AddTranslationComponent),
+    canActivate: [canActivateNodeEdit],
   },
   {
     path: ':nodeId/auto-upload',
-    component: AutoUploadLibraryComponent,
-    canActivate: [NodeEditGuard],
+    loadComponent: () =>
+      import(
+        'app/group/library/auto-upload-library/auto-upload-library.component'
+      ).then((m) => m.AutoUploadLibraryComponent),
+    canActivate: [canActivateNodeEdit],
   },
   {
     path: ':nodeId/manage-space-sharing',
-    component: ManageSpaceSharingComponent,
-    canActivate: [AdminGuard],
+    loadComponent: () =>
+      import(
+        'app/group/library/manage-space-sharing/manage-space-sharing.component'
+      ).then((m) => m.ManageSpaceSharingComponent),
+    canActivate: [canActivateAdmin],
   },
   {
     path: ':nodeId/upload',
-    component: UploadFormComponent,
-    canActivate: [NodeEditGuard],
+    loadComponent: () =>
+      import('app/group/library/upload-form/upload-form.component').then(
+        (m) => m.UploadFormComponent
+      ),
+    canActivate: [canActivateNodeEdit],
     canDeactivate: [LeaveFileUploadGuard],
   },
 ];

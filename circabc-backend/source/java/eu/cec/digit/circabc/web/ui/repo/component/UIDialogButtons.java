@@ -20,16 +20,14 @@
  ******************************************************************************/
 package eu.cec.digit.circabc.web.ui.repo.component;
 
-
-import org.alfresco.web.app.servlet.FacesHelper;
-import org.alfresco.web.ui.common.ComponentConstants;
-import org.alfresco.web.ui.common.Utils;
-
+import java.io.IOException;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIOutput;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
-import java.io.IOException;
+import org.alfresco.web.app.servlet.FacesHelper;
+import org.alfresco.web.ui.common.ComponentConstants;
+import org.alfresco.web.ui.common.Utils;
 
 /**
  * WAI. Component that displays the buttons for a dialog.
@@ -40,58 +38,56 @@ import java.io.IOException;
  *
  * @author patrice.coppens@trasys.lu
  */
-public class UIDialogButtons extends
-        org.alfresco.web.ui.repo.component.UIDialogButtons {
+public class UIDialogButtons
+  extends org.alfresco.web.ui.repo.component.UIDialogButtons {
 
-
-    @Override
-    public void encodeBegin(FacesContext context) throws IOException {
-        if (!isRendered()) {
-            return;
-        }
-
-        if (this.getChildCount() == 0) {
-            // generate all the required buttons the first time
-            generateAdditionalButtons(context);
-        }
-
-        ResponseWriter out = context.getResponseWriter();
+  @Override
+  public void encodeBegin(FacesContext context) throws IOException {
+    if (!isRendered()) {
+      return;
     }
 
-    @Override
-    public void encodeChildren(FacesContext context) throws IOException {
-        if (!isRendered()) {
-            return;
-        }
-
-        ResponseWriter out = context.getResponseWriter();
-
-        // render the buttons
-        for (Object o : getChildren()) {
-
-            UIComponent child = (UIComponent) o;
-            Utils.encodeRecursive(context, child);
-        }
+    if (this.getChildCount() == 0) {
+      // generate all the required buttons the first time
+      generateAdditionalButtons(context);
     }
 
-    @SuppressWarnings("unchecked")
-    protected void addSpacingRow(FacesContext context) {
-        UIOutput spacingRow = (UIOutput) context.getApplication().createComponent(
-                ComponentConstants.JAVAX_FACES_OUTPUT);
-        spacingRow.setRendererType(ComponentConstants.JAVAX_FACES_TEXT);
-        FacesHelper.setupComponentId(context, spacingRow, null);
-        spacingRow.setValue("<br>");
-        spacingRow.getAttributes().put("escape", Boolean.FALSE);
-        this.getChildren().add(spacingRow);
+    ResponseWriter out = context.getResponseWriter();
+  }
+
+  @Override
+  public void encodeChildren(FacesContext context) throws IOException {
+    if (!isRendered()) {
+      return;
     }
 
-    @Override
-    public void encodeEnd(FacesContext context) throws IOException {
-        if (!isRendered()) {
-            return;
-        }
+    ResponseWriter out = context.getResponseWriter();
 
-        ResponseWriter out = context.getResponseWriter();
+    // render the buttons
+    for (Object o : getChildren()) {
+      UIComponent child = (UIComponent) o;
+      Utils.encodeRecursive(context, child);
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  protected void addSpacingRow(FacesContext context) {
+    UIOutput spacingRow = (UIOutput) context
+      .getApplication()
+      .createComponent(ComponentConstants.JAVAX_FACES_OUTPUT);
+    spacingRow.setRendererType(ComponentConstants.JAVAX_FACES_TEXT);
+    FacesHelper.setupComponentId(context, spacingRow, null);
+    spacingRow.setValue("<br>");
+    spacingRow.getAttributes().put("escape", Boolean.FALSE);
+    this.getChildren().add(spacingRow);
+  }
+
+  @Override
+  public void encodeEnd(FacesContext context) throws IOException {
+    if (!isRendered()) {
+      return;
     }
 
+    ResponseWriter out = context.getResponseWriter();
+  }
 }

@@ -23,119 +23,119 @@ import java.util.Date;
  */
 public class LogSearchResultDAO {
 
-    private Date logDate;
-    private String activityDescription;
-    private String serviceDescription;
-    private String userName;
-    private String info;
-    private String path;
-    private int isOK;
+  private Date logDate;
+  private String activityDescription;
+  private String serviceDescription;
+  private String userName;
+  private String info;
+  private String path;
+  private int isOK;
 
-    /**
-     * @return the logDate
-     */
-    public Date getLogDate() {
-        return logDate;
-    }
+  /**
+   * @return the logDate
+   */
+  public Date getLogDate() {
+    return logDate;
+  }
 
-    /**
-     * @param logDate the logDate to set
-     */
-    public void setLogDate(Date date) {
-        this.logDate = date;
-    }
+  /**
+   * @param logDate the logDate to set
+   */
+  public void setLogDate(Date date) {
+    this.logDate = date;
+  }
 
-    /**
-     * @return the activityDescription
-     */
-    public String getActivityDescription() {
-        return activityDescription;
-    }
+  /**
+   * @return the activityDescription
+   */
+  public String getActivityDescription() {
+    return activityDescription;
+  }
 
-    /**
-     * @param activityDescription the activityDescription to set
-     */
-    public void setActivityDescription(String activityDescription) {
-        this.activityDescription = activityDescription;
-    }
+  /**
+   * @param activityDescription the activityDescription to set
+   */
+  public void setActivityDescription(String activityDescription) {
+    this.activityDescription = activityDescription;
+  }
 
-    /**
-     * @return the serviceDescription
-     */
-    public String getServiceDescription() {
-        return serviceDescription;
-    }
+  /**
+   * @return the serviceDescription
+   */
+  public String getServiceDescription() {
+    return serviceDescription;
+  }
 
-    /**
-     * @param serviceDescription the serviceDescription to set
-     */
-    public void setServiceDescription(String serviceDescription) {
-        this.serviceDescription = serviceDescription;
-    }
+  /**
+   * @param serviceDescription the serviceDescription to set
+   */
+  public void setServiceDescription(String serviceDescription) {
+    this.serviceDescription = serviceDescription;
+  }
 
-    /**
-     * @return the userName
-     */
-    public String getUserName() {
-        return userName;
-    }
+  /**
+   * @return the userName
+   */
+  public String getUserName() {
+    return userName;
+  }
 
-    /**
-     * @param userName the userName to set
-     */
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
+  /**
+   * @param userName the userName to set
+   */
+  public void setUserName(String userName) {
+    this.userName = userName;
+  }
 
-    /**
-     * @return the info
-     */
-    public String getInfo() {
-        return info;
-    }
+  /**
+   * @return the info
+   */
+  public String getInfo() {
+    return info;
+  }
 
-    /**
-     * @param info the info to set
-     */
-    public void setInfo(String info) {
-        this.info = info;
-    }
+  /**
+   * @param info the info to set
+   */
+  public void setInfo(String info) {
+    this.info = info;
+  }
 
-    /**
-     * @return the isOK
-     */
-    public int getIsOK() {
-        return isOK;
-    }
+  /**
+   * @return the isOK
+   */
+  public int getIsOK() {
+    return isOK;
+  }
 
-    /**
-     * @param isOK the isOK to set
-     */
-    public void setIsOK(int isOK) {
-        this.isOK = isOK;
-    }
+  /**
+   * @param isOK the isOK to set
+   */
+  public void setIsOK(int isOK) {
+    this.isOK = isOK;
+  }
 
-    /**
-     * @return the path
-     */
-    public String getPath() {
-        return path;
-    }
+  /**
+   * @return the path
+   */
+  public String getPath() {
+    return path;
+  }
 
-    /**
-     * @param path the path to set
-     */
-    public void setPath(String path) {
-        this.path = path;
-    }
+  /**
+   * @param path the path to set
+   */
+  public void setPath(String path) {
+    this.path = path;
+  }
 
-    public String getStatus() {
-        final String result;
-        if (isOK == 1) {
-            result = "OK";
-        } else {
-            result = "Error";
-        }
-        return result;
+  public String getStatus() {
+    final String result;
+    if (isOK == 1) {
+      result = "OK";
+    } else {
+      result = "Error";
     }
+    return result;
+  }
 }

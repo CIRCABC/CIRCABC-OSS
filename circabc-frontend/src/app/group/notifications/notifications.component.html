@@ -1,4 +1,6 @@
-<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+@if (loading) {
+<cbc-horizontal-loader />
+}
 
 <div class="wrap page-container my-account">
   <div class="page-header">
@@ -8,21 +10,17 @@
     ></span>
     <div class="page-header__actions">
       <cbc-reponsive-sub-menu>
-        <a
-          (click)="goBackToFolder()"
-          *ngIf="from === 'library'"
-          class="page-header__backlink"
+        @if (from === 'library') {
+        <a tabindex="0" (click)="goBackToFolder()" class="page-header__backlink"
           >{{ 'label.back' | transloco }}</a
         >
-        <a (click)="goBack()" *ngIf="from === 'library'"
-          >{{ 'label.details' | transloco }}</a
-        >
-        <a
-          (click)="goBack()"
-          *ngIf="from === 'forum' || from === 'topic'"
-          class="page-header__backlink"
+        } @if (from === 'library') {
+        <a tabindex="0" (click)="goBack()">{{ 'label.details' | transloco }}</a>
+        } @if (from === 'forum' || from === 'topic') {
+        <a tabindex="0" (click)="goBack()" class="page-header__backlink"
           >{{ 'label.back' | transloco }}</a
         >
+        }
         <a
           [routerLink]="['../../permissions', getNodeId()]"
           [queryParams]="{ from: from }"
@@ -32,20 +30,21 @@
           >{{ 'label.notifications' | transloco }}</a
         >
       </cbc-reponsive-sub-menu>
-      <a class="cta cta--plus" (click)="showAddModal = true"
+      <a tabindex="0" class="cta cta--plus" (click)="showAddModal = true"
         >{{ 'notifications.add.configuration' | transloco }}</a
       >
     </div>
   </div>
 
   <section>
-    <div class="main fixH3" *ngIf="notifs">
+    @if (notifs) {
+    <div class="main fixH3">
       <h3
         >{{ 'label.notifications.on' | transloco }}: {{ currentNode.name }}</h3
       >
     </div>
-
-    <div class="box half-width-fluid" *ngIf="notifs">
+    } @if (notifs) {
+    <div class="box half-width-fluid">
       <header class="header">
         <span class="title">{{ 'label.profiles' | transloco }}</span>
       </header>
@@ -64,44 +63,41 @@
           </thead>
 
           <tbody>
-            <tr
-              *ngIf="notifs.profiles"
-              class="row"
-              [class.empty-row]="notifs.profiles.length === 0"
-            >
-              <td
-                class="cell-left-border"
-                *ngIf="notifs.profiles.length === 0"
-              ></td>
-              <td
-                class="cell-checkbox"
-                *ngIf="notifs.profiles.length === 0"
-              ></td>
-              <td colspan="3" *ngIf="notifs.profiles.length === 0">
+            @if (notifs.profiles) {
+            <tr class="row" [class.empty-row]="notifs.profiles.length === 0">
+              @if (notifs.profiles.length === 0) {
+              <td class="cell-left-border"></td>
+              } @if (notifs.profiles.length === 0) {
+              <td class="cell-checkbox"></td>
+              } @if (notifs.profiles.length === 0) {
+              <td colspan="3">
                 {{ 'notifications.empty.configuration' | transloco }}</td
               >
+              }
             </tr>
-
-            <tr class="row" *ngFor="let pNotif of notifs.profiles">
+            } @for (pNotif of notifs.profiles; track pNotif) {
+            <tr class="row">
               <td class="cell-left-border"></td>
               <td class="cell-checkbox"></td>
               <td>{{ pNotif.profile?.title | cbcI18n }}</td>
               <td>{{ 'notifications.' + pNotif.notifications | transloco }}</td>
               <td>
+                @if (pNotif.inherited === false) {
                 <cbc-inline-delete
-                  *ngIf="pNotif.inherited === false"
                   (deletionConfirmed)="
                     deleteNotification(pNotif.profile?.groupName)
                   "
                 ></cbc-inline-delete>
+                }
               </td>
             </tr>
+            }
           </tbody>
         </table>
       </div>
     </div>
-
-    <div class="box half-width-fluid" *ngIf="notifs">
+    } @if (notifs) {
+    <div class="box half-width-fluid">
       <header class="header">
         <span class="title">{{ 'label.users' | transloco }}</span>
       </header>
@@ -120,22 +116,20 @@
           </thead>
 
           <tbody>
-            <tr
-              *ngIf="notifs.users"
-              class="row"
-              [class.empty-row]="notifs.users.length === 0"
-            >
-              <td
-                class="cell-left-border"
-                *ngIf="notifs.users.length === 0"
-              ></td>
-              <td class="cell-checkbox" *ngIf="notifs.users.length === 0"></td>
-              <td colspan="3" *ngIf="notifs.users.length === 0">
+            @if (notifs.users) {
+            <tr class="row" [class.empty-row]="notifs.users.length === 0">
+              @if (notifs.users.length === 0) {
+              <td class="cell-left-border"></td>
+              } @if (notifs.users.length === 0) {
+              <td class="cell-checkbox"></td>
+              } @if (notifs.users.length === 0) {
+              <td colspan="3">
                 {{ 'notifications.empty.configuration' | transloco }}</td
               >
+              }
             </tr>
-
-            <tr class="row" *ngFor="let uNotif of notifs.users">
+            } @for (uNotif of notifs.users; track uNotif) {
+            <tr class="row">
               <td class="cell-left-border"></td>
               <td class="cell-checkbox"></td>
               <td
@@ -143,23 +137,27 @@
               >
               <td>{{ 'notifications.' + uNotif.notifications | transloco }}</td>
               <td>
+                @if (uNotif.inherited === false) {
                 <cbc-inline-delete
-                  *ngIf="uNotif.inherited === false"
                   (deletionConfirmed)="deleteNotification(uNotif.user?.userId)"
                 ></cbc-inline-delete>
+                }
               </td>
             </tr>
+            }
           </tbody>
         </table>
       </div>
     </div>
+    }
   </section>
 </div>
 
+@if (currentNode) {
 <cbc-add-notifications
-  *ngIf="currentNode"
   [showModal]="showAddModal"
   [node]="currentNode"
   [ig]="currentIg"
   (finished)="refresh($event)"
-></cbc-add-notifications>
+/>
+}

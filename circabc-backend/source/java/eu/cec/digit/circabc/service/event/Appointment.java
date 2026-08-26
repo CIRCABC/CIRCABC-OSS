@@ -17,125 +17,123 @@
 package eu.cec.digit.circabc.service.event;
 
 import com.google.ical.values.DateValue;
-import org.alfresco.service.namespace.QName;
-import org.alfresco.util.PropertyMap;
-import org.joda.time.LocalTime;
-
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.alfresco.service.namespace.QName;
+import org.alfresco.util.PropertyMap;
+import org.joda.time.LocalTime;
 
 public interface Appointment {
+  String getId();
 
-    String getId();
+  void setId(String id);
 
-    void setId(String id);
+  String getLanguage();
 
-    String getLanguage();
+  void setLanguage(String value);
 
-    void setLanguage(String value);
+  String getTitle();
 
-    String getTitle();
+  void setTitle(String value);
 
-    void setTitle(String value);
+  String getEventAbstract();
 
-    String getEventAbstract();
+  void setEventAbstract(String value);
 
-    void setEventAbstract(String value);
+  DateValue getDate();
 
-    DateValue getDate();
+  Date getDateAsDate();
 
-    Date getDateAsDate();
+  void setDateAsDate(Date value);
 
-    void setDateAsDate(Date value);
+  DateValue getStartDate();
 
-    DateValue getStartDate();
+  void setStartDate(DateValue value);
 
-    void setStartDate(DateValue value);
+  Date getStartDateAsDate();
 
-    Date getStartDateAsDate();
+  void setStartDateAsDate(Date value);
 
-    void setStartDateAsDate(Date value);
+  OccurenceRate getOccurenceRate();
 
-    OccurenceRate getOccurenceRate();
+  void setOccurenceRate(OccurenceRate value);
 
-    void setOccurenceRate(OccurenceRate value);
+  LocalTime getStartTime();
 
-    LocalTime getStartTime();
+  void setStartTime(LocalTime value);
 
-    void setStartTime(LocalTime value);
+  Date getStartTimeAsDate();
 
-    Date getStartTimeAsDate();
+  void setStartTimeAsDate(Date value);
 
-    void setStartTimeAsDate(Date value);
+  LocalTime getEndTime();
 
-    LocalTime getEndTime();
+  void setEndTime(LocalTime value);
 
-    void setEndTime(LocalTime value);
+  Date getEndTimeAsDate();
 
-    Date getEndTimeAsDate();
+  void setEndTimeAsDate(Date value);
 
-    void setEndTimeAsDate(Date value);
+  String getTimeZoneId();
 
-    String getTimeZoneId();
+  void setTimeZoneId(String value);
 
-    void setTimeZoneId(String value);
+  String getLocation();
 
-    String getLocation();
+  void setLocation(String value);
 
-    void setLocation(String value);
+  List<String> getInvitedUsers();
 
-    List<String> getInvitedUsers();
+  void setInvitedUsers(List<String> value);
 
-    void setInvitedUsers(List<String> value);
+  String getInvitedUsersList();
 
-    String getInvitedUsersList();
+  String getInvitationMessage();
 
-    String getInvitationMessage();
+  void setInvitationMessage(String value);
 
-    void setInvitationMessage(String value);
+  AudienceStatus getAudienceStatus();
 
-    AudienceStatus getAudienceStatus();
+  void setAudienceStatus(AudienceStatus value);
 
-    void setAudienceStatus(AudienceStatus value);
+  String getName();
 
-    String getName();
+  void setName(String value);
 
-    void setName(String value);
+  String getPhone();
 
-    String getPhone();
+  void setPhone(String value);
 
-    void setPhone(String value);
+  String getRRule();
 
-    String getRRule();
+  String getEmail();
 
-    String getEmail();
+  void setEmail(String value);
 
-    void setEmail(String value);
+  String getUrl();
 
-    String getUrl();
+  void setUrl(String value);
 
-    void setUrl(String value);
+  Boolean getEnableNotification();
 
-    Boolean getEnableNotification();
+  void setEnableNotification(Boolean value);
 
-    void setEnableNotification(Boolean value);
+  boolean getUseBCC();
 
-    boolean getUseBCC();
+  void setUseBCC(boolean value);
 
-    void setUseBCC(boolean value);
+  PropertyMap getProperties();
 
-    PropertyMap getProperties();
+  PropertyMap getProperties(AppointmentUpdateInfo updateInfo);
 
-    PropertyMap getProperties(AppointmentUpdateInfo updateInfo);
+  List<PropertyMap> getEventDatesProperties(AppointmentType appointmentType);
 
-    List<PropertyMap> getEventDatesProperties(AppointmentType appointmentType);
+  void init(Map<QName, Serializable> properties);
 
-    void init(Map<QName, Serializable> properties);
+  HashMap<String, MeetingRequestStatus> getAudience();
 
-    HashMap<String, MeetingRequestStatus> getAudience();
-
-    void addAudience(String user, MeetingRequestStatus status);
+  void addAudience(String user, MeetingRequestStatus status);
 }

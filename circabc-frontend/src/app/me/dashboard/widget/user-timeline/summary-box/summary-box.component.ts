@@ -1,14 +1,14 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
+import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
   selector: 'cbc-summary-box',
   templateUrl: './summary-box.component.html',
-  styleUrls: ['./summary-box.component.scss'],
+  styleUrl: './summary-box.component.scss',
   preserveWhitespaces: true,
+  imports: [TranslocoModule],
 })
 export class SummaryBoxComponent {
-  @Input()
-  number!: number;
-  @Input()
-  label!: string;
+  readonly number = input.required<number>();
+  readonly label = input.required<string>();
 }

@@ -1,6 +1,6 @@
 <div class="cta cta--dots dropdown-trigger">
-  {{ 'label.actions' | transloco }}
-  <div class="dropdown dropdown--add-file" *ngIf="showActionsDropdown">
+  {{ 'label.actions' | transloco }} @if (showActionsDropdown) {
+  <div class="dropdown dropdown--add-file">
     <ul>
       <li>
         <a
@@ -28,4 +28,5 @@
       </li>
     </ul>
   </div>
+  }
 </div>

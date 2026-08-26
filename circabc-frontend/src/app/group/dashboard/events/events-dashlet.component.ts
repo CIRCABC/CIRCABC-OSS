@@ -1,17 +1,28 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit, input } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import { EventItemDefinition, EventsService } from 'app/core/generated/circabc';
 import { getFullDate } from 'app/core/util';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
+import { DatePipe } from 'app/shared/pipes/date.pipe';
+import { TimePipe } from 'app/shared/pipes/time.pipe';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-events-dashlet',
   templateUrl: './events-dashlet.component.html',
-  styleUrls: ['./events-dashlet.component.scss'],
+  styleUrl: './events-dashlet.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    HorizontalLoaderComponent,
+    RouterLink,
+    DatePipe,
+    TimePipe,
+    TranslocoModule,
+  ],
 })
 export class EventsDashletComponent implements OnInit {
-  @Input()
-  public igId!: string;
+  public readonly igId = input.required<string>();
   public events: EventItemDefinition[] = [];
   public more = false;
   public loading = false;
@@ -33,12 +44,12 @@ export class EventsDashletComponent implements OnInit {
     try {
       this.events = await firstValueFrom(
         this.eventsService.getInterestGroupEvents(
-          this.igId,
+          this.igId(),
           getFullDate(startDate),
           getFullDate(endDate)
         )
       );
-    } catch (error) {
+    } catch (_error) {
       this.events = [];
       this.restCallError = true;
     }

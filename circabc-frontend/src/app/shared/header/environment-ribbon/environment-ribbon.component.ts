@@ -7,7 +7,7 @@ import { environment } from 'environments/environment';
 @Component({
   selector: 'cbc-environment-ribbon',
   templateUrl: './environment-ribbon.component.html',
-  styleUrls: ['./environment-ribbon.component.scss'],
+  styleUrl: './environment-ribbon.component.scss',
 })
 export class EnvironmentRibbonComponent {
   public environmentType = environment.environmentType;

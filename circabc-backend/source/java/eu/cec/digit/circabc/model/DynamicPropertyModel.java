@@ -28,65 +28,81 @@ import org.alfresco.service.namespace.QName;
  * @author Slobodan Filipovic
  */
 public interface DynamicPropertyModel extends BaseCircabcModel {
+  /**
+   * Circabc Dynamic Properties namespace
+   */
+  String CIRCABC_DYNAMIC_PROPERTY_MODEL_1_0_URI =
+    CIRCABC_NAMESPACE + "/model/dynamicproperties/1.0";
 
-    /**
-     * Circabc Dynamic Properties namespace
-     */
-    String CIRCABC_DYNAMIC_PROPERTY_MODEL_1_0_URI =
-            CIRCABC_NAMESPACE + "/model/dynamicproperties/1.0";
+  /**
+   * Circabc dynamic property prefix
+   */
+  String CIRCABC_DYNAMIC_PROPERTY_MODEL_PREFIX = "dz";
 
-    /**
-     * Circabc dynamic property prefix
-     */
-    String CIRCABC_DYNAMIC_PROPERTY_MODEL_PREFIX = "dz";
+  /**
+   * Circabc dynamic property root container
+   */
+  QName TYPE_DYNAMIC_PROPERTY_CONTAINER = QName.createQName(
+    CIRCABC_DYNAMIC_PROPERTY_MODEL_1_0_URI,
+    "Container"
+  );
 
-    /**
-     * Circabc dynamic property root container
-     */
-    QName TYPE_DYNAMIC_PROPERTY_CONTAINER = QName
-            .createQName(CIRCABC_DYNAMIC_PROPERTY_MODEL_1_0_URI, "Container");
+  /**
+   * Circabc dynamic property
+   */
+  QName TYPE_DYNAMIC_PROPERTY = QName.createQName(
+    CIRCABC_DYNAMIC_PROPERTY_MODEL_1_0_URI,
+    "DynProp"
+  );
 
-    /**
-     * Circabc dynamic property
-     */
-    QName TYPE_DYNAMIC_PROPERTY = QName
-            .createQName(CIRCABC_DYNAMIC_PROPERTY_MODEL_1_0_URI, "DynProp");
+  /**
+   * Circabc dynamic property
+   */
+  QName ASSOC_DYNAMIC_PROPERTY = QName.createQName(
+    CIRCABC_DYNAMIC_PROPERTY_MODEL_1_0_URI,
+    "DynPropAss"
+  );
 
-    /**
-     * Circabc dynamic property
-     */
-    QName ASSOC_DYNAMIC_PROPERTY = QName
-            .createQName(CIRCABC_DYNAMIC_PROPERTY_MODEL_1_0_URI, "DynPropAss");
+  /**
+   * Circabc dynamic property index
+   */
+  QName PROP_DYNAMIC_PROPERTY_INDEX = QName.createQName(
+    CIRCABC_DYNAMIC_PROPERTY_MODEL_1_0_URI,
+    "Index"
+  );
 
-    /**
-     * Circabc dynamic property index
-     */
-    QName PROP_DYNAMIC_PROPERTY_INDEX = QName
-            .createQName(CIRCABC_DYNAMIC_PROPERTY_MODEL_1_0_URI, "Index");
+  /**
+   * Circabc dynamic property
+   */
+  QName PROP_DYNAMIC_PROPERTY_LABEL = QName.createQName(
+    CIRCABC_DYNAMIC_PROPERTY_MODEL_1_0_URI,
+    "Label"
+  );
 
-    /**
-     * Circabc dynamic property
-     */
-    QName PROP_DYNAMIC_PROPERTY_LABEL = QName
-            .createQName(CIRCABC_DYNAMIC_PROPERTY_MODEL_1_0_URI, "Label");
+  /**
+   * Circabc dynamic property label
+   */
+  QName PROP_DYNAMIC_PROPERTY_TYPE = QName.createQName(
+    CIRCABC_DYNAMIC_PROPERTY_MODEL_1_0_URI,
+    "Type"
+  );
 
-    /**
-     * Circabc dynamic property label
-     */
-    QName PROP_DYNAMIC_PROPERTY_TYPE = QName
-            .createQName(CIRCABC_DYNAMIC_PROPERTY_MODEL_1_0_URI, "Type");
+  /**
+   * Circabc dynamic property
+   */
+  QName PROP_DYNAMIC_PROPERTY_VALID_VALUES = QName.createQName(
+    CIRCABC_DYNAMIC_PROPERTY_MODEL_1_0_URI,
+    "ValidValues"
+  );
 
-    /**
-     * Circabc dynamic property
-     */
-    QName PROP_DYNAMIC_PROPERTY_VALID_VALUES = QName
-            .createQName(CIRCABC_DYNAMIC_PROPERTY_MODEL_1_0_URI, "ValidValues");
-
-    /**
-     * The possible values of the dynamic property type
-     */
-    String[] DYNAMIC_PROPERTY_TYPE_VALUES = {
-            "DATE_FIELD", "TEXT_FIELD", "TEXT_AREA", "SELECTION", "MULTI_SELECTION"
-    };
-
+  /**
+   * The possible values of the dynamic property type
+   */
+  String[] DYNAMIC_PROPERTY_TYPE_VALUES = {
+    "DATE_FIELD",
+    "TEXT_FIELD",
+    "TEXT_AREA",
+    "SELECTION",
+    "MULTI_SELECTION",
+  };
 }

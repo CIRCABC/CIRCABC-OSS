@@ -1,10 +1,11 @@
-<?xml version='1.0' encoding='UTF-8'?>
-
+<?xml version='1.0' encoding='UTF-8' ?>
 <!--  From config1    -->
-<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
-    version="2.4">
+<web-app
+  xmlns="http://java.sun.com/xml/ns/j2ee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+  version="2.4"
+>
 
    <display-name>Alfresco Web Client</display-name>
 
@@ -27,7 +28,8 @@
 
    <context-param>
       <param-name>javax.faces.CONFIG_FILES</param-name>
-      <param-value>/WEB-INF/faces-config-app.xml,/WEB-INF/faces-config-beans.xml,/WEB-INF/faces-config-navigation.xml,/WEB-INF/faces-config-common.xml,/WEB-INF/faces-config-repo.xml,/WEB-INF/faces-config-wcm.xml,/WEB-INF/faces-config-custom.xml,/WEB-INF/classes/alfresco/extension/circabc-faces-config-custom.xml</param-value>
+      <param-value
+    >/WEB-INF/faces-config-app.xml,/WEB-INF/faces-config-beans.xml,/WEB-INF/faces-config-navigation.xml,/WEB-INF/faces-config-common.xml,/WEB-INF/faces-config-repo.xml,/WEB-INF/faces-config-wcm.xml,/WEB-INF/faces-config-custom.xml,/WEB-INF/classes/alfresco/extension/circabc-faces-config-custom.xml</param-value>
    </context-param>
 
    <context-param>
@@ -36,13 +38,15 @@
    </context-param>
 
    <context-param>
-      <description>This is an EXPERIMENTAL feature, so leave it off for now!</description>
+      <description
+    >This is an EXPERIMENTAL feature, so leave it off for now!</description>
       <param-name>org.apache.myfaces.DETECT_JAVASCRIPT</param-name>
       <param-value>false</param-value>
    </context-param>
 
    <context-param>
-      <description>Stop MyFaces from Serializing the state to the session</description>
+      <description
+    >Stop MyFaces from Serializing the state to the session</description>
       <param-name>org.apache.myfaces.SERIALIZE_STATE_IN_SESSION</param-name>
       <param-value>false</param-value>
    </context-param>
@@ -108,18 +112,23 @@
    </context-param>
 
 
-   <context-param><description>Vaadin production mode</description><param-name>productionMode</param-name><param-value>true</param-value></context-param>
+   <context-param><description>Vaadin production mode</description><param-name
+    >productionMode</param-name><param-value>true</param-value></context-param>
 
    <filter>
-      <description>Cleans security context before authentication via the CMIS services or filters. Mapped only for CMIS</description>
+      <description
+    >Cleans security context before authentication via the CMIS services or filters. Mapped only for CMIS</description>
       <filter-name>CMIS security context cleaning filter</filter-name>
-      <filter-class>org.alfresco.web.app.servlet.CmisSecurityContextCleanerFilter</filter-class>
+      <filter-class
+    >org.alfresco.web.app.servlet.CmisSecurityContextCleanerFilter</filter-class>
    </filter>
 
    <filter>
-      <description>Authentication filter mapped only to faces URLs. Other URLs generally use proprietary means to talk to the AuthenticationComponent</description>
+      <description
+    >Authentication filter mapped only to faces URLs. Other URLs generally use proprietary means to talk to the AuthenticationComponent</description>
       <filter-name>Authentication Filter</filter-name>
-      <filter-class>org.alfresco.repo.web.filter.beans.BeanProxyFilter</filter-class>
+      <filter-class
+    >org.alfresco.repo.web.filter.beans.BeanProxyFilter</filter-class>
       <init-param>
          <param-name>beanName</param-name>
          <param-value>AuthenticationFilter</param-value>
@@ -127,9 +136,11 @@
    </filter>
 
    <filter>
-      <description>Authentication filter mapped to all authenticated URLs. Mainly for SSO support</description>
+      <description
+    >Authentication filter mapped to all authenticated URLs. Mainly for SSO support</description>
       <filter-name>Global Authentication Filter</filter-name>
-      <filter-class>org.alfresco.repo.web.filter.beans.BeanProxyFilter</filter-class>
+      <filter-class
+    >org.alfresco.repo.web.filter.beans.BeanProxyFilter</filter-class>
       <init-param>
          <param-name>beanName</param-name>
          <param-value>GlobalAuthenticationFilter</param-value>
@@ -137,9 +148,11 @@
    </filter>
    
    <filter>
-      <description>Authentication filter mapped to web script URLs. Mainly for SSO support</description>
+      <description
+    >Authentication filter mapped to web script URLs. Mainly for SSO support</description>
       <filter-name>WebScript Authentication Filter</filter-name>
-      <filter-class>org.alfresco.repo.web.filter.beans.BeanProxyFilter</filter-class>
+      <filter-class
+    >org.alfresco.repo.web.filter.beans.BeanProxyFilter</filter-class>
       <init-param>
          <param-name>beanName</param-name>
          <param-value>WebscriptAuthenticationFilter</param-value>
@@ -147,9 +160,11 @@
    </filter>
    
    <filter>
-      <description>Directly handles login script calls, allowing Surf to establish a cookie for a manual login</description>
+      <description
+    >Directly handles login script calls, allowing Surf to establish a cookie for a manual login</description>
       <filter-name>WebScript Cookie Authentication Filter</filter-name>
-      <filter-class>org.alfresco.repo.web.filter.beans.BeanProxyFilter</filter-class>
+      <filter-class
+    >org.alfresco.repo.web.filter.beans.BeanProxyFilter</filter-class>
       <init-param>
          <param-name>beanName</param-name>
          <param-value>WebscriptCookieAuthenticationFilter</param-value>
@@ -158,7 +173,8 @@
       
    <filter>
       <filter-name>WebDAV Authentication Filter</filter-name>
-      <filter-class>org.alfresco.repo.web.filter.beans.BeanProxyFilter</filter-class>
+      <filter-class
+    >org.alfresco.repo.web.filter.beans.BeanProxyFilter</filter-class>
       <init-param>
          <param-name>beanName</param-name>
          <param-value>WebDavAuthenticationFilter</param-value>
@@ -167,30 +183,35 @@
    
    <filter>
       <filter-name>Admin Authentication Filter</filter-name>
-      <filter-class>org.alfresco.web.app.servlet.AdminAuthenticationFilter</filter-class>
+      <filter-class
+    >org.alfresco.web.app.servlet.AdminAuthenticationFilter</filter-class>
    </filter>
    
    <filter>
       <description>Sets fallback default locale for ALL requests</description>
       <filter-name>Global Localization Filter</filter-name>
-      <filter-class>org.alfresco.web.app.servlet.GlobalLocalizationFilter</filter-class>
+      <filter-class
+    >org.alfresco.web.app.servlet.GlobalLocalizationFilter</filter-class>
    </filter>
 
    <filter>
       <filter-name>CIRCABC JSF Session Synchronized Filter</filter-name>
-      <filter-class>eu.cec.digit.circabc.web.servlet.CircabcSessionSynchronizedFilter</filter-class>
+      <filter-class
+    >eu.cec.digit.circabc.web.servlet.CircabcSessionSynchronizedFilter</filter-class>
    </filter>
    
    <filter>
       <filter-name>Encode Survey Filter</filter-name>
-      <filter-class>eu.cec.digit.circabc.web.servlet.EncodeSurveyFilter</filter-class>
+      <filter-class
+    >eu.cec.digit.circabc.web.servlet.EncodeSurveyFilter</filter-class>
    </filter>
    
       
    <filter>
       <description>Filter mapping to try to speed up ecas login</description>
       <filter-name>Login Bean Filter</filter-name>
-      <filter-class>org.alfresco.repo.web.filter.beans.BeanProxyFilter</filter-class>
+      <filter-class
+    >org.alfresco.repo.web.filter.beans.BeanProxyFilter</filter-class>
       <init-param>
          <param-name>beanName</param-name>
          <param-value>LoginBeanFilter</param-value>
@@ -199,18 +220,21 @@
 
 	<filter>
       <filter-name>OfficeLinkFilter</filter-name>
-      <filter-class>eu.cec.digit.circabc.web.servlet.OfficeLinkFilter</filter-class>
+      <filter-class
+    >eu.cec.digit.circabc.web.servlet.OfficeLinkFilter</filter-class>
     </filter>
 
    <filter>
       <filter-name>DisableBAFilter</filter-name>
-      <filter-class>eu.cec.digit.circabc.web.servlet.DisableBasicAuthenicationPopupFilter</filter-class>
+      <filter-class
+    >eu.cec.digit.circabc.web.servlet.DisableBasicAuthenicationPopupFilter</filter-class>
    </filter>
    
      <!-- Add for tomahawk -->
     <filter>
       <filter-name>MyFacesExtensionsFilter</filter-name>
-     <filter-class>org.apache.myfaces.webapp.filter.ExtensionsFilter</filter-class>
+     <filter-class
+    >org.apache.myfaces.webapp.filter.ExtensionsFilter</filter-class>
         <init-param>
             <description>Set the size limit for uploaded files.
                 Format: 10 - 10 bytes
@@ -238,7 +262,8 @@
 
     <filter>
          <filter-name>ClickjackFilterSameOrigin</filter-name>
-         <filter-class>eu.cec.digit.circabc.web.app.servlet.CircabcClickjackFilter</filter-class>
+         <filter-class
+    >eu.cec.digit.circabc.web.app.servlet.CircabcClickjackFilter</filter-class>
          <init-param>
              <param-name>mode</param-name>
              <param-value>SAMEORIGIN</param-value>
@@ -254,7 +279,8 @@
 	       </init-param>
 	       <init-param>
 	             <param-name>cors.allowOrigin</param-name>
-	             <param-value>http://vs-cbc-docker.net1.cec.eu.int:3000 http://vs-cbc-docker.net1.cec.eu.int:3002 http://vs-cbc-docker.net1.cec.eu.int:4200 http://localhost:4200 http://d02di1335292dit.net1.cec.eu.int:4200</param-value>
+	             <param-value
+      >http://localhost:3000 http://localhost:3002 http://localhost:4200 http://localhost:4200 http://localhost:4200</param-value>
 	       </init-param>
 	 </filter>
 	
@@ -302,7 +328,8 @@
 	</listener>
 
 	<listener>
-		<listener-class>eu.cec.digit.circabc.web.servlet.CircabcSessionListener</listener-class>
+		<listener-class
+    >eu.cec.digit.circabc.web.servlet.CircabcSessionListener</listener-class>
 	</listener>
 
 
@@ -431,7 +458,8 @@
 
    <filter-mapping>
       <filter-name>Encode Survey Filter</filter-name>
-      <url-pattern>/faces/jsp/extension/wai/navigation/surveys/dispatch</url-pattern>
+      <url-pattern
+    >/faces/jsp/extension/wai/navigation/surveys/dispatch</url-pattern>
    </filter-mapping>
 
    <filter-mapping>
@@ -527,16 +555,19 @@
    </filter-mapping>
 
    <listener>
-      <listener-class>org.apache.myfaces.webapp.StartupServletContextListener</listener-class>
+      <listener-class
+    >org.apache.myfaces.webapp.StartupServletContextListener</listener-class>
    </listener>
 	
    <listener>
-      <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+      <listener-class
+    >org.springframework.web.util.Log4jConfigListener</listener-class>
    </listener>
    
    <!-- Spring Context Loader listener - can disable loading of context if runtime config changes are needed -->
    <listener>
-      <listener-class>org.alfresco.web.app.ContextLoaderListener</listener-class>
+      <listener-class
+    >org.alfresco.web.app.ContextLoaderListener</listener-class>
    </listener>
 
    <!-- Web Application Context listener - session create/destroy debugging and bootstrap Spring init -->
@@ -546,26 +577,31 @@
 
    <!-- WebDAV session listener - ensures that no locked resources is left after session expires -->
    <listener>
-      <listener-class>org.alfresco.repo.webdav.WebDAVSessionListener</listener-class>
+      <listener-class
+    >org.alfresco.repo.webdav.WebDAVSessionListener</listener-class>
    </listener>
 
    <!-- Web Services context listener for OpenCMIS -->
    <listener>
-        <listener-class>com.sun.xml.ws.transport.http.servlet.WSServletContextListener</listener-class>
+        <listener-class
+    >com.sun.xml.ws.transport.http.servlet.WSServletContextListener</listener-class>
    </listener> 
    
    <!-- ECAS proxy cache for the HRS client (Hermes) -->
    <listener>
-      <listener-class>eu.cec.digit.ecas.client.proxy.ProxyCacheInit</listener-class>
+      <listener-class
+    >eu.cec.digit.ecas.client.proxy.ProxyCacheInit</listener-class>
    </listener>
    
    <!-- ECAS proxy ticket receptor for the HRS client (Hermes) -->
    <servlet>
       <servlet-name>ProxyTicketReceptor</servlet-name>
-      <servlet-class>eu.cec.digit.ecas.client.proxy.EcasProxyTicketReceptor</servlet-class>
+      <servlet-class
+    >eu.cec.digit.ecas.client.proxy.EcasProxyTicketReceptor</servlet-class>
    </servlet>
    
-   <listener><listener-class>org.springframework.web.context.request.RequestContextListener</listener-class></listener>
+   <listener><listener-class
+    >org.springframework.web.context.request.RequestContextListener</listener-class></listener>
    
    <!-- Faces Servlet -->
    <servlet>
@@ -577,58 +613,69 @@
    <servlet>
       <servlet-name>uploadFile</servlet-name>
 <!--       <servlet-class>org.alfresco.web.app.servlet.UploadFileServlet</servlet-class> -->
-      <servlet-class>eu.cec.digit.circabc.web.servlet.UploadFileServlet</servlet-class>
+      <servlet-class
+    >eu.cec.digit.circabc.web.servlet.UploadFileServlet</servlet-class>
    </servlet>
 
    <servlet>
       <servlet-name>uploadContent</servlet-name>
-      <servlet-class>org.alfresco.web.app.servlet.UploadContentServlet</servlet-class>
+      <servlet-class
+    >org.alfresco.web.app.servlet.UploadContentServlet</servlet-class>
    </servlet>
 
    <servlet>
       <servlet-name>downloadContent</servlet-name>
 <!--       <servlet-class>org.alfresco.web.app.servlet.DownloadContentServlet</servlet-class> -->
-      <servlet-class>eu.cec.digit.circabc.web.servlet.CircabcDownloadContentServlet</servlet-class>
+      <servlet-class
+    >eu.cec.digit.circabc.web.servlet.CircabcDownloadContentServlet</servlet-class>
    </servlet>
 
    <servlet>
       <servlet-name>simpleDownloadContent</servlet-name>
-      <servlet-class>eu.cec.digit.circabc.web.servlet.SimpleDownloadServlet</servlet-class>
+      <servlet-class
+    >eu.cec.digit.circabc.web.servlet.SimpleDownloadServlet</servlet-class>
    </servlet>
 
    <servlet>
       <servlet-name>downloadRawContent</servlet-name>
-      <servlet-class>org.alfresco.web.app.servlet.DownloadRawContentServlet</servlet-class>
+      <servlet-class
+    >org.alfresco.web.app.servlet.DownloadRawContentServlet</servlet-class>
    </servlet>
 
    <servlet>
       <servlet-name>bulkDownloadContent</servlet-name>
-      <servlet-class>eu.cec.digit.circabc.web.servlet.BulkDownloadServlet</servlet-class>
+      <servlet-class
+    >eu.cec.digit.circabc.web.servlet.BulkDownloadServlet</servlet-class>
    </servlet>
 
    <servlet>
       <servlet-name>guestDownloadContent</servlet-name>
-      <servlet-class>org.alfresco.web.app.servlet.GuestDownloadContentServlet</servlet-class>
+      <servlet-class
+    >org.alfresco.web.app.servlet.GuestDownloadContentServlet</servlet-class>
    </servlet>
 
    <servlet>
       <servlet-name>guestTemplateContent</servlet-name>
-      <servlet-class>org.alfresco.web.app.servlet.GuestTemplateContentServlet</servlet-class>
+      <servlet-class
+    >org.alfresco.web.app.servlet.GuestTemplateContentServlet</servlet-class>
    </servlet>
 
    <servlet>
       <servlet-name>externalAccess</servlet-name>
-      <servlet-class>org.alfresco.web.app.servlet.ExternalAccessServlet</servlet-class>
+      <servlet-class
+    >org.alfresco.web.app.servlet.ExternalAccessServlet</servlet-class>
    </servlet>
 
    <servlet>
       <servlet-name>waiExternalAccess</servlet-name>
-      <servlet-class>eu.cec.digit.circabc.web.servlet.ExternalAccessServlet</servlet-class>
+      <servlet-class
+    >eu.cec.digit.circabc.web.servlet.ExternalAccessServlet</servlet-class>
    </servlet>
 
    <servlet>
       <servlet-name>templateContent</servlet-name>
-      <servlet-class>org.alfresco.web.app.servlet.TemplateContentServlet</servlet-class>
+      <servlet-class
+    >org.alfresco.web.app.servlet.TemplateContentServlet</servlet-class>
    </servlet>
 
    <servlet>
@@ -638,7 +685,8 @@
 
    <servlet>
       <servlet-name>ajaxServlet</servlet-name>
-      <servlet-class>org.alfresco.web.app.servlet.ajax.AjaxServlet</servlet-class>
+      <servlet-class
+    >org.alfresco.web.app.servlet.ajax.AjaxServlet</servlet-class>
    </servlet>
 
    <servlet>
@@ -661,7 +709,8 @@
 
    <servlet>
       <servlet-name>apiServlet</servlet-name>
-      <servlet-class>org.springframework.extensions.webscripts.servlet.WebScriptServlet</servlet-class>
+      <servlet-class
+    >org.springframework.extensions.webscripts.servlet.WebScriptServlet</servlet-class>
       <init-param>
          <param-name>authenticator</param-name>
          <param-value>webscripts.authenticator.basic</param-value>
@@ -670,7 +719,8 @@
 
    <servlet>
       <servlet-name>wcapiServlet</servlet-name>
-      <servlet-class>org.springframework.extensions.webscripts.servlet.WebScriptServlet</servlet-class>
+      <servlet-class
+    >org.springframework.extensions.webscripts.servlet.WebScriptServlet</servlet-class>
       <init-param>
          <param-name>authenticator</param-name>
          <param-value>webscripts.authenticator.webclient</param-value>
@@ -679,7 +729,8 @@
 
    <servlet>
       <servlet-name>portalapiServlet</servlet-name>
-      <servlet-class>org.springframework.extensions.webscripts.servlet.WebScriptServlet</servlet-class>
+      <servlet-class
+    >org.springframework.extensions.webscripts.servlet.WebScriptServlet</servlet-class>
       <init-param>
          <param-name>authenticator</param-name>
          <param-value>webscripts.authenticator.webclient</param-value>
@@ -688,7 +739,8 @@
 
    <servlet>
       <servlet-name>facebookServlet</servlet-name>
-      <servlet-class>org.alfresco.repo.web.scripts.facebook.FacebookServlet</servlet-class>
+      <servlet-class
+    >org.alfresco.repo.web.scripts.facebook.FacebookServlet</servlet-class>
       <init-param>
          <param-name>authenticator</param-name>
          <param-value>webscripts.authenticator.facebook</param-value>
@@ -697,7 +749,8 @@
 
    <servlet>
       <servlet-name>fbapiServlet</servlet-name>
-      <servlet-class>org.alfresco.repo.web.scripts.facebook.FacebookAPIServlet</servlet-class>
+      <servlet-class
+    >org.alfresco.repo.web.scripts.facebook.FacebookAPIServlet</servlet-class>
       <init-param>
          <param-name>authenticator</param-name>
          <param-value>webscripts.authenticator.facebook</param-value>
@@ -706,7 +759,8 @@
 
    <servlet>
       <servlet-name>workflowDefinitionImageServlet</servlet-name>
-      <servlet-class>org.alfresco.web.app.servlet.WorkflowDefinitionImageServlet</servlet-class>
+      <servlet-class
+    >org.alfresco.web.app.servlet.WorkflowDefinitionImageServlet</servlet-class>
    </servlet>
 
 <!--    <servlet> -->
@@ -718,17 +772,20 @@
 	<!-- PostFormAuthDispatcher Servlet -->
     <servlet>
         <servlet-name>PostFormAuthDispatcher</servlet-name>
-        <servlet-class>eu.cec.digit.ecas.client.servlet.PostFormAuthDispatcher</servlet-class>
+        <servlet-class
+    >eu.cec.digit.ecas.client.servlet.PostFormAuthDispatcher</servlet-class>
     </servlet>
 	
     <servlet>
       <servlet-name>notifySuccessServlet</servlet-name>
-      <servlet-class>eu.cec.digit.circabc.web.servlet.NotifySuccessServlet</servlet-class>
+      <servlet-class
+    >eu.cec.digit.circabc.web.servlet.NotifySuccessServlet</servlet-class>
    </servlet>
    
    <servlet>
       <servlet-name>notifyErrorServlet</servlet-name>
-      <servlet-class>eu.cec.digit.circabc.web.servlet.NotifyErrorServlet</servlet-class>
+      <servlet-class
+    >eu.cec.digit.circabc.web.servlet.NotifyErrorServlet</servlet-class>
    </servlet>
     
    <!-- See comment on the servlet-mapping CMISFileShareServlet.
@@ -788,7 +845,8 @@
 	
     <servlet>
         <servlet-name>cmisws10</servlet-name>
-        <servlet-class>org.apache.chemistry.opencmis.server.impl.webservices.CmisWebServicesServlet</servlet-class>
+        <servlet-class
+    >org.apache.chemistry.opencmis.server.impl.webservices.CmisWebServicesServlet</servlet-class>
         <init-param>
             <param-name>cmisVersion</param-name>
             <param-value>1.0</param-value>
@@ -798,7 +856,8 @@
     
     <servlet>
         <servlet-name>cmisws11</servlet-name>
-        <servlet-class>org.apache.chemistry.opencmis.server.impl.webservices.CmisWebServicesServlet</servlet-class>
+        <servlet-class
+    >org.apache.chemistry.opencmis.server.impl.webservices.CmisWebServicesServlet</servlet-class>
         <init-param>
             <param-name>cmisVersion</param-name>
             <param-value>1.1</param-value>
@@ -808,10 +867,12 @@
 
     <servlet>
         <servlet-name>cmisatom10</servlet-name>
-        <servlet-class>org.apache.chemistry.opencmis.server.impl.atompub.CmisAtomPubServlet</servlet-class>
+        <servlet-class
+    >org.apache.chemistry.opencmis.server.impl.atompub.CmisAtomPubServlet</servlet-class>
         <init-param>
             <param-name>callContextHandler</param-name>
-            <param-value>org.apache.chemistry.opencmis.server.shared.BasicAuthCallContextHandler</param-value>
+            <param-value
+      >org.apache.chemistry.opencmis.server.shared.BasicAuthCallContextHandler</param-value>
         </init-param>
         <init-param>
             <param-name>cmisVersion</param-name>
@@ -822,43 +883,53 @@
 
     <servlet>
         <servlet-name>cmisbrowser</servlet-name>
-        <servlet-class>org.apache.chemistry.opencmis.server.impl.browser.CmisBrowserBindingServlet</servlet-class>
+        <servlet-class
+    >org.apache.chemistry.opencmis.server.impl.browser.CmisBrowserBindingServlet</servlet-class>
         <init-param>
             <param-name>callContextHandler</param-name>
-            <param-value>org.apache.chemistry.opencmis.server.shared.BasicAuthCallContextHandler</param-value>
+            <param-value
+      >org.apache.chemistry.opencmis.server.shared.BasicAuthCallContextHandler</param-value>
         </init-param>
         <load-on-startup>8</load-on-startup>
     </servlet>
 
    <servlet>
       <servlet-name>cmistck</servlet-name>
-      <servlet-class>org.apache.chemistry.opencmis.tck.runner.WebRunnerServlet</servlet-class>
+      <servlet-class
+    >org.apache.chemistry.opencmis.tck.runner.WebRunnerServlet</servlet-class>
       <load-on-startup>8</load-on-startup>
    </servlet>
 
    <servlet>
       <servlet-name>authenticatorServlet</servlet-name>
-      <servlet-class>org.alfresco.repo.web.scripts.servlet.AuthenticatorServlet</servlet-class>
+      <servlet-class
+    >org.alfresco.repo.web.scripts.servlet.AuthenticatorServlet</servlet-class>
    </servlet>
 
    <servlet>
       <servlet-name>publicapiServlet</servlet-name>
-      <servlet-class>org.alfresco.rest.api.PublicApiWebScriptServlet</servlet-class>
+      <servlet-class
+    >org.alfresco.rest.api.PublicApiWebScriptServlet</servlet-class>
       <init-param>
          <param-name>authenticator</param-name>
          <param-value>publicapi.authenticator</param-value>
       </init-param>
    </servlet>
    
-   
+   <servlet><servlet-name
+    >Vaadin Application Servlet</servlet-name><servlet-class
+    >org.activiti.explorer.servlet.ExplorerApplicationServlet</servlet-class></servlet>
+	
    <!-- For the document preview -->
    <servlet>
       <servlet-name>translationsServlet</servlet-name>
-      <servlet-class>eu.cec.digit.circabc.web.servlet.TranslationsJSONServlet</servlet-class>
+      <servlet-class
+    >eu.cec.digit.circabc.web.servlet.TranslationsJSONServlet</servlet-class>
    </servlet>
    <servlet>
       <servlet-name>pdfRenditionServlet</servlet-name>
-      <servlet-class>eu.cec.digit.circabc.web.servlet.PDFRenditionServlet</servlet-class>
+      <servlet-class
+    >eu.cec.digit.circabc.web.servlet.PDFRenditionServlet</servlet-class>
    </servlet>
 
    <servlet-mapping>
@@ -1114,6 +1185,13 @@
    </servlet-mapping>
    CMISTCK -->
    
+   <servlet-mapping><servlet-name
+    >Vaadin Application Servlet</servlet-name><url-pattern
+    >/activiti-admin/*</url-pattern></servlet-mapping>
+   <servlet-mapping><servlet-name
+    >Vaadin Application Servlet</servlet-name><url-pattern
+    >/VAADIN/*</url-pattern></servlet-mapping>
+
    <session-config>
       <session-timeout>60</session-timeout>
    </session-config>
@@ -1136,7 +1214,8 @@
    </resource-ref>
 
    <resource-ref>
-      <description>The Alfresco Activit's ID-generator database connection</description>
+      <description
+    >The Alfresco Activit's ID-generator database connection</description>
       <res-ref-name>jdbc/activitiIdGeneratorDataSource</res-ref-name>
       <res-type>javax.sql.DataSource</res-type>
       <res-auth>Container</res-auth>
@@ -1225,22 +1304,25 @@
    <!-- Toggle securecomms placeholder end -->
    
    <env-entry>
-      <description>A flag that globally enables or disables startup of the major Alfresco subsystems.</description>
+      <description
+    >A flag that globally enables or disables startup of the major Alfresco subsystems.</description>
       <env-entry-name>properties/startup.enable</env-entry-name>
       <env-entry-type>java.lang.Boolean</env-entry-type>
       <env-entry-value>true</env-entry-value>
    </env-entry>
 
    <env-entry>
-      <description>The filesystem directory below which content and index data is stored. Should be on a shared disk
+      <description
+    >The filesystem directory below which content and index data is stored. Should be on a shared disk
          if this is a clustered installation.</description>
       <env-entry-name>properties/dir.root</env-entry-name>
       <env-entry-type>java.lang.String</env-entry-type>
-      <env-entry-value/> <!-- Empty value included for JBoss compatibility -->
+      <env-entry-value /> <!-- Empty value included for JBoss compatibility -->
    </env-entry>
 
    <env-entry>
-      <description>The fully qualified name of a org.hibernate.dialect.Dialect subclass that allows Hibernate to
+      <description
+    >The fully qualified name of a org.hibernate.dialect.Dialect subclass that allows Hibernate to
          generate SQL optimized for a particular relational database. Choose from org.hibernate.dialect.DerbyDialect,
          org.hibernate.dialect.MySQLInnoDBDialect,
          org.alfresco.repo.domain.hibernate.dialect.AlfrescoOracle9Dialect,
@@ -1248,32 +1330,36 @@
          org.alfresco.repo.domain.hibernate.dialect.AlfrescoSQLServerDialect, org.hibernate.dialect.PostgreSQLDialect</description>
       <env-entry-name>properties/hibernate.dialect</env-entry-name>
       <env-entry-type>java.lang.String</env-entry-type>
-      <env-entry-value/> <!-- Empty value included for JBoss compatibility -->
+      <env-entry-value /> <!-- Empty value included for JBoss compatibility -->
    </env-entry>
 
    <env-entry>
-      <description>Mapping from tokens in Hibernate queries to SQL tokens. For PostgreSQL, set this to "true
+      <description
+    >Mapping from tokens in Hibernate queries to SQL tokens. For PostgreSQL, set this to "true
          TRUE, false FALSE".</description>
       <env-entry-name>properties/hibernate.query.substitutions</env-entry-name>
       <env-entry-type>java.lang.String</env-entry-type>
-      <env-entry-value/> <!-- Empty value included for JBoss compatibility -->
+      <env-entry-value /> <!-- Empty value included for JBoss compatibility -->
    </env-entry>
 
    <env-entry>
-      <description>Enable use of JDBC3 PreparedStatement.getGeneratedKeys() to retrieve natively generated keys
+      <description
+    >Enable use of JDBC3 PreparedStatement.getGeneratedKeys() to retrieve natively generated keys
          after insert. Requires JDBC3+ driver. Set to false if your driver has problems with the Hibernate identifier
          generators. By default, tries to determine the driver capabilities using connection metadata. </description>
-      <env-entry-name>properties/hibernate.jdbc.use_get_generated_keys</env-entry-name>
+      <env-entry-name
+    >properties/hibernate.jdbc.use_get_generated_keys</env-entry-name>
       <env-entry-type>java.lang.String</env-entry-type>
-      <env-entry-value/> <!-- Empty value included for JBoss compatibility -->
+      <env-entry-value /> <!-- Empty value included for JBoss compatibility -->
    </env-entry>
 
    <env-entry>
-      <description>Qualify unqualified table names with the given schema/tablespace in generated SQL. It may be
+      <description
+    >Qualify unqualified table names with the given schema/tablespace in generated SQL. It may be
          necessary to set this when the target database has more than one schema.</description>
       <env-entry-name>properties/hibernate.default_schema</env-entry-name>
       <env-entry-type>java.lang.String</env-entry-type>
-      <env-entry-value/> <!-- Empty value included for JBoss compatibility -->
+      <env-entry-value /> <!-- Empty value included for JBoss compatibility -->
    </env-entry>
    
    <jsp-config>
@@ -1302,7 +1388,8 @@
         <!-- Define here the redirection page after login successfull -->
         <web-resource-collection>
             <web-resource-name>ecas</web-resource-name>
-            <url-pattern>/faces/jsp/extension/wai/ecas/ecaslogin.jsp</url-pattern>
+            <url-pattern
+      >/faces/jsp/extension/wai/ecas/ecaslogin.jsp</url-pattern>
 <!--            <url-pattern>/faces/jsp/extension/wai/multifactor.jsp</url-pattern> -->
 <!--             <url-pattern>/faces/jsp/login.jsp</url-pattern> -->
             <http-method>GET</http-method>
@@ -1351,7 +1438,8 @@
 
 	 <servlet>
       <servlet-name>restContentDownload</servlet-name>
-      <servlet-class>eu.cec.digit.circabc.web.servlet.RestContentDownloadServlet</servlet-class>
+      <servlet-class
+    >eu.cec.digit.circabc.web.servlet.RestContentDownloadServlet</servlet-class>
    </servlet>
 
 	<servlet-mapping>
@@ -1361,7 +1449,8 @@
    
    <servlet>
       <servlet-name>restContentUpload</servlet-name>
-      <servlet-class>eu.cec.digit.circabc.web.servlet.RestContentUploadServlet</servlet-class>
+      <servlet-class
+    >eu.cec.digit.circabc.web.servlet.RestContentUploadServlet</servlet-class>
    </servlet>
 
 	<servlet-mapping>
@@ -1371,7 +1460,8 @@
    
    <servlet>
       <servlet-name>restContentUpdate</servlet-name>
-      <servlet-class>eu.cec.digit.circabc.web.servlet.RestContentUpdateServlet</servlet-class>
+      <servlet-class
+    >eu.cec.digit.circabc.web.servlet.RestContentUpdateServlet</servlet-class>
    </servlet>
 
 	<servlet-mapping>

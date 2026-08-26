@@ -1,14 +1,26 @@
-<a (click)="showModal = true" class="delete"
+<a tabindex="0" (click)="showModal = true" class="delete"
   >{{ 'label.delete' | transloco }}</a
 >
 <cbc-modal
   [title]="'label.delete'"
   (ok)="delete()"
-  (cancel)="cancelWizard('close')"
+  (cancelModal)="cancelWizard('close')"
   [okLabel]="'label.delete'"
   [(visible)]="showModal"
   [executing]="deleting"
   [executingLabel]="'label.deleting'"
 >
   {{ confirmationMessage | transloco }}
+  <form style="margin-top: 15px" [formGroup]="notifyFormGroup">
+    <label class="label">{{"label.notifications.dialog" | transloco}}</label>
+    <mat-slide-toggle formControlName="notify"></mat-slide-toggle>
+    <span style="margin: 0 10px"
+      >{{(notifyFormGroup.controls.notify.value)?("label.yes" |
+      transloco):"label.no" | transloco}}</span
+    >
+    <span>
+      ({{(notifyFormGroup.controls.notify.value)?("label.notifications.send" |
+      transloco): "label.notifications.no-send" | transloco }})
+    </span>
+  </form>
 </cbc-modal>

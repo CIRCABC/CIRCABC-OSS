@@ -18,65 +18,63 @@
 package eu.cec.digit.circabc.service.config.auto.upload;
 
 import eu.cec.digit.circabc.repo.config.auto.upload.Configuration;
-import org.alfresco.service.cmr.repository.NodeRef;
-
 import java.util.List;
+import org.alfresco.service.cmr.repository.NodeRef;
 
 /**
  * @author beaurpi Service Interface to be able to configure autoupload inside CIRCABC Auto upload
  *     in CIRCABC enterprise is implemented by Oracle Service Bus
  */
 public interface AutoUploadConfigurationService {
+  /**
+   * * Insert one configuration in the audit database of CIRCABC
+   *
+   * @param config
+   */
+  void registerConfiguration(Configuration config);
 
-    /**
-     * * Insert one configuration in the audit database of CIRCABC
-     *
-     * @param config
-     */
-    void registerConfiguration(Configuration config);
+  /**
+   * * Get all configurations for one Interest Group
+   *
+   * @param igName
+   * @return
+   */
+  List<Configuration> listConfigurations(String igName);
 
-    /**
-     * * Get all configurations for one Interest Group
-     *
-     * @param igName
-     * @return
-     */
-    List<Configuration> listConfigurations(String igName);
+  /**
+   * * Remove configuration from Database
+   *
+   * @param config
+   */
+  void deleteConfiguration(Configuration config);
 
-    /**
-     * * Remove configuration from Database
-     *
-     * @param config
-     */
-    void deleteConfiguration(Configuration config);
+  /**
+   * * Update configuration inside audit database
+   *
+   * @param config
+   */
+  void updateConfiguration(Configuration config);
 
-    /**
-     * * Update configuration inside audit database
-     *
-     * @param config
-     */
-    void updateConfiguration(Configuration config);
+  /**
+   * * Get one configuration by ID.
+   *
+   * @param idConfig
+   * @return
+   */
+  Configuration getConfigurationById(Integer idConfig);
 
-    /**
-     * * Get one configuration by ID.
-     *
-     * @param idConfig
-     * @return
-     */
-    Configuration getConfigurationById(Integer idConfig);
+  /**
+   * * Get one configuration by document node ref.
+   *
+   * @param nodeRef
+   * @return
+   */
+  Configuration getConfigurationByNodeRef(NodeRef nodeRef);
 
-    /**
-     * * Get one configuration by document node ref.
-     *
-     * @param nodeRef
-     * @return
-     */
-    Configuration getConfigurationByNodeRef(NodeRef nodeRef);
-
-    /**
-     * * all configurations
-     *
-     * @return
-     */
-    List<Configuration> getAllConfigurations();
+  /**
+   * * all configurations
+   *
+   * @return
+   */
+  List<Configuration> getAllConfigurations();
 }

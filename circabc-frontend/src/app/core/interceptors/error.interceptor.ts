@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
-  HttpEvent,
-  HttpInterceptor,
-  HttpHandler,
-  HttpRequest,
   HttpErrorResponse,
+  HttpEvent,
+  HttpHandler,
+  HttpInterceptor,
+  HttpRequest,
 } from '@angular/common/http';
 import { Injectable, Injector } from '@angular/core';
+import { AnalyticsService } from 'app/core/analytics.service';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { AnalyticsService } from 'app/core/analytics.service';
 /* send error to the analytics service */
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {

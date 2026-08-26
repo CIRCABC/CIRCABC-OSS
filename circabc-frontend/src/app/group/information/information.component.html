@@ -1,6 +1,7 @@
 {{ 'label.information.title' | transloco: { groupName: group?.name } |
-cbcSetTitle }}
-<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+cbcSetTitle }} @if (loading) {
+<cbc-horizontal-loader />
+}
 <div class="fluid page-container">
   <div class="page-header" style="display: flex">
     <span
@@ -8,30 +9,30 @@ cbcSetTitle }}
       [innerHtml]="'information.page.title' | transloco"
     ></span>
     <div class="warning-top-header">
+      @if (informationNode !== undefined) {
       <cbc-notification-message
-        *ngIf="informationNode !== undefined"
         [severity]="1"
         [message]="'group.information.public' | transloco"
-        [guestAllowed]="informationNode?.hasGuestAccess"
+        [guestAllowed]="informationNode.hasGuestAccess"
       ></cbc-notification-message>
+      }
     </div>
     <div class="page-header__actions">
       <ul class="links">
-        <li
-          *ngIf="
-            informationPage !== undefined
-              | cbcIfRole: [informationPage, 'InfAdmin', []]
-          "
-        >
-          <a (click)="showConfigureModal = true"
+        @if ( informationPage !== undefined | cbcIfRole: [informationPage,
+        'InfAdmin', []] ) {
+        <li>
+          <a tabindex="0" (click)="showConfigureModal = true"
             >{{ 'label.configure' | transloco }}</a
           >
         </li>
-        <li *ngIf="canAddNews()">
+        } @if (canAddNews()) {
+        <li>
           <a class="cta" [routerLink]="['./add', informationNode?.id]"
             >{{ 'information.add.news' | transloco }}</a
           >
         </li>
+        }
       </ul>
     </div>
   </div>
@@ -41,71 +42,68 @@ cbcSetTitle }}
     <header class="header">
       <span class="icons">
         <cbc-share [showLabel]="false" [orientationRight]="false"></cbc-share>
-        <div
-          class="dropdown-trigger dropdown-trigger--with-icons"
-          *ngIf="!isGuest()"
-        >
-          <img
-            src="img/visibility.png"
-            *ngIf="isSubscribedToNotifications()"
-            alt="Notifications"
-          />
-          <img
-            src="img/no-visibility.png"
-            *ngIf="!isSubscribedToNotifications()"
-            alt="Notifications"
-          />
+        @if (!isGuest()) {
+        <div class="dropdown-trigger dropdown-trigger--with-icons">
+          @if (isSubscribedToNotifications()) {
+          <img src="img/visibility.png" alt="Notifications" />
+          } @if (!isSubscribedToNotifications()) {
+          <img src="img/no-visibility.png" alt="Notifications" />
+          }
           <div class="dropdown dropdown--library-settings">
             <div class="number-of-items">
               {{ 'label.notifications' | transloco }}:
               <br />
               <br />
-              <a
-                (click)="changeNotificationSubscription('on')"
-                *ngIf="!isSubscribedToNotifications()"
+              @if (!isSubscribedToNotifications()) {
+              <a tabindex="0" (click)="changeNotificationSubscription('on')"
                 >{{ 'label.subscribe' | transloco }}
                 <img src="img/visibility.png" alt="Notifications" />
               </a>
-              <a
-                (click)="changeNotificationSubscription('off')"
-                *ngIf="isSubscribedToNotifications()"
+              } @if (isSubscribedToNotifications()) {
+              <a tabindex="0" (click)="changeNotificationSubscription('off')"
                 >{{ 'label.unsubscribe' | transloco }}
                 <img src="img/no-visibility.png" alt="Notifications" />
               </a>
+              }
             </div>
           </div>
         </div>
+        }
       </span>
     </header>
   </section>
 
   <section class="information--container">
     <div class="container--selection box box-alternate">
-      <header class="header" style="padding-right: 10px" *ngIf="hasCards()">
+      @if (hasCards()) {
+      <header class="header" style="padding-right: 10px">
         <span class="title"
           >{{ 'label.latest.news' | transloco }} ({{ hasOldInformation() ?
           infoNews.total + 1 : infoNews.total }})</span
         >
-        <span class="clear--filter" *ngIf="highlightedMode">
-          <a (click)="highlight(highlightedNews)"
+        @if (highlightedMode) {
+        <span class="clear--filter">
+          <a tabindex="0" (click)="highlight(highlightedNews)"
             >{{ 'label.clear.filter' | transloco }}</a
           >
         </span>
+        }
       </header>
-      <div class="main" *ngIf="hasCards()">
-        <div class="pager" *ngIf="totalItems > 1">
+      } @if (hasCards()) {
+      <div class="main">
+        @if (totalItems > 1) {
+        <div class="pager">
           <cbc-pager
             [length]="totalItems"
             [pageSize]="listingOptions.limit"
-            [pageIndex]="listingOptions.page"
-            (pageChanged)="changePage($event)"
+            [page]="listingOptions.page"
+            (pageChange)="changePage($event)"
           ></cbc-pager>
         </div>
+        }
         <ul>
-          <li
-            *ngFor="let news of infoNews.data; trackBy: trackById"
-            (click)="highlight(news)"
-          >
+          @for (news of infoNews.data; track news.id) {
+          <li tabindex="0" (click)="highlight(news)">
             <div
               [class.news--type--date]="news.pattern === 'date'"
               [class.news--type--text]="news.pattern === 'text'"
@@ -114,11 +112,9 @@ cbcSetTitle }}
               [class.news--type--iframe]="news.pattern === 'iframe'"
             ></div>
 
-            <img
-              src="img/check.png"
-              *ngIf="highlightedNews === news"
-              class="check"
-            />
+            @if (highlightedNews === news) {
+            <img src="img/check.png" class="check" alt="Check mark" />
+            }
             <div class="new-title">
               {{ news.pattern === 'iframe' ? news.url : (news.title | cbcI18n)
               }}
@@ -127,34 +123,33 @@ cbcSetTitle }}
               >{{ news.modified | date: 'dd-MM-yyyy' }}</span
             >
           </li>
-          <li *ngIf="hasOldInformation()" (click)="highlightIFrame()">
+          } @if (hasOldInformation()) {
+          <li tabindex="0" (click)="highlightIFrame()">
             <div class="news--type--image"></div>
-            <img
-              src="img/check.png"
-              *ngIf="highlightedIframeMode"
-              class="check"
-            />
-            {{ 'information.old.information.title' | transloco }}
+            @if (highlightedIframeMode) {
+            <img src="img/check.png" class="check" alt="Check mark" />
+            } {{ 'information.old.information.title' | transloco }}
           </li>
+          }
         </ul>
       </div>
-      <div class="pager" *ngIf="totalItems > 1 && hasCards()">
+      } @if (totalItems > 1 && hasCards()) {
+      <div class="pager">
         <cbc-pager
           [length]="totalItems"
           [pageSize]="listingOptions.limit"
-          [pageIndex]="listingOptions.page"
-          (pageChanged)="changePage($event)"
+          [page]="listingOptions.page"
+          (pageChange)="changePage($event)"
         ></cbc-pager>
       </div>
+      }
       <br style="clear: left" />
     </div>
 
-    <div
-      class="container--news"
-      *ngIf="!highlightedMode && !highlightedIframeMode"
-    >
+    @if (!highlightedMode && !highlightedIframeMode) {
+    <div class="container--news">
+      @for (news of infoNews.data; track news.id) {
       <div
-        *ngFor="let news of infoNews.data; trackBy: trackById"
         class="newsColumn"
         [class.newsColumn--iframe]="news.pattern === 'iframe'"
       >
@@ -165,36 +160,46 @@ cbcSetTitle }}
         >
         </cbc-news-card>
       </div>
-      <div *ngIf="hasOldInformation()" class="newsColumn newsColumn--iframe">
+      } @if (hasOldInformation()) {
+      <div class="newsColumn newsColumn--iframe">
         <cbc-news-card [news]="getOldInformation()" [hideActions]="true">
         </cbc-news-card>
       </div>
-      <div class="container--empty" *ngIf="!hasCards() && !loading">
+      } @if (!hasCards() && !loading) {
+      <div class="container--empty">
         {{ 'information.empty.configuration' | transloco }}
-        <img src="img/rounded-block-sign.png" />
+        <img src="img/rounded-block-sign.png" alt="Rounded block sign" />
       </div>
+      }
     </div>
-    <div class="container--news" *ngIf="highlightedMode && !loading">
+    } @if (highlightedMode && !loading) {
+    <div class="container--news">
       <cbc-news-card
         [class.span-column]="highlightedMode"
+        [class.span-column-max-window]="highlightedMaxWindow"
         [news]="highlightedNews"
         (newsDeleted)="refresh($event)"
         [highlighted]="true"
         (newsClicked)="highlight(highlightedNews)"
+        (highlightedMaxWindow)="maxWindowHighlighted($event)"
       >
       </cbc-news-card>
     </div>
-    <div class="container--news" *ngIf="highlightedIframeMode && !loading">
-      <div *ngIf="hasOldInformation()" class="newsColumn newsColumn--iframe">
+    } @if (highlightedIframeMode && !loading) {
+    <div class="container--news">
+      @if (hasOldInformation()) {
+      <div class="newsColumn newsColumn--iframe">
         <cbc-news-card [news]="getOldInformation()" [hideActions]="true">
         </cbc-news-card>
       </div>
+      }
     </div>
+    }
   </section>
 </div>
 <cbc-configure-information
   [showModal]="showConfigureModal"
   [groupId]="groupId"
   (modalHide)="refresh($event)"
-></cbc-configure-information>
+/>
 <br /><br />

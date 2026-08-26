@@ -1,17 +1,19 @@
 <section class="user">
   <div class="avatar">
-    <img
-      *ngIf="user.avatar"
-      [attr.src]="user.avatar | cbcDownload | cbcSecure"
-      alt="avatar"
-    />
-    <img *ngIf="!user.avatar" src="img/contact-info.png" />
+    @if (user.avatar) {
+    <img [attr.src]="user.avatar | cbcDownload | cbcSecure" alt="avatar" />
+    } @if (!user.avatar) {
+    <img src="img/contact-info.png" alt="default avatar" />
+    }
   </div>
   {{ user.firstname }}<br />
   {{ user.lastname }}<br />
   <a href="mailto:{{ user.email }}">{{ user.email }}</a>
-  <br *ngIf="showDelete" />
-  <a class="remove" *ngIf="showDelete" (click)="onRemoveClick()"
+  @if (showDelete()) {
+  <br />
+  } @if (showDelete()) {
+  <a tabindex="0" class="remove" (click)="onRemoveClick()"
     >{{ 'label.remove' | transloco }}</a
-  ><br />
+  >
+  }<br />
 </section>

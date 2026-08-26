@@ -1,32 +1,29 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
-} from '@angular/core';
+import { Component, Input, OnChanges, output, input } from '@angular/core';
 import {
   ActionEmitterResult,
   ActionResult,
   ActionType,
 } from 'app/action-result';
 
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { TranslocoModule } from '@jsverse/transloco';
 import { Node as ModelNode, PostService } from 'app/core/generated/circabc';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-signal-abuse',
   templateUrl: './signal-abuse.component.html',
   preserveWhitespaces: true,
+  imports: [ReactiveFormsModule, SpinnerComponent, TranslocoModule],
 })
 export class SignalAbuseComponent implements OnChanges {
-  @Input()
-  post!: ModelNode;
+  readonly post = input.required<ModelNode>();
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   showModal = false;
-  @Output()
-  readonly modalHide = new EventEmitter<ActionEmitterResult>();
+  readonly modalHide = output<ActionEmitterResult>();
 
   public executing = false;
 
@@ -53,7 +50,7 @@ export class SignalAbuseComponent implements OnChanges {
 
     await firstValueFrom(
       this.postService.postAbuse(
-        this.post.id as string,
+        this.post().id as string,
         this.signalPostForm.controls.abuseText.value
       )
     );
@@ -78,10 +75,10 @@ export class SignalAbuseComponent implements OnChanges {
 
   // post.properties.message
   get message(): string {
-    if (this.post.properties) {
-      return this.post.properties.message;
-    } else {
-      return '';
+    const post = this.post();
+    if (post.properties) {
+      return post.properties.message;
     }
+    return '';
   }
 }

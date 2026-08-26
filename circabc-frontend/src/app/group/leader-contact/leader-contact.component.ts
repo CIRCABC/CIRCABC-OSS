@@ -1,31 +1,50 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, Input, OnInit, output, input } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
   ActionType,
 } from 'app/action-result';
-import { EmailService, InterestGroup } from 'app/core/generated/circabc';
+import { EmailService, type InterestGroup } from 'app/core/generated/circabc';
+import { ModalComponent } from 'app/shared/modal/modal.component';
+import { SharedModule } from 'primeng/api';
+import { EditorModule } from 'primeng/editor';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-leader-contact',
   templateUrl: './leader-contact.component.html',
   preserveWhitespaces: true,
+  imports: [
+    ModalComponent,
+    ReactiveFormsModule,
+    EditorModule,
+    SharedModule,
+    TranslocoModule,
+  ],
 })
 export class LeaderContactComponent implements OnInit {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   showModal = false;
-  @Input()
-  group!: InterestGroup;
-  @Output()
-  readonly modalHide = new EventEmitter<ActionEmitterResult>();
+  readonly group = input.required<InterestGroup>();
+  readonly modalHide = output<ActionEmitterResult>();
 
   public processing = false;
   public contactLeaderForm!: FormGroup;
 
-  constructor(private fb: FormBuilder, private emailService: EmailService) {}
+  constructor(
+    private fb: FormBuilder,
+    private emailService: EmailService
+  ) {}
 
   async ngOnInit() {
     this.contactLeaderForm = this.fb.group({
@@ -38,17 +57,18 @@ export class LeaderContactComponent implements OnInit {
     const res: ActionEmitterResult = {};
     res.type = ActionType.CONTACT_LEADERS;
 
-    if (this.group && this.group.id) {
+    const group = this.group();
+    if (group?.id) {
       try {
         await firstValueFrom(
           this.emailService.contactLeadersByEmail(
-            this.group.id,
+            group.id,
             this.contactLeaderForm.value.message
           )
         );
 
         res.result = ActionResult.SUCCEED;
-      } catch (error) {
+      } catch (_error) {
         res.result = ActionResult.FAILED;
       }
     }

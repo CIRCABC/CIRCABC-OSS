@@ -1,22 +1,20 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { TranslocoService } from '@ngneat/transloco';
+import { Component, OnInit, output, input } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { TranslocoService } from '@jsverse/transloco';
 import { SelectItem } from 'primeng/api/selectitem';
+import { SelectButtonModule } from 'primeng/selectbutton';
 @Component({
   selector: 'cbc-inline-select',
   templateUrl: './inline-select.component.html',
-  styleUrls: ['./inline-select.component.scss'],
+  styleUrl: './inline-select.component.scss',
   preserveWhitespaces: true,
+  imports: [ReactiveFormsModule, SelectButtonModule],
 })
 export class InlineSelectComponent implements OnInit {
-  @Input()
-  values: string[] = [];
-  @Input()
-  translationPrefix = '';
-  @Input()
-  value = '';
-  @Output()
-  readonly selectionChanged = new EventEmitter<string>();
+  readonly values = input<string[]>([]);
+  readonly translationPrefix = input('');
+  readonly value = input('');
+  readonly selectionChanged = output<string>();
 
   public form!: FormGroup;
   public options: SelectItem[] = [];
@@ -33,8 +31,9 @@ export class InlineSelectComponent implements OnInit {
       selectValue: '',
     });
 
-    if (this.value !== '' && this.value !== undefined) {
-      this.form.controls.selectValue.patchValue(this.value);
+    const valueValue = this.value();
+    if (valueValue !== '' && valueValue !== undefined) {
+      this.form.controls.selectValue.patchValue(valueValue);
     }
 
     this.form.controls.selectValue.valueChanges.subscribe((value) => {
@@ -45,11 +44,12 @@ export class InlineSelectComponent implements OnInit {
   public getValues(): SelectItem[] {
     const result: SelectItem[] = [];
 
-    for (const v of this.values) {
+    for (const v of this.values()) {
       let txt = v;
 
-      if (this.translationPrefix) {
-        txt = this.translateService.translate(`${this.translationPrefix}.${v}`);
+      const translationPrefix = this.translationPrefix();
+      if (translationPrefix) {
+        txt = this.translateService.translate(`${translationPrefix}.${v}`);
       }
 
       const item: SelectItem = {

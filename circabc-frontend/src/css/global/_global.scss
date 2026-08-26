@@ -36,8 +36,7 @@ html {
 body {
   position: relative;
   min-height: 100%;
-  background: #b1e0e8;
-  background: url(^img/background.jpg) no-repeat center top fixed;
+  background: var(--theme-body-background);
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
@@ -46,11 +45,11 @@ body {
 
 a {
   text-decoration: none;
-  color: variables-mixins-keyframes.$link;
+  color: var(--theme-link);
   cursor: pointer;
 
   &:hover {
-    color: #000;
+    color: var(--theme-link-hover);
   }
 }
 

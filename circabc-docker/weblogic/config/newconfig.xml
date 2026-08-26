@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<domain xmlns="http://xmlns.oracle.com/weblogic/domain" xmlns:sec="http://xmlns.oracle.com/weblogic/security" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:wls="http://xmlns.oracle.com/weblogic/security/wls" xsi:schemaLocation="http://xmlns.oracle.com/weblogic/security/wls http://xmlns.oracle.com/weblogic/security/wls/1.0/wls.xsd http://xmlns.oracle.com/weblogic/domain http://xmlns.oracle.com/weblogic/1.0/domain.xsd http://xmlns.oracle.com/weblogic/security/xacml http://xmlns.oracle.com/weblogic/security/xacml/1.0/xacml.xsd http://xmlns.oracle.com/weblogic/security/providers/passwordvalidator http://xmlns.oracle.com/weblogic/security/providers/passwordvalidator/1.0/passwordvalidator.xsd http://xmlns.oracle.com/weblogic/security http://xmlns.oracle.com/weblogic/1.0/security.xsd https://www.cc.cec/cas/schemas http://xmlns.oracle.com/weblogic/1.0/security.xsd">
+  <name>circabc_local_domain_PORT_7001</name>
+  <domain-version>12.1.3.0.0</domain-version>
+  <security-configuration>
+    <name>circabc_local_domain_PORT_7001</name>
+    <realm>
+      <sec:authentication-provider xmlns:sch="https://www.cc.cec/cas/schemas" xsi:type="sch:ecas-identity-asserter-v2Type">
+        <sec:name>EcasIdentityAsserterV2</sec:name>
+        <sch:control-flag>SUFFICIENT</sch:control-flag>
+        <sch:ecas-base-url>https://webgate.ec.europa.eu</sch:ecas-base-url>
+        <sch:strict-ssl-hostname-verification>false</sch:strict-ssl-hostname-verification>
+        <sch:excluded-context-path>/console</sch:excluded-context-path>
+      </sec:authentication-provider>
+      <sec:authentication-provider xsi:type="wls:default-authenticatorType">
+        <sec:name>DefaultAuthenticator</sec:name>
+        <sec:control-flag>OPTIONAL</sec:control-flag>
+      </sec:authentication-provider>
+      <sec:authentication-provider xsi:type="wls:default-identity-asserterType">
+        <sec:name>DefaultIdentityAsserter</sec:name>
+        <sec:active-type>AuthenticatedUser</sec:active-type>
+      </sec:authentication-provider>
+      <sec:role-mapper xmlns:xac="http://xmlns.oracle.com/weblogic/security/xacml" xsi:type="xac:xacml-role-mapperType">
+        <sec:name>XACMLRoleMapper</sec:name>
+      </sec:role-mapper>
+      <sec:authorizer xmlns:xac="http://xmlns.oracle.com/weblogic/security/xacml" xsi:type="xac:xacml-authorizerType">
+        <sec:name>XACMLAuthorizer</sec:name>
+      </sec:authorizer>
+      <sec:adjudicator xsi:type="wls:default-adjudicatorType">
+        <sec:name>DefaultAdjudicator</sec:name>
+      </sec:adjudicator>
+      <sec:credential-mapper xsi:type="wls:default-credential-mapperType">
+        <sec:name>DefaultCredentialMapper</sec:name>
+      </sec:credential-mapper>
+      <sec:cert-path-provider xsi:type="wls:web-logic-cert-path-providerType">
+        <sec:name>WebLogicCertPathProvider</sec:name>
+      </sec:cert-path-provider>
+      <sec:cert-path-builder>WebLogicCertPathProvider</sec:cert-path-builder>
+      <sec:name>myrealm</sec:name>
+      <sec:password-validator xmlns:pas="http://xmlns.oracle.com/weblogic/security/providers/passwordvalidator" xsi:type="pas:system-password-validatorType">
+        <sec:name>SystemPasswordValidator</sec:name>
+        <pas:min-password-length>8</pas:min-password-length>
+        <pas:min-numeric-or-special-characters>1</pas:min-numeric-or-special-characters>
+      </sec:password-validator>
+    </realm>
+    <default-realm>myrealm</default-realm>
+    <credential-encrypted>{AES}3+Z5xDbXVPLWvoShsJCcQqJ7lNkUpm1rzdgXCAciL0fNQDAAWwLzgPlQAWZTytALwiDweYStFTzGfBjGEuxkaw+2juI0MCV1k/zJJs8LW5+t+8qLz8GRXSkFYt4fcXWx</credential-encrypted>
+    <node-manager-username>weblogic</node-manager-username>
+    <node-manager-password-encrypted>{AES}fm/jWYQeu/0dyl6feLz9AWis+0O8HuBlWDYjeZKQ7KM=</node-manager-password-encrypted>
+  </security-configuration>
+  <server>
+    <name>AdminServer</name>
+    <ssl>
+      <name>AdminServer</name>
+      <enabled>true</enabled>
+    </ssl>
+    <listen-address></listen-address>
+  </server>
+  <embedded-ldap>
+    <name>circabc_local_domain_PORT_7001</name>
+    <credential-encrypted>{AES}JMekjbjASAtr2Be3twvweQGK4cDlC8d6ek4IFILtWAdsegqAB+a5j1J/mcwqVd7R</credential-encrypted>
+  </embedded-ldap>
+  <configuration-version>12.1.3.0.0</configuration-version>
+  <app-deployment>
+    <name>circabc-backend-2.0-wlslocal-morleal</name>
+    <target>AdminServer</target>
+    <module-type>ear</module-type>
+    <source-path>autodeploy\circabc-backend-2.0-wlslocal-morleal.ear</source-path>
+    <security-dd-model>DDOnly</security-dd-model>
+    <staging-mode>stage</staging-mode>
+    <plan-staging-mode xsi:nil="true"></plan-staging-mode>
+    <cache-in-app-directory>false</cache-in-app-directory>
+  </app-deployment>
+  <admin-server-name>AdminServer</admin-server-name>
+  <jdbc-system-resource>
+    <name>jdbc/circabcDB</name>
+    <target>AdminServer</target>
+    <descriptor-file-name>jdbc/jdbc2fcircabcDB-4885-jdbc.xml</descriptor-file-name>
+  </jdbc-system-resource>
+  <jdbc-system-resource>
+    <name>jdbc/circabcAuditDB</name>
+    <target>AdminServer</target>
+    <descriptor-file-name>jdbc/jdbc2fcircabcAuditDB-9410-jdbc.xml</descriptor-file-name>
+  </jdbc-system-resource>
+</domain>

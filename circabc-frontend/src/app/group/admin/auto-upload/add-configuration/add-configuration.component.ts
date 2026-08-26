@@ -1,12 +1,15 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, Input, OnInit, output, input } from '@angular/core';
 
 import {
   AbstractControl,
   FormBuilder,
   FormGroup,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 
+import { RouterLink } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   AutoUploadConfiguration,
   AutoUploadService,
@@ -16,25 +19,33 @@ import {
   Node as ModelNode,
   NodesService,
 } from 'app/core/generated/circabc';
-import { ValidationService } from 'app/core/validation.service';
+import { emailsValidator, portValidator } from 'app/core/validation.service';
+import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
 import { TreeNode } from 'app/shared/treeview/tree-node';
+import { TreeViewComponent } from 'app/shared/treeview/tree-view.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-add-configuration',
   templateUrl: './add-configuration.component.html',
-  styleUrls: ['./add-configuration.component.scss'],
+  styleUrl: './add-configuration.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    ReactiveFormsModule,
+    ControlMessageComponent,
+    TreeViewComponent,
+    RouterLink,
+    TranslocoModule,
+  ],
 })
 export class AddConfigurationComponent implements OnInit {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   public showWizard = false;
-  @Input()
-  public igId!: string;
-  @Output()
-  readonly configurationAdded = new EventEmitter();
-  @Output()
-  readonly canceled = new EventEmitter();
+  public readonly igId = input.required<string>();
+  readonly configurationAdded = output();
+  readonly canceled = output();
   public autoUploadForm!: FormGroup;
   public connectionResult = 0;
   public testedOnce = false;
@@ -59,7 +70,7 @@ export class AddConfigurationComponent implements OnInit {
   private async buildForm() {
     this.autoUploadForm = this.formBuilder.group({
       ftpHost: ['', Validators.required],
-      ftpPort: ['', [Validators.required, ValidationService.portValidator]],
+      ftpPort: ['', [Validators.required, portValidator]],
       pathToFile: [''],
       username: [''],
       password: [''],
@@ -68,22 +79,20 @@ export class AddConfigurationComponent implements OnInit {
       uploadHour: ['-1'],
       autoExtractZip: [false],
       jobNotifications: [false],
-      emailRecipients: ['', ValidationService.emailsValidator],
+      emailRecipients: ['', emailsValidator],
     });
 
     await this.buildLibrarySectionTree();
-
-    //    await this.testConnection();
   }
 
   private async buildLibrarySectionTree() {
     if (!this.ig) {
       this.ig = await firstValueFrom(
-        this.interestGroupService.getInterestGroup(this.igId)
+        this.interestGroupService.getInterestGroup(this.igId())
       );
     }
 
-    if (this.ig && this.ig.libraryId) {
+    if (this.ig?.libraryId) {
       this.libraryRoot = new TreeNode('Library', this.ig.libraryId);
       this.path = await firstValueFrom(
         this.nodeService.getPath(this.ig.libraryId)
@@ -106,7 +115,7 @@ export class AddConfigurationComponent implements OnInit {
         this.connectionResult = result.code;
         this.testedOnce = true;
       }
-    } catch (error) {
+    } catch (_error) {
       this.connectionResult = -1;
     }
   }
@@ -127,16 +136,20 @@ export class AddConfigurationComponent implements OnInit {
 
       const configuration: AutoUploadConfiguration = {};
 
-      configuration.igName = this.igId;
+      configuration.igName = this.igId();
       configuration.ftpHost = this.autoUploadForm.controls.ftpHost.value;
       configuration.ftpPort = this.autoUploadForm.controls.ftpPort.value;
       configuration.ftpUsername = this.autoUploadForm.controls.username.value;
       configuration.ftpPassword = this.autoUploadForm.controls.password.value;
       configuration.ftpPath = this.autoUploadForm.controls.pathToFile.value;
       configuration.autoExtract =
-        this.autoUploadForm.controls.autoExtractZip.value;
+        this.autoUploadForm.controls.autoExtractZip.value === null
+          ? false
+          : this.autoUploadForm.controls.autoExtractZip.value;
       configuration.jobNotifications =
-        this.autoUploadForm.controls.jobNotifications.value;
+        this.autoUploadForm.controls.jobNotifications.value === null
+          ? false
+          : this.autoUploadForm.controls.jobNotifications.value;
       configuration.emails =
         this.autoUploadForm.controls.emailRecipients.value.replace(/\n/g, ',');
 
@@ -146,7 +159,7 @@ export class AddConfigurationComponent implements OnInit {
       configuration.hourChoice = this.autoUploadForm.controls.uploadHour.value;
 
       await firstValueFrom(
-        this.autoUploadService.postAutoUploadEntry(this.igId, configuration)
+        this.autoUploadService.postAutoUploadEntry(this.igId(), configuration)
       );
 
       this.configurationAdded.emit();

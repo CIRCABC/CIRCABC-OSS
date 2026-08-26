@@ -1,46 +1,60 @@
 import {
   Component,
-  EventEmitter,
   Input,
   OnChanges,
   OnInit,
-  Output,
   SimpleChanges,
+  output,
+  input,
 } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
   ActionType,
 } from 'app/action-result';
 import {
-  Comment,
+  type Comment,
   Node as ModelNode,
   PostService,
   TopicService,
   UserService,
 } from 'app/core/generated/circabc';
-import { Quote } from 'app/core/ui-model/index';
+import { type Quote } from 'app/core/ui-model/index';
 import { getUserFullName } from 'app/core/util';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
+import { SharedModule } from 'primeng/api';
+import { EditorModule } from 'primeng/editor';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-add-post',
   templateUrl: './add-post.component.html',
-  styleUrls: ['./add-post.component.scss'],
+  styleUrl: './add-post.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    ReactiveFormsModule,
+    EditorModule,
+    SharedModule,
+    SpinnerComponent,
+    TranslocoModule,
+  ],
 })
 export class AddPostComponent implements OnInit, OnChanges {
-  @Input()
-  topic!: ModelNode;
-  @Input()
-  futureQuote!: Quote;
+  readonly topic = input.required<ModelNode>();
+  readonly futureQuote = input.required<Quote>();
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   editPost: ModelNode | undefined;
-  @Output()
-  readonly postedComment = new EventEmitter<ActionEmitterResult>();
+  readonly postedComment = output<ActionEmitterResult>();
 
   public addPostForm!: FormGroup;
   public showForm = false;
@@ -110,15 +124,16 @@ export class AddPostComponent implements OnInit, OnChanges {
       result.type = ActionType.CREATE_POST;
 
       try {
-        if (this.topic.id) {
+        const topic = this.topic();
+        if (topic.id) {
           await firstValueFrom(
-            this.topicService.postReply(this.topic.id, body)
+            this.topicService.postReply(topic.id, true, body)
           );
           result.result = ActionResult.SUCCEED;
           this.addPostForm.reset();
           this.showForm = false;
         }
-      } catch (exception) {
+      } catch (_exception) {
         result.result = ActionResult.FAILED;
       }
       this.posting = false;
@@ -133,19 +148,19 @@ export class AddPostComponent implements OnInit, OnChanges {
       const result: ActionEmitterResult = {};
       result.type = ActionType.EDIT_POST;
 
-      if (this.editPost && this.editPost.properties) {
+      if (this.editPost?.properties) {
         this.editPost.properties.message = this.addPostForm.value.text;
 
         try {
           if (this.editPost.id) {
             await firstValueFrom(
-              this.postService.putPost(this.editPost.id, this.editPost)
+              this.postService.putPost(this.editPost.id, false, this.editPost)
             );
             result.result = ActionResult.SUCCEED;
             this.addPostForm.reset();
             this.showForm = false;
           }
-        } catch (exception) {
+        } catch (_exception) {
           result.result = ActionResult.FAILED;
         }
         this.posting = false;

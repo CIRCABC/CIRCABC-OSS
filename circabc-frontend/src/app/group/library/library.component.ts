@@ -1,8 +1,8 @@
-import { ListingOptions } from 'app/group/listing-options/listing-options';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Data, Router } from '@angular/router';
+import { ActivatedRoute, Data, Router, RouterLink } from '@angular/router';
+import { ListingOptions } from 'app/group/listing-options/listing-options';
 
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
 import {
   ActionEmitterResult,
@@ -21,21 +21,47 @@ import {
   User,
   UserService,
 } from 'app/core/generated/circabc';
+import { LibraryIdService } from 'app/core/libraryId.service';
 import { LoginService } from 'app/core/login.service';
 import { UiMessageService } from 'app/core/message/ui-message.service';
 import { getSuccessTranslation } from 'app/core/util';
+import { BreadcrumbComponent } from 'app/group/breadcrumb/breadcrumb.component';
+import { FlatMessageComponent } from 'app/shared/flat-message/flat-message.component';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
+import { NotificationMessageComponent } from 'app/shared/notification-message/notification-message.component';
+import { IfOrRolesPipe } from 'app/shared/pipes/if-or-roles.pipe';
+import { SetTitlePipe } from 'app/shared/pipes/set-title.pipe';
+import { ReponsiveSubMenuComponent } from 'app/shared/reponsive-sub-menu/reponsive-sub-menu.component';
 import { CookieService } from 'ngx-cookie-service';
 import { firstValueFrom } from 'rxjs';
-import { LibraryIdService } from 'app/core/libraryId.service';
+import { LibraryBrowserComponent } from './browser/library-browser.component';
+import { ClipboardComponent } from './clipboard/clipboard.component';
+import { AddDropdownComponent } from './dropdown/add-dropdown.component';
+import { FolderTreeViewComponent } from './folder-tree-view/folder-tree-view.component';
 
 @Component({
   selector: 'cbc-library',
   templateUrl: './library.component.html',
-  styleUrls: ['./library.component.scss'],
+  styleUrl: './library.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    HorizontalLoaderComponent,
+    FlatMessageComponent,
+    BreadcrumbComponent,
+    NotificationMessageComponent,
+    ReponsiveSubMenuComponent,
+    RouterLink,
+    AddDropdownComponent,
+    FolderTreeViewComponent,
+    LibraryBrowserComponent,
+    ClipboardComponent,
+    IfOrRolesPipe,
+    SetTitlePipe,
+    TranslocoModule,
+  ],
 })
 export class LibraryComponent implements OnInit {
-  public group!: InterestGroup;
+  public group?: InterestGroup;
   public node!: ModelNode;
   public nodeIsFolder = true;
   public nodeIsFile = false;
@@ -65,6 +91,7 @@ export class LibraryComponent implements OnInit {
       column: this.columnOptions,
       listing: this.listingOptions,
     },
+    search: [],
   };
 
   // eslint-disable-next-line no-magic-numbers
@@ -127,7 +154,7 @@ export class LibraryComponent implements OnInit {
           } else {
             this.preferences.library.listing.page = 1;
           }
-        } catch (error) {
+        } catch (_error) {
           this.preferences.library.listing.page = 1;
         }
       }
@@ -139,7 +166,7 @@ export class LibraryComponent implements OnInit {
           } else {
             this.preferences.library.listing.limit = 10;
           }
-        } catch (error) {
+        } catch (_error) {
           this.preferences.library.listing.limit = 10;
         }
       }
@@ -160,13 +187,13 @@ export class LibraryComponent implements OnInit {
   }
 
   private async setRestrictedMode() {
-    if (!this.isInterestGroup(this.group) && this.nodeId) {
+    if (this.group && !this.isInterestGroup(this.group) && this.nodeId) {
       try {
         const interestGroup = await firstValueFrom(
           this.nodesService.getGroup(this.nodeId)
         );
         this.group = interestGroup;
-      } catch (error) {
+      } catch (_error) {
         this.group.libraryId = this.nodeId;
         this.restrictedMode = true;
         return;
@@ -179,7 +206,7 @@ export class LibraryComponent implements OnInit {
       }
     } else {
       if (
-        this.group.permissions !== undefined &&
+        this.group?.permissions !== undefined &&
         this.group.permissions.library === 'LibNoAccess'
       ) {
         this.restrictedMode = true;
@@ -192,11 +219,11 @@ export class LibraryComponent implements OnInit {
     this.nodeId = params.nodeId;
     if (this.nodeId) {
       await this.setRestrictedMode();
-      if (!this.restrictedMode || this.nodeId !== this.group.libraryId) {
+      if (!this.restrictedMode || this.nodeId !== this.group?.libraryId) {
         this.node = await firstValueFrom(
           this.nodesService.getNode(this.nodeId)
         );
-      } else if (this.nodeId === this.group.libraryId) {
+      } else if (this.nodeId === this.group?.libraryId) {
         this.libraryIdService.updateLibraryId(this.group.libraryId);
         this.node = {
           id: this.group.libraryId,
@@ -246,20 +273,7 @@ export class LibraryComponent implements OnInit {
       );
 
       // get only folders
-      if (!this.restrictedMode) {
-        this.currentContents = await firstValueFrom(
-          this.spaceService.getChildren(
-            this.nodeId,
-            this.translateService.getActiveLang(),
-            false,
-            this.preferences.library.listing.limit,
-            this.preferences.library.listing.page,
-            this.preferences.library.listing.sort,
-            false,
-            false
-          )
-        );
-      } else {
+      if (this.restrictedMode) {
         const contents = await firstValueFrom(
           this.spaceService.getRestrictedChildren(
             this.nodeId,
@@ -294,8 +308,21 @@ export class LibraryComponent implements OnInit {
             this.currentContents.total = this.currentContents.total + 1;
           }
         }
+      } else {
+        this.currentContents = await firstValueFrom(
+          this.spaceService.getChildren(
+            this.nodeId,
+            this.translateService.getActiveLang(),
+            false,
+            this.preferences.library.listing.limit,
+            this.preferences.library.listing.page,
+            this.preferences.library.listing.sort,
+            false,
+            false
+          )
+        );
       }
-    } catch (error) {
+    } catch (_error) {
       this.currentContents = { data: [], total: 0 };
     }
     this.loading = false;
@@ -316,7 +343,6 @@ export class LibraryComponent implements OnInit {
         sort: this.preferences.library.listing.sort,
       },
     });
-    // window.location.reload();
   }
 
   public async changeListing(listingOptions: ListingOptions) {
@@ -330,7 +356,7 @@ export class LibraryComponent implements OnInit {
   }
 
   public isGroupAdmin(): boolean {
-    if (this.group.permissions === undefined) {
+    if (this.group?.permissions === undefined) {
       return false;
     }
     return (
@@ -343,7 +369,7 @@ export class LibraryComponent implements OnInit {
   }
 
   public isLibAdmin(): boolean {
-    if (this.group.permissions === undefined) {
+    if (this.group?.permissions === undefined) {
       return false;
     }
     if (this.group.permissions.library === 'LibAdmin') {
@@ -353,7 +379,7 @@ export class LibraryComponent implements OnInit {
   }
 
   public isLibManageOwn(): boolean {
-    if (this.group.permissions === undefined) {
+    if (this.group?.permissions === undefined) {
       return false;
     }
     return this.permEvalService.isLibManageOwnOrHigher(this.node);
@@ -372,17 +398,15 @@ export class LibraryComponent implements OnInit {
   isFile(node: ModelNode): boolean {
     if (node.type) {
       return node.type.indexOf('folder') === -1;
-    } else {
-      return false;
     }
+    return false;
   }
 
   isFolder(node: ModelNode): boolean {
     if (node.type) {
       return node.type.indexOf('folder') !== -1;
-    } else {
-      return false;
     }
+    return false;
   }
 
   isLibraryRoot(): boolean {
@@ -392,7 +416,7 @@ export class LibraryComponent implements OnInit {
   private async saveListing(listingOptions: ListingOptions) {
     if (this.preferences.library) {
       this.preferences.library.listing = listingOptions;
-      if (this.user && this.user.userId) {
+      if (this.user?.userId) {
         await firstValueFrom(
           this.userService.saveUserPreferences(
             this.user.userId,
@@ -405,7 +429,7 @@ export class LibraryComponent implements OnInit {
 
   private async loadUserPreferences() {
     try {
-      if (this.user && this.user.userId) {
+      if (this.user?.userId) {
         this.preferences = await firstValueFrom(
           this.userService.getUserPreferences(this.user.userId)
         );

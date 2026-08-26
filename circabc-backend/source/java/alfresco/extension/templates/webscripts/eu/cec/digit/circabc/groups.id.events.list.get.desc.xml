@@ -1,8 +1,9 @@
 <webscript>
   <shortname>groups.id.events.list.get</shortname>
-  <description>Get a list of events or meetings given the date ranges</description>
+  <description
+  >Get a list of events or meetings given the date ranges</description>
     <url>/circabc/groups/{igId}/events/list</url>
-  <format default="json"/>
+  <format default="json" />
   <authentication>guest</authentication>
   <transaction>required</transaction>
 </webscript>

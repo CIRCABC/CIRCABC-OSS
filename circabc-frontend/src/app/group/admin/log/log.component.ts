@@ -1,11 +1,13 @@
-import { Inject, Optional, Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, Optional } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
   FormGroup,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   AuditActivity,
   AuditService,
@@ -16,13 +18,25 @@ import {
 } from 'app/core/generated/circabc';
 import { SaveAsService } from 'app/core/save-as.service';
 import { IdName } from 'app/core/ui-model';
-import { ValidationService } from 'app/core/validation.service';
+import { dateLessThan, futureDateValidator } from 'app/core/validation.service';
+import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
+import { SetTitlePipe } from 'app/shared/pipes/set-title.pipe';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
+import { DatePicker } from 'primeng/datepicker';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-log',
   templateUrl: 'log.component.html',
   preserveWhitespaces: true,
+  imports: [
+    ReactiveFormsModule,
+    DatePicker,
+    ControlMessageComponent,
+    SpinnerComponent,
+    SetTitlePipe,
+    TranslocoModule,
+  ],
 })
 export class LogComponent implements OnInit {
   public form!: FormGroup;
@@ -60,15 +74,12 @@ export class LogComponent implements OnInit {
         activities: [''],
         dateFrom: [
           this.get7DaysAgo(),
-          [Validators.required, ValidationService.futureDateValidator],
+          [Validators.required, futureDateValidator],
         ],
-        dateTo: [
-          new Date(),
-          [Validators.required, ValidationService.futureDateValidator],
-        ],
+        dateTo: [new Date(), [Validators.required, futureDateValidator]],
       },
       {
-        validators: ValidationService.dateLessThan('dateFrom', 'dateTo'),
+        validators: dateLessThan('dateFrom', 'dateTo'),
         updateOn: 'change',
       }
     );
@@ -127,8 +138,7 @@ export class LogComponent implements OnInit {
     if (this.pagedUserProfile.data && this.pagedUserProfile.data.length > 0) {
       this.users = this.pagedUserProfile.data.map((userProfile) => {
         if (
-          userProfile.user &&
-          userProfile.user.userId &&
+          userProfile.user?.userId &&
           userProfile.user.firstname &&
           userProfile.user.lastname
         ) {
@@ -136,9 +146,8 @@ export class LogComponent implements OnInit {
             id: userProfile.user.userId,
             name: `${userProfile.user.firstname} ${userProfile.user.lastname}`,
           };
-        } else {
-          return { id: '', name: '' };
         }
+        return { id: '', name: '' };
       });
       this.users.unshift({ id: '', name: 'All' });
     }

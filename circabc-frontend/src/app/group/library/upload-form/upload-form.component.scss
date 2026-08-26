@@ -1,4 +1,4 @@
-@use '~css/global/variables-mixins-keyframes';
+@use 'css/global/variables-mixins-keyframes';
 
 .flexContainer {
   display: flex;
@@ -111,10 +111,35 @@
   min-width: 300px;
 }
 
+.upload-configurations {
+  color: #035;
+  border-radius: 5px;
+  box-shadow: 2px 2px 10px #888;
+  background-color: #fff;
+  padding: 10px 25px;
+  display: flex;
+  margin-top: 10px;
+  align-items: center;
+}
+
 .upload-actions {
   justify-content: center;
 }
 
 .step-hidden {
   opacity: 0;
+}
+
+.notify-label {
+  flex: 0 0 auto;
+}
+
+.toggle {
+  flex: 0 0 auto;
+  padding: 0 7px 0 15px;
+  text-align-last: center;
+}
+
+.notify-message {
+  margin-left: 20px;
 }

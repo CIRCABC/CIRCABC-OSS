@@ -1,7 +1,13 @@
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
@@ -13,14 +19,24 @@ import {
   DynamicPropertyDefinitionUpdatedValues,
 } from 'app/core/generated/circabc';
 import { DynamicPropertyType } from 'app/group/dynamic-properties/type/dynamic-property-type';
-import { DynamicPropertyTypes } from 'app/group/dynamic-properties/type/dynamic-property-types';
+import { getDynamicPropertyTypes } from 'app/group/dynamic-properties/type/dynamic-property-types';
+import { MultilingualInputComponent } from 'app/shared/input/multilingual-input.component';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-edit-dynamic-property',
   templateUrl: './edit-dynamic-property.component.html',
-  styleUrls: ['./edit-dynamic-property.component.scss'],
+  styleUrl: './edit-dynamic-property.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    HorizontalLoaderComponent,
+    ReactiveFormsModule,
+    MultilingualInputComponent,
+    SpinnerComponent,
+    TranslocoModule,
+  ],
 })
 export class EditDynamicPropertyComponent implements OnInit {
   public loading = false;
@@ -61,7 +77,7 @@ export class EditDynamicPropertyComponent implements OnInit {
 
     this.editDynPropForm.controls.type.disable();
 
-    if (this.route && this.route.params) {
+    if (this.route?.params) {
       this.route.params.subscribe(async (params) => {
         if (params.dpId) {
           await this.loadDynamicProperty(params.dpId);
@@ -86,7 +102,7 @@ export class EditDynamicPropertyComponent implements OnInit {
   }
 
   public getTypes(): DynamicPropertyType[] {
-    return DynamicPropertyTypes.getTypes();
+    return getDynamicPropertyTypes();
   }
 
   public hasValues(): boolean {
@@ -106,7 +122,7 @@ export class EditDynamicPropertyComponent implements OnInit {
     res.type = ActionType.UPDATE_DYNAMIC_PROPERTIES;
 
     try {
-      if (this.originalProperty && this.originalProperty.id) {
+      if (this.originalProperty?.id) {
         this.originalProperty.updatedValues = this.values;
         this.originalProperty.title = this.editDynPropForm.value.title;
         await firstValueFrom(
@@ -117,7 +133,7 @@ export class EditDynamicPropertyComponent implements OnInit {
         );
         res.result = ActionResult.SUCCEED;
       }
-    } catch (error) {
+    } catch (_error) {
       res.result = ActionResult.FAILED;
     }
 

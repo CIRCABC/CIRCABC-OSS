@@ -3,11 +3,12 @@ import {
   AbstractControl,
   FormBuilder,
   FormGroup,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { PermissionEvaluatorService } from 'app/core/evaluator/permission-evaluator.service';
 import {
   EmailDefinition,
@@ -17,14 +18,33 @@ import {
   MailTemplateDefinition,
 } from 'app/core/generated/circabc';
 import { UiMessageService } from 'app/core/message/ui-message.service';
-import { ValidationService } from 'app/core/validation.service';
+import { fileNameValidator } from 'app/core/validation.service';
+import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
+import { FilePickerComponent } from 'app/shared/file-picker/file-picker.component';
+import { ReponsiveSubMenuComponent } from 'app/shared/reponsive-sub-menu/reponsive-sub-menu.component';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
+import { UsersPickerComponent } from 'app/shared/users/users-picker.component';
+import { SharedModule } from 'primeng/api';
+import { EditorModule } from 'primeng/editor';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-contact',
   templateUrl: './contact.component.html',
-  styleUrls: ['./contact.component.scss'],
+  styleUrl: './contact.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    ReponsiveSubMenuComponent,
+    RouterLink,
+    ReactiveFormsModule,
+    ControlMessageComponent,
+    EditorModule,
+    SharedModule,
+    SpinnerComponent,
+    UsersPickerComponent,
+    FilePickerComponent,
+    TranslocoModule,
+  ],
 })
 export class ContactComponent implements OnInit {
   public selectedTab = 'email';
@@ -92,7 +112,7 @@ export class ContactComponent implements OnInit {
         this.emailForm.controls.templateName.setValidators([
           Validators.required,
           (templateNameControl: AbstractControl) =>
-            ValidationService.fileNameValidator(templateNameControl),
+            fileNameValidator(templateNameControl),
         ]);
         this.emailForm.controls.templateName.updateValueAndValidity();
       } else {
@@ -184,9 +204,8 @@ export class ContactComponent implements OnInit {
   getNumberRecipients(): number {
     if (this.membersForm.value.invitedUsersOrProfiles) {
       return this.membersForm.value.invitedUsersOrProfiles.length;
-    } else {
-      return 0;
     }
+    return 0;
   }
 
   getNumberAttachments(): number {
@@ -287,7 +306,7 @@ export class ContactComponent implements OnInit {
 
       const res = this.translateService.translate('label.template.removed');
       this.uiMessageService.addSuccessMessage(res, true);
-    } catch (error) {
+    } catch (_error) {
       const res = this.translateService.translate(
         'label.template.removed.error'
       );

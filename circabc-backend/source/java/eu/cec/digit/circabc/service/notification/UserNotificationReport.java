@@ -24,36 +24,35 @@ import org.alfresco.service.cmr.repository.NodeRef;
  * @author Yanick Pignot
  */
 public interface UserNotificationReport {
+  NodeRef getLocation();
 
-    NodeRef getLocation();
+  /**
+   * Get the Global Notification Status enumeration value setted as the user preferences
+   */
+  GlobalNotificationStatus getGlobalNotificationStatus();
 
-    /**
-     * Get the Global Notification Status enumeration value setted as the user preferences
-     */
-    GlobalNotificationStatus getGlobalNotificationStatus();
+  /**
+   * Get the Notification Status enumeration setted for the user's profile for the current location
+   */
+  NotificationStatus getProfileNotificationStatus();
 
-    /**
-     * Get the Notification Status enumeration setted for the user's profile for the current location
-     */
-    NotificationStatus getProfileNotificationStatus();
+  /**
+   * Get the Notification Status enumeration setted for the specific user for the current location
+   */
+  NotificationStatus getUserNotificationStatus();
 
-    /**
-     * Get the Notification Status enumeration setted for the specific user for the current location
-     */
-    NotificationStatus getUserNotificationStatus();
+  /**
+   * Return true if the Notification Statuses allow the user to receive a Notification
+   */
+  boolean isUserNotifiable();
 
-    /**
-     * Return true if the Notification Statuses allow the user to receive a Notification
-     */
-    boolean isUserNotifiable();
+  /**
+   * Get the user authority to which this notification applies.
+   */
+  String getUserAuthority();
 
-    /**
-     * Get the user authority to which this notification applies.
-     */
-    String getUserAuthority();
-
-    /**
-     * Get the user authority profile to which this notification applies.
-     */
-    String getUserProfile();
+  /**
+   * Get the user authority profile to which this notification applies.
+   */
+  String getUserProfile();
 }

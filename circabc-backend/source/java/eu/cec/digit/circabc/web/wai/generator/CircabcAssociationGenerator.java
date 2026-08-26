@@ -21,26 +21,25 @@
 package eu.cec.digit.circabc.web.wai.generator;
 
 import eu.cec.digit.circabc.web.ui.repo.RepoConstants;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
 import org.alfresco.web.app.servlet.FacesHelper;
 import org.alfresco.web.bean.generator.AssociationGenerator;
 
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
-
-
 public class CircabcAssociationGenerator extends AssociationGenerator {
 
-    @SuppressWarnings("unchecked")
-    public UIComponent generate(FacesContext context, String id) {
-        UIComponent component = context.getApplication().
-                createComponent(RepoConstants.CIRCAB_FACES_ASSOC_EDITOR);
-        FacesHelper.setupComponentId(context, component, id);
+  @SuppressWarnings("unchecked")
+  public UIComponent generate(FacesContext context, String id) {
+    UIComponent component = context
+      .getApplication()
+      .createComponent(RepoConstants.CIRCAB_FACES_ASSOC_EDITOR);
+    FacesHelper.setupComponentId(context, component, id);
 
-        // set the size of the list (if provided)
-        if (this.optionsSize != null) {
-            component.getAttributes().put("availableOptionsSize", this.optionsSize);
-        }
-
-        return component;
+    // set the size of the list (if provided)
+    if (this.optionsSize != null) {
+      component.getAttributes().put("availableOptionsSize", this.optionsSize);
     }
+
+    return component;
+  }
 }

@@ -1,14 +1,24 @@
+import { DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   HistoryService,
   PagedUserRevocationRequest,
 } from 'app/core/generated/circabc';
 import { ListingOptions } from 'app/group/listing-options/listing-options';
+import { PagerConfigurationComponent } from 'app/shared/pager-configuration/pager-configuration.component';
+import { PagerComponent } from 'app/shared/pager/pager.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-revocation-jobs',
   templateUrl: './revocation-jobs.component.html',
+  imports: [
+    PagerComponent,
+    PagerConfigurationComponent,
+    DatePipe,
+    TranslocoModule,
+  ],
 })
 export class RevocationJobsComponent implements OnInit {
   public revocations!: PagedUserRevocationRequest;
@@ -67,9 +77,5 @@ export class RevocationJobsComponent implements OnInit {
     this.listingOptions.limit = limit;
     this.listingOptions.page = 0;
     await this.changePage(this.listingOptions);
-  }
-
-  public trackById(_index: number, item: { id?: string | number }) {
-    return item.id;
   }
 }

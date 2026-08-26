@@ -1,9 +1,10 @@
 import { Component, Inject, OnInit, Optional } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
+import { DatePipe } from '@angular/common';
 import {
   ActionEmitterResult,
   ActionResult,
@@ -33,14 +34,55 @@ import {
   getSuccessTranslation,
 } from 'app/core/util';
 import { ListingOptions } from 'app/group/listing-options/listing-options';
+import { CreateUserComponent } from 'app/shared/create-user-wizard/create-user.component';
+import { HintComponent } from 'app/shared/hint/hint.component';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
+import { NumberBadgeComponent } from 'app/shared/number-badge/number-badge.component';
+import { PagerComponent } from 'app/shared/pager/pager.component';
+import { DownloadPipe } from 'app/shared/pipes/download.pipe';
 import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
+import { SecurePipe } from 'app/shared/pipes/secure.pipe';
+import { SetTitlePipe } from 'app/shared/pipes/set-title.pipe';
+import { ReponsiveSubMenuComponent } from 'app/shared/reponsive-sub-menu/reponsive-sub-menu.component';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { environment } from 'environments/environment';
 import { firstValueFrom } from 'rxjs';
+import { ChangeProfilesMultipleComponent } from './change-profiles-multiple/change-profiles-multiple.component';
+import { ChangeUserProfileComponent } from './change-user-profile/change-user-profile.component';
+import { EditExpirationComponent } from './edit-expiration/edit-expiration.component';
+import { InviteUserComponent } from './invite-user/invite-user.component';
+import { MembersDropdownComponent } from './members-dropdown.component';
+import { UninviteMultipleComponent } from './uninvite-multiple/uninvite-multiple.component';
+import { UninviteUserComponent } from './uninvite/uninvite-user.component';
 @Component({
   selector: 'cbc-members',
   templateUrl: './members.component.html',
-  styleUrls: ['./members.component.scss'],
+  styleUrl: './members.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    HorizontalLoaderComponent,
+    ReponsiveSubMenuComponent,
+    RouterLink,
+    MembersDropdownComponent,
+    PagerComponent,
+    HintComponent,
+    ReactiveFormsModule,
+    NumberBadgeComponent,
+    SpinnerComponent,
+    UninviteUserComponent,
+    UninviteMultipleComponent,
+    ChangeProfilesMultipleComponent,
+    ChangeUserProfileComponent,
+    InviteUserComponent,
+    CreateUserComponent,
+    EditExpirationComponent,
+    DatePipe,
+    DownloadPipe,
+    I18nPipe,
+    SecurePipe,
+    SetTitlePipe,
+    TranslocoModule,
+  ],
 })
 export class MembersComponent implements OnInit {
   public selectChangeMember!: UserProfile;
@@ -57,7 +99,7 @@ export class MembersComponent implements OnInit {
   public selectedUser: User | undefined;
   public selectedUsers: SelectableUserProfile[] = [];
   public selectedExpiredUsers: SelectableUserProfile[] = [];
-  public currentGroup!: InterestGroup;
+  public currentGroup?: InterestGroup;
   public listingOptions: ListingOptions = {
     page: 1,
     limit: 10,
@@ -74,9 +116,10 @@ export class MembersComponent implements OnInit {
   public allSelected = false;
   public exporting = false;
   public isOSS = false;
-
-  private searchText = '';
-  private searchProfile: string[] = [];
+  private firstName = '';
+  private lastName = '';
+  private email = '';
+  private searchProfile = '';
 
   // properties for the exporter (format to export the file and the file id)
   public exportFormats = [
@@ -116,7 +159,9 @@ export class MembersComponent implements OnInit {
     }
     this.searchForm = this.fb.group(
       {
-        searchText: [''],
+        firstName: [''],
+        lastName: [''],
+        email: [''],
         searchProfile: ['all'],
       },
       {
@@ -151,8 +196,7 @@ export class MembersComponent implements OnInit {
         );
         for (const profile of this.currentUserMemberships) {
           if (
-            profile &&
-            profile.interestGroup &&
+            profile?.interestGroup &&
             this.currentGroup &&
             profile.interestGroup.id === this.currentGroup.id
           ) {
@@ -186,34 +230,45 @@ export class MembersComponent implements OnInit {
   }
 
   public async searchUsers() {
-    this.listingOptions.page = 1;
-    this.listingOptions.limit = 10;
-
-    if (this.searchForm.controls.searchText.value !== '') {
-      this.searchText = this.searchForm.controls.searchText.value;
+    if (this.searchForm.controls.firstName.value !== '') {
+      this.firstName = this.searchForm.controls.firstName.value;
     } else {
-      this.searchText = '';
+      this.firstName = '';
+    }
+
+    if (this.searchForm.controls.lastName.value !== '') {
+      this.lastName = this.searchForm.controls.lastName.value;
+    } else {
+      this.lastName = '';
+    }
+
+    if (this.searchForm.controls.email.value !== '') {
+      this.email = this.searchForm.controls.email.value;
+    } else {
+      this.email = '';
     }
 
     if (
       this.searchForm.controls.searchProfile.value !== 'all' &&
       this.searchForm.controls.searchProfile.value !== ''
     ) {
-      this.searchProfile = [this.searchForm.value.searchProfile];
+      this.searchProfile = this.searchForm.value.searchProfile;
     } else {
-      this.searchProfile = [];
+      this.searchProfile = '';
     }
 
     if (this.nodeId !== undefined) {
       const result: PagedUserProfile = await firstValueFrom(
-        this.membersService.getMembers(
+        this.membersService.getMembersFilter(
           this.nodeId,
           this.searchProfile,
           '',
           this.listingOptions.limit,
           this.listingOptions.page,
           this.listingOptions.sort,
-          this.searchText
+          this.firstName,
+          this.lastName,
+          this.email
         )
       );
       this.members = result.data as UserProfile[];
@@ -231,14 +286,16 @@ export class MembersComponent implements OnInit {
     this.listingOptions = listingOptions;
     if (this.nodeId !== undefined) {
       const result: PagedUserProfile = await firstValueFrom(
-        this.membersService.getMembers(
+        this.membersService.getMembersFilter(
           this.nodeId,
           this.searchProfile,
           '',
           this.listingOptions.limit,
           this.listingOptions.page,
           this.listingOptions.sort,
-          this.searchText
+          this.firstName,
+          this.lastName,
+          this.email
         )
       );
       this.members = result.data as UserProfile[];
@@ -299,11 +356,17 @@ export class MembersComponent implements OnInit {
   }
 
   public isDirAdmin(): boolean {
-    return this.permEvalService.isDirAdmin(this.currentGroup);
+    return (
+      this.currentGroup !== undefined &&
+      this.permEvalService.isDirAdmin(this.currentGroup)
+    );
   }
 
   public isDirManageMembers(): boolean {
-    return this.permEvalService.isDirManageMembers(this.currentGroup);
+    return (
+      this.currentGroup !== undefined &&
+      this.permEvalService.isDirManageMembers(this.currentGroup)
+    );
   }
 
   public uninviteUser(user: User | undefined): void {
@@ -368,17 +431,28 @@ export class MembersComponent implements OnInit {
   public export() {
     this.exporting = true;
     const exportCode: string = this.exportForm.value.export.code;
-    const url = `${this.basePath}/groups/${this.nodeId}/members/export?format=${exportCode}`;
+    const url = this.createUrl(exportCode);
     const name = `Members.${exportCode}`;
     this.saveAsService.saveUrlAs(url, name);
     this.exporting = false;
   }
 
+  private createUrl(exportCode: string) {
+    return `${this.basePath}/groups/${this.nodeId}/members/export?profile=${
+      this.searchForm.value.searchProfile === 'all'
+        ? ''
+        : this.searchForm.value.searchProfile
+    }&language=&limit=-1&page=1&order=${this.listingOptions.sort}&firstName=${
+      this.searchForm.value.firstName
+    }&lastName=${this.searchForm.controls.lastName.value}&email=${
+      this.searchForm.value.email
+    }&format=${exportCode}`;
+  }
+
   public toggleSelectedUser(selectedUser: SelectableUserProfile) {
     this.members.forEach((member) => {
       if (
-        member.user &&
-        member.user.userId &&
+        member.user?.userId &&
         selectedUser.user &&
         selectedUser.user.userId
       ) {
@@ -402,7 +476,7 @@ export class MembersComponent implements OnInit {
     this.selectedUsers = [];
 
     this.members.forEach((member) => {
-      if (member.user && member.user.userId) {
+      if (member.user?.userId) {
         if (member.selected) {
           this.selectedUsers.push(member);
         }
@@ -475,32 +549,35 @@ export class MembersComponent implements OnInit {
   }
 
   selectAll() {
-    if (!this.allSelected) {
-      this.allSelected = true;
-      const currentUserName = this.loginService.getCurrentUsername();
-      this.members.forEach((member) => {
-        if (
-          member.user &&
-          member.user.userId &&
-          currentUserName !== member.user.userId
-        ) {
-          member.selected = true;
-          this.selectedUsers.push(member);
-        }
-      });
-    } else {
+    if (this.allSelected) {
       this.allSelected = false;
       this.selectedUsers = [];
       this.members.forEach((member) => {
         member.selected = false;
       });
+    } else {
+      this.allSelected = true;
+      const currentUserName = this.loginService.getCurrentUsername();
+      this.members.forEach((member) => {
+        if (member.user?.userId && currentUserName !== member.user.userId) {
+          member.selected = true;
+          this.selectedUsers.push(member);
+        }
+      });
     }
   }
 
   public async resetSearch() {
-    this.searchForm.patchValue({ searchProfile: 'all', searchText: '' });
-    this.searchText = '';
-    this.searchProfile = [];
+    this.searchForm.patchValue({
+      searchProfile: 'all',
+      firstName: '',
+      lastName: '',
+      email: '',
+    });
+    this.firstName = '';
+    this.lastName = '';
+    this.email = '';
+    this.searchProfile = '';
     await this.searchUsers();
   }
 
@@ -528,12 +605,14 @@ export class MembersComponent implements OnInit {
 
   public prepareChangeExpiration(member: SelectableUserProfile) {
     this.selectedExpiredUsers = [member];
+    this.selectedExpiredUsers = [...this.selectedExpiredUsers];
     this.showExpirationDialog = true;
   }
 
   public prepareMultipleSetExpiration() {
     if (this.selectedUsers.length > 0) {
       this.selectedExpiredUsers = this.selectedUsers;
+      this.selectedExpiredUsers = [...this.selectedExpiredUsers];
       this.showExpirationDialog = true;
     }
   }
@@ -559,11 +638,14 @@ export class MembersComponent implements OnInit {
       this.refreshUsers();
     }
   }
-  public trackById(_index: number, item: { id?: string | number }) {
-    return item.id;
-  }
 
   public trackMember(_index: number, item: SelectableUserProfile) {
     return `${item.user?.userId}-${item.profile?.id}`;
+  }
+
+  public filterEnterEvent(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      this.searchUsers();
+    }
   }
 }

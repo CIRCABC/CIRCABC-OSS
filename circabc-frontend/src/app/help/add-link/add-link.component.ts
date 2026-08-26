@@ -1,36 +1,51 @@
 import {
   Component,
-  EventEmitter,
   Input,
   OnChanges,
   OnInit,
-  Output,
   SimpleChanges,
+  output,
 } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActionEmitterResult } from 'app/action-result';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { TranslocoModule } from '@jsverse/transloco';
+import { ActionEmitterResult, ActionResult } from 'app/action-result';
 import { HelpLink, HelpService } from 'app/core/generated/circabc';
-import { ValidationService } from 'app/core/validation.service';
+import { urlValidator } from 'app/core/validation.service';
+import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
+import { MultilingualInputComponent } from 'app/shared/input/multilingual-input.component';
+import { ModalComponent } from 'app/shared/modal/modal.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-add-link',
   templateUrl: './add-link.component.html',
   preserveWhitespaces: true,
+  imports: [
+    ModalComponent,
+    ReactiveFormsModule,
+    MultilingualInputComponent,
+    ControlMessageComponent,
+    TranslocoModule,
+  ],
 })
 export class AddLinkComponent implements OnInit, OnChanges {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   showModal = false;
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   linkId!: string | undefined;
-  @Output()
-  readonly showModalChange = new EventEmitter();
-  @Output()
-  readonly linkIdChange = new EventEmitter();
-  @Output()
-  readonly linkCreated = new EventEmitter<ActionEmitterResult>();
-  @Output()
-  readonly linkUpdated = new EventEmitter<ActionEmitterResult>();
+  readonly showModalChange = output<boolean>();
+  readonly linkIdChange = output();
+  readonly linkCreated = output<ActionEmitterResult>();
+  readonly linkUpdated = output<ActionEmitterResult>();
 
   public creating = false;
   public newLinkForm!: FormGroup;
@@ -38,12 +53,15 @@ export class AddLinkComponent implements OnInit, OnChanges {
   public linkToEdit!: HelpLink | undefined;
   public isValid = false;
 
-  constructor(private fb: FormBuilder, private helpService: HelpService) {}
+  constructor(
+    private fb: FormBuilder,
+    private helpService: HelpService
+  ) {}
 
   ngOnInit() {
     this.newLinkForm = this.fb.group({
       title: ['', Validators.required],
-      href: ['', [Validators.required, ValidationService.urlValidator]],
+      href: ['', [Validators.required, urlValidator]],
     });
 
     this.newLinkForm.valueChanges.subscribe((_value) => {
@@ -73,7 +91,7 @@ export class AddLinkComponent implements OnInit, OnChanges {
 
         await firstValueFrom(this.helpService.updateHelpLink(body.id, body));
 
-        this.linkCreated.emit();
+        this.linkCreated.emit({ result: ActionResult.SUCCEED });
         this.newLinkForm.reset();
         this.editMode = false;
         this.linkId = undefined;
@@ -92,7 +110,7 @@ export class AddLinkComponent implements OnInit, OnChanges {
       await firstValueFrom(
         this.helpService.createHelpLink(this.newLinkForm.value)
       );
-      this.linkCreated.emit();
+      this.linkCreated.emit({ result: ActionResult.SUCCEED });
       this.newLinkForm.reset();
     } catch (error) {
       console.error(error);

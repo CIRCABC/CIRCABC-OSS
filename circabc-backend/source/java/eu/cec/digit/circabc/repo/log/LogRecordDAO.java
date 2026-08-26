@@ -23,189 +23,199 @@ import java.util.Date;
  */
 public class LogRecordDAO {
 
-    private static final int MAX_PATH_SIZE_IN_BYTES = 4000;
-    private static final int MAX_INFO_SIZE_IN_BYTES = 4000;
-    private static final int MAX_USER_NAME_SIZE_IN_BYTES = 50;
-    private static final int MAX_IG_NAME_SIZE_IN_BYTES = 256;
-    private long id; // internal DB-generated sequence id
-    private long igID;
-    private String igName;
-    private long documentID;
-    private String user;
-    private Date date;
-    private int activityID;
-    private String info;
-    private String path;
-    private int isOK;
+  private static final int MAX_PATH_SIZE_IN_BYTES = 4000;
+  private static final int MAX_INFO_SIZE_IN_BYTES = 4000;
+  private static final int MAX_USER_NAME_SIZE_IN_BYTES = 50;
+  private static final int MAX_IG_NAME_SIZE_IN_BYTES = 256;
+  private long id; // internal DB-generated sequence id
+  private long igID;
+  private String igName;
+  private long documentID;
+  private String user;
+  private Date date;
+  private int activityID;
+  private String info;
+  private String path;
+  private int isOK;
+  private boolean isOKBoolean;
 
-    public String getUuid() {
-        return uuid;
+  public boolean isOKBoolean() {
+    return isOKBoolean;
+  }
+
+  public void setOKBoolean(boolean isOKBoolean) {
+    this.isOKBoolean = isOKBoolean;
+  }
+
+  public String getUuid() {
+    return uuid;
+  }
+
+  public void setUuid(String uuid) {
+    this.uuid = uuid;
+  }
+
+  private String uuid;
+
+  /**
+   * Truncate string to maxSizeInBytes bytes
+   *
+   * @param value String to truncate
+   */
+  private static String getTruncatedString(String value, int maxSizeInBytes) {
+    if (value == null) {
+      return null;
     }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    final String result;
+    final byte[] bytes = value.getBytes();
+    if (bytes.length > maxSizeInBytes) {
+      final byte[] destbytes = new byte[maxSizeInBytes];
+      System.arraycopy(bytes, 0, destbytes, 0, maxSizeInBytes);
+      result = new String(destbytes);
+    } else {
+      result = value;
     }
+    return result;
+  }
 
-    private String uuid;
+  /**
+   * @return the igID
+   */
+  public long getIgID() {
+    return igID;
+  }
 
-    /**
-     * Truncate string to maxSizeInBytes bytes
-     *
-     * @param value String to truncate
-     */
-    private static String getTruncatedString(String value, int maxSizeInBytes) {
-        if (value == null) {
-            return null;
-        }
-        final String result;
-        final byte[] bytes = value.getBytes();
-        if (bytes.length > maxSizeInBytes) {
-            final byte[] destbytes = new byte[maxSizeInBytes];
-            System.arraycopy(bytes, 0, destbytes, 0, maxSizeInBytes);
-            result = new String(destbytes);
-        } else {
-            result = value;
-        }
-        return result;
-    }
+  /**
+   * @param igID the igID to set
+   */
+  public void setIgID(long igID) {
+    this.igID = igID;
+  }
 
-    /**
-     * @return the igID
-     */
-    public long getIgID() {
-        return igID;
-    }
+  /**
+   * @return the documentID
+   */
+  public long getDocumentID() {
+    return documentID;
+  }
 
-    /**
-     * @param igID the igID to set
-     */
-    public void setIgID(long igID) {
-        this.igID = igID;
-    }
+  /**
+   * @param documentID the documentID to set
+   */
+  public void setDocumentID(long documentID) {
+    this.documentID = documentID;
+  }
 
-    /**
-     * @return the documentID
-     */
-    public long getDocumentID() {
-        return documentID;
-    }
+  /**
+   * @return the user
+   */
+  public String getUser() {
+    return user == null ? "" : user;
+  }
 
-    /**
-     * @param documentID the documentID to set
-     */
-    public void setDocumentID(long documentID) {
-        this.documentID = documentID;
-    }
+  /**
+   * @param user the user to set
+   */
+  public void setUser(String user) {
+    this.user = getTruncatedString(user, MAX_USER_NAME_SIZE_IN_BYTES);
+  }
 
-    /**
-     * @return the user
-     */
-    public String getUser() {
-        return user == null ? "" : user;
-    }
+  /**
+   * @return the date
+   */
+  public Date getDate() {
+    return date;
+  }
 
-    /**
-     * @param user the user to set
-     */
-    public void setUser(String user) {
-        this.user = getTruncatedString(user, MAX_USER_NAME_SIZE_IN_BYTES);
-    }
+  /**
+   * @param date the date to set
+   */
+  public void setDate(Date date) {
+    this.date = date;
+  }
 
-    /**
-     * @return the date
-     */
-    public Date getDate() {
-        return date;
-    }
+  /**
+   * @return the action
+   */
+  public int getActivityID() {
+    return activityID;
+  }
 
-    /**
-     * @param date the date to set
-     */
-    public void setDate(Date date) {
-        this.date = date;
-    }
+  /**
+   * @param activityID the action to set
+   */
+  public void setActivityID(int activityID) {
+    this.activityID = activityID;
+  }
 
-    /**
-     * @return the action
-     */
-    public int getActivityID() {
-        return activityID;
-    }
+  /**
+   * @return the info
+   */
+  public String getInfo() {
+    return info == null ? "" : info;
+  }
 
-    /**
-     * @param activityID the action to set
-     */
-    public void setActivityID(int activityID) {
-        this.activityID = activityID;
-    }
+  /**
+   * @param info the info to set
+   */
+  public void setInfo(String info) {
+    this.info = getTruncatedString(info, MAX_INFO_SIZE_IN_BYTES);
+  }
 
-    /**
-     * @return the info
-     */
-    public String getInfo() {
-        return info == null ? "" : info;
-    }
+  /**
+   * @return the isOK
+   */
+  public int getIsOK() {
+    return isOK;
+  }
 
-    /**
-     * @param info the info to set
-     */
-    public void setInfo(String info) {
-        this.info = getTruncatedString(info, MAX_INFO_SIZE_IN_BYTES);
-    }
+  /**
+   * @param isOK the isOK to set
+   */
+  public void setIsOK(int isOK) {
+    this.isOK = isOK;
+    this.isOKBoolean = this.isOK == 1;
+  }
 
-    /**
-     * @return the isOK
-     */
-    public int getIsOK() {
-        return isOK;
-    }
+  /**
+   * @return the id
+   */
+  public long getId() {
+    return id;
+  }
 
-    /**
-     * @param isOK the isOK to set
-     */
-    public void setIsOK(int isOK) {
-        this.isOK = isOK;
-    }
+  /**
+   * @param id the id to set
+   */
+  public void setId(long id) {
+    this.id = id;
+  }
 
-    /**
-     * @return the id
-     */
-    public long getId() {
-        return id;
-    }
+  /**
+   * @return the path
+   */
+  public String getPath() {
+    return path == null ? "" : path;
+  }
 
-    /**
-     * @param id the id to set
-     */
-    public void setId(long id) {
-        this.id = id;
-    }
+  /**
+   * @param path the path to set
+   */
+  public void setPath(String path) {
+    this.path = getTruncatedString(path, MAX_PATH_SIZE_IN_BYTES);
+  }
 
-    /**
-     * @return the path
-     */
-    public String getPath() {
-        return path == null ? "" : path;
-    }
+  /**
+   * @return the igName
+   */
+  public String getIgName() {
+    return igName == null ? "" : igName;
+  }
 
-    /**
-     * @param path the path to set
-     */
-    public void setPath(String path) {
-        this.path = getTruncatedString(path, MAX_PATH_SIZE_IN_BYTES);
-    }
-
-    /**
-     * @return the igName
-     */
-    public String getIgName() {
-        return igName == null ? "" : igName;
-    }
-
-    /**
-     * @param igName the igName to set
-     */
-    public void setIgName(String igName) {
-        this.igName = getTruncatedString(igName, MAX_IG_NAME_SIZE_IN_BYTES);
-    }
+  /**
+   * @param igName the igName to set
+   */
+  public void setIgName(String igName) {
+    this.igName = getTruncatedString(igName, MAX_IG_NAME_SIZE_IN_BYTES);
+  }
 }

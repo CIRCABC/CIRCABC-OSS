@@ -23,18 +23,28 @@ package eu.cec.digit.circabc.model;
 import org.alfresco.service.namespace.QName;
 
 public interface ProfileModel extends BaseCircabcModel {
-
-    QName PROP_PROFILE_EXPORTED = QName
-            .createQName(CircabcModel.CIRCABC_CONTENT_MODEL_1_0_URI, "isExported");
-    QName PROP_PROFILE_IMPORTED = QName
-            .createQName(CircabcModel.CIRCABC_CONTENT_MODEL_1_0_URI, "isImported");
-    QName PROP_PROFILE_IMPORTED_REF = QName
-            .createQName(CircabcModel.CIRCABC_CONTENT_MODEL_1_0_URI, "importedNodeRef");
-    QName ASSOC_PROFILE_IMPORTED_TO = QName
-            .createQName(CircabcModel.CIRCABC_CONTENT_MODEL_1_0_URI, "importedTo");
-    QName ASSOC_IG_ROOT_PROFILE = QName
-            .createQName(CircabcModel.CIRCABC_CONTENT_MODEL_1_0_URI, "circaIGRootProfileAssoc");
-    QName PROP_IG_ROOT_PROFILE_NAME = QName
-            .createQName(CircabcModel.CIRCABC_CONTENT_MODEL_1_0_URI, "circaIGRootProfileName");
-
+  QName PROP_PROFILE_EXPORTED = QName.createQName(
+    CircabcModel.CIRCABC_CONTENT_MODEL_1_0_URI,
+    "isExported"
+  );
+  QName PROP_PROFILE_IMPORTED = QName.createQName(
+    CircabcModel.CIRCABC_CONTENT_MODEL_1_0_URI,
+    "isImported"
+  );
+  QName PROP_PROFILE_IMPORTED_REF = QName.createQName(
+    CircabcModel.CIRCABC_CONTENT_MODEL_1_0_URI,
+    "importedNodeRef"
+  );
+  QName ASSOC_PROFILE_IMPORTED_TO = QName.createQName(
+    CircabcModel.CIRCABC_CONTENT_MODEL_1_0_URI,
+    "importedTo"
+  );
+  QName ASSOC_IG_ROOT_PROFILE = QName.createQName(
+    CircabcModel.CIRCABC_CONTENT_MODEL_1_0_URI,
+    "circaIGRootProfileAssoc"
+  );
+  QName PROP_IG_ROOT_PROFILE_NAME = QName.createQName(
+    CircabcModel.CIRCABC_CONTENT_MODEL_1_0_URI,
+    "circaIGRootProfileName"
+  );
 }

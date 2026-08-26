@@ -37,8 +37,7 @@ export class BulkDownloadPipe implements PipeTransform {
         endURL = endURL.substring(0, endURL.length - 1);
       }
       return `${this.basePath}/content/bulk?${endURL}`;
-    } else {
-      throw new Error('The list of node ids should be provided');
     }
+    throw new Error('The list of node ids should be provided');
   }
 }

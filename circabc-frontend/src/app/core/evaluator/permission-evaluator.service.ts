@@ -1,8 +1,20 @@
 import { Injectable } from '@angular/core';
-import { AgendaPermissions } from 'app/core/evaluator/agenda-permissions';
-import { DirectoryPermissions } from 'app/core/evaluator/directory-permissions';
-import { LibraryPermissions } from 'app/core/evaluator/library-permissions';
-import { NewsgroupsPermissions } from 'app/core/evaluator/newsgroups-permissions';
+import {
+  agendaPermissionKeys,
+  AgendaPermissions,
+} from 'app/core/evaluator/agenda-permissions';
+import {
+  directoryPermissionKeys,
+  DirectoryPermissions,
+} from 'app/core/evaluator/directory-permissions';
+import {
+  libraryPermissionKeys,
+  LibraryPermissions,
+} from 'app/core/evaluator/library-permissions';
+import {
+  newsGroupPermissionKeys,
+  NewsgroupsPermissions,
+} from 'app/core/evaluator/newsgroups-permissions';
 import {
   InterestGroup,
   Node as ModelNode,
@@ -15,12 +27,16 @@ import {
 export class PermissionEvaluatorService {
   private ALLOWED = 'ALLOWED';
 
+  public isGroupAdmin(interestGroup: InterestGroup): boolean {
+    return (
+      this.isLibAdmin(interestGroup as ModelNode) ||
+      this.isDirAdmin(interestGroup) ||
+      this.isEveAdmin(interestGroup as ModelNode)
+    );
+  }
+
   public isOwner(node: ModelNode, userName: string): boolean {
-    if (node && node.properties && node.properties.owner) {
-      return userName === node.properties.owner;
-    } else {
-      return false;
-    }
+    return userName === node?.properties?.owner;
   }
 
   public isLibAdmin(node: ModelNode): boolean {
@@ -69,10 +85,14 @@ export class PermissionEvaluatorService {
 
     if (node !== undefined) {
       if (node.permissions !== undefined) {
-        if (
-          node.permissions[LibraryPermissions[libraryPermission]] ===
-          this.ALLOWED
-        ) {
+        // Get the string key name for the permission value
+        const permissionKey = libraryPermissionKeys.find(
+          (key) =>
+            LibraryPermissions[key as keyof typeof LibraryPermissions] ===
+            libraryPermission
+        );
+
+        if (permissionKey && node.permissions[permissionKey] === this.ALLOWED) {
           result = true;
         }
       }
@@ -89,8 +109,16 @@ export class PermissionEvaluatorService {
     if (node !== undefined) {
       if (node.permissions !== undefined) {
         for (const permission of libraryPermissions) {
+          // Get the string key name for the permission value
+          const permissionKey = libraryPermissionKeys.find(
+            (key) =>
+              LibraryPermissions[key as keyof typeof LibraryPermissions] ===
+              permission
+          );
+
           if (
-            node.permissions[LibraryPermissions[permission]] === this.ALLOWED
+            permissionKey &&
+            node.permissions[permissionKey] === this.ALLOWED
           ) {
             result = true;
             break;
@@ -119,9 +147,14 @@ export class PermissionEvaluatorService {
     let result = false;
     if (interestGroup !== undefined) {
       if (interestGroup.permissions !== undefined) {
-        result =
-          interestGroup.permissions.directory ===
-          DirectoryPermissions[directoryPermissions];
+        // Get the string key name for the permission value
+        const permissionKey = directoryPermissionKeys.find(
+          (key) =>
+            DirectoryPermissions[key as keyof typeof DirectoryPermissions] ===
+            directoryPermissions
+        );
+
+        result = interestGroup.permissions.directory === permissionKey;
       }
     }
 
@@ -147,10 +180,14 @@ export class PermissionEvaluatorService {
 
     if (node !== undefined) {
       if (node.permissions !== undefined) {
-        if (
-          node.permissions[NewsgroupsPermissions[newsgroupsPermissions]] ===
-          this.ALLOWED
-        ) {
+        // Get the string key name for the permission value
+        const permissionKey = newsGroupPermissionKeys.find(
+          (key) =>
+            NewsgroupsPermissions[key as keyof typeof NewsgroupsPermissions] ===
+            newsgroupsPermissions
+        );
+
+        if (permissionKey && node.permissions[permissionKey] === this.ALLOWED) {
           result = true;
         }
       }
@@ -204,10 +241,14 @@ export class PermissionEvaluatorService {
 
     if (node !== undefined) {
       if (node.permissions !== undefined) {
-        if (
-          node.permissions[AgendaPermissions[agendaPermissions]] ===
-          this.ALLOWED
-        ) {
+        // Get the string key name for the permission value
+        const permissionKey = agendaPermissionKeys.find(
+          (key) =>
+            AgendaPermissions[key as keyof typeof AgendaPermissions] ===
+            agendaPermissions
+        );
+
+        if (permissionKey && node.permissions[permissionKey] === this.ALLOWED) {
           result = true;
         }
       }
@@ -241,42 +282,36 @@ export class PermissionEvaluatorService {
 
   public getLibraryPermissions() {
     return [
-      LibraryPermissions[LibraryPermissions.LibNoAccess],
-      LibraryPermissions[LibraryPermissions.LibAccess],
-      LibraryPermissions[LibraryPermissions.LibManageOwn],
-      LibraryPermissions[LibraryPermissions.LibFullEdit],
-      LibraryPermissions[LibraryPermissions.LibAdmin],
+      'LibNoAccess',
+      'LibAccess',
+      'LibManageOwn',
+      'LibFullEdit',
+      'LibAdmin',
     ];
   }
 
   public getLibraryContentPermissions() {
     return [
-      LibraryPermissions[LibraryPermissions.LibNoAccess],
-      LibraryPermissions[LibraryPermissions.LibAccess],
-      LibraryPermissions[LibraryPermissions.LibEditOnly],
-      LibraryPermissions[LibraryPermissions.LibFullEdit],
-      LibraryPermissions[LibraryPermissions.LibAdmin],
+      'LibNoAccess',
+      'LibAccess',
+      'LibEditOnly',
+      'LibFullEdit',
+      'LibAdmin',
     ];
   }
 
   public getLibraryFolderPermissions() {
     return [
-      LibraryPermissions[LibraryPermissions.LibNoAccess],
-      LibraryPermissions[LibraryPermissions.LibAccess],
-      LibraryPermissions[LibraryPermissions.LibEditOnly],
-      LibraryPermissions[LibraryPermissions.LibManageOwn],
-      LibraryPermissions[LibraryPermissions.LibFullEdit],
-      LibraryPermissions[LibraryPermissions.LibAdmin],
+      'LibNoAccess',
+      'LibAccess',
+      'LibEditOnly',
+      'LibManageOwn',
+      'LibFullEdit',
+      'LibAdmin',
     ];
   }
 
   public geNewsgroupsPermissions() {
-    return [
-      NewsgroupsPermissions[NewsgroupsPermissions.NwsNoAccess],
-      NewsgroupsPermissions[NewsgroupsPermissions.NwsAccess],
-      NewsgroupsPermissions[NewsgroupsPermissions.NwsPost],
-      NewsgroupsPermissions[NewsgroupsPermissions.NwsModerate],
-      NewsgroupsPermissions[NewsgroupsPermissions.NwsAdmin],
-    ];
+    return ['NwsNoAccess', 'NwsAccess', 'NwsPost', 'NwsModerate', 'NwsAdmin'];
   }
 }

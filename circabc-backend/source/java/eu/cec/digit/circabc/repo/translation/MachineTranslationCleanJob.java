@@ -20,6 +20,7 @@ import eu.cec.digit.circabc.service.CircabcServiceRegistry;
 import eu.cec.digit.circabc.service.event.MeetingResponseListener;
 import eu.cec.digit.circabc.service.lock.LockService;
 import eu.cec.digit.circabc.service.translation.TranslationService;
+import java.util.Calendar;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.ServiceRegistry;
 import org.apache.commons.logging.Log;
@@ -29,61 +30,67 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-import java.util.Calendar;
-
 public class MachineTranslationCleanJob implements Job {
 
-    private static final String MACHINE_TRANSLATION_CLEAN = "MACHINE_TRANSLATION_CLEAN";
+  private static final String MACHINE_TRANSLATION_CLEAN =
+    "MACHINE_TRANSLATION_CLEAN";
 
-    private static boolean isInitialized = false;
+  private static boolean isInitialized = false;
 
-    private static ServiceRegistry serviceRegistry;
+  private static ServiceRegistry serviceRegistry;
 
-    private static CircabcServiceRegistry circabcServiceRegistry;
+  private static CircabcServiceRegistry circabcServiceRegistry;
 
-    private static Log logger = LogFactory.getLog(MeetingResponseListener.class);
+  private static Log logger = LogFactory.getLog(MeetingResponseListener.class);
 
-    private static LockService lockService;
-    private static TranslationService translationService;
+  private static LockService lockService;
+  private static TranslationService translationService;
 
-    @Override
-    public void execute(JobExecutionContext context) throws JobExecutionException {
+  @Override
+  public void execute(JobExecutionContext context)
+    throws JobExecutionException {
+    try {
+      AuthenticationUtil.setRunAsUser(AuthenticationUtil.getSystemUserName());
+      initialize(context);
+      boolean isLuocked = false;
+      if (!lockService.isLocked(MACHINE_TRANSLATION_CLEAN)) {
         try {
-            AuthenticationUtil.setRunAsUser(AuthenticationUtil.getSystemUserName());
-            initialize(context);
-            boolean isLuocked = false;
-            if (!lockService.isLocked(MACHINE_TRANSLATION_CLEAN)) {
-                try {
-                    lockService.lock(MACHINE_TRANSLATION_CLEAN);
-                    isLuocked = true;
-                    Calendar cal = Calendar.getInstance();
-                    cal.add(Calendar.MONTH, -2);
-                    //
-                    translationService.cleanTempSpace(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1);
-                } finally {
-                    if (isLuocked) {
-                        lockService.unlock(MACHINE_TRANSLATION_CLEAN);
-                    }
-                }
-            }
-        } catch (final Exception e) {
-            logger.error("Can not run job MachineTranslationJob", e);
+          lockService.lock(MACHINE_TRANSLATION_CLEAN);
+          isLuocked = true;
+          Calendar cal = Calendar.getInstance();
+          cal.add(Calendar.MONTH, -2);
+          //
+          translationService.cleanTempSpace(
+            cal.get(Calendar.YEAR),
+            cal.get(Calendar.MONTH) + 1
+          );
         } finally {
-            AuthenticationUtil.clearCurrentSecurityContext();
+          if (isLuocked) {
+            lockService.unlock(MACHINE_TRANSLATION_CLEAN);
+          }
         }
+      }
+    } catch (final Exception e) {
+      logger.error("Can not run job MachineTranslationJob", e);
+    } finally {
+      AuthenticationUtil.clearCurrentSecurityContext();
     }
+  }
 
-    private void initialize(final JobExecutionContext context) {
-        if (!isInitialized) {
-            final JobDataMap jobData = context.getJobDetail().getJobDataMap();
-            final Object serviceRegistryObj = jobData.get("serviceRegistry");
-            serviceRegistry = (ServiceRegistry) serviceRegistryObj;
+  private void initialize(final JobExecutionContext context) {
+    if (!isInitialized) {
+      final JobDataMap jobData = context.getJobDetail().getJobDataMap();
+      final Object serviceRegistryObj = jobData.get("serviceRegistry");
+      serviceRegistry = (ServiceRegistry) serviceRegistryObj;
 
-            final Object circabcServiceRegistryObj = jobData.get("circabcServiceRegistry");
-            circabcServiceRegistry = (CircabcServiceRegistry) circabcServiceRegistryObj;
-            lockService = circabcServiceRegistry.getLockService();
-            translationService = circabcServiceRegistry.getTranslationService();
-            isInitialized = true;
-        }
+      final Object circabcServiceRegistryObj = jobData.get(
+        "circabcServiceRegistry"
+      );
+      circabcServiceRegistry =
+        (CircabcServiceRegistry) circabcServiceRegistryObj;
+      lockService = circabcServiceRegistry.getLockService();
+      translationService = circabcServiceRegistry.getTranslationService();
+      isInitialized = true;
     }
+  }
 }

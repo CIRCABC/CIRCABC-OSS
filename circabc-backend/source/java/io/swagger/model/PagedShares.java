@@ -10,26 +10,26 @@ import java.util.List;
  */
 public class PagedShares {
 
-    private List<Share> data;
-    private long total;
+  private List<Share> data;
+  private long total;
 
-    public PagedShares(List<Share> data, long total) {
-        super();
-        this.data = data;
-        this.total = total;
-    }
+  public PagedShares(List<Share> data, long total) {
+    super();
+    this.data = data;
+    this.total = total;
+  }
 
-    /**
-     * @return the data
-     */
-    public List<Share> getData() {
-        return data;
-    }
+  /**
+   * @return the data
+   */
+  public List<Share> getData() {
+    return data;
+  }
 
-    /**
-     * @return the total
-     */
-    public long getTotal() {
-        return total;
-    }
+  /**
+   * @return the total
+   */
+  public long getTotal() {
+    return total;
+  }
 }

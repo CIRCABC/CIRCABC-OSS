@@ -31,12 +31,11 @@ import eu.cec.digit.circabc.web.Services;
 import eu.cec.digit.circabc.web.bean.override.CircabcBrowseBean;
 import eu.cec.digit.circabc.web.bean.override.CircabcNavigationBean;
 import eu.cec.digit.circabc.web.wai.dialog.notification.NotificationUtils;
+import java.io.Serializable;
+import javax.faces.context.FacesContext;
 import org.alfresco.web.app.Application;
 import org.alfresco.web.bean.repository.Node;
 import org.alfresco.web.bean.repository.User;
-
-import javax.faces.context.FacesContext;
-import java.io.Serializable;
 
 /**
  * Bean that back the notification status panel to add in any page
@@ -45,239 +44,248 @@ import java.io.Serializable;
  */
 public class NotificationStatusPanel implements Serializable {
 
-    public static final String MSG_NOTIFIABLE = "notification_panel_result_positive";
-    public static final String MSG_NOT_NOTIFIABLE = "notification_panel_result_negative";
-    public static final String BEAN_NAME = "NotificationStatusPanel";
-    private static final long serialVersionUID = 1825200822620206557L;
-    private transient UserNotificationReport notificationReport;
+  public static final String MSG_NOTIFIABLE =
+    "notification_panel_result_positive";
+  public static final String MSG_NOT_NOTIFIABLE =
+    "notification_panel_result_negative";
+  public static final String BEAN_NAME = "NotificationStatusPanel";
+  private static final long serialVersionUID = 1825200822620206557L;
+  private transient UserNotificationReport notificationReport;
 
-    private transient NotificationSubscriptionService notificationSubscriptionService;
-    private transient ProfileManagerServiceFactory profileManagerServiceFactory;
-    private transient ManagementService managementService;
-    private CircabcNavigationBean navigator;
-    private CircabcBrowseBean browseBean;
+  private transient NotificationSubscriptionService notificationSubscriptionService;
+  private transient ProfileManagerServiceFactory profileManagerServiceFactory;
+  private transient ManagementService managementService;
+  private CircabcNavigationBean navigator;
+  private CircabcBrowseBean browseBean;
 
-    // used for cache purposes to prevent that the methods are not called too many time
-    private transient FacesContext rememberedFacesContext = null;
+  // used for cache purposes to prevent that the methods are not called too many time
+  private transient FacesContext rememberedFacesContext = null;
 
-    public boolean isPanelDisplayed() {
-        final FacesContext fc = FacesContext.getCurrentInstance();
+  public boolean isPanelDisplayed() {
+    final FacesContext fc = FacesContext.getCurrentInstance();
 
-        if (rememberedFacesContext == null || !fc.equals(rememberedFacesContext)) {
-            rememberedFacesContext = fc;
+    if (rememberedFacesContext == null || !fc.equals(rememberedFacesContext)) {
+      rememberedFacesContext = fc;
 
-            notificationReport = null;
+      notificationReport = null;
 
-            final User currentUser = getNavigator().getCurrentUser();
+      final User currentUser = getNavigator().getCurrentUser();
 
-            Node actionNode = getBrowseBean().getActionSpace();
-            if (actionNode == null) {
-                actionNode = getBrowseBean().getDocument();
-            }
+      Node actionNode = getBrowseBean().getActionSpace();
+      if (actionNode == null) {
+        actionNode = getBrowseBean().getDocument();
+      }
 
-            if (actionNode == null || currentUser == null) {
-                return false;
-            }
+      if (actionNode == null || currentUser == null) {
+        return false;
+      }
 
-            notificationReport = getNotificationSubscriptionService().getUserNotificationReport(
-                    actionNode.getNodeRef(),
-                    currentUser.getUserName()
-            );
-        }
-
-        //if the report is null, don't display the panel
-        return notificationReport != null;
+      notificationReport = getNotificationSubscriptionService()
+        .getUserNotificationReport(
+          actionNode.getNodeRef(),
+          currentUser.getUserName()
+        );
     }
 
-    public void reset() {
-        rememberedFacesContext = null;
-        notificationReport = null;
+    //if the report is null, don't display the panel
+    return notificationReport != null;
+  }
+
+  public void reset() {
+    rememberedFacesContext = null;
+    notificationReport = null;
+  }
+
+  public UserNotificationReport getNotificationReport() {
+    return notificationReport;
+  }
+
+  /**
+   *
+   */
+  public final String getUserNotificationStatus() {
+    if (notificationReport == null) {
+      return null;
+    } else {
+      return NotificationUtils.translateStatus(
+        notificationReport.getUserNotificationStatus()
+      ).toUpperCase();
+    }
+  }
+
+  /**
+   *
+   */
+  public final String getProfileNotificationStatus() {
+    if (notificationReport == null) {
+      return null;
+    } else {
+      return NotificationUtils.translateStatus(
+        notificationReport.getProfileNotificationStatus()
+      ).toUpperCase();
+    }
+  }
+
+  /**
+   *
+   */
+  public final String getGlobalNotificationStatus() {
+    if (notificationReport == null) {
+      return null;
+    } else {
+      return NotificationUtils.translateStatus(
+        notificationReport.getGlobalNotificationStatus()
+      ).toUpperCase();
+    }
+  }
+
+  /**
+   *
+   */
+  public final String getUser() {
+    if (notificationReport == null) {
+      return null;
+    } else {
+      return notificationReport.getUserAuthority();
+    }
+  }
+
+  public final String getUserDisplayName() {
+    final String username = getUser();
+
+    if (username != null) {
+      return PermissionUtils.computeUserLogin(username);
+    } else {
+      return null;
+    }
+  }
+
+  /**
+   *
+   */
+  public final String getProfile() {
+    if (
+      notificationReport == null || notificationReport.getUserProfile() == null
+    ) {
+      return null;
+    } else {
+      return ProfileUtils.getProfilename(
+        notificationReport.getLocation(),
+        notificationReport.getUserProfile(),
+        getProfileManagerServiceFactory().getIGRootProfileManagerService(),
+        getManagementService()
+      );
+    }
+  }
+
+  /**
+   *
+   */
+  public final String getNotificationResult() {
+    if (notificationReport == null) {
+      return null;
+    } else if (notificationReport.isUserNotifiable()) {
+      FacesContext fc = FacesContext.getCurrentInstance();
+      return Application.getMessage(fc, MSG_NOTIFIABLE);
+    } else {
+      FacesContext fc = FacesContext.getCurrentInstance();
+      return Application.getMessage(fc, MSG_NOT_NOTIFIABLE);
+    }
+  }
+
+  /**
+   * @return the notificationSubscriptionService
+   */
+  protected final NotificationSubscriptionService getNotificationSubscriptionService() {
+    if (notificationSubscriptionService == null) {
+      notificationSubscriptionService = Services.getCircabcServiceRegistry(
+        FacesContext.getCurrentInstance()
+      ).getNotificationSubscriptionService();
+    }
+    return notificationSubscriptionService;
+  }
+
+  /**
+   * @param notificationSubscriptionService the notificationSubscriptionService to set
+   */
+  public final void setNotificationSubscriptionService(
+    final NotificationSubscriptionService notificationSubscriptionService
+  ) {
+    this.notificationSubscriptionService = notificationSubscriptionService;
+  }
+
+  /**
+   * @return the navigator
+   */
+  protected final CircabcNavigationBean getNavigator() {
+    if (navigator == null) {
+      navigator = Beans.getWaiNavigator();
+    }
+    return navigator;
+  }
+
+  /**
+   * @param navigator the navigator to set
+   */
+  public final void setNavigator(final CircabcNavigationBean navigator) {
+    this.navigator = navigator;
+  }
+
+  /**
+   * @return the managementService
+   */
+  protected final ManagementService getManagementService() {
+    if (managementService == null) {
+      managementService = Services.getCircabcServiceRegistry(
+        FacesContext.getCurrentInstance()
+      ).getManagementService();
+    }
+    return managementService;
+  }
+
+  /**
+   * @param managementService the managementService to set
+   */
+  public final void setManagementService(ManagementService managementService) {
+    this.managementService = managementService;
+  }
+
+  /**
+   * @return the profileManagerServiceFactory
+   */
+  protected final ProfileManagerServiceFactory getProfileManagerServiceFactory() {
+    if (profileManagerServiceFactory == null) {
+      profileManagerServiceFactory = Services.getCircabcServiceRegistry(
+        FacesContext.getCurrentInstance()
+      ).getProfileManagerServiceFactory();
     }
 
+    return profileManagerServiceFactory;
+  }
 
-    public UserNotificationReport getNotificationReport() {
-        return notificationReport;
+  /**
+   * @param profileManagerServiceFactory the profileManagerServiceFactory to set
+   */
+  public final void setProfileManagerServiceFactory(
+    ProfileManagerServiceFactory profileManagerServiceFactory
+  ) {
+    this.profileManagerServiceFactory = profileManagerServiceFactory;
+  }
+
+  /**
+   * @return the browseBean
+   */
+  protected final CircabcBrowseBean getBrowseBean() {
+    if (browseBean == null) {
+      browseBean = Beans.getWaiBrowseBean();
     }
+    return browseBean;
+  }
 
-    /**
-     *
-     */
-    public final String getUserNotificationStatus() {
-        if (notificationReport == null) {
-            return null;
-        } else {
-            return NotificationUtils.translateStatus(notificationReport.getUserNotificationStatus())
-                    .toUpperCase();
-        }
-    }
-
-    /**
-     *
-     */
-    public final String getProfileNotificationStatus() {
-        if (notificationReport == null) {
-            return null;
-        } else {
-            return NotificationUtils.translateStatus(notificationReport.getProfileNotificationStatus())
-                    .toUpperCase();
-        }
-    }
-
-    /**
-     *
-     */
-    public final String getGlobalNotificationStatus() {
-        if (notificationReport == null) {
-            return null;
-        } else {
-            return NotificationUtils.translateStatus(notificationReport.getGlobalNotificationStatus())
-                    .toUpperCase();
-        }
-    }
-
-    /**
-     *
-     */
-    public final String getUser() {
-        if (notificationReport == null) {
-            return null;
-        } else {
-            return notificationReport.getUserAuthority();
-        }
-    }
-
-    public final String getUserDisplayName() {
-        final String username = getUser();
-
-        if (username != null) {
-            return PermissionUtils.computeUserLogin(username);
-        } else {
-            return null;
-        }
-
-    }
-
-    /**
-     *
-     */
-    public final String getProfile() {
-        if (notificationReport == null || notificationReport.getUserProfile() == null) {
-            return null;
-        } else {
-            return ProfileUtils
-                    .getProfilename(notificationReport.getLocation(), notificationReport.getUserProfile(),
-                            getProfileManagerServiceFactory().getIGRootProfileManagerService(),
-                            getManagementService());
-        }
-    }
-
-    /**
-     *
-     */
-    public final String getNotificationResult() {
-        if (notificationReport == null) {
-            return null;
-        } else if (notificationReport.isUserNotifiable()) {
-            FacesContext fc = FacesContext.getCurrentInstance();
-            return Application.getMessage(fc, MSG_NOTIFIABLE);
-        } else {
-            FacesContext fc = FacesContext.getCurrentInstance();
-            return Application.getMessage(fc, MSG_NOT_NOTIFIABLE);
-        }
-    }
-
-
-    /**
-     * @return the notificationSubscriptionService
-     */
-    protected final NotificationSubscriptionService getNotificationSubscriptionService() {
-        if (notificationSubscriptionService == null) {
-            notificationSubscriptionService = Services
-                    .getCircabcServiceRegistry(FacesContext.getCurrentInstance())
-                    .getNotificationSubscriptionService();
-        }
-        return notificationSubscriptionService;
-    }
-
-    /**
-     * @param notificationSubscriptionService the notificationSubscriptionService to set
-     */
-    public final void setNotificationSubscriptionService(
-            final NotificationSubscriptionService notificationSubscriptionService) {
-        this.notificationSubscriptionService = notificationSubscriptionService;
-    }
-
-    /**
-     * @return the navigator
-     */
-    protected final CircabcNavigationBean getNavigator() {
-        if (navigator == null) {
-            navigator = Beans.getWaiNavigator();
-        }
-        return navigator;
-    }
-
-    /**
-     * @param navigator the navigator to set
-     */
-    public final void setNavigator(final CircabcNavigationBean navigator) {
-        this.navigator = navigator;
-    }
-
-    /**
-     * @return the managementService
-     */
-    protected final ManagementService getManagementService() {
-        if (managementService == null) {
-            managementService = Services.getCircabcServiceRegistry(FacesContext.getCurrentInstance())
-                    .getManagementService();
-        }
-        return managementService;
-    }
-
-    /**
-     * @param managementService the managementService to set
-     */
-    public final void setManagementService(ManagementService managementService) {
-        this.managementService = managementService;
-    }
-
-    /**
-     * @return the profileManagerServiceFactory
-     */
-    protected final ProfileManagerServiceFactory getProfileManagerServiceFactory() {
-        if (profileManagerServiceFactory == null) {
-            profileManagerServiceFactory = Services
-                    .getCircabcServiceRegistry(FacesContext.getCurrentInstance())
-                    .getProfileManagerServiceFactory();
-        }
-
-        return profileManagerServiceFactory;
-    }
-
-    /**
-     * @param profileManagerServiceFactory the profileManagerServiceFactory to set
-     */
-    public final void setProfileManagerServiceFactory(
-            ProfileManagerServiceFactory profileManagerServiceFactory) {
-        this.profileManagerServiceFactory = profileManagerServiceFactory;
-    }
-
-    /**
-     * @return the browseBean
-     */
-    protected final CircabcBrowseBean getBrowseBean() {
-        if (browseBean == null) {
-            browseBean = Beans.getWaiBrowseBean();
-        }
-        return browseBean;
-    }
-
-    /**
-     * @param browseBean the browseBean to set
-     */
-    public final void setBrowseBean(CircabcBrowseBean browseBean) {
-        this.browseBean = browseBean;
-    }
-
+  /**
+   * @param browseBean the browseBean to set
+   */
+  public final void setBrowseBean(CircabcBrowseBean browseBean) {
+    this.browseBean = browseBean;
+  }
 }

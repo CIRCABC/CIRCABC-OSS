@@ -1,89 +1,86 @@
-<section class="box box--group-summary" *ngIf="group">
+@if (group) {
+<section class="box box--group-summary">
   <div class="group-summary__logo">
+    @if (!group.logoUrl) {
+    <img src="img/placeholder_162x138.png" alt="" width="162" height="138" />
+    } @if (group.logoUrl) {
     <img
-      *ngIf="!group.logoUrl"
-      src="img/placeholder_162x138.png"
-      alt=""
-      width="162"
-      height="138"
-    />
-    <img
-      *ngIf="group.logoUrl"
       [attr.src]="getLogoRef() | cbcDownload | cbcSecure"
       alt=""
       width="162"
       height="138"
     />
+    }
   </div>
+  @if (isJoinEnabled()) {
   <a
-    *ngIf="isJoinEnabled()"
+    tabindex="0"
     (click)="showApplicationModal = true"
     class="cta"
     [class.disable_a_href]="!isJoinEnabled()"
     >{{ 'descriptor.join-group' | transloco }}</a
   >
-  <a *ngIf="isJoinEnabledGuest()" [matMenuTriggerFor]="menu" class="cta"
-    >{{ 'descriptor.join-group' | transloco }}</a
-  >
+  } @if (isJoinEnabledGuest()) {
+  <a [matMenuTriggerFor]="menu" class="cta" role="button"
+    >{{ 'descriptor.join-group' | transloco }}
+  </a>
+  }
 
   <mat-menu #menu>
     <span class="title">{{ 'descriptor.join-group.title' | transloco }}</span>
 
-    <button
-      *ngIf="isGuest() && !useEULogin"
-      [routerLink]="['/login']"
-      class="cta menu-button-first"
-    >
+    @if (isGuest() && !useEULogin) {
+    <button [routerLink]="['/login']" class="cta menu-button-first">
       {{ 'descriptor.join-group.connect' | transloco }}
     </button>
-
-    <button
-      *ngIf="isGuest() && useEULogin"
-      (click)="euLogin()"
-      class="cta menu-button-first"
-    >
+    } @if (isGuest() && useEULogin) {
+    <button (click)="euLogin()" class="cta menu-button-first">
       {{ 'descriptor.join-group.connect' | transloco }}
     </button>
+    }
 
     <button class="cta menu-button" (click)="euLoginCreate()">
       {{ 'descriptor.join-group.create-account' | transloco }}
     </button>
   </mat-menu>
 
-  <div
-    *ngIf="!isJoinEnabledGuest() && !isJoinEnabled()"
-    style="padding-bottom: 50px"
-  ></div>
+  @if (!isJoinEnabledGuest() && !isJoinEnabled()) {
+  <div style="padding-bottom: 50px"></div>
+  }
 
   <div class="main">
     <cbc-share [showLabel]="true"></cbc-share>
+    @if (isContactLeaderAvailable()) {
     <a
+      tabindex="0"
       class="contact-link"
       (click)="showContactLeadersModal = true"
-      *ngIf="isContactLeaderAvailable()"
       >{{ 'descriptor.contact-leaders' | transloco }}</a
     >
+    }
     <br />
+    @if (group.description && hasDescription()) {
     <div
       class="description-container"
-      *ngIf="group.description && hasDescription()"
       [innerHtml]="getLang() | i18nSelect: group.description"
     ></div>
-    <p *ngIf="!hasDescription()">
-      {{ 'descriptor.no-group-description' | transloco }}
-    </p>
+    } @if (!hasDescription()) {
+    <p>{{ 'descriptor.no-group-description' | transloco }}</p>
+    }
     <div style="clear: both"></div>
   </div>
 </section>
+}
 <cbc-membership-application
   [groupId]="group.id"
   [showModal]="showApplicationModal"
   (canceled)="onRequestCanceled($event)"
   (finished)="onRequestFinished($event)"
-></cbc-membership-application>
+/>
+@if (isContactLeaderAvailable()) {
 <cbc-leader-contact
   [showModal]="showContactLeadersModal"
   [group]="group"
-  *ngIf="isContactLeaderAvailable()"
   (modalHide)="leaderContactRefresh($event)"
-></cbc-leader-contact>
+/>
+}

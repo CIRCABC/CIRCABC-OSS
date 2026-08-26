@@ -1,7 +1,7 @@
 <cbc-modal
   [title]="'label.import'"
   (ok)="import()"
-  (cancel)="cancelWizard()"
+  (cancelModal)="cancelWizard()"
   [okLabel]="'label.import'"
   [(visible)]="showModal"
   [(executing)]="importing"
@@ -19,11 +19,11 @@
           id="selectedProfile"
           formControlName="selectedProfile"
         >
-          <option
-            *ngFor="let profile of exportedProfiles"
-            value="{{ profile.id }}"
+          @for (profile of exportedProfiles; track profile.id) {
+          <option value="{{ profile.id }}"
             >{{ profile.title | cbcI18n }}</option
           >
+          }
         </select>
       </div>
     </div>

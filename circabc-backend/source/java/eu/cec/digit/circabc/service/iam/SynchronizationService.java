@@ -16,33 +16,31 @@
  */
 package eu.cec.digit.circabc.service.iam;
 
-import org.alfresco.service.cmr.repository.NodeRef;
-
 import java.util.List;
 import java.util.Set;
+import org.alfresco.service.cmr.repository.NodeRef;
 
 /**
  * @author Slobodan Filipovic CIRCABC IAM synchronization
  */
 public interface SynchronizationService {
+  public static final String DEFAULT_ECORDA_ROLE = "THEME_MEMBER";
 
-    public static final String DEFAULT_ECORDA_ROLE = "THEME_MEMBER";
+  /**
+   * Call this method to grant user role to IAM
+   */
+  void grantThemeRole(String userName, String themeID, String profile);
 
-    /**
-     * Call this method to grant user role to IAM
-     */
-    void grantThemeRole(String userName, String themeID, String profile);
+  void grantThemeRoles(Set<String> userName, String themeID, String profile);
 
-    void grantThemeRoles(Set<String> userName, String themeID, String profile);
+  /**
+   * Call this method to revoke user role to IAM
+   */
+  void revokeThemeRole(String userName, String themeID, String profile);
 
-    /**
-     * Call this method to revoke user role to IAM
-     */
-    void revokeThemeRole(String userName, String themeID, String profile);
-
-    /**
-     * @param interestGroup node reference of interest group
-     * @return eCORDA Theme IDs if Exists or Empty list otherwise
-     */
-    List<String> getEcordaThemeIds(NodeRef interestGroup);
+  /**
+   * @param interestGroup node reference of interest group
+   * @return eCORDA Theme IDs if Exists or Empty list otherwise
+   */
+  List<String> getEcordaThemeIds(NodeRef interestGroup);
 }

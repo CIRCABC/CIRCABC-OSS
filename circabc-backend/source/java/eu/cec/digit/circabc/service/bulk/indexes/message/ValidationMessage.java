@@ -19,12 +19,11 @@ package eu.cec.digit.circabc.service.bulk.indexes.message;
 import eu.cec.digit.circabc.service.bulk.validation.ErrorType;
 
 public interface ValidationMessage {
+  int getRowNumber();
 
-    int getRowNumber();
+  String getFileName();
 
-    String getFileName();
+  String getErrorDescription();
 
-    String getErrorDescription();
-
-    ErrorType getErrorType();
+  ErrorType getErrorType();
 }

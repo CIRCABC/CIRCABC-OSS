@@ -6,20 +6,18 @@ import org.alfresco.web.bean.repository.Node;
 
 public class CircabcOSSEvaluator implements ActionEvaluator {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 8447820182904144401L;
+  /**
+   *
+   */
+  private static final long serialVersionUID = 8447820182904144401L;
 
-    @Override
-    public boolean evaluate(Node node) {
+  @Override
+  public boolean evaluate(Node node) {
+    return CircabcConfig.OSS;
+  }
 
-        return CircabcConfig.OSS;
-    }
-
-    @Override
-    public boolean evaluate(Object obj) {
-        return CircabcConfig.OSS;
-    }
-
+  @Override
+  public boolean evaluate(Object obj) {
+    return CircabcConfig.OSS;
+  }
 }

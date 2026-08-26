@@ -1,12 +1,13 @@
 import {
   Component,
-  EventEmitter,
   Input,
   OnChanges,
   OnInit,
-  Output,
+  output,
+  input,
 } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
@@ -17,25 +18,25 @@ import {
   ShareIGsAndPermissions,
   SpaceService,
 } from 'app/core/generated/circabc';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-share-space',
   templateUrl: './share-space.component.html',
-  styleUrls: ['./share-space.component.scss'],
+  styleUrl: './share-space.component.scss',
   preserveWhitespaces: true,
+  imports: [ReactiveFormsModule, SpinnerComponent, TranslocoModule],
 })
 export class ShareSpaceComponent implements OnInit, OnChanges {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   public showModal = false;
-  @Input()
-  public spaceId!: string;
-  @Input()
-  public igId: string | undefined;
-  @Input()
-  public currentPermission: string | undefined;
-  @Output()
-  public readonly modalHide = new EventEmitter<ActionEmitterResult>();
+  public readonly spaceId = input.required<string>();
+  public readonly igId = input<string>();
+  public readonly currentPermission = input<string>();
+  public readonly modalHide = output<ActionEmitterResult>();
 
   public shareIGsAndPermissions!: ShareIGsAndPermissions;
 
@@ -68,7 +69,7 @@ export class ShareSpaceComponent implements OnInit, OnChanges {
 
   public async loadShareIGsAndPermissions() {
     this.shareIGsAndPermissions = await firstValueFrom(
-      this.spaceService.getShareIGsAndPermissions(this.spaceId)
+      this.spaceService.getShareIGsAndPermissions(this.spaceId())
     );
     this.resetForm();
   }
@@ -97,7 +98,7 @@ export class ShareSpaceComponent implements OnInit, OnChanges {
 
     await firstValueFrom(
       this.spaceService.postShareSpace(
-        this.spaceId,
+        this.spaceId(),
         this.spaceSharingForm.controls.notifyLeaders.value,
         share
       )
@@ -118,13 +119,14 @@ export class ShareSpaceComponent implements OnInit, OnChanges {
     const permission = this.spaceSharingForm.controls.selectedPermission.value;
     // don't do anything if the current permission is the same as the selected one
     // as this means that the user is not changing it
-    if (this.igId && this.currentPermission !== permission) {
+    const igId = this.igId();
+    if (igId && this.currentPermission() !== permission) {
       this.changing = true;
 
       await firstValueFrom(
         this.spaceService.putShareSpacePermissionUpdate(
-          this.spaceId,
-          this.igId,
+          this.spaceId(),
+          igId,
           permission,
           this.spaceSharingForm.controls.notifyLeaders.value
         )
@@ -146,8 +148,7 @@ export class ShareSpaceComponent implements OnInit, OnChanges {
 
   private resetForm() {
     if (
-      this.shareIGsAndPermissions !== undefined &&
-      this.shareIGsAndPermissions.igs !== undefined &&
+      this.shareIGsAndPermissions?.igs !== undefined &&
       this.shareIGsAndPermissions.igs.length > 0
     ) {
       this.spaceSharingForm.controls.selectedIg.patchValue(
@@ -158,8 +159,7 @@ export class ShareSpaceComponent implements OnInit, OnChanges {
     }
 
     if (
-      this.shareIGsAndPermissions !== undefined &&
-      this.shareIGsAndPermissions.permissions !== undefined &&
+      this.shareIGsAndPermissions?.permissions !== undefined &&
       this.shareIGsAndPermissions.permissions.length > 0
     ) {
       this.spaceSharingForm.controls.selectedPermission.patchValue(
@@ -184,6 +184,6 @@ export class ShareSpaceComponent implements OnInit, OnChanges {
   }
 
   public toChangePermission(): boolean {
-    return this.igId !== undefined;
+    return this.igId() !== undefined;
   }
 }

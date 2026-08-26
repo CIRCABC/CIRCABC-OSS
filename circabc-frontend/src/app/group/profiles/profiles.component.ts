@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
@@ -16,13 +17,29 @@ import {
   UserService,
 } from 'app/core/generated/circabc';
 import { LoginService } from 'app/core/login.service';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
+import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
+import { ReponsiveSubMenuComponent } from 'app/shared/reponsive-sub-menu/reponsive-sub-menu.component';
 import { firstValueFrom } from 'rxjs';
+import { CreateProfileComponent } from './create/create-profile.component';
+import { DeleteProfileComponent } from './delete/delete-profile.component';
+import { ImportProfileComponent } from './import/import-profile.component';
 
 @Component({
   selector: 'cbc-profiles',
   templateUrl: './profiles.component.html',
-  styleUrls: ['./profiles.component.scss'],
+  styleUrl: './profiles.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    HorizontalLoaderComponent,
+    ReponsiveSubMenuComponent,
+    RouterLink,
+    CreateProfileComponent,
+    DeleteProfileComponent,
+    ImportProfileComponent,
+    I18nPipe,
+    TranslocoModule,
+  ],
 })
 export class ProfilesComponent implements OnInit {
   public profiles: Profile[] = [];
@@ -122,19 +139,15 @@ export class ProfilesComponent implements OnInit {
 
   public isEditable(profile: Profile): boolean {
     if (profile.name && profile.permissions) {
-      return (
-        !(
-          profile.name.toLowerCase() === 'leader' ||
-          profile.name === 'IGLeader' ||
-          profile.name === '000'
-        ) &&
-        !(
-          profile.permissions.library === 'LibAdmin' &&
+      return !(
+        profile.name.toLowerCase() === 'leader' ||
+        profile.name === 'IGLeader' ||
+        profile.name === '000' ||
+        (profile.permissions.library === 'LibAdmin' &&
           profile.permissions.information === 'InfAdmin' &&
           profile.permissions.events === 'EveAdmin' &&
           profile.permissions.forums === 'NwsAdmin' &&
-          profile.permissions.members === 'DirAdmin'
-        )
+          profile.permissions.members === 'DirAdmin')
       );
     }
 
@@ -155,23 +168,20 @@ export class ProfilesComponent implements OnInit {
   public isExportable(profile: Profile): boolean {
     if (this.exportFeatureEnabled) {
       return (
-        !profile.exported && !profile.imported && this.isDeletable(profile)
+        !(profile.exported || profile.imported) && this.isDeletable(profile)
       );
-    } else {
-      return false;
     }
+    return false;
   }
 
   public isUnexportable(profile: Profile): boolean {
     if (profile.exported === true) {
       if (profile.exportedRefs) {
         return profile.exportedRefs.length === 0;
-      } else {
-        return true;
       }
-    } else {
-      return false;
+      return true;
     }
+    return false;
   }
 
   public async export(profile: Profile) {
@@ -222,8 +232,7 @@ export class ProfilesComponent implements OnInit {
         );
         for (const profile of currentUserMemberships) {
           if (
-            profile &&
-            profile.interestGroup &&
+            profile?.interestGroup &&
             profile.interestGroup.id === this.currentGroup.id
           ) {
             this.alreadyMember = true;

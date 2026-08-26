@@ -20,9 +20,8 @@
  ******************************************************************************/
 package eu.cec.digit.circabc.web.ui.tag;
 
-import org.alfresco.web.ui.common.tag.HtmlComponentTag;
-
 import javax.faces.component.UIComponent;
+import org.alfresco.web.ui.common.tag.HtmlComponentTag;
 
 /**
  * Displays the list of translations for a survey.
@@ -32,83 +31,83 @@ import javax.faces.component.UIComponent;
  */
 public class SurveyLangsTag extends HtmlComponentTag {
 
-    // ------------------------------------------------------------------------------
-    // Component methods
+  // ------------------------------------------------------------------------------
+  // Component methods
 
-    /**
-     * The variable's name of the attribute value
-     */
-    public static final String ATTR_VALUE = "value";
-    /**
-     * The variable's name of the attribute value
-     */
-    public static final String ATTR_WAI = "wai";
-    /**
-     * The value
-     */
-    private String value;
-    /**
-     * The wai status
-     */
-    private String wai;
+  /**
+   * The variable's name of the attribute value
+   */
+  public static final String ATTR_VALUE = "value";
+  /**
+   * The variable's name of the attribute value
+   */
+  public static final String ATTR_WAI = "wai";
+  /**
+   * The value
+   */
+  private String value;
+  /**
+   * The wai status
+   */
+  private String wai;
 
-    // ------------------------------------------------------------------------------
-    // Bean implementation
+  // ------------------------------------------------------------------------------
+  // Bean implementation
 
-    /**
-     * @see javax.faces.webapp.UIComponentTag#getComponentType()
-     */
-    @Override
-    public String getComponentType() {
-        return "eu.cec.digit.circabc.faces.SurveyLangs";
-    }
+  /**
+   * @see javax.faces.webapp.UIComponentTag#getComponentType()
+   */
+  @Override
+  public String getComponentType() {
+    return "eu.cec.digit.circabc.faces.SurveyLangs";
+  }
 
-    /**
-     * @see javax.faces.webapp.UIComponentTag#getRendererType()
-     */
-    @Override
-    public String getRendererType() {
-        return null;
-    }
+  /**
+   * @see javax.faces.webapp.UIComponentTag#getRendererType()
+   */
+  @Override
+  public String getRendererType() {
+    return null;
+  }
 
-    // ------------------------------------------------------------------------------
-    // Data
+  // ------------------------------------------------------------------------------
+  // Data
 
-    /**
-     * @see javax.servlet.jsp.tagext.Tag#release()
-     */
-    @Override
-    public void release() {
-        super.release();
-        this.value = null;
-        this.wai = null;
-    }
+  /**
+   * @see javax.servlet.jsp.tagext.Tag#release()
+   */
+  @Override
+  public void release() {
+    super.release();
+    this.value = null;
+    this.wai = null;
+  }
 
-    /**
-     * @see javax.faces.webapp.UIComponentTag#setProperties(javax.faces.component.UIComponent)
-     */
-    @Override
-    protected void setProperties(UIComponent component) {
-        super.setProperties(component);
-        setStringBindingProperty(component, ATTR_VALUE, this.value);
-        setBooleanProperty(component, ATTR_WAI, this.wai);
-    }
+  /**
+   * @see javax.faces.webapp.UIComponentTag#setProperties(javax.faces.component.UIComponent)
+   */
+  @Override
+  protected void setProperties(UIComponent component) {
+    super.setProperties(component);
+    setStringBindingProperty(component, ATTR_VALUE, this.value);
+    setBooleanProperty(component, ATTR_WAI, this.wai);
+  }
 
-    /**
-     * Setter method for value
-     *
-     * @param value the value to set
-     */
-    public void setValue(String value) {
-        this.value = value;
-    }
+  /**
+   * Setter method for value
+   *
+   * @param value the value to set
+   */
+  public void setValue(String value) {
+    this.value = value;
+  }
 
-    /**
-     * Setter method for wai status
-     *
-     * @param wai the wai status to set
-     */
-    public void setWai(String wai) {
-        this.wai = wai;
-    }
+  /**
+   * Setter method for wai status
+   *
+   * @param wai the wai status to set
+   */
+  public void setWai(String wai) {
+    this.wai = wai;
+  }
 }

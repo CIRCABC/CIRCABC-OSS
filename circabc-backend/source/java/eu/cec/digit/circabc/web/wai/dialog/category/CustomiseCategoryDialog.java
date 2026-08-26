@@ -19,16 +19,15 @@ package eu.cec.digit.circabc.web.wai.dialog.category;
 
 import eu.cec.digit.circabc.model.CircabcModel;
 import eu.cec.digit.circabc.web.wai.dialog.BaseWaiDialog;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.namespace.QName;
-
-import javax.faces.context.FacesContext;
-import javax.faces.model.SelectItem;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
+import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.namespace.QName;
 
 /**
  * @author beaurpi
@@ -36,146 +35,173 @@ import java.util.Map;
  */
 public class CustomiseCategoryDialog extends BaseWaiDialog {
 
-    /**
-     *
+  /**
+   *
+   */
+  private static final long serialVersionUID = 2288344234549598018L;
+  private static final String navigationListShortNameRender = "shortname";
+  private static final String navigationListTitleRender = "title";
+  private NodeRef currentNode;
+  private String selectedRenderChoice;
+  private List<SelectItem> selectRenderChoices;
+
+  /**
+   * @return the navigationlistshortnamerender
+   */
+  public static String getNavigationlistshortnamerender() {
+    return navigationListShortNameRender;
+  }
+
+  /**
+   * @return the navigationlisttitlerender
+   */
+  public static String getNavigationlisttitlerender() {
+    return navigationListTitleRender;
+  }
+
+  public String getPageIconAltText() {
+    return translate("category_customise_dialog_alt_text");
+  }
+
+  public String getBrowserTitle() {
+    return translate("category_customise_dialog_title");
+  }
+
+  @Override
+  public void init(Map<String, String> parameters) {
+    super.init(parameters);
+
+    currentNode = getActionNode().getNodeRef();
+
+    this.selectRenderChoices = new ArrayList<>();
+    this.selectRenderChoices.add(
+        new SelectItem(
+          navigationListShortNameRender,
+          translate("category_customise_dialog_navigation_shortname_render")
+        )
+      );
+    this.selectRenderChoices.add(
+        new SelectItem(
+          navigationListTitleRender,
+          translate("category_customise_dialog_navigation_title_render")
+        )
+      );
+
+    if (
+      getNodeService()
+        .getProperties(currentNode)
+        .containsKey(CircabcModel.PROP_NAVIGATION_LIST_RENDER_TYPE)
+    ) {
+      selectedRenderChoice = getNodeService()
+        .getProperty(currentNode, CircabcModel.PROP_NAVIGATION_LIST_RENDER_TYPE)
+        .toString();
+    }
+  }
+
+  @Override
+  protected String finishImpl(FacesContext context, String outcome)
+    throws Throwable {
+    Boolean isCategory = getNodeService()
+      .hasAspect(currentNode, CircabcModel.ASPECT_CATEGORY);
+
+    Map<QName, Serializable> rendererProperty = new HashMap<>();
+
+    /*
+     * verify if property already exist and add | update it to the current category node
      */
-    private static final long serialVersionUID = 2288344234549598018L;
-    private static final String navigationListShortNameRender = "shortname";
-    private static final String navigationListTitleRender = "title";
-    private NodeRef currentNode;
-    private String selectedRenderChoice;
-    private List<SelectItem> selectRenderChoices;
 
-    /**
-     * @return the navigationlistshortnamerender
-     */
-    public static String getNavigationlistshortnamerender() {
-        return navigationListShortNameRender;
+    if (
+      selectedRenderChoice.equals(navigationListShortNameRender) && isCategory
+    ) {
+      /*
+       * To display the short name
+       */
+      rendererProperty.put(
+        CircabcModel.PROP_NAVIGATION_LIST_RENDER_TYPE,
+        navigationListShortNameRender
+      );
+
+      if (
+        getNodeService()
+          .getProperties(currentNode)
+          .containsKey(CircabcModel.PROP_NAVIGATION_LIST_RENDER_TYPE)
+      ) {
+        getNodeService()
+          .removeProperty(
+            currentNode,
+            CircabcModel.PROP_NAVIGATION_LIST_RENDER_TYPE
+          );
+      }
+
+      getNodeService().addProperties(currentNode, rendererProperty);
+    } else if (
+      selectedRenderChoice.equals(navigationListTitleRender) && isCategory
+    ) {
+      /*
+       * To display the title
+       */
+      rendererProperty.put(
+        CircabcModel.PROP_NAVIGATION_LIST_RENDER_TYPE,
+        navigationListTitleRender
+      );
+
+      if (
+        getNodeService()
+          .getProperties(currentNode)
+          .containsKey(CircabcModel.PROP_NAVIGATION_LIST_RENDER_TYPE)
+      ) {
+        getNodeService()
+          .removeProperty(
+            currentNode,
+            CircabcModel.PROP_NAVIGATION_LIST_RENDER_TYPE
+          );
+      }
+
+      getNodeService().addProperties(currentNode, rendererProperty);
     }
 
-    /**
-     * @return the navigationlisttitlerender
-     */
-    public static String getNavigationlisttitlerender() {
-        return navigationListTitleRender;
-    }
+    return outcome;
+  }
 
-    public String getPageIconAltText() {
+  /**
+   * @return the currentNode
+   */
+  public NodeRef getCurrentNode() {
+    return currentNode;
+  }
 
-        return translate("category_customise_dialog_alt_text");
-    }
+  /**
+   * @param currentNode the currentNode to set
+   */
+  public void setCurrentNode(NodeRef currentNode) {
+    this.currentNode = currentNode;
+  }
 
-    public String getBrowserTitle() {
-        return translate("category_customise_dialog_title");
-    }
+  /**
+   * @return the selectedRenderChoice
+   */
+  public String getSelectedRenderChoice() {
+    return selectedRenderChoice;
+  }
 
-    @Override
-    public void init(Map<String, String> parameters) {
+  /**
+   * @param selectedRenderChoice the selectedRenderChoice to set
+   */
+  public void setSelectedRenderChoice(String selectedRenderChoice) {
+    this.selectedRenderChoice = selectedRenderChoice;
+  }
 
-        super.init(parameters);
+  /**
+   * @return the selectRenderChoices
+   */
+  public List<SelectItem> getSelectRenderChoices() {
+    return selectRenderChoices;
+  }
 
-        currentNode = getActionNode().getNodeRef();
-
-        this.selectRenderChoices = new ArrayList<>();
-        this.selectRenderChoices.add(new SelectItem(navigationListShortNameRender,
-                translate("category_customise_dialog_navigation_shortname_render")));
-        this.selectRenderChoices.add(new SelectItem(navigationListTitleRender,
-                translate("category_customise_dialog_navigation_title_render")));
-
-        if (getNodeService().getProperties(currentNode)
-                .containsKey(CircabcModel.PROP_NAVIGATION_LIST_RENDER_TYPE)) {
-            selectedRenderChoice = getNodeService()
-                    .getProperty(currentNode, CircabcModel.PROP_NAVIGATION_LIST_RENDER_TYPE).toString();
-        }
-
-    }
-
-    @Override
-    protected String finishImpl(FacesContext context, String outcome)
-            throws Throwable {
-
-        Boolean isCategory = getNodeService().hasAspect(currentNode, CircabcModel.ASPECT_CATEGORY);
-
-        Map<QName, Serializable> rendererProperty = new HashMap<>();
-
-        /*
-         * verify if property already exist and add | update it to the current category node
-         */
-
-        if (selectedRenderChoice.equals(navigationListShortNameRender) && isCategory) {
-            /*
-             * To display the short name
-             */
-            rendererProperty
-                    .put(CircabcModel.PROP_NAVIGATION_LIST_RENDER_TYPE, navigationListShortNameRender);
-
-            if (getNodeService().getProperties(currentNode)
-                    .containsKey(CircabcModel.PROP_NAVIGATION_LIST_RENDER_TYPE)) {
-                getNodeService().removeProperty(currentNode, CircabcModel.PROP_NAVIGATION_LIST_RENDER_TYPE);
-            }
-
-            getNodeService().addProperties(currentNode, rendererProperty);
-
-        } else if (selectedRenderChoice.equals(navigationListTitleRender) && isCategory) {
-            /*
-             * To display the title
-             */
-            rendererProperty
-                    .put(CircabcModel.PROP_NAVIGATION_LIST_RENDER_TYPE, navigationListTitleRender);
-
-            if (getNodeService().getProperties(currentNode)
-                    .containsKey(CircabcModel.PROP_NAVIGATION_LIST_RENDER_TYPE)) {
-                getNodeService().removeProperty(currentNode, CircabcModel.PROP_NAVIGATION_LIST_RENDER_TYPE);
-            }
-
-            getNodeService().addProperties(currentNode, rendererProperty);
-        }
-
-        return outcome;
-    }
-
-    /**
-     * @return the currentNode
-     */
-    public NodeRef getCurrentNode() {
-        return currentNode;
-    }
-
-    /**
-     * @param currentNode the currentNode to set
-     */
-    public void setCurrentNode(NodeRef currentNode) {
-        this.currentNode = currentNode;
-    }
-
-    /**
-     * @return the selectedRenderChoice
-     */
-    public String getSelectedRenderChoice() {
-
-        return selectedRenderChoice;
-    }
-
-    /**
-     * @param selectedRenderChoice the selectedRenderChoice to set
-     */
-    public void setSelectedRenderChoice(String selectedRenderChoice) {
-        this.selectedRenderChoice = selectedRenderChoice;
-    }
-
-    /**
-     * @return the selectRenderChoices
-     */
-    public List<SelectItem> getSelectRenderChoices() {
-        return selectRenderChoices;
-    }
-
-    /**
-     * @param selectRenderChoices the selectRenderChoices to set
-     */
-    public void setSelectRenderChoices(List<SelectItem> selectRenderChoices) {
-        this.selectRenderChoices = selectRenderChoices;
-    }
-
-
+  /**
+   * @param selectRenderChoices the selectRenderChoices to set
+   */
+  public void setSelectRenderChoices(List<SelectItem> selectRenderChoices) {
+    this.selectRenderChoices = selectRenderChoices;
+  }
 }

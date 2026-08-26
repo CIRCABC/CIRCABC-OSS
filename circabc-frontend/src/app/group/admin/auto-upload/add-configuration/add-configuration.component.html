@@ -1,30 +1,39 @@
 <!-- MODAL BOX -->
+@if (showWizard) {
 <div
   class="black-overlayer"
-  *ngIf="showWizard"
   [class.overlayer-shown]="showWizard"
   [class.overlayer-hidden]="!showWizard"
 ></div>
+} @if (showWizard) {
 <section
   class="modal modal--select-files"
-  *ngIf="showWizard"
   [class.modal-shown]="showWizard"
   [class.modal-hidden]="!showWizard"
   style="margin-top: 0"
 >
-  <a class="close-icon" (click)="cancelWizard()"></a>
+  <a
+    tabindex="0"
+    role="button"
+    class="close-icon"
+    aria-label="Cancel wizard"
+    (click)="cancelWizard()"
+  ></a>
 
   <header>
-    <a class="back-link" *ngIf="canGoBack()" (click)="previousWizardStep()"
+    @if (canGoBack()) {
+    <a tabindex="0" class="back-link" (click)="previousWizardStep()"
       >{{ 'label.back' | transloco }}</a
     >
+    }
     <h2 class="title">{{ 'label.add.configuration' | transloco }}</h2>
   </header>
 
   <section class="modal-content">
     <form [formGroup]="autoUploadForm">
       <!-- first wizard step -->
-      <div *ngIf="wizardStep === 1">
+      @if (wizardStep === 1) {
+      <div>
         <div class="field">
           <label for="ftpHost">{{ 'label.ftp.host' | transloco }}</label>
           <input
@@ -81,42 +90,47 @@
           />
         </div>
         <div style="margin-left: 165px">
-          <a class="button apply-button" (click)="testConnection()"
+          <a
+            tabindex="0"
+            class="button apply-button"
+            data-cy="test-connection"
+            (click)="testConnection()"
             >{{ 'label.test.connection' | transloco }}</a
           >
-          <span *ngIf="connectionResult === 1" style="color: green"
-            >{{ 'label.success' | transloco }}</span
-          >
-          <span
-            *ngIf="connectionResult === 0 && testedOnce"
-            style="color: orange"
+          @if (connectionResult === 1) {
+          <span style="color: green">{{ 'label.success' | transloco }}</span>
+          } @if (connectionResult === 0 && testedOnce) {
+          <span style="color: orange"
             >{{ 'label.ftp.ok.no.file' | transloco }}</span
           >
-          <span *ngIf="connectionResult < 0" style="color: red"
-            >{{ 'label.failure' | transloco }}</span
-          >
+          } @if (connectionResult < 0) {
+          <span style="color: red">{{ 'label.failure' | transloco }}</span>
+          }
         </div>
       </div>
+      }
 
       <!-- second wizard step -->
-      <div *ngIf="wizardStep === 2">
-        <label *ngIf="destinationSelected()" class="nonBlockLabel"
-          >{{ 'auto.upload.select.destination' | transloco }}</label
-        >
-        <label
-          *ngIf="!destinationSelected()"
-          class="nonBlockLabel"
-          style="color: red"
-          >{{ 'auto.upload.select.destination' | transloco }}</label
-        >
+      @if (wizardStep === 2) {
+      <div>
+        @if (destinationSelected()) {
+        <div class="nonBlockLabel">
+          {{ 'auto.upload.select.destination' | transloco }}
+        </div>
+        } @if (!destinationSelected()) {
+        <div class="nonBlockLabel" style="color: red">
+          {{ 'auto.upload.select.destination' | transloco }}
+        </div>
+        }
         <br />
+        @if (libraryRoot !== undefined) {
         <cbc-tree-view
-          *ngIf="libraryRoot !== undefined"
           [root]="libraryRoot"
           [folderId]="destinationValue"
           (selectedNodeEmitter)="setDestination($event)"
           [displayedPath]="path"
         ></cbc-tree-view>
+        }
         <br />
         <br />
         <div class="field">
@@ -141,45 +155,17 @@
           <div class="custom-select select--form short-width select-align">
             <select name="" id="uploadHour" formControlName="uploadHour">
               <option value="-1">{{ 'label.every.hour' | transloco }}</option>
-              <option
-                *ngFor="
-                  let hour of [
-                    0,
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6,
-                    7,
-                    8,
-                    9,
-                    10,
-                    11,
-                    12,
-                    13,
-                    14,
-                    15,
-                    16,
-                    17,
-                    18,
-                    19,
-                    20,
-                    21,
-                    22,
-                    23
-                  ]
-                "
-                [value]="hour"
-                >{{ hour }}:00</option
-              >
+              @for ( hour of [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
+              15, 16, 17, 18, 19, 20, 21, 22, 23 ] ; track hour) {
+              <option [value]="hour">{{ hour }}:00</option>
+              }
             </select>
           </div>
         </div>
         <div class="field switch">
-          <div class="label"
-            >{{ 'auto.upload.auto.extract.zip' | transloco }}</div
-          >
+          <div class="label">
+            {{ 'auto.upload.auto.extract.zip' | transloco }}
+          </div>
           <input
             id="autoExtractZip"
             class="cmn-toggle cmn-toggle-round"
@@ -221,30 +207,34 @@
           >{{ 'label.email.recipients.multiple' | transloco }}</span
         >
       </div>
+      }
     </form>
   </section>
 
   <section class="modal-footer">
     <!-- Buttons -->
     <div class="buttons-group">
+      @if (wizardStep === 1) {
       <a
+        tabindex="0"
         class="cta"
-        *ngIf="wizardStep === 1"
         [class.disabled]="connectionResult < 0 || !testedOnce"
         (click)="nextWizardStep()"
         >{{ 'label.next' | transloco }}</a
       >
+      } @if (wizardStep === 2) {
       <a
         class="cta"
         [routerLink]="['.']"
-        *ngIf="wizardStep === 2"
         (click)="!autoUploadForm.valid ? '' : addConfiguration()"
         [class.disabled]="!autoUploadForm.valid"
         >{{ 'label.add' | transloco }}</a
       >
-      <a class="button" (click)="cancelWizard()"
+      }
+      <a tabindex="0" class="button" (click)="cancelWizard()"
         >{{ 'label.cancel' | transloco }}</a
       >
     </div>
   </section>
 </section>
+}

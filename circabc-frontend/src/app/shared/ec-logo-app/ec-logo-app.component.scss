@@ -1,34 +1,22 @@
-@use '~css/global/variables-mixins-keyframes';
+@use 'css/global/variables-mixins-keyframes';
 
-.ec-logo {
-  height: 48px;
-
-  @media screen and (max-width: variables-mixins-keyframes.$break-small) {
-    display: none;
-  }
+.logo-box {
+  display: flex;
+  align-items: center;
 }
 
 .eu-logo {
-  height: 48px;
+  height: 40px;
   border: 1px solid #fff;
-
-  @media screen and (max-width: variables-mixins-keyframes.$break-small) {
-    display: none;
-  }
 }
 
 .app-logo {
   padding: 4px 10px;
-  top: -8px;
-  position: relative;
-
-  @media screen and (max-width: variables-mixins-keyframes.$break-small) {
-    top: 10px;
-  }
+  height: 30px;
 }
 
 @media screen and (max-width: variables-mixins-keyframes.$break-tiny) {
-  .logo {
+  .eu-logo {
     display: none;
   }
 }

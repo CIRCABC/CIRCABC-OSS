@@ -3,3 +3,14 @@
   max-height: calc(100vh - 200px);
   overflow: visible;
 }
+
+.members {
+  margin-left: 20px;
+  margin-bottom: 20px;
+
+  section {
+    padding: 25px;
+    max-height: calc(100vh - 350px);
+    overflow: auto;
+  }
+}

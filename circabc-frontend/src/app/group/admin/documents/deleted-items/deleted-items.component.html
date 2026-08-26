@@ -3,8 +3,8 @@
     <cbc-pager
       [length]="totalItems"
       [pageSize]="listingOptions.limit"
-      [pageIndex]="listingOptions.page"
-      (pageChanged)="goToPage($event)"
+      [page]="listingOptions.page"
+      (pageChange)="goToPage($event)"
     ></cbc-pager>
     <cbc-pager-configuration
       (pageSizeChanged)="changeLimit($event)"
@@ -24,51 +24,45 @@
             [checked]="allSelected"
           />
         </th>
-        <td class="col-hidable"></td>
+        <th class="col-hidable"></th>
         <th>
-          <a (click)="changeSort('name')">{{ 'label.name' | transloco }}</a>
-          <span
-            class="order-arrow-up"
-            *ngIf="listingOptions.sort === 'name_ASC'"
-          ></span>
-          <span
-            class="order-arrow-down"
-            *ngIf="listingOptions.sort === 'name_DESC'"
-          ></span>
+          <a tabindex="0" (click)="changeSort('name')"
+            >{{ 'label.name' | transloco }}</a
+          >
+          @if (listingOptions.sort === 'name_ASC') {
+          <span class="order-arrow-up"></span>
+          } @if (listingOptions.sort === 'name_DESC') {
+          <span class="order-arrow-down"></span>
+          }
         </th>
         <th class="col-hidable">
-          <a (click)="changeSort('archivedBy')"
+          <a tabindex="0" (click)="changeSort('archivedBy')"
             >{{ 'label.deleted.by' | transloco }}</a
           >
-          <span
-            class="order-arrow-up"
-            *ngIf="listingOptions.sort === 'archivedBy_ASC'"
-          ></span>
-          <span
-            class="order-arrow-down"
-            *ngIf="listingOptions.sort === 'archivedBy_DESC'"
-          ></span>
+          @if (listingOptions.sort === 'archivedBy_ASC') {
+          <span class="order-arrow-up"></span>
+          } @if (listingOptions.sort === 'archivedBy_DESC') {
+          <span class="order-arrow-down"></span>
+          }
         </th>
         <th class="col-hidable">
-          <a (click)="changeSort('archivedDate')"
+          <a tabindex="0" (click)="changeSort('archivedDate')"
             >{{ 'label.deleted.date' | transloco }}</a
           >
-          <span
-            class="order-arrow-up"
-            *ngIf="listingOptions.sort === 'archivedDate_ASC'"
-          ></span>
-          <span
-            class="order-arrow-down"
-            *ngIf="listingOptions.sort === 'archivedDate_DESC'"
-          ></span>
+          @if (listingOptions.sort === 'archivedDate_ASC') {
+          <span class="order-arrow-up"></span>
+          } @if (listingOptions.sort === 'archivedDate_DESC') {
+          <span class="order-arrow-down"></span>
+          }
         </th>
-        <th> {{ 'label.actions' | transloco }} </th>
+        <th>{{ 'label.actions' | transloco }}</th>
       </tr>
     </thead>
 
     <tbody>
       <tr>
-        <td colspan="7" *ngIf="restorableNodes.length > 0">
+        @if (restorableNodes.length > 0) {
+        <td colspan="7">
           <ul class="bulk-actions">
             <li>
               <cbc-number-badge
@@ -76,52 +70,39 @@
               ></cbc-number-badge>
             </li>
             <li>
-              <a (click)="restoreNodes()"
-                ><img src="img/icon-last-blue.png" />{{ 'label.restore' |
-                transloco }}</a
+              <a tabindex="0" (click)="restoreNodes()"
+                ><img src="img/icon-last-blue.png" alt="Restore" />{{
+                'label.restore' | transloco }}</a
               >
             </li>
             <li>
-              <a (click)="purgeNodes()"
-                ><img src="img/rubbish-bin-blue-small.png" />{{ 'label.delete' |
-                transloco }}</a
+              <a tabindex="0" (click)="purgeNodes()"
+                ><img src="img/rubbish-bin-blue-small.png" alt="Delete" />{{
+                'label.delete' | transloco }}</a
               >
             </li>
           </ul>
         </td>
+        }
       </tr>
 
-      <tr
-        class="row empty-row"
-        *ngIf="
-          deletedNodes !== undefined && deletedNodes.total === 0 && !loading
-        "
-      >
+      @if ( deletedNodes !== undefined && deletedNodes.total === 0 && !loading )
+      {
+      <tr class="row empty-row">
         <td colspan="7">
           {{ 'admin.deleted.items.display.none' | transloco }}
         </td>
       </tr>
-
-      <tr class="row empty-row" *ngIf="loading">
+      } @if (loading) {
+      <tr class="row empty-row">
         <td class="cell-left-border"></td>
         <td class="cell-checkbox"></td>
         <td class="col-hidable"></td>
-        <td class="cell-file-name cell-archive-item-name">
-          <div class="file-name">
-            {{ 'label.loading' | transloco }}
-            <cbc-spinner class="loader"></cbc-spinner>
-          </div>
-          <ul class="actions">
-            <li>&nbsp;</li>
-          </ul>
-        </td>
+        <td class="cell-file-name">{{ 'label.loading' | transloco }}</td>
         <td class="cell-email" colspan="3"></td>
       </tr>
-
-      <tr
-        class="row"
-        *ngFor="let archiveNode of deletedNodes.data; trackBy: trackById"
-      >
+      } @for (archiveNode of deletedNodes.data; track archiveNode.id) {
+      <tr class="row">
         <td class="cell-left-border"></td>
         <td class="cell-checkbox">
           <input
@@ -138,20 +119,16 @@
         >
           <div class="icon"></div>
         </td>
-        <td class="cell-file-name cell-archive-item-name">
-          <div class="file-name"> {{ archiveNode.name }} </div>
-          <ul class="actions">
-            <li>&nbsp;</li>
-          </ul>
-        </td>
+        <td class="cell-file-name">{{ archiveNode.name }}</td>
         <td class="cell-email col-hidable">
           <cbc-user-card [userId]="archiveNode.deletedBy"></cbc-user-card>
         </td>
-        <td class="cell-email col-hidable">
+        <td class="cell-dateTime col-hidable">
           {{ archiveNode.deletedDate | date: 'yyyy MM dd, HH:mm' }}
         </td>
         <td class="cell-access-level">
           <a
+            tabindex="0"
             title="{{ 'label.restore' | transloco }}"
             (click)="restoreNode(archiveNode)"
           >
@@ -168,36 +145,36 @@
           ></cbc-inline-delete>
         </td>
       </tr>
+      }
     </tbody>
   </table>
 
-  <ul
-    class="bulk-actions bulk-actions--grey"
-    *ngIf="restorableNodes.length > 0"
-  >
+  @if (restorableNodes.length > 0) {
+  <ul class="bulk-actions bulk-actions--grey">
     <li>
       <cbc-number-badge [number]="restorableNodes.length"></cbc-number-badge>
     </li>
     <li>
-      <a (click)="restoreNodes()"
-        ><img src="img/icon-last-blue.png" />{{ 'label.restore' | transloco
-        }}</a
-      >
-    </li>
-    <li>
-      <a (click)="purgeNodes()"
-        ><img src="img/rubbish-bin-blue-small.png" />{{ 'label.delete' |
+      <a tabindex="0" (click)="restoreNodes()"
+        ><img src="img/icon-last-blue.png" alt="Restore" />{{ 'label.restore' |
         transloco }}</a
       >
     </li>
+    <li>
+      <a tabindex="0" (click)="purgeNodes()"
+        ><img src="img/rubbish-bin-blue-small.png" alt="Delete" />{{
+        'label.delete' | transloco }}</a
+      >
+    </li>
   </ul>
+  }
 
   <div class="footer">
     <cbc-pager
       [length]="totalItems"
       [pageSize]="listingOptions.limit"
-      [pageIndex]="listingOptions.page"
-      (pageChanged)="goToPage($event)"
+      [page]="listingOptions.page"
+      (pageChange)="goToPage($event)"
     ></cbc-pager>
   </div>
 </section>
@@ -206,13 +183,13 @@
   [restorableNodes]="restorableNodes"
   [showModal]="showModal"
   [currentIg]="currentIg"
-  (cancel)="restoreCanceled()"
-  (finish)="restoreFinish($event)"
-></cbc-restore-item>
+  (cancelRestore)="canceled()"
+  (finishRestore)="restoreFinish($event)"
+/>
 <cbc-purge-item
   [purgeableNodes]="restorableNodes"
   [showModal]="showPurgeModal"
   [currentIg]="currentIg"
-  (cancel)="restoreCanceled()"
-  (finish)="purgeFinish($event)"
-></cbc-purge-item>
+  (cancelPurge)="canceled()"
+  (finishPurge)="purgeFinish($event)"
+/>

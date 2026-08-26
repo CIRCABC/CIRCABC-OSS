@@ -36,7 +36,8 @@ input::-webkit-calendar-picker-indicator {
   font-size: 100% !important;
 }
 
-::ng-deep .mat-radio-container {
-  width: 18px !important;
-  height: 15px !important;
+.label-calendar-container label,
+.label-calendar-container p-calendar {
+  display: inline-block; /* or inline-flex */
+  vertical-align: middle; /* Optional: align vertically in the middle */
 }

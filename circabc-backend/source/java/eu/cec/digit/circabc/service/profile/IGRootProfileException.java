@@ -23,21 +23,21 @@ package eu.cec.digit.circabc.service.profile;
  */
 public class IGRootProfileException extends RuntimeException {
 
-    private static final long serialVersionUID = 4627788862738776094L;
+  private static final long serialVersionUID = 4627788862738776094L;
 
-    String profileName;
-    String explanation;
+  String profileName;
+  String explanation;
 
-    public IGRootProfileException(String profileName, String explain) {
-        this.profileName = profileName;
-        this.explanation = explain;
-    }
+  public IGRootProfileException(String profileName, String explain) {
+    this.profileName = profileName;
+    this.explanation = explain;
+  }
 
-    public String getProfileName() {
-        return profileName;
-    }
+  public String getProfileName() {
+    return profileName;
+  }
 
-    public String getExplanation() {
-        return explanation;
-    }
+  public String getExplanation() {
+    return explanation;
+  }
 }

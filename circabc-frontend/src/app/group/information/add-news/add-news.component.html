@@ -1,11 +1,14 @@
 <div class="fluid page-container">
   <div class="page-header">
-    <span class="page-header__title" *ngIf="!inEditMode()"
+    @if (!inEditMode()) {
+    <span class="page-header__title"
       >{{ 'information.create.news.title' | transloco }}</span
     >
-    <span class="page-header__title" *ngIf="inEditMode()"
+    } @if (inEditMode()) {
+    <span class="page-header__title"
       >{{ 'information.edit.news.title' | transloco }}</span
     >
+    }
   </div>
   <div class="box box--news">
     <header class="header"></header>
@@ -58,7 +61,8 @@
               [guestAllowed]="infoNode?.hasGuestAccess"
             ></cbc-notification-message>
           </div>
-          <div class="field field--file" *ngIf="isFileOrImageSelected()">
+          @if (isFileOrImageSelected()) {
+          <div class="field field--file">
             <span class="label"
               >{{ 'label.file' | transloco }}<span style="color: red"
                 >*</span
@@ -85,18 +89,19 @@
               </div>
             </label>
           </div>
-
+          } @if (!isIFrameSelected()) {
           <cbc-multilingual-input
-            *ngIf="!isIFrameSelected()"
             formControlName="title"
             [label]="'Title'"
             [placeholder]="'Title'"
             [lang]="'EN'"
             [required]="true"
           ></cbc-multilingual-input>
+          }
           <cbc-control-message [control]="titleControl"></cbc-control-message>
 
-          <div class="field" *ngIf="!isIFrameSelected()">
+          @if (!isIFrameSelected()) {
+          <div class="field">
             <label for="content" class="label">
               {{ 'label.text' | transloco }}
               <span style="color: red">&nbsp;*</span>
@@ -160,52 +165,55 @@
               [control]="contentControl"
             ></cbc-control-message>
           </div>
-
-          <div
-            class="field field--with-icon field--date"
-            *ngIf="isDateSelected()"
-          >
+          } @if (isDateSelected()) {
+          <div class="field field--with-icon field--date">
             <label for="date">{{ 'label.date' | transloco }}</label>
-            <p-calendar
+            <p-datepicker
               formControlName="date"
               [dateFormat]="'dd/mm/yy'"
               [placeholder]="'dd/mm/yyyy'"
               [showIcon]="true"
-            ></p-calendar>
+            ></p-datepicker>
           </div>
-
-          <div class="field" *ngIf="isIFrameSelected()">
+          } @if (isIFrameSelected()) {
+          <div class="field">
             <label class="label" for="url"
               >{{ 'label.iframe' | transloco }}</label
             >
             <input type="text" id="url" formControlName="url" />
           </div>
+          }
         </fieldset>
 
-        <div *ngIf="executing">
+        @if (executing) {
+        <div>
           {{ 'label.posting' | transloco }} ...
           <cbc-spinner></cbc-spinner>
         </div>
-
-        <div class="buttons-group" *ngIf="!executing">
+        } @if (!executing) {
+        <div class="buttons-group">
+          @if (!inEditMode()) {
           <a
+            tabindex="0"
             class="cta"
             (click)="isFormValid() ? saveNews() : ''"
-            *ngIf="!inEditMode()"
             [class.disabled]="!isFormValid()"
             >{{ 'label.create' | transloco }}</a
           >
+          } @if (inEditMode()) {
           <a
+            tabindex="0"
             class="cta"
             (click)="isFormValid() ? updateNews() : ''"
-            *ngIf="inEditMode()"
             [class.disabled]="!isFormValid()"
             >{{ 'label.update' | transloco }}</a
           >
-          <a class="button" (click)="cancel()"
+          }
+          <a tabindex="0" class="button" (click)="cancel()"
             >{{ 'label.cancel' | transloco }}</a
           >
         </div>
+        }
       </form>
     </div>
   </div>

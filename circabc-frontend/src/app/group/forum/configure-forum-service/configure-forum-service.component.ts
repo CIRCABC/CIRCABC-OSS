@@ -1,5 +1,6 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { Component, Input, OnInit, output, input } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
@@ -9,23 +10,24 @@ import {
   GroupConfiguration,
   InterestGroupService,
 } from 'app/core/generated/circabc';
+import { ModalComponent } from 'app/shared/modal/modal.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-configure-forum-service',
   templateUrl: './configure-forum-service.component.html',
-  styleUrls: ['./configure-forum-service.component.scss'],
+  styleUrl: './configure-forum-service.component.scss',
   preserveWhitespaces: true,
+  imports: [ModalComponent, ReactiveFormsModule, TranslocoModule],
 })
 export class ConfigureForumServiceComponent implements OnInit {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   public showModal = false;
-  @Input()
-  public groupId!: string;
-  @Output()
-  public readonly showModalChange = new EventEmitter();
-  @Output()
-  public readonly modalHide = new EventEmitter<ActionEmitterResult>();
+  public readonly groupId = input.required<string>();
+  public readonly showModalChange = output();
+  public readonly modalHide = output<ActionEmitterResult>();
 
   public configurationForm!: FormGroup;
   public defaultValues = [7, 15, 30];
@@ -67,9 +69,10 @@ export class ConfigureForumServiceComponent implements OnInit {
       }
     );
 
-    if (this.groupId) {
+    const groupId = this.groupId();
+    if (groupId) {
       this.configuration = await firstValueFrom(
-        this.groupsService.getGroupConfiguration(this.groupId)
+        this.groupsService.getGroupConfiguration(groupId)
       );
       this.configurationForm.patchValue(this.configuration.newsgroups);
     }
@@ -92,13 +95,13 @@ export class ConfigureForumServiceComponent implements OnInit {
       };
 
       this.configuration = await firstValueFrom(
-        this.groupsService.putGroupConfiguration(this.groupId, newsgroupConf)
+        this.groupsService.putGroupConfiguration(this.groupId(), newsgroupConf)
       );
       this.configurationForm.patchValue(this.configuration.newsgroups);
       res.result = ActionResult.SUCCEED;
       this.showModal = false;
       this.showModalChange.emit();
-    } catch (error) {
+    } catch (_error) {
       res.result = ActionResult.FAILED;
     }
 

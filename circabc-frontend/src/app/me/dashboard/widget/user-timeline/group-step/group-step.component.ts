@@ -1,22 +1,25 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnChanges, SimpleChanges, input } from '@angular/core';
 
+import { DatePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
-  InterestGroupFeed,
+  type InterestGroupFeed,
   Node as ModelNode,
 } from 'app/core/generated/circabc';
 import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
+import { UserCardComponent } from 'app/shared/user-card/user-card.component';
 
 @Component({
   selector: 'cbc-group-step',
   templateUrl: './group-step.component.html',
-  styleUrls: ['./group-step.component.scss'],
+  styleUrl: './group-step.component.scss',
   preserveWhitespaces: true,
+  imports: [RouterLink, UserCardComponent, DatePipe, TranslocoModule],
 })
 export class GroupStepComponent implements OnChanges {
-  @Input()
-  groupFeed!: InterestGroupFeed;
-  @Input()
-  type!: string;
+  readonly groupFeed = input.required<InterestGroupFeed>();
+  readonly type = input.required<string>();
 
   public showAll = false;
   public hasMoreThan15 = false;
@@ -24,17 +27,17 @@ export class GroupStepComponent implements OnChanges {
   constructor(private i18nPipe: I18nPipe) {}
 
   public ngOnChanges(changes: SimpleChanges) {
-    if (changes.groupFeed && changes.groupFeed.currentValue.feed) {
+    if (changes.groupFeed?.currentValue.feed) {
       this.hasMoreThan15 = changes.groupFeed.currentValue.feed.length > 15;
     }
   }
 
   getGroupNameOrTitle(): string {
-    if (this.groupFeed.title && Object.keys(this.groupFeed.title).length > 0) {
-      return this.i18nPipe.transform(this.groupFeed.title);
-    } else {
-      return this.groupFeed.name ? this.groupFeed.name : '';
+    const groupFeed = this.groupFeed();
+    if (groupFeed.title && Object.keys(groupFeed.title).length > 0) {
+      return this.i18nPipe.transform(groupFeed.title);
     }
+    return groupFeed.name ? groupFeed.name : '';
   }
 
   public getDisplayProperty(node: ModelNode | undefined) {
@@ -43,12 +46,7 @@ export class GroupStepComponent implements OnChanges {
     }
     // check if the title is present, and if not, return the name
     let title = this.i18nPipe.transform(node.title);
-    if (
-      node &&
-      node.title &&
-      Object.keys(node.title).length > 0 &&
-      node.properties
-    ) {
+    if (node?.title && Object.keys(node.title).length > 0 && node.properties) {
       if (
         node.properties.kindOfEvent !== undefined ||
         node.properties.meetingType !== undefined ||
@@ -60,11 +58,8 @@ export class GroupStepComponent implements OnChanges {
         title = match === null ? title : match[1];
       }
       return title === '' ? node.name : title;
-    } else if (
-      node.name !== undefined &&
-      node.name.startsWith('posted') &&
-      node.name.endsWith('.html')
-    ) {
+    }
+    if (node.name?.startsWith('posted') && node.name.endsWith('.html')) {
       // case for the posts
       const postedLength = 'posted-'.length;
       const dateLength = 'dd-MM-yyyy'.length;
@@ -82,20 +77,20 @@ export class GroupStepComponent implements OnChanges {
       // eslint-disable-next-line
       const name = `Post ${firstPart} ${secondPart}`;
       return title === '' ? name : title;
-    } else {
-      // just return the name (default)
-      return title === '' ? node.name : title;
     }
+    // just return the name (default)
+    return title === '' ? node.name : title;
   }
 
   public getDisplayableFeed() {
-    if (this.showAll && this.groupFeed.feed) {
-      return this.groupFeed.feed;
-    } else if (!this.showAll && this.groupFeed.feed) {
-      return this.groupFeed.feed.slice(0, 15);
-    } else {
-      return undefined;
+    const groupFeed = this.groupFeed();
+    if (this.showAll && groupFeed.feed) {
+      return groupFeed.feed;
     }
+    if (!this.showAll && groupFeed.feed) {
+      return groupFeed.feed.slice(0, 15);
+    }
+    return undefined;
   }
 
   public showAllFeed() {

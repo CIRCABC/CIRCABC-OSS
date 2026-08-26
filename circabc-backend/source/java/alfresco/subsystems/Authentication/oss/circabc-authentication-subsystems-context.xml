@@ -1,19 +1,21 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
+<?xml version="1.0" encoding="UTF-8" ?>
 <!--+
     |     Copyright European Community 2011 - Licensed under the EUPL V.1.0
     |
     |  		   http://ec.europa.eu/idabc/en/document/6523
     |
     +-->
-
-<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN'
+  'http://www.springframework.org/dtd/spring-beans.dtd'>
 <!-- This file declares the Authentication beans (filters) to use by the new authentication subsystems with ECAS -->
 <beans>
 	
 	<!-- WebDAV authentication -->
 	
-	<bean id="wdPassthruServers" class="org.alfresco.filesys.auth.PassthruServerFactory">
+	<bean
+    id="wdPassthruServers"
+    class="org.alfresco.filesys.auth.PassthruServerFactory"
+  >
 		<property name="localServer">
 			<value>false</value>
 		</property>
@@ -21,7 +23,7 @@
 			<value>${webdav.passthru.server}</value>
 		</property>
 		<property name="domain">
-			<value></value>
+			<value />
 		</property>
 		<property name="timeout">
 			<value>5000</value>
@@ -37,7 +39,11 @@
 		</property>
 	</bean>
 	
-	<bean id="wdAuthenticationComponent" class="org.alfresco.repo.security.authentication.ntlm.NTLMAuthenticationComponentImpl" parent="authenticationComponentBase">
+	<bean
+    id="wdAuthenticationComponent"
+    class="org.alfresco.repo.security.authentication.ntlm.NTLMAuthenticationComponentImpl"
+    parent="authenticationComponentBase"
+  >
 		<property name="passthruServers">
 			<ref bean="wdPassthruServers" />
 		</property>
@@ -54,12 +60,15 @@
 			<value>false</value>
 		</property>
 		<property name="defaultAdministratorUserNameList">
-			<value></value>
+			<value />
 		</property>
 	</bean>
 	
 	<!-- Wrapped version to be used within subsystem -->
-	<bean id="WDAuthenticationComponent" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+	<bean
+    id="WDAuthenticationComponent"
+    class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean"
+  >
 		<property name="proxyInterfaces">
 			<list>
 				<value>org.alfresco.repo.security.authentication.AuthenticationComponent</value>
@@ -80,7 +89,10 @@
 	</bean>
 	
 	<!-- Authenticaton service for chaining -->
-	<bean id="wdLocalAuthenticationService" class="org.alfresco.repo.security.authentication.AuthenticationServiceImpl">
+	<bean
+    id="wdLocalAuthenticationService"
+    class="org.alfresco.repo.security.authentication.AuthenticationServiceImpl"
+  >
 		<property name="ticketComponent">
 			<ref bean="ticketComponent" />
 		</property>
@@ -152,7 +164,11 @@
 		</property>
 	</bean>
 --> 	
-	<bean id="webDavAuthenticationFilter" class="eu.cec.digit.circabc.web.servlet.CircabcWebdavAuthenticationFilter" init-method="init">
+	<bean
+    id="webDavAuthenticationFilter"
+    class="eu.cec.digit.circabc.web.servlet.CircabcWebdavAuthenticationFilter"
+    init-method="init"
+  >
 		<property name="guestDisabledForLibrary">
 			<value>true</value>
 		</property>
@@ -172,7 +188,7 @@
 			<value>/webdav</value>
 		</property>
 		<property name="authenticationListener">
-			<ref bean="webDavAuthenticationListener"/>
+			<ref bean="webDavAuthenticationListener" />
 		</property>
 		<property name="authenticationService">
 			<ref bean="AuthenticationService" />
@@ -208,14 +224,20 @@
 	
 	<!-- OSS authentication -->
 	
-	<bean id="authenticationFilter" class="eu.cec.digit.circabc.web.app.servlet.AuthenticationFilter">
+	<bean
+    id="authenticationFilter"
+    class="eu.cec.digit.circabc.web.app.servlet.AuthenticationFilter"
+  >
 		<property name="configService">
 		    <ref bean="webClientConfigService" />
 	    </property>
     </bean>
 	
 	<!-- Authentication service for chaining (for the ECAS context) -->
-	<bean id="localAuthenticationService" class="org.alfresco.repo.security.authentication.MutableAuthenticationServiceImpl">
+	<bean
+    id="localAuthenticationService"
+    class="org.alfresco.repo.security.authentication.MutableAuthenticationServiceImpl"
+  >
 		<property name="authenticationDao">
 			<ref bean="authenticationDao" />
 		</property>
@@ -231,11 +253,16 @@
 	</bean>
 	
    <!-- Wrapped version to be used within subsystem -->
-   <bean id="AuthenticationComponent" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+   <bean
+    id="AuthenticationComponent"
+    class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean"
+  >
       <property name="proxyInterfaces">
          <list>
-            <value>org.alfresco.repo.security.authentication.AuthenticationComponent</value>
-            <value>org.alfresco.repo.security.authentication.ntlm.NLTMAuthenticator</value>
+            <value
+        >org.alfresco.repo.security.authentication.AuthenticationComponent</value>
+            <value
+        >org.alfresco.repo.security.authentication.ntlm.NLTMAuthenticator</value>
          </list>
       </property>
       <property name="transactionManager">
@@ -253,7 +280,11 @@
 	
 	<!-- Authentication component to be used by the ECAS subsystem. An authentication component has to be defined to avoid a recursive loop into the 
 	SubsystemChainingAuthenticationComponent -->
-	<bean id="authenticationComponent" class="org.alfresco.repo.security.authentication.AuthenticationComponentImpl" parent="authenticationComponentBase">
+	<bean
+    id="authenticationComponent"
+    class="org.alfresco.repo.security.authentication.AuthenticationComponentImpl"
+    parent="authenticationComponentBase"
+  >
 		<property name="authenticationDao">
 			<ref bean="authenticationDao" />
 		</property>

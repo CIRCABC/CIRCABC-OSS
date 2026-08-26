@@ -1,44 +1,58 @@
 <!-- MODAL BOX -->
+@if (visible()) {
 <div
   class="black-overlayer"
-  *ngIf="visible"
-  [class.overlayer-shown]="visible"
-  [class.overlayer-hidden]="!visible"
+  [class.overlayer-shown]="visible()"
+  [class.overlayer-hidden]="!visible()"
 ></div>
+} @if (visible()) {
 <section
   class="modal modal--select-files"
-  *ngIf="visible"
-  [class.modal-shown]="visible"
-  [class.modal-hidden]="!visible"
+  [class.modal-shown]="visible()"
+  [class.modal-hidden]="!visible()"
   [ngStyle]="{ 'margin-top.px': 0 }"
 >
-  <a class="close-icon" (click)="onCancel()"></a>
+  <a
+    tabindex="0"
+    role="button"
+    class="close-icon"
+    aria-label="Cancel "
+    (click)="onCancel()"
+  ></a>
   <header>
-    <h2>{{ title | transloco }}</h2>
+    <h2>{{ title() | transloco }}</h2>
   </header>
-  <section [ngClass]="contentClass">
+  <section [ngClass]="contentClass()">
     <ng-content></ng-content>
-    <div class="field" *ngIf="executing">
-      <label
-        >{{ executingLabel | transloco }}... <cbc-spinner></cbc-spinner
-      ></label>
+    @if (executing()) {
+    <div class="field">
+      <div>
+        {{ executingLabel() | transloco }}... <cbc-spinner></cbc-spinner>
+      </div>
     </div>
+    }
   </section>
 
-  <section class="modal-footer" *ngIf="!executing">
+  @if (!executing()) {
+  <section class="modal-footer">
     <!-- Buttons -->
     <div class="buttons-group">
       <a
+        tabindex="0"
         data-cy="ok"
         class="cta"
-        (click)="!showOkButton ? '' : onOk()"
-        [class.disabled]="!showOkButton"
+        (click)="!showOkButton() ? '' : onOk()"
+        [class.disabled]="!showOkButton()"
       >
-        {{ okLabel | transloco }}</a
+        {{ okLabel() | transloco }}</a
       >
-      <a *ngIf="displayCloseButton" class="button" (click)="onCancel()"
-        >{{ cancelLabel | transloco }}</a
-      >
+      @if (displayCloseButton()) {
+      <a tabindex="0" class="button" (click)="onCancel()"
+        >{{ cancelLabel() | transloco }}
+      </a>
+      }
     </div>
   </section>
+  }
 </section>
+}

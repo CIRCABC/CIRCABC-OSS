@@ -1,5 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
-
+<?xml version='1.0' encoding='UTF-8' ?>
 <!--
   Copyright 2006 European Community
   
@@ -20,11 +19,14 @@
    See the Licence for the specific language governing
    permissions and limitations under the Licence.
 -->
-<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN'
+  'http://www.springframework.org/dtd/spring-beans.dtd'>
 <beans>
     
-	<bean name="homeFolderManager"
-		class="org.alfresco.repo.security.person.PortableHomeFolderManager">
+	<bean
+    name="homeFolderManager"
+    class="org.alfresco.repo.security.person.PortableHomeFolderManager"
+  >
 		<property name="nodeService">
 			<ref bean="NodeService" />
 		</property>
@@ -47,29 +49,45 @@
 	
 	<!-- The person service. -->
 	
-    <bean id="personService" class="org.alfresco.repo.security.person.PersonServiceImpl" init-method="init">
+    <bean
+    id="personService"
+    class="org.alfresco.repo.security.person.PersonServiceImpl"
+    init-method="init"
+  >
         <property name="transactionService" ref="transactionService" />
         <property name="nodeService" ref="nodeService" />
-        <property name="tenantService" ref="tenantService"/>
-        <property name="singletonCache" ref="immutableSingletonCache"/>
+        <property name="tenantService" ref="tenantService" />
+        <property name="singletonCache" ref="immutableSingletonCache" />
         <property name="searchService" ref="admSearchService" />
         <property name="permissionServiceSPI" ref="permissionServiceImpl" />
         <property name="authorityService" ref="authorityService" />
         <property name="authenticationService" ref="authenticationService" />
         <property name="dictionaryService" ref="dictionaryService" />
         <property name="namespacePrefixResolver" ref="namespaceService" />
-        <property name="policyComponent" ref="policyComponent"/>
+        <property name="policyComponent" ref="policyComponent" />
         <property name="personCache" ref="personCache" />
-        <property name="permissionsManager" ref="personServicePermissionsManager" />
-        <property name="cannedQueryRegistry" ref="personServiceCannedQueryRegistry" />
+        <property
+      name="permissionsManager"
+      ref="personServicePermissionsManager"
+    />
+        <property
+      name="cannedQueryRegistry"
+      ref="personServiceCannedQueryRegistry"
+    />
         <property name="aclDAO" ref="aclDAO" />
         <property name="homeFolderManager" ref="HomeFolderManager" />
         <property name="repoAdminService" ref="repoAdminService" />
-        <property name="serviceRegistry" ref="ServiceRegistry"/>
+        <property name="serviceRegistry" ref="ServiceRegistry" />
         
         <!-- Configurable properties. -->
-        <property name="homeFolderCreationEager"    value= "${home.folder.creation.eager}" />
-        <property name="homeFolderCreationDisabled" value= "${home.folder.creation.disabled}" />
+        <property
+      name="homeFolderCreationEager"
+      value="${home.folder.creation.eager}"
+    />
+        <property
+      name="homeFolderCreationDisabled"
+      value="${home.folder.creation.disabled}"
+    />
 		<!-- -->
 		<!-- TODO: -->
 		<!-- Add support for creating real home spaces adn setting -->
@@ -110,7 +128,10 @@
 	</bean>
     
     
-    <bean id="multifactorConfigurationService" class="eu.cec.digit.circabc.service.authentication.MultifactorConfigurationServiceImpl">
+    <bean
+    id="multifactorConfigurationService"
+    class="eu.cec.digit.circabc.service.authentication.MultifactorConfigurationServiceImpl"
+  >
         <property name="multifactorEnabled">
             <value>${multifactor.enabled}</value>
         </property>

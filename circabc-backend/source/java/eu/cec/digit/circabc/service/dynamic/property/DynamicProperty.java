@@ -16,36 +16,34 @@
  */
 package eu.cec.digit.circabc.service.dynamic.property;
 
+import java.util.List;
 import org.alfresco.service.cmr.repository.MLText;
 import org.alfresco.service.cmr.repository.NodeRef;
 
-import java.util.List;
-
 public interface DynamicProperty extends Comparable<DynamicProperty> {
+  // get the index of the property
+  Long getIndex();
 
-    // get the index of the property
-    Long getIndex();
+  MLText getLabel();
 
-    MLText getLabel();
+  // DateField , TextField, TextArea Selection
+  DynamicPropertyType getType();
 
-    // DateField , TextField, TextArea Selection
-    DynamicPropertyType getType();
+  // Valid values for  Selection type (similar like java enum)
+  String getValidValues();
 
-    // Valid values for  Selection type (similar like java enum)
-    String getValidValues();
+  String getDisplayValidValues();
 
-    String getDisplayValidValues();
+  List<String> getListOfValidValues();
 
-    List<String> getListOfValidValues();
+  boolean isSelectionType();
 
-    boolean isSelectionType();
+  /**
+   * @return the node reference where the dynamic property is stored
+   */
+  NodeRef getId();
 
-    /**
-     * @return the node reference where the dynamic property is stored
-     */
-    NodeRef getId();
+  String getName();
 
-    String getName();
-
-    String getLanguages();
+  String getLanguages();
 }

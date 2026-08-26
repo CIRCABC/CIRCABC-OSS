@@ -16,13 +16,12 @@
  */
 package eu.cec.digit.circabc.service.newsgroup;
 
-import org.alfresco.service.Auditable;
-import org.alfresco.service.cmr.repository.DuplicateChildNodeNameException;
-import org.alfresco.service.cmr.repository.NodeRef;
-
 import java.io.File;
 import java.io.InputStream;
 import java.util.List;
+import org.alfresco.service.Auditable;
+import org.alfresco.service.cmr.repository.DuplicateChildNodeNameException;
+import org.alfresco.service.cmr.repository.NodeRef;
 
 /**
  * Interface to manage post attachement.
@@ -37,61 +36,62 @@ import java.util.List;
  */
 // @PublicService
 public interface AttachementService {
+  /**
+   * Create the refered node (refered) in an hidden folder, and attach it to an existiong nodeRef
+   * (referer)
+   *
+   * @return the create refered nodeRef
+   */
+  @Auditable(
+    /*key = Auditable.Key.ARG_0, */parameters = {
+      "referer", "referedFile", "encoding", "mimetype",
+    }
+  )
+  NodeRef attach(
+    final NodeRef referer,
+    final File referedFile,
+    final String encoding,
+    final String mimetype
+  );
 
-    /**
-     * Create the refered node (refered) in an hidden folder, and attach it to an existiong nodeRef
-     * (referer)
-     *
-     * @return the create refered nodeRef
-     */
-    @Auditable(
-            /*key = Auditable.Key.ARG_0, */ parameters = {
-            "referer",
-            "referedFile",
-            "encoding",
-            "mimetype"
-    })
-    NodeRef attach(
-            final NodeRef referer, final File referedFile, final String encoding, final String mimetype);
+  /**
+   * Create the refered node (refered) in an hidden folder, and attach it to an existiong nodeRef
+   * (referer)
+   *
+   * @return the create refered nodeRef
+   */
+  @Auditable(
+    /*key = Auditable.Key.ARG_0, */parameters = {
+      "referer", "referedIs", "name", "encoding", "mimetype",
+    }
+  )
+  NodeRef attach(
+    final NodeRef referer,
+    final InputStream referedIs,
+    final String name,
+    final String encoding,
+    final String mimetype
+  );
 
-    /**
-     * Create the refered node (refered) in an hidden folder, and attach it to an existiong nodeRef
-     * (referer)
-     *
-     * @return the create refered nodeRef
-     */
-    @Auditable(
-            /*key = Auditable.Key.ARG_0, */ parameters = {
-            "referer",
-            "referedIs",
-            "name",
-            "encoding",
-            "mimetype"
-    })
-    NodeRef attach(
-            final NodeRef referer,
-            final InputStream referedIs,
-            final String name,
-            final String encoding,
-            final String mimetype);
+  /**
+   * Attach an existing nodeRef (refered) to another one (referer)
+   *
+   * @return always the refered nodeRef
+   * @throws DuplicateChildNodeNameException If the node is already attached
+   */
+  @Auditable(
+    /*key = Auditable.Key.ARG_0, */parameters = { "referer", "refered" }
+  )
+  NodeRef attach(final NodeRef referer, final NodeRef refered)
+    throws DuplicateChildNodeNameException;
 
-    /**
-     * Attach an existing nodeRef (refered) to another one (referer)
-     *
-     * @return always the refered nodeRef
-     * @throws DuplicateChildNodeNameException If the node is already attached
-     */
-    @Auditable(/*key = Auditable.Key.ARG_0, */ parameters = {"referer", "refered"})
-    NodeRef attach(final NodeRef referer, final NodeRef refered)
-            throws DuplicateChildNodeNameException;
+  /**
+   * Get all attachements of a referer
+   */
+  List<NodeRef> getAttachements(final NodeRef referer);
 
-    /**
-     * Get all attachements of a referer
-     */
-    List<NodeRef> getAttachements(final NodeRef referer);
-
-    /**
-     * get if a node is an hidden attachement
-     */
-    boolean isHiddenAttachement(final NodeRef refered);
+  /**
+   * get if a node is an hidden attachement
+   */
+  boolean isHiddenAttachement(final NodeRef refered);
 }

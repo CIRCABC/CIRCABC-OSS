@@ -1,0 +1,239 @@
+<div class="searchBox">
+  <div class="searchHeader">
+    <h2>{{ 'label.search.advanced' | transloco }}</h2>
+    <a tabindex="0" (click)="closeAdvancedSearchIG.emit()"> X </a>
+  </div>
+
+  <form [formGroup]="searchAdvancedForm" class="flexForm">
+    <div class="flexGroupField">
+      <!-- <div class="flexField">
+        <label>{{ 'label.search.savedname' | transloco }}</label>
+        <div style="display: flex; align-items: center">
+          <div class="custom-select select--form">
+            <select #searchSelect (change)="selectSearch(searchSelect.value)">
+              <option value="" selected></option>
+              @for (search of searchConfigOptions; track search) {
+              <option value="{{ search.searchName }}">
+                {{ search.searchName }}
+              </option>
+              }
+            </select>
+          </div>
+          @if (searchSelect.value){
+          <div>
+            <a
+              (click)="deleteConfiguration(searchSelect.value)"
+              matTooltip="{{ 'label.remove'  | transloco }}"
+            >
+              <img src="img/icon-garbage-blue.svg" alt="delete" height="30px"
+            /></a>
+          </div>
+          }
+        </div>
+        <div style="width: 100%"><hr /></div>
+      </div> -->
+
+      <div class="flexField">
+        <label>{{ 'label.search.search.for' | transloco }}</label>
+        <span style="color: red">&nbsp;*</span>
+        <input
+          type="text"
+          formControlName="searchString"
+          placeholder="{{ 'label.search.foldersfilesforums' | transloco }}"
+        />
+        <cbc-control-message
+          [control]="searchStringControl"
+        ></cbc-control-message>
+      </div>
+
+      <div class="flexField">
+        <label>{{ 'label.search.search.in' | transloco }}</label>
+        <div class="custom-select select--form">
+          <select formControlName="searchIn">
+            <option value="ALL" selected>{{'label.all'| transloco}}</option>
+            <option value="INFORMATION">
+              {{'label.information' | transloco }}
+            </option>
+            <option value="LIBRARY">{{'label.library' | transloco }}</option>
+            <option value="AGENDA">{{'label.agenda' | transloco }}</option>
+            <option value="FORUMS">{{'label.forums' | transloco }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flexField">
+        <div>
+          <label>{{ 'label.search.creationDate' | transloco }}</label>
+        </div>
+        <div style="display: flex; gap: 10px">
+          <div style="flex: 1">
+            <label>{{ 'label.from' | transloco }}</label>
+            <p-datepicker
+              class="flex"
+              formControlName="creationDateFrom"
+              [dateFormat]="'dd/mm/yy'"
+              [placeholder]="'dd/mm/yyyy'"
+              [showIcon]="true"
+              [inputStyle]="{ width: '100%', height: '37px' }"
+              dataType="string"
+            ></p-datepicker>
+          </div>
+          <div style="flex: 1">
+            <label>{{ 'label.to' | transloco }}</label>
+            <p-datepicker
+              class="flex"
+              formControlName="creationDateTo"
+              [dateFormat]="'dd/mm/yy'"
+              [placeholder]="'dd/mm/yyyy'"
+              [showIcon]="true"
+              [inputStyle]="{ width: '100%', height: '37px' }"
+              dataType="string"
+            ></p-datepicker>
+          </div>
+        </div>
+      </div>
+
+      <div class="flexField">
+        <div>
+          <label>{{ 'label.search.lastmodification' | transloco }}</label>
+        </div>
+        <div style="display: flex; gap: 10px">
+          <div style="flex: 1">
+            <label>{{ 'label.from' | transloco }}</label>
+            <p-datepicker
+              class="flex"
+              formControlName="modifiedDateFrom"
+              [dateFormat]="'dd/mm/yy'"
+              [placeholder]="'dd/mm/yyyy'"
+              [showIcon]="true"
+              [inputStyle]="{ width: '100%', height: '37px' }"
+              dataType="string"
+            ></p-datepicker>
+          </div>
+          <div style="flex: 1">
+            <label>{{ 'label.to' | transloco }}</label>
+            <p-datepicker
+              class="flex"
+              formControlName="modifiedDateTo"
+              [dateFormat]="'dd/mm/yy'"
+              [placeholder]="'dd/mm/yyyy'"
+              [showIcon]="true"
+              [inputStyle]="{ width: '100%', height: '37px' }"
+              dataType="string"
+            ></p-datepicker>
+          </div>
+        </div>
+      </div>
+
+      <div class="flexField">
+        <label>{{ 'label.search.language' | transloco }}</label>
+        <div class="custom-select select--form">
+          <cbc-lang-selector
+            formControlName="language"
+            [worldwide]="true"
+            [noSelectLangOption]="true"
+          >
+          </cbc-lang-selector>
+        </div>
+      </div>
+    </div>
+
+    <div class="flexGroupField">
+      <div class="flexField">
+        <cbc-form-keyword-finder
+          [label]="'label.keywords'"
+          [groupId]="groupId()"
+          [searchAdvancedForm]="searchAdvancedForm"
+        ></cbc-form-keyword-finder>
+      </div>
+
+      <div class="flexField">
+        <cbc-form-user-finder
+          [label]="'label.search.creator'"
+          [searchAdvancedForm]="searchAdvancedForm"
+        >
+        </cbc-form-user-finder>
+      </div>
+
+      <div class="flexField">
+        <label>{{ 'label.search.status' | transloco }}</label>
+        <div class="custom-select select--form">
+          <select formControlName="status">
+            <option value="" selected></option>
+            <option value="DRAFT">{{ 'label.draft' | transloco }}</option>
+            <option value="FINAL">{{ 'label.final' | transloco }}</option>
+            <option value="RELEASE">{{ 'label.released' | transloco }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flexField">
+        <label>{{ 'label.security.marking' | transloco }}</label>
+        <div class="custom-select select--form">
+          <select formControlName="securityRanking">
+            <option value="" selected></option>
+            <option value="NORMAL">{{ 'label.normal' | transloco }}</option>
+            <option value="SENSITIVE">
+              {{ 'label.sensitive' | transloco }}
+            </option>
+            <option value="SPECIAL_HANDLING">
+              {{ 'label.special.handling' | transloco }}
+            </option>
+            <option value="PUBLIC">{{ 'label.public' | transloco }}</option>
+            <option value="INTERNAL">{{ 'label.internal' | transloco }}</option>
+            <option value="LIMITED">{{ 'label.limited' | transloco }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flexField">
+        <label>{{ 'label.search.version' | transloco }}</label>
+        <div>
+          <input
+            type="text"
+            style="width: 100px"
+            cbcVersionMask
+            formControlName="version"
+          />
+        </div>
+      </div>
+    </div>
+  </form>
+
+  @if(!saveAsWindow) {
+  <div class="actions buttons-group custom-buttons-group">
+    <button
+      class="cta"
+      (click)="search()"
+      [class.disabled]="!searchAdvancedForm.valid"
+    >
+      {{ 'label.search' | transloco }}
+    </button>
+    <!-- <button class="button" (click)="saveSearch()">
+      {{ 'label.save' | transloco }}
+    </button>
+    <button class="button" (click)="saveAsWindow=true">
+      {{ 'label.save.as' | transloco }}
+    </button> -->
+  </div>
+  }@if(saveAsWindow) {
+  <div class="save-as-box">
+    <form [formGroup]="searchAdvancedForm" class="save-as-form">
+      <div class="flexField">
+        <label>{{ 'label.search.search.for' | transloco }}</label>
+
+        <input type="text" formControlName="searchName" />
+      </div>
+    </form>
+
+    <div class="actions buttons-group save-as-buttons">
+      <button class="cta" (click)="saveSearch()">
+        {{ 'label.save' | transloco }}
+      </button>
+      <button class="button" (click)="saveAsWindow=false">
+        {{ 'label.cancel' | transloco }}
+      </button>
+    </div>
+  </div>
+  }
+</div>

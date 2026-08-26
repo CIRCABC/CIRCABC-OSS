@@ -1,22 +1,40 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AuthGuard } from 'app/core/auth-guard.service';
-import { AccountComponent } from 'app/me/account/account.component';
-import { UserDashboardComponent } from 'app/me/dashboard/user-dashboard.component';
-import { MeComponent } from 'app/me/me.component';
-import { MyCalendarComponent } from 'app/me/my-calendar/my-calendar.component';
-import { RolesComponent } from 'app/me/roles/roles.component';
+import { canActivateAuth } from 'app/core/auth-guard.service';
 
-const meRoutes: Routes = [
+export const meRoutes: Routes = [
   {
     path: '',
-    component: MeComponent,
-    canActivate: [AuthGuard],
+    loadComponent: () =>
+      import('app/me/me.component').then((m) => m.MeComponent),
+    canActivate: [canActivateAuth],
     children: [
-      { path: '', component: UserDashboardComponent },
-      { path: 'calendar', component: MyCalendarComponent },
-      { path: 'account', component: AccountComponent },
-      { path: 'roles', component: RolesComponent },
+      {
+        path: '',
+        loadComponent: () =>
+          import('app/me/dashboard/user-dashboard.component').then(
+            (m) => m.UserDashboardComponent
+          ),
+      },
+      {
+        path: 'calendar',
+        loadComponent: () =>
+          import('app/me/my-calendar/my-calendar.component').then(
+            (m) => m.MyCalendarComponent
+          ),
+      },
+      {
+        path: 'account',
+        loadComponent: () =>
+          import('app/me/account/account.component').then(
+            (m) => m.AccountComponent
+          ),
+      },
+      {
+        path: 'roles',
+        loadComponent: () =>
+          import('app/me/roles/roles.component').then((m) => m.RolesComponent),
+      },
     ],
   },
 ];

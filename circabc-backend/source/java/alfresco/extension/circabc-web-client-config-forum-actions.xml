@@ -4,7 +4,6 @@
     |  		   http://ec.europa.eu/idabc/en/document/6523
     |
     +-->
-
 <alfresco-config>
 
 	<config>
@@ -44,7 +43,7 @@
          <!-- Actions Menu for Space Details screen -->
          <!-- Actions Menu for Forums Details page -->
          <action-group id="forums_details_actions">
-            <action idref="cut_node" hide="true"/>
+            <action idref="cut_node" hide="true" />
             <action idref="copy_node" hide="true" />
             <action idref="import_space" hide="true" />
             <action idref="export_space" hide="true" />

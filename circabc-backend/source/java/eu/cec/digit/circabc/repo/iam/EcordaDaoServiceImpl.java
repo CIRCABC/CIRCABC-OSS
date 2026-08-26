@@ -16,25 +16,25 @@
  */
 package eu.cec.digit.circabc.repo.iam;
 
-import org.mybatis.spring.SqlSessionTemplate;
-
 import java.util.List;
+import org.mybatis.spring.SqlSessionTemplate;
 
 public class EcordaDaoServiceImpl {
 
-    private SqlSessionTemplate sqlSessionTemplate = null;
+  private SqlSessionTemplate sqlSessionTemplate = null;
 
-    @SuppressWarnings("unchecked")
-    public List<String> getEcordaThemaID(String nodeRef) {
-        return (List<String>)
-                sqlSessionTemplate.selectList(
-                        "CircabcEcorda.select_ecorda_thema_ids_by_ig_node_ref", nodeRef);
-    }
+  @SuppressWarnings("unchecked")
+  public List<String> getEcordaThemaID(String nodeRef) {
+    return (List<String>) sqlSessionTemplate.selectList(
+      "CircabcEcorda.select_ecorda_thema_ids_by_ig_node_ref",
+      nodeRef
+    );
+  }
 
-    /**
-     * @param sqlSessionTemplate the sqlSessionTemplate to set
-     */
-    public void setSqlSessionTemplate(SqlSessionTemplate sqlSessionTemplate) {
-        this.sqlSessionTemplate = sqlSessionTemplate;
-    }
+  /**
+   * @param sqlSessionTemplate the sqlSessionTemplate to set
+   */
+  public void setSqlSessionTemplate(SqlSessionTemplate sqlSessionTemplate) {
+    this.sqlSessionTemplate = sqlSessionTemplate;
+  }
 }

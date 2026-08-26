@@ -1,28 +1,33 @@
-import { Component, OnInit } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {
-  Providers,
-  Msal2Provider,
-  TemplateHelper,
   IProvider,
+  Msal2Provider,
+  Providers,
+  TemplateHelper,
 } from '@microsoft/mgt';
-import { DownloadService } from 'app/core/download.service';
-import { DriveItem } from '@microsoft/microsoft-graph-types';
 import { Client } from '@microsoft/microsoft-graph-client';
+import { DriveItem } from '@microsoft/microsoft-graph-types';
+import { DownloadService } from 'app/core/download.service';
 
-import { OfficeService } from 'app/core/office.service';
+import {
+  MatProgressSpinnerModule,
+  ProgressSpinnerMode,
+} from '@angular/material/progress-spinner';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { ContentService, Node, NodesService } from 'app/core/generated/circabc';
-import { firstValueFrom } from 'rxjs';
+import { LoginService } from 'app/core/login.service';
+import { OfficeService } from 'app/core/office.service';
 import { UploadService } from 'app/core/upload.service';
 import { environment } from 'environments/environment';
-import { ProgressSpinnerMode } from '@angular/material/progress-spinner';
-import { TranslocoService } from '@ngneat/transloco';
-import { LoginService } from 'app/core/login.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-office',
   templateUrl: './office.component.html',
-  styleUrls: ['./office.component.scss'],
+  styleUrl: './office.component.scss',
+  imports: [MatProgressSpinnerModule, TranslocoModule],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class OfficeComponent implements OnInit {
   private id!: string;
@@ -130,7 +135,7 @@ export class OfficeComponent implements OnInit {
     );
     if (!circabcFolderExists) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const circabcRoot: DriveItem = await this.officeService.createFolder(
+      const _circabcRoot: DriveItem = await this.officeService.createFolder(
         graphClient,
         OfficeService.rootFolder
       );
@@ -151,7 +156,7 @@ export class OfficeComponent implements OnInit {
         false
       );
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const result = await this.officeService.deleteFile(
+      const _result = await this.officeService.deleteFile(
         graphClient,
         OfficeService.rootFolder,
         node.name as string

@@ -1,0 +1,13 @@
+Index: projects/web-framework-commons/source/web/modules/editors/tiny_mce/tiny_mce_src.js
+===================================================================
+--- projects/web-framework-commons/source/web/modules/editors/tiny_mce/tiny_mce_src.js	(revision 41708)
++++ projects/web-framework-commons/source/web/modules/editors/tiny_mce/tiny_mce_src.js	(working copy)
+@@ -4581,7 +4581,7 @@
+ 		};
+ 
+ 		self.callNativeHandler = function(id, evt) {
+-			if (events) {
++			if (events && events[id][evt.type]) {
+ 				events[id][evt.type].nativeHandler(evt);
+ 			}
+ 		};

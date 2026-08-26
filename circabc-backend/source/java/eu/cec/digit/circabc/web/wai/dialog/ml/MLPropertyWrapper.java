@@ -23,7 +23,6 @@ package eu.cec.digit.circabc.web.wai.dialog.ml;
 import java.io.Serializable;
 import java.util.Locale;
 
-
 /**
  * Light weight object that represent a single ml property in the User Interface
  *
@@ -31,42 +30,42 @@ import java.util.Locale;
  */
 public class MLPropertyWrapper implements Serializable {
 
-    private static final long serialVersionUID = -3491052998092218918L;
-    private String value;
-    private Locale locale;
+  private static final long serialVersionUID = -3491052998092218918L;
+  private String value;
+  private Locale locale;
 
-    /**
-     * Instanciate a MLPropertyWrapper
-     */
-    public MLPropertyWrapper(String value, Locale locale) {
-        super();
-        this.value = value;
-        this.locale = locale;
-    }
+  /**
+   * Instanciate a MLPropertyWrapper
+   */
+  public MLPropertyWrapper(String value, Locale locale) {
+    super();
+    this.value = value;
+    this.locale = locale;
+  }
 
-    /**
-     * @return the value
-     */
-    public String getValue() {
-        return value;
-    }
+  /**
+   * @return the value
+   */
+  public String getValue() {
+    return value;
+  }
 
-    /**
-     * @return the Locale
-     */
-    public Locale getLocale() {
-        return locale;
-    }
+  /**
+   * @return the Locale
+   */
+  public Locale getLocale() {
+    return locale;
+  }
 
-    /**
-     * @return the Language
-     */
-    public String getLanguage() {
-        return locale == null ? "" : locale.getLanguage();
-    }
+  /**
+   * @return the Language
+   */
+  public String getLanguage() {
+    return locale == null ? "" : locale.getLanguage();
+  }
 
-    @Override
-    public String toString() {
-        return getValue();
-    }
+  @Override
+  public String toString() {
+    return getValue();
+  }
 }

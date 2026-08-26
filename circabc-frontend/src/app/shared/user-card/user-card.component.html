@@ -1,17 +1,16 @@
-<span *ngIf="user && !user.visibility">{{ fullName }}</span>
+@if (user && !user.visibility) {
+<span>{{ fullName }}</span>
+} @if (user && user.visibility) {
 <a
-  *ngIf="user && user.visibility"
+  tabindex="0"
   class="user-link"
-  [class.disabled]="disabled"
+  [class.disabled]="disabled()"
   (click)="toggleVisible()"
   >{{ fullName }}</a
 >
-<section
-  class="user-card"
-  *ngIf="user && visible"
-  [class.right-side]="rightSide"
->
-  <a class="close" (click)="toggleVisible()">x</a>
+} @if (user && visible) {
+<section class="user-card" [class.right-side]="rightSide()">
+  <a tabindex="0" class="close" (click)="toggleVisible()">x</a>
   <div class="avatar">
     <img
       [attr.src]="user.avatar | cbcDownload | cbcSecure"
@@ -29,3 +28,4 @@
     </span>
   </div>
 </section>
+}

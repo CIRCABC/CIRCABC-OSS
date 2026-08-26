@@ -1,13 +1,13 @@
+@if (createSpaceForm !== undefined) {
 <cbc-modal
-  *ngIf="createSpaceForm !== undefined"
   [title]="'add.space.create.space'"
   (ok)="createSpace()"
-  (cancel)="cancelWizard('close')"
+  (cancelModal)="cancelWizard('close')"
   [okLabel]="'label.create'"
   [(visible)]="showWizard"
   [executing]="creating"
   [executingLabel]="'label.creating'"
-  [showOkButton]="createSpaceForm.valid && !creating"
+  [showOkButton]="createSpaceForm.valid && !creating && !dateRequired"
 >
   <form [formGroup]="createSpaceForm">
     <div class="field">
@@ -15,6 +15,7 @@
         >{{ 'label.name' | transloco }}</label
       >
       <input
+        data-cy="name"
         formControlName="name"
         type="text"
         id="name"
@@ -39,6 +40,29 @@
       [textarea]="true"
     ></cbc-multilingual-input>
 
+    <div
+      class="field field--with-icon field--date"
+      style="line-height: 40px; display: flex"
+    >
+      <mat-slide-toggle
+        style="width: 50px"
+        formControlName="expirationDateActived"
+      ></mat-slide-toggle>
+      <label for="expirationDate" style="padding-right: 10px"
+        >{{ 'label.expiration.date' | transloco }}</label
+      >
+
+      @if (createSpaceForm.value.expirationDateActived) {
+      <p-datepicker
+        formControlName="expirationDate"
+        [dateFormat]="'dd/mm/yy'"
+        [placeholder]="'dd/mm/yyyy, HH:mm'"
+        [showIcon]="true"
+        [showTime]="true"
+        [class.expired]="isExpired()"
+      ></p-datepicker>
+      }
+    </div>
     <div class="permission">
       <div class="permission_control">
         <strong>{{ 'label.permissions.manage' | transloco }}</strong>
@@ -48,23 +72,24 @@
           [text]="'label.permissions.inherited.help' | transloco"
         ></cbc-hint>
 
-        <mat-slide-toggle
-          formControlName="managePermited"
-          (click)="setPermissionMsg()"
-        ></mat-slide-toggle>
+        <mat-slide-toggle formControlName="managePermited"></mat-slide-toggle>
         <strong
           >{{ (createSpaceForm.value.managePermited? "label.yes":"label.no") |
           transloco}}</strong
         >
       </div>
       <div class="permission_info_msg">
-        <span *ngIf="createSpaceForm.value.managePermited"
+        @if (createSpaceForm.value.managePermited) {
+        <span
           ><em>{{ 'label.permissions.inherited.true' | transloco }}</em></span
         >
-        <span *ngIf="!createSpaceForm.value.managePermited"
+        } @if (!createSpaceForm.value.managePermited) {
+        <span
           ><em>{{ 'label.permissions.inherited.false' | transloco }}</em></span
         >
+        }
       </div>
     </div>
   </form>
 </cbc-modal>
+}

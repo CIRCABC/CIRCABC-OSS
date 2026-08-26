@@ -2,7 +2,7 @@
   <shortname>CIRCABC group's configuration</shortname>
   <description>The new UI configuration of an Interest group</description>
   <url>/circabc/groups/{id}/configuration</url>
-  <format default="json"/>
+  <format default="json" />
   <authentication>guest</authentication>
   <transaction>required</transaction>
 </webscript>

@@ -1,16 +1,18 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnChanges, SimpleChanges, input } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import { UiMessage } from 'app/core/message/ui-message';
 import { UiMessageService } from 'app/core/message/ui-message.service';
 
 @Component({
   selector: 'cbc-ui-message-rendered',
   templateUrl: './ui-message.renderer.component.html',
-  styleUrls: ['./ui-message.renderer.component.scss'],
+  styleUrl: './ui-message.renderer.component.scss',
   preserveWhitespaces: true,
+  imports: [RouterLink, TranslocoModule],
 })
 export class UiMessageRendererComponent implements OnChanges {
-  @Input()
-  public message!: UiMessage;
+  public readonly message = input.required<UiMessage>();
 
   public constructor(private uiMessageService: UiMessageService) {}
 
@@ -25,15 +27,16 @@ export class UiMessageRendererComponent implements OnChanges {
         }
 
         setTimeout(() => {
-          this.uiMessageService.removeMessage(this.message);
+          this.uiMessageService.removeMessage(this.message());
         }, timeOutIntrevalInMiliSeconds);
       }
     }
   }
 
   public closeMessage(): void {
-    this.message.active = false;
-    this.uiMessageService.removeMessage(this.message);
+    const message = this.message();
+    message.active = false;
+    this.uiMessageService.removeMessage(message);
   }
 
   get imageInfoLink(): string {

@@ -1,23 +1,36 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnChanges,
+  SimpleChanges,
+  input,
+} from '@angular/core';
 
 import {
   EntryEvent,
   GroupDashboardEntry,
-  InterestGroup,
+  type InterestGroup,
   Node as ModelNode,
 } from 'app/core/generated/circabc';
 
+import { DatePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
+import { SimpleNewsCardComponent } from './simple-news-card/simple-news-card.component';
 
 @Component({
   selector: 'cbc-timeline',
   templateUrl: './timeline.component.html',
-  styleUrls: ['./timeline.component.scss'],
+  styleUrl: './timeline.component.scss',
   preserveWhitespaces: true,
+  imports: [RouterLink, SimpleNewsCardComponent, DatePipe, TranslocoModule],
 })
 export class TimelineComponent implements OnChanges {
-  @Input()
-  entries: GroupDashboardEntry[] | undefined;
+  readonly entries = input<GroupDashboardEntry[]>();
+  // TODO: Skipped for migration because:
+  //  This input is used in a control flow expression (e.g. `@if` or `*ngIf`)
+  //  and migrating would break narrowing currently.
   @Input()
   group!: InterestGroup;
 
@@ -68,11 +81,8 @@ export class TimelineComponent implements OnChanges {
         title = match === null ? title : match[1];
       }
       return title === '' ? node.name : title;
-    } else if (
-      node.name !== undefined &&
-      node.name.startsWith('posted') &&
-      node.name.endsWith('.html')
-    ) {
+    }
+    if (node.name?.startsWith('posted') && node.name.endsWith('.html')) {
       // case for the posts
       const postedLength = 'posted-'.length;
       const dateLength = 'dd-MM-yyyy'.length;
@@ -90,10 +100,9 @@ export class TimelineComponent implements OnChanges {
       // eslint-disable-next-line
       const name = `Post ${firstPart} ${secondPart}`;
       return title === '' ? name : title;
-    } else {
-      // just return the name (default)
-      return title === '' ? node.name : title;
     }
+    // just return the name (default)
+    return title === '' ? node.name : title;
   }
 
   public getDestination(node: ModelNode) {
@@ -108,17 +117,13 @@ export class TimelineComponent implements OnChanges {
     ) {
       // for events/meetings
       return 'agenda';
-    } else if (
-      node.name !== undefined &&
-      node.name.startsWith('posted') &&
-      node.name.endsWith('.html')
-    ) {
+    }
+    if (node.name?.startsWith('posted') && node.name.endsWith('.html')) {
       // for posts
       return 'forum/topic';
-    } else {
-      // for library
-      return 'library';
     }
+    // for library
+    return 'library';
   }
 
   public isFile(type: string) {
@@ -148,14 +153,14 @@ export class TimelineComponent implements OnChanges {
   }
 
   private getValidNews() {
-    if (this.entries && this.entries.length > 0) {
-      const news = this.entries[0].news;
+    const entries = this.entries();
+    if (entries && entries.length > 0) {
+      const news = entries[0].news;
       if (news) {
         for (const entry of news) {
           // necessary to remove comments on documents
           if (
-            entry.node &&
-            entry.node.type &&
+            entry.node?.type &&
             !(
               entry.node.service === 'library' &&
               (this.isPost(entry.node.type) || this.isTopic(entry.node.type))
@@ -226,9 +231,8 @@ export class TimelineComponent implements OnChanges {
   public getLibraryEntries() {
     if (this.showAll) {
       return this.libraryEntries;
-    } else {
-      return this.libraryEntries.slice(0, 15);
     }
+    return this.libraryEntries.slice(0, 15);
   }
 
   public showAllFeed() {

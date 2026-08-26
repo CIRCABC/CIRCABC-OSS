@@ -24,19 +24,18 @@ import java.util.Date;
  * @author Yanick Pignot
  */
 public interface AbuseReport {
+  /**
+   * @return the date of the reported abuse
+   */
+  Date getReportDate();
 
-    /**
-     * @return the date of the reported abuse
-     */
-    Date getReportDate();
+  /**
+   * @return the user that are report the abuse
+   */
+  String getReporter();
 
-    /**
-     * @return the user that are report the abuse
-     */
-    String getReporter();
-
-    /**
-     * @return the message (reason of the abuse) filled by the user
-     */
-    String getMessage();
+  /**
+   * @return the message (reason of the abuse) filled by the user
+   */
+  String getMessage();
 }

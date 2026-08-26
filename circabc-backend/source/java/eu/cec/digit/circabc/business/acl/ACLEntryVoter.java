@@ -30,12 +30,16 @@ import net.sf.acegisecurity.vote.AccessDecisionVoter;
  *
  * @author Yanick Pignot
  */
-public class ACLEntryVoter extends org.alfresco.repo.security.permissions.impl.acegi.ACLEntryVoter {
+public class ACLEntryVoter
+  extends org.alfresco.repo.security.permissions.impl.acegi.ACLEntryVoter {
 
-    @Override
-    public int vote(final Authentication authentication, final Object object,
-                    final ConfigAttributeDefinition config) {
-        // TODO to implements
-        return AccessDecisionVoter.ACCESS_ABSTAIN;
-    }
+  @Override
+  public int vote(
+    final Authentication authentication,
+    final Object object,
+    final ConfigAttributeDefinition config
+  ) {
+    // TODO to implements
+    return AccessDecisionVoter.ACCESS_ABSTAIN;
+  }
 }

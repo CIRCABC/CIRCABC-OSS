@@ -56,7 +56,10 @@
         border-radius: 3px;
 
         &:hover {
-          background-color: color.adjust(variables-mixins-keyframes.$button-filled, $lightness: 4%);
+          background-color: color.adjust(
+            variables-mixins-keyframes.$button-filled,
+            $lightness: 4%
+          );
         }
       }
 
@@ -152,7 +155,7 @@
     }
 
     .weekend-day {
-      background: rgb(227 236 244 / 1);
+      background: rgb(156 200 243 / 0.3);
     }
   }
 }

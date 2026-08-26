@@ -1,23 +1,30 @@
 /* eslint-disable max-classes-per-file */
 import { HttpClient } from '@angular/common/http';
+import { Inject, Injectable, NgModule } from '@angular/core';
 import {
-  TRANSLOCO_LOADER,
   Translation,
   TranslocoLoader,
-  TRANSLOCO_CONFIG,
-  translocoConfig,
   TranslocoModule,
-} from '@ngneat/transloco';
-import { Injectable, NgModule } from '@angular/core';
+  provideTransloco,
+} from '@jsverse/transloco';
+import { APP_VERSION } from 'app/core/variables';
 import { environment } from 'environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class TranslocoHttpLoader implements TranslocoLoader {
-  constructor(private http: HttpClient) {}
+  appVersion!: string;
+  constructor(
+    private http: HttpClient,
+    @Inject(APP_VERSION) appVersion: string
+  ) {
+    if (appVersion) {
+      this.appVersion = appVersion;
+    }
+  }
 
   getTranslation(lang: string) {
     return this.http.get<Translation>(
-      `${environment.baseHref}assets/i18n/${lang}.json`
+      `${environment.baseHref}assets/${this.appVersion}/i18n/${lang}.json`
     );
   }
 }
@@ -25,9 +32,8 @@ export class TranslocoHttpLoader implements TranslocoLoader {
 @NgModule({
   exports: [TranslocoModule],
   providers: [
-    {
-      provide: TRANSLOCO_CONFIG,
-      useValue: translocoConfig({
+    provideTransloco({
+      config: {
         availableLangs: [
           'bg',
           'cs',
@@ -63,9 +69,9 @@ export class TranslocoHttpLoader implements TranslocoLoader {
           logMissingKey: true,
           useFallbackTranslation: true,
         },
-      }),
-    },
-    { provide: TRANSLOCO_LOADER, useClass: TranslocoHttpLoader },
+      },
+      loader: TranslocoHttpLoader,
+    }),
   ],
 })
 export class TranslocoRootModule {}

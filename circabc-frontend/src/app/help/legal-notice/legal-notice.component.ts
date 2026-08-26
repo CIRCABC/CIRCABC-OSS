@@ -1,18 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+import { SetTitlePipe } from 'app/shared/pipes/set-title.pipe';
 import { environment } from 'environments/environment';
-import { TranslocoService } from '@ngneat/transloco';
+import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 
 @Component({
   selector: 'cbc-legal-notice',
   templateUrl: './legal-notice.component.html',
-  styleUrls: ['./legal-notice.component.scss'],
+  styleUrl: './legal-notice.component.scss',
+  imports: [NgxExtendedPdfViewerModule, SetTitlePipe, TranslocoModule],
 })
 export class LegalNoticeComponent implements OnInit {
   public step = 'privacy';
   public serverURL = environment.serverURL;
   public urlPSExists = false;
   public urlTOSExists = false;
+  public urlACCESSExists = false;
 
   constructor(
     private actroute: ActivatedRoute,
@@ -23,6 +27,9 @@ export class LegalNoticeComponent implements OnInit {
     this.actroute.paramMap.subscribe((paramns) => {
       if (paramns.get('link') === 'terms') {
         this.step = 'terms';
+      }
+      if (paramns.get('link') === 'accessibility') {
+        this.step = 'accessibility';
       }
     });
     this.fileExists();
@@ -46,6 +53,15 @@ export class LegalNoticeComponent implements OnInit {
     } else {
       this.urlTOSExists = false;
     }
+
+    const requesACCESS = new XMLHttpRequest();
+    requesACCESS.open('HEAD', this.urlACCESS(), false);
+    requesACCESS.send();
+    if (requesACCESS.readyState === 4 && requesACCESS.status === 200) {
+      this.urlACCESSExists = true;
+    } else {
+      this.urlACCESSExists = false;
+    }
   }
 
   urlPS() {
@@ -58,5 +74,11 @@ export class LegalNoticeComponent implements OnInit {
     return `${
       environment.serverURL
     }tos/tos-${this.translateService.getActiveLang()}.pdf`;
+  }
+
+  urlACCESS() {
+    return `${
+      environment.serverURL
+    }access/access-${this.translateService.getActiveLang()}.pdf`;
   }
 }

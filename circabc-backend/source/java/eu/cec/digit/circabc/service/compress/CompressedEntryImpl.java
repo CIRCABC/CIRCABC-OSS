@@ -24,59 +24,60 @@ import org.apache.commons.logging.LogFactory;
 
 public class CompressedEntryImpl implements CompressedEntry {
 
-    private static final Log logger = LogFactory.getLog(CompressedEntryImpl.class);
-    private String fileName;
-    private long fileSize;
-    private long fileCompressedSize;
-    private String comment;
-    private boolean isDirectory;
-    private long crc;
-    private long time;
+  private static final Log logger = LogFactory.getLog(
+    CompressedEntryImpl.class
+  );
+  private String fileName;
+  private long fileSize;
+  private long fileCompressedSize;
+  private String comment;
+  private boolean isDirectory;
+  private long crc;
+  private long time;
 
-    public CompressedEntryImpl(final ZipEntry e) {
-        fileName = e.getName();
-        fileSize = e.getSize();
-        fileCompressedSize = e.getCompressedSize();
-        isDirectory = e.isDirectory();
-        comment = e.getComment();
-        crc = e.getCrc();
-        time = e.getTime();
-        if (logger.isDebugEnabled()) {
-            logger.debug("new Compressed Entry:" + this);
-        }
+  public CompressedEntryImpl(final ZipEntry e) {
+    fileName = e.getName();
+    fileSize = e.getSize();
+    fileCompressedSize = e.getCompressedSize();
+    isDirectory = e.isDirectory();
+    comment = e.getComment();
+    crc = e.getCrc();
+    time = e.getTime();
+    if (logger.isDebugEnabled()) {
+      logger.debug("new Compressed Entry:" + this);
     }
+  }
 
-    public String getFileName() {
-        return fileName;
-    }
+  public String getFileName() {
+    return fileName;
+  }
 
-    public long getFileSize() {
-        return fileSize;
-    }
+  public long getFileSize() {
+    return fileSize;
+  }
 
-    public boolean isDirectory() {
-        return isDirectory;
-    }
+  public boolean isDirectory() {
+    return isDirectory;
+  }
 
-    public String getComment() {
-        return comment;
-    }
+  public String getComment() {
+    return comment;
+  }
 
-    public long getFileCompressedSize() {
-        return fileCompressedSize;
-    }
+  public long getFileCompressedSize() {
+    return fileCompressedSize;
+  }
 
-    public long getCrc() {
-        return crc;
-    }
+  public long getCrc() {
+    return crc;
+  }
 
-    public long getTime() {
-        return time;
-    }
+  public long getTime() {
+    return time;
+  }
 
-    @Override
-    public String toString() {
-
-        return fileName;
-    }
+  @Override
+  public String toString() {
+    return fileName;
+  }
 }

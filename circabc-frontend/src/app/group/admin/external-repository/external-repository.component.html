@@ -1,20 +1,28 @@
-{{ 'admin.tab.document.lifecycle' | transloco | cbcSetTitle }}
+{{ 'admin.tab.external.repositories' | transloco | cbcSetTitle }}
 <span class="span-label">{{ 'label.show' | transloco }}:</span>
 <a
+  tabindex="0"
   class="step-link"
   (click)="showProperties()"
   [class.selected]="isShowProperties()"
 >
   {{ 'label.areslog.properties' | transloco }}
 </a>
-<a class="step-link" (click)="showHistory()" [class.selected]="isShowHistory()">
+<a
+  tabindex="0"
+  class="step-link"
+  (click)="showHistory()"
+  [class.selected]="isShowHistory()"
+>
   {{ 'label.areslog.history' | transloco }}
 </a>
 
-<section *ngIf="isShowProperties()">
+@if (isShowProperties()) {
+<section>
   <cbc-external-repository-properties></cbc-external-repository-properties>
 </section>
-
-<section *ngIf="isShowHistory()">
+} @if (isShowHistory()) {
+<section>
   <cbc-external-repository-history></cbc-external-repository-history>
 </section>
+}

@@ -21,14 +21,13 @@
 package eu.cec.digit.circabc.web.servlet;
 
 import eu.cec.digit.circabc.web.bean.surveys.SurveysBean;
-import org.alfresco.web.app.servlet.BaseServlet;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import java.io.IOException;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import org.alfresco.web.app.servlet.BaseServlet;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * When the user submit an IPM survey, the request is caught by this filter to get all parameters
@@ -39,66 +38,74 @@ import java.io.IOException;
  */
 public class EncodeSurveyFilter implements Filter {
 
-    /**
-     * The logger class*
-     */
-    private static final Log logger = LogFactory
-            .getLog(EncodeSurveyFilter.class);
+  /**
+   * The logger class*
+   */
+  private static final Log logger = LogFactory.getLog(EncodeSurveyFilter.class);
 
-    /**
-     * The SurveysBean back bean name
-     */
-    private static final String SURVEYS_BEAN = "SurveysBean";
+  /**
+   * The SurveysBean back bean name
+   */
+  private static final String SURVEYS_BEAN = "SurveysBean";
 
-    /**
-     * Path to survey jsp file
-     */
-    private static final String ENCODE_PAGE = "/jsp/extension/surveys/survey.jsp";
+  /**
+   * Path to survey jsp file
+   */
+  private static final String ENCODE_PAGE = "/jsp/extension/surveys/survey.jsp";
 
-    /**
-     * Path to survey jsp wai file
-     */
-    private static final String ENCODE_PAGE_WAI = "/jsp/extension/wai/navigation/surveys/survey.jsp";
+  /**
+   * Path to survey jsp wai file
+   */
+  private static final String ENCODE_PAGE_WAI =
+    "/jsp/extension/wai/navigation/surveys/survey.jsp";
 
+  /**
+   * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse,
+   * javax.servlet.FilterChain)
+   */
+  @SuppressWarnings("unchecked")
+  public void doFilter(
+    ServletRequest req,
+    ServletResponse res,
+    FilterChain chain
+  ) throws IOException, ServletException {
+    HttpServletRequest httpReq = (HttpServletRequest) req;
+    HttpServletResponse httpRes = (HttpServletResponse) res;
 
-    /**
-     * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse,
-     * javax.servlet.FilterChain)
-     */
-    @SuppressWarnings("unchecked")
-    public void doFilter(ServletRequest req, ServletResponse res,
-                         FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest httpReq = (HttpServletRequest) req;
-        HttpServletResponse httpRes = (HttpServletResponse) res;
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("filtering " + httpReq.getRequestURI());
-        }
-
-        SurveysBean surveysBean = (SurveysBean) httpReq.getSession().getAttribute(SURVEYS_BEAN);
-
-        surveysBean.setParameters(httpReq.getParameterMap());
-
-        // redirect to the encode page
-        if (surveysBean.isInWAI()) {
-            // TODO CircabcBrowseBean.clickSurvey
-            httpRes.sendRedirect(httpReq.getContextPath() + BaseServlet.FACES_SERVLET + ENCODE_PAGE_WAI);
-        } else {
-            httpRes.sendRedirect(httpReq.getContextPath() + BaseServlet.FACES_SERVLET + ENCODE_PAGE);
-        }
+    if (logger.isDebugEnabled()) {
+      logger.debug("filtering " + httpReq.getRequestURI());
     }
 
-    /**
-     * @see javax.servlet.Filter#destroy()
-     */
-    public void destroy() {
-        // nothing to do
-    }
+    SurveysBean surveysBean = (SurveysBean) httpReq
+      .getSession()
+      .getAttribute(SURVEYS_BEAN);
 
-    /**
-     * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
-     */
-    public void init(FilterConfig config) throws ServletException {
-        // nothing to do
+    surveysBean.setParameters(httpReq.getParameterMap());
+
+    // redirect to the encode page
+    if (surveysBean.isInWAI()) {
+      // TODO CircabcBrowseBean.clickSurvey
+      httpRes.sendRedirect(
+        httpReq.getContextPath() + BaseServlet.FACES_SERVLET + ENCODE_PAGE_WAI
+      );
+    } else {
+      httpRes.sendRedirect(
+        httpReq.getContextPath() + BaseServlet.FACES_SERVLET + ENCODE_PAGE
+      );
     }
+  }
+
+  /**
+   * @see javax.servlet.Filter#destroy()
+   */
+  public void destroy() {
+    // nothing to do
+  }
+
+  /**
+   * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
+   */
+  public void init(FilterConfig config) throws ServletException {
+    // nothing to do
+  }
 }

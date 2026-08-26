@@ -1,25 +1,23 @@
 import {
   Component,
   ElementRef,
-  EventEmitter,
   HostListener,
-  Input,
-  Output,
+  output,
+  input,
 } from '@angular/core';
+import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
   selector: 'cbc-add-permission-dropdown',
   templateUrl: './dropdown.component.html',
-  styleUrls: ['./dropdown.component.scss'],
+  styleUrl: './dropdown.component.scss',
   preserveWhitespaces: true,
+  imports: [TranslocoModule],
 })
 export class DropdownComponent {
-  @Input()
-  public disabled = false;
-  @Output()
-  public readonly launchCreate = new EventEmitter<boolean>();
-  @Output()
-  public readonly clickOutside = new EventEmitter<MouseEvent>();
+  public readonly disabled = input(false);
+  public readonly launchCreate = output<boolean>();
+  public readonly clickOutside = output<MouseEvent>();
 
   private elementRef: ElementRef;
 
@@ -45,7 +43,10 @@ export class DropdownComponent {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public toggleAddDropdown(event: any) {
     // only trigger display or hide when clicking the dropdown-trigger html element
-    if (!this.disabled && event.target.classList.contains('dropdown-trigger')) {
+    if (
+      !this.disabled() &&
+      event.target.classList.contains('dropdown-trigger')
+    ) {
       this.showCreateDropdown = !this.showCreateDropdown;
     }
   }

@@ -1,27 +1,39 @@
-<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+@if (loading) {
+<cbc-horizontal-loader />
+}
 <h2
-  >{{ 'label.memberships' | transloco }}
-  <cbc-spinner *ngIf="loading"></cbc-spinner
-></h2>
+  >{{ 'label.memberships' | transloco }} @if (loading) {
+  <cbc-spinner></cbc-spinner>
+  }</h2
+>
 <div class="actions"> </div>
 <h3>{{ 'explorer.categories' | transloco }}</h3>
-<ul *ngIf="!error">
-  <li *ngFor="let category of categories">
+@if (!error) {
+<ul>
+  @for (category of categories; track category.id) {
+  <li>
     <cbc-category-box
       [category]="category"
-      [userId]="userId"
+      [userId]="userId()"
       (userUninvited)="mustRefresh()"
     ></cbc-category-box>
   </li>
+  }
 </ul>
+}
 <h3>{{ 'label.group' | transloco }}</h3>
-<ul *ngIf="!error">
-  <li *ngFor="let membership of memberships">
+@if (!error) {
+<ul>
+  @for (membership of memberships; track membership) {
+  <li>
     <cbc-group-box
       [membership]="membership"
-      [userId]="userId"
+      [userId]="userId()"
       (userUninvited)="mustRefresh()"
     ></cbc-group-box>
   </li>
+  }
 </ul>
-<p *ngIf="error"> {{ 'label.nothing.to.display' | transloco }} </p>
+} @if (error) {
+<p> {{ 'label.nothing.to.display' | transloco }} </p>
+}

@@ -18,79 +18,91 @@
 package eu.cec.digit.circabc.service.statistics.global;
 
 import eu.cec.digit.circabc.repo.statistics.ig.IgDescriptor;
-import org.alfresco.service.cmr.model.FileInfo;
-import org.alfresco.service.cmr.repository.NodeRef;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import org.alfresco.service.cmr.model.FileInfo;
+import org.alfresco.service.cmr.repository.NodeRef;
 
 /** @author beaurpi */
 public interface GlobalStatisticsService {
+  /**
+   * prepare the space where reports will be stored dataDictionary/Circabc/statistics/reports/
+   *
+   * @throws Exception
+   */
+  void prepareFolderRecipient();
 
-    /**
-     * prepare the space where reports will be stored dataDictionary/Circabc/statistics/reports/
-     *
-     * @throws Exception
-     */
-    void prepareFolderRecipient();
+  /** @return list of data */
+  Map<String, Object> makeGlobalStats();
 
-    /** @return list of data */
-    Map<String, Object> makeGlobalStats();
+  /**
+   * make and save stats into the designed folder
+   *
+   * @param destinationFolder
+   * @param lData
+   * @return noderef of the saved file
+   */
+  NodeRef saveStatsToExcel(
+    NodeRef destinationFolder,
+    Map<String, Object> lData
+  );
 
-    /**
-     * make and save stats into the designed folder
-     *
-     * @param destinationFolder
-     * @param lData
-     * @return noderef of the saved file
-     */
-    NodeRef saveStatsToExcel(NodeRef destinationFolder, Map<String, Object> lData);
+  /** */
+  NodeRef getReportSaveFolder();
 
-    /** */
-    NodeRef getReportSaveFolder();
+  /**
+   * Verify if report folder for statistics exists
+   *
+   * @return
+   */
+  Boolean isReportSaveFolderExisting();
 
-    /**
-     * Verify if report folder for statistics exists
-     *
-     * @return
-     */
-    Boolean isReportSaveFolderExisting();
+  /**
+   * @param username
+   * @return
+   */
+  Date getLastLoginDateOfUser(String username);
 
-    /**
-     * @param username
-     * @return
-     */
-    Date getLastLoginDateOfUser(String username);
+  /** @return Map<String, String> String: File Title, String, download link */
+  List<FileInfo> getListOfReportFiles();
 
-    /** @return Map<String, String> String: File Title, String, download link */
-    List<FileInfo> getListOfReportFiles();
+  /** look and zip files in report folder */
+  void cleanAndZipPreviousReportFiles();
 
-    /** look and zip files in report folder */
-    void cleanAndZipPreviousReportFiles();
+  /** report for more details about all IGs */
+  Map<String, Object> makeDetailedIgStats();
 
-    /** report for more details about all IGs */
-    Map<String, Object> makeDetailedIgStats();
+  /**
+   * *
+   *
+   * @param reportSaveFolder
+   * @param makeDetailedIgStats
+   * @return
+   */
+  NodeRef saveDetailedIgStatsToExcel(
+    NodeRef reportSaveFolder,
+    Map<String, Object> igData
+  );
 
-    /**
-     * *
-     *
-     * @param reportSaveFolder
-     * @param makeDetailedIgStats
-     * @return
-     */
-    NodeRef saveDetailedIgStatsToExcel(NodeRef reportSaveFolder, Map<String, Object> igData);
+  List<NodeRef> getListOfCircabcInterestGroups();
 
-    List<NodeRef> getListOfCircabcInterestGroups();
+  List<FileInfo> getCategoryGroupStatsFiles(
+    String categoryName,
+    NodeRef categoryRef
+  );
 
-    List<FileInfo> getCategoryGroupStatsFiles(String categoryName, NodeRef categoryRef);
+  void prepareCategoryReportsFolderRecipient(
+    String categoryName,
+    NodeRef categoryRef
+  );
 
-    void prepareCategoryReportsFolderRecipient(String categoryName, NodeRef categoryRef);
+  NodeRef getCategoryReportsFolderRecipient(String categoryName);
 
-    NodeRef getCategoryReportsFolderRecipient(String categoryName);
+  List<IgDescriptor> computeCategoryGroupStatistics(NodeRef categoryRef);
 
-    List<IgDescriptor> computeCategoryGroupStatistics(NodeRef categoryRef);
-
-    NodeRef saveCategoryGroupStatistics(
-            List<IgDescriptor> computedCategoryGroupStatistics, String categoryName);
+  NodeRef saveCategoryGroupStatistics(
+    List<IgDescriptor> computedCategoryGroupStatistics,
+    String categoryName
+  );
 }

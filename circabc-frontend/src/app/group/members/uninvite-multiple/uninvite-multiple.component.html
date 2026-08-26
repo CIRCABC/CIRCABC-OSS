@@ -5,13 +5,15 @@
   [okLabel]="'label.remove'"
   [title]="'label.delete.multiple.user'"
   (ok)="deleteMembers()"
-  (cancel)="cancel()"
+  (cancelModal)="cancel()"
 >
   <p> {{ 'members.remove.multiple.confirmation' | transloco }} </p>
   <ul>
-    <li *ngFor="let user of users">
+    @for (user of users(); track user) {
+    <li>
       {{ user.user?.firstname + ' ' + user.user?.lastname + ' [ ' +
       (user.profile?.title | cbcI18n) + ' ] ' }}
     </li>
+    }
   </ul>
 </cbc-modal>

@@ -1,20 +1,22 @@
 import {
   Component,
-  EventEmitter,
   Input,
   OnChanges,
   OnInit,
-  Output,
   SimpleChanges,
+  output,
+  input,
+  OnDestroy,
 } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
   FormGroup,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
 import {
   ActionEmitterResult,
@@ -22,35 +24,57 @@ import {
   ActionType,
 } from 'app/action-result';
 import {
-  MembershipPostDefinition,
   MembersService,
+  MembershipPostDefinition,
   Profile,
   ProfileService,
   User,
+  UserPostDefinition,
   UserProfile,
   UserService,
-  UserPostDefinition,
 } from 'app/core/generated/circabc';
 import { UiMessageService } from 'app/core/message/ui-message.service';
 import { getErrorTranslation, getSuccessTranslation } from 'app/core/util';
-import { ValidationService } from 'app/core/validation.service';
+import {
+  emailValidator,
+  nameValidator,
+  passwordValidator,
+  pastDateTimeValidator,
+  phoneValidator,
+  urlValidator,
+  usernameValidator,
+} from 'app/core/validation.service';
+import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
+import { DataCyDirective } from 'app/shared/directives/data-cy.directive';
+import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { environment } from 'environments/environment';
-import { firstValueFrom } from 'rxjs';
+import { DatePicker } from 'primeng/datepicker';
+import { setupCalendarDateHandling } from 'app/core/util/date-calendar-util';
+import { firstValueFrom, Subscription } from 'rxjs';
 
 @Component({
   selector: 'cbc-create-user',
   templateUrl: './create-user.component.html',
   preserveWhitespaces: true,
+  imports: [
+    ReactiveFormsModule,
+    DataCyDirective,
+    ControlMessageComponent,
+    SpinnerComponent,
+    DatePicker,
+    TranslocoModule,
+    I18nPipe,
+  ],
 })
-export class CreateUserComponent implements OnInit, OnChanges {
+export class CreateUserComponent implements OnInit, OnChanges, OnDestroy {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   public showWizard = false;
-  @Input()
-  public groupId!: string;
-  @Output()
-  public readonly modalHide = new EventEmitter();
-  @Output()
-  public readonly userRestored = new EventEmitter();
+  public readonly groupId = input<string>();
+  public readonly modalHide = output<ActionEmitterResult>();
+  public readonly userRestored = output();
 
   public showCreateWizard = false;
   public showInviteWizard = false;
@@ -61,6 +85,7 @@ export class CreateUserComponent implements OnInit, OnChanges {
   public inviting = false;
   public creating = false;
   public isOSS = false;
+  private dateSubscription!: Subscription;
 
   constructor(
     private fb: FormBuilder,
@@ -76,7 +101,7 @@ export class CreateUserComponent implements OnInit, OnChanges {
       this.isOSS = true;
     }
     this.buildForm();
-    if (this.groupId) {
+    if (this.groupId()) {
       await this.initProfiles();
     }
   }
@@ -84,24 +109,18 @@ export class CreateUserComponent implements OnInit, OnChanges {
   public buildForm(): void {
     this.addUserForm = this.fb.group(
       {
-        username: [
-          '',
-          [Validators.required, ValidationService.usernameValidator],
-        ],
-        firstname: ['', [Validators.required, ValidationService.nameValidator]],
-        lastname: ['', [Validators.required, ValidationService.nameValidator]],
-        email: ['', [Validators.required, ValidationService.emailValidator]],
-        phone: ['', [Validators.required, ValidationService.phoneValidator]],
+        username: ['', [Validators.required, usernameValidator]],
+        firstname: ['', [Validators.required, nameValidator]],
+        lastname: ['', [Validators.required, nameValidator]],
+        email: ['', [Validators.required, emailValidator]],
+        phone: ['', [Validators.required, phoneValidator]],
         title: [''],
         companyId: [''],
-        fax: ['', [ValidationService.phoneValidator]],
-        urlAddress: ['', [ValidationService.urlValidator]],
+        fax: ['', [phoneValidator]],
+        urlAddress: ['', [urlValidator]],
         postalAddress: ['', [Validators.required]],
         description: [''],
-        password: [
-          '',
-          [Validators.required, ValidationService.passwordValidator],
-        ],
+        password: ['', [Validators.required, passwordValidator]],
         passwordVerify: [
           '',
           [
@@ -121,7 +140,7 @@ export class CreateUserComponent implements OnInit, OnChanges {
         userNotifications: [false],
         adminNotifications: [false],
         expiration: [false],
-        expirationDateTime: ['', ValidationService.pastDateTimeValidator],
+        expirationDateTime: ['', pastDateTimeValidator],
       },
       {
         updateOn: 'change',
@@ -137,8 +156,18 @@ export class CreateUserComponent implements OnInit, OnChanges {
         result.setDate(result.getDate() + 1);
         this.notificationForm.controls.expirationDateTime.setValue(result);
         this.notificationForm.controls.expirationDateTime.enable();
+
+        this.dateSubscription = setupCalendarDateHandling(
+          this.notificationForm.controls.expirationDateTime
+        );
       }
     });
+  }
+
+  ngOnDestroy() {
+    if (this.dateSubscription) {
+      this.dateSubscription.unsubscribe();
+    }
   }
 
   private validateVerifyPassword(
@@ -163,8 +192,12 @@ export class CreateUserComponent implements OnInit, OnChanges {
   }
 
   public async initProfiles() {
+    const groupId = this.groupId();
+    if (groupId === undefined) {
+      return;
+    }
     const profiles = await firstValueFrom(
-      this.profileService.getProfiles(this.groupId)
+      this.profileService.getProfiles(groupId)
     );
 
     this.availableProfiles = [];
@@ -211,7 +244,7 @@ export class CreateUserComponent implements OnInit, OnChanges {
     this.showCreateWizard = false;
     this.showInviteWizard = false;
     this.resetForm();
-    this.modalHide.emit();
+    this.modalHide.emit({ result: ActionResult.CANCELED });
   }
 
   public launchInviteWizard() {
@@ -240,14 +273,15 @@ export class CreateUserComponent implements OnInit, OnChanges {
       password: this.addUserForm.controls.password.value,
     };
 
-    if (this.groupId !== undefined) {
-      postData.currentIgId = this.groupId;
+    const groupId = this.groupId();
+    if (groupId !== undefined) {
+      postData.currentIgId = groupId;
     }
 
     try {
       await firstValueFrom(this.userService.postUser(postData));
 
-      if (this.groupId !== undefined) {
+      if (groupId !== undefined) {
         this.launchInviteWizard();
       } else {
         this.cancelWizard();
@@ -258,7 +292,8 @@ export class CreateUserComponent implements OnInit, OnChanges {
       );
       this.uiMessageService.addSuccessMessage(res, true);
     } catch (error) {
-      let messageKey;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let messageKey: any;
       if (error.status === 409) {
         messageKey = error.error.message;
       } else {
@@ -300,21 +335,22 @@ export class CreateUserComponent implements OnInit, OnChanges {
       memberships: [userProfile],
     };
 
-    if (this.groupId !== undefined) {
+    const groupId = this.groupId();
+    if (groupId !== undefined) {
       try {
         if (this.notificationForm.value.expiration === true) {
           const expirationDateTime: string =
             this.notificationForm.value.expirationDateTime.toISOString();
           await firstValueFrom(
             this.membersService.postMember(
-              this.groupId,
+              groupId,
               postData,
               expirationDateTime
             )
           );
         } else {
           await firstValueFrom(
-            this.membersService.postMember(this.groupId, postData)
+            this.membersService.postMember(groupId, postData)
           );
         }
 
@@ -329,7 +365,7 @@ export class CreateUserComponent implements OnInit, OnChanges {
         result.type = ActionType.ADD_MEMBERSHIPS;
         result.result = ActionResult.SUCCEED;
         this.modalHide.emit(result);
-      } catch (error) {
+      } catch (_error) {
         const res = this.translateService.translate(
           getErrorTranslation(ActionType.ADD_MEMBERSHIPS)
         );

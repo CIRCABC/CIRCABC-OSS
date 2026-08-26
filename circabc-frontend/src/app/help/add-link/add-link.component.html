@@ -1,7 +1,7 @@
 <cbc-modal
   [title]="editMode ? 'help.update.link' : 'help.add.link'"
   (ok)="editMode ? updateLink() : createLink()"
-  (cancel)="cancel()"
+  (cancelModal)="cancel()"
   [okLabel]="editMode ? 'label.update' : 'label.create'"
   [(visible)]="showModal"
   [executing]="creating"
@@ -23,10 +23,9 @@
         <span style="color: red">&nbsp;*</span></label
       >
       <input type="url" id="href" formControlName="href" />
-      <cbc-control-message
-        *ngIf="newLinkForm"
-        [control]="hrefControl"
-      ></cbc-control-message>
+      @if (newLinkForm) {
+      <cbc-control-message [control]="hrefControl"></cbc-control-message>
+      }
     </div>
   </form>
 </cbc-modal>

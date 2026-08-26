@@ -19,6 +19,7 @@ export class SaveAsService {
     private loginService: LoginService,
     private httpClient: HttpClient,
     private analyticsService: AnalyticsService,
+
     @Optional()
     @Inject(SERVER_URL)
     serverURL: string
@@ -43,16 +44,18 @@ export class SaveAsService {
       saveAs(xhr.response, name);
     };
     xhr.send();
-    this.analyticsService.trackDownload(fileDownloadURL);
+    this.analyticsService.trackDownload(fileDownloadURL, name);
   }
 
   public saveAsDirect(id: string, name: string) {
     const fileDownloadURL = `${
       this.serverURL
     }rest/download/${id}?ticket=${this.loginService.getTicket()}`;
-    this.analyticsService.trackDownload(fileDownloadURL);
+
+    this.analyticsService.trackDownload(fileDownloadURL, name);
     this.download(fileDownloadURL, name);
   }
+
   public saveUrlAs(url: string, name: string) {
     const xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
@@ -67,7 +70,7 @@ export class SaveAsService {
       saveAs(xhr.response, name);
     };
     xhr.send();
-    this.analyticsService.trackDownload(url);
+    this.analyticsService.trackDownload(url, name);
   }
 
   public async saveUrlAsync(url: string, name: string) {
@@ -89,7 +92,7 @@ export class SaveAsService {
     if (res) {
       saveAs(res, name);
     }
-    this.analyticsService.trackDownload(url);
+    this.analyticsService.trackDownload(url, name);
   }
 
   private download(url: string, fileName: string) {

@@ -1,32 +1,33 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Component,
-  ElementRef,
-  EventEmitter,
-  forwardRef,
-  HostListener,
   Input,
   OnChanges,
   OnInit,
-  Output,
   SimpleChanges,
+  forwardRef,
+  output,
+  input,
 } from '@angular/core';
 import {
   ControlValueAccessor,
   FormBuilder,
   FormGroup,
   NG_VALUE_ACCESSOR,
+  ReactiveFormsModule,
 } from '@angular/forms';
+import { MatMenuModule } from '@angular/material/menu';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   LanguageCodeName,
-  SupportedLangs,
-  WorldLangs,
+  availableLanguages,
+  supportedLanguages,
 } from 'app/shared/langs/supported-langs';
 
 @Component({
   selector: 'cbc-lang-selector',
   templateUrl: './lang-selector.component.html',
-  styleUrls: ['./lang-selector.component.scss'],
+  styleUrl: './lang-selector.component.scss',
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -36,6 +37,7 @@ import {
     },
   ],
   preserveWhitespaces: true,
+  imports: [ReactiveFormsModule, TranslocoModule, MatMenuModule],
 })
 export class LangSelectorComponent
   implements OnInit, OnChanges, ControlValueAccessor
@@ -43,23 +45,20 @@ export class LangSelectorComponent
   public availableLang: LanguageCodeName[] = [];
   public expanded = false;
   public form!: FormGroup;
-  private elementRef: ElementRef;
 
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   public currentLang!: string;
   // false = restricted to EU list of languages, true = world languages
-  @Input()
-  public worldwide = false;
-  @Input()
-  public compactMode = false;
-  @Input()
-  public disabledLangs: string[] = [];
-  @Output()
-  public readonly changedLang: EventEmitter<string> = new EventEmitter();
-  @Output()
-  public readonly clickOutside = new EventEmitter<MouseEvent>();
-  @Input()
-  public disable = false;
+  public readonly worldwide = input(false);
+  public readonly compactMode = input(false);
+  public readonly disabledLangs = input<string[]>([]);
+  public readonly changedLang = output<string>();
+  public readonly clickOutside = output<MouseEvent>();
+  public readonly disable = input(false);
+  public readonly iconColorOnlyBlue = input(false);
+  public readonly noSelectLangOption = input(false);
 
   // impement ControlValueAccessor interface
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -88,9 +87,7 @@ export class LangSelectorComponent
     this.onTouched = fn;
   }
 
-  constructor(private fb: FormBuilder, myElement: ElementRef) {
-    this.elementRef = myElement;
-  }
+  constructor(private fb: FormBuilder) {}
 
   public ngOnInit(): void {
     this.form = this.fb.group(
@@ -102,7 +99,7 @@ export class LangSelectorComponent
       }
     );
 
-    if (this.disable) {
+    if (this.disable()) {
       this.form.disable();
     }
 
@@ -124,15 +121,15 @@ export class LangSelectorComponent
 
   private buildAvailableLands() {
     this.availableLang = [];
-    if (this.worldwide) {
-      for (const lang of WorldLangs.availableLangs) {
-        if (this.disabledLangs.indexOf(lang.code) === -1) {
+    if (this.worldwide()) {
+      for (const lang of availableLanguages) {
+        if (this.disabledLangs().indexOf(lang.code) === -1) {
           this.availableLang.push(lang);
         }
       }
     } else {
-      for (const lang of SupportedLangs.availableLangs) {
-        if (this.disabledLangs.indexOf(lang.code) === -1) {
+      for (const lang of supportedLanguages) {
+        if (this.disabledLangs().indexOf(lang.code) === -1) {
           this.availableLang.push(lang);
         }
       }
@@ -154,20 +151,5 @@ export class LangSelectorComponent
 
   public collapse() {
     this.expanded = false;
-  }
-
-  @HostListener('document:click', ['$event', '$event.target'])
-  public onClick(event: MouseEvent, targetElement: HTMLElement): void {
-    if (!targetElement) {
-      return;
-    }
-
-    const clickedInside = this.elementRef.nativeElement.contains(targetElement);
-    if (targetElement.className === 'iconWorldToggle') {
-      this.expanded = !this.expanded;
-    } else if (!clickedInside) {
-      this.clickOutside.emit(event);
-      this.expanded = false;
-    }
   }
 }

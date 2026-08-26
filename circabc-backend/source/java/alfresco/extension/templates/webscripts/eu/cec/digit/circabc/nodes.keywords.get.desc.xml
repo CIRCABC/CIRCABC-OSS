@@ -2,7 +2,7 @@
   <shortname>get the keywords / tags related to one node</shortname>
   <description>get the keywords / tags related to one node</description>
     <url>/circabc/nodes/{id}/keywords</url>
-  <format default="json"/>
+  <format default="json" />
   <authentication>guest</authentication>
   <transaction>required</transaction>
 </webscript>

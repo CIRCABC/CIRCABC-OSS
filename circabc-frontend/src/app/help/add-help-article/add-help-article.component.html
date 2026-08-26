@@ -1,7 +1,7 @@
 <cbc-modal
   [title]="editMode ? 'help.update.article' : 'help.add.article'"
   (ok)="editMode ? updateArticle() : createArticle()"
-  (cancel)="cancel()"
+  (cancelModal)="cancel()"
   [okLabel]="editMode ? 'label.update' : 'label.create'"
   [(visible)]="showModal"
   [executing]="creating"
@@ -21,12 +21,13 @@
       <label>{{ 'label.content' | transloco }}</label>
       <div class="custom-select select--form">
         <select formControlName="currentLang">
+          @for (lang of availableLangs; track lang.code) {
           <option
-            *ngFor="let lang of availableLangs"
             value="{{ lang.code }}"
             [selected]="lang.code === newArticlForm.value.currentLang"
             >{{ lang.name }}</option
           >
+          }
         </select>
       </div>
       <span class="hint">{{ 'help.add.lang.select.info' | transloco }}</span>

@@ -1,13 +1,15 @@
 import { Location } from '@angular/common';
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, OnInit, output } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
   FormGroup,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
+import { TranslocoModule } from '@jsverse/transloco';
 import { PermissionEvaluatorService } from 'app/core/evaluator/permission-evaluator.service';
 import {
   Node as ModelNode,
@@ -17,17 +19,32 @@ import {
   UserService,
 } from 'app/core/generated/circabc';
 import { LoginService } from 'app/core/login.service';
-import { ValidationService } from 'app/core/validation.service';
+import {
+  fileNameValidator,
+  maxLengthTitleValidator,
+  pastDateValidator,
+  titleValidator,
+} from 'app/core/validation.service';
+import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
+import { MultilingualInputComponent } from 'app/shared/input/multilingual-input.component';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-view-edit-details-topic',
   templateUrl: './view-edit-details-topic.component.html',
   preserveWhitespaces: true,
+  imports: [
+    RouterLink,
+    ReactiveFormsModule,
+    MultilingualInputComponent,
+    ControlMessageComponent,
+    SpinnerComponent,
+    TranslocoModule,
+  ],
 })
 export class ViewEditDetailsTopicComponent implements OnInit {
-  @Output()
-  public readonly topicUpdated = new EventEmitter();
+  public readonly topicUpdated = output();
 
   public topicId!: string;
   public topic!: ModelNode;
@@ -58,16 +75,14 @@ export class ViewEditDetailsTopicComponent implements OnInit {
           '',
           [
             Validators.required,
-            (control: AbstractControl) =>
-              ValidationService.titleValidator(control),
-            (control: AbstractControl) =>
-              ValidationService.maxLengthTitleValidator(control, 50),
+            (control: AbstractControl) => titleValidator(control),
+            (control: AbstractControl) => maxLengthTitleValidator(control, 50),
           ],
         ],
         description: [''],
-        name: ['', [Validators.required, ValidationService.fileNameValidator]],
+        name: ['', [Validators.required, fileNameValidator]],
         securityRanking: [''],
-        expirationDate: ['', ValidationService.pastDateValidator],
+        expirationDate: ['', pastDateValidator],
       },
       {
         updateOn: 'change',
@@ -154,7 +169,7 @@ export class ViewEditDetailsTopicComponent implements OnInit {
     try {
       this.processing = true;
 
-      if (this.topic !== undefined && this.topic.properties !== undefined) {
+      if (this.topic?.properties !== undefined) {
         this.topic.title = this.updateTopicForm.controls.title.value;
         this.topic.description =
           this.updateTopicForm.controls.description.value;
@@ -201,32 +216,28 @@ export class ViewEditDetailsTopicComponent implements OnInit {
   get versionLabel(): string {
     if (this.topic.properties) {
       return this.topic.properties.versionLabel;
-    } else {
-      return '';
     }
+    return '';
   }
 
   get created(): string {
     if (this.topic.properties) {
       return this.cutDate(this.topic.properties.created);
-    } else {
-      return '';
     }
+    return '';
   }
 
   get modified(): string {
     if (this.topic.properties) {
       return this.cutDate(this.topic.properties.modified);
-    } else {
-      return '';
     }
+    return '';
   }
 
   get ismoderated(): string {
     if (this.topic.properties) {
       return this.cutDate(this.topic.properties.ismoderated);
-    } else {
-      return 'false';
     }
+    return 'false';
   }
 }

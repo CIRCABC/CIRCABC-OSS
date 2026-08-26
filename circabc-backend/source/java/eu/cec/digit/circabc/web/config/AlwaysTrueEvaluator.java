@@ -30,8 +30,7 @@ import org.springframework.extensions.config.evaluator.Evaluator;
  */
 public class AlwaysTrueEvaluator implements Evaluator {
 
-    public boolean applies(Object obj, String condition) {
-        return true;
-    }
-
+  public boolean applies(Object obj, String condition) {
+    return true;
+  }
 }

@@ -1,18 +1,22 @@
 import {
   Component,
-  EventEmitter,
   Input,
   OnChanges,
   OnInit,
-  Output,
+  output,
+  input,
 } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
   FormGroup,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 
+import { MatRadioModule } from '@angular/material/radio';
+import { RouterLink } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   EventDefinition,
   EventsService,
@@ -25,28 +29,56 @@ import {
 } from 'app/core/generated/circabc';
 import { LoginService } from 'app/core/login.service';
 import { getFormattedTime } from 'app/core/util';
-import { ValidationService } from 'app/core/validation.service';
-import { SupportedTimezones } from 'app/group/agenda/timezones/supported-timezones';
+import {
+  attendantsValidator,
+  dateInfoValidator,
+  emailValidator,
+  emailsValidator,
+  pastDateValidator,
+  phoneValidator,
+  repeatsSelectedValidator,
+} from 'app/core/validation.service';
+import { TimezoneSelectorComponent } from 'app/group/agenda/timezone/timezone-selector.component';
+import { defaultTimezone } from 'app/group/agenda/timezones/supported-timezones';
+import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
+import { LangSelectorComponent } from 'app/shared/lang/lang-selector.component';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { TreeNode } from 'app/shared/treeview/tree-node';
+import { TreeViewComponent } from 'app/shared/treeview/tree-view.component';
+import { UsersPickerComponent } from 'app/shared/users/users-picker.component';
+import { DatePicker } from 'primeng/datepicker';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-create-event',
   templateUrl: './create-event.component.html',
-  styleUrls: ['./create-event.component.scss'],
+  styleUrl: './create-event.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    ReactiveFormsModule,
+    MatRadioModule,
+    ControlMessageComponent,
+    DatePicker,
+    TimezoneSelectorComponent,
+    LangSelectorComponent,
+    UsersPickerComponent,
+    TreeViewComponent,
+    SpinnerComponent,
+    RouterLink,
+    TranslocoModule,
+  ],
 })
 export class CreateEventComponent implements OnInit, OnChanges {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   public showModal = false;
-  @Output()
-  public readonly modalHide = new EventEmitter();
-  @Output()
-  public readonly eventMeetingSaved = new EventEmitter();
-  @Input()
-  public defaultDate!: Date;
-  @Input()
-  public igId!: string;
+  public readonly modalHide = output();
+  public readonly eventMeetingSaved = output();
+  public readonly defaultDate = input.required<Date>();
+  public readonly igId = input.required<string>();
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   public appointmentTypeEvent = true;
 
@@ -74,6 +106,8 @@ export class CreateEventComponent implements OnInit, OnChanges {
 
   public currentLanguage = 'en';
 
+  public minDate = new Date();
+
   public constructor(
     private formBuilder: FormBuilder,
     private interestGroupService: InterestGroupService,
@@ -99,7 +133,7 @@ export class CreateEventComponent implements OnInit, OnChanges {
   private async loadData() {
     if (this.ig === undefined) {
       this.ig = await firstValueFrom(
-        this.interestGroupService.getInterestGroup(this.igId)
+        this.interestGroupService.getInterestGroup(this.igId())
       );
     }
   }
@@ -132,14 +166,14 @@ export class CreateEventComponent implements OnInit, OnChanges {
         meetingType: ['FaceToFace', Validators.required],
         dateInfo: this.formBuilder.group(
           {
-            date: [this.defaultDate, ValidationService.pastDateValidator],
+            date: [this.defaultDate(), pastDateValidator],
             startTime: [startTimeString],
             endTime: [endTimeString],
           },
-          { validators: ValidationService.dateInfoValidator }
+          { validators: dateInfoValidator }
         ),
         language: ['en'],
-        timezone: [SupportedTimezones.defaultTimezone.value],
+        timezone: [defaultTimezone.value],
         abstract: [''],
         invitationMessage: [''],
         location: [''],
@@ -156,16 +190,16 @@ export class CreateEventComponent implements OnInit, OnChanges {
             everyTime: [2, [Validators.min(2), Validators.max(10)]],
             times: [2, [Validators.min(2), Validators.max(10)]],
           },
-          { validators: ValidationService.repeatsSelectedValidator }
+          { validators: repeatsSelectedValidator }
         ),
         // second wizard step
         attendantsInfo: this.formBuilder.group(
           {
             audienceStatusOpen: [true],
             invitedUsersOrProfiles: [[]],
-            invitedExternalEmails: ['', ValidationService.emailsValidator],
+            invitedExternalEmails: ['', emailsValidator],
           },
-          { validators: ValidationService.attendantsValidator }
+          { validators: attendantsValidator }
         ),
         enableNotification: [false],
         useBCC: [false],
@@ -174,11 +208,8 @@ export class CreateEventComponent implements OnInit, OnChanges {
           `${this.user.firstname} ${this.user.lastname}`,
           Validators.required,
         ],
-        contactPhone: [this.user.phone, [ValidationService.phoneValidator]],
-        contactEmail: [
-          this.user.email,
-          [Validators.required, ValidationService.emailValidator],
-        ],
+        contactPhone: [this.user.phone, [phoneValidator]],
+        contactEmail: [this.user.email, [Validators.required, emailValidator]],
         contactURL: [''],
       },
       {
@@ -192,7 +223,7 @@ export class CreateEventComponent implements OnInit, OnChanges {
   }
 
   private async buildLibrarySectionTree() {
-    if (this.ig && this.ig.libraryId) {
+    if (this.ig?.libraryId) {
       this.path = await firstValueFrom(
         this.nodesService.getPath(this.ig.libraryId)
       );
@@ -255,7 +286,7 @@ export class CreateEventComponent implements OnInit, OnChanges {
     const attendantsInfo = this.newEventForm.controls.attendantsInfo;
     const audienceStatusOpen = attendantsInfo.get('audienceStatusOpen');
     const invitedUsersOrProfiles = attendantsInfo.get('invitedUsersOrProfiles');
-    if (audienceStatusOpen !== null && audienceStatusOpen.value) {
+    if (audienceStatusOpen?.value) {
       if (invitedUsersOrProfiles) {
         invitedUsersOrProfiles.setValue([]);
       }
@@ -327,7 +358,7 @@ export class CreateEventComponent implements OnInit, OnChanges {
 
         // create new event/meeting
         await firstValueFrom(
-          this.eventsService.postEvent(this.igId, eventDefinition)
+          this.eventsService.postEvent(this.igId(), eventDefinition)
         );
       }
 

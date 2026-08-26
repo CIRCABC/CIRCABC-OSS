@@ -1,0 +1,49 @@
+<div style="display: flex">
+  <mat-tab-group
+    mat-stretch-tabs="false"
+    mat-align-tabs="start"
+    animationDuration="0ms"
+    (selectedTabChange)="loadRequests($event)"
+  >
+    <mat-tab [label]="'label.waiting' | transloco "></mat-tab>
+    <mat-tab [label]="'label.approved' | transloco "></mat-tab>
+    <mat-tab [label]="'label.rejected' | transloco "></mat-tab>
+  </mat-tab-group>
+
+  <div class="dropdown-trigger">
+    <img src="img/icon-admin-blue.png" alt="Settings" />
+    <div class="dropdown dropdown--library-settings">
+      <div class="number-of-items">
+        {{ 'label.show' | transloco }}:
+        <a tabindex="0" (click)="changeLimit(5)">5</a>
+        <a tabindex="0" (click)="changeLimit(10)">10</a>
+        <a tabindex="0" (click)="changeLimit(25)">25</a>
+        <a tabindex="0" (click)="changeLimit(50)">50</a>
+        <a tabindex="0" (click)="changeLimit(-1)">All</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+@if (loading) {
+<cbc-horizontal-loader />
+} @if (requests) {
+
+<section class="request-container" data-cy="ig-request">
+  @for (request of requests.data; track request.id) {
+
+  <cbc-group-request-delete-element
+    [request]="request"
+    [categoryId]="categoryId"
+    (reloadGroupRequests)="reloadGroupRequests()"
+  ></cbc-group-request-delete-element>
+  }
+</section>
+}
+
+<cbc-pager
+  [length]="requests.total"
+  [pageSize]="listingOptions.limit"
+  [page]="listingOptions.page"
+  (pageChange)="goToPage($event)"
+/>

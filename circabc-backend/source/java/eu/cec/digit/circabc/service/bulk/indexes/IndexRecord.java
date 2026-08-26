@@ -19,172 +19,171 @@ package eu.cec.digit.circabc.service.bulk.indexes;
 import java.util.List;
 
 public interface IndexRecord {
+  void addIndexEntry(final IndexEntry indexEntry);
 
-    void addIndexEntry(final IndexEntry indexEntry);
+  List<IndexEntry> getIndexEntries();
 
-    List<IndexEntry> getIndexEntries();
+  IndexEntry getEntry(final String headerName);
 
-    IndexEntry getEntry(final String headerName);
+  /* Predefined Index accessor */
 
-    /* Predefined Index accessor */
+  String getName();
 
-    String getName();
+  void setName(final String value);
 
-    void setName(final String value);
+  String getTitle();
 
-    String getTitle();
+  void setTitle(final String value);
 
-    void setTitle(final String value);
+  String getDescription();
 
-    String getDescription();
+  void setDescription(final String value);
 
-    void setDescription(final String value);
+  String getDocLang();
 
-    String getDocLang();
+  void setDocLang(final String value);
 
-    void setDocLang(final String value);
+  String getAuthor();
 
-    String getAuthor();
+  void setAuthor(final String value);
 
-    void setAuthor(final String value);
+  String getKeywords();
 
-    String getKeywords();
+  void setKeywords(final String value);
 
-    void setKeywords(final String value);
+  String getStatus();
 
-    String getStatus();
+  void setStatus(final String value);
 
-    void setStatus(final String value);
+  String getIssueDate();
 
-    String getIssueDate();
+  void setIssueDate(final String value);
 
-    void setIssueDate(final String value);
+  String getReference();
 
-    String getReference();
+  void setReference(final String value);
 
-    void setReference(final String value);
+  String getExpirationDate();
 
-    String getExpirationDate();
+  void setExpirationDate(final String value);
 
-    void setExpirationDate(final String value);
+  String getSecurityRanking();
 
-    String getSecurityRanking();
+  void setSecurityRanking(final String value);
 
-    void setSecurityRanking(final String value);
+  String getAttri1();
 
-    String getAttri1();
+  void setAttri1(final String value);
 
-    void setAttri1(final String value);
+  String getAttri2();
 
-    String getAttri2();
+  void setAttri2(final String value);
 
-    void setAttri2(final String value);
+  String getAttri3();
 
-    String getAttri3();
+  void setAttri3(final String value);
 
-    void setAttri3(final String value);
+  String getAttri4();
 
-    String getAttri4();
+  void setAttri4(final String value);
 
-    void setAttri4(final String value);
+  String getAttri5();
 
-    String getAttri5();
+  void setAttri5(final String value);
 
-    void setAttri5(final String value);
+  String getAttri6();
 
-    String getAttri6();
+  void setAttri6(final String value);
 
-    void setAttri6(final String value);
+  String getAttri7();
 
-    String getAttri7();
+  void setAttri7(final String value);
 
-    void setAttri7(final String value);
+  String getAttri8();
 
-    String getAttri8();
+  void setAttri8(final String value);
 
-    void setAttri8(final String value);
+  String getAttri9();
 
-    String getAttri9();
+  void setAttri9(final String value);
 
-    void setAttri9(final String value);
+  String getAttri10();
 
-    String getAttri10();
+  void setAttri10(final String value);
 
-    void setAttri10(final String value);
+  String getAttri11();
 
-    String getAttri11();
+  void setAttri11(final String value);
 
-    void setAttri11(final String value);
+  String getAttri12();
 
-    String getAttri12();
+  void setAttri12(final String value);
 
-    void setAttri12(final String value);
+  String getAttri13();
 
-    String getAttri13();
+  void setAttri13(final String value);
 
-    void setAttri13(final String value);
+  String getAttri14();
 
-    String getAttri14();
+  void setAttri14(final String value);
 
-    void setAttri14(final String value);
+  String getAttri15();
 
-    String getAttri15();
+  void setAttri15(final String value);
 
-    void setAttri15(final String value);
+  String getAttri16();
 
-    String getAttri16();
+  void setAttri16(final String value);
 
-    void setAttri16(final String value);
+  String getAttri17();
 
-    String getAttri17();
+  void setAttri17(final String value);
 
-    void setAttri17(final String value);
+  String getAttri18();
 
-    String getAttri18();
+  void setAttri18(final String value);
 
-    void setAttri18(final String value);
+  String getAttri19();
 
-    String getAttri19();
+  void setAttri19(final String value);
 
-    void setAttri19(final String value);
+  String getAttri20();
 
-    String getAttri20();
+  void setAttri20(final String value);
 
-    void setAttri20(final String value);
+  String getTypeDocument();
 
-    String getTypeDocument();
+  void setTypeDocument(final String value);
 
-    void setTypeDocument(final String value);
+  String getTranslator();
 
-    String getTranslator();
+  void setTranslator(final String value);
 
-    void setTranslator(final String value);
+  String getIndexRecordDocLang();
 
-    String getIndexRecordDocLang();
+  void setIndexRecordDocLang(final String value);
 
-    void setIndexRecordDocLang(final String value);
+  String getNoContent();
 
-    String getNoContent();
+  void setNoContent(final String value);
 
-    void setNoContent(final String value);
+  String getOriLang();
 
-    String getOriLang();
+  void setOriLang(final String value);
 
-    void setOriLang(final String value);
+  String getRelTrans();
 
-    String getRelTrans();
+  void setRelTrans(final String value);
 
-    void setRelTrans(final String value);
+  String getOverwrite();
 
-    String getOverwrite();
+  void setOverwrite(final String value);
 
-    void setOverwrite(final String value);
+  int getRowNumber();
 
-    int getRowNumber();
+  void setDynamicProperty(int index, final String value);
 
-    void setDynamicProperty(int index, final String value);
+  String getDynamicProperty(int index);
 
-    String getDynamicProperty(int index);
-
-    String toString();
+  String toString();
 }

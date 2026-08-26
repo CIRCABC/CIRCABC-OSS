@@ -28,42 +28,55 @@ import org.alfresco.service.namespace.QName;
  * @author Yanick Pignot
  */
 public interface KeywordModel extends BaseCircabcModel {
+  /**
+   * Circabc Keywords namespace
+   */
+  String CIRCABC_KEYWORD_MODEL_1_0_URI =
+    CIRCABC_NAMESPACE + "/model/keyword/1.0";
 
-    /**
-     * Circabc Keywords namespace
-     */
-    String CIRCABC_KEYWORD_MODEL_1_0_URI = CIRCABC_NAMESPACE + "/model/keyword/1.0";
+  /**
+   * Circabc Keywords prefix
+   */
+  String CIRCABC_KEYWORD_MODEL_PREFIX = "kw";
 
-    /**
-     * Circabc Keywords prefix
-     */
-    String CIRCABC_KEYWORD_MODEL_PREFIX = "kw";
+  /**
+   * Circabc Keywords root container
+   */
+  QName TYPE_KEYWORD_CONTAINER = QName.createQName(
+    CIRCABC_KEYWORD_MODEL_1_0_URI,
+    "keywordContainer"
+  );
 
-    /**
-     * Circabc Keywords root container
-     */
-    QName TYPE_KEYWORD_CONTAINER = QName
-            .createQName(CIRCABC_KEYWORD_MODEL_1_0_URI, "keywordContainer");
+  /**
+   * Circabc Keywords element
+   */
+  QName TYPE_KEYWORD = QName.createQName(
+    CIRCABC_KEYWORD_MODEL_1_0_URI,
+    "keyword"
+  );
 
-    /**
-     * Circabc Keywords element
-     */
-    QName TYPE_KEYWORD = QName.createQName(CIRCABC_KEYWORD_MODEL_1_0_URI, "keyword");
+  /**
+   * Circabc Keywords association beetween the root container and the keyword elements
+   */
+  QName ASSOC_KEYWORDS = QName.createQName(
+    CIRCABC_KEYWORD_MODEL_1_0_URI,
+    "keywords"
+  );
 
-    /**
-     * Circabc Keywords association beetween the root container and the keyword elements
-     */
-    QName ASSOC_KEYWORDS = QName.createQName(CIRCABC_KEYWORD_MODEL_1_0_URI, "keywords");
+  /**
+   * Circabc Keywords association beetween the keyword elements and another keyword elements (Not
+   * used yet)
+   */
+  QName ASSOC_SUB_KEYWORDS = QName.createQName(
+    CIRCABC_KEYWORD_MODEL_1_0_URI,
+    "subkeywords"
+  );
 
-    /**
-     * Circabc Keywords association beetween the keyword elements and another keyword elements (Not
-     * used yet)
-     */
-    QName ASSOC_SUB_KEYWORDS = QName.createQName(CIRCABC_KEYWORD_MODEL_1_0_URI, "subkeywords");
-
-    /**
-     * Circabc keyword properties that define if the keyword is multilingal or not
-     */
-    QName PROP_TRANSLATED = QName.createQName(CIRCABC_KEYWORD_MODEL_1_0_URI, "translated");
-
+  /**
+   * Circabc keyword properties that define if the keyword is multilingal or not
+   */
+  QName PROP_TRANSLATED = QName.createQName(
+    CIRCABC_KEYWORD_MODEL_1_0_URI,
+    "translated"
+  );
 }

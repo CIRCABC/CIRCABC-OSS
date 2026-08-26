@@ -5,3 +5,5 @@ logs
 mysql/data/
 tomcat/volumes/
 tomcat-dev/dist
+tomcat/dist
+weblogic/dist

@@ -19,8 +19,7 @@ package eu.cec.digit.circabc.service.bulk.indexes;
 import eu.cec.digit.circabc.service.bulk.indexes.message.ValidationMessage;
 
 public interface HeaderValidator {
+  boolean validate(final IndexEntry indexRecord);
 
-    boolean validate(final IndexEntry indexRecord);
-
-    ValidationMessage getValidationMessage();
+  ValidationMessage getValidationMessage();
 }

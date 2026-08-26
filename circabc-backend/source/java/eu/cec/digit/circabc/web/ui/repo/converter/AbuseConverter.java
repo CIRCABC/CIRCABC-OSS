@@ -21,14 +21,13 @@
 package eu.cec.digit.circabc.web.ui.repo.converter;
 
 import eu.cec.digit.circabc.service.newsgroup.AbuseReport;
-import org.alfresco.web.app.Application;
-
+import java.text.MessageFormat;
+import java.util.List;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
-import java.text.MessageFormat;
-import java.util.List;
+import org.alfresco.web.app.Application;
 
 /**
  * Convertor for an abuse
@@ -37,44 +36,54 @@ import java.util.List;
  */
 public class AbuseConverter implements Converter {
 
-    /**
-     * <p>The standard converter id for this converter.</p>
-     */
-    public static final String CONVERTER_ID = "eu.cec.digit.circabc.faces.AbuseConverter";
-    private static final String MSG_REPORT = "post_moderation_abuse_html_detail";
+  /**
+   * <p>The standard converter id for this converter.</p>
+   */
+  public static final String CONVERTER_ID =
+    "eu.cec.digit.circabc.faces.AbuseConverter";
+  private static final String MSG_REPORT = "post_moderation_abuse_html_detail";
 
-    public static String getAsString(final FacesContext fc, final AbuseReport report) {
-        return MessageFormat.format(Application.getMessage(fc, MSG_REPORT),
-                report.getReporter(),
-                report.getReportDate(),
-                report.getMessage().replace("\n", " "));
+  public static String getAsString(
+    final FacesContext fc,
+    final AbuseReport report
+  ) {
+    return MessageFormat.format(
+      Application.getMessage(fc, MSG_REPORT),
+      report.getReporter(),
+      report.getReportDate(),
+      report.getMessage().replace("\n", " ")
+    );
+  }
+
+  public Object getAsObject(
+    final FacesContext context,
+    final UIComponent comp,
+    final String value
+  ) throws ConverterException {
+    return value;
+  }
+
+  public String getAsString(
+    final FacesContext context,
+    final UIComponent component,
+    final Object object
+  ) throws ConverterException {
+    if (object == null) {
+      return null;
     }
 
-    public Object getAsObject(final FacesContext context, final UIComponent comp, final String value)
-            throws ConverterException {
-        return value;
-    }
+    final StringBuilder buff = new StringBuilder("");
 
-    public String getAsString(final FacesContext context, final UIComponent component,
-                              final Object object) throws ConverterException {
-
-        if (object == null) {
-            return null;
+    if (object instanceof List) {
+      for (Object obj : (List) object) {
+        if (obj instanceof AbuseReport) {
+          buff.append(getAsString(context, (AbuseReport) obj)).append("\n");
         }
-
-        final StringBuilder buff = new StringBuilder("");
-
-        if (object instanceof List) {
-            for (Object obj : (List) object) {
-                if (obj instanceof AbuseReport) {
-                    buff.append(getAsString(context, (AbuseReport) obj)).append("\n");
-                }
-            }
-        } else if (object instanceof AbuseReport) {
-            buff.append(getAsString(context, (AbuseReport) object));
-        }
-
-        return buff.toString();
+      }
+    } else if (object instanceof AbuseReport) {
+      buff.append(getAsString(context, (AbuseReport) object));
     }
 
+    return buff.toString();
+  }
 }

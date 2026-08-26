@@ -44,6 +44,9 @@
  */
 package eu.cec.digit.circabc.web.wai.dialog.trashcan;
 
+import java.text.MessageFormat;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import net.sf.acegisecurity.Authentication;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.web.app.Application;
@@ -51,94 +54,106 @@ import org.alfresco.web.bean.repository.Node;
 import org.alfresco.web.bean.repository.Repository;
 import org.alfresco.web.ui.common.Utils;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
-import java.text.MessageFormat;
-
 public class TrashcanDeleteItemDialog extends TrashcanDialog {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = -4444219472481687089L;
-    private static final String RICHLIST_ID = "trashcan-list";
-    private static final String RICHLIST_MSG_ID = "trashcan" + ':' + RICHLIST_ID;
-    private static final String MSG_YES = "yes";
-    private static final String MSG_NO = "no";
-    private static final String MSG_DELETE_ITEM = "delete_item";
+  /**
+   *
+   */
+  private static final long serialVersionUID = -4444219472481687089L;
+  private static final String RICHLIST_ID = "trashcan-list";
+  private static final String RICHLIST_MSG_ID = "trashcan" + ':' + RICHLIST_ID;
+  private static final String MSG_YES = "yes";
+  private static final String MSG_NO = "no";
+  private static final String MSG_DELETE_ITEM = "delete_item";
 
-    private String deleteItem(FacesContext newContext, String newOutcome) {
-        Node item = property.getItem();
-        if (item != null) {
-            try {
-                property.getNodeArchiveService().purgeArchivedNode(item.getNodeRef());
+  private String deleteItem(FacesContext newContext, String newOutcome) {
+    Node item = property.getItem();
+    if (item != null) {
+      try {
+        property.getNodeArchiveService().purgeArchivedNode(item.getNodeRef());
 
-                FacesContext fc = newContext;
-                String msg = MessageFormat
-                        .format(Application.getMessage(fc, "delete_item_success"), item.getName());
-                FacesMessage facesMsg = new FacesMessage(FacesMessage.SEVERITY_INFO, msg, msg);
-                fc.addMessage(RICHLIST_MSG_ID, facesMsg);
-            } catch (Throwable err) {
-                Utils.addErrorMessage(MessageFormat
-                                .format(Application.getMessage(newContext, Repository.ERROR_GENERIC), err.getMessage()),
-                        err);
-            }
-        }
-        return newOutcome;
+        FacesContext fc = newContext;
+        String msg = MessageFormat.format(
+          Application.getMessage(fc, "delete_item_success"),
+          item.getName()
+        );
+        FacesMessage facesMsg = new FacesMessage(
+          FacesMessage.SEVERITY_INFO,
+          msg,
+          msg
+        );
+        fc.addMessage(RICHLIST_MSG_ID, facesMsg);
+      } catch (Throwable err) {
+        Utils.addErrorMessage(
+          MessageFormat.format(
+            Application.getMessage(newContext, Repository.ERROR_GENERIC),
+            err.getMessage()
+          ),
+          err
+        );
+      }
     }
+    return newOutcome;
+  }
 
-    @Override
-    protected String finishImpl(FacesContext context, String outcome) throws Exception {
-        Authentication originalFullAuthentication = AuthenticationUtil.getFullAuthentication();
-        String userName = AuthenticationUtil.getRunAsUser();
-        try {
-            AuthenticationUtil.setRunAsUserSystem();
-            deleteItem(context, outcome);
-            return "wai:dialog:close";
-        } finally {
-            if (originalFullAuthentication == null) {
-                AuthenticationUtil.clearCurrentSecurityContext();
-            } else {
-                AuthenticationUtil.setFullAuthentication(originalFullAuthentication);
-                AuthenticationUtil.setRunAsUser(userName);
-            }
-        }
-
+  @Override
+  protected String finishImpl(FacesContext context, String outcome)
+    throws Exception {
+    Authentication originalFullAuthentication =
+      AuthenticationUtil.getFullAuthentication();
+    String userName = AuthenticationUtil.getRunAsUser();
+    try {
+      AuthenticationUtil.setRunAsUserSystem();
+      deleteItem(context, outcome);
+      return "wai:dialog:close";
+    } finally {
+      if (originalFullAuthentication == null) {
+        AuthenticationUtil.clearCurrentSecurityContext();
+      } else {
+        AuthenticationUtil.setFullAuthentication(originalFullAuthentication);
+        AuthenticationUtil.setRunAsUser(userName);
+      }
     }
+  }
 
-    @Override
-    public String getCancelButtonLabel() {
-        return Application.getMessage(FacesContext.getCurrentInstance(), MSG_NO);
+  @Override
+  public String getCancelButtonLabel() {
+    return Application.getMessage(FacesContext.getCurrentInstance(), MSG_NO);
+  }
+
+  @Override
+  public boolean getFinishButtonDisabled() {
+    return false;
+  }
+
+  @Override
+  public String getFinishButtonLabel() {
+    return Application.getMessage(FacesContext.getCurrentInstance(), MSG_YES);
+  }
+
+  @Override
+  public String getContainerTitle() {
+    Authentication originalFullAuthentication =
+      AuthenticationUtil.getFullAuthentication();
+    String userName = AuthenticationUtil.getRunAsUser();
+    try {
+      AuthenticationUtil.setRunAsUserSystem();
+      return (
+        Application.getMessage(
+          FacesContext.getCurrentInstance(),
+          MSG_DELETE_ITEM
+        ) +
+        " '" +
+        property.getItem().getName() +
+        "'"
+      );
+    } finally {
+      if (originalFullAuthentication == null) {
+        AuthenticationUtil.clearCurrentSecurityContext();
+      } else {
+        AuthenticationUtil.setFullAuthentication(originalFullAuthentication);
+        AuthenticationUtil.setRunAsUser(userName);
+      }
     }
-
-    @Override
-    public boolean getFinishButtonDisabled() {
-
-        return false;
-    }
-
-    @Override
-    public String getFinishButtonLabel() {
-        return Application.getMessage(FacesContext.getCurrentInstance(), MSG_YES);
-    }
-
-    @Override
-    public String getContainerTitle() {
-
-        Authentication originalFullAuthentication = AuthenticationUtil.getFullAuthentication();
-        String userName = AuthenticationUtil.getRunAsUser();
-        try {
-            AuthenticationUtil.setRunAsUserSystem();
-            return Application.getMessage(FacesContext.getCurrentInstance(), MSG_DELETE_ITEM) + " '"
-                    + property.getItem().getName() + "'";
-        } finally {
-            if (originalFullAuthentication == null) {
-                AuthenticationUtil.clearCurrentSecurityContext();
-            } else {
-                AuthenticationUtil.setFullAuthentication(originalFullAuthentication);
-                AuthenticationUtil.setRunAsUser(userName);
-            }
-        }
-    }
-
+  }
 }

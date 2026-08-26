@@ -16,6 +16,12 @@
  */
 package eu.cec.digit.circabc.repo.model;
 
+import static eu.cec.digit.circabc.model.DocumentModel.ASPECT_URLABLE;
+import static eu.cec.digit.circabc.model.DocumentModel.PROP_URL;
+
+import java.io.Serializable;
+import java.text.MessageFormat;
+import java.util.Map;
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.content.ContentServicePolicies;
@@ -32,115 +38,124 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.Serializable;
-import java.text.MessageFormat;
-import java.util.Map;
-
-import static eu.cec.digit.circabc.model.DocumentModel.ASPECT_URLABLE;
-import static eu.cec.digit.circabc.model.DocumentModel.PROP_URL;
-
 /**
  * URL model aspect behaviour. You should synchronize the content of the URL with its url property.
  *
  * @author David Ferraz
  */
 public class UrlModelAspect
-        implements ContentServicePolicies.OnContentUpdatePolicy,
-        NodeServicePolicies.OnUpdatePropertiesPolicy {
+  implements
+    ContentServicePolicies.OnContentUpdatePolicy,
+    NodeServicePolicies.OnUpdatePropertiesPolicy {
 
-    /**
-     * content of the HTML container of an URL
-     */
-    public static final String URL_FIXED_CONTENT =
-            "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">"
-                    + "<html> <head> <meta content=\"text/html; charset=UTF-8\" http-equiv=\"content-type\">"
-                    + "<meta http-equiv=\"refresh\" content=\"0;url={0}\"></head><body></body></html>";
+  /**
+   * content of the HTML container of an URL
+   */
+  public static final String URL_FIXED_CONTENT =
+    "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">" +
+    "<html> <head> <meta content=\"text/html; charset=UTF-8\" http-equiv=\"content-type\">" +
+    "<meta http-equiv=\"refresh\" content=\"0;url={0}\"></head><body></body></html>";
 
-    private static final Log logger = LogFactory.getLog(UrlModelAspect.class);
+  private static final Log logger = LogFactory.getLog(UrlModelAspect.class);
 
-    /**
-     * The policy component
-     */
-    private PolicyComponent policyComponent;
+  /**
+   * The policy component
+   */
+  private PolicyComponent policyComponent;
 
-    private BehaviourFilter policyBehaviourFilter;
-    private ContentService contentService;
+  private BehaviourFilter policyBehaviourFilter;
+  private ContentService contentService;
 
-    /**
-     * Spring initialise method used to register the policy behaviours
-     */
-    public void init() {
-        // registers the policy behaviours
-        policyComponent.bindClassBehaviour(
-                QName.createQName(NamespaceService.ALFRESCO_URI, "onContentUpdate"),
-                ASPECT_URLABLE,
-                new JavaBehaviour(this, "onContentUpdate"));
-        policyComponent.bindClassBehaviour(
-                QName.createQName(NamespaceService.ALFRESCO_URI, "onUpdateProperties"),
-                ASPECT_URLABLE,
-                new JavaBehaviour(this, "onUpdateProperties"));
-    }
+  /**
+   * Spring initialise method used to register the policy behaviours
+   */
+  public void init() {
+    // registers the policy behaviours
+    policyComponent.bindClassBehaviour(
+      QName.createQName(NamespaceService.ALFRESCO_URI, "onContentUpdate"),
+      ASPECT_URLABLE,
+      new JavaBehaviour(this, "onContentUpdate")
+    );
+    policyComponent.bindClassBehaviour(
+      QName.createQName(NamespaceService.ALFRESCO_URI, "onUpdateProperties"),
+      ASPECT_URLABLE,
+      new JavaBehaviour(this, "onUpdateProperties")
+    );
+  }
 
-    /**
-     * Set the policy component
-     *
-     * @param policyComponent the policy component
-     */
-    public void setPolicyComponent(final PolicyComponent policyComponent) {
-        this.policyComponent = policyComponent;
-    }
+  /**
+   * Set the policy component
+   *
+   * @param policyComponent the policy component
+   */
+  public void setPolicyComponent(final PolicyComponent policyComponent) {
+    this.policyComponent = policyComponent;
+  }
 
-    public void onContentUpdate(final NodeRef nodeRef, final boolean newContent) {
-        throw new AlfrescoRuntimeException("Impossible to update manually the content of an URL");
-    }
+  public void onContentUpdate(final NodeRef nodeRef, final boolean newContent) {
+    throw new AlfrescoRuntimeException(
+      "Impossible to update manually the content of an URL"
+    );
+  }
 
-    public void onUpdateProperties(
-            final NodeRef nodeRef,
-            final Map<QName, Serializable> before,
-            final Map<QName, Serializable> after) {
-        if (after != null && after.containsKey(PROP_URL)) {
-            final Serializable newUrl = after.get(PROP_URL);
-            final Serializable oldUrl = (before == null) ? null : before.get(PROP_URL);
+  public void onUpdateProperties(
+    final NodeRef nodeRef,
+    final Map<QName, Serializable> before,
+    final Map<QName, Serializable> after
+  ) {
+    if (after != null && after.containsKey(PROP_URL)) {
+      final Serializable newUrl = after.get(PROP_URL);
+      final Serializable oldUrl = (before == null)
+        ? null
+        : before.get(PROP_URL);
 
-            if (newUrl != null && !newUrl.equals(oldUrl)) {
-                // sets the content to be written
-                final ContentWriter writer =
-                        contentService.getWriter(nodeRef, ContentModel.PROP_CONTENT, true);
+      if (newUrl != null && !newUrl.equals(oldUrl)) {
+        // sets the content to be written
+        final ContentWriter writer = contentService.getWriter(
+          nodeRef,
+          ContentModel.PROP_CONTENT,
+          true
+        );
 
-                try {
-                    this.policyBehaviourFilter.disableBehaviour(nodeRef, ASPECT_URLABLE);
+        try {
+          this.policyBehaviourFilter.disableBehaviour(nodeRef, ASPECT_URLABLE);
 
-                    // sets the mimetype and encoding
-                    writer.setMimetype(MimetypeMap.MIMETYPE_HTML);
-                    writer.setEncoding("UTF-8");
-                    writer.putContent(MessageFormat.format(URL_FIXED_CONTENT, new Object[]{newUrl}));
+          // sets the mimetype and encoding
+          writer.setMimetype(MimetypeMap.MIMETYPE_HTML);
+          writer.setEncoding("UTF-8");
+          writer.putContent(
+            MessageFormat.format(URL_FIXED_CONTENT, new Object[] { newUrl })
+          );
 
-                    if (logger.isDebugEnabled()) {
-                        logger.debug(
-                                "Updating URL description file"
-                                        + "\n Old URL : "
-                                        + oldUrl.toString()
-                                        + "\n New URL: "
-                                        + newUrl.toString());
-                    }
-                } finally {
-                    this.policyBehaviourFilter.enableBehaviour(nodeRef, ASPECT_URLABLE);
-                }
-            }
+          if (logger.isDebugEnabled()) {
+            logger.debug(
+              "Updating URL description file" +
+              "\n Old URL : " +
+              oldUrl.toString() +
+              "\n New URL: " +
+              newUrl.toString()
+            );
+          }
+        } finally {
+          this.policyBehaviourFilter.enableBehaviour(nodeRef, ASPECT_URLABLE);
         }
+      }
     }
+  }
 
-    /**
-     * @param contentService the contentService to set
-     */
-    public final void setContentService(ContentService contentService) {
-        this.contentService = contentService;
-    }
+  /**
+   * @param contentService the contentService to set
+   */
+  public final void setContentService(ContentService contentService) {
+    this.contentService = contentService;
+  }
 
-    /**
-     * @param policyBehaviourFilter the policyBehaviourFilter to set
-     */
-    public final void setPolicyBehaviourFilter(BehaviourFilter policyBehaviourFilter) {
-        this.policyBehaviourFilter = policyBehaviourFilter;
-    }
+  /**
+   * @param policyBehaviourFilter the policyBehaviourFilter to set
+   */
+  public final void setPolicyBehaviourFilter(
+    BehaviourFilter policyBehaviourFilter
+  ) {
+    this.policyBehaviourFilter = policyBehaviourFilter;
+  }
 }

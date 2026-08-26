@@ -1,0 +1,30 @@
+Index: pdfbox/src/main/java/org/apache/pdfbox/pdfparser/PDFParser.java
+===================================================================
+--- pdfbox/src/main/java/org/apache/pdfbox/pdfparser/PDFParser.java	(revision 1311888)
++++ pdfbox/src/main/java/org/apache/pdfbox/pdfparser/PDFParser.java	(working copy)
+@@ -57,6 +57,9 @@
+ 
+     private static final String PDF_HEADER = "%PDF-";
+     private static final String FDF_HEADER = "%FDF-";
++    
++    private static final String OxFFFFFFFF = Long.toString(0xFFFFFFFFL);
++
+     /**
+      * A list of duplicate objects found when Parsing the PDF
+      * File. 
+@@ -714,6 +717,15 @@
+                     log.warn("invalid xref line: " + currentLine);
+                     break;
+                 }
++                // Handle a not so uncommon xref table encoding error, by overriding the
++                // entryType as free ('f') when the original int offset is -1 (0xFFFFFFFF)
++                // and has been encoded in error as 4294967295. Google search returned
++                // over 7000 hits.
++                if (OxFFFFFFFF.equals(splitString[0]))
++                {
++                	splitString[splitString.length-1] = "f";
++                	splitString[2] = "f";
++                }
+                 /* This supports the corrupt table as reported in 
+                  * PDFBOX-474 (XXXX XXX XX n) */
+                 if(splitString[splitString.length-1].equals("n"))

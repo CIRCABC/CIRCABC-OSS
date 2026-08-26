@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  Copyright 2006 European Community
+  
+   Licensed under the EUPL, Version 1.1 or \?as soon they
+   will be approved by the European Commission - subsequent
+   versions of the EUPL (the "Licence");
+   You may not use this work except in compliance with the
+   Licence.
+   You may obtain a copy of the Licence at:
+  
+   https://joinup.ec.europa.eu/software/page/eupl
+  
+   Unless required by applicable law or agreed to in
+   writing, software distributed under the Licence is
+   distributed on an "AS IS" basis,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+   express or implied.
+   See the Licence for the specific language governing
+   permissions and limitations under the Licence.
+-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="GroupStatistics">
+
+   <select
+    id="selectIGStatisticsById"
+    parameterType="java.lang.Long"
+    resultType="IGStatisticsParameter"
+  >
+     SELECT 
+        ig_id AS igId, 
+        request_date AS requestDate, 
+        creation_date AS creationDate, 
+        nb_users AS nbUsers, 
+        library_folder_count AS libraryFolderCount, 
+        library_document_count AS libraryDocumentCount, 
+        library_size AS librarySize, 
+        information_folder_count AS informationFolderCount, 
+        information_document_count AS informationDocumentCount, 
+        information_size AS informationSize, 
+        version_count AS versionCount, 
+        version_size AS versionSize, 
+        total_size AS totalSize, 
+        event_count AS eventCount, 
+        meeting_count AS meetingCount, 
+        forum_count AS forumCount, 
+        topic_count AS topicCount, 
+        post_count AS postCount,
+        max_level AS maxLevel,
+        customization_count AS customizationAndHiddenContentCount,
+        customization_size AS customizationAndHiddenContentSize
+     FROM cbc_group_statistics
+     WHERE ig_id = #{igId}
+   </select>
+
+   <insert id="insertIGStatistics" parameterType="IGStatisticsParameter">
+     INSERT INTO cbc_group_statistics
+          (ig_id, request_date, creation_date, nb_users, library_folder_count, library_document_count, library_size, 
+          information_folder_count, information_document_count, information_size, version_count, version_size, 
+          total_size, event_count, meeting_count, forum_count, topic_count, post_count, max_level, customization_count, customization_size)
+     VALUES
+          (#{igId}, #{requestDate}, #{creationDate}, #{nbUsers,jdbcType=NUMERIC}, #{libraryFolderCount,jdbcType=NUMERIC}, 
+          #{libraryDocumentCount,jdbcType=NUMERIC}, #{librarySize,jdbcType=NUMERIC}, #{informationFolderCount,jdbcType=NUMERIC},
+          #{informationDocumentCount,jdbcType=NUMERIC}, #{informationSize,jdbcType=NUMERIC}, #{versionCount,jdbcType=NUMERIC},
+          #{versionSize,jdbcType=NUMERIC}, #{totalSize,jdbcType=NUMERIC}, #{eventCount,jdbcType=NUMERIC}, #{meetingCount,jdbcType=NUMERIC},
+          #{forumCount,jdbcType=NUMERIC}, #{topicCount,jdbcType=NUMERIC}, #{postCount,jdbcType=NUMERIC}, #{maxLevel,jdbcType=NUMERIC},
+          #{customizationAndHiddenContentCount,jdbcType=NUMERIC}, #{customizationAndHiddenContentSize,jdbcType=NUMERIC})
+   </insert>
+
+   <update id="updateIGStatistics" parameterType="IGStatisticsParameter">
+     UPDATE cbc_group_statistics
+     SET
+          request_date = #{requestDate},
+          creation_date = #{creationDate},
+          nb_users = #{nbUsers,jdbcType=NUMERIC},
+          library_folder_count = #{libraryFolderCount,jdbcType=NUMERIC},
+          library_document_count = #{libraryDocumentCount,jdbcType=NUMERIC},
+          library_size = #{librarySize,jdbcType=NUMERIC},
+          information_folder_count = #{informationFolderCount,jdbcType=NUMERIC},
+          information_document_count = #{informationDocumentCount,jdbcType=NUMERIC},
+          information_size = #{informationSize,jdbcType=NUMERIC},
+          version_count = #{versionCount,jdbcType=NUMERIC},
+          version_size = #{versionSize,jdbcType=NUMERIC},
+          total_size = #{totalSize,jdbcType=NUMERIC},
+          event_count = #{eventCount,jdbcType=NUMERIC},
+          meeting_count = #{meetingCount,jdbcType=NUMERIC},
+          forum_count = #{forumCount,jdbcType=NUMERIC},
+          topic_count = #{topicCount,jdbcType=NUMERIC},
+          post_count = #{postCount,jdbcType=NUMERIC},
+          max_level = #{maxLevel,jdbcType=NUMERIC},
+          customization_count = #{customizationAndHiddenContentCount,jdbcType=NUMERIC},
+          customization_size = #{customizationAndHiddenContentSize,jdbcType=NUMERIC}
+     WHERE ig_id = #{igId}
+   </update>
+
+</mapper>

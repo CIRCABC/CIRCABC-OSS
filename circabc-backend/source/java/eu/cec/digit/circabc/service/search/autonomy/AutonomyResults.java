@@ -25,68 +25,72 @@ import java.util.List;
  */
 public class AutonomyResults {
 
-    private String error = null;
+  private String error = null;
 
-    private List<AutonomyResultNode> results = null;
+  private List<AutonomyResultNode> results = null;
 
-    private String numHits = null;
-    private String totalHits = null;
-    private String maxResults = null;
+  private String numHits = null;
+  private String totalHits = null;
+  private String maxResults = null;
 
-    public AutonomyResults(String error) {
-        this.error = error;
-    }
+  public AutonomyResults(String error) {
+    this.error = error;
+  }
 
-    public AutonomyResults(
-            List<AutonomyResultNode> results, String numHits, String totalHits, String maxResults) {
-        this.results = results;
-        this.numHits = numHits;
-        this.totalHits = totalHits;
-        this.maxResults = maxResults;
-    }
+  public AutonomyResults(
+    List<AutonomyResultNode> results,
+    String numHits,
+    String totalHits,
+    String maxResults
+  ) {
+    this.results = results;
+    this.numHits = numHits;
+    this.totalHits = totalHits;
+    this.maxResults = maxResults;
+  }
 
-    /**
-     * Gets the value of the results
-     *
-     * @return the results
-     */
-    public List<AutonomyResultNode> getResults() {
-        return results;
-    }
+  /**
+   * Gets the value of the results
+   *
+   * @return the results
+   */
+  public List<AutonomyResultNode> getResults() {
+    return results;
+  }
 
-    /**
-     * Gets the value of the numHits
-     *
-     * @return the numHits
-     */
-    public String getNumHits() {
-        return numHits;
-    }
+  /**
+   * Gets the value of the numHits
+   *
+   * @return the numHits
+   */
+  public String getNumHits() {
+    return numHits;
+  }
 
-    /**
-     * Gets the value of the totalHits
-     *
-     * @return the totalHits
-     */
-    public String getTotalHits() {
-        return totalHits;
-    }
+  /**
+   * Gets the value of the totalHits
+   *
+   * @return the totalHits
+   */
+  public String getTotalHits() {
+    return totalHits;
+  }
 
-    /**
-     * Gets the value of the maxResults
-     *
-     * @return the maxResults
-     */
-    public String getMaxResults() {
-        return maxResults;
-    }
+  /**
+   * Gets the value of the maxResults
+   *
+   * @return the maxResults
+   */
+  public String getMaxResults() {
+    return maxResults;
+  }
 
-    /**
-     * Gets the value of the error
-     *
-     * @return the error
-     */
-    public String getError() {
-        return error;
-    }
+  /**
+   * Gets the value of the error
+   *
+   * @return the error
+   */
+  public String getError() {
+    return error;
+  }
 }

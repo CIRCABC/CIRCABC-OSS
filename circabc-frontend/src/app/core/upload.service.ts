@@ -42,18 +42,24 @@ export class UploadService {
   public async updateExistingFileContent(
     file: File,
     nodeId: string,
+    notify: boolean,
     generateNewFileName = true
   ) {
     const result: { nodeRef?: string } = (await this.httpUpdateFile(
       file,
       nodeId,
+      notify,
       generateNewFileName
     )) as { nodeRef?: string };
     return this.nodeIdPipe.transform(result.nodeRef as string);
   }
 
-  public async updateCheckedOutFileContent(file: File, nodeId: string) {
-    await this.httpUpdate(file, nodeId);
+  public async updateCheckedOutFileContent(
+    file: File,
+    nodeId: string,
+    notify: boolean
+  ) {
+    await this.httpUpdate(file, nodeId, notify);
   }
 
   public async updateAvatar(userId: string, file: File) {
@@ -71,19 +77,20 @@ export class UploadService {
   private async httpUpdateFile(
     file: File,
     destination: string,
+    notify: boolean,
     generateNewFileName: boolean
   ) {
     return new Promise((resolve, reject) => {
       const ticket = this.loginService.getTicket();
-      const url = `${this.serverURL}rest/update/${destination}?generateNewFileName=${generateNewFileName}`;
+      const url = `${this.serverURL}rest/update/${destination}?notify=${notify}&generateNewFileName=${generateNewFileName}`;
       this.sendRequest(url, ticket, file, resolve, reject);
     });
   }
 
-  private async httpUpdate(file: File, nodeId: string) {
+  private async httpUpdate(file: File, nodeId: string, notify: boolean) {
     return new Promise((resolve, reject) => {
       const ticket = this.loginService.getTicket();
-      const url = `${this.circabcURL}/content/${nodeId}/update`;
+      const url = `${this.circabcURL}/content/${nodeId}/update?notify=${notify}`;
       this.sendRequest(url, ticket, file, resolve, reject);
     });
   }
@@ -119,7 +126,7 @@ export class UploadService {
     request.onreadystatechange = function () {
       if (request.readyState === doneState) {
         if (request.status === OK) {
-          resolve(JSON.parse(request.response));
+          resolve(JSON.parse(request.response) as Record<string, unknown>);
         } else {
           reject(new Error(this.statusText));
         }

@@ -1,11 +1,13 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, Input, OnInit, output, input } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
   FormGroup,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
@@ -17,7 +19,13 @@ import {
   Node as ModelNode,
 } from 'app/core/generated/circabc';
 import { removeNulls } from 'app/core/util';
-import { ValidationService } from 'app/core/validation.service';
+import {
+  maxLengthTitleValidator,
+  titleValidator,
+} from 'app/core/validation.service';
+import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
+import { MultilingualInputComponent } from 'app/shared/input/multilingual-input.component';
+import { ModalComponent } from 'app/shared/modal/modal.component';
 import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
 import { firstValueFrom } from 'rxjs';
 
@@ -25,14 +33,21 @@ import { firstValueFrom } from 'rxjs';
   selector: 'cbc-create-topic',
   templateUrl: './create-topic.component.html',
   preserveWhitespaces: true,
+  imports: [
+    ModalComponent,
+    ReactiveFormsModule,
+    MultilingualInputComponent,
+    ControlMessageComponent,
+    TranslocoModule,
+  ],
 })
 export class CreateTopicComponent implements OnInit {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   public showWizard!: boolean;
-  @Input()
-  forum!: ModelNode;
-  @Output()
-  readonly modalHide = new EventEmitter<ActionEmitterResult>();
+  readonly forum = input.required<ModelNode>();
+  readonly modalHide = output<ActionEmitterResult>();
 
   public newTopicForm!: FormGroup;
   public creating = false;
@@ -57,10 +72,8 @@ export class CreateTopicComponent implements OnInit {
           '',
           [
             Validators.required,
-            (control: AbstractControl) =>
-              ValidationService.titleValidator(control),
-            (control: AbstractControl) =>
-              ValidationService.maxLengthTitleValidator(control, 50),
+            (control: AbstractControl) => titleValidator(control),
+            (control: AbstractControl) => maxLengthTitleValidator(control, 50),
           ],
         ],
       },
@@ -83,7 +96,8 @@ export class CreateTopicComponent implements OnInit {
   }
 
   public async createTopic() {
-    if (this.forum && this.forum.id && this.forum.type) {
+    const forum = this.forum();
+    if (forum?.id && forum.type) {
       this.creating = true;
 
       const result: ActionEmitterResult = {};
@@ -98,21 +112,19 @@ export class CreateTopicComponent implements OnInit {
       );
 
       try {
-        if (this.forum.type.indexOf('forum') !== -1) {
+        if (forum.type.indexOf('forum') !== -1) {
           await firstValueFrom(
-            this.forumService.postForumContent(this.forum.id, body)
+            this.forumService.postForumContent(forum.id, body)
           );
-        } else if (this.forum.type.indexOf('content') !== -1) {
-          await firstValueFrom(
-            this.contentService.postTopic(this.forum.id, body)
-          );
+        } else if (forum.type.indexOf('content') !== -1) {
+          await firstValueFrom(this.contentService.postTopic(forum.id, body));
         }
 
         result.result = ActionResult.SUCCEED;
         this.modalHide.emit(result);
         this.reset();
         this.showWizard = false;
-      } catch (error) {
+      } catch (_error) {
         result.result = ActionResult.FAILED;
       }
 

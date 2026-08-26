@@ -22,19 +22,18 @@ package eu.cec.digit.circabc.service.search.autonomy;
  * @author schwerr
  */
 public interface AutonomySearchService {
+  /**
+   * Database name constant, wrong in ACI API?
+   */
+  String AGENT_DATABASES_FIELD_NAME = "databasematch";
 
-    /**
-     * Database name constant, wrong in ACI API?
-     */
-    String AGENT_DATABASES_FIELD_NAME = "databasematch";
+  /**
+   * Returns true if the system is enabled.
+   */
+  boolean isEnabled();
 
-    /**
-     * Returns true if the system is enabled.
-     */
-    boolean isEnabled();
-
-    /**
-     * Executes a text search.
-     */
-    AutonomyResults search(String text);
+  /**
+   * Executes a text search.
+   */
+  AutonomyResults search(String text);
 }

@@ -17,6 +17,8 @@
  */
 package eu.cec.digit.circabc.business.helper;
 
+import java.util.Collection;
+import javax.faces.context.FacesContext;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
@@ -25,49 +27,52 @@ import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.util.ISO9075;
 import org.alfresco.web.bean.repository.Repository;
 
-import javax.faces.context.FacesContext;
-import java.util.Collection;
-
 /**
  * @author beaurpi
  *
  */
 public class LuceneQueryHelper {
 
-    public static String getPathFromSpaceRef(NodeRef igRoot) {
+  public static String getPathFromSpaceRef(NodeRef igRoot) {
+    final FacesContext fc = FacesContext.getCurrentInstance();
 
-        final FacesContext fc = FacesContext.getCurrentInstance();
+    final NodeService nodeService = Repository.getServiceRegistry(
+      fc
+    ).getNodeService();
+    final NamespaceService namespaceService = Repository.getServiceRegistry(
+      fc
+    ).getNamespaceService();
 
-        final NodeService nodeService = Repository.getServiceRegistry(fc).getNodeService();
-        final NamespaceService namespaceService = Repository.getServiceRegistry(fc)
-                .getNamespaceService();
-
-        final Path path = nodeService.getPath(igRoot);
-        final StringBuilder buf = new StringBuilder(64);
-        String elementString;
-        Path.Element element;
-        ChildAssociationRef elementRef;
-        Collection<?> prefixes;
-        for (int i = 0; i < path.size(); i++) {
-            elementString = "";
-            element = path.get(i);
-            if (element instanceof Path.ChildAssocElement) {
-                elementRef = ((Path.ChildAssocElement) element).getRef();
-                if (elementRef.getParentRef() != null) {
-                    prefixes = namespaceService.getPrefixes(elementRef.getQName().getNamespaceURI());
-                    if (prefixes.size() > 0) {
-                        elementString = '/' + (String) prefixes.iterator().next() + ':' + ISO9075
-                                .encode(elementRef.getQName().getLocalName());
-                    }
-                }
-            }
-
-            buf.append(elementString);
+    final Path path = nodeService.getPath(igRoot);
+    final StringBuilder buf = new StringBuilder(64);
+    String elementString;
+    Path.Element element;
+    ChildAssociationRef elementRef;
+    Collection<?> prefixes;
+    for (int i = 0; i < path.size(); i++) {
+      elementString = "";
+      element = path.get(i);
+      if (element instanceof Path.ChildAssocElement) {
+        elementRef = ((Path.ChildAssocElement) element).getRef();
+        if (elementRef.getParentRef() != null) {
+          prefixes = namespaceService.getPrefixes(
+            elementRef.getQName().getNamespaceURI()
+          );
+          if (prefixes.size() > 0) {
+            elementString =
+              '/' +
+              (String) prefixes.iterator().next() +
+              ':' +
+              ISO9075.encode(elementRef.getQName().getLocalName());
+          }
         }
+      }
 
-        buf.append("/");
-
-        return buf.toString();
+      buf.append(elementString);
     }
 
+    buf.append("/");
+
+    return buf.toString();
+  }
 }

@@ -17,13 +17,12 @@
 package eu.cec.digit.circabc.repo.notification;
 
 import eu.cec.digit.circabc.service.notification.NotifiableUser;
-import org.alfresco.model.ContentModel;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.namespace.QName;
-
 import java.io.Serializable;
 import java.util.Locale;
 import java.util.Map;
+import org.alfresco.model.ContentModel;
+import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.namespace.QName;
 
 /**
  * The interface used to support reporting back a notifiable user.
@@ -32,73 +31,77 @@ import java.util.Map;
  */
 public class NotifiableUserImpl implements NotifiableUser {
 
-    private String userName;
-    private String lastName;
-    private String firstName;
-    private String email;
-    private NodeRef person;
-    private Locale locale;
-    private Map<QName, Serializable> properties;
+  private String userName;
+  private String lastName;
+  private String firstName;
+  private String email;
+  private NodeRef person;
+  private Locale locale;
+  private Map<QName, Serializable> properties;
 
-    /**
-     * @param person
-     */
-    public NotifiableUserImpl(NodeRef person, Locale locale, Map<QName, Serializable> properties) {
-        super();
-        this.person = person;
-        this.properties = properties;
-        this.locale = locale;
-        userName = (String) properties.get(ContentModel.PROP_USERNAME);
-        lastName = (String) properties.get(ContentModel.PROP_LASTNAME);
-        firstName = (String) properties.get(ContentModel.PROP_FIRSTNAME);
-        email = (String) properties.get(ContentModel.PROP_EMAIL);
-    }
+  /**
+   * @param person
+   */
+  public NotifiableUserImpl(
+    NodeRef person,
+    Locale locale,
+    Map<QName, Serializable> properties
+  ) {
+    super();
+    this.person = person;
+    this.properties = properties;
+    this.locale = locale;
+    userName = (String) properties.get(ContentModel.PROP_USERNAME);
+    lastName = (String) properties.get(ContentModel.PROP_LASTNAME);
+    firstName = (String) properties.get(ContentModel.PROP_FIRSTNAME);
+    email = (String) properties.get(ContentModel.PROP_EMAIL);
+  }
 
-    /**
-     * @return the emailName
-     */
-    public final String getEmailAddress() {
-        return email;
-    }
+  /**
+   * @return the emailName
+   */
+  public final String getEmailAddress() {
+    return email;
+  }
 
-    /**
-     * @return the firstName
-     */
-    public final String getFirstName() {
-        return firstName;
-    }
+  /**
+   * @return the firstName
+   */
+  public final String getFirstName() {
+    return firstName;
+  }
 
-    /**
-     * @return the lastName
-     */
-    public final String getLastName() {
-        return lastName;
-    }
+  /**
+   * @return the lastName
+   */
+  public final String getLastName() {
+    return lastName;
+  }
 
-    /**
-     * @return the person
-     */
-    public final NodeRef getPerson() {
-        return person;
-    }
+  /**
+   * @return the person
+   */
+  public final NodeRef getPerson() {
+    return person;
+  }
 
-    /**
-     * @return the userName
-     */
-    public final String getUserName() {
-        return userName;
-    }
+  /**
+   * @return the userName
+   */
+  public final String getUserName() {
+    return userName;
+  }
 
-    public Map<QName, Serializable> getUserProperties() {
-        return properties;
-    }
+  public Map<QName, Serializable> getUserProperties() {
+    return properties;
+  }
 
-    public Locale getNotificationLanguage() {
-        return locale;
-    }
+  public Locale getNotificationLanguage() {
+    return locale;
+  }
 
-    @Override
-    public String toString() {
-        return userName + '(' + email + ')';
-    }
+  @Override
+  public String toString() {
+    return userName + '(' + email + ')';
+  }
 }

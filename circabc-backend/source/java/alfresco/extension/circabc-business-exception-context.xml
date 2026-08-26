@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version='1.0' encoding='UTF-8' ?>
 <!--
   Copyright 2006 European Community
   
@@ -19,7 +19,8 @@
    See the Licence for the specific language governing
    permissions and limitations under the Licence.
 -->
-<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans-2.0.dtd'>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN'
+  'http://www.springframework.org/dtd/spring-beans-2.0.dtd'>
 <beans>
 
 	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
@@ -28,15 +29,20 @@
 	<!-- You DO NOT MODIFY here beans related to Alfresco                 -->
 	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
 
-	<bean id="business.error.handler.base" class="eu.cec.digit.circabc.business.aop.GenericExceptionHandler" abstract="true" init-method="init">
+	<bean
+    id="business.error.handler.base"
+    class="eu.cec.digit.circabc.business.aop.GenericExceptionHandler"
+    abstract="true"
+    init-method="init"
+  >
 		<property name="exceptionTranslator">
-			<ref bean="business.exceptionTranslator"/>
+			<ref bean="business.exceptionTranslator" />
 		</property>
 		<property name="mailService">
-			<ref bean="CircabcMailService"/>
+			<ref bean="CircabcMailService" />
 		</property>
 		<property name="navigationBusinessSrv">
-			<ref bean="NavigationBusinessSrv"/>
+			<ref bean="NavigationBusinessSrv" />
 		</property>
 		<!-- true = Print stack trace in logger, false display in debug -->
 		<property name="printStack" value="true" />
@@ -46,7 +52,10 @@
 		<property name="mailDestinator" value="NOBODY" />
 	</bean>
 
-	<bean id="business.error.handler.business.validation" parent="business.error.handler.base">
+	<bean
+    id="business.error.handler.business.validation"
+    parent="business.error.handler.base"
+  >
 		<property name="managedClasses">
 			<list>
 				<value>eu.cec.digit.circabc.business.api.BusinessValidationError</value>
@@ -57,7 +66,10 @@
 		<!-- Message key will be returned when parent will do error.getMessage() -->
 	</bean>
 
-	<bean id="business.error.handler.business.runtime" parent="business.error.handler.base">
+	<bean
+    id="business.error.handler.business.runtime"
+    parent="business.error.handler.base"
+  >
 		<property name="managedClasses">
 			<list>
 				<value>eu.cec.digit.circabc.business.api.BusinessRuntimeExpection</value>
@@ -67,7 +79,10 @@
 		<property name="mailDestinator" value="SUPPORT_TEAM" />
 	</bean>
 
-	<bean id="business.error.handler.business.search.limit" parent="business.error.handler.base">
+	<bean
+    id="business.error.handler.business.search.limit"
+    parent="business.error.handler.base"
+  >
 		<property name="managedClasses">
 			<list>
 				<value>eu.cec.digit.circabc.repo.user.LdapLimitExceededException</value>
@@ -76,12 +91,16 @@
 		<property name="message" value="business_error_handler_business_search_limit" />
 	</bean>
 
-	<bean id="business.error.handler.search.other" parent="business.error.handler.base">
+	<bean
+    id="business.error.handler.search.other"
+    parent="business.error.handler.base"
+  >
 		<property name="managedClasses">
 			<list>
 				<value>org.alfresco.repo.search.impl.lucene.fts.FTSIndexerException</value>
 				<value>org.alfresco.repo.search.IndexerException</value>
-				<value>org.alfresco.repo.search.impl.lucene.QueryParameterisationException</value>
+				<value
+        >org.alfresco.repo.search.impl.lucene.QueryParameterisationException</value>
 				<value>org.alfresco.repo.search.IndexerAndSearcherFactoryException</value>
 				<value>org.alfresco.repo.search.SearcherException</value>
 				<value>org.alfresco.repo.search.transaction.LuceneTransactionException</value>
@@ -91,7 +110,10 @@
 		<property name="message" value="business_error_handler_search_other" />
 	</bean>
 
-	<bean id="business.error.handler.programmatic" parent="business.error.handler.base">
+	<bean
+    id="business.error.handler.programmatic"
+    parent="business.error.handler.base"
+  >
 		<property name="managedClasses">
 			<list>
 				<value>java.lang.ArithmeticException</value>
@@ -153,7 +175,10 @@
 		<property name="message" value="business_error_handler_mail" />
 	</bean>
 
-	<bean id="business.error.handler.access.denied" parent="business.error.handler.base">
+	<bean
+    id="business.error.handler.access.denied"
+    parent="business.error.handler.base"
+  >
 		<property name="managedClasses">
 			<list>
 				<value>javax.jcr.AccessDeniedException</value>
@@ -176,12 +201,16 @@
 		<property name="mailDestinator" value="SUPPORT_DEV_TEAM" />
 	</bean>
 
-	<bean id="business.error.handler.node.state" parent="business.error.handler.base">
+	<bean
+    id="business.error.handler.node.state"
+    parent="business.error.handler.base"
+  >
 		<property name="managedClasses">
 			<list>
 				<value>org.alfresco.service.cmr.repository.AspectMissingException</value>
 				<value>org.alfresco.service.cmr.repository.CopyServiceException</value>
-				<value>org.alfresco.service.cmr.repository.DuplicateChildNodeNameException</value>
+				<value
+        >org.alfresco.service.cmr.repository.DuplicateChildNodeNameException</value>
 				<value>org.alfresco.service.cmr.lock.NodeLockedException</value>
 				<value>org.alfresco.service.cmr.lock.UnableToAquireLockException</value>
 				<value>org.alfresco.service.cmr.lock.UnableToReleaseLockException</value>
@@ -235,7 +264,10 @@
 		<property name="message" value="business_error_handler_person" />
 	</bean>
 
-	<bean id="business.error.handler.authentication" parent="business.error.handler.base">
+	<bean
+    id="business.error.handler.authentication"
+    parent="business.error.handler.base"
+  >
 		<property name="managedClasses">
 			<list>
 				<value>org.alfresco.repo.security.authentication.AuthenticationException</value>
@@ -244,7 +276,10 @@
 		<property name="message" value="business_error_handler_authentication" />
 	</bean>
 
-	<bean id="business.error.handler.authority" parent="business.error.handler.base">
+	<bean
+    id="business.error.handler.authority"
+    parent="business.error.handler.base"
+  >
 		<property name="managedClasses">
 			<list>
 				<value>org.alfresco.repo.security.authority.AuthorityException</value>

@@ -1,34 +1,42 @@
 <!-- MODAL BOX -->
+@if (showModal && formReady) {
 <div
   class="black-overlayer"
-  *ngIf="showModal && formReady"
   [class.overlayer-shown]="showModal"
   [class.overlayer-hidden]="!showModal"
 ></div>
+}
 <section
   class="modal"
   [class.modal-shown]="showModal"
   [class.modal-hidden]="!showModal"
   style="margin-top: 0"
 >
-  <a class="close-icon" (click)="closeWizard('close')"></a>
+  <a
+    tabindex="0"
+    role="button"
+    class="close-icon"
+    aria-label="Close Wizard"
+    (click)="closeWizard('close')"
+  ></a>
   <form [formGroup]="newEventForm">
     <header>
       <!-- The Back link is only shown if there is a wizard step to go back to (ie. if step is not the first one) -->
-      <a class="back-link" *ngIf="canGoBack()" (click)="previousWizardStep()"
+      @if (canGoBack()) {
+      <a tabindex="0" class="back-link" (click)="previousWizardStep()"
         >{{ 'label.back' | transloco }}</a
       >
-      <h2 class="title" *ngIf="appointmentTypeEvent">
-        {{ 'create-event.new.event' | transloco }}
-      </h2>
-      <h2 class="title" *ngIf="!appointmentTypeEvent">
-        {{ 'create-event.new.meeting' | transloco }}
-      </h2>
+      } @if (appointmentTypeEvent) {
+      <h2 class="title">{{ 'create-event.new.event' | transloco }}</h2>
+      } @if (!appointmentTypeEvent) {
+      <h2 class="title">{{ 'create-event.new.meeting' | transloco }}</h2>
+      }
     </header>
     <section class="modal-content">
       <div class="wrapping">
         <!-- Shown during the wizard's first step -->
-        <div *ngIf="wizardStep === 1">
+        @if (wizardStep === 1) {
+        <div>
           <div class="field switch">
             <div class="label">{{ 'label.create' | transloco }}</div>
 
@@ -55,7 +63,8 @@
               [control]="titleControl"
             ></cbc-control-message>
           </div>
-          <div class="field" *ngIf="appointmentTypeEvent">
+          @if (appointmentTypeEvent) {
+          <div class="field">
             <label for="eventType">{{ 'label.type' | transloco }}</label>
             <div class="custom-select select--form reset-width select-align">
               <select name="" id="eventType" formControlName="eventType">
@@ -68,8 +77,8 @@
               </select>
             </div>
           </div>
-
-          <div class="field" *ngIf="!appointmentTypeEvent">
+          } @if (!appointmentTypeEvent) {
+          <div class="field">
             <label for="meetingType">{{ 'label.type' | transloco }}</label>
             <div class="custom-select select--form reset-width select-align">
               <select name="" id="meetingType" formControlName="meetingType">
@@ -84,20 +93,25 @@
               </select>
             </div>
           </div>
+          }
           <cbc-control-message
             [control]="meetingTypeControl"
           ></cbc-control-message>
 
           <div formGroupName="dateInfo">
             <!-- Groups the date info for validation -->
-            <div class="field field--with-icon field--date">
+            <div
+              class="field field--with-icon field--date label-calendar-container"
+            >
               <label for="date">{{ 'label.date' | transloco }}</label>
-              <p-calendar
+              <p-datepicker
                 formControlName="date"
                 [dateFormat]="'dd/mm/yy'"
                 [placeholder]="'dd/mm/yyyy'"
                 [showIcon]="true"
-              ></p-calendar>
+                [minDate]="minDate"
+                [keepInvalid]="true"
+              ></p-datepicker>
               <cbc-control-message
                 [showInvalid]="true"
                 [control]="dateInfoControl"
@@ -127,9 +141,12 @@
             <input type="text" id="location" formControlName="location" />
           </div>
         </div>
+        }
         <!-- Shown during the wizard's second step -->
-        <div *ngIf="wizardStep === 2">
-          <div class="field" *ngIf="appointmentTypeEvent">
+        @if (wizardStep === 2) {
+        <div>
+          @if (appointmentTypeEvent) {
+          <div class="field">
             <label for="eventPriority"
               >{{ 'label.priority' | transloco }}</label
             >
@@ -146,6 +163,7 @@
               </select>
             </div>
           </div>
+          }
           <div class="field">
             <label for="language">{{ 'label.language' | transloco }}</label>
             <div class="custom-select select--form reset-width">
@@ -173,7 +191,8 @@
               formControlName="invitationMessage"
             ></textarea>
           </div>
-          <div class="field" *ngIf="!appointmentTypeEvent">
+          @if (!appointmentTypeEvent) {
+          <div class="field">
             <label for="meetingOrganisation"
               >{{ 'label.organisation' | transloco }}</label
             >
@@ -183,7 +202,8 @@
               formControlName="meetingOrganisation"
             />
           </div>
-          <div class="field switch" *ngIf="!appointmentTypeEvent">
+          } @if (!appointmentTypeEvent) {
+          <div class="field switch">
             <div class="label">
               {{ 'label.public.availability' | transloco }}
             </div>
@@ -203,6 +223,7 @@
               'label.public' : 'label.private' ) | transloco }}</span
             >
           </div>
+          }
           <div formGroupName="repeatsInfo">
             <!-- Groups the repeats info for validation -->
             <div class="field switch">
@@ -221,7 +242,8 @@
                 | transloco }}</span
               >
             </div>
-            <div class="field" *ngIf="repeatsSelected">
+            @if (repeatsSelected) {
+            <div class="field">
               <label for="when"
                 >{{ 'create-event.frequency.when' | transloco }}</label
               >
@@ -286,7 +308,8 @@
                 >{{ 'create-event.frequency.times' | transloco }}</label
               >
             </div>
-            <div class="field" *ngIf="repeatsSelected">
+            } @if (repeatsSelected) {
+            <div class="field">
               <label for="everyTimesOccurence"
                 >{{ 'create-event.frequency.every' | transloco }}</label
               >
@@ -331,6 +354,7 @@
                 >{{ 'create-event.frequency.times' | transloco }}</label
               >
             </div>
+            }
           </div>
           <cbc-control-message
             [showInvalid]="true"
@@ -345,8 +369,10 @@
             [control]="repeatsInfoControl"
           ></cbc-control-message>
         </div>
+        }
         <!-- Shown during the wizard's third step -->
-        <div *ngIf="wizardStep === 3">
+        @if (wizardStep === 3) {
+        <div>
           <div formGroupName="attendantsInfo">
             <div class="field switch">
               <div class="label">{{ 'label.audience.status' | transloco }}</div>
@@ -364,22 +390,26 @@
                 'label.closed' ) | transloco }}</span
               >
             </div>
-            <div *ngIf="!audienceStatusOpenControl.value">
-              <span *ngIf="showPicker">
-                <label>{{ 'create-event.part.a' | transloco }}</label>
+            @if (!audienceStatusOpenControl.value) {
+            <div>
+              @if (showPicker) {
+              <span>
+                <div>{{ 'create-event.part.a' | transloco }}</div>
                 <cbc-users-picker
-                  [igId]="igId"
+                  [igId]="igId()"
                   formControlName="invitedUsersOrProfiles"
                   (userOrProfileQueryError)="showNoPickerText()"
                 ></cbc-users-picker>
               </span>
-              <span *ngIf="!showPicker">
+              } @if (!showPicker) {
+              <span>
                 <div style="color: red">
                   {{ 'members.alternate.access' | transloco }}
                 </div>
               </span>
+              }
               <br />
-              <label>{{ 'create-event.part.b' | transloco }}</label>
+              <div>{{ 'create-event.part.b' | transloco }}</div>
               <div class="field">
                 <textarea
                   id="invitedExternalEmails"
@@ -391,12 +421,14 @@
                 [control]="invitedExternalEmailsControl"
               ></cbc-control-message>
             </div>
+            }
           </div>
           <cbc-control-message
             [showInvalid]="true"
             [control]="attendantsInfoControl"
           ></cbc-control-message>
-          <div *ngIf="audienceStatusOpenControl.value">
+          @if (audienceStatusOpenControl.value) {
+          <div>
             <label for="enableNotification">
               <input
                 type="checkbox"
@@ -406,6 +438,7 @@
               transloco }}</label
             >
           </div>
+          }
           <br />
           <br />
           <div class="field switch">
@@ -423,13 +456,15 @@
             >
           </div>
         </div>
+        }
         <!-- Shown during the wizard's fourth (in this case final) step -->
-        <div *ngIf="wizardStep === 4">
-          <div *ngIf="!appointmentTypeEvent && hasLibraryAccess()">
-            <label
-              >{{ 'create-event.relevant.space.in.the.library' | transloco
-              }}</label
-            >
+        @if (wizardStep === 4) {
+        <div>
+          @if (!appointmentTypeEvent && hasLibraryAccess()) {
+          <div>
+            <div>
+              {{ 'create-event.relevant.space.in.the.library' | transloco }}
+            </div>
             <br />
             <br />
             <cbc-tree-view
@@ -440,8 +475,9 @@
             ></cbc-tree-view>
             <br />
           </div>
+          }
           <br />
-          <label>{{ 'label.contact.details' | transloco }}</label>
+          <div>{{ 'label.contact.details' | transloco }}</div>
           <br />
           <br />
           <div class="field">
@@ -481,40 +517,46 @@
             <input type="text" id="contactURL" formControlName="contactURL" />
           </div>
         </div>
+        }
       </div>
-      <div class="field" *ngIf="processing">
-        <label
-          >{{ 'label.creating' | transloco }}...
+      @if (processing) {
+      <div class="field">
+        <div>
+          {{ 'label.creating' | transloco }}...
           <cbc-spinner></cbc-spinner>
-        </label>
+        </div>
       </div>
+      }
     </section>
     <section class="modal-footer">
-      <span *ngIf="wizardStep === 4 && !newEventForm.valid" style="color: red"
-        >{{ 'create-event.error' | transloco }}</span
-      >
+      @if (wizardStep === 4 && !newEventForm.valid) {
+      <span style="color: red">{{ 'create-event.error' | transloco }}</span>
+      }
       <!-- Buttons -->
-      <div class="buttons-group" *ngIf="!processing">
+      @if (!processing) {
+      <div class="buttons-group">
+        @if (wizardStep < 4) {
         <a
           class="cta"
           [routerLink]="['.']"
-          *ngIf="wizardStep < 4"
           [class.disabled]="!stepIsValid()"
           (click)="nextWizardStep()"
           >{{ 'label.next' | transloco }}</a
         >
+        } @if (wizardStep === 4) {
         <a
           class="cta"
           [routerLink]="['.']"
-          *ngIf="wizardStep === 4"
           (click)="!newEventForm.valid ? '' : save()"
           [class.disabled]="!newEventForm.valid"
           >{{ 'label.save' | transloco }}</a
         >
-        <a class="button" (click)="closeWizard('close')"
+        }
+        <a tabindex="0" class="button" (click)="closeWizard('close')"
           >{{ 'label.cancel' | transloco }}</a
         >
       </div>
+      }
     </section>
   </form>
 </section>

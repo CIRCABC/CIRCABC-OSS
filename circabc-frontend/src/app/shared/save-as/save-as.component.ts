@@ -1,28 +1,64 @@
-import { Component, Input, NgZone } from '@angular/core';
+import { Component, NgZone, input } from '@angular/core';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { SaveAsService } from 'app/core/save-as.service';
+import { environment } from 'environments/environment';
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-save-as',
   templateUrl: './save-as.component.html',
-  styleUrls: ['./save-as.component.scss'],
+  styleUrl: './save-as.component.scss',
   preserveWhitespaces: true,
+  imports: [TranslocoModule],
 })
 export class SaveAsComponent {
-  @Input()
-  id: string | undefined;
-  @Input()
-  name: string | undefined;
-  @Input()
-  showIcon = true;
+  readonly id = input<string>();
+  readonly name = input<string>();
+  readonly showIcon = input(true);
+  readonly sensitive = input(false);
 
-  constructor(private saveAsService: SaveAsService, private ngZone: NgZone) {}
+  public acceptSncShowModal = false;
 
-  onClick() {
+  constructor(
+    private saveAsService: SaveAsService,
+    private ngZone: NgZone,
+    private translateService: TranslocoService,
+    private dialog: MatDialog
+  ) {}
+
+  public async download() {
+    if (environment.circabcRelease === 'echa' && this.sensitive()) {
+      if (!(await this.showDialogConfirmMsg())) {
+        return;
+      }
+    }
+
     this.ngZone.runOutsideAngular(() => {
-      if (this.id && this.name) {
-        this.saveAsService.saveAsDirect(this.id, this.name);
+      const id = this.id();
+      const name = this.name();
+      if (id && name) {
+        this.saveAsService.saveAsDirect(id, name);
       }
     });
-    return false;
+  }
+
+  private async showDialogConfirmMsg() {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        messageTranslated: this.translateService.translate(
+          'label.dialog.alert.snc.download',
+          {
+            link: `<a href="https://ec.europa.eu/transparency/documents-register/detail?ref=C(2019)1904&lang=en" target="_blank">C(2019)1904</a>`,
+          }
+        ),
+        labelOK: 'label.confirm',
+        title: 'label.dialog.alert.snc.download.title',
+        layoutStyle: 'SNCNotification',
+      },
+    });
+
+    return firstValueFrom(dialogRef.afterClosed());
   }
 }

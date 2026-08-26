@@ -27,16 +27,16 @@ package eu.cec.digit.circabc.service.profile;
  * @author Stephane Clinckart
  */
 public enum CircabcServices {
-    CIRCABC,
-    CATEGORY_HEADER,
-    CATEGORY,
-    INTEREST_GROUP,
-    LIBRARY,
-    DIRECTORY,
-    APPLICANT,
-    VISIBILITY,
-    NEWSGROUP,
-    SURVEY,
-    EVENT,
-    INFORMATION
+  CIRCABC,
+  CATEGORY_HEADER,
+  CATEGORY,
+  INTEREST_GROUP,
+  LIBRARY,
+  DIRECTORY,
+  APPLICANT,
+  VISIBILITY,
+  NEWSGROUP,
+  SURVEY,
+  EVENT,
+  INFORMATION,
 }

@@ -1,15 +1,27 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
+import { TranslocoModule } from '@jsverse/transloco';
 import { ActionEmitterResult, ActionResult } from 'app/action-result';
 import { PagedShares, Share, SpaceService } from 'app/core/generated/circabc';
 import { ListingOptions } from 'app/group/listing-options/listing-options';
+import { InlineDeleteComponent } from 'app/shared/delete/inline-delete.component';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
+import { PagerComponent } from 'app/shared/pager/pager.component';
 import { firstValueFrom } from 'rxjs';
+import { ShareSpaceComponent } from './share-space/share-space.component';
 
 @Component({
   selector: 'cbc-manage-space-sharing',
   templateUrl: './manage-space-sharing.component.html',
   preserveWhitespaces: true,
+  imports: [
+    HorizontalLoaderComponent,
+    PagerComponent,
+    InlineDeleteComponent,
+    ShareSpaceComponent,
+    TranslocoModule,
+  ],
 })
 export class ManageSpaceSharingComponent implements OnInit {
   public shares!: Share[];

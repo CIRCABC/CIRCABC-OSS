@@ -1,11 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
+import { SetTitlePipe } from 'app/shared/pipes/set-title.pipe';
+import { DeletedItemsComponent } from './deleted-items/deleted-items.component';
+import { ExpiredItemsComponent } from './expired-items/expired-items.component';
 
 @Component({
   selector: 'cbc-document-lifecycle',
   templateUrl: './document-lifecycle.component.html',
-  styleUrls: ['./document-lifecycle.component.scss'],
+  styleUrl: './document-lifecycle.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    DeletedItemsComponent,
+    ExpiredItemsComponent,
+    SetTitlePipe,
+    TranslocoModule,
+  ],
 })
 export class DocumentLifecycleComponent implements OnInit {
   public showDeletedItems = false;

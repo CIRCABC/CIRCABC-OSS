@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version='1.0' encoding='UTF-8' ?>
 <!--
   Copyright 2006 European Community
   
@@ -21,31 +21,32 @@
 -->
 <!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN'
   'http://www.springframework.org/dtd/spring-beans.dtd'>
-
 <beans>
 
   <bean class="liquibase.spring.SpringLiquibase" id="liquibase">
-    <property name="dataSource" ref="auditDataSource"/>
+    <property name="dataSource" ref="auditDataSource" />
     <property name="changeLog">
-      <value>classpath:alfresco/module/circabcAmp/context/db-changelog.xml</value>
+      <value
+      >classpath:alfresco/module/circabcAmp/context/db-changelog.xml</value>
     </property>
 
     <!--
       contexts specifies the runtime contexts to use.
     -->
-    <property name="contexts" value=""/>
+    <property name="contexts" value="" />
   </bean>
 
   <bean class="liquibase.spring.SpringLiquibase" id="liquibasePatchAlfresco">
-    <property name="dataSource" ref="dataSource"/>
+    <property name="dataSource" ref="dataSource" />
     <property name="changeLog">
-      <value>classpath:alfresco/module/circabcAmp/context/db-changelog-alfresco-patch.xml</value>
+      <value
+      >classpath:alfresco/module/circabcAmp/context/db-changelog-alfresco-patch.xml</value>
     </property>
 
     <!--
       contexts specifies the runtime contexts to use.
     -->
-    <property name="contexts" value=""/>
+    <property name="contexts" value="" />
   </bean>
 
   <!-- A simple class that is initialized by Spring -->
@@ -55,54 +56,56 @@
 
   <!-- A simple module component that will be executed once -->
 
-  <bean class="eu.cec.digit.circabc.module.circabc.CircabcComponent"
+  <bean
+    class="eu.cec.digit.circabc.module.circabc.CircabcComponent"
     id="circabcAmp.circabcComponent"
-    parent="module.baseComponent">
-    <property name="moduleId" value="circabcAmp"/>
+    parent="module.baseComponent"
+  >
+    <property name="moduleId" value="circabcAmp" />
     <!-- See module.properties -->
-    <property name="name" value="Circabc 1.0.1"/>
-    <property name="description" value="Release 1.0.1 of circabc"/>
-    <property name="sinceVersion" value="1.0.0"/>
-    <property name="appliesFromVersion" value="1.0.0"/>
-    <property name="executeOnceOnly" value="false"/>
+    <property name="name" value="Circabc 1.0.1" />
+    <property name="description" value="Release 1.0.1 of circabc" />
+    <property name="sinceVersion" value="1.0.0" />
+    <property name="appliesFromVersion" value="1.0.0" />
+    <property name="executeOnceOnly" value="false" />
     <property name="nodeService">
-      <ref bean="nodeService"/>
+      <ref bean="nodeService" />
     </property>
     <property name="managementService">
-      <ref bean="managementService"/>
+      <ref bean="managementService" />
     </property>
     <property name="profileManagerServiceFactory">
-      <ref bean="profileManagerServiceFactory"/>
+      <ref bean="profileManagerServiceFactory" />
     </property>
     <property name="personService">
-      <ref bean="personService"/>
+      <ref bean="personService" />
     </property>
     <property name="userService">
-      <ref bean="userService"/>
+      <ref bean="userService" />
     </property>
     <property name="categoryService">
-      <ref bean="CategoryService"/>
+      <ref bean="CategoryService" />
     </property>
     <property name="transactionService">
-      <ref bean="transactionService"/>
+      <ref bean="transactionService" />
     </property>
     <property name="mailPreferencesService">
-      <ref bean="mailPreferencesService"/>
+      <ref bean="mailPreferencesService" />
     </property>
     <property name="nodePreferencesService">
-      <ref bean="nodePreferencesService"/>
+      <ref bean="nodePreferencesService" />
     </property>
     <property name="translationService">
-      <ref bean="translationService"/>
+      <ref bean="translationService" />
     </property>
     <property name="permissionService">
-      <ref bean="permissionService"/>
+      <ref bean="permissionService" />
     </property>
     <property name="authorityService">
-      <ref bean="authorityService"/>
+      <ref bean="authorityService" />
     </property>
     <property name="lockService">
-      <ref bean="circabcLockService"/>
+      <ref bean="circabcLockService" />
     </property>
     <property name="execute">
       <value>${component.execute}</value>
@@ -111,11 +114,13 @@
       <value>${force.template.update}</value>
     </property>
      <!-- Data properties -->
-     <property name="importer" ref="spacesBootstrap"/>
+     <property name="importer" ref="spacesBootstrap" />
      <property name="bootstrapView">
         <props>
           <prop key="path">/cm:categoryRoot/cm:generalclassifiable</prop>
-          <prop key="location">alfresco/module/circabcAmp/context/categories.xml</prop>
+          <prop
+          key="location"
+        >alfresco/module/circabcAmp/context/categories.xml</prop>
         </props>
      </property>
   </bean>

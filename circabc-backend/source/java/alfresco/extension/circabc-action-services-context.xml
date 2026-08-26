@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version='1.0' encoding='UTF-8' ?>
 <!--
   Copyright 2006 European Community
   
@@ -19,35 +19,37 @@
    See the Licence for the specific language governing
    permissions and limitations under the Licence.
 -->
-<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
-
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN'
+  'http://www.springframework.org/dtd/spring-beans.dtd'>
 <beans>
 
     <!-- CIRCABC Action Service -->
 
-  <bean id="mailwithattach"
+  <bean
+    id="mailwithattach"
     class="eu.cec.digit.circabc.action.MailActionExecuterWithAttach"
-    parent="action-executer">
+    parent="action-executer"
+  >
     <property name="mailService">
-      <ref bean="circabcMailService"></ref>
+      <ref bean="circabcMailService" />
     </property>
     <property name="templateService">
-      <ref bean="templateService"></ref>
+      <ref bean="templateService" />
     </property>
     <property name="personService">
-      <ref bean="personService"></ref>
+      <ref bean="personService" />
     </property>
     <property name="authenticationService">
-      <ref bean="authenticationService"></ref>
+      <ref bean="authenticationService" />
     </property>
     <property name="nodeService">
-      <ref bean="nodeService"></ref>
+      <ref bean="nodeService" />
     </property>
     <property name="authorityService">
-      <ref bean="authorityService"></ref>
+      <ref bean="authorityService" />
     </property>
     <property name="serviceRegistry">
-      <ref bean="ServiceRegistry"></ref>
+      <ref bean="ServiceRegistry" />
     </property>
     <property name="applicableTypes">
       <list>
@@ -56,41 +58,43 @@
     </property>
   </bean>
   
-  <bean id="circabc-import"
+  <bean
+    id="circabc-import"
     class="eu.cec.digit.circabc.action.CircabcImporterActionExecuter"
-    parent="import">
+    parent="import"
+  >
     <property name="myNodeService">
-      <ref bean="nodeService"></ref>
+      <ref bean="nodeService" />
     </property>
      <property name="myContentService">
-      <ref bean="contentService"></ref>
+      <ref bean="contentService" />
     </property>
     <property name="myImporterService">
-      <ref bean="ImporterService"></ref>
+      <ref bean="ImporterService" />
     </property>
     <property name="myMimetypeService">
-      <ref bean="mimetypeService"></ref>
+      <ref bean="mimetypeService" />
     </property>
     <property name="myFileFolderService">
-      <ref bean="FileFolderService"></ref>
+      <ref bean="FileFolderService" />
     </property>
     <property name="mailService">
-      <ref bean="circabcMailService"></ref>
+      <ref bean="circabcMailService" />
     </property>
     <property name="personService">
-      <ref bean="personService"></ref>
+      <ref bean="personService" />
     </property>
     <property name="logService">
-      <ref bean="logService"></ref>
+      <ref bean="logService" />
     </property>
     <property name="managementService">
-      <ref bean="managementService"></ref>
+      <ref bean="managementService" />
     </property>
     <property name="config">
-      <ref bean="importFileLimit"></ref>
+      <ref bean="importFileLimit" />
     </property>
     <property name="bulkService">
-      <ref bean="bulkService"></ref>
+      <ref bean="bulkService" />
     </property>
     <property name="policyBehaviourFilter">
 		<ref bean="policyBehaviourFilter" />
@@ -98,8 +102,11 @@
   </bean>
   
    <!-- Replication Action executor -->
-   <bean id="circabcReplicationActionExecutor" parent="action-executer"
-      class="eu.cec.digit.circabc.action.CircabcReplicationActionExecutor">
+   <bean
+    id="circabcReplicationActionExecutor"
+    parent="action-executer"
+    class="eu.cec.digit.circabc.action.CircabcReplicationActionExecutor"
+  >
       <property name="publicAction">
          <value>false</value>
       </property>
@@ -117,7 +124,10 @@
       <property name="nodeCrawlerFactory" ref="NodeCrawlerFactory" />
       <property name="actionTrackingService" ref="actionTrackingService" />
       <property name="transactionService" ref="transactionService" />
-      <property name="replicationDefinitionPersister" ref="replicationDefinitionPersister" />
+      <property
+      name="replicationDefinitionPersister"
+      ref="replicationDefinitionPersister"
+    />
       <property name="replicationParams" ref="replicationParams" />
       <property name="excludedAspects">
          <list>
@@ -126,62 +136,68 @@
    </bean>
   
   
-  <bean id="advanced-import"
+  <bean
+    id="advanced-import"
     class="eu.cec.digit.circabc.action.AdvancedImporterActionExecuter"
-    parent="action-executer">
+    parent="action-executer"
+  >
             <property name="importerService">
-            <ref bean="ImporterService"/>
+            <ref bean="ImporterService" />
         </property>
         <property name="nodeService">
-            <ref bean="NodeService"></ref>
+            <ref bean="NodeService" />
         </property>
         <property name="contentService">
             <ref bean="ContentService" />
         </property>
         <property name="mimetypeService">
-            <ref bean="mimetypeService"/>
+            <ref bean="mimetypeService" />
         </property>
         <property name="fileFolderService">
-            <ref bean="FileFolderService"/>
+            <ref bean="FileFolderService" />
         </property>
 
   </bean>
   
-  <bean id="scan-missing-user-referrences"
-  	class="eu.cec.digit.circabc.migration.post.cleaning.MissingUserReferrenceAction"
-  	parent="action-executer">
+  <bean
+    id="scan-missing-user-referrences"
+    class="eu.cec.digit.circabc.migration.post.cleaning.MissingUserReferrenceAction"
+    parent="action-executer"
+  >
   	    <property name="nodeService">
-            <ref bean="NodeService"></ref>
+            <ref bean="NodeService" />
         </property>	
         <property name="gStatService">
-            <ref bean="GlobalStatisticsService"></ref>
+            <ref bean="GlobalStatisticsService" />
         </property>
     	<property name="permissionService">
-            <ref bean="PermissionService"></ref>
+            <ref bean="PermissionService" />
         </property>	
         <property name="notificationSubscriptionService">
-            <ref bean="NotificationSubscriptionService"></ref>
+            <ref bean="NotificationSubscriptionService" />
         </property>
         <property name="ldapUserService">
-            <ref bean="ldapUserService"></ref>
+          <ref
+        bean="#{circabcConfig.USE_LDAP == true ? 'ldapUserService' : 'luceneUserService'}"
+      />
         </property>
         <property name="userService">
-            <ref bean="userService"></ref>
+            <ref bean="userService" />
         </property>
         <property name="managementService">
-            <ref bean="managementService"></ref>
+            <ref bean="managementService" />
         </property>
         <property name="fileFolderService">
-            <ref bean="fileFolderService"></ref>
+            <ref bean="fileFolderService" />
         </property>
         <property name="profileManagerServiceFactory">
-            <ref bean="profileManagerServiceFactory"></ref>
+            <ref bean="profileManagerServiceFactory" />
         </property>
         <property name="transactionService">
-            <ref bean="transactionService"></ref>
+            <ref bean="transactionService" />
         </property>
         <property name="contentService">
-            <ref bean="contentService"></ref>
+            <ref bean="contentService" />
         </property>
   </bean>
   

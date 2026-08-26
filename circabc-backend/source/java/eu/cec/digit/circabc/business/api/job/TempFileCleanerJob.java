@@ -40,64 +40,70 @@ import org.springframework.util.Assert;
  */
 public class TempFileCleanerJob implements Job {
 
-    private static Log logger = LogFactory.getLog(TempFileCleanerJob.class);
+  private static Log logger = LogFactory.getLog(TempFileCleanerJob.class);
 
-    private TemporaryFileManager temporaryFileManager;
-    private TransactionService transactionService;
+  private TemporaryFileManager temporaryFileManager;
+  private TransactionService transactionService;
 
-    public void execute(final JobExecutionContext context) throws JobExecutionException {
-        try {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Start job .... ");
+  public void execute(final JobExecutionContext context)
+    throws JobExecutionException {
+    try {
+      if (logger.isDebugEnabled()) {
+        logger.debug("Start job .... ");
+      }
+
+      final RetryingTransactionHelper helper = getTransactionService(
+        context
+      ).getRetryingTransactionHelper();
+      helper.doInTransaction(
+        new RetryingTransactionCallback<Object>() {
+          public Object execute() throws Throwable {
+            try {
+              AuthenticationUtil.setRunAsUserSystem();
+              getTemporaryFileManager(context).removeTempFiles();
+            } finally {
+              AuthenticationUtil.clearCurrentSecurityContext();
             }
+            return null;
+          }
+        },
+        false,
+        true
+      );
+    } catch (final Throwable e) {
+      logger.error("Can not run job TempFileCleanerJob", e);
+    }
+  }
 
-            final RetryingTransactionHelper helper = getTransactionService(context)
-                    .getRetryingTransactionHelper();
-            helper.doInTransaction(new RetryingTransactionCallback<Object>() {
+  private synchronized void initialize(JobExecutionContext context) {
+    final JobDataMap jobData = context.getJobDetail().getJobDataMap();
 
-                                       public Object execute() throws Throwable {
+    temporaryFileManager = (TemporaryFileManager) jobData.get(
+      "temporaryFileManager"
+    );
+    transactionService = (TransactionService) jobData.get("transactionService");
 
-                                           try {
-                                               AuthenticationUtil.setRunAsUserSystem();
-                                               getTemporaryFileManager(context).removeTempFiles();
-                                           } finally {
-                                               AuthenticationUtil.clearCurrentSecurityContext();
-                                           }
-                                           return null;
-                                       }
-                                   }
-                    , false, true);
+    Assert.notNull(temporaryFileManager);
+    Assert.notNull(transactionService);
+  }
 
-
-        } catch (final Throwable e) {
-            logger.error("Can not run job TempFileCleanerJob", e);
-        }
+  private TemporaryFileManager getTemporaryFileManager(
+    final JobExecutionContext context
+  ) {
+    if (this.temporaryFileManager == null) {
+      initialize(context);
     }
 
+    return this.temporaryFileManager;
+  }
 
-    private synchronized void initialize(JobExecutionContext context) {
-        final JobDataMap jobData = context.getJobDetail().getJobDataMap();
-
-        temporaryFileManager = (TemporaryFileManager) jobData.get("temporaryFileManager");
-        transactionService = (TransactionService) jobData.get("transactionService");
-
-        Assert.notNull(temporaryFileManager);
-        Assert.notNull(transactionService);
+  private TransactionService getTransactionService(
+    final JobExecutionContext context
+  ) {
+    if (this.transactionService == null) {
+      initialize(context);
     }
 
-    private TemporaryFileManager getTemporaryFileManager(final JobExecutionContext context) {
-        if (this.temporaryFileManager == null) {
-            initialize(context);
-        }
-
-        return this.temporaryFileManager;
-    }
-
-    private TransactionService getTransactionService(final JobExecutionContext context) {
-        if (this.transactionService == null) {
-            initialize(context);
-        }
-
-        return this.transactionService;
-    }
+    return this.transactionService;
+  }
 }

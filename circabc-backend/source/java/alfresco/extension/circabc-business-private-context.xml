@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version='1.0' encoding='UTF-8' ?>
 <!--
   Copyright 2006 European Community
   
@@ -19,7 +19,8 @@
    See the Licence for the specific language governing
    permissions and limitations under the Licence.
 -->
-<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans-2.0.dtd'>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN'
+  'http://www.springframework.org/dtd/spring-beans-2.0.dtd'>
 <beans>
 
 	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
@@ -28,42 +29,49 @@
 	<!-- You DO NOT MODIFY here beans related to Alfresco                 -->
 	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
 
-	<bean id="business-properties"
-          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+	<bean
+    id="business-properties"
+    class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
+  >
         <property name="ignoreUnresolvablePlaceholders">
             <value>true</value>
         </property>
         <property name="locations">
             <list>
-                <value>classpath:alfresco/extension/circabc-business-srv.properties</value>
+                <value
+        >classpath:alfresco/extension/circabc-business-srv.properties</value>
             </list>
         </property>
     </bean>
 
-	<bean id="_mailMeContentBusinessSrv"
-		class="eu.cec.digit.circabc.business.impl.mail.MailMeContentBusinessImpl">
+	<bean
+    id="_mailMeContentBusinessSrv"
+    class="eu.cec.digit.circabc.business.impl.mail.MailMeContentBusinessImpl"
+  >
 		<property name="mailService">
-			<ref bean="circabcMailService"></ref>
+			<ref bean="circabcMailService" />
 		</property>
 		<property name="mailPreferencesService">
-			<ref bean="mailPreferencesService"></ref>
+			<ref bean="mailPreferencesService" />
 		</property>
 		<property name="nodeTypeManager">
-			<ref bean="_nodeTypeManager"></ref>
+			<ref bean="_nodeTypeManager" />
 		</property>
 		<property name="validationManager">
-			<ref bean="_validationManager"></ref>
+			<ref bean="_validationManager" />
 		</property>
 		<property name="userManager">
-			<ref bean="_userManager"></ref>
+			<ref bean="_userManager" />
 		</property>
 		<property name="contentManager">
-			<ref bean="_contentManager"></ref>
+			<ref bean="_contentManager" />
 		</property>
 	</bean>
 
-	<bean id="_contentBusinessSrv"
-		class="eu.cec.digit.circabc.business.impl.content.ContentBusinessImpl">
+	<bean
+    id="_contentBusinessSrv"
+    class="eu.cec.digit.circabc.business.impl.content.ContentBusinessImpl"
+  >
 		<property name="policyBehaviourFilter">
 			<ref bean="policyBehaviourFilter" />
 		</property>
@@ -76,8 +84,10 @@
 	</bean>
 
 
-	<bean id="_cociContentBusinessSrv"
-		class="eu.cec.digit.circabc.business.impl.content.CociContentBusinessImpl">
+	<bean
+    id="_cociContentBusinessSrv"
+    class="eu.cec.digit.circabc.business.impl.content.CociContentBusinessImpl"
+  >
 		<property name="contentService">
 			<ref bean="contentService" />
 		</property>
@@ -107,8 +117,10 @@
 		</property>
 	</bean>
 
-	<bean id="_propertiesBusinessSrv"
-		class="eu.cec.digit.circabc.business.impl.props.PropertiesBusinessImpl">
+	<bean
+    id="_propertiesBusinessSrv"
+    class="eu.cec.digit.circabc.business.impl.props.PropertiesBusinessImpl"
+  >
 		<property name="nodeService">
 			<ref bean="nodeService" />
 		</property>
@@ -129,8 +141,11 @@
 		</property>
 	</bean>
 
-	<bean id="_containerAbstractBusinessSrv"
-		class="eu.cec.digit.circabc.business.impl.space.ContainerBaseBusinessService" abstract="true">
+	<bean
+    id="_containerAbstractBusinessSrv"
+    class="eu.cec.digit.circabc.business.impl.space.ContainerBaseBusinessService"
+    abstract="true"
+  >
 		<property name="fileFolderService">
 			<ref bean="fileFolderService" />
 		</property>
@@ -148,16 +163,24 @@
 		</property>
 	</bean>
 
-	<bean id="_spaceBusinessSrv"
-		class="eu.cec.digit.circabc.business.impl.space.SpaceBusinessImpl" parent="_containerAbstractBusinessSrv">
+	<bean
+    id="_spaceBusinessSrv"
+    class="eu.cec.digit.circabc.business.impl.space.SpaceBusinessImpl"
+    parent="_containerAbstractBusinessSrv"
+  >
 	</bean>
 
-	<bean id="_dossierBusinessSrv"
-		class="eu.cec.digit.circabc.business.impl.space.DossierBusinessImpl" parent="_containerAbstractBusinessSrv">
+	<bean
+    id="_dossierBusinessSrv"
+    class="eu.cec.digit.circabc.business.impl.space.DossierBusinessImpl"
+    parent="_containerAbstractBusinessSrv"
+  >
 	</bean>
 
-	<bean id="_linksBusinessSrv"
-		class="eu.cec.digit.circabc.business.impl.link.LinksBusinessImpl">
+	<bean
+    id="_linksBusinessSrv"
+    class="eu.cec.digit.circabc.business.impl.link.LinksBusinessImpl"
+  >
 		<property name="fileFolderService">
 			<ref bean="fileFolderService" />
 		</property>
@@ -181,8 +204,10 @@
 		</property>
 	</bean>
 
-	<bean id="_navigationBusinessSrv"
-		class="eu.cec.digit.circabc.business.impl.nav.NavigationBusinessImpl">
+	<bean
+    id="_navigationBusinessSrv"
+    class="eu.cec.digit.circabc.business.impl.nav.NavigationBusinessImpl"
+  >
 		<property name="nodeService">
 			<ref bean="nodeService" />
 		</property>
@@ -200,16 +225,22 @@
 		</property>
 	</bean>
 
-	<bean id="_profileBusinessSrv"
-		class="eu.cec.digit.circabc.business.impl.security.ProfileBusinessImpl">
+	<bean
+    id="_profileBusinessSrv"
+    class="eu.cec.digit.circabc.business.impl.security.ProfileBusinessImpl"
+  >
 	</bean>
 
-	<bean id="_permissionsBusinessSrv"
-		class="eu.cec.digit.circabc.business.impl.security.PermissionsBusinessImpl">
+	<bean
+    id="_permissionsBusinessSrv"
+    class="eu.cec.digit.circabc.business.impl.security.PermissionsBusinessImpl"
+  >
 	</bean>
 
-	<bean id="_userDetailsBusinessSrv"
-		class="eu.cec.digit.circabc.business.impl.user.UserDetailsBusinessImpl">
+	<bean
+    id="_userDetailsBusinessSrv"
+    class="eu.cec.digit.circabc.business.impl.user.UserDetailsBusinessImpl"
+  >
 		<property name="nodeService">
 			<ref bean="nodeService" />
 		</property>
@@ -239,18 +270,22 @@
 		</property>
 	</bean>
 
-	<bean id="_remoteUserBusinessSrv"
-		class="eu.cec.digit.circabc.business.impl.user.LdapBusinessImpl">
+	<bean
+    id="_remoteUserBusinessSrv"
+    class="eu.cec.digit.circabc.business.impl.user.LdapBusinessImpl"
+  >
 		<property name="userService">
 			<ref bean="userService" />
 		</property>
-		<property name="remoteManagementAvailable" >
+		<property name="remoteManagementAvailable">
 			<value>${business.remote.user.available}</value>
 		</property>
 	</bean>
 
-	<bean id="_attachementBusinessSrv"
-		class="eu.cec.digit.circabc.business.impl.content.AttachementBusinessImpl">
+	<bean
+    id="_attachementBusinessSrv"
+    class="eu.cec.digit.circabc.business.impl.content.AttachementBusinessImpl"
+  >
 		<property name="nodeService">
 			<ref bean="nodeService" />
 		</property>
@@ -271,8 +306,10 @@
 
 	<!-- Here the definition of Business Manager (IOC aware helpers) -->
 
-	<bean id="_applicationConfigManager"
-		class="eu.cec.digit.circabc.business.helper.ApplicationConfigManager">
+	<bean
+    id="_applicationConfigManager"
+    class="eu.cec.digit.circabc.business.helper.ApplicationConfigManager"
+  >
 		<property name="namespaceService">
 			<ref bean="namespaceService" />
 		</property>
@@ -284,8 +321,10 @@
 		</property>
 	</bean>
 
-	<bean id="_metadataManager"
-		class="eu.cec.digit.circabc.business.helper.MetadataManager">
+	<bean
+    id="_metadataManager"
+    class="eu.cec.digit.circabc.business.helper.MetadataManager"
+  >
 		<property name="metadataExtracterRegistry">
 			<ref bean="metadataExtracterRegistry" />
 		</property>
@@ -303,8 +342,10 @@
 		</property>
 	</bean>
 
-	<bean id="_validationManager"
-		class="eu.cec.digit.circabc.business.helper.ValidationManager">
+	<bean
+    id="_validationManager"
+    class="eu.cec.digit.circabc.business.helper.ValidationManager"
+  >
 		<property name="nodeService">
 			<ref bean="nodeService" />
 		</property>
@@ -322,15 +363,19 @@
 		</property>
 	</bean>
 
-	<bean id="_alfrescoObjectsManager"
-		class="eu.cec.digit.circabc.business.helper.AlfrescoObjectsManager">
+	<bean
+    id="_alfrescoObjectsManager"
+    class="eu.cec.digit.circabc.business.helper.AlfrescoObjectsManager"
+  >
 		<property name="namespaceService">
 			<ref bean="namespaceService" />
 		</property>
 	</bean>
 
-	<bean id="_nodeTypeManager"
-		class="eu.cec.digit.circabc.business.helper.NodeTypeManager">
+	<bean
+    id="_nodeTypeManager"
+    class="eu.cec.digit.circabc.business.helper.NodeTypeManager"
+  >
 		<property name="nodeService">
 			<ref bean="nodeService" />
 		</property>
@@ -342,15 +387,19 @@
 		</property>
 	</bean>
 
-	<bean id="_permissionManager"
-		class="eu.cec.digit.circabc.business.helper.PermissionManager">
+	<bean
+    id="_permissionManager"
+    class="eu.cec.digit.circabc.business.helper.PermissionManager"
+  >
 		<property name="permissionService">
 			<ref bean="permissionService" />
 		</property>
 	</bean>
 
-	<bean id="_contentManager"
-		class="eu.cec.digit.circabc.business.helper.ContentManager" >
+	<bean
+    id="_contentManager"
+    class="eu.cec.digit.circabc.business.helper.ContentManager"
+  >
 		<property name="contentService">
 			<ref bean="contentService" />
 		</property>
@@ -371,8 +420,10 @@
 		</property>
 	</bean>
 
-	<bean id="_rulesManager"
-		class="eu.cec.digit.circabc.business.helper.RulesManager" >
+	<bean
+    id="_rulesManager"
+    class="eu.cec.digit.circabc.business.helper.RulesManager"
+  >
 		<property name="actionService">
 			<ref bean="actionService" />
 		</property>
@@ -381,8 +432,10 @@
 		</property>
 	</bean>
 
-	<bean id="_userManager"
-		class="eu.cec.digit.circabc.business.helper.UserManager" >
+	<bean
+    id="_userManager"
+    class="eu.cec.digit.circabc.business.helper.UserManager"
+  >
 		<property name="nodeService">
 			<ref bean="nodeService" />
 		</property>
@@ -403,8 +456,10 @@
 		</property>
 	</bean>
 
-	<bean id="_temporaryFileManager"
-		class="eu.cec.digit.circabc.business.helper.TemporaryFileManager" >
+	<bean
+    id="_temporaryFileManager"
+    class="eu.cec.digit.circabc.business.helper.TemporaryFileManager"
+  >
 		<property name="nodeService">
 			<ref bean="nodeService" />
 		</property>
@@ -429,7 +484,10 @@
 
 	<bean id="tempFileCleanerJob" class="org.alfresco.util.TriggerBean">
 		<property name="jobDetail">
-			<bean id="tempFileCleanerJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
+			<bean
+        id="tempFileCleanerJobDetail"
+        class="org.springframework.scheduling.quartz.JobDetailBean"
+      >
 				<property name="jobClass">
 					<value>eu.cec.digit.circabc.business.api.job.TempFileCleanerJob</value>
 				</property>

@@ -1,8 +1,9 @@
 <webscript>
   <shortname>groups.id.summary.export</shortname>
-  <description>Exports the summary of an IG in different formats: CSV, XLS, or XML</description>
+  <description
+  >Exports the summary of an IG in different formats: CSV, XLS, or XML</description>
     <url>/circabc/groups/{id}/summary/export</url>
-  <format default="json"/>
+  <format default="json" />
   <authentication>user</authentication>
   <transaction>required</transaction>
 </webscript>

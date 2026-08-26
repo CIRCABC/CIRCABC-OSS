@@ -1,25 +1,29 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input, output, input } from '@angular/core';
 
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
   ActionType,
 } from 'app/action-result';
 import { Node as ModelNode, TopicService } from 'app/core/generated/circabc';
+import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-delete-topic',
   templateUrl: './delete-topic.component.html',
   preserveWhitespaces: true,
+  imports: [SpinnerComponent, I18nPipe, TranslocoModule],
 })
 export class DeleteTopicComponent {
-  @Input()
-  topic!: ModelNode;
+  readonly topic = input.required<ModelNode>();
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   showModal = false;
-  @Output()
-  readonly modalHide = new EventEmitter<ActionEmitterResult>();
+  readonly modalHide = output<ActionEmitterResult>();
 
   public deleting = false;
 
@@ -31,11 +35,12 @@ export class DeleteTopicComponent {
     const result: ActionEmitterResult = {};
     result.type = ActionType.DELETE_TOPIC;
 
-    if (this.topic.id) {
+    const topic = this.topic();
+    if (topic.id) {
       try {
-        await firstValueFrom(this.topicService.deleteTopic(this.topic.id));
+        await firstValueFrom(this.topicService.deleteTopic(topic.id));
         result.result = ActionResult.SUCCEED;
-      } catch (error) {
+      } catch (_error) {
         result.result = ActionResult.FAILED;
       }
     }

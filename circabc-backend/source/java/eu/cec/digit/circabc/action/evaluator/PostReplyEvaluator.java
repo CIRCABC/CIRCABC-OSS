@@ -34,20 +34,21 @@ import org.alfresco.web.bean.repository.Node;
  */
 public class PostReplyEvaluator extends BaseActionEvaluator {
 
-    private static final long serialVersionUID = 6422283424092387176L;
+  private static final long serialVersionUID = 6422283424092387176L;
 
-    public boolean evaluate(final Node node) {
-        if (node.hasAspect(ModerationModel.ASPECT_WAITING_APPROVAL)
-                || node.hasAspect(ModerationModel.ASPECT_REJECTED)) {
-            return false;
-        }
-        if (node.hasAspect(CircabcModel.ASPECT_NEWSGROUP)) {
-            return node.hasPermission(NewsGroupPermissions.NWSPOST.toString());
-        } else if (node.hasAspect(CircabcModel.ASPECT_LIBRARY)) {
-            return node.hasPermission(LibraryPermissions.LIBACCESS.toString());
-        } else {
-            return false;
-        }
+  public boolean evaluate(final Node node) {
+    if (
+      node.hasAspect(ModerationModel.ASPECT_WAITING_APPROVAL) ||
+      node.hasAspect(ModerationModel.ASPECT_REJECTED)
+    ) {
+      return false;
     }
-
+    if (node.hasAspect(CircabcModel.ASPECT_NEWSGROUP)) {
+      return node.hasPermission(NewsGroupPermissions.NWSPOST.toString());
+    } else if (node.hasAspect(CircabcModel.ASPECT_LIBRARY)) {
+      return node.hasPermission(LibraryPermissions.LIBACCESS.toString());
+    } else {
+      return false;
+    }
+  }
 }

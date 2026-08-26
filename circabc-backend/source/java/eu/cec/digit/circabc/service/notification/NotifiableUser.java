@@ -16,12 +16,11 @@
  */
 package eu.cec.digit.circabc.service.notification;
 
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.namespace.QName;
-
 import java.io.Serializable;
 import java.util.Locale;
 import java.util.Map;
+import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.namespace.QName;
 
 /**
  * The interface used to support reporting back a notifiable user.
@@ -29,39 +28,38 @@ import java.util.Map;
  * @author Yanick Pignot
  */
 public interface NotifiableUser {
+  /**
+   * Get the username of the person that will be notified
+   */
+  String getUserName();
 
-    /**
-     * Get the username of the person that will be notified
-     */
-    String getUserName();
+  /**
+   * Get the user last name of the person that will be notified
+   */
+  String getLastName();
 
-    /**
-     * Get the user last name of the person that will be notified
-     */
-    String getLastName();
+  /**
+   * Get the user last name of the person that will be notified
+   */
+  String getFirstName();
 
-    /**
-     * Get the user last name of the person that will be notified
-     */
-    String getFirstName();
+  /**
+   * Get the user email address of the person that will be notified
+   */
+  String getEmailAddress();
 
-    /**
-     * Get the user email address of the person that will be notified
-     */
-    String getEmailAddress();
+  /**
+   * Get the user email properties of the person that will be notified
+   */
+  Map<QName, Serializable> getUserProperties();
 
-    /**
-     * Get the user email properties of the person that will be notified
-     */
-    Map<QName, Serializable> getUserProperties();
+  /**
+   * Get the language in which the user want to be notified
+   */
+  Locale getNotificationLanguage();
 
-    /**
-     * Get the language in which the user want to be notified
-     */
-    Locale getNotificationLanguage();
-
-    /**
-     * Get the noderef representation of the user that will be notified
-     */
-    NodeRef getPerson();
+  /**
+   * Get the noderef representation of the user that will be notified
+   */
+  NodeRef getPerson();
 }

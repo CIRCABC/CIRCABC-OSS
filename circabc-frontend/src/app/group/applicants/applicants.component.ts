@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import {
   animate,
@@ -9,6 +9,7 @@ import {
   trigger,
 } from '@angular/animations';
 
+import { TranslocoModule } from '@jsverse/transloco';
 import { PermissionEvaluatorService } from 'app/core/evaluator/permission-evaluator.service';
 import {
   Applicant,
@@ -20,12 +21,15 @@ import {
   UserService,
 } from 'app/core/generated/circabc';
 import { LoginService } from 'app/core/login.service';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
+import { ReponsiveSubMenuComponent } from 'app/shared/reponsive-sub-menu/reponsive-sub-menu.component';
 import { firstValueFrom } from 'rxjs';
+import { RequestComponent } from './request/request.component';
 
 @Component({
   selector: 'cbc-applicants',
   templateUrl: './applicants.component.html',
-  styleUrls: ['./applicants.component.scss'],
+  styleUrl: './applicants.component.scss',
   preserveWhitespaces: true,
   animations: [
     trigger('state', [
@@ -37,6 +41,13 @@ import { firstValueFrom } from 'rxjs';
         animate(300, style({ transform: 'translateX(100%)' })),
       ]),
     ]),
+  ],
+  imports: [
+    HorizontalLoaderComponent,
+    ReponsiveSubMenuComponent,
+    RouterLink,
+    RequestComponent,
+    TranslocoModule,
   ],
 })
 export class ApplicantsComponent implements OnInit {
@@ -98,7 +109,7 @@ export class ApplicantsComponent implements OnInit {
         this.profiles = this.profiles.filter(
           (profile) => profile.name !== 'guest' && profile.name !== 'EVERYONE'
         );
-      } catch (error) {
+      } catch (_error) {
         console.error('problem retrieving the profiles');
       }
     }
@@ -157,8 +168,7 @@ export class ApplicantsComponent implements OnInit {
         );
         for (const profile of currentUserMemberships) {
           if (
-            profile &&
-            profile.interestGroup &&
+            profile?.interestGroup &&
             profile.interestGroup.id === this.currentGroup.id
           ) {
             this.alreadyMember = true;

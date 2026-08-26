@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit, input } from '@angular/core';
 
 import {
   FavouritesService,
@@ -11,12 +11,11 @@ import { firstValueFrom } from 'rxjs';
 @Component({
   selector: 'cbc-favourite-switch',
   templateUrl: './favourite-switch.component.html',
-  styleUrls: ['./favourite-switch.component.scss'],
+  styleUrl: './favourite-switch.component.scss',
   preserveWhitespaces: true,
 })
 export class FavouriteSwitchComponent implements OnInit {
-  @Input()
-  node!: ModelNode;
+  readonly node = input.required<ModelNode>();
   private isWorking = false;
   public shaw = false;
 
@@ -27,10 +26,11 @@ export class FavouriteSwitchComponent implements OnInit {
 
   ngOnInit(): void {
     this.shaw = false;
-    if (!this.loginService.isGuest() && this.node.type) {
+    const node = this.node();
+    if (!this.loginService.isGuest() && node.type) {
       this.shaw =
-        this.node.type.indexOf('filelink') === -1 &&
-        this.node.type.indexOf('folderlink') === -1;
+        node.type.indexOf('filelink') === -1 &&
+        node.type.indexOf('folderlink') === -1;
     }
   }
 
@@ -40,24 +40,25 @@ export class FavouriteSwitchComponent implements OnInit {
     }
     try {
       this.isWorking = true;
-      if (this.node) {
-        if (this.node.favourite && this.node.id) {
+      const node = this.node();
+      if (node) {
+        if (node.favourite && node.id) {
           await firstValueFrom(
             this.favouritesService.deleteFavourite(
               this.loginService.getCurrentUsername(),
-              this.node.id
+              node.id
             )
           );
-          this.node.favourite = false;
+          node.favourite = false;
         } else {
-          const body: SimpleId = { id: this.node.id as string };
+          const body: SimpleId = { id: node.id as string };
           await firstValueFrom(
             this.favouritesService.postFavourite(
               this.loginService.getCurrentUsername(),
               body
             )
           );
-          this.node.favourite = true;
+          node.favourite = true;
         }
       }
     } finally {
@@ -66,9 +67,10 @@ export class FavouriteSwitchComponent implements OnInit {
   }
 
   isFavourite(): boolean {
-    if (this.node) {
-      if (this.node.favourite) {
-        return this.node.favourite;
+    const node = this.node();
+    if (node) {
+      if (node.favourite) {
+        return node.favourite;
       }
     }
 

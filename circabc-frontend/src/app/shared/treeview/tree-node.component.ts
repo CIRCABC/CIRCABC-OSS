@@ -1,13 +1,14 @@
 import {
   Component,
-  EventEmitter,
   Input,
   OnDestroy,
   OnInit,
-  Output,
+  forwardRef,
+  output,
+  input,
 } from '@angular/core';
 
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
 import {
   ForumService,
@@ -15,38 +16,39 @@ import {
   SpaceService,
 } from 'app/core/generated/circabc';
 import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { TreeNode } from 'app/shared/treeview/tree-node';
-import { firstValueFrom, Subscription } from 'rxjs';
+import { TooltipModule } from 'primeng/tooltip';
+import { Subscription, firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-tree-node',
   templateUrl: './tree-node.component.html',
-  styleUrls: ['./tree-node.component.scss'],
+  styleUrl: './tree-node.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    SpinnerComponent,
+    TooltipModule,
+    forwardRef(() => TreeNodeComponent),
+    TranslocoModule,
+  ],
 })
 export class TreeNodeComponent implements OnInit, OnDestroy {
+  // TODO: Skipped for migration because:
+  //  This input is used in a control flow expression (e.g. `@if` or `*ngIf`)
+  //  and migrating would break narrowing currently.
   @Input()
   node!: TreeNode;
-  @Input()
-  rootId!: string;
-  @Input()
-  service: 'library' | 'newsgroups' = 'library';
-  @Input()
-  displayedPath: ModelNode[] = [];
-  @Input()
-  searchedNodeId: string | undefined;
-  @Input()
-  disabled = false;
-  @Input()
-  showSelector = true;
-  @Input()
-  showExpander = true;
-  @Input()
-  flagNewDays = -1;
-  @Output()
-  readonly selectedNodeEmitter = new EventEmitter<TreeNode>();
-  @Output()
-  readonly clickedNodeEmitter = new EventEmitter<TreeNode>();
+  readonly rootId = input.required<string>();
+  readonly service = input<'library' | 'newsgroups'>('library');
+  readonly displayedPath = input<ModelNode[]>([]);
+  readonly searchedNodeId = input<string>();
+  readonly disabled = input(false);
+  readonly showSelector = input(true);
+  readonly showExpander = input(true);
+  readonly flagNewDays = input(-1);
+  readonly selectedNodeEmitter = output<TreeNode>();
+  readonly clickedNodeEmitter = output<TreeNode>();
 
   needsExpansion = false;
   public loading = false;
@@ -60,10 +62,11 @@ export class TreeNodeComponent implements OnInit, OnDestroy {
   ) {}
 
   public async reload() {
-    if (this.displayedPath.length > 0 && this.pathContainsId()) {
+    const rootId = this.rootId();
+    if (this.displayedPath().length > 0 && this.pathContainsId()) {
       await this.loadChildren();
       this.node.expanded = true;
-    } else if (this.rootId && this.node && this.rootId === this.node.nodeId) {
+    } else if (rootId && this.node && rootId === this.node.nodeId) {
       await this.loadChildren();
     }
   }
@@ -83,7 +86,7 @@ export class TreeNodeComponent implements OnInit, OnDestroy {
   }
 
   private pathContainsId(): boolean {
-    for (const node of this.displayedPath) {
+    for (const node of this.displayedPath()) {
       if (node.id === this.node.nodeId) {
         return true;
       }
@@ -97,28 +100,27 @@ export class TreeNodeComponent implements OnInit, OnDestroy {
   }
 
   async clickNode(node: TreeNode) {
-    if (!this.showSelector) {
-      this.clickedNodeEmitter.emit(node);
-    } else {
+    if (this.showSelector()) {
       this.selectedNodeEmitter.emit(node);
+    } else {
+      this.clickedNodeEmitter.emit(node);
     }
   }
 
   // checks if this node is the one to mark selected
   markSelected(): boolean {
-    return (
-      this.searchedNodeId !== undefined &&
-      this.searchedNodeId === this.node.nodeId
-    );
+    const searchedNodeId = this.searchedNodeId();
+    return searchedNodeId !== undefined && searchedNodeId === this.node.nodeId;
   }
 
   // method called when expanding a node, to load its children on demand
   async loadChildren() {
     this.loading = true;
     this.node.children = [];
-    if (this.service === 'library') {
+    const service = this.service();
+    if (service === 'library') {
       await this.listSpaces();
-    } else if (this.service === 'newsgroups') {
+    } else if (service === 'newsgroups') {
       await this.listForums();
     }
     this.loading = false;
@@ -149,7 +151,7 @@ export class TreeNodeComponent implements OnInit, OnDestroy {
       childNode.hasSubFolders = forum.hasSubFolders
         ? forum.hasSubFolders
         : false;
-      if (forum.properties && forum.properties.created) {
+      if (forum.properties?.created) {
         childNode.created = new Date(forum.properties.created);
       }
       this.node.children.push(childNode);
@@ -188,7 +190,7 @@ export class TreeNodeComponent implements OnInit, OnDestroy {
       childNode.hasSubFolders = space.hasSubFolders
         ? space.hasSubFolders
         : false;
-      if (space.properties && space.properties.created) {
+      if (space.properties?.created) {
         childNode.created = new Date(space.properties.created);
       }
       this.node.children.push(childNode);
@@ -213,11 +215,11 @@ export class TreeNodeComponent implements OnInit, OnDestroy {
   }
 
   public isNew(): boolean {
-    if (this.flagNewDays > 0) {
+    if (this.flagNewDays() > 0) {
       const comparableDate = new Date();
-      const day = comparableDate.getDate() - this.flagNewDays;
+      const day = comparableDate.getDate() - this.flagNewDays();
       comparableDate.setDate(day);
-      if (this.node && this.node.created) {
+      if (this.node?.created) {
         const nodeDate = new Date(this.node.created);
         return nodeDate >= comparableDate;
       }

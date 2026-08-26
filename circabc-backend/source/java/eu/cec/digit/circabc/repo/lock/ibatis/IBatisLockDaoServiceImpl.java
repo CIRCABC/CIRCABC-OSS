@@ -17,7 +17,6 @@
 package eu.cec.digit.circabc.repo.lock.ibatis;
 
 import java.util.Date;
-
 import org.mybatis.spring.SqlSessionTemplate;
 
 /**
@@ -26,34 +25,37 @@ import org.mybatis.spring.SqlSessionTemplate;
  */
 public class IBatisLockDaoServiceImpl implements LockDaoService {
 
-    private SqlSessionTemplate sqlSessionTemplate = null;
+  private SqlSessionTemplate sqlSessionTemplate = null;
 
-    public int getLockCount(String item) {
-        return (Integer) sqlSessionTemplate.selectOne("CircabcLock.select_lock_count", item);
-    }
+  public int getLockCount(String item) {
+    return (Integer) sqlSessionTemplate.selectOne(
+      "CircabcLock.select_lock_count",
+      item
+    );
+  }
 
-    public void insertLock(String item) {
-        sqlSessionTemplate.insert("CircabcLock.insert_lock", item);
-    }
+  public void insertLock(String item) {
+    sqlSessionTemplate.insert("CircabcLock.insert_lock", item);
+  }
 
-    @Override
-    public void insertLockNulls(String item) {
-        sqlSessionTemplate.insert("CircabcLock.insert_lock_nulls", item);
-    }
+  @Override
+  public void insertLockNulls(String item) {
+    sqlSessionTemplate.insert("CircabcLock.insert_lock_nulls", item);
+  }
 
-    public void deleteLock(String item) {
-        sqlSessionTemplate.delete("CircabcLock.delete_lock", item);
-    }
+  public void deleteLock(String item) {
+    sqlSessionTemplate.delete("CircabcLock.delete_lock", item);
+  }
 
-    public void deleteLocks(int hours) {
-        Date date =  new Date(System.currentTimeMillis() - hours * 3600 * 1000);
-        sqlSessionTemplate.delete("CircabcLock.delete_locks", date);
-    }
+  public void deleteLocks(int hours) {
+    Date date = new Date(System.currentTimeMillis() - hours * 3600 * 1000);
+    sqlSessionTemplate.delete("CircabcLock.delete_locks", date);
+  }
 
-    /**
-     * @param sqlSessionTemplate the sqlSessionTemplate to set
-     */
-    public void setSqlSessionTemplate(SqlSessionTemplate sqlSessionTemplate) {
-        this.sqlSessionTemplate = sqlSessionTemplate;
-    }
+  /**
+   * @param sqlSessionTemplate the sqlSessionTemplate to set
+   */
+  public void setSqlSessionTemplate(SqlSessionTemplate sqlSessionTemplate) {
+    this.sqlSessionTemplate = sqlSessionTemplate;
+  }
 }

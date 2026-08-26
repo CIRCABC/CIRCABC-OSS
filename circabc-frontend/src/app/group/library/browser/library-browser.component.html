@@ -1,4 +1,5 @@
-<span *ngIf="isStoredInSharedLinkNavigationInfo()" style="font-size: 13px">
+@if (isStoredInSharedLinkNavigationInfo()) {
+<span style="font-size: 13px">
   <img src="img/error-triangle-orange-16.png" alt="" />&nbsp;{{
   'shared.space.link.access' | transloco }}&nbsp;
   <a [routerLink]="['../../../', getOriginIgId(), 'library', getOriginId()]">
@@ -6,78 +7,74 @@
     | transloco }}</a
   >&nbsp;
   <a
+    tabindex="0"
     class="button"
     style="height: 25px; padding-top: 4px"
     (click)="removeStoredLinkNavigationInfo()"
     >{{ 'label.close' | transloco }}</a
   >
 </span>
+}
 <section class="table-container">
   <header class="header">
     <cbc-pager
-      [length]="totalItems"
-      [pageSize]="preferences.library.listing.limit"
-      [pageIndex]="preferences.library.listing.page"
-      (pageChanged)="changePage($event)"
+      [length]="totalItems()"
+      [pageSize]="preferences().library.listing.limit"
+      [page]="preferences().library.listing.page"
+      (pageChange)="changePage($event)"
     ></cbc-pager>
     <span class="icons">
-      <a (click)="toggleTreeView()" *ngIf="!restrictedMode">
-        <img src="img/file-tree-empty.png" *ngIf="!treeView" alt="" />
-        <img src="img/file-tree-blue.png" *ngIf="treeView" alt="" />
+      @if (!restrictedMode()) {
+      <a tabindex="0" (click)="toggleTreeView()">
+        @if (!treeView) {
+        <img src="img/file-tree-empty.png" alt="" />
+        } @if (treeView) {
+        <img src="img/file-tree-blue.png" alt="" />
+        }
       </a>
+      }
       <cbc-share [showLabel]="false" [orientationRight]="false"></cbc-share>
-      <div
-        class="dropdown-trigger dropdown-trigger--with-icons"
-        *ngIf="!isGuest()"
-      >
-        <img
-          src="img/visibility.png"
-          *ngIf="isSubscribedToNotifications"
-          alt="Notifications"
-        />
-        <img
-          src="img/no-visibility.png"
-          *ngIf="!isSubscribedToNotifications"
-          alt="Notifications"
-        />
+      @if (!isGuest()) {
+      <div class="dropdown-trigger dropdown-trigger--with-icons">
+        @if (isSubscribedToNotifications) {
+        <img src="img/visibility.png" alt="Notifications" />
+        } @if (!isSubscribedToNotifications) {
+        <img src="img/no-visibility.png" alt="Notifications" />
+        }
         <div class="dropdown dropdown--library-settings">
           <div class="number-of-items">
             {{ 'label.notifications' | transloco }}:
             <br />
             <br />
-            <a
-              (click)="changeNotificationSubscription('on')"
-              *ngIf="!isSubscribedToNotifications"
+            @if (!isSubscribedToNotifications) {
+            <a tabindex="0" (click)="changeNotificationSubscription('on')"
               >{{ 'label.subscribe' | transloco }}
               <img src="img/visibility.png" alt="Notifications" />
             </a>
-            <a
-              (click)="changeNotificationSubscription('off')"
-              *ngIf="isSubscribedToNotifications"
+            } @if (isSubscribedToNotifications) {
+            <a tabindex="0" (click)="changeNotificationSubscription('off')"
               >{{ 'label.unsubscribe' | transloco }}
               <img src="img/no-visibility.png" alt="Notifications" />
             </a>
+            }
           </div>
         </div>
       </div>
-      <div class="dropdown-trigger" *ngIf="!restrictedMode">
+      } @if (!restrictedMode()) {
+      <div class="dropdown-trigger">
         <img src="img/icon-admin-blue.png" alt="Settings" />
         <div class="dropdown dropdown--library-settings">
           <div class="number-of-items">
             {{ 'label.show' | transloco }}:
-            <a (click)="changeLimit(10)">10</a>
-            <a (click)="changeLimit(25)">25</a>
-            <a (click)="changeLimit(50)">50</a>
-            <a (click)="changeLimit(-1)">All</a>
+            <a tabindex="0" (click)="changeLimit(10)">10</a>
+            <a tabindex="0" (click)="changeLimit(25)">25</a>
+            <a tabindex="0" (click)="changeLimit(50)">50</a>
+            <a tabindex="0" (click)="changeLimit(-1)">All</a>
           </div>
           <form [formGroup]="columnForm">
             <ul>
               <li>
-                <input
-                  type="checkbox"
-                  formControlName="name"
-                  [attr.disabled]="true"
-                />
+                <input type="checkbox" formControlName="name" />
                 {{ 'label.name' | transloco }}
               </li>
               <li>
@@ -124,6 +121,7 @@
           </form>
         </div>
       </div>
+      }
     </span>
   </header>
 
@@ -138,12 +136,14 @@
             name=""
             value=""
             (click)="toggleSelect()"
-            [checked]="allSelected"
+            [checked]="allSelected()"
           />
         </td>
         <td class="col-hidable"></td>
-        <td>
+        @if (columnForm.value.name) {
+        <td class="col-hidable">
           <a
+            tabindex="0"
             (click)="changeSort('name')"
             [class.underline-selector]="
               localListingOptions.sort === 'name_ASC' ||
@@ -156,166 +156,163 @@
             >{{ 'label.name' | transloco }}</a
           >
 
-          <span
-            class="order-arrow-up"
-            *ngIf="localListingOptions.sort === 'name_ASC'"
-          ></span>
-          <span
-            class="order-arrow-down"
-            *ngIf="localListingOptions.sort === 'name_DESC'"
-          ></span>
+          @if (localListingOptions.sort === 'name_ASC') {
+          <span class="order-arrow-up"></span>
+          } @if (localListingOptions.sort === 'name_DESC') {
+          <span class="order-arrow-down"></span>
+          }
         </td>
-        <td *ngIf="columnForm.value.title">
-          <a (click)="changeSort('title')">{{ 'label.title' | transloco }}</a>
-          <span
-            class="order-arrow-up"
-            *ngIf="localListingOptions.sort === 'title_ASC'"
-          ></span>
-          <span
-            class="order-arrow-down"
-            *ngIf="localListingOptions.sort === 'title_DESC'"
-          ></span>
+        } @if (columnForm.value.title) {
+        <td>
+          <a tabindex="0" (click)="changeSort('title')"
+            >{{ 'label.title' | transloco }}</a
+          >
+          @if (localListingOptions.sort === 'title_ASC') {
+          <span class="order-arrow-up"></span>
+          } @if (localListingOptions.sort === 'title_DESC') {
+          <span class="order-arrow-down"></span>
+          }
         </td>
-        <td *ngIf="columnForm.value.creation">
-          <a (click)="changeSort('created')"
+        } @if (columnForm.value.creation) {
+        <td>
+          <a tabindex="0" (click)="changeSort('created')"
             >{{ 'label.created' | transloco }}</a
           >
-          <span
-            class="order-arrow-up"
-            *ngIf="localListingOptions.sort === 'created_ASC'"
-          ></span>
-          <span
-            class="order-arrow-down"
-            *ngIf="localListingOptions.sort === 'created_DESC'"
-          ></span>
+          @if (localListingOptions.sort === 'created_ASC') {
+          <span class="order-arrow-up"></span>
+          } @if (localListingOptions.sort === 'created_DESC') {
+          <span class="order-arrow-down"></span>
+          }
         </td>
-        <td *ngIf="columnForm.value.modification">
-          <a (click)="changeSort('modified')"
+        } @if (columnForm.value.modification) {
+        <td>
+          <a tabindex="0" (click)="changeSort('modified')"
             >{{ 'label.last.modification' | transloco }}</a
           >
-          <span
-            class="order-arrow-up"
-            *ngIf="localListingOptions.sort === 'modified_ASC'"
-          ></span>
-          <span
-            class="order-arrow-down"
-            *ngIf="localListingOptions.sort === 'modified_DESC'"
-          ></span>
+          @if (localListingOptions.sort === 'modified_ASC') {
+          <span class="order-arrow-up"></span>
+          } @if (localListingOptions.sort === 'modified_DESC') {
+          <span class="order-arrow-down"></span>
+          }
         </td>
-        <td class="col-hidable" *ngIf="columnForm.value.description">
+        } @if (columnForm.value.description) {
+        <td class="col-hidable">
           <a>{{ 'label.description' | transloco }}</a>
-          <span
-            class="order-arrow-up"
-            *ngIf="localListingOptions.sort === 'description_ASC'"
-          ></span>
-          <span
-            class="order-arrow-down"
-            *ngIf="localListingOptions.sort === 'description_DESC'"
-          ></span>
+          @if (localListingOptions.sort === 'description_ASC') {
+          <span class="order-arrow-up"></span>
+          } @if (localListingOptions.sort === 'description_DESC') {
+          <span class="order-arrow-down"></span>
+          }
         </td>
-        <td class="col-hidable" *ngIf="columnForm.value.version">
-          <a (click)="changeSort('versionLabel')"
+        } @if (columnForm.value.version) {
+        <td class="col-hidable">
+          <a tabindex="0" (click)="changeSort('versionLabel')"
             >{{ 'label.version' | transloco }}</a
           >
-          <span
-            class="order-arrow-up"
-            *ngIf="localListingOptions.sort === 'versionLabel_ASC'"
-          ></span>
-          <span
-            class="order-arrow-down"
-            *ngIf="localListingOptions.sort === 'versionLabel_DESC'"
-          ></span>
+          @if (localListingOptions.sort === 'versionLabel_ASC') {
+          <span class="order-arrow-up"></span>
+          } @if (localListingOptions.sort === 'versionLabel_DESC') {
+          <span class="order-arrow-down"></span>
+          }
         </td>
-        <td class="col-hidable" *ngIf="columnForm.value.size">
+        } @if (columnForm.value.size) {
+        <td class="col-hidable">
           <span>{{ 'label.Size' | transloco }}</span>
         </td>
-        <td class="col-hidable" *ngIf="columnForm.value.expiration">
-          <a (click)="changeSort('expiration_date')"
+        } @if (columnForm.value.expiration) {
+        <td class="col-hidable">
+          <a tabindex="0" (click)="changeSort('expiration_date')"
             >{{ 'label.expiration.date' | transloco }}</a
           >
-          <span
-            class="order-arrow-up"
-            *ngIf="localListingOptions.sort === 'expiration_date_ASC'"
-          ></span>
-          <span
-            class="order-arrow-down"
-            *ngIf="localListingOptions.sort === 'expiration_date_DESC'"
-          ></span>
+          @if (localListingOptions.sort === 'expiration_date_ASC') {
+          <span class="order-arrow-up"></span>
+          } @if (localListingOptions.sort === 'expiration_date_DESC') {
+          <span class="order-arrow-down"></span>
+          }
         </td>
-        <td class="col-hidable" *ngIf="columnForm.value.author">
-          <a (click)="changeSort('author')">{{ 'label.author' | transloco }}</a>
-          <span
-            class="order-arrow-up"
-            *ngIf="localListingOptions.sort === 'author_ASC'"
-          ></span>
-          <span
-            class="order-arrow-down"
-            *ngIf="localListingOptions.sort === 'author_DESC'"
-          ></span>
+        } @if (columnForm.value.author) {
+        <td class="col-hidable">
+          <a tabindex="0" (click)="changeSort('author')"
+            >{{ 'label.author' | transloco }}</a
+          >
+          @if (localListingOptions.sort === 'author_ASC') {
+          <span class="order-arrow-up"></span>
+          } @if (localListingOptions.sort === 'author_DESC') {
+          <span class="order-arrow-down"></span>
+          }
         </td>
-        <td class="col-hidable" *ngIf="columnForm.value.status">
-          <a (click)="changeSort('status')">{{ 'label.status' | transloco }}</a>
-          <span
-            class="order-arrow-up"
-            *ngIf="localListingOptions.sort === 'status_ASC'"
-          ></span>
-          <span
-            class="order-arrow-down"
-            *ngIf="localListingOptions.sort === 'status_DESC'"
-          ></span>
+        } @if (columnForm.value.status) {
+        <td class="col-hidable">
+          <a tabindex="0" (click)="changeSort('status')"
+            >{{ 'label.status' | transloco }}</a
+          >
+          @if (localListingOptions.sort === 'status_ASC') {
+          <span class="order-arrow-up"></span>
+          } @if (localListingOptions.sort === 'status_DESC') {
+          <span class="order-arrow-down"></span>
+          }
         </td>
-        <td class="col-hidable" *ngIf="columnForm.value.securityRanking">
-          <a (click)="changeSort('security_ranking')"
+        } @if (columnForm.value.securityRanking) {
+        <td class="col-hidable">
+          <a tabindex="0" (click)="changeSort('security_ranking')"
             >{{ 'label.security.marking' | transloco }}</a
           >
-          <span
-            class="order-arrow-up"
-            *ngIf="localListingOptions.sort === 'security_ranking_ASC'"
-          ></span>
-          <span
-            class="order-arrow-down"
-            *ngIf="localListingOptions.sort === 'security_ranking_DESC'"
-          ></span>
+          @if (localListingOptions.sort === 'security_ranking_ASC') {
+          <span class="order-arrow-up"></span>
+          } @if (localListingOptions.sort === 'security_ranking_DESC') {
+          <span class="order-arrow-down"></span>
+          }
         </td>
+        }
       </tr>
     </thead>
 
     <tbody>
       <tr>
-        <td
-          [attr.colspan]="getColumnCount()"
-          *ngIf="contents.length !== 0 && getSelectedNodes().length > 0"
-        >
+        @if (contents().length !== 0 && getSelectedNodes().length > 0) {
+        <td [attr.colspan]="getColumnCount()">
           <ul class="bulk-actions">
             <li>
               <cbc-number-badge
                 [number]="getSelectedNodes().length"
+                [limit]="MAX_NODES"
               ></cbc-number-badge>
             </li>
             <li>
-              <a (click)="bulkDownload()" *ngIf="!bulkDownloading">
+              @if (!bulkDownloading && !isGuest()) {
+              <a tabindex="0" (click)="bulkDownloadCheck()">
                 <img src="img/download-blue-small.png" alt="" />{{
                 'label.download' | transloco }}</a
               >
-              <span *ngIf="bulkDownloading">
+              } @if (bulkDownloading) {
+              <span>
                 <cbc-spinner [float]="'left'"></cbc-spinner>
                 &nbsp; {{ 'label.downloading' | transloco }} &nbsp;
               </span>
+              }
             </li>
-            <li *ngIf="areNodesDeletable()">
-              <a data-cy="delete-all" (click)="showDeleteAllModal()">
+            @if (areNodesDeletable()) {
+            <li>
+              <a
+                tabindex="0"
+                data-cy="delete-all"
+                (click)="showDeleteAllModal()"
+              >
                 <img src="img/rubbish-bin-blue-small.png" alt="" />{{
                 'label.delete' | transloco }}</a
               >
             </li>
+            }
             <li>
-              <a (click)="addSelectedToClipboard()">
+              <a tabindex="0" (click)="addSelectedToClipboard()">
                 <img src="img/icon-files-blue.png" alt="" />{{ 'label.copy' |
                 transloco }}</a
               >
             </li>
-            <li *ngIf="canSendToAresBridge()">
+            @if (canSendToAresBridge()) {
+            <li>
               <a
+                tabindex="0"
                 (click)="sendToAresBridge()"
                 title="{{ 'label.send.to.ares' | transloco }}"
                 style="margin-right: 0"
@@ -329,11 +326,14 @@
                 style="margin-left: 5px"
               ></cbc-hint>
             </li>
+            }
           </ul>
         </td>
+        }
       </tr>
 
-      <tr class="row" *ngFor="let content of contents; trackBy: trackById">
+      @for (content of contents(); track content.id) {
+      <tr class="row">
         <td class="cell-left-border"></td>
         <td class="cell-checkbox">
           <input
@@ -355,29 +355,29 @@
         >
           <div class="icon"></div>
         </td>
+        @if (columnForm.value.name) {
         <td class="cell-file-name">
-          <div class="file-name" *ngIf="content.properties">
+          @if (content.properties) {
+          <div class="file-name">
             <cbc-favourite-switch [node]="content"></cbc-favourite-switch>
-            <a
-              *ngIf="isFile(content) && !isLink(content)"
-              [routerLink]="['../', content.id, 'details']"
+            @if (isFile(content) && !isLink(content)) {
+            <a [routerLink]="['../', content.id, 'details']"
               >{{ content.name }}</a
             >
+            } @if (isFolder(content) && !isSharedSpaceLink(content)) {
             <a
-              *ngIf="isFolder(content) && !isSharedSpaceLink(content)"
               [routerLink]="['../', content.id]"
               [queryParams]="{
                 p: '1',
-                n: preferences.library.listing.limit,
-                sort: preferences.library.listing.sort
+                n: preferences().library.listing.limit,
+                sort: preferences().library.listing.sort
               }"
               >{{ content.name }}</a
             >
-            <a *ngIf="isLink(content)" href="{{ url(content) }}" target="_blank"
-              >{{ content.name }}</a
-            >
+            } @if (isLink(content)) {
+            <a href="{{ url(content) }}" target="_blank">{{ content.name }}</a>
+            } @if (isLibraryLink(content)) {
             <a
-              *ngIf="isLibraryLink(content)"
               [routerLink]="[
                 '../',
                 getDestinationId(content.properties.destination),
@@ -385,53 +385,65 @@
               ]"
               >{{ content.name }}</a
             >
-            <a
-              *ngIf="isSharedSpaceLink(content)"
-              (click)="openSharedLinkNavigation(content)"
+            } @if (isSharedSpaceLink(content)) {
+            <a tabindex="0" (click)="openSharedLinkNavigation(content)"
               >{{ content.title | cbcI18n }}</a
             >
-            <img *ngIf="locked(content)" src="img/icon-lock-blue.png" alt="" />
-            <span *ngIf="isFile(content) && multilingual(content) === 'true'">
+            } @if (locked(content)) {
+            <span>
+              <img src="img/icon-lock-blue.png" alt="" />
+              {{ 'label.locked.by' | transloco }}
+              <cbc-user-card
+                [userId]="content.properties.lockOwner"
+              ></cbc-user-card>
+            </span>
+            } @if (isFile(content) && multilingual(content) === 'true') {
+            <span>
               <img src="img/icon-world-20x20.png" alt="multilingual" /><sup
                 >(+{{ getTranslationsCount(content) }})</sup
               >
               {{ locale(content) }}</span
             >
+            }
           </div>
+          }
           <div class="filename--hidable col-hidable">
-            <span *ngIf="!isLink(content)">{{ content.name }}</span>
-            <span *ngIf="isLink(content)">{{ url(content) }}</span>
+            @if (!isLink(content)) {
+            <span>{{ content.name }}</span>
+            } @if (isLink(content)) {
+            <span>{{ url(content) }}</span>
+            }
           </div>
           <ul class="actions">
+            @if (isFile(content)) {
             <cbc-save-as
-              *ngIf="isFile(content)"
               [id]="content.id"
               [name]="content.name"
+              [sensitive]="isSensitive(content)"
               [showIcon]="false"
             ></cbc-save-as>
-            <li *ngIf="isLibAdmin(content) || isOwner(content)">
+            } @if (isLibAdmin(content) || isOwner(content)) {
+            <li>
+              @if ( !locked(content) && !workingCopy(content) | cbcIfRoles : [
+              content, ['LibAdmin', 'LibManageOwn', 'LibFullEdit'],
+              ['LibManageOwn', 'LibFullEdit'] ] ) {
               <cbc-delete-action
                 [node]="content"
                 (modalHide)="onDeletedElement($event)"
-                *ngIf="
-                  !locked(content) && !workingCopy(content)
-                    | cbcIfRoles
-                      : [
-                          content,
-                          ['LibAdmin', 'LibManageOwn', 'LibFullEdit'],
-                          ['LibManageOwn', 'LibFullEdit']
-                        ]
-                "
               >
               </cbc-delete-action>
+              }
             </li>
+            }
             <li>
+              @if (!locked(content) && !workingCopy(content)) {
               <a
+                tabindex="0"
                 id="copyContentId"
-                *ngIf="!locked(content) && !workingCopy(content)"
                 (click)="addToClipboard(content)"
                 >{{ 'label.copy' | transloco }}</a
               >
+              }
             </li>
             <li>
               <a
@@ -441,84 +453,147 @@
               >
             </li>
             <li>
+              @if (isPreviewable(content)) {
               <a
+                tabindex="0"
                 id="previewContentId"
-                *ngIf="isPreviewable(content)"
                 (click)="previewContent(content)"
                 >{{ 'label.preview' | transloco }}</a
               >
+              }
             </li>
-            <li *ngIf="canEditInOffice(content)">
-              <a (click)="openDocInOffice(content)"
-                >{{ 'label.edit.in.office' | transloco }}</a
-              >
-            </li>
-            <li *ngIf="isEditOnline(content)">
-              <a (click)="openDocInOffice(content)"
+            @if (isEditOnline(content)) {
+            <li>
+              <a tabindex="0" (click)="openDocInOffice(content)"
                 >{{ 'label.end.editing.in.office' | transloco }}</a
               >
             </li>
+            }
           </ul>
         </td>
-        <td class="cell-title" *ngIf="columnForm.value.title">
-          {{ getTitle(content) }}
+        } @if (columnForm.value.title) {
+        <td class="cell-title">
+          @if (isFile(content) && !isLink(content)) {
+          <a [routerLink]="['../', content.id, 'details']"
+            >{{ getTitle(content) }}</a
+          >
+          } @if (isFolder(content) && !isSharedSpaceLink(content)) {
+          <a
+            [routerLink]="['../', content.id]"
+            [queryParams]="{
+                p: '1',
+                n: preferences().library.listing.limit,
+                sort: preferences().library.listing.sort
+              }"
+          >
+            {{ getTitle(content) }}</a
+          >
+          } @if (!columnForm.value.name && getTitle(content) !== '') {
+          <ul class="actions">
+            @if (isFile(content)) {
+            <cbc-save-as
+              [id]="content.id"
+              [name]="content.name"
+              [sensitive]="isSensitive(content)"
+              [showIcon]="false"
+            ></cbc-save-as>
+            } @if (isLibAdmin(content) || isOwner(content)) {
+            <li>
+              @if ( !locked(content) && !workingCopy(content) | cbcIfRoles : [
+              content, ['LibAdmin', 'LibManageOwn', 'LibFullEdit'],
+              ['LibManageOwn', 'LibFullEdit'] ] ) {
+              <cbc-delete-action
+                [node]="content"
+                (modalHide)="onDeletedElement($event)"
+              >
+              </cbc-delete-action>
+              }
+            </li>
+            }
+            <li>
+              @if (!locked(content) && !workingCopy(content)) {
+              <a
+                tabindex="0"
+                id="copyContentId"
+                (click)="addToClipboard(content)"
+                >{{ 'label.copy' | transloco }}</a
+              >
+              }
+            </li>
+            <li>
+              <a
+                id="DetailContentId"
+                [routerLink]="['../', content.id, 'details']"
+                >{{ 'label.details' | transloco }}</a
+              >
+            </li>
+            <li>
+              @if (isPreviewable(content)) {
+              <a
+                tabindex="0"
+                id="previewContentId"
+                (click)="previewContent(content)"
+                >{{ 'label.preview' | transloco }}</a
+              >
+              }
+            </li>
+            @if (isEditOnline(content)) {
+            <li>
+              <a tabindex="0" (click)="openDocInOffice(content)"
+                >{{ 'label.end.editing.in.office' | transloco }}</a
+              >
+            </li>
+            }
+          </ul>
+          }
         </td>
-        <td class="cell-last-modification" *ngIf="columnForm.value.creation">
+        } @if (columnForm.value.creation) {
+        <td class="cell-last-modification">
           <span class="date"
             >{{ created(content) | date: 'yyyy MM dd, HH:mm' }}</span
           >
         </td>
-        <td
-          class="cell-last-modification"
-          *ngIf="columnForm.value.modification"
-        >
+        } @if (columnForm.value.modification) {
+        <td class="cell-last-modification">
           <span class="date"
             >{{ modified(content) | date: 'yyyy MM dd, HH:mm' }}</span
           >
           <cbc-user-card [userId]="modifier(content)"></cbc-user-card>
         </td>
-        <td class="col-hidable" *ngIf="columnForm.value.description">
+        } @if (columnForm.value.description) {
+        <td class="col-hidable">
           <div
             class="cell-description-content"
             [innerHTML]="content.description | cbcI18n"
           ></div>
         </td>
-        <td class="col-hidable" *ngIf="columnForm.value.version">
-          {{ versionLabel(content) }}
+        } @if (columnForm.value.version) {
+        <td class="col-hidable">{{ versionLabel(content) }}</td>
+        } @if (isFolder(content) && columnForm.value.size) {
+        <td class="col-hidable">-</td>
+        } @if (isFile(content) && columnForm.value.size) {
+        <td class="col-hidable">{{ size(content) | cbcSize: true }}</td>
+        } @if (columnForm.value.expiration) {
+        <td class="cell-expiration-date col-hidable">
+          {{ hasExpirationDate(content) ? (content.properties?.expiration_date |
+          date: 'yyyy MM dd, HH:mm') : ' ' }}
         </td>
-        <td
-          class="col-hidable"
-          *ngIf="isFolder(content) && columnForm.value.size"
-        >
-          -
-        </td>
-        <td
-          class="col-hidable"
-          *ngIf="isFile(content) && columnForm.value.size"
-        >
-          {{ size(content) | cbcSize: true }}
-        </td>
-        <td
-          class="cell-expiration-date col-hidable"
-          *ngIf="columnForm.value.expiration"
-        >
-          {{ !hasExpirationDate(content) ? '-' : ' ' +
-          (content.properties?.expiration_date | date: 'yyyy MM dd, HH:mm') }}
-        </td>
-        <td class="col-hidable" *ngIf="columnForm.value.author">
-          {{ content.properties?.author }}
-        </td>
-        <td class="col-hidable" *ngIf="columnForm.value.status">
+        } @if (columnForm.value.author) {
+        <td class="col-hidable">{{ content.properties?.author }}</td>
+        } @if (columnForm.value.status) {
+        <td class="col-hidable">
           {{ content.properties?.status === 'RELEASE' ? 'RELEASED' :
           content.properties?.status }}
         </td>
-        <td class="col-hidable" *ngIf="columnForm.value.securityRanking">
-          {{ content.properties?.security_ranking }}
-        </td>
+        } @if (columnForm.value.securityRanking) {
+        <td class="col-hidable">{{ content.properties?.security_ranking }}</td>
+        }
       </tr>
+      }
     </tbody>
   </table>
 
+  @if (contents().length === 0) {
   <div
     style="
       color: #ccc;
@@ -528,7 +603,6 @@
       background-color: #fff;
       line-height: 64px;
     "
-    *ngIf="contents.length === 0"
   >
     {{ 'label.empty.library' | transloco }}
     <img
@@ -537,46 +611,47 @@
       alt="empty"
     />
   </div>
-
+  } @if (isNotItemToClipboardUndefined) {
   <cbc-snackbar
-    *ngIf="isNotItemToClipboardUndefined"
     [message]="'clipboard.item.added' | transloco: { name: itemToClipboard }"
     (snackFinished)="itemToClipboard = undefined"
   ></cbc-snackbar>
-
+  } @if (isNotSelectedItemsToClipboardUndefined) {
   <cbc-snackbar
-    *ngIf="isNotSelectedItemsToClipboardUndefined"
     [message]="'clipboard.selected.item.added' | transloco "
     (snackFinished)="selecteditemsToClipboard = false"
   ></cbc-snackbar>
-
-  <ul
-    class="bulk-actions"
-    *ngIf="contents.length !== 0 && getSelectedNodes().length > 0"
-  >
+  } @if (contents().length !== 0 && getSelectedNodes().length > 0) {
+  <ul class="bulk-actions">
     <li>
       <cbc-number-badge [number]="getSelectedNodes().length"></cbc-number-badge>
     </li>
     <li>
-      <a (click)="bulkDownload()">
+      @if (!bulkDownloading && !isGuest()) {
+      <a tabindex="0" (click)="bulkDownloadCheck()">
         <img src="img/download-blue-small.png" alt="" />{{ 'label.download' |
         transloco }}</a
       >
+      }
     </li>
-    <li *ngIf="areNodesDeletable()">
-      <a (click)="showDeleteAllModal()">
+    @if (areNodesDeletable()) {
+    <li>
+      <a tabindex="0" (click)="showDeleteAllModal()">
         <img src="img/rubbish-bin-blue-small.png" alt="" />{{ 'label.delete' |
         transloco }}</a
       >
     </li>
+    }
     <li>
-      <a (click)="addSelectedToClipboard()">
+      <a tabindex="0" (click)="addSelectedToClipboard()">
         <img src="img/icon-files-blue.png" alt="" />{{ 'label.copy' | transloco
         }}</a
       >
     </li>
-    <li *ngIf="canSendToAresBridge()">
+    @if (canSendToAresBridge()) {
+    <li>
       <a
+        tabindex="0"
         (click)="sendToAresBridge()"
         title="{{ 'label.send.to.ares' | transloco }}"
       >
@@ -584,14 +659,16 @@
         'label.send.to.ares' | transloco }}</a
       >
     </li>
+    }
   </ul>
+  }
 
   <div class="footer">
     <cbc-pager
-      [length]="totalItems"
-      [pageSize]="preferences.library.listing.limit"
-      [pageIndex]="preferences.library.listing.page"
-      (pageChanged)="changePage($event)"
+      [length]="totalItems()"
+      [pageSize]="preferences().library.listing.limit"
+      [page]="preferences().library.listing.page"
+      (pageChange)="changePage($event)"
     ></cbc-pager>
   </div>
 </section>
@@ -600,19 +677,35 @@
   [nodes]="selection"
   [showModal]="showMultipleDeleteWizard"
   (modalHide)="afterMultipleDeletion($event)"
-></cbc-delete-multiple>
-
+/>
 <cbc-content-preview-ext
   [showModal]="showPreview"
   [contentURL]="contentURL"
   [documentId]="previewDocumentId"
   [content]="contentToPreview"
   (contentPreviewed)="closePreview()"
-></cbc-content-preview-ext>
+/>
 
-<div
-  *ngIf="processing"
-  style="position: absolute; padding-left: 44%; margin-top: -1000px"
->
+@if (processing) {
+<div style="position: absolute; padding-left: 44%; margin-top: -1000px">
   <img width="100" height="100" src="img/spinner-dark.gif" alt="" />
 </div>
+}
+
+<cbc-modal
+  [title]="'label.dialog.alert.snc.download.title'"
+  (ok)="bulkDownload()"
+  (cancelModal)="acceptSncShowModal = false"
+  [(visible)]="acceptSncShowModal"
+  [okLabel]="'label.confirm'"
+  [contentClass]="'modal-content'"
+>
+  <p [innerHTML]="message" class="message"></p>
+
+  @for (content of getSncFiles(); track content) {
+  <div>
+    <strong>{{content}} </strong>
+    <br />
+  </div>
+  }
+</cbc-modal>

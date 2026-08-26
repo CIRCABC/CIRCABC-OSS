@@ -20,83 +20,81 @@
  ******************************************************************************/
 package eu.cec.digit.circabc.web.ui.repo.component;
 
+import javax.faces.component.UISelectMany;
+import javax.faces.context.FacesContext;
+import javax.faces.el.ValueBinding;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.faces.component.UISelectMany;
-import javax.faces.context.FacesContext;
-import javax.faces.el.ValueBinding;
-
 public class UICircabcSelectMany extends UISelectMany {
 
-    public static final String COMPONENT_TYPE = "eu.cec.digit.circabc.faces.CircabcSelectMany";
-    public static final String COMPONENT_FAMILY = "javax.faces.SelectMany";
-    private final static Log logger = LogFactory.getLog(UICircabcSelectMany.class);
+  public static final String COMPONENT_TYPE =
+    "eu.cec.digit.circabc.faces.CircabcSelectMany";
+  public static final String COMPONENT_FAMILY = "javax.faces.SelectMany";
+  private static final Log logger = LogFactory.getLog(
+    UICircabcSelectMany.class
+  );
 
-    @Override
-    protected Object getConvertedValue(FacesContext context,
-                                       Object submittedValue) {
-        return submittedValue;
+  @Override
+  protected Object getConvertedValue(
+    FacesContext context,
+    Object submittedValue
+  ) {
+    return submittedValue;
+  }
+
+  @Override
+  public Object getValue() {
+    if (isLocalValueSet()) {
+      return super.getLocalValue();
     }
-
-    @Override
-    public Object getValue() {
-        if (isLocalValueSet()) {
-            return super.getLocalValue();
+    {
+      ValueBinding vb = getValueBinding("value");
+      if (vb != null) {
+        Object value = vb.getValue(getFacesContext());
+        if (value instanceof String) {
+          return ((String) value).split(",");
+        } else {
+          return value;
         }
-        {
-            ValueBinding vb = getValueBinding("value");
-            if (vb != null) {
-                Object value = vb.getValue(getFacesContext());
-                if (value instanceof String) {
-                    return ((String) value).split(",");
-                } else {
-                    return value;
-                }
-            } else {
-                return null;
-            }
-
-        }
-
+      } else {
+        return null;
+      }
     }
+  }
 
-    @Override
-    public void updateModel(FacesContext context) {
-        if (!isValid()) {
-            return;
-        }
-        if (!isLocalValueSet()) {
-            return;
-        }
-        ValueBinding vb = getValueBinding("value");
-        if (vb == null) {
-            return;
-        }
-        try {
-            Object localValue = getLocalValue();
-            if (localValue instanceof String[]) {
-
-                String[] items = (String[]) localValue;
-                String valueAsString = StringUtils.join(items, ',');
-                vb.setValue(context, valueAsString);
-                setValue(null);
-                setLocalValueSet(false);
-            }
-
-
-        } catch (RuntimeException e) {
-            if (logger.isErrorEnabled()) {
-                logger.error("Runtime exception when update model", e);
-            }
-
-            throw e;
-        } catch (Exception e) {
-            if (logger.isErrorEnabled()) {
-                logger.error("Runtime exception when update model", e);
-            }
-        }
+  @Override
+  public void updateModel(FacesContext context) {
+    if (!isValid()) {
+      return;
     }
+    if (!isLocalValueSet()) {
+      return;
+    }
+    ValueBinding vb = getValueBinding("value");
+    if (vb == null) {
+      return;
+    }
+    try {
+      Object localValue = getLocalValue();
+      if (localValue instanceof String[]) {
+        String[] items = (String[]) localValue;
+        String valueAsString = StringUtils.join(items, ',');
+        vb.setValue(context, valueAsString);
+        setValue(null);
+        setLocalValueSet(false);
+      }
+    } catch (RuntimeException e) {
+      if (logger.isErrorEnabled()) {
+        logger.error("Runtime exception when update model", e);
+      }
 
+      throw e;
+    } catch (Exception e) {
+      if (logger.isErrorEnabled()) {
+        logger.error("Runtime exception when update model", e);
+      }
+    }
+  }
 }

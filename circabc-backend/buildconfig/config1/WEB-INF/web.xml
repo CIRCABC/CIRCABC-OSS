@@ -248,7 +248,7 @@
 	       <!--</init-param>-->
 	       <!--<init-param>-->
 	             <!--<param-name>cors.allowOrigin</param-name>-->
-	             <!--<param-value>http://vs-cbc-docker.net1.cec.eu.int:3000 http://vs-cbc-docker.net1.cec.eu.int:3002 http://vs-cbc-docker.net1.cec.eu.int:4200 http://localhost:4200 http://d02di1335292dit.net1.cec.eu.int:4200</param-value>-->
+	             <!--<param-value>http://localhost http://localhost http://localhost http://localhost:4200 http://localhost
 	       <!--</init-param>-->
 	 <!--</filter>-->
 	

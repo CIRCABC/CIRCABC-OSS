@@ -1,6 +1,6 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 
-import { KnownExtensions } from 'app/shared/file-extension-icon/known-extensions';
+import { knownExtensionsList } from 'app/shared/file-extension-icon/known-extensions';
 import { environment } from 'environments/environment';
 
 @Component({
@@ -9,17 +9,16 @@ import { environment } from 'environments/environment';
   preserveWhitespaces: true,
 })
 export class FileExtensionIconComponent {
-  @Input()
-  filename: string | undefined;
-  @Input()
-  mimtype: string | undefined;
+  readonly filename = input<string>();
+  readonly mimtype = input<string>();
 
   getExtension(): string {
-    if (this.filename) {
-      const dotIndex = this.filename.lastIndexOf('.');
+    const filename = this.filename();
+    if (filename) {
+      const dotIndex = filename.lastIndexOf('.');
       if (dotIndex !== -1) {
-        const ext = this.filename.substring(dotIndex + 1);
-        if (KnownExtensions.list.indexOf(ext) !== -1) {
+        const ext = filename.substring(dotIndex + 1);
+        if (knownExtensionsList.indexOf(ext) !== -1) {
           return ext;
         }
       }

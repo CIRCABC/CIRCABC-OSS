@@ -25,48 +25,47 @@ import eu.cec.digit.circabc.web.wai.dialog.WaiDialog;
 import eu.cec.digit.circabc.web.wai.manager.ActionsListWrapper;
 import org.alfresco.web.bean.workflow.ViewCompletedTaskDialog;
 
-public class CircabcViewCompletedTaskDialog extends ViewCompletedTaskDialog
-        implements WaiDialog {
+public class CircabcViewCompletedTaskDialog
+  extends ViewCompletedTaskDialog
+  implements WaiDialog {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = -3820932579605147338L;
+  /**
+   *
+   */
+  private static final long serialVersionUID = -3820932579605147338L;
 
+  @Override
+  public String getCancelButtonLabel() {
+    return WebClientHelper.translate("close");
+  }
 
-    @Override
-    public String getCancelButtonLabel() {
-        return WebClientHelper.translate("close");
-    }
+  @Override
+  public String getPageIconAltText() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
-    @Override
-    public String getPageIconAltText() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+  @Override
+  public String getBrowserTitle() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
-    @Override
-    public String getBrowserTitle() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+  @Override
+  public ActionsListWrapper getActionList() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
-    @Override
-    public ActionsListWrapper getActionList() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+  @Override
+  public boolean isCancelButtonVisible() {
+    // TODO Auto-generated method stub
+    return true;
+  }
 
-    @Override
-    public boolean isCancelButtonVisible() {
-        // TODO Auto-generated method stub
-        return true;
-    }
-
-    @Override
-    public boolean isFormProvided() {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
+  @Override
+  public boolean isFormProvided() {
+    // TODO Auto-generated method stub
+    return false;
+  }
 }

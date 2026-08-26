@@ -1,13 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { TranslocoModule } from '@jsverse/transloco';
 import { AppMessageService } from 'app/core/generated/circabc';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-old-ui-configuration',
   templateUrl: './old-ui-configuration.component.html',
-  styleUrls: ['./old-ui-configuration.component.scss'],
+  styleUrl: './old-ui-configuration.component.scss',
   preserveWhitespaces: true,
+  imports: [ReactiveFormsModule, TranslocoModule],
 })
 export class OldUiConfigurationComponent implements OnInit {
   public form!: FormGroup;

@@ -1,13 +1,17 @@
-export enum LibraryPermissions {
-  LibNoAccess,
-  LibAccess,
-  LibManageOwn,
-  LibEditOnly,
-  LibFullEdit,
-  LibAdmin,
-}
+export const LibraryPermissions = {
+  LibNoAccess: 0,
+  LibAccess: 1,
+  LibManageOwn: 2,
+  LibEditOnly: 3,
+  LibFullEdit: 4,
+  LibAdmin: 5,
+} as const;
 
-export const libraryPermissionKeys = Object.keys(LibraryPermissions).filter(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (k) => typeof LibraryPermissions[k as any] === 'number'
-);
+export type LibraryPermissions =
+  (typeof LibraryPermissions)[keyof typeof LibraryPermissions];
+
+/**
+ * Array of string keys from the LibraryPermissions object
+ * Used for permission lookups and UI components
+ */
+export const libraryPermissionKeys: string[] = Object.keys(LibraryPermissions);

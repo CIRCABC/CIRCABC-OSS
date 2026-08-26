@@ -1,0 +1,97 @@
+<cbc-modal
+  [title]="'admin.invite.circabc.admin'"
+  (cancelModal)="cancel()"
+  [okLabel]="'label.create'"
+  [(visible)]="showModal"
+  [showOkButton]="isWizardOk()"
+  (ok)="inviteCircabcAdmin()"
+  [executing]="processing"
+  [executingLabel]="'label.creating'"
+>
+  <a
+    tabindex="0"
+    data-cy="admins"
+    class="step-link"
+    [class.step-link-selected]="step === 'admins'"
+    (click)="step = 'admins'"
+    >{{ 'label.administrators' | transloco }}</a
+  >
+
+  @if (step === 'admins') {
+  <div class="div-step">
+    <form [formGroup]="addUserForm">
+      <div class="field">
+        <label for="name">{{ 'label.search' | transloco }}</label>
+        <input
+          type="text"
+          id="name"
+          value=""
+          placeholder="User name / email / ..."
+          formControlName="name"
+        />
+        <button data-cy="search-button" class="button" (click)="searchUsers()"
+          >{{ 'label.search' | transloco }}</button
+        >
+        <a tabindex="0" (click)="resetForm()"
+          >{{ 'label.clear' | transloco }}</a
+        >
+        @if (searchingUsers) {
+        <cbc-spinner></cbc-spinner>
+        }
+      </div>
+
+      <div class="field">
+        <label for="sMultiple">{{ 'label.results' | transloco }}</label>
+        <div
+          class="custom-select select--multiple"
+          style="width: 585px; height: 150px"
+        >
+          <select
+            data-cy="users"
+            multiple
+            id="sMultiple"
+            style="width: 585px; height: 150px"
+            formControlName="possibleUsers"
+          >
+            @for (user of availableUsers; track user.userId) {
+            <option value="{{ user.userId }}"
+              >{{ user.firstname + ' ' + user.lastname + ' (' + user.email + ')'
+              }}</option
+            >
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="sMultiple">{{ 'label.invitations' | transloco }}</label>
+        @if (hasSelectedUser()) {
+        <input
+          data-cy="add-selection"
+          type="button"
+          value="{{ 'label.add.selection' | transloco }}"
+          (click)="selectUsers()"
+        />
+        }
+        <br />
+        <br />
+        <ul>
+          @for (futureAdmin of futureAdmins; track futureAdmin.userId) {
+          <li>
+            {{ '[ CIRCABC Administrator ] ' + futureAdmin.firstname + ' ' +
+            futureAdmin.lastname + ' (' + futureAdmin.email + ')' }}
+            <a tabindex="0" (click)="removeFromFutureAdmin(futureAdmin)">
+              <img
+                src="img/icon-close-20x20.png"
+                style="vertical-align: middle"
+                alt="Close"
+              />
+            </a>
+          </li>
+          }
+        </ul>
+      </div>
+    </form>
+  </div>
+  }
+</cbc-modal>

@@ -1,19 +1,29 @@
+import { DatePipe } from '@angular/common';
 import { Component, Inject, OnDestroy, OnInit, Optional } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
-  BASE_PATH,
   CategoryService,
   PagedStatisticsContents,
   StatisticsContent,
 } from 'app/core/generated/circabc';
 import { SaveAsService } from 'app/core/save-as.service';
+import { ALF_BASE_PATH } from 'app/core/variables';
 import { ListingOptions } from 'app/group/listing-options/listing-options';
+import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
+import { PagerComponent } from 'app/shared/pager/pager.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-ig-statistics',
   templateUrl: './ig-statistics.component.html',
   preserveWhitespaces: true,
+  imports: [
+    HorizontalLoaderComponent,
+    PagerComponent,
+    DatePipe,
+    TranslocoModule,
+  ],
 })
 export class IgStatisticsComponent implements OnInit, OnDestroy {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -25,7 +35,7 @@ export class IgStatisticsComponent implements OnInit, OnDestroy {
 
   public categoryId!: string;
   public loading = false;
-  private basePath!: string;
+  private alfrescoServicePath!: string;
 
   public showAddModal = false;
 
@@ -34,11 +44,11 @@ export class IgStatisticsComponent implements OnInit, OnDestroy {
     private categoryService: CategoryService,
     private saveAsService: SaveAsService,
     @Optional()
-    @Inject(BASE_PATH)
+    @Inject(ALF_BASE_PATH)
     basePath: string
   ) {
     if (basePath) {
-      this.basePath = basePath;
+      this.alfrescoServicePath = basePath;
     }
   }
 
@@ -59,7 +69,6 @@ export class IgStatisticsComponent implements OnInit, OnDestroy {
     await this.loadContents();
     this.interval = setInterval(async () => {
       await this.loadContents();
-      // eslint-disable-next-line @typescript-eslint/indent
     }, 10000);
   }
 
@@ -106,17 +115,9 @@ export class IgStatisticsComponent implements OnInit, OnDestroy {
   }
 
   public download(content: StatisticsContent) {
-    const hostBasePath = this.basePath.substring(
-      0,
-      this.basePath.length - '/service/circabc'.length
-    );
-    const url = `${hostBasePath}/s/api/node/content${(
+    const url = `${this.alfrescoServicePath}/node/content${(
       content.downloadURL as string
     ).substring(4, 63)}`;
     this.saveAsService.saveUrlAs(url, content.name as string);
-  }
-
-  public trackByName(_index: number, item: { name?: string }) {
-    return item.name;
   }
 }

@@ -30,24 +30,27 @@ import eu.cec.digit.circabc.web.wai.manager.ActionsListWrapper;
  */
 public class FileLinkDetailsBean extends ContentDetailsBean {
 
-    public static final String BEAN_NAME = "LibFileLinkDetailsBean";
-    public static final String JSP_NAME = "file-link-details.jsp";
-    /**
-     *
-     */
-    private static final long serialVersionUID = -1967164575499663894L;
+  public static final String BEAN_NAME = "LibFileLinkDetailsBean";
+  public static final String JSP_NAME = "file-link-details.jsp";
+  /**
+   *
+   */
+  private static final long serialVersionUID = -1967164575499663894L;
 
-    @Override
-    public NavigableNodeType getManagedNodeType() {
-        return NavigableNodeType.LIBRARY_FILE_LINK;
-    }
+  @Override
+  public NavigableNodeType getManagedNodeType() {
+    return NavigableNodeType.LIBRARY_FILE_LINK;
+  }
 
-    @Override
-    public String getRelatedJsp() {
-        return NAVIGATION_JSP_FOLDER + "library/" + JSP_NAME;
-    }
+  @Override
+  public String getRelatedJsp() {
+    return NAVIGATION_JSP_FOLDER + "library/" + JSP_NAME;
+  }
 
-    public ActionsListWrapper getActionList() {
-        return new ActionsListWrapper(getDocument(), "filelink_details_actions_wai");
-    }
+  public ActionsListWrapper getActionList() {
+    return new ActionsListWrapper(
+      getDocument(),
+      "filelink_details_actions_wai"
+    );
+  }
 }

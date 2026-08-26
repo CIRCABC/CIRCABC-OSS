@@ -22,7 +22,6 @@ package eu.cec.digit.circabc.business.impl.security;
 
 import eu.cec.digit.circabc.business.api.security.PermissionsBusinessSrv;
 
-
 /**
  * Business implemntation service to manage permissions.
  *
@@ -30,7 +29,4 @@ import eu.cec.digit.circabc.business.api.security.PermissionsBusinessSrv;
  * <p>
  * TODO super class comments
  */
-public class PermissionsBusinessImpl implements PermissionsBusinessSrv {
-
-
-}
+public class PermissionsBusinessImpl implements PermissionsBusinessSrv {}

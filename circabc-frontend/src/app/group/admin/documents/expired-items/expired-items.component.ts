@@ -1,5 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { TranslocoService } from '@ngneat/transloco';
+import { DatePipe } from '@angular/common';
+import { Component, OnInit, input } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
@@ -20,17 +22,33 @@ import {
   getSuccessTranslation,
 } from 'app/core/util';
 import { ListingOptions } from 'app/group/listing-options/listing-options';
+import { InlineDeleteComponent } from 'app/shared/delete/inline-delete.component';
+import { NumberBadgeComponent } from 'app/shared/number-badge/number-badge.component';
+import { PagerConfigurationComponent } from 'app/shared/pager-configuration/pager-configuration.component';
+import { PagerComponent } from 'app/shared/pager/pager.component';
+import { UserCardComponent } from 'app/shared/user-card/user-card.component';
 import { firstValueFrom } from 'rxjs';
+import { UpdateExpiredDateComponent } from './update-expired-date/update-expired-date.component';
 
 @Component({
   selector: 'cbc-expired-items',
   templateUrl: './expired-items.component.html',
-  styleUrls: ['./expired-items.component.scss'],
+  styleUrl: './expired-items.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    PagerComponent,
+    PagerConfigurationComponent,
+    NumberBadgeComponent,
+    InlineDeleteComponent,
+    RouterLink,
+    UserCardComponent,
+    UpdateExpiredDateComponent,
+    DatePipe,
+    TranslocoModule,
+  ],
 })
 export class ExpiredItemsComponent implements OnInit {
-  @Input()
-  groupId!: string;
+  readonly groupId = input.required<string>();
 
   public currentIg!: InterestGroup;
   public listingOptions: ListingOptions = {
@@ -62,13 +80,14 @@ export class ExpiredItemsComponent implements OnInit {
 
   private async loadIg() {
     this.loading = true;
-    if (this.groupId) {
+    const groupId = this.groupId();
+    if (groupId) {
       this.currentIg = await firstValueFrom(
-        this.groupService.getInterestGroup(this.groupId)
+        this.groupService.getInterestGroup(groupId)
       );
       this.expiredNodes = await firstValueFrom(
         this.expiredService.getExpiredDocuments(
-          this.groupId,
+          groupId,
           this.listingOptions.limit,
           this.listingOptions.page,
           this.listingOptions.sort
@@ -90,10 +109,11 @@ export class ExpiredItemsComponent implements OnInit {
   public async changePage(listingOptions: ListingOptions) {
     this.loading = true;
     this.listingOptions = listingOptions;
-    if (this.groupId !== undefined) {
+    const groupId = this.groupId();
+    if (groupId !== undefined) {
       this.expiredNodes = await firstValueFrom(
         this.expiredService.getExpiredDocuments(
-          this.groupId,
+          groupId,
           this.listingOptions.limit,
           this.listingOptions.page,
           this.listingOptions.sort
@@ -121,27 +141,24 @@ export class ExpiredItemsComponent implements OnInit {
   public isFile(node: ModelNode): boolean {
     if (node.type) {
       return node.type.indexOf('folder') === -1;
-    } else {
-      return false;
     }
+    return false;
   }
 
   public isFolder(node: ModelNode): boolean {
     if (node.type) {
       return node.type.indexOf('folder') !== -1;
-    } else {
-      return false;
     }
+    return false;
   }
 
   public isLink(node: ModelNode): boolean {
-    if (node.properties && node.properties.mimetype && node.properties.url) {
+    if (node.properties?.mimetype && node.properties.url) {
       return (
         node.properties.mimetype === 'text/html' && node.properties.url !== ''
       );
-    } else {
-      return false;
     }
+    return false;
   }
 
   public prepareNode(node: ModelNode) {
@@ -167,7 +184,7 @@ export class ExpiredItemsComponent implements OnInit {
       if (node.id) {
         try {
           await firstValueFrom(this.contentService.deleteContent(node.id));
-        } catch (error) {
+        } catch (_error) {
           isError = true;
         }
       }
@@ -200,7 +217,7 @@ export class ExpiredItemsComponent implements OnInit {
         );
         this.uiMessageService.addSuccessMessage(txt, true);
         await this.changePage(this.listingOptions);
-      } catch (error) {
+      } catch (_error) {
         const txt = this.translateService.translate(
           getErrorTranslation(ActionType.DELETE_CONTENT)
         );
@@ -211,7 +228,7 @@ export class ExpiredItemsComponent implements OnInit {
 
   public toggleAllPrepared() {
     this.allSelected = !this.allSelected;
-    if (this.expiredNodes && this.expiredNodes.data && this.allSelected) {
+    if (this.expiredNodes?.data && this.allSelected) {
       for (const delNode of this.expiredNodes.data) {
         this.deletableNodes.push(delNode);
       }
@@ -248,20 +265,15 @@ export class ExpiredItemsComponent implements OnInit {
   public getModifier(node: ModelNode): string {
     if (node.properties) {
       return node.properties.modifier;
-    } else {
-      return '';
     }
+    return '';
   }
 
   public getExpirationDate(node: ModelNode): string | null {
     if (node.properties) {
       return node.properties.expiration_date;
-    } else {
-      return null;
     }
-  }
-  public trackById(_index: number, item: { id?: string | number }) {
-    return item.id;
+    return null;
   }
 
   public updateExpiredDate(node: ModelNode) {

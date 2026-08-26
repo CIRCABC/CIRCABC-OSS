@@ -1,6 +1,6 @@
 <div class="flex-calendar main" style="margin-top: 5px">
+  @for (item of viewRowElements; track item) {
   <div
-    *ngFor="let item of viewRowElements"
     class="day"
     [class.day-hour]="item.isHour"
     [class.day--previous-month]="item.isHour"
@@ -12,15 +12,18 @@
     (mouseenter)="item.showDetailsBox = true"
     (mouseleave)="item.showDetailsBox = false"
   >
-    <span *ngIf="item.isHour">{{ item.value }}</span>
-
-    <div *ngIf="!item.isHour" style="float: left"
+    @if (item.isHour) {
+    <span>{{ item.value }}</span>
+    } @if (!item.isHour) {
+    <div style="float: left"
       >{{ this.padWithLeadingZero(item.minutes) }}&nbsp;</div
     >
-    <div *ngIf="!item.isHour" class="events--container">
-      <span *ngFor="let showableEvent of getValueAsArray(item.value)">
+    } @if (!item.isHour) {
+    <div class="events--container">
+      @for (showableEvent of getValueAsArray(item.value); track showableEvent) {
+      <span>
+        @if (isEvent(showableEvent.event) && showableEvent.show && meMode()) {
         <a
-          *ngIf="isEvent(showableEvent.event) && showableEvent.show && meMode"
           [routerLink]="[
             '/group',
             showableEvent.event.igId,
@@ -29,21 +32,25 @@
             'details'
           ]"
         >
-          <img width="10" height="10" src="img/event-155D79.png" />
+          <img
+            width="10"
+            height="10"
+            src="img/event-155D79.png"
+            alt="Event icon"
+          />
           <span style="color: #155d79"
             >{{ showableEvent.event.startTime }} {{ showableEvent.event.endTime
             }}</span
           >
           <span style="color: black">{{ showableEvent.event.title }}</span>
-          <span
-            *ngIf="showRibbons"
-            class="arrow--start"
-            [ngStyle]="getStyle(showableEvent)"
-          ></span>
+          @if (showRibbons) {
+          <span class="arrow--start" [ngStyle]="getStyle(showableEvent)"></span>
+          }
           <br />
         </a>
+        } @if (isMeeting(showableEvent.event) && showableEvent.show && meMode())
+        {
         <a
-          *ngIf="isMeeting(showableEvent.event) && showableEvent.show && meMode"
           [routerLink]="[
             '/group',
             showableEvent.event.igId,
@@ -52,69 +59,78 @@
             'details'
           ]"
         >
-          <img width="10" height="10" src="img/meeting-155D79.png" />
+          <img
+            width="10"
+            height="10"
+            src="img/meeting-155D79.png"
+            alt="Meeting icon"
+          />
           <span style="color: #155d79"
             >{{ showableEvent.event.startTime }} {{ showableEvent.event.endTime
             }}</span
           >
           <span style="color: black">{{ showableEvent.event.title }}</span>
-          <span
-            *ngIf="showRibbons"
-            class="arrow--start"
-            [ngStyle]="getStyle(showableEvent)"
-          ></span>
+          @if (showRibbons) {
+          <span class="arrow--start" [ngStyle]="getStyle(showableEvent)"></span>
+          }
           <br />
         </a>
+        } @if (isEvent(showableEvent.event) && showableEvent.show && !meMode())
+        {
         <a
-          *ngIf="isEvent(showableEvent.event) && showableEvent.show && !meMode"
           [routerLink]="[
             '/group',
-            id,
+            id(),
             'agenda',
             showableEvent.event.id,
             'details'
           ]"
         >
-          <img width="10" height="10" src="img/event-155D79.png" />
+          <img
+            width="10"
+            height="10"
+            src="img/event-155D79.png"
+            alt="Event icon"
+          />
           <span style="color: #155d79"
             >{{ showableEvent.event.startTime }} {{ showableEvent.event.endTime
             }}</span
           >
           <span style="color: black">{{ showableEvent.event.title }}</span>
-          <span
-            *ngIf="showRibbons"
-            class="arrow--start"
-            [ngStyle]="getStyle(showableEvent)"
-          ></span>
+          @if (showRibbons) {
+          <span class="arrow--start" [ngStyle]="getStyle(showableEvent)"></span>
+          }
           <br />
         </a>
+        } @if ( isMeeting(showableEvent.event) && showableEvent.show &&
+        !meMode() ) {
         <a
-          *ngIf="
-            isMeeting(showableEvent.event) && showableEvent.show && !meMode
-          "
           [routerLink]="[
             '/group',
-            id,
+            id(),
             'agenda',
             showableEvent.event.id,
             'details'
           ]"
         >
-          <img width="10" height="10" src="img/meeting-155D79.png" />
+          <img
+            width="10"
+            height="10"
+            src="img/meeting-155D79.png"
+            alt="Meeting icon"
+          />
           <span style="color: #155d79"
             >{{ showableEvent.event.startTime }} {{ showableEvent.event.endTime
             }}</span
           >
           <span style="color: black">{{ showableEvent.event.title }}</span>
-          <span
-            *ngIf="showRibbons"
-            class="arrow--start"
-            [ngStyle]="getStyle(showableEvent)"
-          ></span>
+          @if (showRibbons) {
+          <span class="arrow--start" [ngStyle]="getStyle(showableEvent)"></span>
+          }
           <br />
         </a>
+        } @if (!showableEvent.show && meMode() && showRibbons) {
         <a
-          *ngIf="!showableEvent.show && meMode && showRibbons"
           [routerLink]="[
             '/group',
             showableEvent.event.igId,
@@ -129,11 +145,11 @@
           ></span>
           <br />
         </a>
+        } @if (!showableEvent.show && !meMode() && showRibbons) {
         <a
-          *ngIf="!showableEvent.show && !meMode && showRibbons"
           [routerLink]="[
             '/group',
-            id,
+            id(),
             'agenda',
             showableEvent.event.id,
             'details'
@@ -145,25 +161,24 @@
           ></span>
           <br />
         </a>
+        }
       </span>
+      }
     </div>
+    }
 
     <!-- Hover popup with meeting details -->
-    <div
-      id="detailsPopup"
-      class="popup popup--calendar"
-      *ngIf="showRightDetailsBox(item)"
-    >
+    @if (showRightDetailsBox(item)) {
+    <div id="detailsPopup" class="popup popup--calendar">
       <div class="events-of-the-day">
         <div class="title"
           >{{ this.padWithLeadingZero(item.hour) }}:{{
           this.padWithLeadingZero(item.minutes) }}</div
         >
         <ul class="events">
-          <li
-            class="event"
-            *ngFor="let showableEvent of getValueAsArray(item.value)"
-          >
+          @for (showableEvent of getValueAsArray(item.value); track
+          showableEvent) {
+          <li class="event">
             <div>
               <span class="hour">{{ showableEvent.event.startTime }}</span>
               <a
@@ -185,31 +200,25 @@
                 transloco) : showableEvent.event.location }}</span
               >
               <!-- see how to refactor this with a variable or something, not to call the function so much -->
-              <span
-                *ngIf="
-                  getRepetition(showableEvent.event.occurrenceRate).length === 1
-                "
-                class="repetition"
+              @if ( getRepetition(showableEvent.event.occurrenceRate).length ===
+              1 ) {
+              <span class="repetition"
                 >{{ 'label.' +
                 getRepetition(showableEvent.event.occurrenceRate)[0] | transloco
                 }}</span
               >
-              <span
-                *ngIf="
-                  getRepetition(showableEvent.event.occurrenceRate).length === 3
-                "
-                class="repetition"
+              } @if ( getRepetition(showableEvent.event.occurrenceRate).length
+              === 3 ) {
+              <span class="repetition"
                 >{{ 'update-event.repeats.legend.when' | transloco : {
                 timesOccurrence: 'label.' + getRepetition(
                 showableEvent.event.occurrenceRate )[1] | transloco, times:
                 getRepetition( showableEvent.event.occurrenceRate )[2] }
                 }}</span
               >
-              <span
-                *ngIf="
-                  getRepetition(showableEvent.event.occurrenceRate).length === 4
-                "
-                class="repetition"
+              } @if ( getRepetition(showableEvent.event.occurrenceRate).length
+              === 4 ) {
+              <span class="repetition"
                 >{{ 'update-event.repeats.legend.every' | transloco : {
                 everyTime: getRepetition( showableEvent.event.occurrenceRate
                 )[2], everyTimesOccurence:
@@ -217,25 +226,24 @@
                 transloco, times: getRepetition(
                 showableEvent.event.occurrenceRate )[3] } }}</span
               >
+              }
             </div>
           </li>
+          }
         </ul>
       </div>
     </div>
-    <div
-      class="left-popup left-popup--calendar"
-      *ngIf="showLeftDetailsBox(item)"
-    >
+    } @if (showLeftDetailsBox(item)) {
+    <div class="left-popup left-popup--calendar">
       <div class="events-of-the-day">
         <div class="title"
           >{{ this.padWithLeadingZero(item.hour) }}:{{
           this.padWithLeadingZero(item.minutes) }}</div
         >
         <ul class="events">
-          <li
-            class="event"
-            *ngFor="let showableEvent of getValueAsArray(item.value)"
-          >
+          @for (showableEvent of getValueAsArray(item.value); track
+          showableEvent) {
+          <li class="event">
             <div>
               <span class="hour">{{ showableEvent.event.startTime }}</span>
               <a
@@ -257,31 +265,25 @@
                 transloco) : showableEvent.event.location }}</span
               >
               <!-- see how to refactor this with a variable or something, not to call the function so much -->
-              <span
-                *ngIf="
-                  getRepetition(showableEvent.event.occurrenceRate).length === 1
-                "
-                class="repetition"
+              @if ( getRepetition(showableEvent.event.occurrenceRate).length ===
+              1 ) {
+              <span class="repetition"
                 >{{ 'label.' +
                 getRepetition(showableEvent.event.occurrenceRate)[0] | transloco
                 }}</span
               >
-              <span
-                *ngIf="
-                  getRepetition(showableEvent.event.occurrenceRate).length === 3
-                "
-                class="repetition"
+              } @if ( getRepetition(showableEvent.event.occurrenceRate).length
+              === 3 ) {
+              <span class="repetition"
                 >{{ 'update-event.repeats.legend.when' | transloco : {
                 timesOccurrence: 'label.' + getRepetition(
                 showableEvent.event.occurrenceRate )[1] | transloco, times:
                 getRepetition( showableEvent.event.occurrenceRate )[2] }
                 }}</span
               >
-              <span
-                *ngIf="
-                  getRepetition(showableEvent.event.occurrenceRate).length === 4
-                "
-                class="repetition"
+              } @if ( getRepetition(showableEvent.event.occurrenceRate).length
+              === 4 ) {
+              <span class="repetition"
                 >{{ 'update-event.repeats.legend.every' | transloco : {
                 everyTime: getRepetition( showableEvent.event.occurrenceRate
                 )[2], everyTimesOccurence:
@@ -289,14 +291,19 @@
                 transloco, times: getRepetition(
                 showableEvent.event.occurrenceRate )[3] } }}</span
               >
+              }
             </div>
           </li>
+          }
         </ul>
       </div>
     </div>
+    }
   </div>
+  }
 </div>
 <div
+  tabindex="0"
   style="float: right; width: 20px; height: 20px"
   (click)="toggleRibbons()"
 ></div>

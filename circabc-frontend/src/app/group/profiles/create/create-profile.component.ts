@@ -1,13 +1,18 @@
 import {
   Component,
-  EventEmitter,
   Input,
   OnChanges,
   OnInit,
-  Output,
   SimpleChanges,
+  output,
+  input,
 } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 
 import {
   ActionEmitterResult,
@@ -15,34 +20,47 @@ import {
   ActionType,
 } from 'app/action-result';
 
-import { agendaPermissionKeys } from 'app/core/evaluator/agenda-permissions';
 import { directoryPermissionKeys } from 'app/core/evaluator/directory-permissions';
 import { informationPermissionKeys } from 'app/core/evaluator/information-permissions';
 import { libraryPermissionKeys } from 'app/core/evaluator/library-permissions';
 import { newsGroupPermissionKeys } from 'app/core/evaluator/newsgroups-permissions';
 
+import { MatSliderModule } from '@angular/material/slider';
+import { TranslocoModule } from '@jsverse/transloco';
 import { Profile, ProfileService } from 'app/core/generated/circabc';
+import { MultilingualInputComponent } from 'app/shared/input/multilingual-input.component';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { firstValueFrom } from 'rxjs';
+import { PermissionDescriptorComponent } from './permission-descriptor/permission-descriptor.component';
+import { agendaPermissionKeys } from 'app/core/evaluator/agenda-permissions';
 
 @Component({
   selector: 'cbc-create-profile',
   templateUrl: './create-profile.component.html',
-  styleUrls: ['./create-profile.component.scss'],
+  styleUrl: './create-profile.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    ReactiveFormsModule,
+    MultilingualInputComponent,
+    MatSliderModule,
+    PermissionDescriptorComponent,
+    SpinnerComponent,
+    TranslocoModule,
+  ],
 })
 export class CreateProfileComponent implements OnInit, OnChanges {
-  @Input()
-  groupId!: string;
+  readonly groupId = input.required<string>();
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   showDialog = false;
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   profileToEdit: Profile | undefined;
-  @Output()
-  readonly profileCreated = new EventEmitter<ActionEmitterResult>();
-  @Output()
-  readonly profileUpdated = new EventEmitter<ActionEmitterResult>();
-  @Output()
-  readonly canceled = new EventEmitter();
+  readonly profileCreated = output<ActionEmitterResult>();
+  readonly profileUpdated = output<ActionEmitterResult>();
+  readonly canceled = output();
 
   public createProfileForm!: FormGroup;
   public processing = false;
@@ -122,24 +140,16 @@ export class CreateProfileComponent implements OnInit, OnChanges {
   }
 
   public isEditable(): boolean {
-    if (
-      this.profileToEdit &&
-      this.profileToEdit.name &&
-      this.profileToEdit.permissions
-    ) {
-      return (
-        !(
-          this.profileToEdit.name.toLowerCase() === 'leader' ||
-          this.profileToEdit.name === 'IGLeader' ||
-          this.profileToEdit.name === '000'
-        ) &&
-        !(
-          this.profileToEdit.permissions.library === 'LibAdmin' &&
+    if (this.profileToEdit?.name && this.profileToEdit.permissions) {
+      return !(
+        this.profileToEdit.name.toLowerCase() === 'leader' ||
+        this.profileToEdit.name === 'IGLeader' ||
+        this.profileToEdit.name === '000' ||
+        (this.profileToEdit.permissions.library === 'LibAdmin' &&
           this.profileToEdit.permissions.information === 'InfAdmin' &&
           this.profileToEdit.permissions.events === 'EveAdmin' &&
           this.profileToEdit.permissions.forums === 'NwsAdmin' &&
-          this.profileToEdit.permissions.members === 'DirAdmin'
-        )
+          this.profileToEdit.permissions.members === 'DirAdmin')
       );
     }
 
@@ -179,8 +189,7 @@ export class CreateProfileComponent implements OnInit, OnChanges {
       };
 
       if (
-        this.profileToEdit &&
-        this.profileToEdit.id &&
+        this.profileToEdit?.id &&
         this.profileToEdit.permissions &&
         body.permissions
       ) {
@@ -191,13 +200,13 @@ export class CreateProfileComponent implements OnInit, OnChanges {
         );
       } else {
         await firstValueFrom(
-          this.profileService.postProfile(this.groupId, body)
+          this.profileService.postProfile(this.groupId(), body)
         );
       }
 
       this.showDialog = false;
       result.result = ActionResult.SUCCEED;
-    } catch (error) {
+    } catch (_error) {
       result.result = ActionResult.FAILED;
     }
 
@@ -211,13 +220,11 @@ export class CreateProfileComponent implements OnInit, OnChanges {
   }
 
   public isEdition(): boolean {
-    return (
-      this.profileToEdit !== undefined && this.profileToEdit.id !== undefined
-    );
+    return this.profileToEdit?.id !== undefined;
   }
 
   public getLabel() {
-    return this.profileToEdit ? 'label.edit' : 'label.create';
+    return this.profileToEdit ? 'label.save' : 'label.create';
   }
 
   public getInfPerms(i: number): string {
@@ -304,6 +311,22 @@ export class CreateProfileComponent implements OnInit, OnChanges {
         this.profileToEdit.name === 'guest' ||
         this.profileToEdit.name === 'EVERYONE'
       );
+    }
+
+    return false;
+  }
+
+  public isGuest(): boolean {
+    if (this.profileToEdit) {
+      return this.profileToEdit.name === 'guest';
+    }
+
+    return false;
+  }
+
+  public isRegistered(): boolean {
+    if (this.profileToEdit) {
+      return this.profileToEdit.name === 'EVERYONE';
     }
 
     return false;

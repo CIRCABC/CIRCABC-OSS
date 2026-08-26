@@ -17,18 +17,17 @@
 package eu.cec.digit.circabc.service.compress;
 
 public interface CompressedEntry {
+  String getFileName();
 
-    String getFileName();
+  long getFileSize();
 
-    long getFileSize();
+  boolean isDirectory();
 
-    boolean isDirectory();
+  String getComment();
 
-    String getComment();
+  long getFileCompressedSize();
 
-    long getFileCompressedSize();
+  long getCrc();
 
-    long getCrc();
-
-    long getTime();
+  long getTime();
 }

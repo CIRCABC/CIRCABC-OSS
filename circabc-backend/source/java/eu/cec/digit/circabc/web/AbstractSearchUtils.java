@@ -24,92 +24,95 @@ import eu.cec.digit.circabc.service.profile.ProfileManagerServiceFactory;
 import eu.cec.digit.circabc.service.struct.ManagementService;
 import eu.cec.digit.circabc.service.user.UserService;
 import eu.cec.digit.circabc.web.bean.override.CircabcNavigationBean;
+import javax.faces.context.FacesContext;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.PermissionService;
 import org.alfresco.service.cmr.security.PersonService;
 
-import javax.faces.context.FacesContext;
+/*package*/abstract class AbstractSearchUtils {
 
-/*package*/ abstract class AbstractSearchUtils {
+  /**
+   * Minimum characters for a user search query
+   */
+  public static final int MIN_CHAR_ALLOWED_FOR_QUERY = 3;
 
-    /**
-     * Minimum characters for a user search query
-     */
-    public static final int MIN_CHAR_ALLOWED_FOR_QUERY = 3;
+  /**
+   * Maximim number of elements put in the list
+   */
+  public static final int MAX_ELEMENTS_IN_LIST = 1000;
 
-    /**
-     * Maximim number of elements put in the list
-     */
-    public static final int MAX_ELEMENTS_IN_LIST = 1000;
+  public static final String ALL_PROFILE = "all_profile";
 
-    public static final String ALL_PROFILE = "all_profile";
+  protected static final String STAR_WILDCARD_REGEX = "[\\*\\ ]*";
 
-    protected final static String STAR_WILDCARD_REGEX = "[\\*\\ ]*";
+  /**
+   * @return the profileManagerServiceFactory
+   */
+  protected static CircabcNavigationBean getNavigator() {
+    return Beans.getWaiNavigator();
+  }
 
+  /**
+   * @return the profileManagerServiceFactory
+   */
+  protected static ProfileManagerServiceFactory getProfileManagerServiceFactory() {
+    return Services.getCircabcServiceRegistry(
+      FacesContext.getCurrentInstance()
+    ).getProfileManagerServiceFactory();
+  }
 
-    /**
-     * @return the profileManagerServiceFactory
-     */
-    protected static CircabcNavigationBean getNavigator() {
-        return Beans.getWaiNavigator();
-    }
+  /**
+   * @return the managementService
+   */
+  protected static ManagementService getManagementService() {
+    return Services.getCircabcServiceRegistry(
+      FacesContext.getCurrentInstance()
+    ).getManagementService();
+  }
 
+  /**
+   * @return the userService
+   */
+  protected static UserService getUserService() {
+    return Services.getCircabcServiceRegistry(
+      FacesContext.getCurrentInstance()
+    ).getUserService();
+  }
 
-    /**
-     * @return the profileManagerServiceFactory
-     */
-    protected static ProfileManagerServiceFactory getProfileManagerServiceFactory() {
-        return Services.getCircabcServiceRegistry(
-                FacesContext.getCurrentInstance())
-                .getProfileManagerServiceFactory();
-    }
+  /**
+   * @return the person service
+   */
+  protected static PersonService getPersonService() {
+    return Services.getAlfrescoServiceRegistry(
+      FacesContext.getCurrentInstance()
+    ).getPersonService();
+  }
 
-    /**
-     * @return the managementService
-     */
-    protected static ManagementService getManagementService() {
-        return Services.getCircabcServiceRegistry(
-                FacesContext.getCurrentInstance()).getManagementService();
-    }
+  /**
+   * @return the nodeService
+   */
+  protected static NodeService getNodeService() {
+    return Services.getAlfrescoServiceRegistry(
+      FacesContext.getCurrentInstance()
+    ).getNodeService();
+  }
 
-    /**
-     * @return the userService
-     */
-    protected static UserService getUserService() {
-        return Services.getCircabcServiceRegistry(
-                FacesContext.getCurrentInstance()).getUserService();
-    }
+  /**
+   * @return the permissionService
+   */
+  protected static PermissionService getPermissionService() {
+    return Services.getAlfrescoServiceRegistry(
+      FacesContext.getCurrentInstance()
+    ).getPermissionService();
+  }
 
-    /**
-     * @return the person service
-     */
-    protected static PersonService getPersonService() {
-        return Services.getAlfrescoServiceRegistry(
-                FacesContext.getCurrentInstance()).getPersonService();
-    }
-
-    /**
-     * @return the nodeService
-     */
-    protected static NodeService getNodeService() {
-        return Services.getAlfrescoServiceRegistry(
-                FacesContext.getCurrentInstance()).getNodeService();
-    }
-
-    /**
-     * @return the permissionService
-     */
-    protected static PermissionService getPermissionService() {
-        return Services.getAlfrescoServiceRegistry(
-                FacesContext.getCurrentInstance()).getPermissionService();
-    }
-
-    /**
-     * @return the Authority Service
-     */
-    protected static AuthorityService getAuthorityService() {
-        return Services.getAlfrescoServiceRegistry(
-                FacesContext.getCurrentInstance()).getAuthorityService();
-    }
+  /**
+   * @return the Authority Service
+   */
+  protected static AuthorityService getAuthorityService() {
+    return Services.getAlfrescoServiceRegistry(
+      FacesContext.getCurrentInstance()
+    ).getAuthorityService();
+  }
 }

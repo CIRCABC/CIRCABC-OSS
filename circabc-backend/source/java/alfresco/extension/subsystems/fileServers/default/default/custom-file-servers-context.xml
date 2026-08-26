@@ -1,16 +1,19 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE beans PUBLIC "-//SPRING/DTD BEAN//EN"
-    "http://www.springframework.org/dtd/spring-beans.dtd">
+  "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
 
-<bean id="CircabcFtpAuthenticator"  class="org.springframework.aop.framework.ProxyFactoryBean">
+<bean
+    id="CircabcFtpAuthenticator"
+    class="org.springframework.aop.framework.ProxyFactoryBean"
+  >
       <property name="target">
-            <ref bean="FtpAuthenticator"/>
+            <ref bean="FtpAuthenticator" />
       </property>
       <property name="interceptorNames">
          <list>
-         	<idref bean="disableNotificationMethodInterceptor"/>
+         	<idref bean="disableNotificationMethodInterceptor" />
          </list>
       </property>
     </bean>

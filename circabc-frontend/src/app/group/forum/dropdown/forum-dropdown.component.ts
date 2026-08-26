@@ -1,31 +1,34 @@
 import {
   Component,
   ElementRef,
-  EventEmitter,
   HostListener,
   Input,
-  Output,
+  output,
+  input,
 } from '@angular/core';
 
+import { TranslocoModule } from '@jsverse/transloco';
 import { ActionEmitterResult } from 'app/action-result';
 import { Node as ModelNode } from 'app/core/generated/circabc';
+import { CreateForumComponent } from 'app/group/forum/create-forum/create-forum.component';
+import { CreateTopicComponent } from 'app/group/forum/topic/create-topic.component';
 
 @Component({
   selector: 'cbc-forum-dropdown',
   templateUrl: './forum-dropdown.component.html',
   preserveWhitespaces: true,
+  imports: [CreateForumComponent, CreateTopicComponent, TranslocoModule],
 })
 export class ForumDropdownComponent {
-  @Input()
-  public enableAddTopic = true;
-  @Input()
-  public enableAddForum = true;
+  public readonly enableAddTopic = input(true);
+  public readonly enableAddForum = input(true);
+  // TODO: Skipped for migration because:
+  //  This input is used in a control flow expression (e.g. `@if` or `*ngIf`)
+  //  and migrating would break narrowing currently.
   @Input()
   public currentNode!: ModelNode;
-  @Output()
-  public readonly actionFinished = new EventEmitter<ActionEmitterResult>();
-  @Output()
-  public readonly clickOutside = new EventEmitter<MouseEvent>();
+  public readonly actionFinished = output<ActionEmitterResult>();
+  public readonly clickOutside = output<MouseEvent>();
 
   public showAddDropdown = false;
   public launchCreateForum = false;
@@ -78,9 +81,10 @@ export class ForumDropdownComponent {
   }
 
   public isOnlyOneAction(): boolean {
+    const enableAddForum = this.enableAddForum();
+    const enableAddTopic = this.enableAddTopic();
     return (
-      (this.enableAddForum && !this.enableAddTopic) ||
-      (!this.enableAddForum && this.enableAddTopic)
+      (enableAddForum && !enableAddTopic) || (!enableAddForum && enableAddTopic)
     );
   }
 }

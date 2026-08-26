@@ -1,5 +1,5 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { Component, Input, OnInit, output, input } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
 import {
   ActionEmitterResult,
@@ -7,7 +7,10 @@ import {
   ActionType,
 } from 'app/action-result';
 
+import { TranslocoModule } from '@jsverse/transloco';
 import { CategoryService, User, UserService } from 'app/core/generated/circabc';
+import { ModalComponent } from 'app/shared/modal/modal.component';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { environment } from 'environments/environment';
 import { firstValueFrom } from 'rxjs';
 
@@ -15,14 +18,20 @@ import { firstValueFrom } from 'rxjs';
   selector: 'cbc-add-category-administrator',
   templateUrl: './add-category-administrator.component.html',
   preserveWhitespaces: true,
+  imports: [
+    ModalComponent,
+    ReactiveFormsModule,
+    SpinnerComponent,
+    TranslocoModule,
+  ],
 })
 export class AddCategoryAdministratorComponent implements OnInit {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   showModal = false;
-  @Input()
-  categoryId!: string;
-  @Output()
-  public readonly modalHide = new EventEmitter<ActionEmitterResult>();
+  readonly categoryId = input.required<string>();
+  public readonly modalHide = output<ActionEmitterResult>();
 
   public processing = false;
   public addUserForm!: FormGroup;
@@ -48,9 +57,10 @@ export class AddCategoryAdministratorComponent implements OnInit {
     if (environment.circabcRelease === 'oss') {
       this.isOSS = true;
     }
-    if (this.categoryId) {
+    const categoryId = this.categoryId();
+    if (categoryId) {
       this.existingAdmins = await firstValueFrom(
-        this.categoryService.getCategoryAdministrators(this.categoryId)
+        this.categoryService.getCategoryAdministrators(categoryId)
       );
     }
   }
@@ -69,7 +79,7 @@ export class AddCategoryAdministratorComponent implements OnInit {
 
       await firstValueFrom(
         this.categoryService.postCategoryAdministartors(
-          this.categoryId,
+          this.categoryId(),
           userIds
         )
       );
@@ -77,7 +87,7 @@ export class AddCategoryAdministratorComponent implements OnInit {
       this.showModal = false;
       this.resetForm();
       this.futureMembers = [];
-    } catch (error) {
+    } catch (_error) {
       console.error('impossible to add the users as category admins');
       res.result = ActionResult.FAILED;
     }
@@ -151,9 +161,8 @@ export class AddCategoryAdministratorComponent implements OnInit {
           this.futureMembers.find((member) => {
             if (member && memberTmp) {
               return member.userId === memberTmp.userId;
-            } else {
-              return true;
             }
+            return true;
           }) === undefined
         );
       })

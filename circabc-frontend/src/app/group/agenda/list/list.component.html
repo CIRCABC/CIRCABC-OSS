@@ -1,4 +1,6 @@
-<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+@if (loading) {
+<cbc-horizontal-loader />
+}
 <div class="wrap page-container">
   <div class="page-header">
     <span
@@ -16,8 +18,8 @@
       <cbc-pager
         [length]="appointments.length"
         [pageSize]="listingOptions.limit"
-        [pageIndex]="listingOptions.page"
-        (pageChanged)="goToPage($event)"
+        [page]="listingOptions.page"
+        (pageChange)="goToPage($event)"
       ></cbc-pager>
 
       <span class="icons">
@@ -26,11 +28,13 @@
           <div class="dropdown dropdown--library-settings">
             <div class="number-of-items">
               {{ 'label.show' | transloco }}:
-              <a (click)="changeLimit(10)">10</a>
-              <a (click)="changeLimit(25)">25</a>
-              <a (click)="changeLimit(50)">50</a>
-              <a (click)="changeLimit(100)">100</a>
-              <a (click)="changeLimit(-1)">{{ 'label.all' | transloco }}</a>
+              <a tabindex="0" (click)="changeLimit(10)">10</a>
+              <a tabindex="0" (click)="changeLimit(25)">25</a>
+              <a tabindex="0" (click)="changeLimit(50)">50</a>
+              <a tabindex="0" (click)="changeLimit(100)">100</a>
+              <a tabindex="0" (click)="changeLimit(-1)"
+                >{{ 'label.all' | transloco }}</a
+              >
             </div>
           </div>
         </div>
@@ -45,29 +49,33 @@
       <div class="filtering">
         {{ 'label.filter.by' | transloco }}:
         <a
+          tabindex="0"
           [class.link-underline]="filter === 'Previous'"
           (click)="changeFilter('Previous')"
           >{{ 'agenda-list.past.events' | transloco }}</a
         >
         |
         <a
+          tabindex="0"
           [class.link-underline]="filter === 'Future'"
           (click)="changeFilter('Future')"
           >{{ 'agenda-list.future.events' | transloco }}</a
         >
         |
         <a
+          tabindex="0"
           [class.link-underline]="filter === 'Exact'"
           (click)="changeFilter('Exact')"
           >{{ 'agenda-list.exact.date' | transloco }}</a
         >
-        <p-calendar
-          *ngIf="filter === 'Exact'"
+        @if (filter === 'Exact') {
+        <p-datepicker
           #datePicker
           dateFormat="yy-mm-dd"
           [placeholder]="getFormattedTodaysDate()"
           formControlName="date"
-        ></p-calendar>
+        ></p-datepicker>
+        }
       </div>
     </form>
 
@@ -77,83 +85,71 @@
           <th></th>
           <th style="width: 22px"></th>
           <th>
-            <a (click)="changeSort('title')">{{ 'label.title' | transloco }}</a>
-            <span
-              class="order-arrow-up"
-              *ngIf="listingOptions.sort === 'title_ASC'"
-            ></span>
-            <span
-              class="order-arrow-down"
-              *ngIf="listingOptions.sort === 'title_DESC'"
-            ></span>
+            <a tabindex="0" (click)="changeSort('title')"
+              >{{ 'label.title' | transloco }}</a
+            >
+            @if (listingOptions.sort === 'title_ASC') {
+            <span class="order-arrow-up"></span>
+            } @if (listingOptions.sort === 'title_DESC') {
+            <span class="order-arrow-down"></span>
+            }
           </th>
           <th>
-            <a (click)="changeSort('appointmentDate')"
+            <a tabindex="0" (click)="changeSort('appointmentDate')"
               >{{ 'label.date' | transloco }}</a
             >
-            <span
-              class="order-arrow-up"
-              *ngIf="listingOptions.sort === 'appointmentDate_ASC'"
-            ></span>
-            <span
-              class="order-arrow-down"
-              *ngIf="listingOptions.sort === 'appointmentDate_DESC'"
-            ></span>
+            @if (listingOptions.sort === 'appointmentDate_ASC') {
+            <span class="order-arrow-up"></span>
+            } @if (listingOptions.sort === 'appointmentDate_DESC') {
+            <span class="order-arrow-down"></span>
+            }
           </th>
           <th class="col-hidable">
-            <a (click)="changeSort('appointmentType')"
+            <a tabindex="0" (click)="changeSort('appointmentType')"
               >{{ 'label.type' | transloco }}</a
             >
-            <span
-              class="order-arrow-up"
-              *ngIf="listingOptions.sort === 'appointmentType_ASC'"
-            ></span>
-            <span
-              class="order-arrow-down"
-              *ngIf="listingOptions.sort === 'appointmentType_DESC'"
-            ></span>
+            @if (listingOptions.sort === 'appointmentType_ASC') {
+            <span class="order-arrow-up"></span>
+            } @if (listingOptions.sort === 'appointmentType_DESC') {
+            <span class="order-arrow-down"></span>
+            }
           </th>
           <th>
-            <a (click)="changeSort('contact')"
+            <a tabindex="0" (click)="changeSort('contact')"
               >{{ 'welcome.contact' | transloco }}</a
             >
-            <span
-              class="order-arrow-up"
-              *ngIf="listingOptions.sort === 'contact_ASC'"
-            ></span>
-            <span
-              class="order-arrow-down"
-              *ngIf="listingOptions.sort === 'contact_DESC'"
-            ></span>
+            @if (listingOptions.sort === 'contact_ASC') {
+            <span class="order-arrow-up"></span>
+            } @if (listingOptions.sort === 'contact_DESC') {
+            <span class="order-arrow-down"></span>
+            }
           </th>
         </tr>
       </thead>
 
       <tbody>
-        <tr class="row empty-row" *ngIf="appointments !== undefined">
-          <td
-            style="padding-left: 22px"
-            colspan="7"
-            *ngIf="appointments.length === 0"
-          >
+        @if (appointments !== undefined) {
+        <tr class="row empty-row">
+          @if (appointments.length === 0) {
+          <td style="padding-left: 22px" colspan="7">
             {{ 'event.display.none' | transloco }}
           </td>
+          }
         </tr>
-
-        <tr
-          class="row"
-          *ngFor="let appointment of appointments; trackBy: trackById"
-        >
+        } @for (appointment of appointments; track appointment.id) {
+        <tr class="row">
           <td class="cell-left-border"></td>
           <td class="cell-checkbox"></td>
           <td class="cell-file-name">
             <div class="file-name">{{ appointment.title }}</div>
             <ul class="actions">
-              <li *ngIf="isEveAdmin()">
-                <a (click)="popupDeleteEvent(appointment)"
+              @if (isEveAdmin()) {
+              <li>
+                <a tabindex="0" (click)="popupDeleteEvent(appointment)"
                   >{{ 'label.delete' | transloco }}</a
                 >
               </li>
+              }
               <li>
                 <a [routerLink]="['..', appointment.id, 'details']"
                   >{{ 'event.view.details' | transloco }}</a
@@ -165,6 +161,7 @@
           <td>{{ appointment.appointmentType }}</td>
           <td>{{ appointment.contact }}</td>
         </tr>
+        }
       </tbody>
     </table>
 
@@ -172,8 +169,8 @@
       <cbc-pager
         [length]="appointments.length"
         [pageSize]="listingOptions.limit"
-        [pageIndex]="listingOptions.page"
-        (pageChanged)="goToPage($event)"
+        [page]="listingOptions.page"
+        (pageChange)="goToPage($event)"
       ></cbc-pager>
     </div>
   </section>

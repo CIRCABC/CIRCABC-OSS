@@ -26,68 +26,69 @@ import java.util.HashSet;
  * @author Clinckart Stephane
  */
 public enum CategoryPermissions {
-    CIRCACATEGORYADMIN("CircaCategoryAdmin"),
-    CIRCACATEGORYMANAGEMEMBERS("CircaCategoryManageMembers"),
-    CIRCACATEGORYACCESS("CircaCategoryAccess"),
-    CIRCACATEGORYNOACCESS("CircaCategoryNoAccess");
+  CIRCACATEGORYADMIN("CircaCategoryAdmin"),
+  CIRCACATEGORYMANAGEMEMBERS("CircaCategoryManageMembers"),
+  CIRCACATEGORYACCESS("CircaCategoryAccess"),
+  CIRCACATEGORYNOACCESS("CircaCategoryNoAccess");
 
-    static HashSet<CategoryPermissions> circaCategoryPermissions = null;
-    protected String permissionString;
+  static HashSet<CategoryPermissions> circaCategoryPermissions = null;
+  protected String permissionString;
 
-    /**
-     * Constructor initialising the string value of the permission. The String values will be defined
-     * in the file permissionDefinitions.xml
-     *
-     * @param value string value associated to the enumeration value.
-     */
-    CategoryPermissions(String value) {
-        permissionString = value;
+  /**
+   * Constructor initialising the string value of the permission. The String values will be defined
+   * in the file permissionDefinitions.xml
+   *
+   * @param value string value associated to the enumeration value.
+   */
+  CategoryPermissions(String value) {
+    permissionString = value;
+  }
+
+  public static CategoryPermissions withPermissionString(String permiString) {
+    CategoryPermissions match = null;
+
+    for (CategoryPermissions permission : getPermissions()) {
+      if (permission.permissionString.equals(permiString)) {
+        match = permission;
+        break;
+      }
     }
-
-    public static CategoryPermissions withPermissionString(String permiString) {
-        CategoryPermissions match = null;
-
-        for (CategoryPermissions permission : getPermissions()) {
-            if (permission.permissionString.equals(permiString)) {
-                match = permission;
-                break;
-            }
-        }
-        if (match == null) {
-            throw new IllegalArgumentException(
-                    "No enum const class with permission string " + permiString);
-        } else {
-            return match;
-        }
+    if (match == null) {
+      throw new IllegalArgumentException(
+        "No enum const class with permission string " + permiString
+      );
+    } else {
+      return match;
     }
+  }
 
-    /**
-     * initialise the list of permissions
-     */
-    protected static void init() {
-        circaCategoryPermissions = new HashSet<>();
-        Collections.addAll(circaCategoryPermissions, CategoryPermissions.values());
-    }
+  /**
+   * initialise the list of permissions
+   */
+  protected static void init() {
+    circaCategoryPermissions = new HashSet<>();
+    Collections.addAll(circaCategoryPermissions, CategoryPermissions.values());
+  }
 
-    /**
-     * return an Set representing the permission list.
-     *
-     * @return Set of LibraryPermissions
-     */
-    public static HashSet<CategoryPermissions> getPermissions() {
-        if (circaCategoryPermissions == null) {
-            init();
-        }
-        return (HashSet<CategoryPermissions>) circaCategoryPermissions.clone();
+  /**
+   * return an Set representing the permission list.
+   *
+   * @return Set of LibraryPermissions
+   */
+  public static HashSet<CategoryPermissions> getPermissions() {
+    if (circaCategoryPermissions == null) {
+      init();
     }
+    return (HashSet<CategoryPermissions>) circaCategoryPermissions.clone();
+  }
 
-    /**
-     * Return the string value associated to the permission
-     */
-    public String toString() {
-        if (circaCategoryPermissions == null) {
-            init();
-        }
-        return permissionString;
+  /**
+   * Return the string value associated to the permission
+   */
+  public String toString() {
+    if (circaCategoryPermissions == null) {
+      init();
     }
+    return permissionString;
+  }
 }

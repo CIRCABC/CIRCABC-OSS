@@ -1,25 +1,26 @@
 <cbc-modal
   [title]="
-    property === undefined ? 'dynamic-property.add' : 'dynamic-property.update'
+    property() === undefined ? 'dynamic-property.add' : 'dynamic-property.update'
   "
-  (ok)="property === undefined ? create() : update()"
-  (cancel)="cancelWizard()"
-  [okLabel]="property === undefined ? 'label.add' : 'label.update'"
+  (ok)="property() === undefined ? create() : update()"
+  (cancelModal)="cancelWizard()"
+  [okLabel]="property() === undefined ? 'label.add' : 'label.update'"
   [(visible)]="showModal"
   [(executing)]="creating"
   [executingLabel]="'label.adding'"
   [showOkButton]="canCreateOrUpdate()"
 >
   <!-- Create -->
-  <div *ngIf="property === undefined">
+  @if (property() === undefined) {
+  <div>
     <form [formGroup]="createForm">
       <div class="field">
         <label for="propertyType">{{ 'label.type' | transloco }}</label>
         <div class="custom-select select--form">
           <select id="propertyType" formControlName="propertyType" required>
-            <option *ngFor="let t of getTypes()" value="{{ t.type }}"
-              >{{ t.display }}</option
-            >
+            @for (t of getTypes(); track t) {
+            <option value="{{ t.type }}">{{ t.display }}</option>
+            }
           </select>
         </div>
         <cbc-control-message
@@ -33,13 +34,9 @@
         [lang]="'EN'"
       ></cbc-multilingual-input>
       <cbc-control-message [control]="titleControl"></cbc-control-message>
-      <div
-        class="field field--textarea"
-        *ngIf="
-          createForm.value.propertyType === 'SELECTION' ||
-          createForm.value.propertyType === 'MULTI_SELECTION'
-        "
-      >
+      @if ( createForm.value.propertyType === 'SELECTION' ||
+      createForm.value.propertyType === 'MULTI_SELECTION' ) {
+      <div class="field field--textarea">
         <label for="possibleValues">{{ 'label.values' | transloco }}</label>
         <textarea
           id="possibleValues"
@@ -47,24 +44,30 @@
         ></textarea>
         <span class="hint">{{ 'label.value.one.per.line' | transloco }}</span>
       </div>
+      }
     </form>
   </div>
+  }
 
   <!-- Update -->
-  <div *ngIf="property !== undefined" class="main">
+  @if (property() !== undefined) {
+  <div class="main">
     <a
+      tabindex="0"
       class="step-link"
       [class.step-link-selected]="showDefinition"
       (click)="showDefinition = true"
       >{{ 'label.definition' | transloco }}</a
     >
+    @if (hasValues()) {
     <a
+      tabindex="0"
       class="step-link"
       [class.step-link-selected]="!showDefinition"
       (click)="showDefinition = false"
-      *ngIf="hasValues()"
       >{{ 'label.values' | transloco }}</a
     >
+    }
     <br />
     <br />
     <section [class.hidden]="!showDefinition">
@@ -79,9 +82,9 @@
           <label for="type">{{ 'label.type' | transloco }}</label>
           <div class="custom-select select--form reset-width select-align">
             <select id="type" formControlName="type">
-              <option *ngFor="let t of getTypes()" value="{{ t.type }}"
-                >{{ t.display }}</option
-              >
+              @for (t of getTypes(); track t) {
+              <option value="{{ t.type }}">{{ t.display }}</option>
+              }
             </select>
           </div>
           <p class="hint"
@@ -104,7 +107,7 @@
             [disabled]="!newValueFormValid()"
             [class.disabled]="!newValueFormValid()"
           />
-          <a class="button" (click)="cancelAddValue()"
+          <a tabindex="0" class="button" (click)="cancelAddValue()"
             >{{ 'label.cancel' | transloco }}</a
           >
         </div>
@@ -118,18 +121,17 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let item of values" class="row">
+          @for (item of values; track item) {
+          <tr class="row">
             <td class="cell-left-border"></td>
             <td class="first-cell">
-              <span class="tag" *ngIf="item.status === 'deleted'"
-                >{{ 'label.removed' | transloco }}</span
-              >
-              <span class="tag" *ngIf="item.status === 'new'"
-                >{{ 'label.new' | transloco }}</span
-              >
-              <span class="tag" *ngIf="item.status === 'edited'"
-                >{{ 'label.edited' | transloco }}</span
-              >
+              @if (item.status === 'deleted') {
+              <span class="tag">{{ 'label.removed' | transloco }}</span>
+              } @if (item.status === 'new') {
+              <span class="tag">{{ 'label.new' | transloco }}</span>
+              } @if (item.status === 'edited') {
+              <span class="tag">{{ 'label.edited' | transloco }}</span>
+              }
               <span [class.striked]="item.status === 'deleted'"
                 >{{ item._new }}</span
               >
@@ -137,51 +139,66 @@
             <td class="row-actions">
               <a>
                 <img
+                  tabindex="0"
                   src="img/sort-up.png"
                   (click)="moveUp(item)"
                   title="{{ 'label.move.up' | transloco }}"
+                  alt="move"
                 />
               </a>
               <a>
                 <img
+                  tabindex="0"
                   src="img/sort-down.png"
                   (click)="moveDown(item)"
                   title="{{ 'label.move.down' | transloco }}"
+                  alt="move"
                 />
               </a>
               &nbsp;&nbsp;
               <a>
                 <img
+                  tabindex="0"
                   src="img/icon-edit-20x20.png"
                   (click)="tagAsEdited(item)"
                   title="{{ 'label.edit' | transloco }}"
+                  alt="move"
                 />
               </a>
               <a>
+                @if (item.status === 'edited') {
                 <img
+                  tabindex="0"
                   src="img/undo-arrow-3355.png"
                   height="15"
                   width="15"
                   (click)="resetEdited(item)"
-                  *ngIf="item.status === 'edited'"
                   title="{{ 'label.undo' | transloco }}"
+                  alt="move"
                 />
+                }
               </a>
               <a>
                 <img
+                  tabindex="0"
                   src="img/icon-close-20x20.png"
                   (click)="tagAsRemoved(item)"
                   title="{{ 'label.delete' | transloco }}"
+                  alt="move"
                 />
               </a>
             </td>
           </tr>
+          }
         </tbody>
       </table>
     </section>
-    <div *ngIf="creating">
+    @if (creating) {
+    <div>
       {{ 'label.updating' | transloco }}...
       <cbc-spinner></cbc-spinner>
     </div>
+    }
   </div>
+  }
 </cbc-modal>

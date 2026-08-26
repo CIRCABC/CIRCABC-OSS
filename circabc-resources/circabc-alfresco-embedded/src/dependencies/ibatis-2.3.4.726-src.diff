@@ -1,0 +1,585 @@
+Index: build/version.properties
+===================================================================
+--- build/version.properties	(revision 4289)
++++ build/version.properties	(working copy)
+@@ -1,5 +1,6 @@
+ #Build version info
++#Fri, 09 Dec 2011 15:11:48 +0000
+ #Tue Sep 09 09:43:13 MDT 2008
+ version=2.3.4
+-buildDate=2008/09/09 09\:43
+-buildNum=726
++buildDate=2011/12/09 15\:11
++buildNum=727
+Index: pom.xml
+===================================================================
+--- pom.xml	(revision 4289)
++++ pom.xml	(working copy)
+@@ -141,8 +141,8 @@
+         <groupId>org.apache.maven.plugins</groupId>
+         <artifactId>maven-compiler-plugin</artifactId>
+         <configuration>
+-          <source>1.4</source>
+-          <target>1.4</target>
++          <source>1.5</source>
++          <target>1.5</target>
+         </configuration>
+       </plugin>
+       <plugin>
+@@ -177,23 +177,6 @@
+           <attach>true</attach>
+         </configuration>
+       </plugin>
+-      <plugin>
+-        <groupId>org.codehaus.mojo</groupId>
+-        <artifactId>maven-buildnumber-plugin</artifactId>
+-        <version>0.9.4</version>
+-        <executions>
+-          <execution>
+-            <phase>validate</phase>
+-            <goals>
+-              <goal>create</goal>
+-            </goals>
+-          </execution>
+-        </executions>
+-        <configuration>
+-          <doCheck>false</doCheck>
+-          <doUpdate>false</doUpdate>
+-        </configuration>
+-      </plugin>
+     </plugins>
+   </build>
+   <reporting>
+Index: setenv.bat
+===================================================================
+--- setenv.bat	(revision 0)
++++ setenv.bat	(working copy)
+@@ -0,0 +1,11 @@
++set JAVA_HOME=C:\Program Files\Java\jdk1.5.0_22
++
++set PATH=C:\apache-maven-2.2.1\bin;%JAVA_HOME%\bin;%PATH%
++@title ibatis
++
++mvn clean install
++copy target\ibatis-sqlmap-SNAPSHOT-rnull.jar \workspaces\V3.4.6\SOURCE\root\projects\3rd-party\lib\ibatis-2.3.4.726-patched.jar
++
++mvn clean
++
++rem now create 
+\ No newline at end of file
+Index: src/com/ibatis/common/beans/ClassInfo.java
+===================================================================
+--- src/com/ibatis/common/beans/ClassInfo.java	(revision 4289)
++++ src/com/ibatis/common/beans/ClassInfo.java	(working copy)
+@@ -12,12 +12,17 @@
+  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  *  See the License for the specific language governing permissions and
+  *  limitations under the License.
++ * 
++ * 2011 - Alfresco Software, Ltd.
++ * Alfresco Software has modified source of this file
++ * The details of changes as svn diff can be found in svn at location root/projects/3rd-party/src 
+  */
+ package com.ibatis.common.beans;
+ 
+ import java.lang.reflect.*;
+ import java.math.*;
+ import java.util.*;
++import java.util.concurrent.ConcurrentHashMap;
+ 
+ /**
+  * This class represents a cached set of class definition information that
+@@ -28,7 +33,7 @@
+   private static boolean cacheEnabled = true;
+   private static final String[] EMPTY_STRING_ARRAY = new String[0];
+   private static final Set SIMPLE_TYPE_SET = new HashSet();
+-  private static final Map CLASS_INFO_MAP = Collections.synchronizedMap(new HashMap());
++  private static final Map<Class, ClassInfo> CLASS_INFO_MAP = new ConcurrentHashMap<Class, ClassInfo>();
+ 
+   private String className;
+   private String[] readablePropertyNames = EMPTY_STRING_ARRAY;
+@@ -491,14 +496,12 @@
+    */
+   public static ClassInfo getInstance(Class clazz) {
+     if (cacheEnabled) {
+-      synchronized (clazz) {
+-        ClassInfo cached = (ClassInfo) CLASS_INFO_MAP.get(clazz);
+-        if (cached == null) {
+-          cached = new ClassInfo(clazz);
+-          CLASS_INFO_MAP.put(clazz, cached);
+-        }
+-        return cached;
++      ClassInfo cached = (ClassInfo) CLASS_INFO_MAP.get(clazz);
++      if (cached == null) {
++        cached = new ClassInfo(clazz);
++        CLASS_INFO_MAP.put(clazz, cached);
+       }
++      return cached;
+     } else {
+       return new ClassInfo(clazz);
+     }
+Index: src/com/ibatis/sqlmap/engine/builder/xml/SqlStatementParser.java
+===================================================================
+--- src/com/ibatis/sqlmap/engine/builder/xml/SqlStatementParser.java	(revision 4289)
++++ src/com/ibatis/sqlmap/engine/builder/xml/SqlStatementParser.java	(working copy)
+@@ -1,3 +1,9 @@
++/*
++ * 2010 - Alfresco Software, Ltd.
++ * Alfresco Software has modified source of this file
++ * The details of changes as svn diff can be found in svn at location root/projects/3rd-party/src
++ */
++
+ package com.ibatis.sqlmap.engine.builder.xml;
+ 
+ import com.ibatis.common.xml.*;
+@@ -5,9 +11,9 @@
+ import com.ibatis.sqlmap.engine.config.*;
+ import com.ibatis.sqlmap.engine.mapping.statement.*;
+ import com.ibatis.sqlmap.client.*;
+-import org.w3c.dom.CharacterData;
+ import org.w3c.dom.*;
+ 
++import java.sql.SQLException;
+ import java.util.Properties;
+ 
+ public class SqlStatementParser {
+@@ -108,7 +114,19 @@
+           String keyPropName = attributes.getProperty("keyProperty");
+           String resultClassName = attributes.getProperty("resultClass");
+           String type = attributes.getProperty("type");
+-          config.setSelectKeyStatement(new XMLSqlSource(state, child), resultClassName, keyPropName, foundSQLFirst, type);
++          String selectQuery = ((CharacterData) child.getFirstChild( )).getData();
++          String generatedKeyColumn = null;
++          if (selectQuery.trim().toUpperCase().startsWith("KEY_COLUMN:"))
++          {
++            String sql = selectQuery.trim();
++            generatedKeyColumn = sql.substring(11);
++            if (generatedKeyColumn.length() == 0)
++            {
++              throw new SqlMapException("Invalid key column specification: " + selectQuery.trim());
++            }
++          }
++          boolean useGeneratedKey = selectQuery.trim().toUpperCase().startsWith("KEY_COLUMN:");
++          config.setSelectKeyStatement(new XMLSqlSource(state, child), resultClassName, keyPropName, foundSQLFirst, type, generatedKeyColumn);
+           break;
+         }
+       }
+Index: src/com/ibatis/sqlmap/engine/config/MappedStatementConfig.java
+===================================================================
+--- src/com/ibatis/sqlmap/engine/config/MappedStatementConfig.java	(revision 4289)
++++ src/com/ibatis/sqlmap/engine/config/MappedStatementConfig.java	(working copy)
+@@ -1,3 +1,9 @@
++/*
++ * 2010 - Alfresco Software, Ltd.
++ * Alfresco Software has modified source of this file
++ * The details of changes as svn diff can be found in svn at location root/projects/3rd-party/src
++ */
++
+ package com.ibatis.sqlmap.engine.config;
+ 
+ import com.ibatis.common.beans.*;
+@@ -114,7 +120,7 @@
+     delegate.addMappedStatement(mappedStatement);
+   }
+ 
+-  public void setSelectKeyStatement(SqlSource processor, String resultClassName, String keyPropName, boolean runAfterSQL, String type) {
++  public void setSelectKeyStatement(SqlSource processor, String resultClassName, String keyPropName, boolean runAfterSQL, String type, String generatedKeyColumn) {
+     if (rootStatement instanceof InsertStatement) {
+       InsertStatement insertStatement = ((InsertStatement) rootStatement);
+       Class parameterClass = insertStatement.getParameterClass();
+@@ -129,6 +135,7 @@
+       selectKeyStatement.setResource(errorContext.getResource());
+       selectKeyStatement.setKeyProperty(keyPropName);
+       selectKeyStatement.setRunAfterSQL(runAfterSQL);
++      selectKeyStatement.setGeneratedKeyColumn(generatedKeyColumn);
+       // process the type (pre or post) attribute
+       if (type != null) {
+         selectKeyStatement.setRunAfterSQL("post".equals(type));
+Index: src/com/ibatis/sqlmap/engine/execution/GeneratedKeyThreadLocal.java
+===================================================================
+--- src/com/ibatis/sqlmap/engine/execution/GeneratedKeyThreadLocal.java	(revision 0)
++++ src/com/ibatis/sqlmap/engine/execution/GeneratedKeyThreadLocal.java	(working copy)
+@@ -0,0 +1,31 @@
++package com.ibatis.sqlmap.engine.execution;
++
++import com.ibatis.sqlmap.engine.mapping.statement.SelectKeyStatement;
++
++/**
++ * This class stores a jdbc3 generated key per thread using a {@link ThreadLocal}. 
++ * In this way the key can be passed to lower layers of interfaces without making 
++ * any changes to current method signatures.
++ *  
++ * @see SelectKeyStatement
++ */
++public class GeneratedKeyThreadLocal
++{
++	private static final ThreadLocal tl = new ThreadLocal( );
++	
++	public static final Object getKey( )
++	{
++		return tl.get( );
++	}
++
++	public static final void setKey( Object key )
++	{
++		tl.set( key );
++	}
++	
++	public static final void clear( )
++	{
++		tl.remove( );
++	}
++	
++}
+Index: src/com/ibatis/sqlmap/engine/execution/SqlExecutor.java
+===================================================================
+--- src/com/ibatis/sqlmap/engine/execution/SqlExecutor.java	(revision 4289)
++++ src/com/ibatis/sqlmap/engine/execution/SqlExecutor.java	(working copy)
+@@ -12,6 +12,10 @@
+  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  *  See the License for the specific language governing permissions and
+  *  limitations under the License.
++ * 
++ * 2010 - Alfresco Software, Ltd.
++ * Alfresco Software has modified source of this file
++ * The details of changes as svn diff can be found in svn at location root/projects/3rd-party/src 
+  */
+ package com.ibatis.sqlmap.engine.execution;
+ 
+@@ -19,8 +23,10 @@
+ import com.ibatis.sqlmap.engine.mapping.parameter.ParameterMap;
+ import com.ibatis.sqlmap.engine.mapping.result.ResultMap;
+ import com.ibatis.sqlmap.engine.mapping.result.ResultObjectFactoryUtil;
++import com.ibatis.sqlmap.engine.mapping.statement.InsertStatement;
+ import com.ibatis.sqlmap.engine.mapping.statement.MappedStatement;
+ import com.ibatis.sqlmap.engine.mapping.statement.RowHandlerCallback;
++import com.ibatis.sqlmap.engine.mapping.statement.SelectKeyStatement;
+ import com.ibatis.sqlmap.engine.scope.ErrorContext;
+ import com.ibatis.sqlmap.engine.scope.StatementScope;
+ import com.ibatis.sqlmap.engine.scope.SessionScope;
+@@ -71,13 +77,55 @@
+     setupResultObjectFactory(statementScope);
+     int rows = 0;
+     try {
++      MappedStatement mappedStatement = statementScope.getStatement();
++      String[] keyColumns = new String[0];
++      if (mappedStatement instanceof InsertStatement)
++      {
++        InsertStatement insertStmt = (InsertStatement) mappedStatement;
++        SelectKeyStatement selectKeyStmt = insertStmt.getSelectKeyStatement();
++        if (selectKeyStmt != null)
++        {
++          String generatedKeyColumn = selectKeyStmt.getGeneratedKeyColumn();
++          if (generatedKeyColumn != null)
++          {
++            keyColumns = new String[] {generatedKeyColumn};
++          }
++        }
++      }
++      
+       errorContext.setMoreInfo("Check the SQL Statement (preparation failed).");
+-      ps = prepareStatement(statementScope.getSession(), conn, sql);
++      ps = prepareStatement(statementScope.getSession(), conn, sql, keyColumns);
+       setStatementTimeout(statementScope.getStatement(), ps);
+       errorContext.setMoreInfo("Check the parameters (set parameters failed).");
+       statementScope.getParameterMap().setParameters(statementScope, ps, parameters);
+       errorContext.setMoreInfo("Check the statement (update failed).");
++      // Reset any generate key
++      SelectKeyStatement.GeneratedKeyThreadLocal.clear();
+       ps.execute();
++      // Retrieve generated key, if necessary
++      if (keyColumns.length > 0)
++      {
++        ResultSet rsKeys = ps.getGeneratedKeys();
++        try
++        {
++          int rsColumnCount = rsKeys.getMetaData().getColumnCount();
++          if (rsColumnCount != 1)
++          {
++            throw new SQLException("Multi-column generated keys are not supported.");
++          }
++          if (!rsKeys.next())
++          {
++            throw new SQLException("No results returned for generated keys.");
++          }
++          Object generatedKey = rsKeys.getObject(keyColumns[0]);
++          // Store this for later
++          SelectKeyStatement.GeneratedKeyThreadLocal.setKey(generatedKey);
++        }
++        finally
++        {
++          try { rsKeys.close(); } catch (Throwable e) {}
++        }
++      }
+       rows = ps.getUpdateCount();
+     } finally {
+       closeStatement(statementScope.getSession(), ps);
+@@ -500,6 +548,21 @@
+     }
+   }
+ 
++  private static PreparedStatement prepareStatement(SessionScope sessionScope, Connection conn, String sql, String[] returnColumns) throws SQLException {
++    SqlMapExecutorDelegate delegate = ((SqlMapClientImpl) sessionScope.getSqlMapExecutor()).getDelegate();
++    if (sessionScope.hasPreparedStatementFor(sql)) {
++      return sessionScope.getPreparedStatement((sql));
++    } else {
++      PreparedStatement ps;
++      if (returnColumns == null || returnColumns.length == 0)
++        ps = conn.prepareStatement(sql);
++      else
++        ps = conn.prepareStatement(sql, returnColumns);
++      sessionScope.putPreparedStatement(delegate, sql, ps);
++      return ps;
++    }
++  }
++
+   private CallableStatement prepareCall(SessionScope sessionScope, Connection conn, String sql) throws SQLException {
+     SqlMapExecutorDelegate delegate = ((SqlMapClientImpl) sessionScope.getSqlMapExecutor()).getDelegate();
+     if (sessionScope.hasPreparedStatementFor(sql)) {
+Index: src/com/ibatis/sqlmap/engine/mapping/parameter/ParameterMap.java
+===================================================================
+--- src/com/ibatis/sqlmap/engine/mapping/parameter/ParameterMap.java	(revision 4289)
++++ src/com/ibatis/sqlmap/engine/mapping/parameter/ParameterMap.java	(working copy)
+@@ -12,9 +12,15 @@
+  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  *  See the License for the specific language governing permissions and
+  *  limitations under the License.
++ * 
++ * 2010 - Alfresco Software, Ltd.
++ * Alfresco Software has modified source of this file
++ * The details of changes as svn diff can be found in svn at location root/projects/3rd-party/src 
+  */
+ package com.ibatis.sqlmap.engine.mapping.parameter;
+ 
++import com.ibatis.common.logging.Log;
++import com.ibatis.common.logging.LogFactory;
+ import com.ibatis.sqlmap.engine.cache.CacheKey;
+ import com.ibatis.sqlmap.engine.exchange.DataExchange;
+ import com.ibatis.sqlmap.engine.impl.SqlMapExecutorDelegate;
+@@ -24,6 +30,7 @@
+ import com.ibatis.sqlmap.engine.type.JdbcTypeRegistry;
+ import com.ibatis.sqlmap.engine.type.TypeHandler;
+ 
++import java.sql.DatabaseMetaData;
+ import java.sql.PreparedStatement;
+ import java.sql.SQLException;
+ import java.sql.Types;
+@@ -33,10 +40,14 @@
+ 
+ public class ParameterMap {
+ 
++  private static final Log log = LogFactory.getLog(ParameterMap.class);
++
+   private String id;
+   private Class parameterClass;
+ 
+   private ParameterMapping[] parameterMappings;
++  private Boolean useSetObjectForNullValue;
++  private int sqlTypeToUseForNullValue;
+   private DataExchange dataExchange;
+ 
+   private String resource;
+@@ -171,7 +182,30 @@
+       if (jdbcType != JdbcTypeRegistry.UNKNOWN_TYPE) {
+         ps.setNull(i + 1, jdbcType);
+       } else {
+-        ps.setNull(i + 1, Types.OTHER);
++        // Cloned from Spring StatementCreatorUtils.java (IBATIS-536)
++        if (useSetObjectForNullValue == null) {
++          // Keep current JDBC connection preferences for limiting introspections
++          useSetObjectForNullValue = Boolean.FALSE;
++          sqlTypeToUseForNullValue = Types.NULL;
++          try {
++            DatabaseMetaData dbmd = ps.getConnection().getMetaData();
++            String databaseProductName = dbmd.getDatabaseProductName();
++            String jdbcDriverName = dbmd.getDriverName();
++            if (databaseProductName.startsWith("Informix") || jdbcDriverName.startsWith("Microsoft SQL Server")) {
++              useSetObjectForNullValue = Boolean.TRUE;
++            } else if (databaseProductName.startsWith("DB2") || jdbcDriverName.startsWith("jConnect") ||
++                       jdbcDriverName.startsWith("SQLServer") || jdbcDriverName.startsWith("Apache Derby Embedded")) {
++              sqlTypeToUseForNullValue = Types.VARCHAR;
++            }
++          } catch (Throwable ex) {
++            log.debug("Could not check database or driver name: " + ex.getMessage());
++          }
++        }
++        if (useSetObjectForNullValue.booleanValue()) {
++          ps.setObject(i + 1, null);
++        } else {
++          ps.setNull(i + 1, sqlTypeToUseForNullValue);
++        }
+       }
+     }
+   }
+Index: src/com/ibatis/sqlmap/engine/mapping/parameter/ParameterMapping.java
+===================================================================
+--- src/com/ibatis/sqlmap/engine/mapping/parameter/ParameterMapping.java	(revision 4289)
++++ src/com/ibatis/sqlmap/engine/mapping/parameter/ParameterMapping.java	(working copy)
+@@ -12,6 +12,10 @@
+  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  *  See the License for the specific language governing permissions and
+  *  limitations under the License.
++ * 
++ * 2010 - Alfresco Software, Ltd.
++ * Alfresco Software has modified source of this file
++ * The details of changes as svn diff can be found in svn at location root/projects/3rd-party/src 
+  */
+ package com.ibatis.sqlmap.engine.mapping.parameter;
+ 
+@@ -45,6 +49,8 @@
+     mode = "IN";
+     inputAllowed = true;
+     outputAllowed = false;
++    // Default JDBC type if UNKNOWN_TYPE
++    jdbcType = JdbcTypeRegistry.UNKNOWN_TYPE;
+   }
+ 
+   public String getNullValue() {
+Index: src/com/ibatis/sqlmap/engine/mapping/statement/SelectKeyStatement.java
+===================================================================
+--- src/com/ibatis/sqlmap/engine/mapping/statement/SelectKeyStatement.java	(revision 4289)
++++ src/com/ibatis/sqlmap/engine/mapping/statement/SelectKeyStatement.java	(working copy)
+@@ -12,13 +12,27 @@
+  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  *  See the License for the specific language governing permissions and
+  *  limitations under the License.
++ * 
++ * 2010 - Alfresco Software, Ltd.
++ * Alfresco Software has modified source of this file
++ * The details of changes as svn diff can be found in svn at location root/projects/3rd-party/src 
+  */
+ package com.ibatis.sqlmap.engine.mapping.statement;
+ 
++import com.ibatis.common.beans.Probe;
++import com.ibatis.common.beans.ProbeFactory;
++import com.ibatis.common.resources.Resources;
+ import com.ibatis.sqlmap.client.event.RowHandler;
++import com.ibatis.sqlmap.engine.exchange.DataExchange;
++import com.ibatis.sqlmap.engine.mapping.result.ResultMap;
++import com.ibatis.sqlmap.engine.mapping.result.ResultMapping;
+ import com.ibatis.sqlmap.engine.scope.StatementScope;
+ import com.ibatis.sqlmap.engine.transaction.Transaction;
++import com.ibatis.sqlmap.engine.type.TypeHandler;
++import com.ibatis.sqlmap.engine.type.TypeHandlerFactory;
+ 
++import java.beans.BeanDescriptor;
++import java.sql.Connection;
+ import java.sql.SQLException;
+ import java.util.List;
+ 
+@@ -26,6 +40,7 @@
+ 
+   private String keyProperty;
+   private boolean runAfterSQL;
++  private String generatedKeyColumn;
+ 
+   public String getKeyProperty() {
+     return keyProperty;
+@@ -43,6 +58,21 @@
+     this.runAfterSQL = runAfterSQL;
+   }
+ 
++  public boolean isUseGeneratedKey()
++  {
++    return generatedKeyColumn != null;
++  }
++  
++  public String getGeneratedKeyColumn()
++  {
++      return this.generatedKeyColumn;
++  }
++
++  public void setGeneratedKeyColumn(String generatedKeyColumn)
++  {
++    this.generatedKeyColumn = generatedKeyColumn;
++  }
++
+   public List executeQueryForList(StatementScope statementScope, Transaction trans, Object parameterObject, int skipResults, int maxResults)
+       throws SQLException {
+     throw new SQLException("Select Key statements cannot be executed for a list.");
+@@ -53,4 +83,59 @@
+     throw new SQLException("Select Key statements cannot be executed with a row handler.");
+   }
+ 
++  @SuppressWarnings("unchecked")
++  protected void executeQueryWithCallback(
++          StatementScope statementScope, Connection conn, Object parameterObject, Object resultObject,
++          RowHandler rowHandler, int skipResults,
++          int maxResults) throws SQLException
++  {
++      if (generatedKeyColumn == null)
++      {
++        super.executeQueryWithCallback(statementScope, conn, parameterObject, resultObject, rowHandler, skipResults, maxResults);
++      }
++      else
++      {
++        // We are using generate keys, so spoof a resultset
++        Object generatedKey = GeneratedKeyThreadLocal.getKey();
++        if (generatedKey == null)
++        {
++          throw new SQLException("No generated key value available for column: " + this.generatedKeyColumn);
++        }
++        // Cast the generated key to the correct type on the resultObject
++        ResultMap resultMap = getSql().getResultMap(statementScope, parameterObject);
++        Class resultType = resultMap.getResultClass();
++        
++        if (resultType.isAssignableFrom(generatedKey.getClass()))
++        {
++          // No conversion required
++        }
++        else
++        {
++          // This is untidy, but the type conversion APIs were not designed for this
++          TypeHandler resultTypeHandler = new TypeHandlerFactory().getTypeHandler(resultType);
++          generatedKey = resultTypeHandler.valueOf(generatedKey.toString());
++        }
++        rowHandler.handleRow(generatedKey);
++      }
++  }
++  
++  public static class GeneratedKeyThreadLocal
++  {
++      private static final ThreadLocal tl = new ThreadLocal();
++      
++      public static final Object getKey( )
++      {
++          return tl.get();
++      }
++
++      public static final void setKey(Object key)
++      {
++          tl.set(key);
++      }
++      
++      public static final void clear( )
++      {
++          tl.remove();
++      }
++  }
+ }
+Index: src/com/ibatis/sqlmap/engine/type/TypeHandlerFactory.java
+===================================================================
+--- src/com/ibatis/sqlmap/engine/type/TypeHandlerFactory.java	(revision 4289)
++++ src/com/ibatis/sqlmap/engine/type/TypeHandlerFactory.java	(working copy)
+@@ -12,6 +12,10 @@
+  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  *  See the License for the specific language governing permissions and
+  *  limitations under the License.
++ * 
++ * 2010 - Alfresco Software, Ltd.
++ * Alfresco Software has modified source of this file
++ * The details of changes as svn diff can be found in svn at location root/projects/3rd-party/src 
+  */
+ package com.ibatis.sqlmap.engine.type;
+ 
+@@ -56,6 +60,10 @@
+     register(Byte.class, handler);
+     register(byte.class, handler);
+ 
++    handler = new ByteTypeHandler();
++    register(Byte.class, handler);
++    register(byte.class, handler);
++
+     handler = new ShortTypeHandler();
+     register(Short.class, handler);
+     register(short.class, handler);

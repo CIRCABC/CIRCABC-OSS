@@ -27,6 +27,13 @@ import eu.cec.digit.circabc.service.struct.ManagementService;
 import eu.cec.digit.circabc.service.user.UserService;
 import eu.cec.digit.circabc.util.CircabcUserDataBean;
 import eu.cec.digit.ecas.client.jaas.DetailedUser;
+import java.io.IOException;
+import java.security.Principal;
+import java.util.Date;
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.web.filter.beans.DependencyInjectedFilter;
@@ -38,169 +45,174 @@ import org.alfresco.web.bean.LoginOutcomeBean;
 import org.alfresco.web.bean.repository.User;
 import org.springframework.beans.factory.InitializingBean;
 
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.security.Principal;
-import java.util.Date;
+public class LoginBeanFilter
+  implements InitializingBean, DependencyInjectedFilter {
 
-public class LoginBeanFilter implements InitializingBean, DependencyInjectedFilter {
+  private NodeService nodeService = null;
+  private PersonService personService = null;
 
-    private NodeService nodeService = null;
-    private PersonService personService = null;
+  private UserService userService = null;
+  private ManagementService managementService = null;
+  private LogService logService = null;
 
+  private String dispatchUrl = null;
 
-    private UserService userService = null;
-    private ManagementService managementService = null;
-    private LogService logService = null;
-
-    private String dispatchUrl = null;
-
-    /**
-     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-     */
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        if (this.dispatchUrl == null) {
-            throw new ServletException("Property 'dispatchUrl' not found.");
-        }
+  /**
+   * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+   */
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    if (this.dispatchUrl == null) {
+      throw new ServletException("Property 'dispatchUrl' not found.");
     }
+  }
 
-    /**
-     * @see org.alfresco.repo.web.filter.beans.DependencyInjectedFilter#doFilter(javax.servlet.ServletContext,
-     * javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)
-     */
-    @Override
-    public void doFilter(ServletContext context, ServletRequest request,
-                         ServletResponse response, FilterChain chain) throws IOException,
-            ServletException {
+  /**
+   * @see org.alfresco.repo.web.filter.beans.DependencyInjectedFilter#doFilter(javax.servlet.ServletContext,
+   * javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)
+   */
+  @Override
+  public void doFilter(
+    ServletContext context,
+    ServletRequest request,
+    ServletResponse response,
+    FilterChain chain
+  ) throws IOException, ServletException {
+    final LogRecord logRecord = new LogRecord();
 
-        final LogRecord logRecord = new LogRecord();
+    HttpServletRequest httpRequest = (HttpServletRequest) request;
+    HttpSession session = httpRequest.getSession();
+    final Principal userPrincipal = httpRequest.getUserPrincipal();
+    String userName = userPrincipal.getName();
+    logRecord.setService("Directory");
+    logRecord.setActivity("Login");
+    logRecord.setUser(userName);
+    try {
+      AuthenticationUtil.setRunAsUserSystem();
+      if (!personService.personExists(userName)) {
+        final CircabcUserDataBean user = new CircabcUserDataBean();
+        user.setUserName(userName);
 
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpSession session = httpRequest.getSession();
-        final Principal userPrincipal = httpRequest.getUserPrincipal();
-        String userName = userPrincipal.getName();
-        logRecord.setService("Directory");
-        logRecord.setActivity("Login");
-        logRecord.setUser(userName);
-        try {
-            AuthenticationUtil.setRunAsUserSystem();
-            if (!personService.personExists(userName)) {
-                final CircabcUserDataBean user = new CircabcUserDataBean();
-                user.setUserName(userName);
-
-                final CircabcUserDataBean ldapUserDetail = userService.getLDAPUserDataByUid(userName);
-                user.copyLdapProperties(ldapUserDetail);
-                if (ldapUserDetail == null) {
-                    if (userPrincipal instanceof DetailedUser) {
-                        DetailedUser detailedUser = (DetailedUser) userPrincipal;
-                        user.copyDetailedUserProperties(detailedUser);
-                    }
-                }
-                user.setHomeSpaceNodeRef(managementService.getGuestHomeNodeRef());
-                userService.createUser(user, true);
-            } else {
-                final CircabcUserDataBean ldapUserDetail = userService.getLDAPUserDataByUid(userName);
-                if (ldapUserDetail != null) {
-                    Date ldapTime = ldapUserDetail.getLastModificationDetailsTime();
-                    if (ldapTime != null) {
-                        final NodeRef nodeRef = personService.getPerson(userName);
-                        Date repoTime = (Date) nodeService
-                                .getProperty(nodeRef, UserModel.PROP_LAST_MODIFICATION_DETAILS_TIME);
-                        if (repoTime == null || ldapTime.after(repoTime)) {
-                            final CircabcUserDataBean repoUser = userService.getCircabcUserDataBean(userName);
-                            repoUser.copyLdapProperties(ldapUserDetail);
-                            userService.updateUser(repoUser);
-                        }
-
-                    }
-                }
-                
-                if (!userService.getAuthenticationEnabled(userName)){
-                    userService.setAuthenticationEnabled(userName, true);
-                }
-
+        final CircabcUserDataBean ldapUserDetail =
+          userService.getLDAPUserDataByUid(userName);
+        user.copyLdapProperties(ldapUserDetail);
+        if (ldapUserDetail == null) {
+          if (userPrincipal instanceof DetailedUser) {
+            DetailedUser detailedUser = (DetailedUser) userPrincipal;
+            user.copyDetailedUserProperties(detailedUser);
+          }
+        }
+        user.setHomeSpaceNodeRef(managementService.getGuestHomeNodeRef());
+        userService.createUser(user, true);
+      } else {
+        final CircabcUserDataBean ldapUserDetail =
+          userService.getLDAPUserDataByUid(userName);
+        if (ldapUserDetail != null) {
+          Date ldapTime = ldapUserDetail.getLastModificationDetailsTime();
+          if (ldapTime != null) {
+            final NodeRef nodeRef = personService.getPerson(userName);
+            Date repoTime = (Date) nodeService.getProperty(
+              nodeRef,
+              UserModel.PROP_LAST_MODIFICATION_DETAILS_TIME
+            );
+            if (repoTime == null || ldapTime.after(repoTime)) {
+              final CircabcUserDataBean repoUser =
+                userService.getCircabcUserDataBean(userName);
+              repoUser.copyLdapProperties(ldapUserDetail);
+              userService.updateUser(repoUser);
             }
-        } finally {
-            AuthenticationUtil.setRunAsUser(userName);
+          }
         }
 
-        try {
-            AuthenticationUtil.setRunAsUserSystem();
-            final NodeRef circabcNodeRef = managementService.getCircabcNodeRef();
-            logRecord
-                    .setIgID((Long) nodeService.getProperty(circabcNodeRef, ContentModel.PROP_NODE_DBID));
-            logRecord.setIgName((String) nodeService.getProperty(circabcNodeRef, ContentModel.PROP_NAME));
-        } finally {
-            AuthenticationUtil.setRunAsUser(userName);
+        if (!userService.getAuthenticationEnabled(userName)) {
+          userService.setAuthenticationEnabled(userName, true);
         }
-
-        session.removeAttribute(AuthenticationHelper.SESSION_INVALIDATED);
-        final String ticket = userService.getCurrentTicket(userName);
-        final NodeRef nodeRef = personService.getPerson(userName);
-        final User user = new User(userName, ticket, nodeRef);
-
-        session.removeAttribute(AuthenticationHelper.AUTHENTICATION_USER);
-        session.setAttribute(AuthenticationHelper.AUTHENTICATION_USER, user);
-
-        final String redirectURL = (String) session.getAttribute(LoginOutcomeBean.PARAM_REDIRECT_URL);
-
-        if (redirectURL != null) {
-            // remove redirect URL from session
-            session.removeAttribute(LoginOutcomeBean.PARAM_REDIRECT_URL);
-            HttpServletResponse httpResponse = (HttpServletResponse) response;
-            httpResponse.sendRedirect(redirectURL);
-            return;
-        }
-
-        logRecord.setOK(true);
-        logService.log(logRecord);
-        RequestDispatcher dispatcher = request.getRequestDispatcher(dispatchUrl);
-        dispatcher.forward(request, response);
+      }
+    } finally {
+      AuthenticationUtil.setRunAsUser(userName);
     }
 
-    /**
-     * @param dispatchUrl the dispatchUrl to set
-     */
-    public void setDispatchUrl(String dispatchUrl) {
-        this.dispatchUrl = dispatchUrl;
+    try {
+      AuthenticationUtil.setRunAsUserSystem();
+      final NodeRef circabcNodeRef = managementService.getCircabcNodeRef();
+      logRecord.setIgID(
+        (Long) nodeService.getProperty(
+          circabcNodeRef,
+          ContentModel.PROP_NODE_DBID
+        )
+      );
+      logRecord.setIgName(
+        (String) nodeService.getProperty(circabcNodeRef, ContentModel.PROP_NAME)
+      );
+    } finally {
+      AuthenticationUtil.setRunAsUser(userName);
     }
 
-    /**
-     * @param nodeService the nodeService to set
-     */
-    public void setNodeService(NodeService nodeService) {
-        this.nodeService = nodeService;
+    session.removeAttribute(AuthenticationHelper.SESSION_INVALIDATED);
+    final String ticket = userService.getCurrentTicket(userName);
+    final NodeRef nodeRef = personService.getPerson(userName);
+    final User user = new User(userName, ticket, nodeRef);
+
+    session.removeAttribute(AuthenticationHelper.AUTHENTICATION_USER);
+    session.setAttribute(AuthenticationHelper.AUTHENTICATION_USER, user);
+
+    final String redirectURL = (String) session.getAttribute(
+      LoginOutcomeBean.PARAM_REDIRECT_URL
+    );
+
+    if (redirectURL != null) {
+      // remove redirect URL from session
+      session.removeAttribute(LoginOutcomeBean.PARAM_REDIRECT_URL);
+      HttpServletResponse httpResponse = (HttpServletResponse) response;
+      httpResponse.sendRedirect(redirectURL);
+      return;
     }
 
-    /**
-     * @param personService the personService to set
-     */
-    public void setPersonService(PersonService personService) {
-        this.personService = personService;
-    }
+    logRecord.setOK(true);
+    logService.log(logRecord);
+    RequestDispatcher dispatcher = request.getRequestDispatcher(dispatchUrl);
+    dispatcher.forward(request, response);
+  }
 
-    /**
-     * @param userService the userService to set
-     */
-    public void setUserService(UserService userService) {
-        this.userService = userService;
-    }
+  /**
+   * @param dispatchUrl the dispatchUrl to set
+   */
+  public void setDispatchUrl(String dispatchUrl) {
+    this.dispatchUrl = dispatchUrl;
+  }
 
-    /**
-     * @param managementService the managementService to set
-     */
-    public void setManagementService(ManagementService managementService) {
-        this.managementService = managementService;
-    }
+  /**
+   * @param nodeService the nodeService to set
+   */
+  public void setNodeService(NodeService nodeService) {
+    this.nodeService = nodeService;
+  }
 
-    /**
-     * @param logService the logService to set
-     */
-    public void setLogService(LogService logService) {
-        this.logService = logService;
-    }
+  /**
+   * @param personService the personService to set
+   */
+  public void setPersonService(PersonService personService) {
+    this.personService = personService;
+  }
+
+  /**
+   * @param userService the userService to set
+   */
+  public void setUserService(UserService userService) {
+    this.userService = userService;
+  }
+
+  /**
+   * @param managementService the managementService to set
+   */
+  public void setManagementService(ManagementService managementService) {
+    this.managementService = managementService;
+  }
+
+  /**
+   * @param logService the logService to set
+   */
+  public void setLogService(LogService logService) {
+    this.logService = logService;
+  }
 }

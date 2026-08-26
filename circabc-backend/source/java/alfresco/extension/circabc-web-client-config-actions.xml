@@ -4,11 +4,9 @@
     |  		   http://ec.europa.eu/idabc/en/document/6523
     |
     +-->
-
 <!-- Here Only the new Circabc specific NON WAI actions and action groups -->
 <!-- AND -->
 <!-- Modification of original Alfresco actions behaviour -->
-
 <alfresco-config>
 
    <config>
@@ -375,7 +373,9 @@
 	            <image>/images/icons/create_space.gif</image>
 	            <action>wizard:createSpace</action>
 	            <params>
-				   <param name="imageName">create_space_wizard_extended_#{actionContext.name}</param>
+				   <param
+            name="imageName"
+          >create_space_wizard_extended_#{actionContext.name}</param>
 	            </params>
          	</action>
          	
@@ -388,7 +388,9 @@
 	            <image>/images/icons/admin_console_large.gif</image>
 	            <action>wai:dialog:contactFormWai</action>
 	            <params>
-				   <param name="imageName">create_space_wizard_extended_#{actionContext.name}</param>
+				   <param
+            name="imageName"
+          >create_space_wizard_extended_#{actionContext.name}</param>
 	            </params>
          	</action>
          	
@@ -423,7 +425,10 @@
 		</actions>
 	</config>
 
-	<config evaluator="multiple-aspect-name" condition="ci:circabcManagement;!ci:circaIGRoot;!ci:circaCategory;!ci:circaBC" >
+	<config
+    evaluator="multiple-aspect-name"
+    condition="ci:circabcManagement;!ci:circaIGRoot;!ci:circaCategory;!ci:circaBC"
+  >
    		<actions>
    		   <action id="manage_space_permission">
 				<permissions>
@@ -446,9 +451,9 @@
 	         </action-group>
 
 	         <action-group id="browse_create_menu">
-	            <action idref="create_content"  hide="true" />
-	            <action idref="create_form"  hide="true" />
-	            <action idref="create_website_wizard"  hide="true" />
+	            <action idref="create_content" hide="true" />
+	            <action idref="create_form" hide="true" />
+	            <action idref="create_website_wizard" hide="true" />
   	            <action idref="create_space_wizard" hide="true" />
   	            <action idref="create_space_wizard_extended" />
 	         </action-group>
@@ -464,7 +469,7 @@
 	            <action idref="manage_space_permission" />
 	         </action-group>
 
-	         <action-group id="space_details_actions" >
+	         <action-group id="space_details_actions">
 	            <action idref="approve_space_details" hide="true" />
 	            <action idref="reject_space_details" hide="true" />
 	            <action idref="manage_space_users" hide="true" />
@@ -522,8 +527,8 @@
 
 	         <action-group id="forums_actions_menu">
 	            <action idref="delete_forums" hide="true" />
-	            <action idref="paste_all" hide="true"/>
-				<action idref="manage_space_users" hide="true"/>
+	            <action idref="paste_all" hide="true" />
+				<action idref="manage_space_users" hide="true" />
 	            <action idref="import_space" hide="true" />
 	            <action idref="export_space" hide="true" />
 	         </action-group>
@@ -533,29 +538,29 @@
     	     </action-group>
 
 	         <action-group id="forum_create_menu">
-	            <action idref="create_topic" hide="true"  />
+	            <action idref="create_topic" hide="true" />
 	            <action idref="create_topic_extended" />
 	         </action-group>
 
 	         <action-group id="forum_actions_menu">
-	            <action idref="delete_forum" hide="true"  />
+	            <action idref="delete_forum" hide="true" />
 	            <action idref="delete_forum_extended" />
 	            <action idref="manage_space_users" hide="true" />
 	         </action-group>
 
 	         <action-group id="forum_actions_menu">
-	            <action idref="delete_topic" hide="true"  />
+	            <action idref="delete_topic" hide="true" />
 	            <action idref="delete_topic_extended" />
 	         </action-group>
 
 	         <action-group id="topic_create_menu">
-	            <action idref="create_post" hide="true"  />
+	            <action idref="create_post" hide="true" />
 	            <action idref="create_post_extended" />
 	         </action-group>
 
 	         <action-group id="topic_actions_menu">
 				<action idref="manage_space_users" hide="true" />
-	            <action idref="delete_topic" hide="true"  />
+	            <action idref="delete_topic" hide="true" />
 	            <action idref="delete_topic_extended" />
 	         </action-group>
 
@@ -587,11 +592,11 @@
 	         </action-group>
 
 	         <action-group id="browse_create_menu">
-	            <action idref="create_content"  hide="true" />
-	            <action idref="create_form"  hide="true" />
-	            <action idref="create_website_wizard"  hide="true" />
+	            <action idref="create_content" hide="true" />
+	            <action idref="create_form" hide="true" />
+	            <action idref="create_website_wizard" hide="true" />
   	            <action idref="create_space_wizard" hide="true" />
-		        <action idref="create_space"  hide="false" />
+		        <action idref="create_space" hide="false" />
   	            <action idref="create_space_wizard_extended" />
 	         </action-group>
 
@@ -643,11 +648,11 @@
 	         </action-group>
 
 	         <action-group id="browse_create_menu">
-	            <action idref="create_content"  hide="true" />
-	            <action idref="create_form"  hide="true" />
-	            <action idref="create_website_wizard"  hide="true" />
+	            <action idref="create_content" hide="true" />
+	            <action idref="create_form" hide="true" />
+	            <action idref="create_website_wizard" hide="true" />
   	            <action idref="create_space_wizard" hide="true" />
-		        <action idref="create_space"  hide="false" />
+		        <action idref="create_space" hide="false" />
   	            <action idref="create_space_wizard_extended" />
 	         </action-group>
 
@@ -699,10 +704,10 @@
 	         </action-group>
 
 	         <action-group id="browse_create_menu">
-	            <action idref="create_content"  hide="true" />
-	            <action idref="create_form"  hide="true" />
-	            <action idref="create_website_wizard"  hide="true" />
-	            <action idref="create_space"  hide="true" />
+	            <action idref="create_content" hide="true" />
+	            <action idref="create_form" hide="true" />
+	            <action idref="create_website_wizard" hide="true" />
+	            <action idref="create_space" hide="true" />
 	            <action idref="create_space_wizard" hide="true" />
 	         </action-group>
 
@@ -786,11 +791,11 @@
 	         </action-group>
 
 	         <action-group id="browse_create_menu">
-	            <action idref="create_content"  hide="true" />
-	            <action idref="create_form"  hide="true" />
-	            <action idref="create_website_wizard"  hide="true" />
+	            <action idref="create_content" hide="true" />
+	            <action idref="create_form" hide="true" />
+	            <action idref="create_website_wizard" hide="true" />
 	            <action idref="create_space_wizard" hide="true" />
-	            <action idref="create_space"  hide="false" />
+	            <action idref="create_space" hide="false" />
 	            <action idref="create_space_wizard_extended" />
 	         </action-group>
 
@@ -846,11 +851,11 @@
 	         </action-group>
 
 	         <action-group id="browse_create_menu">
-	            <action idref="create_content"  hide="true" />
-	            <action idref="create_form"  hide="true" />
-	            <action idref="create_website_wizard"  hide="true" />
+	            <action idref="create_content" hide="true" />
+	            <action idref="create_form" hide="true" />
+	            <action idref="create_website_wizard" hide="true" />
   	            <action idref="create_space_wizard" hide="true" />
-		        <action idref="create_space"  hide="false" />
+		        <action idref="create_space" hide="false" />
   	            <action idref="create_space_wizard_extended" />
 	         </action-group>
 
@@ -902,10 +907,10 @@
 	         </action-group>
 
 	         <action-group id="browse_create_menu">
-	            <action idref="create_content"  hide="true" />
-	            <action idref="create_form"  hide="true" />
-	            <action idref="create_website_wizard"  hide="true" />
-	            <action idref="create_space"  hide="true" />
+	            <action idref="create_content" hide="true" />
+	            <action idref="create_form" hide="true" />
+	            <action idref="create_website_wizard" hide="true" />
+	            <action idref="create_space" hide="true" />
 	            <action idref="create_space_wizard" hide="true" />
 	            <!--  New Actions -->
 		   <action idref="circabc_create_survey" />
@@ -970,10 +975,10 @@
 	         </action-group>
 
 	         <action-group id="browse_create_menu">
-	            <action idref="create_content"  hide="true" />
-	            <action idref="create_form"  hide="true" />
-	            <action idref="create_website_wizard"  hide="true" />
-	            <action idref="create_space"  hide="true" />
+	            <action idref="create_content" hide="true" />
+	            <action idref="create_form" hide="true" />
+	            <action idref="create_website_wizard" hide="true" />
+	            <action idref="create_space" hide="true" />
 	            <action idref="create_space_wizard" hide="true" />
 	            <!--  New Actions -->
 				<action idref="create_interest_group_wizard" />
@@ -1034,10 +1039,10 @@
 	         </action-group>
 
 	         <action-group id="browse_create_menu">
-	            <action idref="create_content"  hide="true" />
-	            <action idref="create_form"  hide="true" />
-	            <action idref="create_website_wizard"  hide="true" />
-	            <action idref="create_space"  hide="true" />
+	            <action idref="create_content" hide="true" />
+	            <action idref="create_form" hide="true" />
+	            <action idref="create_website_wizard" hide="true" />
+	            <action idref="create_space" hide="true" />
 	            <action idref="create_space_wizard" hide="true" />
 	            <!--  New Actions -->
 				<action idref="create_category_wizard" />

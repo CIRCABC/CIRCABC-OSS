@@ -45,104 +45,132 @@ import org.apache.commons.logging.Log;
  */
 public abstract class ValidationUtils {
 
-    private ValidationUtils() {
+  private ValidationUtils() {}
+
+  /**
+   * Assert if the node ref is a valid nodeRef and if user has read access on it.
+   */
+  public static void assertNodeRef(
+    final NodeRef nodeRef,
+    final ValidationManager validator,
+    final Log logger
+  ) {
+    final BusinessStackError stack = new BusinessStackError();
+    validator.validateNodeRef(nodeRef, stack);
+    validator.validateCanRead(nodeRef, stack);
+    stack.finish(logger);
+  }
+
+  /**
+   * Assert if the node ref is a valid document and if user has read access on it.
+   * <p>
+   * if forUpdateProps == true: -	user must have 'edit props' permission -	the noderef must be ready
+   * to be udpated (not locked ...)
+   * </p>
+   * <p>
+   * if forUpdateContent == true: -	user must have 'write content' permission -	the noderef must be
+   * ready to be udpated (not locked ...)
+   * </p>
+   */
+  public static void assertDocument(
+    final NodeRef nodeRef,
+    final ValidationManager validator,
+    final boolean forUpdateProps,
+    final boolean forUpdateContent,
+    final Log logger
+  ) {
+    final BusinessStackError stack = new BusinessStackError();
+    validator.validateNodeRef(nodeRef, stack);
+
+    if (!forUpdateContent && !forUpdateProps) {
+      validator.validateContent(nodeRef, stack);
+    } else {
+      validator.validateUpdatableContent(nodeRef, stack);
     }
+    stack.finish(logger);
+  }
 
-    /**
-     * Assert if the node ref is a valid nodeRef and if user has read access on it.
-     */
-    public static void assertNodeRef(final NodeRef nodeRef, final ValidationManager validator,
-                                     final Log logger) {
-        final BusinessStackError stack = new BusinessStackError();
-        validator.validateNodeRef(nodeRef, stack);
-        validator.validateCanRead(nodeRef, stack);
-        stack.finish(logger);
-    }
+  /**
+   * Assert if the node ref is a valid space and if user has read access on it.
+   */
+  public static void assertSpace(
+    final NodeRef nodeRef,
+    final ValidationManager validator,
+    final Log logger
+  ) {
+    final BusinessStackError stack = new BusinessStackError();
+    validator.validateNodeRef(nodeRef, stack);
+    validator.validateSpace(nodeRef, stack);
+    stack.finish(logger);
+  }
 
-    /**
-     * Assert if the node ref is a valid document and if user has read access on it.
-     * <p>
-     * if forUpdateProps == true: -	user must have 'edit props' permission -	the noderef must be ready
-     * to be udpated (not locked ...)
-     * </p>
-     * <p>
-     * if forUpdateContent == true: -	user must have 'write content' permission -	the noderef must be
-     * ready to be udpated (not locked ...)
-     * </p>
-     */
-    public static void assertDocument(final NodeRef nodeRef, final ValidationManager validator,
-                                      final boolean forUpdateProps, final boolean forUpdateContent, final Log logger) {
-        final BusinessStackError stack = new BusinessStackError();
-        validator.validateNodeRef(nodeRef, stack);
+  /**
+   * Assert if the node ref is a valid space in the library and if user has read access on it.
+   */
+  public static void assertLibrarySpace(
+    final NodeRef nodeRef,
+    final ValidationManager validator,
+    final Log logger
+  ) {
+    final BusinessStackError stack = new BusinessStackError();
+    validator.validateNodeRef(nodeRef, stack);
+    validator.validateSpace(nodeRef, stack);
+    validator.validateLibraryChild(nodeRef, stack);
+    stack.finish(logger);
+  }
 
-        if (!forUpdateContent && !forUpdateProps) {
-            validator.validateContent(nodeRef, stack);
-        } else {
-            validator.validateUpdatableContent(nodeRef, stack);
-        }
-        stack.finish(logger);
-    }
+  /**
+   * Assert if the node ref is a valid locked document and if user has read access on it.
+   */
+  public static void assertLockedDocument(
+    final NodeRef nodeRef,
+    final ValidationManager validator,
+    final Log logger
+  ) {
+    final BusinessStackError stack = new BusinessStackError();
+    validator.validateNodeRef(nodeRef, stack);
+    validator.validateLockedContent(nodeRef, stack);
+    stack.finish(logger);
+  }
 
-    /**
-     * Assert if the node ref is a valid space and if user has read access on it.
-     */
-    public static void assertSpace(final NodeRef nodeRef, final ValidationManager validator,
-                                   final Log logger) {
-        final BusinessStackError stack = new BusinessStackError();
-        validator.validateNodeRef(nodeRef, stack);
-        validator.validateSpace(nodeRef, stack);
-        stack.finish(logger);
-    }
+  /**
+   * Assert if the node ref is a valid working copy document and if user has read access on it.
+   */
+  public static void assertWorkingCopyDocument(
+    final NodeRef nodeRef,
+    final ValidationManager validator,
+    final Log logger
+  ) {
+    final BusinessStackError stack = new BusinessStackError();
+    validator.validateNodeRef(nodeRef, stack);
+    validator.validateWorkingCopyContent(nodeRef, stack);
+    stack.finish(logger);
+  }
 
-    /**
-     * Assert if the node ref is a valid space in the library and if user has read access on it.
-     */
-    public static void assertLibrarySpace(final NodeRef nodeRef, final ValidationManager validator,
-                                          final Log logger) {
-        final BusinessStackError stack = new BusinessStackError();
-        validator.validateNodeRef(nodeRef, stack);
-        validator.validateSpace(nodeRef, stack);
-        validator.validateLibraryChild(nodeRef, stack);
-        stack.finish(logger);
-    }
+  /**
+   * Assert if the user details before update. Validate: username (not empty and unique), email (not
+   * empty, unique and well formated), first name (not empty), last name (not empty)
+   */
+  public static void assertUserDetails(
+    final UserDetails userDetails,
+    final ValidationManager validator,
+    final Log logger
+  ) {
+    final String previousEmail = (String) userDetails
+      .getOriginalProperties()
+      .get(ContentModel.PROP_EMAIL);
+    final String previousUserName = (String) userDetails
+      .getOriginalProperties()
+      .get(ContentModel.PROP_USERNAME);
 
-    /**
-     * Assert if the node ref is a valid locked document and if user has read access on it.
-     */
-    public static void assertLockedDocument(final NodeRef nodeRef, final ValidationManager validator,
-                                            final Log logger) {
-        final BusinessStackError stack = new BusinessStackError();
-        validator.validateNodeRef(nodeRef, stack);
-        validator.validateLockedContent(nodeRef, stack);
-        stack.finish(logger);
-    }
-
-    /**
-     * Assert if the node ref is a valid working copy document and if user has read access on it.
-     */
-    public static void assertWorkingCopyDocument(final NodeRef nodeRef,
-                                                 final ValidationManager validator, final Log logger) {
-        final BusinessStackError stack = new BusinessStackError();
-        validator.validateNodeRef(nodeRef, stack);
-        validator.validateWorkingCopyContent(nodeRef, stack);
-        stack.finish(logger);
-    }
-
-    /**
-     * Assert if the user details before update. Validate: username (not empty and unique), email (not
-     * empty, unique and well formated), first name (not empty), last name (not empty)
-     */
-    public static void assertUserDetails(final UserDetails userDetails,
-                                         final ValidationManager validator, final Log logger) {
-        final String previousEmail = (String) userDetails.getOriginalProperties()
-                .get(ContentModel.PROP_EMAIL);
-        final String previousUserName = (String) userDetails.getOriginalProperties()
-                .get(ContentModel.PROP_USERNAME);
-
-        final BusinessStackError stack = new BusinessStackError();
-        validator.validateUserName(previousUserName, userDetails.getUserName(), stack);
-        validator.validateFirstName(userDetails.getFirstName(), stack);
-        validator.validateLastName(userDetails.getLastName(), stack);
-        stack.finish(logger);
-    }
+    final BusinessStackError stack = new BusinessStackError();
+    validator.validateUserName(
+      previousUserName,
+      userDetails.getUserName(),
+      stack
+    );
+    validator.validateFirstName(userDetails.getFirstName(), stack);
+    validator.validateLastName(userDetails.getLastName(), stack);
+    stack.finish(logger);
+  }
 }

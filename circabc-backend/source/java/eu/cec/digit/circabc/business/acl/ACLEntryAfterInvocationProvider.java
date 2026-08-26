@@ -30,14 +30,17 @@ import net.sf.acegisecurity.ConfigAttributeDefinition;
  *
  * @author Yanick Pignot
  */
-public class ACLEntryAfterInvocationProvider extends
-        org.alfresco.repo.security.permissions.impl.acegi.ACLEntryAfterInvocationProvider {
+public class ACLEntryAfterInvocationProvider
+  extends org.alfresco.repo.security.permissions.impl.acegi.ACLEntryAfterInvocationProvider {
 
-    @Override
-    public Object decide(final Authentication authentication, final Object object,
-                         final ConfigAttributeDefinition config, final Object returnedObject)
-            throws AccessDeniedException {
-        // TODO to implements
-        return returnedObject;
-    }
+  @Override
+  public Object decide(
+    final Authentication authentication,
+    final Object object,
+    final ConfigAttributeDefinition config,
+    final Object returnedObject
+  ) throws AccessDeniedException {
+    // TODO to implements
+    return returnedObject;
+  }
 }

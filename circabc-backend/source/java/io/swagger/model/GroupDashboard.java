@@ -15,148 +15,163 @@ import java.util.Objects;
  */
 public class GroupDashboard {
 
-    private String groupId = null;
+  private String groupId = null;
 
-    private InterestGroup group = null;
+  private InterestGroup group = null;
 
-    private List<GroupDashboardEntry> entries = new ArrayList<>();
+  private List<GroupDashboardEntry> entries = new ArrayList<>();
 
-    private List<Node> incomingEvents = new ArrayList<>();
+  private List<Node> incomingEvents = new ArrayList<>();
 
-    private List<Object> applicationRequests = new ArrayList<>();
+  private List<Object> applicationRequests = new ArrayList<>();
 
-    private List<GroupDashboardImportantMessages> importantMessages = new ArrayList<>();
+  private List<GroupDashboardImportantMessages> importantMessages =
+    new ArrayList<>();
 
-    /**
-     * Get groupId
-     *
-     * @return groupId
-     */
-    public String getGroupId() {
-        return groupId;
+  /**
+   * Get groupId
+   *
+   * @return groupId
+   */
+  public String getGroupId() {
+    return groupId;
+  }
+
+  public void setGroupId(String groupId) {
+    this.groupId = groupId;
+  }
+
+  /**
+   * Get group
+   *
+   * @return group
+   */
+  public InterestGroup getGroup() {
+    return group;
+  }
+
+  public void setGroup(InterestGroup group) {
+    this.group = group;
+  }
+
+  /**
+   * Get entries
+   *
+   * @return entries
+   */
+  public List<GroupDashboardEntry> getEntries() {
+    return entries;
+  }
+
+  public void setEntries(List<GroupDashboardEntry> entries) {
+    this.entries = entries;
+  }
+
+  /**
+   * Get incomingEvents
+   *
+   * @return incomingEvents
+   */
+  public List<Node> getIncomingEvents() {
+    return incomingEvents;
+  }
+
+  public void setIncomingEvents(List<Node> incomingEvents) {
+    this.incomingEvents = incomingEvents;
+  }
+
+  /**
+   * Get applicationRequests
+   *
+   * @return applicationRequests
+   */
+  public List<Object> getApplicationRequests() {
+    return applicationRequests;
+  }
+
+  public void setApplicationRequests(List<Object> applicationRequests) {
+    this.applicationRequests = applicationRequests;
+  }
+
+  /**
+   * Get importantMessages
+   *
+   * @return importantMessages
+   */
+  public List<GroupDashboardImportantMessages> getImportantMessages() {
+    return importantMessages;
+  }
+
+  public void setImportantMessages(
+    List<GroupDashboardImportantMessages> importantMessages
+  ) {
+    this.importantMessages = importantMessages;
+  }
+
+  @Override
+  public boolean equals(java.lang.Object o) {
+    if (this == o) {
+      return true;
     }
-
-    public void setGroupId(String groupId) {
-        this.groupId = groupId;
+    if (o == null || getClass() != o.getClass()) {
+      return false;
     }
+    GroupDashboard groupDashboard = (GroupDashboard) o;
+    return (
+      Objects.equals(this.groupId, groupDashboard.groupId) &&
+      Objects.equals(this.group, groupDashboard.group) &&
+      Objects.equals(this.entries, groupDashboard.entries) &&
+      Objects.equals(this.incomingEvents, groupDashboard.incomingEvents) &&
+      Objects.equals(
+        this.applicationRequests,
+        groupDashboard.applicationRequests
+      ) &&
+      Objects.equals(this.importantMessages, groupDashboard.importantMessages)
+    );
+  }
 
-    /**
-     * Get group
-     *
-     * @return group
-     */
-    public InterestGroup getGroup() {
-        return group;
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(
+      groupId,
+      group,
+      entries,
+      incomingEvents,
+      applicationRequests,
+      importantMessages
+    );
+  }
 
-    public void setGroup(InterestGroup group) {
-        this.group = group;
-    }
+  @Override
+  public String toString() {
+    return (
+      "class GroupDashboard {\n" +
+      "    groupId: " +
+      toIndentedString(groupId) +
+      "\n" +
+      "    group: " +
+      toIndentedString(group) +
+      "\n" +
+      "    entries: " +
+      toIndentedString(entries) +
+      "\n" +
+      "    incomingEvents: " +
+      toIndentedString(incomingEvents) +
+      "\n" +
+      "    applicationRequests: " +
+      toIndentedString(applicationRequests) +
+      "\n" +
+      "    importantMessages: " +
+      toIndentedString(importantMessages) +
+      "\n" +
+      "}"
+    );
+  }
 
-    /**
-     * Get entries
-     *
-     * @return entries
-     */
-    public List<GroupDashboardEntry> getEntries() {
-        return entries;
-    }
-
-    public void setEntries(List<GroupDashboardEntry> entries) {
-        this.entries = entries;
-    }
-
-    /**
-     * Get incomingEvents
-     *
-     * @return incomingEvents
-     */
-    public List<Node> getIncomingEvents() {
-        return incomingEvents;
-    }
-
-    public void setIncomingEvents(List<Node> incomingEvents) {
-        this.incomingEvents = incomingEvents;
-    }
-
-    /**
-     * Get applicationRequests
-     *
-     * @return applicationRequests
-     */
-    public List<Object> getApplicationRequests() {
-        return applicationRequests;
-    }
-
-    public void setApplicationRequests(List<Object> applicationRequests) {
-        this.applicationRequests = applicationRequests;
-    }
-
-    /**
-     * Get importantMessages
-     *
-     * @return importantMessages
-     */
-    public List<GroupDashboardImportantMessages> getImportantMessages() {
-        return importantMessages;
-    }
-
-    public void setImportantMessages(List<GroupDashboardImportantMessages> importantMessages) {
-        this.importantMessages = importantMessages;
-    }
-
-    @Override
-    public boolean equals(java.lang.Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        GroupDashboard groupDashboard = (GroupDashboard) o;
-        return Objects.equals(this.groupId, groupDashboard.groupId)
-                && Objects.equals(this.group, groupDashboard.group)
-                && Objects.equals(this.entries, groupDashboard.entries)
-                && Objects.equals(this.incomingEvents, groupDashboard.incomingEvents)
-                && Objects.equals(this.applicationRequests, groupDashboard.applicationRequests)
-                && Objects.equals(this.importantMessages, groupDashboard.importantMessages);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(
-                groupId, group, entries, incomingEvents, applicationRequests, importantMessages);
-    }
-
-    @Override
-    public String toString() {
-
-        return "class GroupDashboard {\n"
-                + "    groupId: "
-                + toIndentedString(groupId)
-                + "\n"
-                + "    group: "
-                + toIndentedString(group)
-                + "\n"
-                + "    entries: "
-                + toIndentedString(entries)
-                + "\n"
-                + "    incomingEvents: "
-                + toIndentedString(incomingEvents)
-                + "\n"
-                + "    applicationRequests: "
-                + toIndentedString(applicationRequests)
-                + "\n"
-                + "    importantMessages: "
-                + toIndentedString(importantMessages)
-                + "\n"
-                + "}";
-    }
-
-    /**
-     * Convert the given object to string with each line indented by 4 spaces (except the first line).
-     */
-    private String toIndentedString(java.lang.Object o) {
-        return Util.toIndentedString(o);
-    }
+  /**
+   * Convert the given object to string with each line indented by 4 spaces (except the first line).
+   */
+  private String toIndentedString(java.lang.Object o) {
+    return Util.toIndentedString(o);
+  }
 }

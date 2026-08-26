@@ -1,16 +1,16 @@
 import {
   Directive,
-  Input,
   OnChanges,
   OnInit,
   SimpleChanges,
   TemplateRef,
   ViewContainerRef,
+  input,
 } from '@angular/core';
+import { assertDefined } from 'app/core/asserts';
 import { PermissionEvaluator } from 'app/core/evaluator/permission-evaluator';
 import { AllPermission } from 'app/core/evaluator/permissions';
 import { Node as ModelNode } from 'app/core/generated/circabc';
-import { assertDefined } from 'app/core/asserts';
 /**
  * Dispalay ui element is user has given permission or some stronger permission
  * @example
@@ -20,10 +20,12 @@ import { assertDefined } from 'app/core/asserts';
  * show <div> bla bla </div> if node has at least permission LibManageOwn
  *
  */
-@Directive({ selector: '[cbcIfRoleGE]' })
+@Directive({
+  selector: '[cbcIfRoleGE]',
+})
 export class IfRoleGEDirective implements OnInit, OnChanges {
-  @Input()
-  cbcIfRoleGE!: [ModelNode | undefined, AllPermission, AllPermission[]];
+  readonly cbcIfRoleGE =
+    input.required<[ModelNode | undefined, AllPermission, AllPermission[]]>();
 
   constructor(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -33,13 +35,14 @@ export class IfRoleGEDirective implements OnInit, OnChanges {
   ) {}
 
   ngOnInit() {
-    assertDefined(this.cbcIfRoleGE[0]);
+    const cbcIfRoleGE = this.cbcIfRoleGE();
+    assertDefined(cbcIfRoleGE[0]);
     this.viewContainer.clear();
     if (
       this.permissionEvaluator.hasStrongerPermission(
-        this.cbcIfRoleGE[0],
-        this.cbcIfRoleGE[1],
-        this.cbcIfRoleGE[2]
+        cbcIfRoleGE[0],
+        cbcIfRoleGE[1],
+        cbcIfRoleGE[2]
       )
     ) {
       this.viewContainer.createEmbeddedView(this.templateRef);

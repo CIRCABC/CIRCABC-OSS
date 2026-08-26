@@ -18,106 +18,108 @@ import org.alfresco.web.bean.repository.Repository;
  */
 public class ExpiredApiImpl implements ExpiredApi {
 
-    private static final String PROP_EXPIRATION_DATE =
-            Repository.escapeQName(DocumentModel.PROP_EXPIRATION_DATE);
-    private static final String QUERY_SEARCH_ALL = "PARENT:\"%s\"";
-    private static final String CLOSE_QUERY = " )";
-    private static final String OPEN_QUERY = "( ";
-    private static final String PATH = "PATH:";
-    private static final String ESCAPE_QUOTES = "\" ";
-    private SearchService internalSearchService;
-    private NodesApi nodesApi;
-    private NodeService nodeService;
-    private ApiToolBox apiToolBox;
+  private static final String PROP_EXPIRATION_DATE = Repository.escapeQName(
+    DocumentModel.PROP_EXPIRATION_DATE
+  );
+  private static final String QUERY_SEARCH_ALL = "PARENT:\"%s\"";
+  private static final String CLOSE_QUERY = " )";
+  private static final String OPEN_QUERY = "( ";
+  private static final String PATH = "PATH:";
+  private static final String ESCAPE_QUOTES = "\" ";
+  private SearchService internalSearchService;
+  private NodesApi nodesApi;
+  private NodeService nodeService;
+  private ApiToolBox apiToolBox;
 
-    @Override
-    public PagedNodes groupsIdDocumentsExpiredGet(
-            String id, Integer limit, Integer page, String order) {
+  @Override
+  public PagedNodes groupsIdDocumentsExpiredGet(
+    String id,
+    Integer limit,
+    Integer page,
+    String order
+  ) {
+    final NodeRef nodeRef = Converter.createNodeRefFromId(id);
 
-        final NodeRef nodeRef = Converter.createNodeRefFromId(id);
+    return (PagedNodes) AuthenticationUtil.runAs(
+      new AuthenticationUtil.RunAsWork<Object>() {
+        public Object doWork() {
+          PagedNodes expiredNodes = new PagedNodes();
 
-        return (PagedNodes)
-                AuthenticationUtil.runAs(
-                        new AuthenticationUtil.RunAsWork<Object>() {
+          ResultSet results;
+          // fire the query to find the items
+          final String query = buildSearchQuery(nodeRef);
+          results = getInternalSearchService()
+            .query(
+              StoreRef.STORE_REF_WORKSPACE_SPACESSTORE,
+              SearchService.LANGUAGE_LUCENE,
+              query
+            );
 
-                            public Object doWork() {
+          expiredNodes.setTotal(results.getNumberFound());
 
-                                PagedNodes expiredNodes = new PagedNodes();
+          if (results.length() != 0) {
+            for (final ResultSetRow row : results) {
+              NodeRef expiredRef = row.getNodeRef();
+              expiredNodes.getData().add(nodesApi.getNode(expiredRef));
+            }
+          }
 
-                                ResultSet results;
-                                // fire the query to find the items
-                                final String query = buildSearchQuery(nodeRef);
-                                results =
-                                        getInternalSearchService()
-                                                .query(
-                                                        StoreRef.STORE_REF_WORKSPACE_SPACESSTORE,
-                                                        SearchService.LANGUAGE_LUCENE,
-                                                        query);
+          return expiredNodes;
+        }
+      },
+      AuthenticationUtil.getSystemUserName()
+    );
+  }
 
-                                expiredNodes.setTotal(results.getNumberFound());
+  /**
+   * @return the search query to use when displaying the list of deleted items
+   */
+  private String buildSearchQuery(NodeRef nodeRef) {
+    String query = String.format(QUERY_SEARCH_ALL, nodeRef.toString());
 
-                                if (results.length() != 0) {
-                                    for (final ResultSetRow row : results) {
-                                        NodeRef expiredRef = row.getNodeRef();
-                                        expiredNodes.getData().add(nodesApi.getNode(expiredRef));
-                                    }
-                                }
+    query +=
+      OPEN_QUERY +
+      PATH +
+      ESCAPE_QUOTES +
+      apiToolBox.getPathFromSpaceRef(nodeRef, true) +
+      ESCAPE_QUOTES +
+      CLOSE_QUERY;
 
-                                return expiredNodes;
-                            }
-                        },
-                        AuthenticationUtil.getSystemUserName());
-    }
+    String buf = " AND @" + PROP_EXPIRATION_DATE + ":[MIN TO NOW]";
+    query += buf;
 
-    /**
-     * @return the search query to use when displaying the list of deleted items
-     */
-    private String buildSearchQuery(NodeRef nodeRef) {
-        String query = String.format(QUERY_SEARCH_ALL, nodeRef.toString());
+    return query;
+  }
 
-        query +=
-                OPEN_QUERY
-                        + PATH
-                        + ESCAPE_QUOTES
-                        + apiToolBox.getPathFromSpaceRef(nodeRef, true)
-                        + ESCAPE_QUOTES
-                        + CLOSE_QUERY;
+  public SearchService getInternalSearchService() {
+    return internalSearchService;
+  }
 
-        String buf = " AND @" + PROP_EXPIRATION_DATE + ":[MIN TO NOW]";
-        query += buf;
+  public void setInternalSearchService(SearchService internalSearchService) {
+    this.internalSearchService = internalSearchService;
+  }
 
-        return query;
-    }
+  public NodesApi getNodesApi() {
+    return nodesApi;
+  }
 
-    public SearchService getInternalSearchService() {
-        return internalSearchService;
-    }
+  public void setNodesApi(NodesApi nodesApi) {
+    this.nodesApi = nodesApi;
+  }
 
-    public void setInternalSearchService(SearchService internalSearchService) {
-        this.internalSearchService = internalSearchService;
-    }
+  public NodeService getNodeService() {
+    return nodeService;
+  }
 
-    public NodesApi getNodesApi() {
-        return nodesApi;
-    }
+  public void setNodeService(NodeService nodeService) {
+    this.nodeService = nodeService;
+  }
 
-    public void setNodesApi(NodesApi nodesApi) {
-        this.nodesApi = nodesApi;
-    }
+  public ApiToolBox getApiToolBox() {
+    return apiToolBox;
+  }
 
-    public NodeService getNodeService() {
-        return nodeService;
-    }
-
-    public void setNodeService(NodeService nodeService) {
-        this.nodeService = nodeService;
-    }
-
-    public ApiToolBox getApiToolBox() {
-        return apiToolBox;
-    }
-
-    public void setApiToolBox(ApiToolBox apiToolBox) {
-        this.apiToolBox = apiToolBox;
-    }
+  public void setApiToolBox(ApiToolBox apiToolBox) {
+    this.apiToolBox = apiToolBox;
+  }
 }

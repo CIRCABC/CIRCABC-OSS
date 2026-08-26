@@ -1,0 +1,215 @@
+<div class="dialog">
+  <div style="display: flex; align-items: center">
+    <div style="padding-right: 15px">
+      <img
+        src="img/icon-alert-orange.svg"
+        alt="refuse"
+        style="float: left; margin-right: 25px"
+      />
+    </div>
+    <div style="flex: 1">
+      <b>
+        <span>{{ 'text.group.delete.introduction' | transloco }}</span>
+      </b>
+    </div>
+  </div>
+
+  @if (verifying) {
+  <span>
+    {{ 'label.verifying' | transloco }}... <cbc-spinner></cbc-spinner
+  ></span>
+  } @if (!isReadyForDeletion() && verified) {
+  <div>
+    <h4>{{ 'text.group.delete.step1.explanation' | transloco }}</h4>
+    @if (conditions!.lockedNodes && conditions!.lockedNodes.length > 0) {
+    <h3>{{ 'text.list.locked.nodes' | transloco }}:</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>{{ 'label.name' | transloco }}</th>
+          <th>{{ 'label.path' | transloco }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (lockedNode of conditions!.lockedNodes; track lockedNode.id) {
+        <tr>
+          <td class="name">{{ lockedNode.name }}</td>
+          <td>
+            <cbc-group-breadcrumb
+              [clickable]="false"
+              [node]="lockedNode.id"
+              [textColor]="'757575'"
+              [noMarginBottom]="true"
+              [displayName]="false"
+              [showHomeIcon]="false"
+            ></cbc-group-breadcrumb>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+
+    <div class="actions buttons-group">
+      <div style="display: flex; align-items: center">
+        <div>
+          <img
+            src="img/icon-alert-orange.svg"
+            alt="refuse"
+            width="15"
+            style="float: left; margin-right: 8px"
+          />
+        </div>
+        <div style="flex: 1">
+          <b>
+            <span style="text-transform: uppercase"
+              >{{ 'text.action.not.recoverable' | transloco }}</span
+            >
+          </b>
+        </div>
+      </div>
+
+      <a tabindex="0" class="cta" (click)="cleanLocks()"
+        >{{ 'label.remove.locks' | transloco }}</a
+      >
+      <a tabindex="0" class="button" (click)="dialogRef.close(false)"
+        >{{ 'label.cancel' | transloco }}</a
+      >
+    </div>
+
+    @if (cleaningLocks) {
+    <cbc-horizontal-loader></cbc-horizontal-loader>
+    } } @if (conditions!.sharedNodes && conditions!.sharedNodes.length > 0) {
+    <h4>{{ 'text.list.shared.nodes' | transloco }}:</h4>
+    <table>
+      <thead>
+        <tr>
+          <th>{{ 'label.name' | transloco }}</th>
+          <th>{{ 'label.path' | transloco }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (node of conditions!.sharedNodes; track node.id) {
+        <tr>
+          <td class="name">{{ node.name }}</td>
+          <td>
+            <cbc-group-breadcrumb
+              [clickable]="false"
+              [node]="node.id"
+              [textColor]="'757575'"
+              [noMarginBottom]="true"
+              [displayName]="false"
+              [showHomeIcon]="false"
+            ></cbc-group-breadcrumb>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+
+    <div class="actions buttons-group">
+      <div style="display: flex; align-items: center">
+        <div>
+          <img
+            src="img/icon-alert-orange.svg"
+            alt="refuse"
+            width="15"
+            style="float: left; margin-right: 8px"
+          />
+        </div>
+        <div style="flex: 1">
+          <b>
+            <span style="text-transform: uppercase"
+              >{{ 'text.action.not.recoverable' | transloco }}</span
+            >
+          </b>
+        </div>
+      </div>
+
+      <a tabindex="0" class="cta" (click)="cleanSharedNodes()"
+        >{{ 'label.remove.shared.spaces' | transloco }}</a
+      >
+      <a tabindex="0" class="button" (click)="dialogRef.close(false)"
+        >{{ 'label.cancel' | transloco }}</a
+      >
+    </div>
+
+    @if (cleaningSharedNodes) {
+    <cbc-horizontal-loader></cbc-horizontal-loader>
+    } } @if (conditions!.sharedProfiles && conditions!.sharedProfiles.length >
+    0) {
+    <h4>{{ 'text.list.shared.profiles' | transloco }}:</h4>
+
+    <table>
+      <thead>
+        <tr>
+          <th>{{ 'label.profile' | transloco }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (profile of conditions!.sharedProfiles; track profile.id) {
+        <tr>
+          <td>{{ profile.name }}</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+
+    <div class="actions buttons-group">
+      <div style="display: flex; align-items: center">
+        <div>
+          <img
+            src="img/icon-alert-orange.svg"
+            alt="refuse"
+            width="15"
+            style="float: left; margin-right: 8px"
+          />
+        </div>
+        <div style="flex: 1">
+          <b>
+            <span style="text-transform: uppercase"
+              >{{ 'text.action.not.recoverable' | transloco }}</span
+            >
+          </b>
+        </div>
+      </div>
+
+      <a tabindex="0" class="cta" (click)="cleanSharedProfiles()"
+        >{{ 'label.remove.shared.profiles' | transloco }}</a
+      >
+      <a tabindex="0" class="button" (click)="dialogRef.close(false)"
+        >{{ 'label.cancel' | transloco }}</a
+      >
+    </div>
+
+    @if (cleaningSharedProfiles) {
+    <cbc-horizontal-loader></cbc-horizontal-loader>
+    } }
+  </div>
+  } @if (isReadyForDeletion() && verified) {
+  <div>
+    <h3>{{ 'label.deletion' | transloco }}</h3>
+    @if (!deleting) {
+    <p>{{ 'text.group.deletion' | transloco }}</p>
+    } @if (!deleting) {
+    <p>
+      <a
+        tabindex="0"
+        data-cy="delete-button"
+        class="button button--red"
+        (click)="updateRequestDeleteGroup()"
+        >{{ 'label.delete' | transloco }}</a
+      >
+      &nbsp;
+      <a tabindex="0" class="button" (click)="dialogRef.close(false)"
+        >{{ 'label.cancel' | transloco }}</a
+      >
+    </p>
+    } @if (deleting) {
+    <p>
+      {{ 'label.deleting' | transloco }}
+      <cbc-spinner [float]="'left'"></cbc-spinner>
+    </p>
+    }
+  </div>
+  }
+</div>

@@ -21,9 +21,8 @@
 package eu.cec.digit.circabc.web.wai.dialog;
 
 public interface IECompatibilityPreference {
+  String IE_8 = "IE=8";
+  String IE_9 = "IE=9";
 
-    String IE_8 = "IE=8";
-    String IE_9 = "IE=9";
-
-    String getMode();
+  String getMode();
 }

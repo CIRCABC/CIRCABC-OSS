@@ -19,13 +19,12 @@ package eu.cec.digit.circabc.service.notification;
 import eu.cec.digit.circabc.service.customisation.mail.MailTemplate;
 import io.swagger.model.AppMessage;
 import io.swagger.model.UserProfile;
-import org.alfresco.service.Auditable;
-import org.alfresco.service.cmr.repository.NodeRef;
-
 import java.io.File;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import org.alfresco.service.Auditable;
+import org.alfresco.service.cmr.repository.NodeRef;
 
 /**
  * @author filips
@@ -36,52 +35,92 @@ import java.util.Set;
  */
 // @PublicService
 public interface NotificationService {
+  @Auditable(
+    /* key = Auditable.Key.ARG_0, */parameters = { "nodeRef", "users" }
+  )
+  void notify(NodeRef nodeRef, Set<NotifiableUser> users) throws Exception;
 
-    @Auditable(/* key = Auditable.Key.ARG_0, */ parameters = {"nodeRef", "users"})
-    void notify(NodeRef nodeRef, Set<NotifiableUser> users) throws Exception;
+  @Auditable(
+    /* key = Auditable.Key.ARG_0, */parameters = {
+      "nodeRef", "users", "notificationType",
+    }
+  )
+  void notify(
+    NodeRef nodeRef,
+    Set<NotifiableUser> users,
+    NotificationType notificationType,
+    String notificationText,
+    Date expirationDate
+  ) throws Exception;
 
-    @Auditable(/* key = Auditable.Key.ARG_0, */ parameters = {"nodeRef", "users", "notificationType"})
-    void notify(NodeRef nodeRef, Set<NotifiableUser> users, NotificationType notificationType, String notificationText, Date expirationDate)
-            throws Exception;
+  @Auditable(
+    /* key = Auditable.Key.ARG_0, */parameters = { "nodeRef", "users" }
+  )
+  void notifyNewEdition(NodeRef nodeRef, Set<NotifiableUser> users)
+    throws Exception;
 
-    @Auditable(/* key = Auditable.Key.ARG_0, */ parameters = {"nodeRef", "users"})
-    void notifyNewEdition(NodeRef nodeRef, Set<NotifiableUser> users) throws Exception;
+  @Auditable(
+    /* key = Auditable.Key.ARG_0, */parameters = { "nodeRef", "admins" }
+  )
+  void notifyNewMemberships(
+    NodeRef nodeRef,
+    Set<NotifiableUser> admins,
+    UserProfile newMember
+  ) throws Exception;
 
-    @Auditable(/* key = Auditable.Key.ARG_0, */ parameters = {"nodeRef", "admins"})
-    void notifyNewMemberships(NodeRef nodeRef, Set<NotifiableUser> admins, UserProfile newMember)
-            throws Exception;
+  @Auditable(
+    /* key = Auditable.Key.ARG_0, */parameters = { "nodeRef", "admins" }
+  )
+  void notifyUpdateMemberships(
+    NodeRef nodeRef,
+    Set<NotifiableUser> admins,
+    UserProfile newMember
+  ) throws Exception;
 
-    @Auditable(/* key = Auditable.Key.ARG_0, */ parameters = {"nodeRef", "admins"})
-    void notifyUpdateMemberships(NodeRef nodeRef, Set<NotifiableUser> admins, UserProfile newMember)
-            throws Exception;
+  /**
+   * * This method use only emails, there is not any locale feature for translation -> only in
+   * english so
+   *
+   * @param nodeRef
+   * @param mails
+   * @param templateType
+   * @throws Exception
+   */
+  @Auditable(
+    /* key = Auditable.Key.ARG_0, */parameters = {
+      "nodeRef", "mails", "templateType",
+    }
+  )
+  void notify(NodeRef nodeRef, List<String> mails, MailTemplate templateType)
+    throws Exception;
 
-    /**
-     * * This method use only emails, there is not any locale feature for translation -> only in
-     * english so
-     *
-     * @param nodeRef
-     * @param mails
-     * @param templateType
-     * @throws Exception
-     */
-    @Auditable(/* key = Auditable.Key.ARG_0, */ parameters = {"nodeRef", "mails", "templateType"})
-    void notify(NodeRef nodeRef, List<String> mails, MailTemplate templateType) throws Exception;
+  /**
+   * * new method to notify the users of a multiple upload of files
+   *
+   * @param parentRef
+   * @param nodeRefs
+   * @param notifiableUsers
+   * @param notifyDocBulk
+   */
+  void notifyNewFiles(
+    NodeRef parentRef,
+    List<NodeRef> nodeRefs,
+    Set<NotifiableUser> notifiableUsers,
+    MailTemplate notifyDocBulk
+  );
 
-    /**
-     * * new method to notify the users of a multiple upload of files
-     *
-     * @param parentRef
-     * @param nodeRefs
-     * @param notifiableUsers
-     * @param notifyDocBulk
-     */
-    void notifyNewFiles(
-            NodeRef parentRef,
-            List<NodeRef> nodeRefs,
-            Set<NotifiableUser> notifiableUsers,
-            MailTemplate notifyDocBulk);
+  void notify(
+    NodeRef nodeRef,
+    List<String> mails,
+    MailTemplate mailTemplate,
+    List<File> files
+  );
 
-    void notify(NodeRef nodeRef, List<String> mails, MailTemplate mailTemplate, List<File> files);
+  void notify(
+    NodeRef nodeRef,
+    Set<NotifiableUser> users,
+    MailTemplate mailTemplate
+  );
 
-    void notifySystemMessage(List<String> mailAddress, AppMessage template);
+  void notifySystemMessage(List<String> mailAddress, AppMessage template);
 }

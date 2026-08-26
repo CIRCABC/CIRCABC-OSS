@@ -1,5 +1,6 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input, output, input } from '@angular/core';
 
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
@@ -8,27 +9,27 @@ import {
 import {
   ArchiveNode,
   ArchiveService,
-  InterestGroup,
+  type InterestGroup,
 } from 'app/core/generated/circabc';
+import { ModalComponent } from 'app/shared/modal/modal.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-purge-item',
   templateUrl: './purge-item.component.html',
-  styleUrls: ['./purge-item.component.scss'],
+  styleUrl: './purge-item.component.scss',
   preserveWhitespaces: true,
+  imports: [ModalComponent, TranslocoModule],
 })
 export class PurgeItemComponent {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   showModal = false;
-  @Input()
-  purgeableNodes: ArchiveNode[] = [];
-  @Input()
-  currentIg!: InterestGroup;
-  @Output()
-  readonly cancel = new EventEmitter<ActionEmitterResult>();
-  @Output()
-  readonly finish = new EventEmitter<ActionEmitterResult>();
+  readonly purgeableNodes = input<ArchiveNode[]>([]);
+  readonly currentIg = input.required<InterestGroup>();
+  readonly cancelPurge = output<ActionEmitterResult>();
+  readonly finishPurge = output<ActionEmitterResult>();
 
   public processing = false;
 
@@ -37,9 +38,8 @@ export class PurgeItemComponent {
   isFolder(node: ArchiveNode): boolean {
     if (node.type) {
       return node.type.indexOf('folder') !== -1;
-    } else {
-      return false;
     }
+    return false;
   }
 
   async purge() {
@@ -48,11 +48,11 @@ export class PurgeItemComponent {
     res.type = ActionType.PURGE_CONTENT;
 
     try {
-      for (const node of this.purgeableNodes) {
+      for (const node of this.purgeableNodes()) {
         if (node.id) {
           await firstValueFrom(
             this.archiveService.deleteDeletedDocument(
-              this.currentIg.id as string,
+              this.currentIg().id as string,
               node.id
             )
           );
@@ -60,10 +60,10 @@ export class PurgeItemComponent {
       }
       this.showModal = false;
       res.result = ActionResult.SUCCEED;
-    } catch (error) {
+    } catch (_error) {
       res.result = ActionResult.FAILED;
     }
-    this.finish.emit(res);
+    this.finishPurge.emit(res);
     this.processing = false;
   }
 
@@ -72,6 +72,6 @@ export class PurgeItemComponent {
     res.result = ActionResult.CANCELED;
     res.type = ActionType.PURGE_CONTENT;
     this.showModal = false;
-    this.cancel.emit(res);
+    this.cancelPurge.emit(res);
   }
 }

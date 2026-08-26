@@ -1,31 +1,28 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
-} from '@angular/core';
+import { Component, Input, OnChanges, output, input } from '@angular/core';
 import {
   ActionEmitterResult,
   ActionResult,
   ActionType,
 } from 'app/action-result';
 
+import { TranslocoModule } from '@jsverse/transloco';
 import { ForumService, Node as ModelNode } from 'app/core/generated/circabc';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-moderate-forum',
   templateUrl: './moderate.component.html',
   preserveWhitespaces: true,
+  imports: [SpinnerComponent, TranslocoModule],
 })
 export class ModerateComponent implements OnChanges {
-  @Input()
-  forum!: ModelNode;
+  readonly forum = input.required<ModelNode>();
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   showModal = false;
-  @Output()
-  readonly modalHide = new EventEmitter<ActionEmitterResult>();
+  readonly modalHide = output<ActionEmitterResult>();
 
   public executing = false;
 
@@ -39,8 +36,9 @@ export class ModerateComponent implements OnChanges {
   }
 
   public forumModerated(): boolean {
-    if (this.forum.properties !== undefined) {
-      return this.forum.properties.ismoderated === 'true';
+    const forum = this.forum();
+    if (forum.properties !== undefined) {
+      return forum.properties.ismoderated === 'true';
     }
     return false;
   }
@@ -55,17 +53,16 @@ export class ModerateComponent implements OnChanges {
 
   public async accept() {
     this.executing = true;
-    if (this.forum.id && this.forum.properties) {
+    const forum = this.forum();
+    if (forum.id && forum.properties) {
       await firstValueFrom(
         this.forumService.putModeration(
-          this.forum.id,
+          forum.id,
           this.moderationEnabled,
           this.acceptPostValidation
         )
       );
-      this.forum.properties.ismoderated = this.moderationEnabled
-        ? 'true'
-        : 'false';
+      forum.properties.ismoderated = this.moderationEnabled ? 'true' : 'false';
     }
 
     this.showModal = false;

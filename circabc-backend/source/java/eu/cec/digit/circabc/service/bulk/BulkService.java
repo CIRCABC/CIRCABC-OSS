@@ -20,39 +20,43 @@ import eu.cec.digit.circabc.service.bulk.indexes.IndexRecord;
 import eu.cec.digit.circabc.service.bulk.indexes.message.ValidationMessage;
 import eu.cec.digit.circabc.service.bulk.upload.UploadedEntry;
 import eu.cec.digit.circabc.service.compress.CompressedEntry;
-import org.alfresco.service.cmr.repository.NodeRef;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import org.alfresco.service.cmr.repository.NodeRef;
 
 public interface BulkService {
+  String INDEX_DATE_FORMAT = "dd/MM/yyyy";
 
-    String INDEX_DATE_FORMAT = "dd/MM/yyyy";
+  List<UploadedEntry> upload(
+    final NodeRef containerNodeRef,
+    final File compressedFile,
+    final List<ValidationMessage> messages
+  );
 
-    List<UploadedEntry> upload(
-            final NodeRef containerNodeRef,
-            final File compressedFile,
-            final List<ValidationMessage> messages);
+  List<UploadedEntry> upload(
+    final NodeRef containerNodeRef,
+    final File compressedFile,
+    final List<IndexRecord> indexRecords,
+    final List<ValidationMessage> messages
+  );
 
-    List<UploadedEntry> upload(
-            final NodeRef containerNodeRef,
-            final File compressedFile,
-            final List<IndexRecord> indexRecords,
-            final List<ValidationMessage> messages);
+  List<IndexRecord> getIndexRecords(
+    final File compressedFile,
+    final List<ValidationMessage> messages
+  ) throws IOException;
 
-    List<IndexRecord> getIndexRecords(
-            final File compressedFile, final List<ValidationMessage> messages) throws IOException;
+  List<CompressedEntry> getCompressedEntries(
+    final NodeRef containerNodeRef,
+    final File compressedFile,
+    final List<ValidationMessage> messages
+  );
 
-    List<CompressedEntry> getCompressedEntries(
-            final NodeRef containerNodeRef,
-            final File compressedFile,
-            final List<ValidationMessage> messages);
+  List<IndexRecord> getMetaData(final List<NodeRef> nodeRefs);
 
-    List<IndexRecord> getMetaData(final List<NodeRef> nodeRefs);
-
-    void validateEntries(
-            final List<IndexRecord> indexFileEntries,
-            final List<UploadedEntry> uploadedEntries,
-            final List<ValidationMessage> messages);
+  void validateEntries(
+    final List<IndexRecord> indexFileEntries,
+    final List<UploadedEntry> uploadedEntries,
+    final List<ValidationMessage> messages
+  );
 }

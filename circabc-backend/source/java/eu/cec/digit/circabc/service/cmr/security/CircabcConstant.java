@@ -18,16 +18,15 @@ package eu.cec.digit.circabc.service.cmr.security;
 
 public class CircabcConstant {
 
-    /**
-     * The guest authority
-     */
-    public static final String GUEST_AUTHORITY = "guest";
-    public static final String REGISTERED_AUTHORITY = "EVERYONE";
-    /**
-     * session key for BulkDownloadServlet to save file path to download
-     */
-    public static final String BULK_DOWNLOAD_FILE = "bdf";
+  /**
+   * The guest authority
+   */
+  public static final String GUEST_AUTHORITY = "guest";
+  public static final String REGISTERED_AUTHORITY = "EVERYONE";
+  /**
+   * session key for BulkDownloadServlet to save file path to download
+   */
+  public static final String BULK_DOWNLOAD_FILE = "bdf";
 
-    private CircabcConstant() {
-    }
+  private CircabcConstant() {}
 }

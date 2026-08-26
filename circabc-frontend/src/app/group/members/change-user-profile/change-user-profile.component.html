@@ -2,18 +2,20 @@
   [title]="'label.change.profile'"
   [okLabel]="'label.update'"
   [visible]="showModal"
-  (cancel)="cancel()"
+  (cancelModal)="cancel()"
   (ok)="changeProfile()"
   [executing]="processing"
   [executingLabel]="'label.updating'"
 >
-  <p *ngIf="member && member.user && member.profile">
+  @if (member && member.user && member.profile) {
+  <p>
     {{ member.user.firstname + ' ' + member.user.lastname }}
     <span style="font-weight: bold"
       >{{ 'members.current.user.is' | transloco }}
     </span>
     {{ getProfileTitle(oldMember) }}
   </p>
+  }
   <form [formGroup]="changeProfileForm">
     <div class="field">
       <label for="groupContact">{{ 'label.new.profile' | transloco }}</label>
@@ -23,9 +25,11 @@
           id="profileName"
           formControlName="selectedProfile"
         >
-          <option *ngFor="let profile of profiles" value="{{ profile.id }}"
+          @for (profile of profiles; track profile.id) {
+          <option value="{{ profile.id }}"
             >{{ profile.title | cbcI18n }}</option
           >
+          }
         </select>
       </div>
     </div>

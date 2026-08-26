@@ -20,7 +20,6 @@
  ******************************************************************************/
 package eu.cec.digit.circabc.business.api.security;
 
-
 /**
  * Business service to manage profiles and hide the complexity of profile manager services.
  *
@@ -29,7 +28,4 @@ package eu.cec.digit.circabc.business.api.security;
  * TODO create ease to use method using a Profile Wrapper. TODO refractor Profile manager services
  * to be more low-level (No use of ProfileWrapper, only nodeRef and authority)
  */
-public interface ProfileBusinessSrv {
-
-
-}
+public interface ProfileBusinessSrv {}

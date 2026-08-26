@@ -20,10 +20,9 @@
  ******************************************************************************/
 package eu.cec.digit.circabc.business.api;
 
-import org.springframework.extensions.surf.util.I18NUtil;
-
 import java.text.MessageFormat;
 import java.util.Locale;
+import org.springframework.extensions.surf.util.I18NUtil;
 
 /**
  * @author Yanick Pignot
@@ -33,62 +32,67 @@ import java.util.Locale;
  */
 public class BusinessRuntimeExpection extends RuntimeException {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = -6603382649957220698L;
-    private final Object[] parameters;
+  /**
+   *
+   */
+  private static final long serialVersionUID = -6603382649957220698L;
+  private final Object[] parameters;
 
-    /**
-     *
-     */
-    public BusinessRuntimeExpection() {
-        super();
-        this.parameters = null;
+  /**
+   *
+   */
+  public BusinessRuntimeExpection() {
+    super();
+    this.parameters = null;
+  }
+
+  /**
+   * @param messageKey The message key
+   * @param parameters The optional paramaters of the I18N message key
+   */
+  public BusinessRuntimeExpection(
+    final String messageKey,
+    final Object... parameters
+  ) {
+    this(messageKey, null, parameters);
+  }
+
+  /**
+   * @param messageKey The message key
+   * @param cause      The previous cause of the error
+   * @param parameters The optional paramaters of the I18N message key
+   */
+  public BusinessRuntimeExpection(
+    final String messageKey,
+    final Throwable cause,
+    final Object... parameters
+  ) {
+    super(messageKey, cause);
+    this.parameters = parameters;
+  }
+
+  /**
+   * @return The I18N message key
+   */
+  public String getMessageKey() {
+    return getMessage();
+  }
+
+  /**
+   * @return The validation message translated in the given locale
+   */
+  public String getLocalizedMessage(final Locale locale) {
+    final String message = I18NUtil.getMessage(getMessageKey(), locale);
+
+    if (parameters == null) {
+      return message;
+    } else {
+      return MessageFormat.format(message, parameters);
     }
+  }
 
-    /**
-     * @param messageKey The message key
-     * @param parameters The optional paramaters of the I18N message key
-     */
-    public BusinessRuntimeExpection(final String messageKey, final Object... parameters) {
-        this(messageKey, null, parameters);
-    }
-
-    /**
-     * @param messageKey The message key
-     * @param cause      The previous cause of the error
-     * @param parameters The optional paramaters of the I18N message key
-     */
-    public BusinessRuntimeExpection(final String messageKey, final Throwable cause,
-                                    final Object... parameters) {
-        super(messageKey, cause);
-        this.parameters = parameters;
-    }
-
-    /**
-     * @return The I18N message key
-     */
-    public String getMessageKey() {
-        return getMessage();
-    }
-
-    /**
-     * @return The validation message translated in the given locale
-     */
-    public String getLocalizedMessage(final Locale locale) {
-        final String message = I18NUtil.getMessage(getMessageKey(), locale);
-
-        if (parameters == null) {
-            return message;
-        } else {
-            return MessageFormat.format(message, parameters);
-        }
-    }
-
-    @Override
-    public String getLocalizedMessage() {
-        return getLocalizedMessage(I18NUtil.getLocale());
-    }
-
+  @Override
+  public String getLocalizedMessage() {
+    return getLocalizedMessage(I18NUtil.getLocale());
+  }
 }

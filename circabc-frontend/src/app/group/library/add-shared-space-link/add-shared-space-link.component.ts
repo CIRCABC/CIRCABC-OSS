@@ -1,10 +1,12 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, Input, OnInit, output, input } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
   FormGroup,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
@@ -15,27 +17,37 @@ import {
   ShareSpaceItem,
   SpaceService,
 } from 'app/core/generated/circabc';
+import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
+import { ModalComponent } from 'app/shared/modal/modal.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-add-shared-space-link',
   templateUrl: './add-shared-space-link.component.html',
   preserveWhitespaces: true,
+  imports: [
+    ModalComponent,
+    ReactiveFormsModule,
+    ControlMessageComponent,
+    TranslocoModule,
+  ],
 })
 export class AddSharedSpaceLinkComponent implements OnInit {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   showModal = false;
-  @Input()
-  public parentNode!: ModelNode;
-  @Input()
-  public sharedSpaceItems!: ShareSpaceItem[];
-  @Output()
-  public readonly modalHide = new EventEmitter<ActionEmitterResult>();
+  public readonly parentNode = input.required<ModelNode>();
+  public readonly sharedSpaceItems = input.required<ShareSpaceItem[]>();
+  public readonly modalHide = output<ActionEmitterResult>();
 
   public createSharedSpaceLinkForm!: FormGroup;
   public processing = false;
 
-  constructor(private fb: FormBuilder, private spaceService: SpaceService) {}
+  constructor(
+    private fb: FormBuilder,
+    private spaceService: SpaceService
+  ) {}
 
   ngOnInit() {
     this.createSharedSpaceLinkForm = this.fb.group(
@@ -53,7 +65,8 @@ export class AddSharedSpaceLinkComponent implements OnInit {
   async createSharedSpaceLink() {
     this.processing = true;
 
-    if (this.parentNode.id !== undefined) {
+    const parentNode = this.parentNode();
+    if (parentNode.id !== undefined) {
       const res: ActionEmitterResult = {};
       res.type = ActionType.ADD_SHARED_SPACE_LINK;
 
@@ -61,7 +74,7 @@ export class AddSharedSpaceLinkComponent implements OnInit {
         await firstValueFrom(
           this.spaceService.postExportedSharedSpace(
             this.createSharedSpaceLinkForm.value.sharedSpaceId,
-            this.parentNode.id,
+            parentNode.id,
             this.createSharedSpaceLinkForm.value.title,
             this.createSharedSpaceLinkForm.value.description
           )
@@ -69,7 +82,7 @@ export class AddSharedSpaceLinkComponent implements OnInit {
         res.result = ActionResult.SUCCEED;
         this.showModal = false;
         this.createSharedSpaceLinkForm.reset();
-      } catch (error) {
+      } catch (_error) {
         res.result = ActionResult.FAILED;
       }
 

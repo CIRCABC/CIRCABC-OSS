@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, Input, OnInit, output, input } from '@angular/core';
 
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
@@ -10,20 +11,22 @@ import {
   InformationPage,
   InformationService,
 } from 'app/core/generated/circabc';
+import { ModalComponent } from 'app/shared/modal/modal.component';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-configure-information',
   templateUrl: './configure-information.component.html',
   preserveWhitespaces: true,
+  imports: [ModalComponent, ReactiveFormsModule, TranslocoModule],
 })
 export class ConfigureInformationComponent implements OnInit {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   showModal = false;
-  @Input()
-  groupId!: string;
-  @Output()
-  readonly modalHide = new EventEmitter<ActionEmitterResult>();
+  readonly groupId = input.required<string>();
+  readonly modalHide = output<ActionEmitterResult>();
 
   public processing = false;
   public infPage!: InformationPage;
@@ -39,9 +42,10 @@ export class ConfigureInformationComponent implements OnInit {
       displayOldInformation: [false],
     });
 
-    if (this.groupId) {
+    const groupId = this.groupId();
+    if (groupId) {
       this.infPage = await firstValueFrom(
-        this.informationService.getInformationDefinitions(this.groupId)
+        this.informationService.getInformationDefinitions(groupId)
       );
 
       this.configurationForm.patchValue({
@@ -75,11 +79,11 @@ export class ConfigureInformationComponent implements OnInit {
       body.displayOldInformation =
         this.configurationForm.value.displayOldInformation;
       await firstValueFrom(
-        this.informationService.putInformationDefinitions(this.groupId, body)
+        this.informationService.putInformationDefinitions(this.groupId(), body)
       );
       this.showModal = false;
       res.result = ActionResult.SUCCEED;
-    } catch (error) {
+    } catch (_error) {
       console.error('impossible to save the configuration');
       res.result = ActionResult.FAILED;
     }

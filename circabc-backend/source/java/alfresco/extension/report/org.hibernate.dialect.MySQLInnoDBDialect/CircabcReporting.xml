@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!--
   Copyright 2006 European Community
   
@@ -19,12 +19,16 @@
    See the Licence for the specific language governing
    permissions and limitations under the Licence.
 -->
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="CircabcReporting">
 
 <!-- This query includes documents + all versions of this documents -->
-  <select id="select_count_documents" resultType="Integer" parameterType="ContentNumberParametersDAO">
+  <select
+    id="select_count_documents"
+    resultType="Integer"
+    parameterType="ContentNumberParametersDAO"
+  >
 		SELECT
 		COUNT(*)
 		FROM
@@ -37,11 +41,19 @@
 		audit_creator != 'System'
    </select>
    
-   <select id="select_qname_id_by_local_name__and_uri" resultType="Integer" parameterType="map" >
+   <select
+    id="select_qname_id_by_local_name__and_uri"
+    resultType="Integer"
+    parameterType="map"
+  >
    	  	select id from alf_qname where local_name = #{localName} and ns_id = (select id from alf_namespace where uri = #{uri} )
    </select>
    
-   <select id="select_shared_spaces_by_ig" resultType="String" parameterType="ShareSpaceQueryParameter">
+   <select
+    id="select_shared_spaces_by_ig"
+    resultType="String"
+    parameterType="ShareSpaceQueryParameter"
+  >
    		SELECT CONCAT(ALF_STORE.PROTOCOL,
   			'&#58;//',
   			ALF_STORE.identifier,
@@ -58,7 +70,11 @@
 		AND ALF_NODE_PROPERTIES.STRING_VALUE = #{igNodeRef}
    </select>
    
-   <select id="select_store_id_by_protocol_protocol" resultType="Integer" parameterType="map" >
+   <select
+    id="select_store_id_by_protocol_protocol"
+    resultType="Integer"
+    parameterType="map"
+  >
    	  	select id from alf_store where protocol = #{protocol}  and  identifier = #{identifier}
    </select>
    

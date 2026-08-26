@@ -38,85 +38,94 @@ import org.apache.commons.logging.LogFactory;
  * @author Slobodan Filipovic
  */
 public class DossierModelType
-        implements NodeServicePolicies.BeforeCreateNodePolicy, NodeServicePolicies.OnMoveNodePolicy {
+  implements
+    NodeServicePolicies.BeforeCreateNodePolicy,
+    NodeServicePolicies.OnMoveNodePolicy {
 
-    private static final String ERR_MSG_ONLY_LINKS = "only_links";
+  private static final String ERR_MSG_ONLY_LINKS = "only_links";
 
-    @SuppressWarnings("unused")
-    private static final Log logger = LogFactory.getLog(DossierModelType.class);
+  @SuppressWarnings("unused")
+  private static final Log logger = LogFactory.getLog(DossierModelType.class);
 
-    /**
-     * The policy component
-     */
-    private PolicyComponent policyComponent;
+  /**
+   * The policy component
+   */
+  private PolicyComponent policyComponent;
 
-    /**
-     * The node service
-     */
-    private NodeService nodeService;
+  /**
+   * The node service
+   */
+  private NodeService nodeService;
 
-    /**
-     * Spring initialise method used to register the policy behaviours
-     */
-    public void init() {
-        // Register the policy behaviours
-        policyComponent.bindClassBehaviour(
-                NodeServicePolicies.BeforeCreateNodePolicy.QNAME,
-                ContentModel.TYPE_CMOBJECT,
-                new JavaBehaviour(this, "beforeCreateNode"));
+  /**
+   * Spring initialise method used to register the policy behaviours
+   */
+  public void init() {
+    // Register the policy behaviours
+    policyComponent.bindClassBehaviour(
+      NodeServicePolicies.BeforeCreateNodePolicy.QNAME,
+      ContentModel.TYPE_CMOBJECT,
+      new JavaBehaviour(this, "beforeCreateNode")
+    );
 
-        policyComponent.bindClassBehaviour(
-                NodeServicePolicies.OnMoveNodePolicy.QNAME,
-                ContentModel.TYPE_CMOBJECT,
-                new JavaBehaviour(this, "onMoveNode"));
+    policyComponent.bindClassBehaviour(
+      NodeServicePolicies.OnMoveNodePolicy.QNAME,
+      ContentModel.TYPE_CMOBJECT,
+      new JavaBehaviour(this, "onMoveNode")
+    );
+  }
+
+  public void beforeCreateNode(
+    final NodeRef parentRef,
+    final QName assocTypeQName,
+    final QName assocQName,
+    final QName nodeTypeQName
+  ) {
+    final QName parentType = nodeService.getType(parentRef);
+    checkTypes(nodeTypeQName, parentType);
+  }
+
+  /**
+   * Allow only to create types filelink , folderlink , or forum in dossier
+   */
+  private void checkTypes(final QName nodeTypeQName, final QName parentType) {
+    if (
+      parentType.equals(DossierModel.TYPE_DOSSIER_SPACE) &&
+      !(nodeTypeQName.equals(ApplicationModel.TYPE_FILELINK) ||
+        nodeTypeQName.equals(ApplicationModel.TYPE_FOLDERLINK) ||
+        nodeTypeQName.equals(ForumModel.TYPE_FORUM))
+    ) {
+      throw new CircabcRuntimeException(ERR_MSG_ONLY_LINKS);
     }
+  }
 
-    public void beforeCreateNode(
-            final NodeRef parentRef,
-            final QName assocTypeQName,
-            final QName assocQName,
-            final QName nodeTypeQName) {
-        final QName parentType = nodeService.getType(parentRef);
-        checkTypes(nodeTypeQName, parentType);
-    }
+  /**
+   * Set the policy component
+   *
+   * @param policyComponent the policy component
+   */
+  public void setPolicyComponent(final PolicyComponent policyComponent) {
+    this.policyComponent = policyComponent;
+  }
 
-    /**
-     * Allow only to create types filelink , folderlink , or forum in dossier
-     */
-    private void checkTypes(final QName nodeTypeQName, final QName parentType) {
-        if (parentType.equals(DossierModel.TYPE_DOSSIER_SPACE)
-                && !(nodeTypeQName.equals(ApplicationModel.TYPE_FILELINK)
-                || nodeTypeQName.equals(ApplicationModel.TYPE_FOLDERLINK)
-                || nodeTypeQName.equals(ForumModel.TYPE_FORUM))) {
-            throw new CircabcRuntimeException(ERR_MSG_ONLY_LINKS);
-        }
-    }
+  /**
+   * Set the node service
+   *
+   * @param nodeService the node service
+   */
+  public void setNodeService(final NodeService nodeService) {
+    this.nodeService = nodeService;
+  }
 
-    /**
-     * Set the policy component
-     *
-     * @param policyComponent the policy component
-     */
-    public void setPolicyComponent(final PolicyComponent policyComponent) {
-        this.policyComponent = policyComponent;
-    }
-
-    /**
-     * Set the node service
-     *
-     * @param nodeService the node service
-     */
-    public void setNodeService(final NodeService nodeService) {
-        this.nodeService = nodeService;
-    }
-
-    @Override
-    public void onMoveNode(
-            ChildAssociationRef oldChildAssocRef, ChildAssociationRef newChildAssocRef) {
-        final NodeRef parentRef = newChildAssocRef.getParentRef();
-        final QName parentType = nodeService.getType(parentRef);
-        final NodeRef nodeRef = newChildAssocRef.getChildRef();
-        final QName nodeTypeQName = nodeService.getType(nodeRef);
-        checkTypes(nodeTypeQName, parentType);
-    }
+  @Override
+  public void onMoveNode(
+    ChildAssociationRef oldChildAssocRef,
+    ChildAssociationRef newChildAssocRef
+  ) {
+    final NodeRef parentRef = newChildAssocRef.getParentRef();
+    final QName parentType = nodeService.getType(parentRef);
+    final NodeRef nodeRef = newChildAssocRef.getChildRef();
+    final QName nodeTypeQName = nodeService.getType(nodeRef);
+    checkTypes(nodeTypeQName, parentType);
+  }
 }

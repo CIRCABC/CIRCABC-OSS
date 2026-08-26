@@ -26,7 +26,6 @@ import eu.cec.digit.circabc.web.Beans;
 import eu.cec.digit.circabc.web.ui.tag.AppointmentUnit;
 import eu.cec.digit.circabc.web.ui.tag.JSFCalendarDecorator;
 import eu.cec.digit.circabc.web.wai.bean.navigation.EventBean;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -39,34 +38,34 @@ import java.util.Map;
  */
 public class EventServiceDecorator extends JSFCalendarDecorator {
 
-    private EventBean eventBean;
-    private Map<DateValue, List<AppointmentUnit>> appointmentsOfRange;
+  private EventBean eventBean;
+  private Map<DateValue, List<AppointmentUnit>> appointmentsOfRange;
 
-
-    public List<AppointmentUnit> getAppointments() {
-        if (appointmentsOfRange == null) {
-            appointmentsOfRange = getEventBean().getAppointmentUnitByDay(start, end);
-        }
-
-        List<AppointmentUnit> appointments = appointmentsOfRange
-                .get(AppointmentUtils.convertDateToDateValue(calendar.getTime()));
-
-        // return the appointments of the day.
-        return appointments == null ? Collections.<AppointmentUnit>emptyList() : appointments;
+  public List<AppointmentUnit> getAppointments() {
+    if (appointmentsOfRange == null) {
+      appointmentsOfRange = getEventBean().getAppointmentUnitByDay(start, end);
     }
 
-    private EventBean getEventBean() {
-        if (eventBean == null) {
-            eventBean = (EventBean) Beans.getBean(EventBean.BEAN_NAME);
-        }
+    List<AppointmentUnit> appointments = appointmentsOfRange.get(
+      AppointmentUtils.convertDateToDateValue(calendar.getTime())
+    );
 
-        return eventBean;
+    // return the appointments of the day.
+    return appointments == null
+      ? Collections.<AppointmentUnit>emptyList()
+      : appointments;
+  }
+
+  private EventBean getEventBean() {
+    if (eventBean == null) {
+      eventBean = (EventBean) Beans.getBean(EventBean.BEAN_NAME);
     }
 
-    public void initializeCalendar() {
-        // release cache the events of the current period
-        appointmentsOfRange = null;
-    }
+    return eventBean;
+  }
 
+  public void initializeCalendar() {
+    // release cache the events of the current period
+    appointmentsOfRange = null;
+  }
 }
-

@@ -2,10 +2,14 @@
   <header class="header">
     <span class="title">{{ 'label.events' | transloco }}</span>
   </header>
-  <cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
-  <div class="main main--listing" *ngIf="!loading">
-    <ul *ngIf="events !== undefined && events.length > 0 && !restCallError">
-      <li *ngFor="let event of getListOfEvents()" class="row">
+  @if (loading) {
+  <cbc-horizontal-loader></cbc-horizontal-loader>
+  } @if (!loading) {
+  <div class="main main--listing">
+    @if (events !== undefined && events.length > 0 && !restCallError) {
+    <ul>
+      @for (event of getListOfEvents(); track event.id) {
+      <li class="row">
         <span class="date"
           >{{ event.appointmentDate | cbcDate: event.startTime: event.timeZone
           }} - {{ event.appointmentDate | cbcTime: event.startTime:
@@ -15,20 +19,29 @@
           >{{ event.title }}</a
         >
       </li>
+      }
     </ul>
-    <ul *ngIf="(events === undefined || events.length === 0) && !restCallError">
+    } @if ((events === undefined || events.length === 0) && !restCallError) {
+    <ul>
       <li class="row">{{ 'events.dashlet.no-event' | transloco }}</li>
     </ul>
-    <ul *ngIf="restCallError">
+    } @if (restCallError) {
+    <ul>
       <li class="row">{{ 'forums.dashlet.not.available' | transloco }}</li>
     </ul>
+    }
   </div>
-  <footer *ngIf="events !== undefined && events.length > 8" class="footer">
-    <a (click)="more = true" *ngIf="!more" class="footer__button"
+  } @if (events !== undefined && events.length > 8) {
+  <footer class="footer">
+    @if (!more) {
+    <a tabindex="0" (click)="more = true" class="footer__button"
       >{{ 'label.show.more' | transloco }}</a
     >
-    <a (click)="more = false" *ngIf="more" class="footer__button"
+    } @if (more) {
+    <a tabindex="0" (click)="more = false" class="footer__button"
       >{{ 'label.show.less' | transloco }}</a
     >
+    }
   </footer>
+  }
 </section>

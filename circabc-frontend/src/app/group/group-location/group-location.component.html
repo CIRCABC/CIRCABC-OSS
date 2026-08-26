@@ -1,26 +1,31 @@
-<ul *ngIf="groupPath">
+@if (groupPath) {
+<ul>
   <li>
     <a [routerLink]="['/explore']" [queryParams]="{ start: 'ok' }">
-      <img src="img/icon-dashboard-grey.png" />
+      <img src="img/icon-dashboard-grey.png" alt="Dashboard Icon" />
     </a>
   </li>
-  <li *ngIf="groupPath.header">
+  @if (groupPath.header) {
+  <li>
     <a
       [routerLink]="['/explore']"
       [queryParams]="{ headerId: groupPath.header.id }"
     >
-      <span *ngIf="groupPath.header.description">
+      @if (groupPath.header.description) {
+      <span>
         {{ ('en' | i18nSelect: groupPath.header.description) === '' ?
         groupPath.header.name : ('en' | i18nSelect:
         groupPath.header.description) }}
       </span>
-      <span *ngIf="!groupPath.header.description">
-        {{ groupPath.header.name }}
-      </span>
+      } @if (!groupPath.header.description) {
+      <span> {{ groupPath.header.name }} </span>
+      }
     </a>
   </li>
+  }
   <li>&gt;</li>
-  <li *ngIf="groupPath.header && groupPath.category">
+  @if (groupPath.header && groupPath.category) {
+  <li>
     <a
       [routerLink]="['/explore']"
       [queryParams]="{
@@ -28,24 +33,32 @@
         categoryId: groupPath.category.id
       }"
     >
-      <span *ngIf="groupPath.category.title">
+      @if (groupPath.category.title) {
+      <span>
         {{ (groupPath.category.title | cbcI18n) !== '' ?
         (groupPath.category.title | cbcI18n) : ('en' | i18nSelect:
         groupPath.category.title) !== '' ? ('en' | i18nSelect:
         groupPath.category.title) : groupPath.category.name }}
       </span>
-      <span *ngIf="!groupPath.category.title">
-        {{ groupPath.category.name }}
-      </span>
+      } @if (!groupPath.category.title) {
+      <span> {{ groupPath.category.name }} </span>
+      }
     </a>
   </li>
+  }
   <li>&gt;</li>
-  <li *ngIf="groupPath.group">
-    <span *ngIf="groupPath.group.title">
+  @if (groupPath.group) {
+  <li>
+    @if (groupPath.group.title) {
+    <span>
       {{ (groupPath.group.title | cbcI18n) !== '' ? (groupPath.group.title |
       cbcI18n) : ('en' | i18nSelect: groupPath.group.title) !== '' ? ('en' |
       i18nSelect: groupPath.group.title) : groupPath.group.name }}
     </span>
-    <span *ngIf="!groupPath.group.title"> {{ groupPath.group.name }} </span>
+    } @if (!groupPath.group.title) {
+    <span> {{ groupPath.group.name }} </span>
+    }
   </li>
+  }
 </ul>
+}

@@ -17,40 +17,40 @@
 package eu.cec.digit.circabc.repo.template;
 
 import freemarker.template.TemplateMethodModelEx;
+import java.io.Serializable;
+import java.util.Map;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.repository.MLText;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
-
-import java.io.Serializable;
-import java.util.Map;
 
 /**
  * Freemarker method to display the title of a node or its name if no title
  *
  * @author Yanick Pignot
  */
-public class TitleOrNameMethod extends NodeRefBaseTemplateProcessorExtension
-        implements TemplateMethodModelEx {
+public class TitleOrNameMethod
+  extends NodeRefBaseTemplateProcessorExtension
+  implements TemplateMethodModelEx {
 
-    @Override
-    public String getResult(final NodeRef nodeRef) {
+  @Override
+  public String getResult(final NodeRef nodeRef) {
+    final Map<QName, Serializable> props = getNodeService()
+      .getProperties(nodeRef);
+    final Serializable titleObj = props.get(ContentModel.PROP_TITLE);
+    String result = props.get(ContentModel.PROP_NAME).toString();
 
-        final Map<QName, Serializable> props = getNodeService().getProperties(nodeRef);
-        final Serializable titleObj = props.get(ContentModel.PROP_TITLE);
-        String result = props.get(ContentModel.PROP_NAME).toString();
-
-        if (titleObj != null && titleObj instanceof MLText) {
-            MLText title = (MLText) titleObj;
-            if (!"".equals(title.getDefaultValue())) {
-                result = title.getDefaultValue();
-            }
-        } else if (titleObj != null && titleObj instanceof String) {
-            if (!"".equals((String) titleObj)) {
-                result = (String) titleObj;
-            }
-        }
-
-        return result;
+    if (titleObj != null && titleObj instanceof MLText) {
+      MLText title = (MLText) titleObj;
+      if (!"".equals(title.getDefaultValue())) {
+        result = title.getDefaultValue();
+      }
+    } else if (titleObj != null && titleObj instanceof String) {
+      if (!"".equals((String) titleObj)) {
+        result = (String) titleObj;
+      }
     }
+
+    return result;
+  }
 }

@@ -1,0 +1,16 @@
+diff org/quartz/simpl/SimpleThreadPool.java
+365a366,379
+>                 // wait for each worker thread to finish - they should all have finished any pending work
+>                 // at this point.
+>                 try
+>                 {
+>                   workerThreads = workers.iterator();
+>                   while(workerThreads.hasNext()) {
+>                       WorkerThread wt = (WorkerThread) workerThreads.next();
+>                       wt.join();
+>                   }
+>                 } catch (InterruptedException e)
+>                 {
+>                   // nothing to do
+>                 }
+> 

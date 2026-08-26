@@ -2,47 +2,31 @@
 #
 # Copyright (c) 2014-2018 Oracle and/or its affiliates. All rights reserved.
 #
-# ORACLE DOCKERFILES PROJECT
-# --------------------------
-# This Dockerfile extends the Oracle WebLogic image by creating a sample domain.
-#
-# The 'base-domain' created here has Java EE 7 APIs enabled by default:
-#  - JAX-RS 2.0 shared lib deployed
-#  - JPA 2.1,
-#  - WebSockets and JSON-P
-#
-# Util scripts are copied into the image enabling users to plug NodeManager
-# magically into the AdminServer running on another container as a Machine.
-#
-# HOW TO BUILD THIS IMAGE
-# -----------------------
-# Put all downloaded files in the same directory as this Dockerfile
-# Run:
-#      $ sudo docker build -t 1213-domain --build-arg ADMIN_PASSWORD=welcome1 .
-#
 
 # Pull base image
 # ---------------
-FROM oracle/weblogic:12.1.3-developer
+FROM container-registry.oracle.com/middleware/weblogic:12.2.1.4
 
 # Maintainer
 # ----------
-MAINTAINER Monica Riccelli <monica.riccelli@oracle.com>  Philippe Collignon <philippe.collignon@ext.ec.europa.eu>
+MAINTAINER  Philippe Collignon <philippe.collignon@ext.ec.europa.eu>  Monica Riccelli <monica.riccelli@oracle.com> 
 
 # WLS Configuration
 # -------------------------------
-ARG ADMIN_PASSWORD
-ARG PRODUCTION_MODE
+ENV ADMIN_PASSWORD="welcome1"
+ENV PRODUCTION_MODE="dev"
 
 ENV DOMAIN_NAME="base_domain" \
     PRE_DOMAIN_HOME=/u01/oracle/user_projects \
     ADMIN_PORT="7001" \
-    ADMIN_HOST="wlsadmin" \
     NM_PORT="5556" \
     MS_PORT="7002" \
     CONFIG_JVM_ARGS="-Dweblogic.security.SSL.ignoreHostnameVerification=true" \
     PATH=$PATH:/u01/oracle/oracle_common/common/bin:/u01/oracle/wlserver/common/bin:$PRE_DOMAIN_HOME/domains/base_domain:$PRE_DOMAIN_HOME/domains/base_domain/bin:/u01/oracle
 
+#      ADMIN_HOST="wlsadmin" \
+ 
+ 
 
 # Add files required to build this image
 COPY container-scripts/* /u01/oracle/
@@ -51,15 +35,16 @@ COPY container-scripts/* /u01/oracle/
 USER root
 
 COPY wait-for-it.sh /u01/oracle/wait-for-it.sh
-RUN chown oracle:oracle /u01/oracle/wait-for-it.sh
+
+RUN chown oracle:root /u01/oracle/wait-for-it.sh
 RUN chmod u+x /u01/oracle/wait-for-it.sh
-RUN chown oracle:oracle /u01/oracle/wait-for-it.sh
+RUN chown oracle:root /u01/oracle/wait-for-it.sh
 
 WORKDIR /u01/oracle
 RUN /u01/oracle/wlst /u01/oracle/create-wls-domain.py && \
     mkdir -p $PRE_DOMAIN_HOME && \
     chmod a+xr $PRE_DOMAIN_HOME && \
-    chown -R oracle:oracle $PRE_DOMAIN_HOME && \
+    chown -R oracle:root $PRE_DOMAIN_HOME && \
     mkdir -p $PRE_DOMAIN_HOME/domains/base_domain/servers/AdminServer/security && \
     echo "username=weblogic" > $PRE_DOMAIN_HOME/domains/base_domain/servers/AdminServer/security/boot.properties && \
     echo "password=$ADMIN_PASSWORD" >> $PRE_DOMAIN_HOME/domains/base_domain/servers/AdminServer/security/boot.properties && \
@@ -81,7 +66,7 @@ RUN mkdir -p /u01/oracle/user_projects/domains/base_domain/deploy
 RUN mkdir -p /u01/oracle/user_projects/domains/base_domain/alfresco/extension/license
 
 # Copy Ecas lib
-COPY ./lib/ecas-weblogic-12.2.1-authprovider-4.26.3.jar /u01/oracle/user_projects/domains/base_domain/lib
+COPY ./lib/ecas-weblogic-12.2.1-authprovider-4.61.0.jar /u01/oracle/user_projects/domains/base_domain/lib
 
 # Add license to Classpath
 RUN echo "PRE_CLASSPATH=/u01/oracle/user_projects/domains/base_domain/alfresco/extension/license:${PRE_CLASSPATH}" >> "/u01/oracle/user_projects/domains/base_domain/bin/setDomainEnv.sh"
@@ -94,5 +79,28 @@ COPY container-scripts/* /u01/oracle/
 RUN wlst -loadProperties /u01/oracle/datasource-circabc.properties /u01/oracle/ds-deploy.py 
 RUN wlst -loadProperties /u01/oracle/datasource-circabc-audit.properties /u01/oracle/ds-deploy.py 
 
+# Configuration for ECAS
+RUN echo "JAVA_OPTIONS=\"\${JAVA_OPTIONS} -Deu.cec.digit.ecas.client.ignoreEcasHostnameDnsResolutionError=true  \"" >> /u01/oracle/user_projects/domains/base_domain/bin/setDomainEnv.sh
+RUN ls -al /u01/oracle/user_projects/domains/base_domain/bin/setDomainEnv.sh
+RUN echo "export JAVA_OPTIONS"  >> /u01/oracle/user_projects/domains/base_domain/bin/setDomainEnv.sh
+RUN ls -al /u01/oracle/user_projects/domains/base_domain/bin/setDomainEnv.sh
+RUN echo "JAVA_VM=\"\${JAVA_VM} -Dweblogic.security.SSL.ignoreHostnameVerification=true  \"" >> /u01/oracle/user_projects/domains/base_domain/bin/setDomainEnv.sh
+RUN echo "export JAVA_VM"  >> /u01/oracle/user_projects/domains/base_domain/bin/setDomainEnv.sh
+# Try hardcoding
+# RUN echo "JAVA_OPTIONS=\"-Djava.system.class.loader=com.oracle.classloader.weblogic.LaunchClassLoader  -javaagent:/u01/oracle/wlserver/server/lib/debugpatch-agent.jar -da -Dwls.home=/u01/oracle/wlserver/server -Dweblogic.home=/u01/oracle/wlserver/server  -Deu.cec.digit.ecas.client.ignoreEcasHostnameDnsResolutionError=true  \"" >> /u01/oracle/user_projects/domains/base_domain/bin/setDomainEnv.sh
+
+RUN cat /u01/oracle/user_projects/domains/base_domain/bin/setDomainEnv.sh
+RUN echo "#########################################################"
+RUN cat /u01/oracle/user_projects/domains/base_domain/bin/startWebLogic.sh
+
+RUN sed  ':a;N;$!ba; s|<realm>.*<\/realm>|<realm>\n<sec:authentication-provider xmlns:sch="https://www.cc.cec/cas/schemas" xsi:type="sch:ecas-identity-asserter-v2Type">\n<sec:name>EcasIdentityAsserterV2</sec:name>\n<sch:control-flag>SUFFICIENT</sch:control-flag>\n<sch:ecas-base-url>https://webgate.ec.europa.eu</sch:ecas-base-url>\n<sch:strict-ssl-hostname-verification>false</sch:strict-ssl-hostname-verification>\n<sch:excluded-context-path>/console</sch:excluded-context-path>\n</sec:authentication-provider>\n<sec:authentication-provider xsi:type="wls:default-authenticatorType">\n<sec:name>DefaultAuthenticator</sec:name>\n<sec:control-flag>OPTIONAL</sec:control-flag>\n</sec:authentication-provider>\n<sec:authentication-provider xsi:type="wls:default-identity-asserterType">\n<sec:name>DefaultIdentityAsserter</sec:name>\n<sec:active-type>AuthenticatedUser</sec:active-type>\n</sec:authentication-provider>\n<sec:role-mapper xmlns:xac="http://xmlns.oracle.com/weblogic/security/xacml" xsi:type="xac:xacml-role-mapperType">\n<sec:name>XACMLRoleMapper</sec:name>\n</sec:role-mapper>\n<sec:authorizer xmlns:xac="http://xmlns.oracle.com/weblogic/security/xacml" xsi:type="xac:xacml-authorizerType">\n<sec:name>XACMLAuthorizer</sec:name>\n</sec:authorizer>\n<sec:adjudicator xsi:type="wls:default-adjudicatorType">\n<sec:name>DefaultAdjudicator</sec:name>\n</sec:adjudicator>\n<sec:credential-mapper xsi:type="wls:default-credential-mapperType">\n<sec:name>DefaultCredentialMapper</sec:name>\n</sec:credential-mapper>\n<sec:cert-path-provider xsi:type="wls:web-logic-cert-path-providerType">\n<sec:name>WebLogicCertPathProvider</sec:name>\n</sec:cert-path-provider>\n<sec:cert-path-builder>WebLogicCertPathProvider</sec:cert-path-builder>\n<sec:name>myrealm</sec:name>\n<sec:password-validator xmlns:pas="http://xmlns.oracle.com/weblogic/security/providers/passwordvalidator" xsi:type="pas:system-password-validatorType">\n<sec:name>SystemPasswordValidator</sec:name>\n<pas:min-password-length>8</pas:min-password-length>\n<pas:min-numeric-or-special-characters>1</pas:min-numeric-or-special-characters>\n</sec:password-validator>\n</realm>\n|g'  /u01/oracle/user_projects/domains/base_domain/config/config.xml  > /u01/oracle/user_projects/domains/base_domain/config/config.sed
+RUN mv  /u01/oracle/user_projects/domains/base_domain/config/config.sed /u01/oracle/user_projects/domains/base_domain/config/config.xml
+RUN sed  ':a;N;$!ba; s|<name>AdminServer</name>|<name>AdminServer</name>\n<ssl>\n<name>AdminServer</name>\n<enabled>true</enabled>\n</ssl>\n|g'  /u01/oracle/user_projects/domains/base_domain/config/config.xml  > /u01/oracle/user_projects/domains/base_domain/config/config.sed
+RUN mv  /u01/oracle/user_projects/domains/base_domain/config/config.sed /u01/oracle/user_projects/domains/base_domain/config/config.xml
+
+RUN cat /u01/oracle/user_projects/domains/base_domain/config/config.xml
+
 # Define default command to start bash.
-CMD ["/u01/oracle/wait-for-it.sh","db:8080","--timeout=0","--strict", "--","/u01/oracle/user_projects/domains/base_domain/startWebLogic.sh"]
+CMD ["/u01/oracle/wait-for-it.sh","oracle-db:1521","--timeout=0","--strict", "--","/u01/oracle/user_projects/domains/base_domain/startWebLogic.sh"]
+# CMD [ "/u01/oracle/user_projects/domains/base_domain/startWebLogic.sh"]
+# CMD ["for i in {1..100} ; do if ! curl -s oracle-db:5500 > /dev/null ; then echo waiting on oracle-db for $i seconds; sleep $i; fi; done; /u01/oracle/user_projects/domains/base_domain/startWebLogic.sh"]

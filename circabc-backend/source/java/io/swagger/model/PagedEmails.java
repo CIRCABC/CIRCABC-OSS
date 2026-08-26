@@ -1,7 +1,6 @@
 package io.swagger.model;
 
 import eu.cec.digit.circabc.service.app.message.DistributionEmailDAO;
-
 import java.util.List;
 
 /**
@@ -12,28 +11,28 @@ import java.util.List;
  */
 public class PagedEmails {
 
-    private List<DistributionEmailDAO> data;
-    private long total;
+  private List<DistributionEmailDAO> data;
+  private long total;
 
-    /**
-     * @return the data
-     */
-    public List<DistributionEmailDAO> getData() {
-        return data;
-    }
+  /**
+   * @return the data
+   */
+  public List<DistributionEmailDAO> getData() {
+    return data;
+  }
 
-    public void setData(List<DistributionEmailDAO> data) {
-        this.data = data;
-    }
+  public void setData(List<DistributionEmailDAO> data) {
+    this.data = data;
+  }
 
-    /**
-     * @return the total
-     */
-    public long getTotal() {
-        return total;
-    }
+  /**
+   * @return the total
+   */
+  public long getTotal() {
+    return total;
+  }
 
-    public void setTotal(long total) {
-        this.total = total;
-    }
+  public void setTotal(long total) {
+    this.total = total;
+  }
 }

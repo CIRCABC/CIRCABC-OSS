@@ -3,19 +3,38 @@ import {
   AbstractControl,
   FormBuilder,
   FormGroup,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
 import { LoginService } from 'app/core/login.service';
 import { RedirectionService } from 'app/core/redirection.service';
+import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
+import { DataCyDirective } from 'app/shared/directives/data-cy.directive';
+import { FocusDirective } from 'app/shared/directives/focus.directive';
+import { SetTitlePipe } from 'app/shared/pipes/set-title.pipe';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
+import { environment } from 'environments/environment';
 
 @Component({
   selector: 'cbc-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss'],
+  styleUrl: './login.component.scss',
   preserveWhitespaces: true,
+  imports: [
+    ReactiveFormsModule,
+    DataCyDirective,
+    FocusDirective,
+    ControlMessageComponent,
+    SpinnerComponent,
+    RouterLink,
+    SetTitlePipe,
+    TranslocoModule,
+  ],
 })
 export class LoginComponent implements OnInit {
+  public circabcRelease = environment.circabcRelease;
   public loginError!: boolean;
   public loginDenied!: boolean;
   public loginForm!: FormGroup;

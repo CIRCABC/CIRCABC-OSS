@@ -1,15 +1,16 @@
 import {
   Component,
-  EventEmitter,
   Inject,
   Input,
   OnInit,
   Optional,
-  Output,
+  output,
+  input,
 } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
-import { TranslocoService } from '@ngneat/transloco';
+import { MatDialog } from '@angular/material/dialog';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
@@ -22,21 +23,26 @@ import {
 } from 'app/core/generated/circabc';
 import { UiMessageService } from 'app/core/message/ui-message.service';
 import { SaveAsService } from 'app/core/save-as.service';
+import { ConfirmDialogComponent } from 'app/shared/confirm-dialog/confirm-dialog.component';
+import { SizePipe } from 'app/shared/pipes/size.pipe';
+import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
+import { environment } from 'environments/environment';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-import',
   templateUrl: './import.component.html',
-  styleUrls: ['./import.component.scss'],
+  styleUrl: './import.component.scss',
   preserveWhitespaces: true,
+  imports: [ReactiveFormsModule, SpinnerComponent, SizePipe, TranslocoModule],
 })
 export class ImportComponent implements OnInit {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   public showModal = false;
-  @Input()
-  public targetNode!: ModelNode;
-  @Output()
-  public readonly modalHide = new EventEmitter<ActionEmitterResult>();
+  public readonly targetNode = input.required<ModelNode>();
+  public readonly modalHide = output<ActionEmitterResult>();
 
   public fileToUpload: File | undefined;
   public uploading = false;
@@ -50,6 +56,7 @@ export class ImportComponent implements OnInit {
   private basePath!: string;
 
   constructor(
+    private dialog: MatDialog,
     private interestGroupService: InterestGroupService,
     private formBuilder: FormBuilder,
     private saveAsService: SaveAsService,
@@ -99,9 +106,16 @@ export class ImportComponent implements OnInit {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public fileChangeEvent(fileInput: any) {
-    const filesList = fileInput.target.files as FileList;
+  public async fileChangeEvent(event: Event) {
+    if (environment.circabcRelease === 'echa') {
+      if (!(await this.showDialogConfirmMsg())) {
+        return;
+      }
+    }
+
+    const input = event.target as HTMLInputElement;
+    const filesList = input.files as FileList;
+
     this.fileToUpload = filesList[0];
   }
 
@@ -121,7 +135,7 @@ export class ImportComponent implements OnInit {
     try {
       await firstValueFrom(
         this.interestGroupService.postImportZipFile(
-          this.targetNode.id as string,
+          this.targetNode().id as string,
           this.importForm.controls.notifyUser.value,
           this.importForm.controls.deleteFile.value,
           this.importForm.controls.disableNotification.value,
@@ -176,5 +190,23 @@ export class ImportComponent implements OnInit {
     const url = `${this.basePath}/groups/import/template`;
     this.saveAsService.saveUrlAs(url, 'index.txt');
     return false;
+  }
+
+  private async showDialogConfirmMsg() {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        messageTranslated: this.translateService.translate(
+          'label.dialog.alert.snc.import',
+          {
+            link: `<a href="https://ec.europa.eu/transparency/documents-register/detail?ref=C(2019)1904&lang=en" target="_blank">C(2019)1904</a>`,
+          }
+        ),
+        labelOK: 'label.confirm',
+        title: 'label.dialog.alert.snc.import.title',
+        layoutStyle: 'SNCNotification',
+      },
+    });
+
+    return firstValueFrom(dialogRef.afterClosed());
   }
 }

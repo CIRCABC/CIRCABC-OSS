@@ -21,13 +21,11 @@
 package eu.cec.digit.circabc.web.wai.dialog;
 
 public interface WaiDialogAsync {
+  String getFinishAsyncButtonLabel();
 
-    String getFinishAsyncButtonLabel();
+  boolean isFinishAsyncButtonDisabled();
 
-    boolean isFinishAsyncButtonDisabled();
+  String finishAsync();
 
-    String finishAsync();
-
-    boolean isFinishAsyncButtonVisible();
-
+  boolean isFinishAsyncButtonVisible();
 }

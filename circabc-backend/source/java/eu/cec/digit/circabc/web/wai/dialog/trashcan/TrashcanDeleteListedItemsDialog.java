@@ -44,6 +44,10 @@
  */
 package eu.cec.digit.circabc.web.wai.dialog.trashcan;
 
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
+import javax.faces.context.FacesContext;
 import net.sf.acegisecurity.Authentication;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -52,77 +56,76 @@ import org.alfresco.web.bean.repository.Node;
 import org.alfresco.web.bean.repository.Repository;
 import org.alfresco.web.ui.common.Utils;
 
-import javax.faces.context.FacesContext;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-
 public class TrashcanDeleteListedItemsDialog extends TrashcanDialog {
 
+  /**
+   *
+   */
+  private static final long serialVersionUID = 249489779589432007L;
+  private static final String MSG_YES = "yes";
+  private static final String MSG_NO = "no";
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 249489779589432007L;
-    private static final String MSG_YES = "yes";
-    private static final String MSG_NO = "no";
-
-    private String deleteListedItems(FacesContext context, String outcome) {
-        if (property.isInProgress()) {
-            return null;
-        }
-
-        property.setInProgress(true);
-
-        try {
-            List<NodeRef> nodeRefs = new ArrayList<>(property.getListedItems().size());
-            for (Node node : property.getListedItems()) {
-                nodeRefs.add(node.getNodeRef());
-            }
-            property.getNodeArchiveService().purgeArchivedNodes(nodeRefs);
-        } catch (Throwable err) {
-            Utils.addErrorMessage(MessageFormat
-                            .format(Application.getMessage(context, Repository.ERROR_GENERIC), err.getMessage()),
-                    err);
-        } finally {
-            property.setInProgress(false);
-        }
-
-        return outcome;
+  private String deleteListedItems(FacesContext context, String outcome) {
+    if (property.isInProgress()) {
+      return null;
     }
 
-    @Override
-    protected String finishImpl(FacesContext context, String outcome) throws Exception {
-        Authentication originalFullAuthentication = AuthenticationUtil.getFullAuthentication();
-        String userName = AuthenticationUtil.getRunAsUser();
-        try {
-            AuthenticationUtil.setRunAsUserSystem();
-            return deleteListedItems(context, outcome);
-        } finally {
-            if (originalFullAuthentication == null) {
-                AuthenticationUtil.clearCurrentSecurityContext();
-            } else {
-                AuthenticationUtil.setFullAuthentication(originalFullAuthentication);
-                AuthenticationUtil.setRunAsUser(userName);
-            }
-        }
+    property.setInProgress(true);
 
+    try {
+      List<NodeRef> nodeRefs = new ArrayList<>(
+        property.getListedItems().size()
+      );
+      for (Node node : property.getListedItems()) {
+        nodeRefs.add(node.getNodeRef());
+      }
+      property.getNodeArchiveService().purgeArchivedNodes(nodeRefs);
+    } catch (Throwable err) {
+      Utils.addErrorMessage(
+        MessageFormat.format(
+          Application.getMessage(context, Repository.ERROR_GENERIC),
+          err.getMessage()
+        ),
+        err
+      );
+    } finally {
+      property.setInProgress(false);
     }
 
-    @Override
-    public String getCancelButtonLabel() {
-        return Application.getMessage(FacesContext.getCurrentInstance(), MSG_NO);
+    return outcome;
+  }
+
+  @Override
+  protected String finishImpl(FacesContext context, String outcome)
+    throws Exception {
+    Authentication originalFullAuthentication =
+      AuthenticationUtil.getFullAuthentication();
+    String userName = AuthenticationUtil.getRunAsUser();
+    try {
+      AuthenticationUtil.setRunAsUserSystem();
+      return deleteListedItems(context, outcome);
+    } finally {
+      if (originalFullAuthentication == null) {
+        AuthenticationUtil.clearCurrentSecurityContext();
+      } else {
+        AuthenticationUtil.setFullAuthentication(originalFullAuthentication);
+        AuthenticationUtil.setRunAsUser(userName);
+      }
     }
+  }
 
-    @Override
-    public boolean getFinishButtonDisabled() {
+  @Override
+  public String getCancelButtonLabel() {
+    return Application.getMessage(FacesContext.getCurrentInstance(), MSG_NO);
+  }
 
-        return false;
-    }
+  @Override
+  public boolean getFinishButtonDisabled() {
+    return false;
+  }
 
-    @Override
-    public String getFinishButtonLabel() {
-        return Application.getMessage(FacesContext.getCurrentInstance(), MSG_YES);
-    }
-
+  @Override
+  public String getFinishButtonLabel() {
+    return Application.getMessage(FacesContext.getCurrentInstance(), MSG_YES);
+  }
 }

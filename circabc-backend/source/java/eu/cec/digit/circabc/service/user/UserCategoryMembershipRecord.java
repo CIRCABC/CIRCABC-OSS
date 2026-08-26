@@ -20,51 +20,55 @@ import java.io.Serializable;
 
 public class UserCategoryMembershipRecord implements Serializable {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 3300655181779771569L;
-    /**
-     *
-     */
-    private String category;
+  /**
+   *
+   */
+  private static final long serialVersionUID = 3300655181779771569L;
+  /**
+   *
+   */
+  private String category;
 
-    private String profile;
-    private String categoryNodeId;
+  private String profile;
+  private String categoryNodeId;
 
-    public UserCategoryMembershipRecord(String category, String profile, String categoryNodeId) {
-        this.category = category;
-        this.profile = profile;
-        this.categoryNodeId = categoryNodeId;
-    }
+  public UserCategoryMembershipRecord(
+    String category,
+    String profile,
+    String categoryNodeId
+  ) {
+    this.category = category;
+    this.profile = profile;
+    this.categoryNodeId = categoryNodeId;
+  }
 
-    /**
-     * @return the profile
-     */
-    public String getProfile() {
-        return profile;
-    }
+  /**
+   * @return the profile
+   */
+  public String getProfile() {
+    return profile;
+  }
 
-    /**
-     * @param profile the profile to set
-     */
-    public void setProfile(String profile) {
-        this.profile = profile;
-    }
+  /**
+   * @param profile the profile to set
+   */
+  public void setProfile(String profile) {
+    this.profile = profile;
+  }
 
-    public String getCategory() {
-        return category;
-    }
+  public String getCategory() {
+    return category;
+  }
 
-    public void setCategory(String category) {
-        this.category = category;
-    }
+  public void setCategory(String category) {
+    this.category = category;
+  }
 
-    public String getCategoryNodeId() {
-        return categoryNodeId;
-    }
+  public String getCategoryNodeId() {
+    return categoryNodeId;
+  }
 
-    public void setCategoryNodeId(String categoryNodeId) {
-        this.categoryNodeId = categoryNodeId;
-    }
+  public void setCategoryNodeId(String categoryNodeId) {
+    this.categoryNodeId = categoryNodeId;
+  }
 }

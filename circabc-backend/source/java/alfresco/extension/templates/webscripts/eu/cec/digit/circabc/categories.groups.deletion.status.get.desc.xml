@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>CIRCABC group request delete status</shortname>
+  <description>checks if there is a request to delete a group</description>
+  <url>/circabc/categories/{groupId}/groups/deletion-status</url>
+  <format default="json" />
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

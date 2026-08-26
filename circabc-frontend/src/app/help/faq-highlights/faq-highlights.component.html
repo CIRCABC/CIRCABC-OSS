@@ -1,26 +1,27 @@
-<section class="help-highlight" *ngIf="highlightedArticles.length > 0">
+@if (highlightedArticles.length > 0) {
+<section class="help-highlight">
   <h2>{{ 'help.highlights' | transloco }}</h2>
 
   <div class="slider">
     <div class="previous-slider">
-      <a
-        class="a-previous"
-        *ngIf="highlightedArticles.length > 3"
-        (click)="previous()"
-      >
-        <img src="img/arrow-left-blue.png" />
+      @if (highlightedArticles.length > 3) {
+      <a tabindex="0" class="a-previous" (click)="previous()">
+        <img src="img/arrow-left-blue.png" alt="Previous" />
       </a>
+      }
     </div>
     <div class="card-container">
-      <cbc-article-card
-        *ngFor="let article of displayedArticles"
-        [article]="article"
-      ></cbc-article-card>
+      @for (article of displayedArticles; track article.id) {
+      <cbc-article-card [article]="article"></cbc-article-card>
+      }
     </div>
     <div class="next-slider">
-      <a class="a-next" *ngIf="highlightedArticles.length > 3" (click)="next()">
-        <img src="img/arrow-right-blue.png" />
+      @if (highlightedArticles.length > 3) {
+      <a tabindex="0" class="a-next" (click)="next()">
+        <img src="img/arrow-right-blue.png" alt="Next" />
       </a>
+      }
     </div>
   </div>
 </section>
+}

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!-- Copyright 2006 European Community Licensed under the EUPL, Version 1.1 
 	or – as soon they will be approved by the European Commission - subsequent 
 	versions of the EUPL (the "Licence"); You may not use this work except in 
@@ -7,9 +7,8 @@
 	under the Licence is distributed on an "AS IS" basis, WITHOUT WARRANTIES 
 	OR CONDITIONS OF ANY KIND, either express or implied. See the Licence for 
 	the specific language governing permissions and limitations under the Licence. -->
-
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="Translation">
 
 	<insert id="insert_request" parameterType="Request">
@@ -31,7 +30,11 @@
 		#{errMsg, jdbcType=VARCHAR}, #{respDate}, #{translated}, #{documentUpdated})
 	</insert>
 
-	<select id="selectItemsToProccess" parameterType="Search" resultType="SearchResult">
+	<select
+    id="selectItemsToProccess"
+    parameterType="Search"
+    resultType="SearchResult"
+  >
 		select
 		cbc_mt_response.request_id as requestID, 	
 		target_lang as targetLang,
@@ -49,7 +52,11 @@
 		order by resp_date
 	</select>
 
-	<select id="selectUsersToNotify" parameterType="Search" resultType="SearchResultNotify">
+	<select
+    id="selectUsersToNotify"
+    parameterType="Search"
+    resultType="SearchResultNotify"
+  >
 		select cbc_mt_response.request_id as requestID, 	
 		target_langs as targetLangs,
 		cbc_mt_request.target_path as targetPath,

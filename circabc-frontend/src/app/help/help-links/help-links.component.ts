@@ -1,22 +1,28 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input, output } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
+import { RouterLink } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
+import { assertDefined } from 'app/core/asserts';
 import { HelpLink, HelpService } from 'app/core/generated/circabc';
 import { LoginService } from 'app/core/login.service';
-import { assertDefined } from 'app/core/asserts';
+import { InlineDeleteComponent } from 'app/shared/delete/inline-delete.component';
+import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'cbc-help-links',
   templateUrl: './help-links.component.html',
-  styleUrls: ['./help-links.component.scss'],
+  styleUrl: './help-links.component.scss',
+  imports: [RouterLink, InlineDeleteComponent, I18nPipe, TranslocoModule],
 })
 export class HelpLinksComponent {
+  // TODO: Skipped for migration because:
+  //  This input is used in a control flow expression (e.g. `@if` or `*ngIf`)
+  //  and migrating would break narrowing currently.
   @Input()
   links: HelpLink[] = [];
-  @Output()
-  readonly linkDeleted = new EventEmitter();
-  @Output()
-  readonly clickedForEdition = new EventEmitter<string>();
+  readonly linkDeleted = output();
+  readonly clickedForEdition = output<string>();
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -54,14 +60,13 @@ export class HelpLinksComponent {
   }
 
   public edit(link: HelpLink) {
-    this.clickedForEdition.emit(link.id);
+    this.clickedForEdition.emit(link.id as string);
   }
 
   public getTarget(link: string | undefined) {
     if (link && link.indexOf(window.location.hostname) !== -1) {
       return '_self';
-    } else {
-      return '_blank';
     }
+    return '_blank';
   }
 }

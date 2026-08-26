@@ -24,24 +24,23 @@ import org.alfresco.service.cmr.security.AuthorityType;
  * @author Yanick Pignot
  */
 public interface AuthorityNotification {
+  /**
+   * Get the Notification Status enumeration value
+   */
+  NotificationStatus getNotificationStatus();
 
-    /**
-     * Get the Notification Status enumeration value
-     */
-    NotificationStatus getNotificationStatus();
+  /**
+   * Get the authority to which this notification applies.
+   */
+  String getAuthority();
 
-    /**
-     * Get the authority to which this notification applies.
-     */
-    String getAuthority();
+  /**
+   * Get the type of authority to which this notification applies.
+   */
+  AuthorityType getAuthorityType();
 
-    /**
-     * Get the type of authority to which this notification applies.
-     */
-    AuthorityType getAuthorityType();
-
-    /**
-     * @return true if notification is inherited from parent node
-     */
-    boolean getInherited();
+  /**
+   * @return true if notification is inherited from parent node
+   */
+  boolean getInherited();
 }

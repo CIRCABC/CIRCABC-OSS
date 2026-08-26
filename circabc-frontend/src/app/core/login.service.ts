@@ -4,7 +4,7 @@ import {
   HttpHeaders,
 } from '@angular/common/http';
 import { Inject, Injectable, Injector, Optional } from '@angular/core';
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoService } from '@jsverse/transloco';
 import { User, UserService } from 'app/core/generated/circabc';
 import { ALF_BASE_PATH, CBC_BASE_PATH } from 'app/core/variables';
 import { firstValueFrom } from 'rxjs';
@@ -28,9 +28,8 @@ export class LoginService {
   ): string {
     if (typeof value === 'string') {
       return value;
-    } else {
-      return defaultValue;
     }
+    return defaultValue;
   }
 
   private static setlocalStorage(ticket: string, user: User): void {
@@ -110,7 +109,7 @@ export class LoginService {
         this.translateService.setActiveLang(user.uiLang);
       }
       return true;
-    } catch (error) {
+    } catch (_error) {
       return false;
     }
   }
@@ -149,7 +148,7 @@ export class LoginService {
           try {
             await this.tryLogin(body, userPassword);
             return true;
-          } catch (innerError) {
+          } catch (_innerError) {
             return false;
           }
         }
@@ -233,7 +232,7 @@ export class LoginService {
       ),
       properties: JSON.parse(
         sessionStorage.getItem('user.properties') as string
-      ),
+      ) as { [key: string]: string } | undefined,
     };
 
     let visibility = false;

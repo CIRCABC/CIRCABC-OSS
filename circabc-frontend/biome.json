@@ -1,0 +1,61 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "formatter": {
+    "enabled": false,
+    "ignore": ["src/app/core/generated"],
+    "indentWidth": 2,
+    "indentStyle": "space"
+  },
+  "organizeImports": {
+    "ignore": ["src/app/core/generated"],
+    "enabled": false
+  },
+  "linter": {
+    "ignore": ["src/app/core/generated"],
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+
+      "style": {
+        "noNegationElse": "error",
+        "useTemplate": "error",
+        "noUnusedTemplateLiteral": "error",
+        "useEnumInitializers": "error",
+        "noParameterAssign": "error",
+        "noUselessElse": "error",
+        "useNumberNamespace":"error",
+        "useImportType":"off"
+      },
+      "complexity": {
+        "useSimplifiedLogicExpression": "error",
+        "useOptionalChain": "error",
+        "useLiteralKeys": "off",
+        "noStaticOnlyClass": "error",
+        "noBannedTypes":"off",
+        "noForEach":"off"
+      },
+      "correctness": {
+        "noUndeclaredVariables": "error",
+        "noUnusedVariables": "error",
+        "noUnnecessaryContinue": "error"
+      },
+      "nursery": {
+      },
+      "suspicious": {
+        "noExplicitAny": "off",
+        "noRedeclare": "error",
+        "noAssignInExpressions": "error",
+        "noImplicitAnyLet": "error"
+      },
+      "performance": {
+        "noDelete": "off"
+      }
+    }
+  },
+  "javascript": {
+    "formatter": { "quoteStyle": "single", "trailingCommas": "all" },
+    "parser": {
+      "unsafeParameterDecoratorsEnabled": true
+    }
+  }
+}

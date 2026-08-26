@@ -4,132 +4,147 @@
     <div class="field export-select">
       <label for="users">{{ 'label.user' | transloco }}</label>
       <div class="custom-select select--form">
-        <select *ngIf="users" formControlName="users">
-          <option *ngFor="let user of users" [ngValue]="user.id">
-            {{ user.name }}
-          </option>
+        @if (users) {
+        <select formControlName="users">
+          @for (user of users; track user.id) {
+          <option [ngValue]="user.id"> {{ user.name }} </option>
+          }
         </select>
+        }
       </div>
     </div>
     <div class="field export-select">
       <label for="services">{{ 'label.service' | transloco }}</label>
       <div class="custom-select select--form">
+        @if (services) {
         <select
-          *ngIf="services"
           #service
           (change)="serviceClick(service.value)"
           formControlName="services"
         >
-          <option *ngFor="let service of services" [ngValue]="service.id">
+          @for (service of services; track service.id) {
+          <option [ngValue]="service.id">
             {{ (service.name ==='Newsgroups')? "Forum": service.name }}
           </option>
+          }
         </select>
+        }
       </div>
     </div>
     <div class="field export-select">
       <label for="activities">{{ 'label.activity' | transloco }}</label>
       <div class="custom-select select--form">
-        <select *ngIf="activities" formControlName="activities">
-          <option *ngFor="let activity of activities" [ngValue]="activity.id">
-            {{ activity.name }}
-          </option>
+        @if (activities) {
+        <select formControlName="activities">
+          @for (activity of activities; track activity.id) {
+          <option [ngValue]="activity.id"> {{ activity.name }} </option>
+          }
         </select>
+        }
       </div>
     </div>
     <div class="field field--with-icon field--date">
       <label for="dateFrom">{{ 'label.from' | transloco }}</label>
-      <p-calendar
+      <p-datepicker
         formControlName="dateFrom"
         [dateFormat]="'dd/mm/yy'"
         [placeholder]="'dd/mm/yyyy'"
         [showIcon]="true"
-      ></p-calendar>
-      <cbc-control-message
-        *ngIf="form"
-        [control]="dateFrom"
-      ></cbc-control-message>
+      ></p-datepicker>
+      @if (form) {
+      <cbc-control-message [control]="dateFrom"></cbc-control-message>
+      }
     </div>
     <div class="field field--with-icon field--date">
       <label for="dateTo">{{ 'label.to' | transloco }}</label>
-      <p-calendar
+      <p-datepicker
         formControlName="dateTo"
         [dateFormat]="'dd/mm/yy'"
         [placeholder]="'dd/mm/yyyy'"
         [showIcon]="true"
-      ></p-calendar>
-      <cbc-control-message
-        *ngIf="form"
-        [control]="dateTo"
-      ></cbc-control-message>
+      ></p-datepicker>
+      @if (form) {
+      <cbc-control-message [control]="dateTo"></cbc-control-message>
+      }
     </div>
-    <cbc-control-message *ngIf="form" [control]="form"></cbc-control-message>
+    @if (form) {
+    <cbc-control-message [control]="form"></cbc-control-message>
+    }
   </form>
   <div class="buttons-group centered">
+    @if (form.valid) {
     <a
+      tabindex="0"
       class="cta"
       (click)="search()"
-      *ngIf="form.valid"
       [class.disabled]="loading || preloading"
       >{{ 'label.search' | transloco }}</a
     >
+    } @if (form.valid) {
     <a
+      tabindex="0"
       class="cta"
       (click)="export('csv')"
-      *ngIf="form.valid"
       [class.disabled]="loading || preloading"
       >{{ 'label.export.csv' | transloco }}</a
     >
+    } @if (form.valid) {
     <a
+      tabindex="0"
       class="cta"
       (click)="export('xml')"
-      *ngIf="form.valid"
       [class.disabled]="loading || preloading"
       >{{ 'label.export.xml' | transloco }}</a
     >
-    <span *ngIf="preloading"
-      >{{ 'admin.log.search.preloading' | transloco }}</span
-    >
-    <span *ngIf="loading">{{ 'label.searching' | transloco }}</span>
-    <cbc-spinner *ngIf="loading || preloading"></cbc-spinner>
+    } @if (preloading) {
+    <span>{{ 'admin.log.search.preloading' | transloco }}</span>
+    } @if (loading) {
+    <span>{{ 'label.searching' | transloco }}</span>
+    } @if (loading || preloading) {
+    <cbc-spinner></cbc-spinner>
+    }
   </div>
 
   <section class="modal-content table-container">
     <div class="wrapping scroll-body">
-      <p *ngIf="searchResults !== undefined && searchResults.length > 0">
+      @if (searchResults !== undefined && searchResults.length > 0) {
+      <p>
         {{ 'label.records.found' | transloco: { total: searchResults.length } }}
       </p>
+      }
       <table class="main no-border-spacing">
         <thead style="color: #035">
           <tr>
             <th>
-              <label>{{ 'label.date' | transloco }}</label>
+              <div>{{ 'label.date' | transloco }}</div>
             </th>
             <th>
-              <label>{{ 'label.user.id' | transloco }}</label>
+              <div>{{ 'label.user.id' | transloco }}</div>
             </th>
             <th>
-              <label>{{ 'label.service' | transloco }}</label>
+              <div>{{ 'label.service' | transloco }}</div>
             </th>
             <th>
-              <label>{{ 'label.activity' | transloco }}</label>
+              <div>{{ 'label.activity' | transloco }}</div>
             </th>
             <th>
-              <label>{{ 'label.path' | transloco }}</label>
+              <div>{{ 'label.path' | transloco }}</div>
             </th>
             <th>
-              <label>{{ 'label.status' | transloco }}</label>
+              <div>{{ 'label.status' | transloco }}</div>
             </th>
           </tr>
         </thead>
 
         <tbody>
-          <tr class="row empty-row" *ngIf="searchResults !== undefined">
-            <td colspan="6" *ngIf="searchResults.length === 0">
-              {{ 'label.nothing.to.display' | transloco }}
-            </td>
+          @if (searchResults !== undefined) {
+          <tr class="row empty-row">
+            @if (searchResults.length === 0) {
+            <td colspan="6"> {{ 'label.nothing.to.display' | transloco }} </td>
+            }
           </tr>
-
-          <tr class="row left-text" *ngFor="let saerchResult of searchResults">
+          } @for (saerchResult of searchResults; track saerchResult) {
+          <tr class="row left-text">
             <td>{{ saerchResult.logDate }}</td>
             <td>{{ saerchResult.userId }}</td>
             <td>
@@ -143,6 +158,7 @@
               'label.failure') | transloco }}
             </td>
           </tr>
+          }
         </tbody>
       </table>
     </div>

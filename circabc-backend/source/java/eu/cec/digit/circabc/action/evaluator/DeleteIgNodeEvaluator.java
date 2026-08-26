@@ -28,7 +28,6 @@ import org.alfresco.web.bean.repository.Node;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-
 /**
  * Evaluate if current user has Delete Permission on an Interest Group (in other words: Is the
  * current user a CategoryAdmin?)
@@ -36,36 +35,40 @@ import org.apache.commons.logging.LogFactory;
  * @author Stephane Clinckart
  **/
 
-
 public class DeleteIgNodeEvaluator extends BaseActionEvaluator {
 
-    /**
-     * A logger for the class
-     */
-    private static final Log logger = LogFactory.getLog(DeleteIgNodeEvaluator.class);
+  /**
+   * A logger for the class
+   */
+  private static final Log logger = LogFactory.getLog(
+    DeleteIgNodeEvaluator.class
+  );
 
-    private static final long serialVersionUID = -3468920341034630518L;
+  private static final long serialVersionUID = -3468920341034630518L;
 
-    /**
-     *
-     */
+  /**
+   *
+   */
 
+  public boolean evaluate(final Node node) {
+    boolean isAdmin = false;
 
-    public boolean evaluate(final Node node) {
+    final CategoryNode categoryNode = (CategoryNode) Beans.getWaiNavigator()
+      .getCurrentCategory();
 
-        boolean isAdmin = false;
-
-        final CategoryNode categoryNode = (CategoryNode) Beans.getWaiNavigator().getCurrentCategory();
-
-        if (categoryNode != null) {
-            if (categoryNode.hasPermission(CategoryProfileManagerService.Profiles.CIRCA_CATEGORY_ADMIN)) {
-                isAdmin = true;
-            }
-        }
-        if (logger.isTraceEnabled()) {
-            logger.trace("return :" + isAdmin);
-        }
-
-        return isAdmin;
+    if (categoryNode != null) {
+      if (
+        categoryNode.hasPermission(
+          CategoryProfileManagerService.Profiles.CIRCA_CATEGORY_ADMIN
+        )
+      ) {
+        isAdmin = true;
+      }
     }
+    if (logger.isTraceEnabled()) {
+      logger.trace("return :" + isAdmin);
+    }
+
+    return isAdmin;
+  }
 }

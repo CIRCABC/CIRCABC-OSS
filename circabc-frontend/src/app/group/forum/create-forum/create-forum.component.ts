@@ -1,11 +1,13 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, Input, OnInit, output, input } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
   FormGroup,
+  ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 
+import { TranslocoModule } from '@jsverse/transloco';
 import {
   ActionEmitterResult,
   ActionResult,
@@ -14,7 +16,13 @@ import {
 import { ActionService } from 'app/action-result/action.service';
 import { ForumService, Node as ModelNode } from 'app/core/generated/circabc';
 import { removeNulls } from 'app/core/util';
-import { ValidationService } from 'app/core/validation.service';
+import {
+  maxLengthTitleValidator,
+  titleValidator,
+} from 'app/core/validation.service';
+import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
+import { MultilingualInputComponent } from 'app/shared/input/multilingual-input.component';
+import { ModalComponent } from 'app/shared/modal/modal.component';
 import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
 import { firstValueFrom } from 'rxjs';
 
@@ -22,14 +30,21 @@ import { firstValueFrom } from 'rxjs';
   selector: 'cbc-create-forum',
   templateUrl: './create-forum.component.html',
   preserveWhitespaces: true,
+  imports: [
+    ModalComponent,
+    ReactiveFormsModule,
+    MultilingualInputComponent,
+    ControlMessageComponent,
+    TranslocoModule,
+  ],
 })
 export class CreateForumComponent implements OnInit {
+  // TODO: Skipped for migration because:
+  //  Your application code writes to the input. This prevents migration.
   @Input()
   public showWizard!: boolean;
-  @Input()
-  public parentNode!: ModelNode;
-  @Output()
-  public readonly modalHide = new EventEmitter<ActionEmitterResult>();
+  public readonly parentNode = input.required<ModelNode>();
+  public readonly modalHide = output<ActionEmitterResult>();
 
   public createForumForm!: FormGroup;
   public creating = false;
@@ -54,10 +69,8 @@ export class CreateForumComponent implements OnInit {
           '',
           [
             Validators.required,
-            (control: AbstractControl) =>
-              ValidationService.titleValidator(control),
-            (control: AbstractControl) =>
-              ValidationService.maxLengthTitleValidator(control, 50),
+            (control: AbstractControl) => titleValidator(control),
+            (control: AbstractControl) => maxLengthTitleValidator(control, 255),
           ],
         ],
       },
@@ -91,12 +104,13 @@ export class CreateForumComponent implements OnInit {
         ...this.createForumForm.value,
       };
 
-      if (this.parentNode.id !== undefined) {
+      const parentNode = this.parentNode();
+      if (parentNode.id !== undefined) {
         forumNode.name = removeNulls(
           this.i18nPipe.transform(this.createForumForm.value.title)
         );
         const response = await firstValueFrom(
-          this.forumService.postSubforums(this.parentNode.id, forumNode)
+          this.forumService.postSubforums(parentNode.id, forumNode)
         );
 
         this.showWizard = false;
@@ -104,7 +118,7 @@ export class CreateForumComponent implements OnInit {
         result.node = response;
         result.result = ActionResult.SUCCEED;
       }
-    } catch (error) {
+    } catch (_error) {
       result.result = ActionResult.FAILED;
     }
 

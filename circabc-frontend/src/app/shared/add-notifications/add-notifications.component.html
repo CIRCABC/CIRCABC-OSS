@@ -1,7 +1,7 @@
 <cbc-modal
   [title]="'label.add'"
   (ok)="addNotifications()"
-  (cancel)="cancelWizard()"
+  (cancelModal)="cancelWizard()"
   [okLabel]="'label.add'"
   [(visible)]="showModal"
   [(executing)]="adding"
@@ -12,7 +12,7 @@
     <form [formGroup]="newNotificationForm">
       <p> {{ 'notifications.selection.explanation' | transloco }} </p>
       <cbc-users-picker
-        [igId]="ig"
+        [igId]="ig()"
         formControlName="invitedUsersOrProfiles"
         (afterSelectionMade)="assign()"
         [showSelectedList]="false"
@@ -29,7 +29,8 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let pair of configModel">
+        @for (pair of configModel; track pair) {
+        <tr>
           <td
             ><span class="authorityName"
               >{{ getAuthorityDisplay(pair.authValue.authority) }}</span
@@ -46,14 +47,16 @@
           <td>
             <span class="authorityPerm">
               <a
+                tabindex="0"
                 (click)="removeNotification(pair.authKey)"
                 title="{{ 'label.delete' | transloco }}"
               >
-                <img src="img/icon-close-20x20.png" width="16" />
+                <img src="img/icon-close-20x20.png" width="16" alt="Close" />
               </a>
             </span>
           </td>
         </tr>
+        }
       </tbody>
     </table>
   </div>

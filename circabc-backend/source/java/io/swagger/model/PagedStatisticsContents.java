@@ -1,7 +1,6 @@
 package io.swagger.model;
 
 import eu.cec.digit.circabc.repo.statistics.ReportFile;
-
 import java.util.List;
 
 /**
@@ -12,26 +11,26 @@ import java.util.List;
  */
 public class PagedStatisticsContents {
 
-    private List<ReportFile> data;
-    private long total;
+  private List<ReportFile> data;
+  private long total;
 
-    public PagedStatisticsContents(List<ReportFile> data, long total) {
-        super();
-        this.data = data;
-        this.total = total;
-    }
+  public PagedStatisticsContents(List<ReportFile> data, long total) {
+    super();
+    this.data = data;
+    this.total = total;
+  }
 
-    /**
-     * @return the data
-     */
-    public List<ReportFile> getData() {
-        return data;
-    }
+  /**
+   * @return the data
+   */
+  public List<ReportFile> getData() {
+    return data;
+  }
 
-    /**
-     * @return the total
-     */
-    public long getTotal() {
-        return total;
-    }
+  /**
+   * @return the total
+   */
+  public long getTotal() {
+    return total;
+  }
 }

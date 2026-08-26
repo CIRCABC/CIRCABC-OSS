@@ -23,80 +23,80 @@ package eu.cec.digit.circabc.service.search.autonomy;
  */
 public class AutonomyResultNode {
 
-    private String name = null;
-    private String title = null;
-    private String link = null;
-    private String description = null;
+  private String name = null;
+  private String title = null;
+  private String link = null;
+  private String description = null;
 
-    /**
-     * Gets the value of the name
-     *
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
+  /**
+   * Gets the value of the name
+   *
+   * @return the name
+   */
+  public String getName() {
+    return name;
+  }
 
-    /**
-     * Sets the value of the name
-     *
-     * @param name the name to set.
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
+  /**
+   * Sets the value of the name
+   *
+   * @param name the name to set.
+   */
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    /**
-     * Gets the value of the title
-     *
-     * @return the title
-     */
-    public String getTitle() {
-        return title;
-    }
+  /**
+   * Gets the value of the title
+   *
+   * @return the title
+   */
+  public String getTitle() {
+    return title;
+  }
 
-    /**
-     * Sets the value of the title
-     *
-     * @param title the title to set.
-     */
-    public void setTitle(String title) {
-        this.title = title;
-    }
+  /**
+   * Sets the value of the title
+   *
+   * @param title the title to set.
+   */
+  public void setTitle(String title) {
+    this.title = title;
+  }
 
-    /**
-     * Gets the value of the link
-     *
-     * @return the link
-     */
-    public String getLink() {
-        return link;
-    }
+  /**
+   * Gets the value of the link
+   *
+   * @return the link
+   */
+  public String getLink() {
+    return link;
+  }
 
-    /**
-     * Sets the value of the link
-     *
-     * @param link the link to set.
-     */
-    public void setLink(String link) {
-        this.link = link;
-    }
+  /**
+   * Sets the value of the link
+   *
+   * @param link the link to set.
+   */
+  public void setLink(String link) {
+    this.link = link;
+  }
 
-    /**
-     * Gets the value of the description
-     *
-     * @return the description
-     */
-    public String getDescription() {
-        return description;
-    }
+  /**
+   * Gets the value of the description
+   *
+   * @return the description
+   */
+  public String getDescription() {
+    return description;
+  }
 
-    /**
-     * Sets the value of the description
-     *
-     * @param description the description to set.
-     */
-    public void setDescription(String description) {
-        this.description = description;
-    }
+  /**
+   * Sets the value of the description
+   *
+   * @param description the description to set.
+   */
+  public void setDescription(String description) {
+    this.description = description;
+  }
 }

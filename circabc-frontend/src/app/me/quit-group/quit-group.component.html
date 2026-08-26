@@ -3,12 +3,14 @@
   [title]="'label.leave.group.confirmation' | transloco"
   [executing]="processing"
   [okLabel]="'label.yes' | transloco"
-  (cancel)="cancel()"
+  (cancelModal)="cancel()"
   (ok)="removeMembership()"
 >
-  <p *ngIf="group">
+  @if (group()) {
+  <p>
     {{ 'label.leave.group.question' | transloco }}
     <br /><br />
     {{ getGroupLabel() }}
   </p>
+  }
 </cbc-modal>

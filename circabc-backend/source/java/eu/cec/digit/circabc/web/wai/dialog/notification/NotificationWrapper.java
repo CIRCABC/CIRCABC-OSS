@@ -22,9 +22,8 @@ package eu.cec.digit.circabc.web.wai.dialog.notification;
 
 import eu.cec.digit.circabc.service.notification.NotificationStatus;
 import io.swagger.model.I18nProperty;
-import org.alfresco.service.cmr.security.AuthorityType;
-
 import java.io.Serializable;
+import org.alfresco.service.cmr.security.AuthorityType;
 
 /**
  * Light weight object that represents a dispalyable Notification element for the UI
@@ -33,180 +32,190 @@ import java.io.Serializable;
  */
 public class NotificationWrapper implements Serializable {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = -8112745596456613819L;
+  /**
+   *
+   */
+  private static final long serialVersionUID = -8112745596456613819L;
 
+  private String username;
+  private NotificationStatus status;
+  private AuthorityType type;
+  private String authority;
+  private String nodeId;
+  private boolean isInherited;
+  private I18nProperty title;
 
-    private String username;
-    private NotificationStatus status;
-    private AuthorityType type;
-    private String authority;
-    private String nodeId;
-    private boolean isInherited;
-    private I18nProperty title;
+  /**
+   * @param type
+   * @param username
+   * @param status
+   * @param autority
+   */
+  public NotificationWrapper(
+    final AuthorityType type,
+    final String username,
+    final NotificationStatus status,
+    final String authority,
+    final String nodeId,
+    final boolean isInherited
+  ) {
+    super();
+    this.type = type;
+    this.username = username;
+    this.status = status;
+    this.authority = authority;
+    this.nodeId = nodeId;
+    this.isInherited = isInherited;
+  }
 
+  /**
+   * @param type
+   * @param username
+   * @param status
+   * @param autority
+   */
+  public NotificationWrapper(
+    final AuthorityType type,
+    final String username,
+    final NotificationStatus status,
+    final String authority,
+    final String nodeId,
+    final boolean isInherited,
+    final I18nProperty title
+  ) {
+    super();
+    this.type = type;
+    this.username = username;
+    this.status = status;
+    this.authority = authority;
+    this.nodeId = nodeId;
+    this.isInherited = isInherited;
+    this.title = title;
+  }
 
-    /**
-     * @param type
-     * @param username
-     * @param status
-     * @param autority
-     */
-    public NotificationWrapper(final AuthorityType type, final String username,
-                               final NotificationStatus status, final String authority, final String nodeId,
-                               final boolean isInherited) {
-        super();
-        this.type = type;
-        this.username = username;
-        this.status = status;
-        this.authority = authority;
-        this.nodeId = nodeId;
-        this.isInherited = isInherited;
+  /**
+   * @return the title
+   */
+  public I18nProperty getTitle() {
+    return title;
+  }
+
+  /**
+   * @param title the title to set
+   */
+  public void setTitle(I18nProperty title) {
+    this.title = title;
+  }
+
+  @Override
+  public String toString() {
+    return this.authority + " ( " + this.username + " ) " + this.status;
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
     }
-
-    /**
-     * @param type
-     * @param username
-     * @param status
-     * @param autority
-     */
-    public NotificationWrapper(final AuthorityType type, final String username,
-                               final NotificationStatus status, final String authority, final String nodeId,
-                               final boolean isInherited, final I18nProperty title) {
-        super();
-        this.type = type;
-        this.username = username;
-        this.status = status;
-        this.authority = authority;
-        this.nodeId = nodeId;
-        this.isInherited = isInherited;
-        this.title = title;
+    if (!(o instanceof NotificationWrapper)) {
+      return false;
     }
+    final NotificationWrapper other = (NotificationWrapper) o;
+    return (
+      this.getAuthority().equals(other.getAuthority()) &&
+      this.getStatus().equals(other.getStatus())
+    );
+  }
 
-    /**
-     * @return the title
-     */
-    public I18nProperty getTitle() {
-        return title;
-    }
+  @Override
+  public int hashCode() {
+    return authority.hashCode() + nodeId.hashCode() + status.hashCode();
+  }
 
-    /**
-     * @param title the title to set
-     */
-    public void setTitle(I18nProperty title) {
-        this.title = title;
-    }
+  /**
+   * @return the autority
+   */
+  public final String getAuthority() {
+    return authority;
+  }
 
-    @Override
-    public String toString() {
-        return this.authority + " ( " + this.username + " ) " + this.status;
-    }
+  /**
+   * @return the user friendly status as String
+   */
+  public final String getStatus() {
+    return NotificationUtils.translateStatus(status);
+  }
 
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof NotificationWrapper)) {
-            return false;
-        }
-        final NotificationWrapper other = (NotificationWrapper) o;
-        return this.getAuthority().equals(other.getAuthority())
-                && this.getStatus().equals(other.getStatus());
-    }
+  public String getStatusName() {
+    return status.name();
+  }
 
-    @Override
-    public int hashCode() {
-        return authority.hashCode() + nodeId.hashCode() + status.hashCode();
-    }
+  /**
+   * @return the user friendly tye As string
+   */
+  public final String getType() {
+    return NotificationUtils.translateAuthorityType(type);
+  }
 
-    /**
-     * @return the autority
-     */
-    public final String getAuthority() {
-        return authority;
-    }
+  public String gettypeName() {
+    return type.name();
+  }
 
-    /**
-     * @return the user friendly status as String
-     */
-    public final String getStatus() {
-        return NotificationUtils.translateStatus(status);
-    }
+  /**
+   * @return the username
+   */
+  public final String getUsername() {
+    return username;
+  }
 
-    public String getStatusName() {
-        return status.name();
-    }
+  /**
+   * @return the nodeId
+   */
+  public final String getNodeId() {
+    return nodeId;
+  }
 
-    /**
-     * @return the user friendly tye As string
-     */
-    public final String getType() {
-        return NotificationUtils.translateAuthorityType(type);
-    }
+  /**
+   * @return the status
+   */
+  public final NotificationStatus getStatusValue() {
+    return status;
+  }
 
-    public String gettypeName() {
-        return type.name();
-    }
+  /**
+   * @return the type
+   */
+  public final AuthorityType getTypeValue() {
+    return type;
+  }
 
-    /**
-     * @return the username
-     */
-    public final String getUsername() {
-        return username;
-    }
+  /**
+   * @return the status as an object string
+   */
+  public final String getStatusValueToString() {
+    return status.toString();
+  }
 
-    /**
-     * @return the nodeId
-     */
-    public final String getNodeId() {
-        return nodeId;
-    }
+  /**
+   * @return the type as an object string
+   */
+  public final String getTypeValueToString() {
+    return type.toString();
+  }
 
-    /**
-     * @return the status
-     */
-    public final NotificationStatus getStatusValue() {
-        return status;
-    }
+  public boolean getInherited() {
+    return isInherited;
+  }
 
-    /**
-     * @return the type
-     */
-    public final AuthorityType getTypeValue() {
-        return type;
-    }
+  public void setInherited(boolean isInherited) {
+    this.isInherited = isInherited;
+  }
 
-    /**
-     * @return the status as an object string
-     */
-    public final String getStatusValueToString() {
-        return status.toString();
-    }
+  public String getInheritedString() {
+    return String.valueOf(isInherited);
+  }
 
-    /**
-     * @return the type as an object string
-     */
-    public final String getTypeValueToString() {
-        return type.toString();
-    }
-
-    public boolean getInherited() {
-        return isInherited;
-    }
-
-    public void setInherited(boolean isInherited) {
-        this.isInherited = isInherited;
-    }
-
-    public String getInheritedString() {
-        return String.valueOf(isInherited);
-    }
-
-    public void setInheritedString(String isInheritedString) {
-        this.isInherited = Boolean.valueOf(isInheritedString);
-    }
-
+  public void setInheritedString(String isInheritedString) {
+    this.isInherited = Boolean.valueOf(isInheritedString);
+  }
 }

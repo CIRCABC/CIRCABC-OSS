@@ -19,10 +19,9 @@ package eu.cec.digit.circabc.service.bulk.indexes;
 import java.util.List;
 
 public interface IndexHeaders {
+  void addHeader(final IndexHeader header);
 
-    void addHeader(final IndexHeader header);
+  List<IndexHeader> getHeaders();
 
-    List<IndexHeader> getHeaders();
-
-    IndexHeader getHeader(final String headerName);
+  IndexHeader getHeader(final String headerName);
 }

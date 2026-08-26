@@ -27,70 +27,85 @@ import org.alfresco.service.cmr.security.AuthorityType;
  */
 public class AuthorityNotificationImpl implements AuthorityNotification {
 
-    private NotificationStatus notificationStatus;
-    private String authority;
-    private AuthorityType authorityType;
-    private boolean isInherited;
+  private NotificationStatus notificationStatus;
+  private String authority;
+  private AuthorityType authorityType;
+  private boolean isInherited;
 
-    /**
-     * @param notificationStatus
-     * @param authority
-     * @param isInheritedFromParent
-     */
-    public AuthorityNotificationImpl(
-            NotificationStatus notificationStatus, String authority, boolean isInheritedFromParent) {
-        super();
-        this.notificationStatus = notificationStatus;
-        this.authority = authority;
-        this.authorityType = AuthorityType.getAuthorityType(authority);
-        this.isInherited = isInheritedFromParent;
-    }
+  /**
+   * @param notificationStatus
+   * @param authority
+   * @param isInheritedFromParent
+   */
+  public AuthorityNotificationImpl(
+    NotificationStatus notificationStatus,
+    String authority,
+    boolean isInheritedFromParent
+  ) {
+    super();
+    this.notificationStatus = notificationStatus;
+    this.authority = authority;
+    this.authorityType = AuthorityType.getAuthorityType(authority);
+    this.isInherited = isInheritedFromParent;
+  }
 
-    public AuthorityNotificationImpl(NotificationStatus notificationStatus, String authority) {
-        super();
-        this.notificationStatus = notificationStatus;
-        this.authority = authority;
-        this.authorityType = AuthorityType.getAuthorityType(authority);
-        this.isInherited = false;
-    }
+  public AuthorityNotificationImpl(
+    NotificationStatus notificationStatus,
+    String authority
+  ) {
+    super();
+    this.notificationStatus = notificationStatus;
+    this.authority = authority;
+    this.authorityType = AuthorityType.getAuthorityType(authority);
+    this.isInherited = false;
+  }
 
-    public NotificationStatus getNotificationStatus() {
-        return notificationStatus;
-    }
+  public NotificationStatus getNotificationStatus() {
+    return notificationStatus;
+  }
 
-    public String getAuthority() {
-        return authority;
-    }
+  public String getAuthority() {
+    return authority;
+  }
 
-    public AuthorityType getAuthorityType() {
-        return authorityType;
-    }
+  public AuthorityType getAuthorityType() {
+    return authorityType;
+  }
 
-    @Override
-    public String toString() {
-        return notificationStatus + " " + this.authority + " (" + this.authorityType + ")";
-    }
+  @Override
+  public String toString() {
+    return (
+      notificationStatus +
+      " " +
+      this.authority +
+      " (" +
+      this.authorityType +
+      ")"
+    );
+  }
 
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof AuthorityNotificationImpl)) {
-            return false;
-        }
-        final AuthorityNotification other = (AuthorityNotification) o;
-        return this.getNotificationStatus() == other.getNotificationStatus()
-                && this.getAuthority().equals(other.getAuthority());
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
     }
+    if (!(o instanceof AuthorityNotificationImpl)) {
+      return false;
+    }
+    final AuthorityNotification other = (AuthorityNotification) o;
+    return (
+      this.getNotificationStatus() == other.getNotificationStatus() &&
+      this.getAuthority().equals(other.getAuthority())
+    );
+  }
 
-    @Override
-    public int hashCode() {
-        return (authority.hashCode() * 37) + notificationStatus.hashCode();
-    }
+  @Override
+  public int hashCode() {
+    return (authority.hashCode() * 37) + notificationStatus.hashCode();
+  }
 
-    @Override
-    public boolean getInherited() {
-        return isInherited;
-    }
+  @Override
+  public boolean getInherited() {
+    return isInherited;
+  }
 }

@@ -5,8 +5,8 @@ package io.swagger.exception;
  */
 public class InvalidTopicException extends Exception {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1317649542000367706L;
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1317649542000367706L;
 }

@@ -29,12 +29,8 @@ img.descriptor-icon {
   margin: 2em;
 }
 
-.mat-menu {
-  padding: 10px;
-}
-
-::ng-deep .mat-menu-content {
-  padding: 10px !important;
+::ng-deep .mat-mdc-menu-content {
+  padding: 20px !important;
   text-align: center;
 }
 

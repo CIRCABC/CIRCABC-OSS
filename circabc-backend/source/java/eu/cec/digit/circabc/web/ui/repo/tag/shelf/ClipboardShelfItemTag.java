@@ -21,11 +21,10 @@
 package eu.cec.digit.circabc.web.ui.repo.tag.shelf;
 
 import eu.cec.digit.circabc.web.ui.repo.component.shelf.UIClipboardShelfItem;
-import org.springframework.extensions.webscripts.ui.common.tag.BaseComponentTag;
-
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 import javax.faces.el.MethodBinding;
+import org.springframework.extensions.webscripts.ui.common.tag.BaseComponentTag;
 
 /**
  * @author Guillaume
@@ -36,109 +35,117 @@ import javax.faces.el.MethodBinding;
  */
 public class ClipboardShelfItemTag extends BaseComponentTag {
 
-    /**
-     * the pasteActionListener
-     */
-    private String pasteActionListener;
-    /**
-     * the downloadAllActionListener
-     */
-    private String downloadAllActionListener;
-    /**
-     * the style class
-     */
-    private String styleClass;
-    /**
-     * the clipboard collections reference
-     */
-    private String collections;
+  /**
+   * the pasteActionListener
+   */
+  private String pasteActionListener;
+  /**
+   * the downloadAllActionListener
+   */
+  private String downloadAllActionListener;
+  /**
+   * the style class
+   */
+  private String styleClass;
+  /**
+   * the clipboard collections reference
+   */
+  private String collections;
 
-    /**
-     * @see javax.faces.webapp.UIComponentTag#getComponentType()
-     */
-    public String getComponentType() {
-        return "eu.cec.digit.circabc.faces.ClipboardShelfItem";
+  /**
+   * @see javax.faces.webapp.UIComponentTag#getComponentType()
+   */
+  public String getComponentType() {
+    return "eu.cec.digit.circabc.faces.ClipboardShelfItem";
+  }
+
+  /**
+   * @see javax.faces.webapp.UIComponentTag#getRendererType()
+   */
+  public String getRendererType() {
+    // self rendering component
+    return null;
+  }
+
+  /**
+   * @see javax.faces.webapp.UIComponentTag#setProperties(javax.faces.component.UIComponent)
+   */
+  protected void setProperties(final UIComponent component) {
+    super.setProperties(component);
+
+    setStringBindingProperty(component, "collections", this.collections);
+    setStringProperty(component, "styleClass", this.styleClass);
+    if (isValueReference(this.pasteActionListener)) {
+      final MethodBinding vb = getFacesContext()
+        .getApplication()
+        .createMethodBinding(this.pasteActionListener, ACTION_CLASS_ARGS);
+      ((UIClipboardShelfItem) component).setPasteActionListener(vb);
+    } else {
+      throw new FacesException(
+        "paste Action listener method binding incorrectly specified: " +
+        this.pasteActionListener
+      );
     }
 
-    /**
-     * @see javax.faces.webapp.UIComponentTag#getRendererType()
-     */
-    public String getRendererType() {
-        // self rendering component
-        return null;
+    if (isValueReference(this.downloadAllActionListener)) {
+      final MethodBinding vb = getFacesContext()
+        .getApplication()
+        .createMethodBinding(this.downloadAllActionListener, ACTION_CLASS_ARGS);
+      ((UIClipboardShelfItem) component).setDownloadAllActionListener(vb);
+    } else {
+      throw new FacesException(
+        "DownloadAll Action listener method binding incorrectly specified: " +
+        this.downloadAllActionListener
+      );
     }
+  }
 
-    /**
-     * @see javax.faces.webapp.UIComponentTag#setProperties(javax.faces.component.UIComponent)
-     */
-    protected void setProperties(final UIComponent component) {
-        super.setProperties(component);
+  /**
+   * @see javax.servlet.jsp.tagext.Tag#release()
+   */
+  public void release() {
+    super.release();
 
-        setStringBindingProperty(component, "collections", this.collections);
-        setStringProperty(component, "styleClass", this.styleClass);
-        if (isValueReference(this.pasteActionListener)) {
-            final MethodBinding vb = getFacesContext().getApplication()
-                    .createMethodBinding(this.pasteActionListener, ACTION_CLASS_ARGS);
-            ((UIClipboardShelfItem) component).setPasteActionListener(vb);
-        } else {
-            throw new FacesException("paste Action listener method binding incorrectly specified: "
-                    + this.pasteActionListener);
-        }
+    this.collections = null;
+    this.styleClass = null;
+    this.pasteActionListener = null;
+  }
 
-        if (isValueReference(this.downloadAllActionListener)) {
-            final MethodBinding vb = getFacesContext().getApplication()
-                    .createMethodBinding(this.downloadAllActionListener, ACTION_CLASS_ARGS);
-            ((UIClipboardShelfItem) component).setDownloadAllActionListener(vb);
-        } else {
-            throw new FacesException("DownloadAll Action listener method binding incorrectly specified: "
-                    + this.downloadAllActionListener);
-        }
-    }
+  /**
+   * Set the clipboard collections to show
+   *
+   * @param collections the clipboard collections to show
+   */
+  public void setCollections(final String collections) {
+    this.collections = collections;
+  }
 
-    /**
-     * @see javax.servlet.jsp.tagext.Tag#release()
-     */
-    public void release() {
-        super.release();
+  /**
+   * The CSS class to use
+   *
+   * @param styleClass The CSS class to use
+   */
+  public void setStyleClass(final String styleClass) {
+    this.styleClass = styleClass;
+  }
 
-        this.collections = null;
-        this.styleClass = null;
-        this.pasteActionListener = null;
-    }
+  /**
+   * Set the pasteActionListener
+   *
+   * @param pasteActionListener the pasteActionListener
+   */
+  public void setPasteActionListener(final String pasteActionListener) {
+    this.pasteActionListener = pasteActionListener;
+  }
 
-    /**
-     * Set the clipboard collections to show
-     *
-     * @param collections the clipboard collections to show
-     */
-    public void setCollections(final String collections) {
-        this.collections = collections;
-    }
-
-    /**
-     * The CSS class to use
-     *
-     * @param styleClass The CSS class to use
-     */
-    public void setStyleClass(final String styleClass) {
-        this.styleClass = styleClass;
-    }
-
-    /**
-     * Set the pasteActionListener
-     *
-     * @param pasteActionListener the pasteActionListener
-     */
-    public void setPasteActionListener(final String pasteActionListener) {
-        this.pasteActionListener = pasteActionListener;
-    }
-
-    /**
-     * Set the pasteActionListener
-     *
-     * @param pasteActionListener the pasteActionListener
-     */
-    public void setDownloadAllActionListener(final String downloadAllActionListener) {
-        this.downloadAllActionListener = downloadAllActionListener;
-    }
+  /**
+   * Set the pasteActionListener
+   *
+   * @param pasteActionListener the pasteActionListener
+   */
+  public void setDownloadAllActionListener(
+    final String downloadAllActionListener
+  ) {
+    this.downloadAllActionListener = downloadAllActionListener;
+  }
 }

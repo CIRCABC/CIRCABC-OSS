@@ -1,4 +1,6 @@
-<cbc-horizontal-loader *ngIf="loading"></cbc-horizontal-loader>
+@if (loading) {
+<cbc-horizontal-loader />
+}
 
 <header class="header">
   <div class="header__actions">
@@ -9,30 +11,35 @@
   <cbc-pager
     [length]="totalItems"
     [pageSize]="listingOptions.limit"
-    [pageIndex]="listingOptions.page"
-    (pageChanged)="goToPage($event)"
+    [page]="listingOptions.page"
+    (pageChange)="goToPage($event)"
   ></cbc-pager>
 </header>
 
-<cbc-old-ui-configuration></cbc-old-ui-configuration>
+<cbc-old-ui-configuration />
 
-<ul *ngIf="templates" style="margin-bottom: 20px">
-  <li *ngFor="let template of templates.data; trackBy: trackById">
+@if (templates) {
+<ul style="margin-bottom: 20px">
+  @for (template of templates.data; track template.id) {
+  <li>
     <cbc-template-renderer
       [template]="template"
-      (delete)="refresh($event)"
+      (delete)="refresh()"
     ></cbc-template-renderer>
   </li>
-  <li *ngIf="templates.total === 0" class="empty-list">
+  } @if (templates.total === 0) {
+  <li class="empty-list">
     <p>{{ 'label.nothing.to.display' | transloco }}</p>
   </li>
+  }
 </ul>
+}
 
 <div class="footer" style="height: 20px">
   <cbc-pager
     [length]="totalItems"
     [pageSize]="listingOptions.limit"
-    [pageIndex]="listingOptions.page"
-    (pageChanged)="goToPage($event)"
+    [page]="listingOptions.page"
+    (pageChange)="goToPage($event)"
   ></cbc-pager>
 </div>

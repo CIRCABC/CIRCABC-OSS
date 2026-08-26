@@ -1,90 +1,94 @@
 .selector-compact {
-  margin-top: 22px;
-  margin-left: 15px;
-  position: relative;
-  display: inline-block;
-  z-index: 10;
-  text-align: left;
+  padding: 3px;
+  border: 0.5px solid #fff;
+  border-radius: 10px;
 
-  .selector-icon {
-    float: right;
-    padding: 3px;
+  a {
+    display: flex;
+    align-items: center;
+    gap: 3px;
 
     .lang-indicator {
       text-transform: uppercase;
+      color: #fff;
     }
 
-    .bluecolor {
-      color: #035;
+    .iconWorldToggle {
+      width: 20px;
+      content: url(^img/earth-white.svg);
     }
 
-    img {
-      vertical-align: middle;
-    }
-  }
-
-  .selector-list {
-    background-color: #fff;
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
-    border-top-left-radius: 5px;
-    padding: 15px;
-    width: 160px;
-    position: absolute;
-    top: 30px;
-    right: 0;
-    z-index: 3;
-
-    ul li {
-      margin-bottom: 5px;
-
-      .languageName {
-        text-transform: capitalize;
-      }
-
-      .languageCode {
-        text-transform: uppercase;
-      }
+    .iconArrow {
+      rotate: -90deg;
+      width: 8px;
+      height: 8px;
+      content: url(^img/arrow-white.svg);
     }
   }
 }
 
 .expanded {
   background-color: #fff;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
+
+  a {
+    .lang-indicator {
+      color: #035;
+    }
+
+    .iconWorldToggle {
+      content: url(^img/earth-blue.svg);
+    }
+
+    .iconArrow {
+      rotate: 90deg;
+      content: url(^img/arrow-blue.svg);
+    }
+  }
 }
 
-.no-float {
-  float: none !important;
+.iconColorOnlyBlue {
+  border: 0.5px solid #035;
+
+  a {
+    .lang-indicator {
+      color: #035;
+    }
+
+    .iconWorldToggle {
+      content: url(^img/earth-blue.svg);
+    }
+
+    .iconArrow {
+      rotate: 90deg;
+      content: url(^img/arrow-blue.svg);
+    }
+  }
 }
 
-.hinttextlang {
-  width: 500px;
-  background-color: rgb(85 85 85 / 1);
-  color: #fff;
-  border-radius: 6px;
-  padding: 15px;
-  position: absolute;
-  z-index: 1;
-  top: 12px;
-  left: -627px;
-  font-size: 12px;
+.iconArrowBlue {
+  rotate: -90deg;
+}
 
-  h4 {
-    margin-top: 0;
+menu {
+  line-height: 20px;
+  height: 20px;
+  font-size: 15px;
+  min-height: 20px;
+
+  .languageName {
+    text-transform: capitalize;
   }
 
-  &::after {
-    -ms-transform: rotate(271deg);
-    transform: rotate(271deg);
-    content: '';
-    position: absolute;
-    top: 33px;
-    left: 504px;
-    margin-left: -5px;
-    border-width: 15px;
-    border-style: solid;
-    border-color: rgb(85 85 85 / 1) transparent transparent;
+  .languageCode {
+    text-transform: uppercase;
   }
+
+  span {
+    color: var(--theme-link);
+    font-size: 10px;
+  }
+}
+
+select {
+  width: 100%;
 }

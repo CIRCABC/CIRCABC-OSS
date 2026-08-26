@@ -1,42 +1,18 @@
-import { Injectable } from '@angular/core';
-import {
-  ActivatedRouteSnapshot,
-  CanActivate,
-  Router,
-  RouterStateSnapshot,
-} from '@angular/router';
+import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
 import { LoginService } from 'app/core/login.service';
 import { RedirectionService } from 'app/core/redirection.service';
 
-@Injectable({
-  providedIn: 'root',
-})
-export class AuthGuard implements CanActivate {
-  public constructor(
-    private loginService: LoginService,
-    private router: Router,
-    private redirectionService: RedirectionService
-  ) {}
-  public async canActivate(
-    _route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): Promise<boolean> {
-    const url: string = state.url;
-
-    return await this.checkLogin(url);
+export const canActivateAuth: CanActivateFn = async () => {
+  if (!inject(LoginService).isGuest()) {
+    return true;
   }
 
-  private async checkLogin(_url: string): Promise<boolean> {
-    if (!this.loginService.isGuest()) {
-      return true;
-    }
+  // store the attempted URL for redirecting
+  inject(RedirectionService).mustRedirect();
 
-    // store the attempted URL for redirecting
-    this.redirectionService.mustRedirect();
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  inject(Router).navigate(['/denied']);
 
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.router.navigate(['/denied']);
-
-    return false;
-  }
-}
+  return false;
+};

@@ -1,12 +1,14 @@
 <div class="description">
+  @if (label) {
   <div
+    tabindex="0"
     class="clickable"
     [class.text]="!mustExpand"
     [class.expanded]="mustExpand"
-    *ngIf="label"
     #textExplanation
     (click)="toggleExpand()"
   >
     {{ label | transloco }}
   </div>
+  }
 </div>

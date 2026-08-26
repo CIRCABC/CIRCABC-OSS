@@ -19,37 +19,33 @@ package eu.cec.digit.circabc.service.event;
 import org.alfresco.service.cmr.repository.NodeRef;
 
 public interface Meeting extends Appointment {
+  MeetingAvailability getAvailability();
 
-    MeetingAvailability getAvailability();
+  void setAvailability(MeetingAvailability value);
 
-    void setAvailability(MeetingAvailability value);
+  String getOrganization();
 
-    String getOrganization();
+  void setOrganization(String value);
 
-    void setOrganization(String value);
+  String getAgenda();
 
-    String getAgenda();
+  void setAgenda(String value);
 
-    void setAgenda(String value);
-    
-    @Deprecated
-    MeetingType getMeetingType();
+  @Deprecated
+  MeetingType getMeetingType();
 
-    @Deprecated
-    void setMeetingType(MeetingType value);
+  @Deprecated
+  void setMeetingType(MeetingType value);
 
-    
-    String getMeetingTypeString();
+  String getMeetingTypeString();
 
-    
-    void setMeetingTypeString(String value);
+  void setMeetingTypeString(String value);
 
+  NodeRef getLibrarySection();
 
-    NodeRef getLibrarySection();
+  void setLibrarySection(NodeRef value);
 
-    void setLibrarySection(NodeRef value);
+  Integer getSequence();
 
-    Integer getSequence();
-
-    void setSequence(Integer value);
+  void setSequence(Integer value);
 }
