@@ -57,6 +57,9 @@ public class AppDistributionMailsExistGet extends DeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied: ", ade);
+      }
       return null;
     }
 

@@ -1,15 +1,12 @@
-rm -f ./circabc-backend/target/circabc.war
-rm -rf ./circabc-frontend/dist/circabc
+cd ../circabc-frontend
+npm install 
+npm run docker
+cd .. 
 mvn clean
-mvn clean package -Dbackend-target.env=tomcat-docker  -Dfrontend-target.env=docker -Dserver.node=N1
-rm -rf ./circabc-docker/tomcat/dist
-rm -rf ./circabc-docker/angular/dist
-mkdir -p circabc-docker/tomcat/dist     
-mkdir -p circabc-docker/angular/dist
+mvn clean package -Dbackend-target.env=tomcat-docker  -Dfrontend-target.env=docker -Dserver.node=N1 -D"skip.installnodenpm"=true -D"skip.npm"=true
+mkdir ./circabc-docker/tomcat/dist
 cp -f  ./circabc-backend/target/circabc.war ./circabc-docker/tomcat/dist
 cp -rf ./circabc-frontend/dist/circabc ./circabc-docker/angular/dist
 cd circabc-docker
-docker-compose -f docker-compose-tomcat.yml build
+./clean.sh
 docker-compose -f docker-compose-tomcat.yml up
-
-

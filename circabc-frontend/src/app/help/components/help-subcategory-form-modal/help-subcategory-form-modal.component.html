@@ -1,0 +1,39 @@
+<cbc-modal
+  [title]="editMode() ? 'help.update.subsection' : 'help.add.subsection'"
+  (ok)="onSave()"
+  (cancelModal)="onCancel()"
+  [okLabel]="editMode() ? 'label.update' : 'label.create'"
+  [(visible)]="visible"
+  [(executing)]="isSaving"
+  [executingLabel]="editMode() ? 'label.updating' : 'label.creating'"
+  [showOkButton]="isFormValid && !isSaving()"
+>
+  @if (isLoading()) {
+  <div class="loading-container">
+    <p>{{ 'label.loading' | transloco }}</p>
+  </div>
+  } @else {
+  <form [formGroup]="subcategoryForm">
+    <cbc-multilingual-input
+      formControlName="title"
+      [label]="'label.title' | transloco"
+      [placeholder]="'label.title' | transloco"
+      [lang]="'en'"
+      [required]="true"
+    ></cbc-multilingual-input>
+
+    @if (subcategoryForm.controls['title'].invalid &&
+    subcategoryForm.controls['title'].touched) {
+    <div class="validation-error" role="alert">
+      <small class="p-error">
+        {{ 'help.validation.title.required' | transloco }}
+      </small>
+    </div>
+    } @if (errorMessage()) {
+    <div class="error-message" role="alert">
+      <p class="p-error">{{ errorMessage() | transloco }}</p>
+    </div>
+    }
+  </form>
+  }
+</cbc-modal>

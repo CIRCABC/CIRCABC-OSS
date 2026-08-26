@@ -1,10 +1,9 @@
 package eu.cec.digit.circabc.repo.web.scripts.bean;
 
+import io.swagger.api.AppMessageApi;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletResponse;
-
 import org.alfresco.repo.security.permissions.AccessDeniedException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -12,8 +11,6 @@ import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.DeclarativeWebScript;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptRequest;
-
-import io.swagger.api.AppMessageApi;
 
 /**
  * @author beaurpi
@@ -33,14 +30,15 @@ public class AppMessagesGet extends DeclarativeWebScript {
     Status status,
     Cache cache
   ) {
-
-    if (!eu.cec.digit.circabc.web.servlet.ControlServlet.ServerState.isActivated()) {
+    if (
+      !eu.cec.digit.circabc.web.servlet.ControlServlet.ServerState.isActivated()
+    ) {
       status.setCode(HttpServletResponse.SC_NOT_FOUND, "Server is deactivated");
       status.setMessage("Server is not available");
       status.setRedirect(true); // optional: tells browser not to process response body
       return null;
     }
-    
+
     Map<String, Object> model = new HashMap<>(7, 1.0f);
 
     try {
@@ -49,6 +47,9 @@ public class AppMessagesGet extends DeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied: ", ade);
+      }
       return null;
     }
 

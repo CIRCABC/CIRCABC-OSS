@@ -84,7 +84,7 @@ export class WelcomeComponent implements OnInit {
 
   public euLoginCreate() {
     window.location.href =
-      '';
+      'https://ecas.cc.cec.eu.int:7002/cas/eim/external/register.cgi';
   }
 
   public get useEULogin(): boolean {

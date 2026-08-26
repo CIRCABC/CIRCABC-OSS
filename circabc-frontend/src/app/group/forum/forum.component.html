@@ -29,7 +29,7 @@
         >
         }
       </cbc-reponsive-sub-menu>
-      @if (isNewsgroupPost() || isNewsgroupModerateAdmin()) {
+      @if (!isReadOnly() && (isNewsgroupPost() || isNewsgroupModerateAdmin())) {
       <cbc-forum-dropdown
         [currentNode]="node"
         [enableAddTopic]="isNewsgroupPost() || isNewsgroupAdmin()"

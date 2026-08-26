@@ -135,6 +135,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link InfNews }
+     * 
+     */
+    public InfNews createInfNews() {
+        return new InfNews();
+    }
+
+    /**
      * Create an instance of {@link Message }
      * 
      */

@@ -110,25 +110,29 @@ export class SystemMessageIndicatorComponent implements OnInit, OnDestroy {
             this.uiMessageService.addInfoMessage(
               message.content,
               !firstTime,
-              displayTime
+              displayTime,
+              message.id?.toString()
             );
           } else if (message.level === 'error') {
             this.uiMessageService.addErrorMessage(
               message.content,
               !firstTime,
-              displayTime
+              displayTime,
+              message.id?.toString()
             );
           } else if (message.level === 'warning') {
             this.uiMessageService.addWarningMessage(
               message.content,
               !firstTime,
-              displayTime
+              displayTime,
+              message.id?.toString()
             );
           } else {
             this.uiMessageService.addSuccessMessage(
               message.content,
               !firstTime,
-              displayTime
+              displayTime,
+              message.id?.toString()
             );
           }
         }

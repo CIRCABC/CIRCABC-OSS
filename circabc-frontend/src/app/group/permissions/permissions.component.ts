@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+import { ReadOnlyStateService } from 'app/core/read-only-state.service';
 import {
   ActionEmitterResult,
   ActionResult,
@@ -97,6 +98,8 @@ export class PermissionsComponent implements OnInit {
   public profiles: Profile[] = [];
   public libAdmin: string[] = [];
   public ownerName = '';
+
+  public readonly readOnlyState = inject(ReadOnlyStateService);
 
   constructor(
     private permissionService: PermissionService,
@@ -592,9 +595,25 @@ export class PermissionsComponent implements OnInit {
   }
 
   public showAddPermissionModal() {
-    if (!this.shouldDisablePermissionSetting()) {
+    if (
+      !(
+        this.shouldDisablePermissionSetting() || this.readOnlyState.isReadOnly()
+      )
+    ) {
       this.showAddModal = true;
     }
+  }
+
+  /**
+   * Aggregated guard used by the template. Returns true when the "Add /
+   * modify / delete permission" affordances should be disabled — either
+   * because the IG's own permissions block it, or because the IG is currently
+   * in read-only mode.
+   */
+  public isPermissionEditingDisabled(): boolean {
+    return (
+      this.shouldDisablePermissionSetting() || this.readOnlyState.isReadOnly()
+    );
   }
 
   public getMapKeys(obj: {}) {

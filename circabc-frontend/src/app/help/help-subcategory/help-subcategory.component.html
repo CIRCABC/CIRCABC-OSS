@@ -1,0 +1,127 @@
+@if (loading()) {
+<cbc-horizontal-loader />
+} @if (subcategory()) {
+<div class="help-subcategory-container">
+  <header class="breadcrumb">
+    <nav aria-label="Breadcrumb">
+      <span class="crumb">
+        <a [routerLink]="['/help']" class="home">
+          <img src="img/icon-dashboard-blue.png" alt="Dashboard Icon" />
+          {{ 'label.help' | transloco }}
+        </a>
+        <img
+          src="img/small-arrow-right.png"
+          class="separator"
+          alt=""
+          role="presentation"
+        />
+        <a [routerLink]="['/help/category', category()?.id]">
+          {{ category()?.title | cbcI18n }}
+        </a>
+        <img
+          src="img/small-arrow-right.png"
+          class="separator"
+          alt=""
+          role="presentation"
+        />
+        <span>{{ subcategory()?.title | cbcI18n }}</span>
+      </span>
+    </nav>
+  </header>
+  <br class="cleaner" />
+
+  <section class="subcategory-content">
+    <aside class="article-list">
+      @if (isAdminOrSupport()) {
+      <header class="actions">
+        <cbc-help-action-buttons
+          [entityType]="'subsection'"
+          [showAdd]="false"
+          (editClicked)="onEditSubcategory()"
+          (deleteClicked)="onDeleteSubcategory()"
+        />
+        <a
+          tabindex="0"
+          role="button"
+          class="cta"
+          (click)="onAddArticle()"
+          (keydown.enter)="onAddArticle()"
+          >{{ 'help.add.article' | transloco }}</a
+        >
+      </header>
+      }
+
+      <h2>{{ 'help.articles' | transloco }}</h2>
+
+      <ul
+        cdkDropList
+        [cdkDropListDisabled]="!isAdminOrSupport()"
+        (cdkDropListDropped)="onArticleDrop($event)"
+      >
+        @for (article of articles(); track article.id; let i = $index) {
+        <li
+          cdkDrag
+          [cdkDragDisabled]="!isAdminOrSupport()"
+          [class.draggable]="isAdminOrSupport()"
+          [title]="isAdminOrSupport() ? ('help.drag.to.reorder' | transloco) : ''"
+        >
+          <a
+            [routerLink]="[
+              '/help/category',
+              category()?.id,
+              'subcategory',
+              subcategory()?.id,
+              'article',
+              article.id
+            ]"
+          >
+            {{ article.title | cbcI18n }}
+            <p class="metadata">
+              {{ 'label.last.updated.on' | transloco }} {{ article.lastUpdate |
+              date }}
+            </p>
+          </a>
+        </li>
+        } @if (articles().length === 0) {
+        <li class="empty-category">{{ 'help.no.article' | transloco }}</li>
+        }
+      </ul>
+    </aside>
+  </section>
+</div>
+} @if (subcategory()) {
+<cbc-add-help-article
+  [(showModal)]="showCreateArticleModal"
+  [subcategoryId]="subcategory()?.id"
+  (articleCreated)="onArticleCreated($event)"
+/>
+} @if (category() && subcategory()) {
+<cbc-help-subcategory-form-modal
+  [(visible)]="showSubcategoryFormModal"
+  [categoryId]="category()!.id!"
+  [subcategoryId]="selectedSubcategoryForEdit()"
+  (saved)="onSubcategorySaved($event)"
+/>
+} @if (subcategory()) {
+<cbc-help-delete-confirmation-modal
+  [(visible)]="showSubcategoryDeleteModal"
+  [entityType]="'subsection'"
+  [entityTitle]="subcategory()?.title | cbcI18n"
+  [hasChildren]="(subcategory()?.numberOfArticles ?? 0) > 0"
+  [childrenCount]="subcategory()?.numberOfArticles ?? 0"
+  (confirmed)="onSubcategoryDeleteConfirmed()"
+/>
+} @if (subcategory()) {
+<cbc-add-help-subcategory
+  [(showModal)]="showEditSubcategoryModal"
+  [categoryId]="category()?.id"
+  [subcategoryId]="subcategory()?.id"
+  (subcategoryUpdated)="onSubcategoryUpdated($event)"
+/>
+} @if (subcategory()) {
+<cbc-delete-help-subcategory
+  [(showModal)]="showDeleteSubcategoryModal"
+  [subcategoryId]="subcategory()?.id"
+  (subcategoryDeleted)="onSubcategoryDeleted()"
+/>
+}

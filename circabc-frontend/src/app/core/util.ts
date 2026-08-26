@@ -159,46 +159,391 @@ export function isContentPreviewableFull(content: ModelNode): boolean {
       'application/msword',
       'application/vnd.ms-excel',
       'application/vnd.visio',
+      'text/html',
       'image/gif',
       'image/jpeg',
       'image/png',
     ].indexOf(content.properties.mimetype.toLowerCase()) !== -1
   );
 }
+
+/**
+ * Preview support for the standard (OSS) deployment where `useAlfrescoAPI` is
+ * false. Only formats that are actually rendered are listed here, so the
+ * preview button never shows up for unsupported formats (e.g. legacy .doc,
+ * PowerPoint, OpenDocument, RTF, Visio), which would otherwise fail because no
+ * server-side converter (LibreOffice) is available.
+ *
+ * Supported: PDF, images, audio, video, plain text/XML, HTML, CSV, Markdown,
+ * Word (.docx) and Excel (.xls/.xlsx).
+ */
+export function isContentPreviewableOss(content: ModelNode): boolean {
+  return (
+    isContentPdf(content) ||
+    isContentImage(content) ||
+    isContentAudio(content) ||
+    isContentVideo(content) ||
+    isContentText(content) ||
+    isContentHtml(content) ||
+    isContentCsv(content) ||
+    isContentMarkdown(content) ||
+    isContentSvg(content) ||
+    isContentWord(content) ||
+    isContentExcel(content) ||
+    isContentTiff(content) ||
+    isContentRtf(content) ||
+    isContentPptx(content) ||
+    isContentWebp(content)
+  );
+}
+
 export function isContentPreviewable(content: ModelNode): boolean {
   let result =
     content?.properties?.mimetype !== undefined &&
     ['application/pdf', 'image/gif', 'image/jpeg', 'image/png'].indexOf(
       content.properties.mimetype.toLowerCase()
     ) !== -1;
-  result = result || isContentAudio(content) || isContentVideo(content);
+  result =
+    result ||
+    isContentAudio(content) ||
+    isContentVideo(content) ||
+    isContentText(content) ||
+    isContentHtml(content) ||
+    isContentCsv(content) ||
+    isContentMarkdown(content) ||
+    isContentSvg(content) ||
+    isContentWord(content) ||
+    isContentExcel(content) ||
+    isContentTiff(content) ||
+    isContentRtf(content) ||
+    isContentPptx(content) ||
+    isContentWebp(content);
   return result;
+}
+
+/** Returns true when the node file name ends with one of the given extensions. */
+function nodeNameEndsWith(content: ModelNode, extensions: string[]): boolean {
+  const name = content?.name?.toLowerCase();
+  return name !== undefined && extensions.some((ext) => name.endsWith(ext));
+}
+
+/** Returns true when the node file name exactly matches one of the given names. */
+function nodeNameIs(content: ModelNode, names: string[]): boolean {
+  const name = content?.name?.toLowerCase();
+  return name !== undefined && names.includes(name);
+}
+
+export function isContentText(content: ModelNode): boolean {
+  const mimetype = content?.properties?.mimetype?.toLowerCase();
+  return (
+    (mimetype !== undefined &&
+      [
+        'text/plain',
+        'text/xml',
+        'application/xml',
+        'text/css',
+        'application/x-javascript',
+        'application/javascript',
+        'application/json',
+        'application/xhtml+xml',
+        'text/calendar',
+        'application/rss+xml',
+        'text/mediawiki',
+        'text/sgml',
+        'text/richtext',
+        'application/x-latex',
+        'application/x-tex',
+        'application/x-sh',
+        'application/x-csh',
+        'application/x-tcl',
+      ].includes(mimetype)) ||
+    nodeNameEndsWith(content, [
+      // Plain text / config / data
+      '.txt',
+      '.log',
+      '.ini',
+      '.properties',
+      '.conf',
+      '.config',
+      '.cfg',
+      '.env',
+      '.yaml',
+      '.yml',
+      '.toml',
+      '.gitignore',
+      '.mk',
+      '.mak',
+      '.diff',
+      '.patch',
+      '.rst',
+      '.adoc',
+      // Web / markup / styles
+      '.css',
+      '.scss',
+      '.sass',
+      '.less',
+      '.styl',
+      '.js',
+      '.mjs',
+      '.jsx',
+      '.ts',
+      '.tsx',
+      '.vue',
+      '.svelte',
+      '.json',
+      '.xhtml',
+      '.graphql',
+      '.gql',
+      '.proto',
+      // Existing / misc text formats
+      '.ics',
+      '.rss',
+      '.mw',
+      '.sgml',
+      '.sgm',
+      '.rtx',
+      '.latex',
+      '.tex',
+      '.sh',
+      '.bat',
+      '.cmd',
+      '.csh',
+      '.awk',
+      '.sed',
+      '.tcl',
+      // C / C++ / C#
+      '.c',
+      '.h',
+      '.cpp',
+      '.cc',
+      '.cxx',
+      '.hpp',
+      '.hh',
+      '.hxx',
+      '.ino',
+      '.cs',
+      // Objective-C
+      '.m',
+      '.mm',
+      // Python / Ruby / Go / Rust / PHP / Perl
+      '.py',
+      '.pyw',
+      '.pyi',
+      '.rb',
+      '.go',
+      '.rs',
+      '.php',
+      '.php3',
+      '.phtml',
+      '.pl',
+      '.pm',
+      // Pascal / Delphi
+      '.pas',
+      '.pp',
+      '.dpr',
+      '.dfm',
+      '.inc',
+      // Fortran
+      '.f',
+      '.for',
+      '.f90',
+      '.f95',
+      // Visual Basic / PowerShell
+      '.vb',
+      '.vbs',
+      '.bas',
+      '.ps1',
+      '.psm1',
+      '.psd1',
+      // JVM / mobile
+      '.kt',
+      '.kts',
+      '.swift',
+      '.scala',
+      '.sc',
+      '.groovy',
+      '.gradle',
+      // Scripting / functional / others
+      '.lua',
+      '.dart',
+      '.jl',
+      '.r',
+      '.hs',
+      '.erl',
+      '.ex',
+      '.exs',
+      '.clj',
+      '.cljs',
+      '.ml',
+      '.mli',
+      // Assembly
+      '.asm',
+      '.s',
+      '.nasm',
+    ]) ||
+    // Common extension-less build/config files
+    nodeNameIs(content, [
+      'makefile',
+      'gnumakefile',
+      'dockerfile',
+      'containerfile',
+      'jenkinsfile',
+      'vagrantfile',
+      'gemfile',
+      'rakefile',
+      'procfile',
+    ])
+  );
+}
+
+export function isContentHtml(content: ModelNode): boolean {
+  return (
+    content?.properties?.mimetype !== undefined &&
+    ['text/html'].includes(content.properties.mimetype.toLowerCase())
+  );
+}
+
+export function isContentCsv(content: ModelNode): boolean {
+  const mimetype = content?.properties?.mimetype?.toLowerCase();
+  return (
+    mimetype === 'text/csv' ||
+    mimetype === 'text/tab-separated-values' ||
+    nodeNameEndsWith(content, ['.csv', '.tsv'])
+  );
+}
+
+export function isContentMarkdown(content: ModelNode): boolean {
+  const mimetype = content?.properties?.mimetype?.toLowerCase();
+  return (
+    mimetype === 'text/markdown' ||
+    mimetype === 'text/x-markdown' ||
+    nodeNameEndsWith(content, ['.md', '.markdown'])
+  );
+}
+
+/**
+ * Modern Word documents (OOXML .docx). The legacy binary .doc format is not
+ * covered: no reliable open-source client-side renderer exists for it.
+ */
+export function isContentWord(content: ModelNode): boolean {
+  const mimetype = content?.properties?.mimetype?.toLowerCase();
+  return (
+    mimetype ===
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+    nodeNameEndsWith(content, ['.docx'])
+  );
+}
+
+/** Excel spreadsheets: both modern .xlsx and legacy binary .xls. */
+export function isContentExcel(content: ModelNode): boolean {
+  const mimetype = content?.properties?.mimetype?.toLowerCase();
+  return (
+    mimetype === 'application/vnd.ms-excel' ||
+    mimetype ===
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+    nodeNameEndsWith(content, ['.xls', '.xlsx'])
+  );
 }
 
 export function isContentImage(content: ModelNode): boolean {
   return (
     content?.properties?.mimetype !== undefined &&
-    ['image/gif', 'image/png', 'image/jpeg'].includes(
+    ['image/gif', 'image/png', 'image/jpeg', 'image/bmp'].includes(
       content.properties.mimetype.toLowerCase()
     )
   );
 }
 
-export function isContentVideo(content: ModelNode): boolean {
+/**
+ * WebP images. Rendered natively by the browser via <img>, served from the raw
+ * content servlet (Alfresco 4.2.f does not map the webp mimetype, so detection
+ * also relies on the file extension).
+ */
+export function isContentWebp(content: ModelNode): boolean {
+  const mimetype = content?.properties?.mimetype?.toLowerCase();
+  return mimetype === 'image/webp' || nodeNameEndsWith(content, ['.webp']);
+}
+
+/**
+ * SVG images. Rendered inside the sandboxed iframe (not via <img>) so the strict
+ * CSP + DOM scrub neutralise any script embedded in the SVG.
+ */
+export function isContentSvg(content: ModelNode): boolean {
+  const mimetype = content?.properties?.mimetype?.toLowerCase();
+  return mimetype === 'image/svg+xml' || nodeNameEndsWith(content, ['.svg']);
+}
+
+/** TIFF images, decoded client-side with UTIF.js and drawn to a canvas. */
+export function isContentTiff(content: ModelNode): boolean {
+  const mimetype = content?.properties?.mimetype?.toLowerCase();
   return (
-    content?.name !== undefined &&
-    content.properties !== undefined &&
-    content.properties.mimetype !== undefined &&
-    content.properties.mimetype.toLowerCase().indexOf('video') !== -1
+    mimetype === 'image/tiff' || nodeNameEndsWith(content, ['.tif', '.tiff'])
   );
 }
 
-export function isContentAudio(content: ModelNode): boolean {
+/** Rich Text Format documents, rendered client-side with rtf.js. */
+export function isContentRtf(content: ModelNode): boolean {
+  const mimetype = content?.properties?.mimetype?.toLowerCase();
   return (
-    content?.name !== undefined &&
-    content.properties !== undefined &&
-    content.properties.mimetype !== undefined &&
-    content.properties.mimetype.toLowerCase().indexOf('audio') !== -1
+    mimetype === 'application/rtf' ||
+    mimetype === 'text/rtf' ||
+    nodeNameEndsWith(content, ['.rtf'])
+  );
+}
+
+/** Modern PowerPoint (OOXML .pptx), rendered client-side with pptx-preview. */
+export function isContentPptx(content: ModelNode): boolean {
+  const mimetype = content?.properties?.mimetype?.toLowerCase();
+  return (
+    mimetype ===
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation' ||
+    nodeNameEndsWith(content, ['.pptx'])
+  );
+}
+
+/**
+ * Video formats natively playable by the <video> element. Containers/codecs the
+ * browser cannot decode (e.g. mkv, avi, wmv, flv, mpeg, 3gp) are intentionally
+ * excluded so the preview button is not shown for something that cannot play.
+ */
+export function isContentVideo(content: ModelNode): boolean {
+  const mimetype = content?.properties?.mimetype?.toLowerCase();
+  return (
+    (mimetype !== undefined &&
+      ['video/mp4', 'video/x-m4v', 'video/webm', 'video/ogg'].includes(
+        mimetype
+      )) ||
+    nodeNameEndsWith(content, ['.mp4', '.m4v', '.webm', '.ogv'])
+  );
+}
+
+/** Audio formats natively playable by the <audio> element. */
+export function isContentAudio(content: ModelNode): boolean {
+  const mimetype = content?.properties?.mimetype?.toLowerCase();
+  return (
+    (mimetype !== undefined &&
+      [
+        'audio/mpeg',
+        'audio/mp4',
+        'audio/aac',
+        'audio/wav',
+        'audio/x-wav',
+        'audio/ogg',
+        'audio/vorbis',
+        'audio/webm',
+        'audio/flac',
+        'audio/x-flac',
+      ].includes(mimetype)) ||
+    nodeNameEndsWith(content, [
+      '.mp3',
+      '.m4a',
+      '.aac',
+      '.wav',
+      '.oga',
+      '.ogg',
+      '.flac',
+      '.weba',
+    ])
   );
 }
 

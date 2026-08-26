@@ -76,11 +76,17 @@ public class HelpCategoryArticlesPost extends CircabcDeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", e);
+      }
       return null;
     } catch (InvalidArgumentException | ParseException | IOException e) {
       status.setCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
       status.setMessage("Internal error");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Internal server error", e);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);

@@ -26,12 +26,12 @@ import eu.cec.digit.circabc.service.event.UpdateMode;
 import eu.cec.digit.circabc.service.mail.MailService;
 import eu.cec.digit.circabc.service.struct.ManagementService;
 import io.swagger.util.Converter;
+import io.swagger.util.EmailUtil;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.text.MessageFormat;
-import java.util.Arrays;
 import java.util.List;
 import javax.activation.DataHandler;
 import javax.activation.MailcapCommandMap;
@@ -180,7 +180,7 @@ public class MailServiceImpl implements MailService {
 
   private boolean isValidEmailList(final List<String> emails) {
     for (final String email : emails) {
-      if (!email.contains("@")) {
+      if (!EmailUtil.isValidEmailAddress(email)) {
         return false;
       }
     }
@@ -237,7 +237,7 @@ public class MailServiceImpl implements MailService {
     final boolean html,
     boolean useCC
   ) throws MessagingException {
-    if (to == null || !to.contains("@")) {
+    if (!EmailUtil.isValidEmailAddress(to)) {
       throw new MessagingException(
         "At least one destination email address must be specified  " + to
       );
@@ -304,7 +304,7 @@ public class MailServiceImpl implements MailService {
     final String body,
     final List<NodeRef> attachments
   ) throws MessagingException {
-    if (to == null || to.length() < 1) {
+    if (!EmailUtil.isValidEmailAddress(to)) {
       throw new MessagingException(
         "Cannot send one email to invalid address  " + to
       );
@@ -486,18 +486,23 @@ public class MailServiceImpl implements MailService {
     final boolean useBCC,
     final List<File> attachements
   ) throws MessagingException {
-    if (from == null || from.length() < 3 || from.indexOf('@') == -1) {
+    final String sanitizedTo = EmailUtil.sanitizeEmailAddresses(to);
+
+    if (!EmailUtil.isValidEmailAddress(from)) {
       throw new MessagingException(
         "The from email address is mandatory and must not be set as " + from
       );
     }
 
-    if (to == null || to.length() < 3 || to.indexOf('@') == -1) {
+    if (sanitizedTo == null || sanitizedTo.isEmpty()) {
       throw new MessagingException(
-        "The destination email address is mandatory and must not be set as " +
-        to
+        "No valid destination email addresses found after sanitization"
       );
     }
+
+    // Split sanitized addresses into array to avoid AddressException
+    // when the original input contained multiple addresses separated by ; or ,
+    final String[] sanitizedToArray = sanitizedTo.split("\\s*,\\s*");
 
     final MimeMessagePreparator mailPreparer = new MimeMessagePreparator() {
       public void prepare(final MimeMessage mimeMessage)
@@ -520,44 +525,48 @@ public class MailServiceImpl implements MailService {
 
           if (others != null) {
             for (final String otherTo : others) {
-              if (otherTo != null) {
+              if (EmailUtil.isValidEmailAddress(otherTo)) {
                 if (useBCC) {
                   message.addBcc(redirectEmailAddress);
                 } else {
                   message.addTo(redirectEmailAddress);
                 }
+              } else if (otherTo != null && !otherTo.isEmpty()) {
+                logger.warn(
+                  "Skipping invalid email address in others list: " + otherTo
+                );
               }
             }
           }
 
-          if (replyTo != null) {
-            if (replyTo.indexOf('@') != -1) {
-              message.setReplyTo(redirectEmailAddress);
-            }
+          if (EmailUtil.isValidEmailAddress(replyTo)) {
+            message.setReplyTo(redirectEmailAddress);
           }
         } else {
           if (useBCC) {
-            message.setBcc(to);
+            message.setBcc(sanitizedToArray);
           } else {
-            message.setTo(to);
+            message.setTo(sanitizedToArray);
           }
 
           if (others != null) {
             for (final String otherTo : others) {
-              if (otherTo != null) {
+              if (EmailUtil.isValidEmailAddress(otherTo)) {
                 if (useBCC) {
                   message.addBcc(otherTo);
                 } else {
                   message.addTo(otherTo);
                 }
+              } else if (otherTo != null && !otherTo.isEmpty()) {
+                logger.warn(
+                  "Skipping invalid email address in others list: " + otherTo
+                );
               }
             }
           }
 
-          if (replyTo != null) {
-            if (replyTo.indexOf('@') != -1) {
-              message.setReplyTo(replyTo);
-            }
+          if (EmailUtil.isValidEmailAddress(replyTo)) {
+            message.setReplyTo(replyTo);
           }
         }
 
@@ -718,7 +727,7 @@ public class MailServiceImpl implements MailService {
       done = true;
     } catch (final Throwable t) {
       if (logger.isErrorEnabled()) { // don't stop the action but let admins know email is not getting sent
-        logger.error("Failed to send email to " + to, t);
+        logger.error("Failed to send email to " + sanitizedTo, t);
       }
     }
 
@@ -738,18 +747,23 @@ public class MailServiceImpl implements MailService {
     final boolean html,
     final boolean useCC
   ) throws MessagingException {
-    if (from == null || from.length() < 3 || from.indexOf('@') == -1) {
+    final String sanitizedTo = EmailUtil.sanitizeEmailAddresses(to);
+
+    if (!EmailUtil.isValidEmailAddress(from)) {
       throw new MessagingException(
         "The from email address is mandatory and must not be set as " + from
       );
     }
 
-    if (to == null || to.length() < 3 || to.indexOf('@') == -1) {
+    if (sanitizedTo == null || sanitizedTo.isEmpty()) {
       throw new MessagingException(
-        "The destination email address is mandatory and must not be set as " +
-        to
+        "No valid destination email addresses found after sanitization"
       );
     }
+
+    // Split sanitized addresses into array to avoid AddressException
+    // when the original input contained multiple addresses separated by ; or ,
+    final String[] sanitizedToArray = sanitizedTo.split("\\s*,\\s*");
 
     final MimeMessagePreparator mailPreparer = new MimeMessagePreparator() {
       public void prepare(final MimeMessage mimeMessage)
@@ -762,23 +776,25 @@ public class MailServiceImpl implements MailService {
 
         // set the email addresses
         message.setFrom(from);
-        message.setTo(to);
+        message.setTo(sanitizedToArray);
         if (others != null) {
           for (final String otherTo : others) {
-            if (otherTo != null) {
+            if (EmailUtil.isValidEmailAddress(otherTo)) {
               if (useCC) {
                 message.addCc(otherTo);
               } else {
                 message.addTo(otherTo);
               }
+            } else if (otherTo != null && !otherTo.isEmpty()) {
+              logger.warn(
+                "Skipping invalid email address in others list: " + otherTo
+              );
             }
           }
         }
 
-        if (replyTo != null) {
-          if (replyTo.indexOf('@') != -1) {
-            message.setReplyTo(replyTo);
-          }
+        if (EmailUtil.isValidEmailAddress(replyTo)) {
+          message.setReplyTo(replyTo);
         }
 
         String crlf = "\n";
@@ -984,13 +1000,25 @@ public class MailServiceImpl implements MailService {
 
     mimeMessage.addFrom(addressFrom);
     final InternetAddress[] addressTo = new InternetAddress[to.size()];
+    int validCount = 0;
     for (int i = 0; i < to.size(); i++) {
-      addressTo[i] = new InternetAddress(to.get(i));
+      final String email = to.get(i);
+      if (EmailUtil.isValidEmailAddress(email)) {
+        addressTo[validCount++] = new InternetAddress(email);
+      } else {
+        logger.warn(
+          "Skipping invalid email address in meeting request: " + email
+        );
+      }
     }
-    if (useBCC) {
-      mimeMessage.addRecipients(Message.RecipientType.BCC, addressTo);
-    } else {
-      mimeMessage.addRecipients(Message.RecipientType.TO, addressTo);
+    if (validCount > 0) {
+      final InternetAddress[] validAddresses = new InternetAddress[validCount];
+      System.arraycopy(addressTo, 0, validAddresses, 0, validCount);
+      if (useBCC) {
+        mimeMessage.addRecipients(Message.RecipientType.BCC, validAddresses);
+      } else {
+        mimeMessage.addRecipients(Message.RecipientType.TO, validAddresses);
+      }
     }
     final Multipart multipart = new MimeMultipart();
     final MimeBodyPart iCalAttachment = new MimeBodyPart();
@@ -1315,10 +1343,22 @@ public class MailServiceImpl implements MailService {
 
     mimeMessage.addFrom(addressFrom);
     final InternetAddress[] addressTo = new InternetAddress[to.size()];
+    int validCount = 0;
     for (int i = 0; i < to.size(); i++) {
-      addressTo[i] = new InternetAddress(to.get(i));
+      final String email = to.get(i);
+      if (EmailUtil.isValidEmailAddress(email)) {
+        addressTo[validCount++] = new InternetAddress(email);
+      } else {
+        logger.warn(
+          "Skipping invalid email address in meeting cancellation: " + email
+        );
+      }
     }
-    mimeMessage.addRecipients(Message.RecipientType.TO, addressTo);
+    if (validCount > 0) {
+      final InternetAddress[] validAddresses = new InternetAddress[validCount];
+      System.arraycopy(addressTo, 0, validAddresses, 0, validCount);
+      mimeMessage.addRecipients(Message.RecipientType.TO, validAddresses);
+    }
     final Multipart multipart = new MimeMultipart();
     final MimeBodyPart iCalAttachment = new MimeBodyPart();
     final String meetingID = meeting.getId();
@@ -1686,7 +1726,7 @@ public class MailServiceImpl implements MailService {
     boolean useBCC,
     List<File> attachements
   ) throws MessagingException {
-    if (to == null || to.length() < 1) {
+    if (!EmailUtil.isValidEmailAddress(to)) {
       throw new MessagingException(
         "At least one destination email address must be specified  " + to
       );

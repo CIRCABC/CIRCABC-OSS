@@ -77,18 +77,27 @@ public class CircabcAdminsPost extends CircabcDeclarativeWebScript {
       status.setCode(Status.STATUS_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied. ", ade);
+      }
       return null;
     } catch (InvalidNodeRefException | ParseException | IOException inre) {
       logger.error(inre);
       status.setCode(Status.STATUS_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request. ", inre);
+      }
       return null;
     } catch (Exception e) {
       logger.error(e);
       status.setCode(Status.STATUS_INTERNAL_SERVER_ERROR);
       status.setMessage("Internal server error");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Internal server error. ", e);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);

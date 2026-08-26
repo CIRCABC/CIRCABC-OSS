@@ -21,6 +21,7 @@ import org.alfresco.model.ContentModel;
 import org.alfresco.model.ForumModel;
 import org.alfresco.repo.node.MLPropertyInterceptor;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
+import org.alfresco.repo.security.permissions.AccessDeniedException;
 import org.alfresco.rest.framework.core.exceptions.InvalidArgumentException;
 import org.alfresco.service.cmr.favourites.FavouritesService;
 import org.alfresco.service.cmr.lock.LockService;
@@ -28,6 +29,9 @@ import org.alfresco.service.cmr.lock.NodeLockedException;
 import org.alfresco.service.cmr.ml.MultilingualContentService;
 import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.cmr.repository.Path.Element;
+import org.alfresco.service.cmr.search.ResultSet;
+import org.alfresco.service.cmr.search.SearchParameters;
+import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.cmr.security.*;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
@@ -60,6 +64,7 @@ public class NodesApiImpl implements NodesApi {
   private AuthorityService authorityService;
   private ApiToolBox apiToolBox;
   private GroupsApi groupsApi;
+  private SearchService searchService;
   private final List<String> noAccessStrings = Arrays.asList(
     DirectoryPermissions.DIRNOACCESS.toString(),
     InformationPermissions.INFNOACCESS.toString(),
@@ -87,6 +92,99 @@ public class NodesApiImpl implements NodesApi {
 
   public void setGroupsApi(GroupsApi groupsApi) {
     this.groupsApi = groupsApi;
+  }
+
+  public void setSearchService(SearchService searchService) {
+    this.searchService = searchService;
+  }
+
+  @Override
+  public String getOriginalNodeRef(String id) {
+    NodeRef nodeRef = Converter.createNodeRefFromId(id);
+    if (!nodeService.exists(nodeRef)) {
+      throw new InvalidNodeRefException(nodeRef);
+    }
+    Serializable v = nodeService.getProperty(
+      nodeRef,
+      CircabcModel.PROP_ORIGINAL_NODE_REF
+    );
+    return v == null ? null : v.toString();
+  }
+
+  @Override
+  public Node setOriginalNodeRef(String id, String originalNodeRef) {
+    NodeRef nodeRef = Converter.createNodeRefFromId(id);
+    if (!nodeService.exists(nodeRef)) {
+      throw new InvalidNodeRefException(nodeRef);
+    }
+    Map<QName, Serializable> props = new HashMap<>(1);
+    props.put(CircabcModel.PROP_ORIGINAL_NODE_REF, originalNodeRef);
+    // addAspect is a no-op if already present; setProperty ensures update on existing aspect
+    nodeService.addAspect(nodeRef, CircabcModel.ASPECT_MIGRATED, props);
+    nodeService.setProperty(
+      nodeRef,
+      CircabcModel.PROP_ORIGINAL_NODE_REF,
+      originalNodeRef
+    );
+    return getNode(nodeRef);
+  }
+
+  @Override
+  public void deleteOriginalNodeRef(String id) {
+    NodeRef nodeRef = Converter.createNodeRefFromId(id);
+    if (!nodeService.exists(nodeRef)) {
+      throw new InvalidNodeRefException(nodeRef);
+    }
+    if (nodeService.hasAspect(nodeRef, CircabcModel.ASPECT_MIGRATED)) {
+      nodeService.removeAspect(nodeRef, CircabcModel.ASPECT_MIGRATED);
+    }
+  }
+
+  @Override
+  public Node resolveByOriginalNodeRef(String originalId) {
+    final String originalRef = new NodeRef(
+      StoreRef.STORE_REF_WORKSPACE_SPACESSTORE,
+      originalId
+    ).toString();
+    // Find permission-agnostically (as system) so we can distinguish 404 from 403.
+    NodeRef found = AuthenticationUtil.runAs(
+      new AuthenticationUtil.RunAsWork<NodeRef>() {
+        public NodeRef doWork() {
+          SearchParameters sp = new SearchParameters();
+          sp.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
+          sp.setLanguage(SearchService.LANGUAGE_LUCENE);
+          sp.setQuery("@ci\\:originalNodeRef:\"" + originalRef + "\"");
+          ResultSet rs = null;
+          try {
+            rs = searchService.query(sp);
+            for (NodeRef r : rs.getNodeRefs()) {
+              if (nodeService.exists(r)) {
+                return r;
+              }
+            }
+          } finally {
+            if (rs != null) {
+              rs.close();
+            }
+          }
+          return null;
+        }
+      },
+      AuthenticationUtil.getSystemUserName()
+    );
+    if (found == null) {
+      return null; // -> 404
+    }
+    if (
+      !permissionService
+        .hasPermission(found, PermissionService.READ)
+        .equals(AccessStatus.ALLOWED)
+    ) {
+      throw new AccessDeniedException(
+        "Not enough rights to access the migrated node"
+      );
+    }
+    return getNode(found);
   }
 
   /*
@@ -248,6 +346,17 @@ public class NodesApiImpl implements NodesApi {
       }
     }
     MLPropertyInterceptor.setMLAware(isMLAware);
+
+    // original node ref: present on nodes created by the migration/import process
+    // (ci:migrated aspect). Exposed as a dedicated field so the UI can resolve/redirect
+    // old (source) deep links to the migrated node.
+    final Serializable originalRef = secureNodeService.getProperty(
+      nodeRef,
+      CircabcModel.PROP_ORIGINAL_NODE_REF
+    );
+    if (originalRef != null) {
+      node.setOriginalNodeRef(originalRef.toString());
+    }
 
     // add owner
     if (this.ownableService.hasOwner(nodeRef)) {

@@ -60,6 +60,7 @@ import eu.cec.digit.circabc.migration.entities.generated.user.Person;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "node", propOrder = {
     "nodeReference",
+    "originalNodeRef",
     "extendedProperties",
     "created",
     "creator",
@@ -81,6 +82,9 @@ public abstract class Node
     @XmlElement(type = String.class)
     @XmlJavaTypeAdapter(NodeRefAdapter.class)
     protected NodeRef nodeReference;
+    @XmlElement(type = String.class)
+    @XmlJavaTypeAdapter(NodeRefAdapter.class)
+    protected NodeRef originalNodeRef;
     @XmlElement(name = "extendedProperty", namespace = "https://circabc.europa.eu/Import/PropertiesSchema/1.0")
     protected List<ExtendedProperty> extendedProperties;
     @XmlElement(namespace = "https://circabc.europa.eu/Import/PropertiesSchema/1.0", type = String.class)
@@ -142,6 +146,35 @@ public abstract class Node
      */
     public void setNodeReference(NodeRef value) {
         this.nodeReference = value;
+    }
+
+    /**
+     * Gets the value of the originalNodeRef property.
+     *
+     * This holds the NodeRef of the node in the source system this node was
+     * migrated/exported from. It is written on export (when the option is
+     * enabled) and, on import, is stored on the created node as the
+     * {@code ci:originalNodeRef} property of the {@code ci:migrated} aspect.
+     *
+     * @return
+     *     possible object is
+     *     {@link String }
+     *
+     */
+    public NodeRef getOriginalNodeRef() {
+        return originalNodeRef;
+    }
+
+    /**
+     * Sets the value of the originalNodeRef property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *
+     */
+    public void setOriginalNodeRef(NodeRef value) {
+        this.originalNodeRef = value;
     }
 
     /**
@@ -271,6 +304,11 @@ public abstract class Node
 
     public Node withNodeReference(NodeRef value) {
         setNodeReference(value);
+        return this;
+    }
+
+    public Node withOriginalNodeRef(NodeRef value) {
+        setOriginalNodeRef(value);
         return this;
     }
 

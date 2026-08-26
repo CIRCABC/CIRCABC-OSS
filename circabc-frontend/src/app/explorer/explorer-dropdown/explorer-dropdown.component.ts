@@ -1,11 +1,13 @@
-import { Component, HostListener, Input } from '@angular/core';
+import { Component, HostListener, Input, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { Header, Node as ModelNode } from 'app/core/generated/circabc';
+import { LoginService } from 'app/core/login.service';
 
 @Component({
   selector: 'cbc-explorer-dropdown',
   templateUrl: './explorer-dropdown.component.html',
+  styleUrls: ['./explorer-dropdown.component.scss'],
   preserveWhitespaces: true,
   imports: [RouterLink, TranslocoModule],
 })
@@ -20,6 +22,11 @@ export class ExplorerDropdownComponent {
   @Input() currentCategory!: ModelNode | undefined;
 
   public showActionsDropdown = false;
+  private loginService = inject(LoginService);
+
+  get isExternalUser(): boolean {
+    return this.loginService.getUser().properties?.domain === 'external';
+  }
 
   @HostListener('document:click', ['$event'])
 

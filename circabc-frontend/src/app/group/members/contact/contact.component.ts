@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -18,6 +18,7 @@ import {
   MailTemplateDefinition,
 } from 'app/core/generated/circabc';
 import { UiMessageService } from 'app/core/message/ui-message.service';
+import { ReadOnlyStateService } from 'app/core/read-only-state.service';
 import { fileNameValidator } from 'app/core/validation.service';
 import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
 import { FilePickerComponent } from 'app/shared/file-picker/file-picker.component';
@@ -58,6 +59,8 @@ export class ContactComponent implements OnInit {
   public templates!: MailTemplateDefinition[];
   public selectedTemplateId!: string;
   public loaded = false;
+
+  public readonly readOnlyState = inject(ReadOnlyStateService);
 
   constructor(
     private fb: FormBuilder,

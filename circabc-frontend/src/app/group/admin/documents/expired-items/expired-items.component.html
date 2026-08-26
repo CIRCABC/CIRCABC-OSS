@@ -70,6 +70,7 @@
                 [number]="deletableNodes.length"
               ></cbc-number-badge>
             </li>
+            @if (!readOnly()) {
             <li>
               <img
                 src="img/rubbish-bin-blue-small.png"
@@ -82,6 +83,7 @@
                 [(mustConfirm)]="mustConfirm"
               ></cbc-inline-delete>
             </li>
+            }
           </ul>
         </td>
         }
@@ -133,6 +135,7 @@
         </td>
 
         <td class="cell-access-level">
+          @if (!readOnly()) {
           <a tabindex="0" (click)="updateExpiredDate(expiredNode)">
             <img
               src="img/calendar-with-a-clock-time-tools-155D79.png"
@@ -149,6 +152,7 @@
             [useText]="false"
             [deleteLabel]="'label.remove'"
           ></cbc-inline-delete>
+          }
         </td>
       </tr>
       }
@@ -160,6 +164,7 @@
     <li>
       <cbc-number-badge [number]="deletableNodes.length"></cbc-number-badge>
     </li>
+    @if (!readOnly()) {
     <li>
       <img
         src="img/rubbish-bin-blue-small.png"
@@ -172,6 +177,7 @@
         [(mustConfirm)]="mustConfirm"
       ></cbc-inline-delete>
     </li>
+    }
   </ul>
   }
 

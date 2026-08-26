@@ -5,11 +5,14 @@ import io.swagger.api.SpacesApi;
 import io.swagger.model.Node;
 import io.swagger.model.PagedNodes;
 import io.swagger.util.CurrentUserPermissionCheckerService;
+import io.swagger.util.GroupLockGuard;
 import java.util.*;
 import javax.servlet.http.HttpServletResponse;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.MLPropertyInterceptor;
 import org.alfresco.repo.security.permissions.AccessDeniedException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.DeclarativeWebScript;
@@ -23,8 +26,14 @@ import org.springframework.extensions.webscripts.WebScriptRequest;
  */
 public class SubspacesIdGet extends DeclarativeWebScript {
 
+  /**
+   * A logger for the class
+   */
+  static final Log logger = LogFactory.getLog(SubspacesIdGet.class);
+
   private SpacesApi spacesApi;
   private CurrentUserPermissionCheckerService currentUserPermissionCheckerService;
+  private GroupLockGuard groupLockGuard;
 
   @Override
   protected Map<String, Object> executeImpl(
@@ -48,8 +57,14 @@ public class SubspacesIdGet extends DeclarativeWebScript {
 
     String sort = req.getParameter("sort");
     String order = req.getParameter("order");
+    String skipExpiredParam = req.getParameter("skipExpiredItems");
+    boolean skipExpiredItems = (skipExpiredParam == null)
+      ? false
+      : Boolean.parseBoolean(skipExpiredParam);
 
     try {
+      this.groupLockGuard.checkAccess(id);
+
       if (
         !this.currentUserPermissionCheckerService.hasAnyOfLibraryPermission(
             id,
@@ -77,7 +92,8 @@ public class SubspacesIdGet extends DeclarativeWebScript {
             -1,
             sort + "_" + order,
             true,
-            false
+            false,
+            skipExpiredItems
           );
 
       List<Node> spaces = new ArrayList<>();
@@ -94,12 +110,18 @@ public class SubspacesIdGet extends DeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (Exception e) {
       status.setCode(HttpServletResponse.SC_NOT_ACCEPTABLE);
       status.setMessage(e.getMessage());
       status.setException(e);
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error(e.getMessage(), e);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);
@@ -120,5 +142,9 @@ public class SubspacesIdGet extends DeclarativeWebScript {
   ) {
     this.currentUserPermissionCheckerService =
       currentUserPermissionCheckerService;
+  }
+
+  public void setGroupLockGuard(GroupLockGuard groupLockGuard) {
+    this.groupLockGuard = groupLockGuard;
   }
 }

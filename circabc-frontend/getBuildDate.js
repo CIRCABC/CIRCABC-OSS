@@ -3,7 +3,7 @@ const fse = require('fs-extra');
 
 let fileName = 'src/app/app-info.ts';
 // executes `svn info`
-const appVersion = '4.2.4.3';
+const appVersion = '4.2.5';
 const alfVersion = '4.2.f (OSS)';
 fs.exists(fileName, (exists) => {
   if (exists) {

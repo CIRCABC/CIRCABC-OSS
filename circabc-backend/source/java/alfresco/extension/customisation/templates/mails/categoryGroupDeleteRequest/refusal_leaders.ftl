@@ -12,64 +12,122 @@
 
 <tr>
     <td bgcolor="#ffffff" align="center" style="padding: 0 10px 0 10px;">
-      <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;" class="table-max">
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;" class="table-max">
+    <tbody>
         <tr>
-          <td>
-            <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
-              <tr>
-                <td>
-                    <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
-                    <tr>
-                      <td align="center" height="25" style="height:25px; font-size: 0;">&nbsp;</td>
-                    </tr>
-                    <tr>
-                      <td align="left">
-                      	<h1 style="font-family: Helvetica, Arial, sans-serif; font-size: 28px; font-weight:normal; color: #2C3E50; margin:0; mso-line-height-rule:exactly;">
-                      		${formatMessage("category_group_delete_request_template_mail_subject")}</h1>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td align="center" height="25" style="height:25px; font-size: 0;">&nbsp;</td>
-                    </tr>
-                    <tr>
-                      <td align="left" style="font-family: Helvetica, Arial, sans-serif; font-size: 16px; line-height: 25px; color: #2C3E50;">
-                        ${formatMessage("mails_common_dear_user", fullName(toUserRef))}
-                        <br>
-                        <br>
-                        ${formatMessage("category_group_delete_request_rejection_leaders_i")}
-                        (${igName})
-                        <br>
-                        ${formatMessage("category_group_delete_request_rejection_leaders_ii")}
-                        (${categoryName})
-                        ${formatMessage("category_group_delete_request_rejection_leaders_iii")}
-                        <p>
-                        ${formatMessage("category_group_delete_request_rejection_template_mail_reason")}
-                        (${reason})
-                        </p>
-                        </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-              <tr>
-                <td align="center" height="25" style="height:25px; font-size: 0;">&nbsp;</td>
-              </tr>
-            </table></td>
+            <td>
+                <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tbody>
+                                        <tr>
+                                            <td align="center" height="25" style="height:25px; font-size: 0;">&nbsp;
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td align="left">
+                                                <h1
+                                                    style="font-family: Helvetica, Arial, sans-serif; font-size: 28px; font-weight:normal; color: #2C3E50; margin:0; mso-line-height-rule:exactly;">
+                                                    ${formatMessage("category_group_delete_request_template_mail_subject")}
+                                                </h1>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td align="center" height="25" style="height:25px; font-size: 0;">&nbsp;
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td align="left"
+                                                style="font-family: Helvetica, Arial, sans-serif; font-size: 16px; line-height: 25px; color: #2C3E50;">
+                                                ${formatMessage("mails_common_dear_user", fullName(toUserRef))}
+                                                <br>
+                                                <br>
+                                                ${formatMessage("category_group_delete_request_rejection_leaders_i")}
+                                                <b>${igName}</b>
+                                                ${formatMessage("category_group_delete_request_rejection_leaders_ii")}
+                                                <b>${categoryName}</b>
+                                                ${formatMessage("category_group_delete_request_rejection_leaders_iii")}
+                                                <p>
+                                                    ${formatMessage("category_group_delete_request_rejection_template_mail_reason")}
+                                                    <b>${reason}</b>
+                                                </p>
+                                                <br>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="center" height="25" style="height:25px; font-size: 0;">&nbsp;</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
         </tr>
-      </table>
-      <!--[if (gte mso 9)|(IE)]>
-      </td>
-      </tr>
-      </table>
-      <![endif]-->
+        <tr>
+            <td align="center" height="25" style="height:25px; font-size: 0;">&nbsp;</td>
+        </tr>
+        <tr>
+            <td bgcolor="#eff5f1" align="center" style="padding: 0 10px 0 10px;">
+                <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%"
+                    style="max-width: 600px;" class="table-max">
+                    <tbody>
+                        <tr>
+                            <td bgcolor="#eff5f1">
+                                <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tbody>
+                                        <tr>
+                                            <td align="center" height="25" style="height:25px; font-size: 0;">&nbsp;
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td align="left"
+                                                style="font-family: Helvetica, Arial, sans-serif; font-size: 16px; line-height: 25px; color: #2C3E50; vertical-align: top;">
+                                                <b>${formatMessage("name")}</b>
+                                            </td>
+                                            <td align="left"
+                                                style="font-family: Helvetica, Arial, sans-serif; font-size: 16px; line-height: 25px; color: #2C3E50;">
+                                                ${igName}
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td align="left"
+                                                style="font-family: Helvetica, Arial, sans-serif; font-size: 16px; line-height: 25px; color: #2C3E50; vertical-align: top;">
+                                                <b>${formatMessage("title")}</b>
+                                            </td>
+                                            <td align="left"
+                                                style="font-family: Helvetica, Arial, sans-serif; font-size: 16px; line-height: 25px; color: #2C3E50;">
+                                                <#if igTitle?? && igTitle !="null">
+                                                    ${igTitle}
+                                                </#if>
+                                            </td>
+                                        </tr>
+
+
+
+
+
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="center" height="25" style="height:25px; font-size: 0;">&nbsp;</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+
+    </tbody>
+</table>
     </td>
-  </tr>
-	  
-  <tr>
-    <td align="center" height="25" style="height:25px; font-size: 0;">&nbsp;</td>
-  </tr>
- 
-  
+</tr>   
+
 <#-- ------------------------------------- -->
 <#-- ------------END CONTENT-------------- -->
 <#-- ------------------------------------- -->

@@ -7,10 +7,15 @@
 
 package eu.cec.digit.circabc.migration.processor.impl;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.alfresco.model.ContentModel;
 import org.alfresco.model.ForumModel;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.search.CategoryService;
+import org.alfresco.service.namespace.QName;
 
 import eu.cec.digit.circabc.migration.entities.ElementsHelper;
 import eu.cec.digit.circabc.migration.entities.TypedPreference;
@@ -28,6 +33,7 @@ import eu.cec.digit.circabc.migration.entities.generated.nodes.Events;
 import eu.cec.digit.circabc.migration.entities.generated.nodes.Forum;
 import eu.cec.digit.circabc.migration.entities.generated.nodes.InfContent;
 import eu.cec.digit.circabc.migration.entities.generated.nodes.InfMLContent;
+import eu.cec.digit.circabc.migration.entities.generated.nodes.InfNews;
 import eu.cec.digit.circabc.migration.entities.generated.nodes.InfSpace;
 import eu.cec.digit.circabc.migration.entities.generated.nodes.Information;
 import eu.cec.digit.circabc.migration.entities.generated.nodes.InformationContentVersion;
@@ -72,6 +78,7 @@ import eu.cec.digit.circabc.migration.journal.JournalLine.Parameter;
 import eu.cec.digit.circabc.migration.journal.JournalLine.Status;
 import eu.cec.digit.circabc.migration.journal.JournalLine.UpdateOperation;
 import eu.cec.digit.circabc.migration.journal.MigrationTracer;
+import eu.cec.digit.circabc.model.CircabcModel;
 import eu.cec.digit.circabc.model.DossierModel;
 import eu.cec.digit.circabc.service.struct.ManagementService;
 
@@ -126,6 +133,13 @@ public class MigrateSpaces extends MigrateProcessorBase
 	{
 		apply(new MigrateSpaceCallback(getJournal(), space));
 		super.visit(space);
+	}
+
+	@Override
+	public void visit(final InfNews infNews) throws Exception
+	{
+		apply(new MigrateNewsCallback(getJournal(), infNews));
+		super.visit(infNews);
 	}
 
 	@Override
@@ -414,6 +428,31 @@ public class MigrateSpaces extends MigrateProcessorBase
 		{
 			return ManagementService.DEFAULT_SPACE_ICON_NAME;
 		}
+    };
+
+    class MigrateNewsCallback extends MigrateNodesCallback
+    {
+    	private final InfNews infNews;
+
+    	public MigrateNewsCallback(final MigrationTracer journal, InfNews infNews)
+		{
+			super(journal, infNews);
+			this.infNews = infNews;
+		}
+
+		public NodeRef executeImpl(Node node) throws Throwable
+    	{
+			final NodeRef ref = executeImplGeneric(node, CircabcModel.TYPE_INFORMATION_NEWS);
+			final Map<QName, Serializable> aspectProps = new HashMap<>();
+			if (infNews.getNewsContent() != null) { aspectProps.put(CircabcModel.PROP_NEWS_CONTENT, infNews.getNewsContent()); }
+			if (infNews.getNewsPattern() != null) { aspectProps.put(CircabcModel.PROP_NEWS_PATTERN, infNews.getNewsPattern()); }
+			if (infNews.getNewsLayout() != null) { aspectProps.put(CircabcModel.PROP_NEWS_LAYOUT, infNews.getNewsLayout()); }
+			if (infNews.getNewsSize() != null) { aspectProps.put(CircabcModel.PROP_NEWS_SIZE, infNews.getNewsSize()); }
+			if (infNews.getNewsDate() != null) { aspectProps.put(CircabcModel.PROP_NEWS_DATE, infNews.getNewsDate()); }
+			if (infNews.getNewsUrl() != null) { aspectProps.put(CircabcModel.PROP_NEWS_URL, infNews.getNewsUrl()); }
+			getNodeService().addAspect(ref, CircabcModel.ASPECT_INFORMATION_NEWS, aspectProps);
+			return ref;
+    	}
     };
 
     class MigrateDossierCallback extends MigrateNodesCallback

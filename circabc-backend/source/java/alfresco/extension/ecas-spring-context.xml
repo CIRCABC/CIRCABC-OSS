@@ -63,12 +63,12 @@
       value="eu.cec.digit.circabc.verifyProxyTicket"
     />
         <property name="serverName" value="circabc.europa.eu" />
-        <property name="ecasBaseUrl" value="" />
+        <property name="ecasBaseUrl" value="https://ecas.cc.cec.eu.int:7002" />
         <property name="initLoginUrl" value="/cas/login/init" />
         <property name="loginUrl" value="https://ecas.ec.europa.eu/cas/login" />
         <property
       name="validateUrl"
-      value=""
+      value="https://ecas.cc.cec.eu.int:7002/cas/TicketValidationService"
     />
         <property name="proxyUrl" value="/cas/proxy" />
         <property name="forcingRenew" value="false" />

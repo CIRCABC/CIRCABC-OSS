@@ -1,4 +1,4 @@
-import { Component, output, input } from '@angular/core';
+import { Component, inject, output, input } from '@angular/core';
 
 import { TranslocoService } from '@jsverse/transloco';
 import {
@@ -6,6 +6,7 @@ import {
   KeywordsService,
   Node as ModelNode,
 } from 'app/core/generated/circabc';
+import { ReadOnlyStateService } from 'app/core/read-only-state.service';
 import { supportedLanguages } from 'app/shared/langs/supported-langs';
 import { CapitalizePipe } from 'app/shared/pipes/capitalize.pipe';
 import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
@@ -28,10 +29,21 @@ export class KeywordTagComponent {
 
   public deleting = false;
 
+  public readonly readOnlyState = inject(ReadOnlyStateService);
+
   constructor(
     private translateService: TranslocoService,
     private keywordsService: KeywordsService
   ) {}
+
+  /**
+   * Whether the "remove" (x) affordance should be shown. Requires the caller
+   * to have opted in via [removable]="true" AND the IG to not be in
+   * read-only mode.
+   */
+  public canRemove(): boolean {
+    return this.removable() && !this.readOnlyState.isReadOnly();
+  }
 
   public getTitleKeys(keyword: KeywordDefinition): string[] {
     const keywordValue = this.keyword();
@@ -57,7 +69,7 @@ export class KeywordTagComponent {
     if (documentNode === undefined) {
       return;
     }
-    if (this.removable() && keyword.id && documentNode.id) {
+    if (this.canRemove() && keyword.id && documentNode.id) {
       this.deleting = true;
       await firstValueFrom(
         this.keywordsService.deleteKeyword(documentNode.id, keyword.id)

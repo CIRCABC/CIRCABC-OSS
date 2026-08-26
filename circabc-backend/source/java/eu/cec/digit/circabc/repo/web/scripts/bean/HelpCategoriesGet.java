@@ -55,6 +55,9 @@ public class HelpCategoriesGet extends DeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
       status.setMessage("Internal server error");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Internal server error", e);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);

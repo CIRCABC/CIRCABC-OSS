@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.json.simple.parser.ParseException;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.Status;
@@ -19,6 +21,13 @@ import org.springframework.extensions.webscripts.WebScriptRequest;
 
 public class ExternalRepositoryTransactionPost
   extends CircabcDeclarativeWebScript {
+
+  /**
+   * A logger for the class
+   */
+  static final Log logger = LogFactory.getLog(
+    ExternalRepositoryTransactionPost.class
+  );
 
   private AresBridgeApi aresBridgeApi;
   private CurrentUserPermissionCheckerService currentUserPermissionCheckerService;
@@ -41,6 +50,9 @@ public class ExternalRepositoryTransactionPost
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied");
+      }
       return null;
     }
 
@@ -74,6 +86,9 @@ public class ExternalRepositoryTransactionPost
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request", e);
+      }
       return null;
     }
 

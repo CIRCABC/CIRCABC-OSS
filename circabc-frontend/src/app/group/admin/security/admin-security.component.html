@@ -11,6 +11,7 @@
       min="0"
       max="2"
       step="1"
+      [attr.disabled]="readOnlyState.isReadOnly() ? true : null"
     />
     <span>
       @if (isGuestVisible()) {
@@ -62,6 +63,7 @@
       class="cmn-toggle cmn-toggle-round"
       type="checkbox"
       formControlName="applicants"
+      [attr.disabled]="readOnlyState.isReadOnly() ? true : null"
     />
     <label for="cmn-toggle-3" class="nonBlockLabel"></label>
     @if (ig) {
@@ -85,7 +87,7 @@
   </div>
   }
 </form>
-@if (!saving) {
+@if (!saving && !readOnlyState.isReadOnly()) {
 <div class="buttons-group">
   <a tabindex="0" class="cta" (click)="save()"
     >{{ 'label.save' | transloco }}</a

@@ -74,14 +74,14 @@ public class ExternalRepositoriesManagementServiceImpl
   private ContentService contentService = null;
 
   // HRS
-  private String applicationId = "";
+  private String applicationId = "CIRCAmN67t";
   private UserNameResolver userNameResolver = null;
   private ProxyTicketResolver proxyTicketResolver = null;
-  private String uploadUrl = "";
+  private String uploadUrl = "http://myserver:1234/hrs-dts/DataTransferService";
   private String endpointBaseAddress =
-    "";
+    "http://dighbust.cc.cec.eu.int:11031/hermes/Proxy";
   private String aresLinkPrefix =
-    "";
+    "http://www.development.cc.cec/Ares_pg/documentDirectAccess.do?documentId=";
 
   private EntityWebService entityWebService = null;
   private DocumentWebService documentWebService = null;

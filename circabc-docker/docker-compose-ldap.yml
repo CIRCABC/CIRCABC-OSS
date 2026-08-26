@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  openldap:
+    #image: docker.io/bitnami/openldap:2-debian-10
+    build: openldap/bitnami-docker-openldap/2/debian-10
+    container_name: openldap
+    privileged: true
+    ports:
+      - '389:1389'
+      - '1636:1636'
+    environment:
+      - LDAP_ADMIN_USERNAME=admin
+      - LDAP_ADMIN_PASSWORD=EC1234
+      - LDAP_ROOT=dc=cec,dc=eu,dc=int
+     
+    volumes:
+      - 'openldap_data:/bitnami/openldap'
+      - ./openldap/imports/ldifs:/ldifs
+      - ./openldap/imports/schema/cudperson.ldif:/schema/custom.ldif
+volumes:
+  openldap_data:
+    driver: local
+

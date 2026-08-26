@@ -48,16 +48,28 @@ public class AppDistributionMailsPost extends CircabcDeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied: ", ade);
+      }
       return null;
     } catch (IOException e) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Error in request, impossible to read request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Error in request, impossible to read request: ", e);
+      }
       return null;
     } catch (ParseException e) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Error in request, impossible to parse object request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error(
+          "Error in request, impossible to parse object request: ",
+          e
+        );
+      }
       return null;
     }
 

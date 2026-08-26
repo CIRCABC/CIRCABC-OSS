@@ -3,15 +3,20 @@ package io.swagger.api;
 import eu.cec.digit.circabc.model.CircabcModel;
 import eu.cec.digit.circabc.repo.config.auto.upload.Configuration;
 import eu.cec.digit.circabc.service.config.auto.upload.AutoUploadManagementService;
+import eu.cec.digit.circabc.service.ftp.FtpDestinationValidator;
 import io.swagger.exception.SwaggerRuntimeException;
 import io.swagger.model.PagedAutoUploadConfiguration;
 import io.swagger.util.Converter;
 import java.io.Serializable;
 import java.sql.SQLException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.alfresco.model.ContentModel;
+import org.alfresco.repo.security.permissions.AccessDeniedException;
 import org.alfresco.service.cmr.repository.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,6 +54,8 @@ public class AutoUploadApiImpl implements AutoUploadApi {
       );
 
       for (Configuration listOfConfiguration : listOfConfigurations) {
+        requireConfigurationInInterestGroup(igNodeRef, listOfConfiguration);
+
         if (
           listOfConfiguration.getFileNodeRef() != null &&
           nodeService.exists(
@@ -123,15 +130,158 @@ public class AutoUploadApiImpl implements AutoUploadApi {
    * Gets the nodeRef with the id of the given IG
    */
   private NodeRef getIGNodeRef(String id) {
-    NodeRef igNodeRef = Converter.createNodeRefFromId(id);
+    NodeRef igNodeRef = getExistingNodeRef(id, "IG id");
 
-    if (!nodeService.exists(igNodeRef)) {
+    if (!nodeService.hasAspect(igNodeRef, CircabcModel.ASPECT_IGROOT)) {
       throw new IllegalArgumentException(
         "The IG with id '" + id + "' does not exist."
       );
     }
 
     return igNodeRef;
+  }
+
+  private NodeRef getExistingNodeRef(String id, String selectorName) {
+    NodeRef nodeRef = createNodeRef(id, selectorName);
+
+    if (!nodeService.exists(nodeRef)) {
+      throw new IllegalArgumentException(
+        "The node selected by '" + selectorName + "' does not exist."
+      );
+    }
+
+    return nodeRef;
+  }
+
+  private NodeRef createNodeRef(String id, String selectorName) {
+    if (id == null || id.isEmpty()) {
+      throw new IllegalArgumentException(
+        "'" + selectorName + "' cannot be null or empty."
+      );
+    }
+
+    String nodeId = id;
+    if (id.startsWith(WORKSPACE_SPACES_STORE)) {
+      nodeId = Converter.extractNodeRefId(id);
+    } else if (id.contains("://")) {
+      throw new IllegalArgumentException(
+        "'" + selectorName + "' must reference the workspace store."
+      );
+    }
+
+    try {
+      return Converter.createNodeRefFromId(nodeId);
+    } catch (MalformedNodeRefException e) {
+      throw new IllegalArgumentException(
+        "'" + selectorName + "' must be a valid node reference.",
+        e
+      );
+    }
+  }
+
+  private void requireNodeInInterestGroup(
+    NodeRef igNodeRef,
+    NodeRef nodeRef,
+    String selectorName
+  ) {
+    if (!isNodeInInterestGroup(igNodeRef, nodeRef)) {
+      throw new AccessDeniedException(
+        "The node selected by '" +
+        selectorName +
+        "' does not belong to the authorized IG."
+      );
+    }
+  }
+
+  private boolean isNodeInInterestGroup(NodeRef igNodeRef, NodeRef nodeRef) {
+    ArrayDeque<NodeRef> pending = new ArrayDeque<>();
+    Set<NodeRef> visited = new HashSet<>();
+    pending.add(nodeRef);
+
+    while (!pending.isEmpty()) {
+      NodeRef current = pending.removeFirst();
+
+      if (!visited.add(current)) {
+        continue;
+      }
+
+      if (igNodeRef.equals(current)) {
+        return true;
+      }
+
+      for (ChildAssociationRef parentAssoc : nodeService.getParentAssocs(
+        current
+      )) {
+        pending.addLast(parentAssoc.getParentRef());
+      }
+    }
+
+    return false;
+  }
+
+  private void requireConfigurationInInterestGroup(
+    NodeRef igNodeRef,
+    Configuration configuration
+  ) {
+    if (configuration == null) {
+      throw new IllegalArgumentException(
+        "The auto-upload configuration could not be found."
+      );
+    }
+
+    NodeRef configurationIgNodeRef = getExistingNodeRef(
+      configuration.getIgName(),
+      "configuration IG"
+    );
+
+    if (!igNodeRef.equals(configurationIgNodeRef)) {
+      throw new AccessDeniedException(
+        "The auto-upload configuration does not belong to the authorized IG."
+      );
+    }
+
+    requireStoredNodeInInterestGroup(
+      igNodeRef,
+      configuration.getFileNodeRef(),
+      "fileId"
+    );
+    requireStoredNodeInInterestGroup(
+      igNodeRef,
+      configuration.getParentNodeRef(),
+      "parentId"
+    );
+  }
+
+  private void requireStoredNodeInInterestGroup(
+    NodeRef igNodeRef,
+    String nodeId,
+    String selectorName
+  ) {
+    if (nodeId == null || nodeId.isEmpty()) {
+      return;
+    }
+
+    NodeRef nodeRef = createNodeRef(nodeId, selectorName);
+    if (nodeService.exists(nodeRef)) {
+      requireNodeInInterestGroup(igNodeRef, nodeRef, selectorName);
+    }
+  }
+
+  private Configuration getConfigurationForInterestGroup(
+    NodeRef igNodeRef,
+    long configurationId
+  )
+    throws SQLException {
+    if (configurationId < 1 || configurationId > Integer.MAX_VALUE) {
+      throw new IllegalArgumentException(
+        "The auto-upload configuration id is invalid."
+      );
+    }
+
+    Configuration configuration =
+      autoUploadManagementService.getConfigurationById((int) configurationId);
+    requireConfigurationInInterestGroup(igNodeRef, configuration);
+    return configuration;
   }
 
   private String getPathFromContentNode(NodeRef nodeRef) {
@@ -204,14 +354,15 @@ public class AutoUploadApiImpl implements AutoUploadApi {
   }
 
   /**
-   * @see io.swagger.api.AutoUploadApi#removeAutoUploadEntry(long)
+   * @see io.swagger.api.AutoUploadApi#removeAutoUploadEntry(java.lang.String, long)
    */
   @Override
-  public void removeAutoUploadEntry(long configurationId) {
-    Configuration conf = new Configuration();
-    conf.setIdConfiguration(configurationId);
-
+  public void removeAutoUploadEntry(String igId, long configurationId) {
     try {
+      Configuration conf = getConfigurationForInterestGroup(
+        getIGNodeRef(igId),
+        configurationId
+      );
       autoUploadManagementService.deleteConfiguration(conf);
     } catch (SQLException e) {
       if (logger.isErrorEnabled()) {
@@ -226,13 +377,18 @@ public class AutoUploadApiImpl implements AutoUploadApi {
   }
 
   /**
-   * @see io.swagger.api.AutoUploadApi#toggleAutoUploadEntry(long, boolean)
+   * @see io.swagger.api.AutoUploadApi#toggleAutoUploadEntry(java.lang.String, long, boolean)
    */
   @Override
-  public void toggleAutoUploadEntry(long configurationId, boolean enable) {
+  public void toggleAutoUploadEntry(
+    String igId,
+    long configurationId,
+    boolean enable
+  ) {
     try {
-      Configuration conf = autoUploadManagementService.getConfigurationById(
-        (int) configurationId
+      Configuration conf = getConfigurationForInterestGroup(
+        getIGNodeRef(igId),
+        configurationId
       );
       conf.setStatus(enable ? 1 : 0);
       autoUploadManagementService.updateConfiguration(conf);
@@ -249,20 +405,21 @@ public class AutoUploadApiImpl implements AutoUploadApi {
   }
 
   /**
-   * @see io.swagger.api.AutoUploadApi#getAutoUploadEntry(java.lang.String)
+   * @see io.swagger.api.AutoUploadApi#getAutoUploadEntry(java.lang.String, java.lang.String)
    */
   @Override
-  public Configuration getAutoUploadEntry(String nodeId) {
-    NodeRef nodeRef = Converter.createNodeRefFromId(nodeId);
-
-    if (!nodeService.exists(nodeRef)) {
-      throw new IllegalArgumentException(
-        "The node with id " + nodeId + " could not be found."
-      );
-    }
+  public Configuration getAutoUploadEntry(String igId, String nodeId) {
+    NodeRef igNodeRef = getIGNodeRef(igId);
+    NodeRef nodeRef = getExistingNodeRef(nodeId, "nodeId");
+    requireNodeInInterestGroup(igNodeRef, nodeRef, "nodeId");
 
     try {
-      return autoUploadManagementService.getConfigurationByNodeRef(nodeRef);
+      Configuration configuration =
+        autoUploadManagementService.getConfigurationByNodeRef(nodeRef);
+      if (configuration != null) {
+        requireConfigurationInInterestGroup(igNodeRef, configuration);
+      }
+      return configuration;
     } catch (SQLException e) {
       if (logger.isErrorEnabled()) {
         logger.error(
@@ -275,11 +432,16 @@ public class AutoUploadApiImpl implements AutoUploadApi {
   }
 
   /**
-   * @see io.swagger.api.AutoUploadApi#addAutoUploadEntry(java.lang.String)
+   * @see io.swagger.api.AutoUploadApi#addAutoUploadEntry(java.lang.String, java.lang.String)
    */
   @Override
-  public void addAutoUploadEntry(String autoUploadConfigurationJson) {
+  public void addAutoUploadEntry(
+    String igId,
+    String autoUploadConfigurationJson
+  ) {
+    NodeRef igNodeRef = getIGNodeRef(igId);
     Configuration autoUploadConfiguration = parseBodyJSON(
+      igNodeRef,
       autoUploadConfigurationJson
     );
 
@@ -289,6 +451,10 @@ public class AutoUploadApiImpl implements AutoUploadApi {
           autoUploadConfiguration
         );
       } else {
+        getConfigurationForInterestGroup(
+          igNodeRef,
+          autoUploadConfiguration.getIdConfiguration()
+        );
         autoUploadManagementService.updateConfiguration(
           autoUploadConfiguration
         );
@@ -301,7 +467,10 @@ public class AutoUploadApiImpl implements AutoUploadApi {
     }
   }
 
-  private Configuration parseBodyJSON(String autoUploadConfigurationJson) {
+  private Configuration parseBodyJSON(
+    NodeRef igNodeRef,
+    String autoUploadConfigurationJson
+  ) {
     if (
       autoUploadConfigurationJson == null ||
       autoUploadConfigurationJson.isEmpty()
@@ -339,30 +508,18 @@ public class AutoUploadApiImpl implements AutoUploadApi {
       );
     }
 
-    if (!igName.startsWith(WORKSPACE_SPACES_STORE)) {
-      igName = WORKSPACE_SPACES_STORE + igName;
+    NodeRef igNameNodeRef = getExistingNodeRef(igName, "igName");
+    if (!nodeService.hasAspect(igNameNodeRef, CircabcModel.ASPECT_IGROOT)) {
+      throw new IllegalArgumentException("'igName' must be a valid IG id");
     }
 
-    // check if the node exists
-    try {
-      NodeRef igNameNodeRef = Converter.createNodeRefFromId(
-        Converter.extractNodeRefId(igName)
-      );
-
-      if (
-        !nodeService.exists(igNameNodeRef) ||
-        !nodeService.hasAspect(igNameNodeRef, CircabcModel.ASPECT_IGROOT)
-      ) {
-        throw new IllegalArgumentException("'igName' must be a valid IG id");
-      }
-    } catch (MalformedNodeRefException e) {
-      throw new IllegalArgumentException(
-        "'igName' must be a valid node reference.",
-        e
+    if (!igNodeRef.equals(igNameNodeRef)) {
+      throw new AccessDeniedException(
+        "'igName' does not belong to the authorized IG."
       );
     }
 
-    configuration.setIgName(igName);
+    configuration.setIgName(igNameNodeRef.toString());
 
     // fileId
     String fileId = (String) json.get("fileId");
@@ -370,37 +527,22 @@ public class AutoUploadApiImpl implements AutoUploadApi {
     if (fileId != null && !fileId.isEmpty()) {
       // in case the configuration is defined at the file level
 
-      if (!fileId.startsWith(WORKSPACE_SPACES_STORE)) {
-        fileId = WORKSPACE_SPACES_STORE + fileId;
-      }
+      NodeRef fileNodeRef = getExistingNodeRef(fileId, "fileId");
+      requireNodeInInterestGroup(igNodeRef, fileNodeRef, "fileId");
 
-      NodeRef fileNodeRef;
-
-      // check if the node exists
-      try {
-        fileNodeRef = Converter.createNodeRefFromId(
-          Converter.extractNodeRefId(fileId)
-        );
-
-        if (!nodeService.exists(fileNodeRef)) {
-          throw new IllegalArgumentException(
-            "'fileId' must be a valid node reference."
-          );
-        }
-      } catch (MalformedNodeRefException e) {
-        throw new IllegalArgumentException(
-          "'fileId' must be a valid node reference.",
-          e
-        );
-      }
-
-      configuration.setParentNodeRef(
-        nodeService
-          .getParentAssocs(fileNodeRef)
-          .get(0)
-          .getParentRef()
-          .toString()
+      List<ChildAssociationRef> parentAssocs = nodeService.getParentAssocs(
+        fileNodeRef
       );
+      if (parentAssocs.isEmpty()) {
+        throw new IllegalArgumentException(
+          "'fileId' must have a valid parent node."
+        );
+      }
+
+      NodeRef parentNodeRef = parentAssocs.get(0).getParentRef();
+      requireNodeInInterestGroup(igNodeRef, parentNodeRef, "parentId");
+      configuration.setParentNodeRef(parentNodeRef.toString());
+      fileId = fileNodeRef.toString();
     } else {
       // in case the configuration is defined at the admin level
       fileId = null;
@@ -414,29 +556,9 @@ public class AutoUploadApiImpl implements AutoUploadApi {
         );
       }
 
-      if (!parentId.startsWith(WORKSPACE_SPACES_STORE)) {
-        parentId = WORKSPACE_SPACES_STORE + parentId;
-      }
-
-      // check if the node exists
-      try {
-        NodeRef parentNodeRef = Converter.createNodeRefFromId(
-          Converter.extractNodeRefId(parentId)
-        );
-
-        if (!nodeService.exists(parentNodeRef)) {
-          throw new IllegalArgumentException(
-            "'parentId' must be a valid node reference."
-          );
-        }
-      } catch (MalformedNodeRefException e) {
-        throw new IllegalArgumentException(
-          "'parentId' must be a valid node reference.",
-          e
-        );
-      }
-
-      configuration.setParentNodeRef(parentId);
+      NodeRef parentNodeRef = getExistingNodeRef(parentId, "parentId");
+      requireNodeInInterestGroup(igNodeRef, parentNodeRef, "parentId");
+      configuration.setParentNodeRef(parentNodeRef.toString());
     }
 
     configuration.setFileNodeRef(fileId);
@@ -465,6 +587,8 @@ public class AutoUploadApiImpl implements AutoUploadApi {
         "Invalid 'ftpPort'. Must be a number in the range [1..65535]"
       );
     }
+
+    FtpDestinationValidator.validateAndResolveHost(ftpHost, ftpPort);
 
     configuration.setFtpPort(ftpPort);
 

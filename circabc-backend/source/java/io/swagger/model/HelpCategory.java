@@ -12,6 +12,8 @@ public class HelpCategory {
 
   private I18nProperty title = new I18nProperty();
 
+  private Integer sortOrder = 0;
+
   private Integer numberOfArticles = 0;
 
   @Override
@@ -26,13 +28,14 @@ public class HelpCategory {
     return (
       Objects.equals(this.id, helpCategory.id) &&
       Objects.equals(this.title, helpCategory.title) &&
+      Objects.equals(this.sortOrder, helpCategory.sortOrder) &&
       Objects.equals(this.numberOfArticles, helpCategory.numberOfArticles)
     );
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, title);
+    return Objects.hash(id, title, sortOrder);
   }
 
   @Override
@@ -44,6 +47,9 @@ public class HelpCategory {
       "\n" +
       "    title: " +
       toIndentedString(title) +
+      "\n" +
+      "    sortOrder: " +
+      toIndentedString(sortOrder) +
       "\n" +
       "    numberOfArticles: " +
       toIndentedString(numberOfArticles) +
@@ -80,5 +86,13 @@ public class HelpCategory {
 
   public void setNumberOfArticles(Integer numberOfArticles) {
     this.numberOfArticles = numberOfArticles;
+  }
+
+  public Integer getSortOrder() {
+    return sortOrder;
+  }
+
+  public void setSortOrder(Integer sortOrder) {
+    this.sortOrder = sortOrder;
   }
 }

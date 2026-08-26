@@ -29,8 +29,6 @@ public class CircabcOwnerDynamicAuthority implements DynamicAuthority {
     this.circabcService = circabcService;
   }
 
-
-
   /**
    * Checks if the user has authority for a given node.
    *
@@ -54,6 +52,16 @@ public class CircabcOwnerDynamicAuthority implements DynamicAuthority {
       LOGGER.info("Node {} has no group", nodeRef);
       return isOwner(nodeRef, userName);
     } else {
+      // If the user is Category Admin of the Interest Group, grant OWNER dynamic authority
+      if (circabcService.isCategoryAdmin(group, userName)) {
+        LOGGER.info(
+          "User {} is Category Admin for group {} — granting OWNER authority",
+          userName,
+          group
+        );
+        return true;
+      }
+
       if (circabcService.isGroupMember(group, userName)) {
         LOGGER.info("User {} is a member of group {}", userName, group);
         return isOwner(nodeRef, userName);

@@ -19,12 +19,12 @@ import {
 import { InformationService, News } from 'app/core/generated/circabc';
 import { LoginService } from 'app/core/login.service';
 import { SaveAsService } from 'app/core/save-as.service';
-import { urlWellFormed } from 'app/core/util';
+import { ReadOnlyStateService } from 'app/core/read-only-state.service';
 import { InlineDeleteComponent } from 'app/shared/delete/inline-delete.component';
 import { IfRoleGEDirective } from 'app/shared/directives/ifrolege.directive';
 import { DownloadPipe } from 'app/shared/pipes/download.pipe';
 import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
-import { SafePipe } from 'app/shared/pipes/safe.pipe';
+import { SafePipe, isAllowedResourceUrl } from 'app/shared/pipes/safe.pipe';
 import { SecurePipe } from 'app/shared/pipes/secure.pipe';
 import { UserCardComponent } from 'app/shared/user-card/user-card.component';
 import { environment } from 'environments/environment';
@@ -79,7 +79,8 @@ export class NewsCardComponent implements OnChanges {
     private informationService: InformationService,
     private saveAsService: SaveAsService,
     private sanitizer: DomSanitizer,
-    private loginService: LoginService
+    private loginService: LoginService,
+    private readOnlyStateService: ReadOnlyStateService
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -229,6 +230,9 @@ export class NewsCardComponent implements OnChanges {
   }
 
   isNewsManage(): boolean {
+    if (this.readOnlyStateService.isReadOnly()) {
+      return false;
+    }
     if (this.news?.permissions) {
       return (
         this.news.permissions.InfManage === 'ALLOWED' ||
@@ -267,7 +271,7 @@ export class NewsCardComponent implements OnChanges {
 
   getSanitizedContent() {
     if (this.news?.content) {
-      return this.sanitizer.bypassSecurityTrustHtml(this.news.content);
+      return this.news.content;
     }
 
     return '';
@@ -281,11 +285,7 @@ export class NewsCardComponent implements OnChanges {
   }
 
   public hasValidUrl(): boolean {
-    return (
-      this.news?.url !== undefined &&
-      this.news.url !== '' &&
-      urlWellFormed(this.news.url)
-    );
+    return isAllowedResourceUrl(this.news?.url);
   }
 
   public getAuthor(): string {

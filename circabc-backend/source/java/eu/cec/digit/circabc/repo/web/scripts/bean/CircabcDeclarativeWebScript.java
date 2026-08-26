@@ -2,6 +2,7 @@ package eu.cec.digit.circabc.repo.web.scripts.bean;
 
 import eu.cec.digit.circabc.service.log.LogRestRecord;
 import eu.cec.digit.circabc.service.log.LogService;
+import io.swagger.api.GroupLockApi;
 import io.swagger.util.ApiToolBox;
 import io.swagger.util.Converter;
 import java.io.IOException;
@@ -29,10 +30,13 @@ public class CircabcDeclarativeWebScript extends DeclarativeWebScript {
     "line.separator"
   );
 
+  private static final String LOCKED_MESSAGE = "Interest group is locked";
+
   protected LogService logService;
 
   protected ApiToolBox apiToolBox;
   protected NodeService notSecuredNodeService;
+  protected GroupLockApi groupLockApi;
 
   protected NodeRef nodeParent;
   protected String nodePath;
@@ -40,6 +44,52 @@ public class CircabcDeclarativeWebScript extends DeclarativeWebScript {
 
   private static final int INFO_MAX_SIZE = 4000;
   private static final int URL_MAX_SIZE = 510;
+
+  /**
+   * Checks whether the current user is allowed to perform a write operation on the given
+   * node, based on the lock state of the Interest Group that contains it.
+   *
+   * <p>Blocks the operation when:</p>
+   * <ul>
+   *   <li>The IG is locked and the user is not an IG leader nor a category admin
+   *       (regular members, registered users and guests).</li>
+   *   <li>The IG is locked and marked read-only, regardless of the user's role.</li>
+   * </ul>
+   *
+   * @param nodeId the ID of the node (content, space, topic, etc.) targeted by the write
+   * @throws ReadOnlyAccessException if the write is not allowed under the current lock state
+   */
+  protected void checkGroupReadOnlyMode(final String nodeId) {
+    if (groupLockApi == null) {
+      return;
+    }
+
+    final NodeRef nodeRef = Converter.createNodeRefFromId(nodeId);
+    if (nodeRef == null || !notSecuredNodeService.exists(nodeRef)) {
+      return;
+    }
+
+    final NodeRef igNodeRef = apiToolBox.getCurrentInterestGroup(nodeRef);
+    if (igNodeRef == null) {
+      return;
+    }
+
+    final String igId = igNodeRef.getId();
+    if (!groupLockApi.canWrite(igId)) {
+      if (logger.isWarnEnabled()) {
+        final String username = AuthenticationUtil.getFullyAuthenticatedUser();
+        logger.warn(
+          "Write operation blocked on locked IG " +
+          igId +
+          " for node " +
+          nodeId +
+          " by user " +
+          username
+        );
+      }
+      throw new ReadOnlyAccessException(LOCKED_MESSAGE);
+    }
+  }
 
   protected void recordBeforeDelete(String deletedNodeId) {
     NodeRef deletedNodeRef = Converter.createNodeRefFromId(deletedNodeId);
@@ -315,5 +365,23 @@ public class CircabcDeclarativeWebScript extends DeclarativeWebScript {
 
   public void setApiToolBox(ApiToolBox apiToolBox) {
     this.apiToolBox = apiToolBox;
+  }
+
+  public GroupLockApi getGroupLockApi() {
+    return groupLockApi;
+  }
+
+  public void setGroupLockApi(GroupLockApi groupLockApi) {
+    this.groupLockApi = groupLockApi;
+  }
+
+  /**
+   * Thrown when a write operation is attempted on an Interest Group that is in read-only mode.
+   */
+  public static class ReadOnlyAccessException extends RuntimeException {
+
+    public ReadOnlyAccessException(final String message) {
+      super(message);
+    }
   }
 }

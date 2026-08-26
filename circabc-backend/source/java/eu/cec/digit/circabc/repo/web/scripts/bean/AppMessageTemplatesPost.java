@@ -59,16 +59,25 @@ public class AppMessageTemplatesPost extends CircabcDeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied: ", ade);
+      }
       return null;
     } catch (IOException e) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Problem with object");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Problem with object: ", e);
+      }
       return null;
     } catch (ParseException e) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad JSON format");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad JSON format: ", e);
+      }
       return null;
     }
 

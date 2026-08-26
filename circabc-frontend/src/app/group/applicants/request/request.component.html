@@ -18,9 +18,11 @@
   <div class="request--footer">
     @if (!showAcceptForm && !showDeclineForm) {
     <div class="buttons-group">
+      @if (!readOnlyState.isReadOnly()) {
       <a tabindex="0" class="cta" (click)="prepareAccept()"
         >{{ 'label.accept' | transloco }}</a
       >
+      }
       <a tabindex="0" class="button" (click)="prepareDecline()"
         >{{ 'label.decline' | transloco }}</a
       >

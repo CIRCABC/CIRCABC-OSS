@@ -16,6 +16,7 @@ import {
   NodesService,
 } from 'app/core/generated/circabc';
 import { LoginService } from 'app/core/login.service';
+import { ReadOnlyStateService } from 'app/core/read-only-state.service';
 import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
 import { SetTitlePipe } from 'app/shared/pipes/set-title.pipe';
 import { ReponsiveSubMenuComponent } from 'app/shared/reponsive-sub-menu/reponsive-sub-menu.component';
@@ -54,7 +55,8 @@ export class ForumComponent implements OnInit {
     private permEvalService: PermissionEvaluatorService,
     private groupsService: InterestGroupService,
     private loginService: LoginService,
-    private router: Router
+    private router: Router,
+    private readOnlyStateService: ReadOnlyStateService
   ) {}
 
   public ngOnInit() {
@@ -145,6 +147,10 @@ export class ForumComponent implements OnInit {
       return true;
     }
     return this.permEvalService.isLibAdmin(this.node);
+  }
+
+  public isReadOnly(): boolean {
+    return this.readOnlyStateService.isReadOnly();
   }
 
   public async refreshConf(res: ActionEmitterResult) {

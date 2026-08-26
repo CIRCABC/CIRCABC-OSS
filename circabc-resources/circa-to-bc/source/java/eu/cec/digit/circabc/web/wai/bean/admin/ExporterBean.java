@@ -87,6 +87,14 @@ public class ExporterBean extends BaseWaiDialog {
 			String title = (String) getNodeService().getProperty(categoryNodeRef, 
 							ContentModel.PROP_TITLE);
 			
+			if (title == null) {
+				title = (String) getNodeService().getProperty(categoryNodeRef,
+								ContentModel.PROP_NAME);
+			}
+			if (title == null) {
+				title = categoryNodeRef.toString();
+			}
+			
 			categories.put(title, categoryNodeRef.toString());
 			
 			// ECHA as default (remove when ready)
@@ -135,6 +143,14 @@ public class ExporterBean extends BaseWaiDialog {
 				
 				String title = (String) getNodeService().getProperty(igNodeRef, 
 								ContentModel.PROP_TITLE);
+				
+				if (title == null) {
+					title = (String) getNodeService().getProperty(igNodeRef,
+									ContentModel.PROP_NAME);
+				}
+				if (title == null) {
+					title = igNodeRef.toString();
+				}
 				
 				igs.put(title, igNodeRef.toString());
 			}

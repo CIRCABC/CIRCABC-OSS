@@ -24,8 +24,19 @@ import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.AuthorityType;
 import org.alfresco.service.cmr.security.PermissionService;
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class CurrentUserPermissionCheckerService {
+
+  private static final Log logger = LogFactory.getLog(
+    CurrentUserPermissionCheckerService.class
+  );
+
+  private static final String SERVICE_LIBRARY = "Library";
+  private static final String SERVICE_NEWSGROUPS = "Newsgroups";
+  private static final String SERVICE_INFORMATION = "Information";
+  private static final String SERVICE_EVENTS = "Events";
 
   private PermissionService permissionService;
   private NodeService nodeService;
@@ -472,40 +483,71 @@ public class CurrentUserPermissionCheckerService {
     this.authorityService = authorityService;
   }
 
-  public boolean isInterestGroupLibAdmin(String igId) {
-    NodeRef igRef = Converter.createNodeRefFromId(igId);
+  private NodeRef getInterestGroupServiceNode(
+    NodeRef igRef,
+    String serviceName
+  ) {
+    NodeRef serviceRef = nodeService.getChildByName(
+      igRef,
+      ContentModel.ASSOC_CONTAINS,
+      serviceName
+    );
 
-    if (nodeService.hasAspect(igRef, CircabcModel.ASPECT_IGROOT)) {
-      NodeRef libRef = nodeService.getChildByName(
-        igRef,
-        ContentModel.ASSOC_CONTAINS,
-        "Library"
-      );
-      return (
-        libRef != null &&
-        hasAnyOfLibraryPermission(libRef.getId(), LibraryPermissions.LIBADMIN)
-      );
+    if (serviceRef != null && nodeService.exists(serviceRef)) {
+      return serviceRef;
+    }
+
+    return null;
+  }
+
+  public boolean isInterestGroupLibAdmin(String igId) {
+    try {
+      NodeRef igRef = Converter.createNodeRefFromId(igId);
+
+      if (nodeService.hasAspect(igRef, CircabcModel.ASPECT_IGROOT)) {
+        NodeRef libRef = getInterestGroupServiceNode(igRef, SERVICE_LIBRARY);
+        return (
+          libRef != null &&
+          hasAnyOfLibraryPermission(libRef.getId(), LibraryPermissions.LIBADMIN)
+        );
+      }
+    } catch (Exception e) {
+      if (logger.isErrorEnabled()) {
+        logger.error(
+          "Error while checking library admin for interest group '" +
+          igId +
+          "'",
+          e
+        );
+      }
     }
 
     return false;
   }
 
   public boolean isInterestGroupNewsAdmin(String igId) {
-    NodeRef igRef = Converter.createNodeRefFromId(igId);
+    try {
+      NodeRef igRef = Converter.createNodeRefFromId(igId);
 
-    if (nodeService.hasAspect(igRef, CircabcModel.ASPECT_IGROOT)) {
-      NodeRef newsRef = nodeService.getChildByName(
-        igRef,
-        ContentModel.ASSOC_CONTAINS,
-        "Newsgroups"
-      );
-      return (
-        newsRef != null &&
-        hasAnyOfNewsGroupPermission(
-          newsRef.getId(),
-          NewsGroupPermissions.NWSADMIN
-        )
-      );
+      if (nodeService.hasAspect(igRef, CircabcModel.ASPECT_IGROOT)) {
+        NodeRef newsRef = getInterestGroupServiceNode(igRef, SERVICE_NEWSGROUPS);
+        return (
+          newsRef != null &&
+          hasAnyOfNewsGroupPermission(
+            newsRef.getId(),
+            NewsGroupPermissions.NWSADMIN
+          )
+        );
+      }
+    } catch (Exception e) {
+      if (logger.isErrorEnabled()) {
+        logger.error(
+          "Error while checking newsgroup admin for interest group '" +
+          igId +
+          "'",
+          e
+        );
+      }
     }
 
     return false;
@@ -520,13 +562,24 @@ public class CurrentUserPermissionCheckerService {
   }
 
   public boolean isInterestGroupDirAdmin(String igId) {
-    NodeRef igRef = Converter.createNodeRefFromId(igId);
+    try {
+      NodeRef igRef = Converter.createNodeRefFromId(igId);
 
-    if (nodeService.hasAspect(igRef, CircabcModel.ASPECT_IGROOT)) {
-      return hasAnyOfDirectoryPermission(
-        igRef.getId(),
-        DirectoryPermissions.DIRADMIN
-      );
+      if (nodeService.hasAspect(igRef, CircabcModel.ASPECT_IGROOT)) {
+        return hasAnyOfDirectoryPermission(
+          igRef.getId(),
+          DirectoryPermissions.DIRADMIN
+        );
+      }
+    } catch (Exception e) {
+      if (logger.isErrorEnabled()) {
+        logger.error(
+          "Error while checking directory admin for interest group '" +
+          igId +
+          "'",
+          e
+        );
+      }
     }
 
     return false;
@@ -570,29 +623,84 @@ public class CurrentUserPermissionCheckerService {
       .equals(AccessStatus.ALLOWED);
   }
 
-  public boolean isGroupAdmin(String id) {
-    NodeRef igRef = Converter.createNodeRefFromId(id);
+  public boolean isInterestGroupEventAdmin(String igId) {
+    try {
+      NodeRef igRef = Converter.createNodeRefFromId(igId);
 
-    if (nodeService.exists(igRef)) {
-      return !(
-        hasAnyOfDirectoryPermission(
-          igRef.getId(),
-          DirectoryPermissions.DIRADMIN
-        ) &&
-        hasAnyOfLibraryPermission(igRef.getId(), LibraryPermissions.LIBADMIN) &&
-        hasAnyOfEventPermission(igRef.getId(), EventPermissions.EVEADMIN) &&
-        hasAnyOfInformationPermission(
-          igRef.getId(),
-          InformationPermissions.INFADMIN
-        ) &&
-        hasAnyOfNewsGroupPermission(
-          igRef.getId(),
-          NewsGroupPermissions.NWSADMIN
-        )
-      );
+      if (nodeService.hasAspect(igRef, CircabcModel.ASPECT_IGROOT)) {
+        NodeRef eventRef = getInterestGroupServiceNode(igRef, SERVICE_EVENTS);
+        return (
+          eventRef != null &&
+          hasAnyOfEventPermission(eventRef.getId(), EventPermissions.EVEADMIN)
+        );
+      }
+    } catch (Exception e) {
+      if (logger.isErrorEnabled()) {
+        logger.error(
+          "Error while checking event admin for interest group '" +
+          igId +
+          "'",
+          e
+        );
+      }
     }
 
     return false;
+  }
+
+  public boolean isInterestGroupInfoAdmin(String igId) {
+    try {
+      NodeRef igRef = Converter.createNodeRefFromId(igId);
+
+      if (nodeService.hasAspect(igRef, CircabcModel.ASPECT_IGROOT)) {
+        NodeRef informationRef = getInterestGroupServiceNode(
+          igRef,
+          SERVICE_INFORMATION
+        );
+        return (
+          informationRef != null &&
+          hasAnyOfInformationPermission(
+            informationRef.getId(),
+            InformationPermissions.INFADMIN
+          )
+        );
+      }
+    } catch (Exception e) {
+      if (logger.isErrorEnabled()) {
+        logger.error(
+          "Error while checking information admin for interest group '" +
+          igId +
+          "'",
+          e
+        );
+      }
+    }
+
+    return false;
+  }
+
+  public boolean isGroupAdmin(String id) {
+    // A full interest-group admin must hold the admin permission for every
+    // service. Each service permission is evaluated on its own service node
+    // (Library, Events, Information, Newsgroups); the directory admin
+    // permission is held on the interest-group (members) node itself.
+    try {
+      return (
+        isInterestGroupDirAdmin(id) &&
+        isInterestGroupLibAdmin(id) &&
+        isInterestGroupEventAdmin(id) &&
+        isInterestGroupInfoAdmin(id) &&
+        isInterestGroupNewsAdmin(id)
+      );
+    } catch (Exception e) {
+      if (logger.isErrorEnabled()) {
+        logger.error(
+          "Error while checking group admin for interest group '" + id + "'",
+          e
+        );
+      }
+      return false;
+    }
   }
 
   public boolean hasTakeOwnershipPermission(String id) {

@@ -32,4 +32,36 @@ public interface NodesApi {
   String removeFileNameExtension(final String fileName);
 
   InterestGroup nodesIdGroupGet(String id) throws InvalidArgumentException;
+
+  /**
+   * Read the original (source) node reference stored on a node via the
+   * {@code ci:migrated} aspect. Returns {@code null} if the node is not migrated.
+   * Intended for CIRCABC administrators.
+   */
+  String getOriginalNodeRef(String id);
+
+  /**
+   * Set (create or update) the original (source) node reference on a node,
+   * applying the {@code ci:migrated} aspect. Intended for CIRCABC administrators.
+   *
+   * @return the updated node
+   */
+  Node setOriginalNodeRef(String id, String originalNodeRef);
+
+  /**
+   * Remove the {@code ci:migrated} aspect (and its {@code ci:originalNodeRef}
+   * property) from a node. Intended for CIRCABC administrators.
+   */
+  void deleteOriginalNodeRef(String id);
+
+  /**
+   * Resolve the migrated node whose {@code ci:originalNodeRef} matches the given
+   * original node id (a workspace://SpacesStore uuid). Available to any user, but
+   * the current user must have READ permission on the resolved node.
+   *
+   * @return the migrated node, or {@code null} if no node references the original id
+   * @throws org.alfresco.repo.security.permissions.AccessDeniedException if a node is
+   *         found but the current user has no READ permission on it
+   */
+  Node resolveByOriginalNodeRef(String originalId);
 }

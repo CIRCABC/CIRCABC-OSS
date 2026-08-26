@@ -80,6 +80,10 @@ public class GroupsInformationNewsPost extends CircabcDeclarativeWebScript {
       );
       trx.begin();
 
+      if (!this.groupLockApi.canWriteOrAdmin(id)) {
+        throw new AccessDeniedException("Interest group is in read-only mode");
+      }
+
       NodeRef infRef =
         this.nodeService.getChildByName(
             Converter.createNodeRefFromId(id),
@@ -107,6 +111,9 @@ public class GroupsInformationNewsPost extends CircabcDeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (
       InvalidNodeRefException
@@ -117,6 +124,9 @@ public class GroupsInformationNewsPost extends CircabcDeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request", inre);
+      }
       return null;
     } catch (
       NotSupportedException
@@ -130,6 +140,9 @@ public class GroupsInformationNewsPost extends CircabcDeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
       status.setMessage("Internal server error");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Internal server error", e);
+      }
       return null;
     } finally {
       if (finalNews != null) {

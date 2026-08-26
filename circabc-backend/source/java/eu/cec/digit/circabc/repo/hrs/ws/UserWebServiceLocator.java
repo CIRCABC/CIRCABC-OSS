@@ -36,7 +36,7 @@ public class UserWebServiceLocator
 
   // Use to get a proxy class for UserService
   private java.lang.String UserService_address =
-    "";
+    "http://dighbust.cc.cec.eu.int:11031/hermes/Proxy/1.14/UserWebServicePS";
   // The WSDD service name defaults to the port name.
   private java.lang.String UserServiceWSDDServiceName = "UserService";
   private java.util.HashSet ports = null;

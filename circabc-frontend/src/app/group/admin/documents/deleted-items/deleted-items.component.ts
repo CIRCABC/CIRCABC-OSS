@@ -47,6 +47,7 @@ import { firstValueFrom } from 'rxjs';
 })
 export class DeletedItemsComponent implements OnInit {
   readonly groupId = input.required<string>();
+  readonly readOnly = input<boolean>(false);
 
   public currentIg!: InterestGroup;
   public listingOptions: ListingOptions = {

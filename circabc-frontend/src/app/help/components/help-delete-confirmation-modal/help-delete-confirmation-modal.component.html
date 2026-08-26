@@ -1,0 +1,23 @@
+<cbc-modal
+  [title]="'help.delete.confirmation.title' | transloco"
+  (ok)="onConfirm()"
+  (cancelModal)="onCancel()"
+  [okLabel]="'label.delete' | transloco"
+  [(visible)]="visible"
+  [(executing)]="isDeleting"
+  [executingLabel]="'label.deleting' | transloco"
+  [showOkButton]="!isDeleting()"
+>
+  <div class="delete-confirmation-content">
+    <!-- Confirmation message -->
+    <div class="confirmation-message">
+      <p> {{'label.warning' | transloco}}! </p>
+      <p>
+        {{ confirmationMessageKey | transloco: { count: childrenCount() } }}
+      </p>
+      <p class="warning-text">
+        {{ 'help.delete.permanent.warning' | transloco }}
+      </p>
+    </div>
+  </div>
+</cbc-modal>

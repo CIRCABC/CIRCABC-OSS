@@ -8,6 +8,8 @@ import java.util.Objects;
 public class GuardAuthorization {
 
   private Boolean granted = null;
+  private Boolean readOnly = null;
+  private Boolean locked = null;
 
   /**
    * Get granted
@@ -22,6 +24,33 @@ public class GuardAuthorization {
     this.granted = granted;
   }
 
+  /**
+   * Get readOnly
+   *
+   * @return readOnly
+   */
+  public Boolean getReadOnly() {
+    return readOnly;
+  }
+
+  public void setReadOnly(Boolean readOnly) {
+    this.readOnly = readOnly;
+  }
+
+  /**
+   * Get locked — true when access was denied specifically because the IG is locked.
+   * The user would normally have access (public/registered/member) but the lock prevents it.
+   *
+   * @return locked
+   */
+  public Boolean getLocked() {
+    return locked;
+  }
+
+  public void setLocked(Boolean locked) {
+    this.locked = locked;
+  }
+
   @Override
   public boolean equals(java.lang.Object o) {
     if (this == o) {
@@ -31,12 +60,16 @@ public class GuardAuthorization {
       return false;
     }
     GuardAuthorization guardAuthorization = (GuardAuthorization) o;
-    return Objects.equals(this.granted, guardAuthorization.granted);
+    return (
+      Objects.equals(this.granted, guardAuthorization.granted) &&
+      Objects.equals(this.readOnly, guardAuthorization.readOnly) &&
+      Objects.equals(this.locked, guardAuthorization.locked)
+    );
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(granted);
+    return Objects.hash(granted, readOnly, locked);
   }
 
   @Override
@@ -45,6 +78,12 @@ public class GuardAuthorization {
       "class GuardAuthorization {\n" +
       "    granted: " +
       toIndentedString(granted) +
+      "\n" +
+      "    readOnly: " +
+      toIndentedString(readOnly) +
+      "\n" +
+      "    locked: " +
+      toIndentedString(locked) +
       "\n" +
       "}"
     );

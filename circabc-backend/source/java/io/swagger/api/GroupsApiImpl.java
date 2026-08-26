@@ -46,6 +46,7 @@ import eu.cec.digit.circabc.web.wai.bean.content.CircabcUploadedFile;
 import io.swagger.model.*;
 import io.swagger.util.ApiToolBox;
 import io.swagger.util.Converter;
+import io.swagger.util.RestInputSanitizer;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -220,6 +221,7 @@ public class GroupsApiImpl implements GroupsApi {
   private HistoryApi historyApi;
   private RuleService ruleService;
   private NodeArchiveService nodeArchiveService;
+  private GroupLockApi groupLockApi;
 
   @Override
   public InterestGroup getInterestGroupDetails(final NodeRef igRef) {
@@ -482,6 +484,24 @@ public class GroupsApiImpl implements GroupsApi {
       }
     }
 
+    final GroupLockInfo lockInfo;
+    try {
+      lockInfo = groupLockApi.getGroupLockInfo(igRef.getId());
+    } catch (Exception e) {
+      if (logger.isWarnEnabled()) {
+        logger.warn(
+          "Could not retrieve lock info for IG " +
+          igRef.getId() +
+          ": " +
+          e.getMessage()
+        );
+      }
+      return interestGroup;
+    }
+    if (lockInfo != null) {
+      interestGroup.setLockInfo(lockInfo);
+    }
+
     return interestGroup;
   }
 
@@ -674,6 +694,12 @@ public class GroupsApiImpl implements GroupsApi {
     groupDashboardEntry.setNews(new ArrayList<EntryEvent>());
 
     for (NodeRef node : nodeRefs) {
+      if (!nodeService.exists(node)) {
+        logger.warn(
+          "NodeRef " + node + " does not exist anymore, skipping it."
+        );
+        continue;
+      }
       QName nodeType = nodeService.getType(node);
       if (filterType(nodeType)) {
         continue;
@@ -865,6 +891,46 @@ public class GroupsApiImpl implements GroupsApi {
   @Override
   public void groupsIdDelete(String id, Boolean purgeData, Boolean purgeLogs) {
     NodeRef groupNode = Converter.createNodeRefFromId(id);
+
+    // Refuse to delete an Interest Group that is currently locked. The IG must be
+    // unlocked before it can be removed. Same rule applies to deletion requests
+    // handled by CategoriesApiImpl.groupIdDeleteRequestPost.
+    if (groupLockApi != null) {
+      final GroupLockInfo lockInfo;
+      try {
+        lockInfo = groupLockApi.getGroupLockInfo(id);
+      } catch (Exception e) {
+        // Fail-closed: if we cannot determine the lock state, refuse the delete
+        // rather than silently allowing a possibly-forbidden operation.
+        if (logger.isErrorEnabled()) {
+          logger.error(
+            "Could not verify lock state for IG " +
+            id +
+            " before delete: " +
+            e.getMessage(),
+            e
+          );
+        }
+        throw new GroupLockApiImpl.GroupLockedForDeletionException(
+          "Could not verify lock state of the Interest Group; delete refused"
+        );
+      }
+      if (lockInfo != null && Boolean.TRUE.equals(lockInfo.getLocked())) {
+        if (logger.isWarnEnabled()) {
+          logger.warn(
+            "Refused delete of IG " +
+            id +
+            ": Interest Group is locked (lockedBy=" +
+            lockInfo.getLockedBy() +
+            ")"
+          );
+        }
+        throw new GroupLockApiImpl.GroupLockedForDeletionException(
+          "Interest Group is locked and must be unlocked before it can be deleted"
+        );
+      }
+    }
+
     LogRecord logRecord = prepareLogDelete(groupNode);
     // delete the node
     try {
@@ -1229,7 +1295,7 @@ public class GroupsApiImpl implements GroupsApi {
           user.copyLdapProperties(ldapUserDetail);
 
           user.setHomeSpaceNodeRef(managementService.getGuestHomeNodeRef());
-          userService.createUser(user, false);
+          userService.createUser(user, true);
         }
 
         if (!isAlreadyMember(groupNodeRef, userProfile.getUser().getUserId())) {
@@ -1580,7 +1646,9 @@ public class GroupsApiImpl implements GroupsApi {
       secureNodeService.setProperty(
         igRef,
         ContentModel.PROP_DESCRIPTION,
-        Converter.toMLText(body.getDescription())
+        Converter.toMLText(
+          RestInputSanitizer.sanitizeRichText(body.getDescription())
+        )
       );
     }
 
@@ -1588,7 +1656,9 @@ public class GroupsApiImpl implements GroupsApi {
       secureNodeService.setProperty(
         igRef,
         CircabcModel.PROP_CONTACT_INFORMATION,
-        Converter.toMLText(body.getContact())
+        Converter.toMLText(
+          RestInputSanitizer.sanitizeRichText(body.getContact())
+        )
       );
     }
 
@@ -3834,6 +3904,14 @@ public class GroupsApiImpl implements GroupsApi {
    */
   public void setNodeArchiveService(NodeArchiveService nodeArchiveService) {
     this.nodeArchiveService = nodeArchiveService;
+  }
+
+  public GroupLockApi getGroupLockApi() {
+    return groupLockApi;
+  }
+
+  public void setGroupLockApi(GroupLockApi groupLockApi) {
+    this.groupLockApi = groupLockApi;
   }
 
   @Override

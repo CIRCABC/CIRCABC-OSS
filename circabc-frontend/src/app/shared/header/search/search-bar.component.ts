@@ -173,13 +173,33 @@ export class SearchBarComponent implements OnInit {
     } else {
       // done especially for a IG search
       const groupId = this.groupId();
-      if (data.searchString !== '' && !this.searching && groupId) {
+      const searchStr = data.searchString?.trim() || '';
+      // Allow search if: text is >= 3 chars, OR it comes from advanced search
+      // (user explicitly clicked the search button)
+      const hasAdvancedFilters =
+        data.isAdvancedSearch ||
+        data.language ||
+        data.creator ||
+        data.creationDateFrom ||
+        data.creationDateTo ||
+        data.modifiedDateFrom ||
+        data.modifiedDateTo ||
+        data.keywords ||
+        data.status ||
+        data.securityRanking ||
+        data.version ||
+        (data.searchIn && data.searchIn !== 'ALL');
+      if (
+        (searchStr.length >= 3 || hasAdvancedFilters) &&
+        !this.searching &&
+        groupId
+      ) {
         this.searching = true;
         this.panelResultIG().open();
         try {
           const res = await firstValueFrom(
             this.searchService.getSearch(
-              data.searchString,
+              data.searchString || undefined,
               groupId,
               data.language,
               undefined,
@@ -192,7 +212,29 @@ export class SearchBarComponent implements OnInit {
               data.keywords,
               data.status,
               data.securityRanking,
-              data.version
+              data.version,
+              undefined,
+              undefined,
+              data.dynAttr1,
+              data.dynAttr2,
+              data.dynAttr3,
+              data.dynAttr4,
+              data.dynAttr5,
+              data.dynAttr6,
+              data.dynAttr7,
+              data.dynAttr8,
+              data.dynAttr9,
+              data.dynAttr10,
+              data.dynAttr11,
+              data.dynAttr12,
+              data.dynAttr13,
+              data.dynAttr14,
+              data.dynAttr15,
+              data.dynAttr16,
+              data.dynAttr17,
+              data.dynAttr18,
+              data.dynAttr19,
+              data.dynAttr20
             )
           );
           if (res.data) {

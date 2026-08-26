@@ -65,7 +65,8 @@ export class FilePickerComponent implements OnInit {
           -1,
           'modified_DESC',
           this.targetFolderMode(),
-          false
+          false,
+          true
         )
       );
       this.loading = false;

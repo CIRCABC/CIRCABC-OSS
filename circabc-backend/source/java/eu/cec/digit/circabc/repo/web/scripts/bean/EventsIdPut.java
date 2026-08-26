@@ -65,6 +65,7 @@ public class EventsIdPut extends CircabcDeclarativeWebScript {
     }
 
     try {
+      checkGroupReadOnlyMode(id);
       if (
         !this.currentUserPermissionCheckerService.hasAnyOfEventPermission(
             id,
@@ -85,11 +86,22 @@ public class EventsIdPut extends CircabcDeclarativeWebScript {
           AppointmentUpdateInfo.valueOf(appointmentUpdateInfo),
           UpdateMode.valueOf(updateMode)
         );
+    } catch (ReadOnlyAccessException roae) {
+      this.logger.warn(
+          "Read-only mode blocked event update: " + roae.getMessage()
+        );
+      status.setCode(HttpServletResponse.SC_FORBIDDEN);
+      status.setMessage(roae.getMessage());
+      status.setRedirect(true);
+      return null;
     } catch (AccessDeniedException ade) {
       this.logger.error("Forbidden: " + ade);
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage(ade.getMessage());
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (Exception e) {
       this.logger.error("Exception: " + e);
@@ -97,6 +109,9 @@ public class EventsIdPut extends CircabcDeclarativeWebScript {
       status.setMessage(e.getMessage());
       status.setException(e);
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error(e.getMessage(), e);
+      }
       return null;
     }
 

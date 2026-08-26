@@ -54,6 +54,7 @@ public class NodesPermissionsPut extends CircabcDeclarativeWebScript {
     Map<String, String> templateVars = req.getServiceMatch().getTemplateVars();
     String id = templateVars.get("id");
     try {
+      checkGroupReadOnlyMode(id);
       if (
         !(this.currentUserPermissionCheckerService.hasAnyOfLibraryPermission(
               id,
@@ -78,11 +79,27 @@ public class NodesPermissionsPut extends CircabcDeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
+      return null;
+    } catch (ReadOnlyAccessException roe) {
+      status.setCode(HttpServletResponse.SC_FORBIDDEN);
+      status.setMessage(roe.getMessage());
+      status.setRedirect(true);
+      if (logger.isWarnEnabled()) {
+        logger.warn(
+          "Read-only mode prevented permission update: " + roe.getMessage()
+        );
+      }
       return null;
     } catch (InvalidNodeRefException | ParseException | IOException inre) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request", inre);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);

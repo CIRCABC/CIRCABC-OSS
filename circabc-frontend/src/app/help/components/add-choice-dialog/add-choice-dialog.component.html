@@ -1,0 +1,36 @@
+<h2 mat-dialog-title>{{ 'help.add.choice.title' | transloco }}</h2>
+
+<mat-dialog-content>
+  <div class="choice-content">
+    <p class="choice-description"
+      >{{ 'help.add.choice.description' | transloco }}</p
+    >
+
+    <div class="choice-buttons">
+      <button
+        type="button"
+        class="choice-button article-button files"
+        data-cy="add-article-choice"
+        (click)="onArticleClick()"
+        [attr.aria-label]="'help.add.article' | transloco"
+      >
+        {{ 'help.add.article' | transloco }}
+      </button>
+
+      <button
+        type="button"
+        class="choice-button subcategory-button folder"
+        (click)="onSubcategoryClick()"
+        [attr.aria-label]="'help.add.subsection' | transloco"
+      >
+        {{ 'help.add.subsection' | transloco }}
+      </button>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button type="button" class="button" (click)="onCancel()">
+    {{ 'label.cancel' | transloco }}
+  </button>
+</mat-dialog-actions>

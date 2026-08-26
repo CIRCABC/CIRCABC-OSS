@@ -46,7 +46,7 @@ public class CircaLdapClient
 
 	public static final String CLASS_NAMES = "classname";
 
-	private static final int MAX_CNT_RETRY_MILLIS = 1000*30;
+	private static final int MAX_CNT_RETRY_MILLIS = 1000*5;
 
 	private String contextFactory = null;
 	private String providerUrl = null;
@@ -186,26 +186,48 @@ public class CircaLdapClient
 
 	public List<String> getCategoryNames() throws Exception
 	{
-		final List<Attributes> cats = queryCircaRoot("(ou=*)");
-		final List<String> categories = new ArrayList<String>(cats.size());
-		for(final Attributes attr: cats)
+		try
 		{
-			categories.add(LdapHelper.mandatoryValue(attr, "ou", getSystemEncoding()));
-		}
+			final List<Attributes> cats = queryCircaRoot("(ou=*)");
+			final List<String> categories = new ArrayList<String>(cats.size());
+			for(final Attributes attr: cats)
+			{
+				categories.add(LdapHelper.mandatoryValue(attr, "ou", getSystemEncoding()));
+			}
 
-		return categories;
+			return categories;
+		}
+		catch (ExportationException e)
+		{
+			if (logger.isWarnEnabled())
+			{
+				logger.warn("Unable to retrieve category names from LDAP server. LDAP may be unavailable: " + e.getMessage());
+			}
+			return Collections.emptyList();
+		}
 	}
 
 	public List<String> getInterestGroupNames(final String virtualCirca) throws Exception
 	{
-		final List<Attributes> igs = queryCategory(virtualCirca, "(cn=*)");
-		final List<String> interestGroups = new ArrayList<String>(igs.size());
-		for(final Attributes attr: igs)
+		try
 		{
-			interestGroups.add(LdapHelper.mandatoryValue(attr, "cn", getSystemEncoding()));
-		}
+			final List<Attributes> igs = queryCategory(virtualCirca, "(cn=*)");
+			final List<String> interestGroups = new ArrayList<String>(igs.size());
+			for(final Attributes attr: igs)
+			{
+				interestGroups.add(LdapHelper.mandatoryValue(attr, "cn", getSystemEncoding()));
+			}
 
-		return interestGroups;
+			return interestGroups;
+		}
+		catch (ExportationException e)
+		{
+			if (logger.isWarnEnabled())
+			{
+				logger.warn("Unable to retrieve interest group names from LDAP server for '" + virtualCirca + "'. LDAP may be unavailable: " + e.getMessage());
+			}
+			return Collections.emptyList();
+		}
 	}
 
 	private Hashtable<String, String> getUserEnvironment()

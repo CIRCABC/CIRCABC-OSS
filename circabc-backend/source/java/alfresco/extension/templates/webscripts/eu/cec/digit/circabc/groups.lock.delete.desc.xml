@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Unlock an Interest Group</shortname>
+  <description>Unlock an Interest Group to restore normal access for all members</description>
+  <url>/circabc/groups/{id}/lock</url>
+  <format default="json" />
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

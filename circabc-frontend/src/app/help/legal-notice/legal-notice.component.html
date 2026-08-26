@@ -5,21 +5,21 @@
     class="step-link"
     (click)="step = 'privacy'"
     [class.step-link-selected]="step === 'privacy'"
-    >Privacy Statement</a
+    >Privacy statement</a
   >
   <a
     tabindex="0"
     class="step-link"
     (click)="step = 'accessibility'"
     [class.step-link-selected]="step === 'accessibility'"
-    >Accessibility
+    >Accessibility statement
   </a>
   <a
     tabindex="0"
     class="step-link"
     (click)="step = 'terms'"
     [class.step-link-selected]="step === 'terms'"
-    >Terms of Service
+    >Terms of service
   </a>
 
   <a
@@ -75,30 +75,166 @@
 </div>
 } @if (step === 'accessibility') {
 <div class="wrap">
-  @if (urlACCESSExists) {
-  <div>
-    <ngx-extended-pdf-viewer
-      [src]="urlACCESS()"
-      height="100vh"
-      [showToolbar]="false"
-      [zoom]="100"
-      [showBorders]="false"
-      [rotation]="0"
-      [textLayer]="true"
-      [showHandToolButton]="true"
-    ></ngx-extended-pdf-viewer>
+  <div style="display: flex">
+    <div>
+      <img
+        src="img/logo-european-commission.png"
+        alt="Logo Europen Commission"
+      />
+    </div>
+    <div>
+      <h1>EUROPEAN COMMISSION</h1>
+      <h2>DIRECTORATE-GENERAL FOR DIGITAL SERVICES</h2>
+      <h3>Policy Solution & Business Automation</h3>
+      <h4>Unit A4</h4>
+    </div>
   </div>
-  } @if (!urlACCESSExists) {
-  <div>
-    <h2>{{"error.not.found.title" | transloco}}</h2>
-  </div>
-  }
+  <h1 style="text-align: center">Accessibility statement</h1>
+  <p>
+    This statement applies to content published on the domain: @if(isSCircabc) {
+    <a href="https://s-circabc.europa.eu/">https://s-circabc.europa.eu/</a>
+    } @else {
+    <a href="https://circabc.europa.eu/">https://circabc.europa.eu/</a>
+    }.
+  </p>
+  <p>
+    It does not apply to other content or websites published on any of its
+    subdomains. These websites and their content will have their own specific
+    accessibility statement.
+  </p>
+  <p>
+    This website is managed by <strong>DIGIT A4</strong> and it is designed to
+    be used by as many people as possible, including people with disabilities.
+  </p>
+
+  <h3>You should be able to:</h3>
+  <ul>
+    <li>Zoom up to 200% without problems;</li>
+    <li>Navigate most of the website using just a keyboard;</li>
+    <li>
+      Navigate most of the website using a modern screen reader and speech
+      recognition software (on your computer or phone).
+    </li>
+  </ul>
+
+  <p>
+    This website is designed to comply with the
+    <a
+      href="https://www.etsi.org/deliver/etsi_en/301500_301599/301549/03.02.01_60/en_301549v030201p.pdf"
+    >
+      technical standard for websites and mobile apps, EN 301 549, v.3.2.1</a
+    >. This closely follows level ‘AA’ of the
+    <a href="https://www.w3.org/TR/WCAG21/"
+      >Web Content Accessibility Guidelines (WCAG) version 2.1</a
+    >
+    .
+  </p>
+
+  <h2>Compliance status</h2>
+  <p>
+    This website is partially <strong>compliant</strong> with
+    <a
+      href="https://www.etsi.org/deliver/etsi_en/301500_301599/301549/03.02.01_60/en_301549v030201p.pdf"
+    >
+      technical standard EN 301 549 v.3.2.1
+    </a>
+    and the
+    <a href="https://www.w3.org/WAI/standards-guidelines/wcag/">
+      Web Content Accessibility Guidelines (WCAG) 2.1 Level AA</a
+    >. See below section ‘Non-accessible content’ for more details.
+  </p>
+  <p>The website was last tested on December 2025.</p>
+
+  <h2>Preparation of this statement</h2>
+  <p>
+    This statement was reviewed on October 2024 and it is based on a
+    self-assessment conducted by DG DIGIT, using both automated tools (e.g.,
+    <a href="https://wave.webaim.org">WAVE</a>) and manual testing.
+  </p>
+
+  <h2>Feedback</h2>
+  <p>
+    We welcome your feedback on the accessibility of @if(isSCircabc) {
+    S-CIRCABC} @else { CIRCABC } website. Please let us know if you encounter
+    accessibility barriers:
+  </p>
+  <ul>
+    <li
+      >Feedback form:
+      <a class="linkHighlight" [routerLink]="['/help/contact']"
+        >Feedback form</a
+      ></li
+    >
+  </ul>
+  <p>
+    We try to respond to feedback within 15 business days from the date of
+    receipt of the enquiry by the responsible Commission department.
+  </p>
+
+  <h2>Compatibility with browsers and assistive technology</h2>
+  <p>
+    The @if(isSCircabc) { S-CIRCABC} @else { CIRCABC } service is designed to be
+    compatible with the following most used assistive technologies:
+  </p>
+
+  <ul>
+    <li>
+      the latest version of Google Chrome, Mozilla FireFox and Microsoft Edge
+      browsers;
+    </li>
+    <li>
+      assistive technologies such as NVDA (Non Visual Desktop Access) and
+      Windows Narrator.
+    </li>
+  </ul>
+
+  <h2>Technical specifications</h2>
+
+  <p>
+    The accessibility of the @if(isSCircabc) { S-CIRCABC} @else { CIRCABC }
+    service website relies on the following technologies to work with the
+    particular combination of web browser and any assistive technologies or
+    plugins installed on your computer:
+  </p>
+  <ul>
+    <li><strong>HTML:</strong> for structuring content</li>
+    <li><strong>CSS:</strong> for layout and design</li>
+    <li><strong>JavaScript:</strong> for interactive elements</li>
+  </ul>
+
+  <h2>Non-accessible content</h2>
+
+  <p>
+    Despite our best efforts to ensure accessibility of the @if(isSCircabc) {
+    S-CIRCABC} @else { CIRCABC } website, we are aware of some limitations,
+    which we are working to fix. Below is a description of known limitations and
+    potential solutions. Please contact us if you encounter an issue not listed
+    below.
+  </p>
+  <ul class="listStyleNone">
+    <li>1. Some pages might have poor colour contrast;</li>
+    <li>
+      2. Some functionalities might not be accessible using only a keyboard;
+    </li>
+    <li>3. Some heading elements might not be used consistently;</li>
+    <li>
+      4. Some labels might not be correctly connected with their corresponding
+      form fields;
+    </li>
+    <li>5. Some images might not have alt text descriptions;</li>
+    <li>6. Some buttons and/or links might not have readable text;</li>
+    <li
+      >7. Some error messages are not clearly associated with form controls;</li
+    >
+    <li>8. Some documents are in PDF format and might not be accessible.</li>
+  </ul>
 </div>
 } @if (step === 'thirdparty') {
 <div class="wrap">
   <h1>Third party technologies</h1>
   <p>
-    CIRCABC is based on several open source libraries and free resources. <br />
+    @if(isSCircabc) { S-CIRCABC} @else { CIRCABC } is based on several open
+    source libraries and free resources. <br />
     The credits and the list of used resources are accessible right after.
   </p>
   <ul>

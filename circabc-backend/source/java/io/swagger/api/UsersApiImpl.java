@@ -19,6 +19,7 @@ import io.swagger.model.*;
 import io.swagger.util.ApiToolBox;
 import io.swagger.util.Converter;
 import io.swagger.util.CurrentUserPermissionCheckerService;
+import io.swagger.util.RestInputSanitizer;
 import io.swagger.util.parsers.UserJsonParser;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -570,6 +571,10 @@ public class UsersApiImpl implements UsersApi {
         );
       }
       if (properties.get(SIGNATURE) != null) {
+        properties.put(
+          SIGNATURE,
+          RestInputSanitizer.sanitizeRichText(properties.get(SIGNATURE))
+        );
         userDetails.setSignature(properties.get(SIGNATURE));
       }
 

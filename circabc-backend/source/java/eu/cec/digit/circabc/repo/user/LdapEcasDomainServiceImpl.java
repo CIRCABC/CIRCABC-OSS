@@ -79,6 +79,8 @@ public class LdapEcasDomainServiceImpl implements LdapEcasDomainService {
           CircabcConfiguration.CONTEXT_SECURITY_CREDENTIALS
         )
       );
+      // Follow LDAP referrals (required to access external users in EUDS)
+      env.put(Context.REFERRAL, "follow");
       initCache();
     }
   }

@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Set the original node reference of a node</shortname>
+  <description>Set (create or update) the original (source) node reference (ci:originalNodeRef, ci:migrated aspect) of a node. CIRCABC admin only.</description>
+    <url>/circabc/nodes/{id}/originalnoderef</url>
+  <format default="json" />
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

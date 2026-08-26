@@ -5,12 +5,21 @@ import io.swagger.util.CurrentUserPermissionCheckerService;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.DeclarativeWebScript;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptRequest;
 
 public class GetExternalRepositoryGroupLog extends DeclarativeWebScript {
+
+  /**
+   * A logger for the class
+   */
+  static final Log logger = LogFactory.getLog(
+    GetExternalRepositoryGroupLog.class
+  );
 
   private AresBridgeApi aresBridgeApi;
   private CurrentUserPermissionCheckerService currentUserPermissionCheckerService;
@@ -31,6 +40,9 @@ public class GetExternalRepositoryGroupLog extends DeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied");
+      }
       return null;
     }
 
@@ -40,6 +52,9 @@ public class GetExternalRepositoryGroupLog extends DeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request", e);
+      }
       return null;
     }
     return model;

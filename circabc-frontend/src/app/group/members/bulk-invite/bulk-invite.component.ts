@@ -1,8 +1,17 @@
-import { Component, Inject, Input, OnInit, Optional } from '@angular/core';
+import {
+  Component,
+  Inject,
+  Input,
+  OnInit,
+  Optional,
+  inject,
+} from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { PermissionEvaluatorService } from 'app/core/evaluator/permission-evaluator.service';
+import { ReadOnlyStateService } from 'app/core/read-only-state.service';
 import {
   BASE_PATH,
   BulkInviteData,
@@ -81,6 +90,8 @@ export class BulkInviteComponent implements OnInit {
   public loading = false;
 
   public fileToUpload: File | undefined;
+
+  public readonly readOnlyState = inject(ReadOnlyStateService);
 
   private basePath!: string;
 
@@ -350,7 +361,7 @@ export class BulkInviteComponent implements OnInit {
     if (title === undefined) {
       return '';
     }
-    return truncate(this.i18nPipe.transform(title), 12);
+    return truncate(this.i18nPipe.transform(title), 22);
   }
 
   public deleteMember(member: SelectableBulkImportUserData) {
@@ -443,6 +454,14 @@ export class BulkInviteComponent implements OnInit {
   }
 
   public async invite() {
+    // Defensive guard: block the submit if the IG became read-only after page load.
+    if (this.readOnlyState.isReadOnly()) {
+      this.uiMessageService.addWarningMessage(
+        this.translateService.translate('text.bulk.invite.readonly.warning')
+      );
+      return;
+    }
+
     this.processing = true;
 
     try {
@@ -481,9 +500,47 @@ export class BulkInviteComponent implements OnInit {
       );
 
       this.close();
+    } catch (error: unknown) {
+      this.handleInviteError(error);
     } finally {
       this.processing = false;
     }
+  }
+
+  /**
+   * Surfaces backend failures during bulk invite. Distinguishes the "IG is
+   * read-only" case (HTTP 403 with a matching message) from generic errors so
+   * the user gets an actionable message instead of a silent failure.
+   */
+  private handleInviteError(error: unknown): void {
+    if (error instanceof HttpErrorResponse) {
+      const backendMessage = error.error?.message ?? '';
+      const isReadOnly =
+        error.status === 403 &&
+        typeof backendMessage === 'string' &&
+        backendMessage.toLowerCase().includes('read-only');
+
+      if (isReadOnly) {
+        // Reflect the backend truth in the local UI state so the banner shows
+        // and the CTA gets disabled without waiting for a full page refresh.
+        this.readOnlyState.setReadOnly(true);
+        this.uiMessageService.addWarningMessage(
+          this.translateService.translate('text.bulk.invite.readonly.warning')
+        );
+        return;
+      }
+
+      if (error.status === 403) {
+        this.uiMessageService.addErrorMessage(
+          this.translateService.translate('error.access.denied.title')
+        );
+        return;
+      }
+    }
+
+    this.uiMessageService.addErrorMessage(
+      this.translateService.translate('label.error')
+    );
   }
 
   public close() {

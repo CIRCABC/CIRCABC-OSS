@@ -21,6 +21,13 @@
   margin-left: 190px;
 }
 
+.listToBeUploaded {
+  li {
+    word-break: break-all;
+    overflow-wrap: break-word;
+  }
+}
+
 .field--file-t {
   input {
     display: none;

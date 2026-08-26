@@ -170,8 +170,8 @@ export class RequestGroupComponent implements OnInit {
     const request: GroupCreationRequest = {
       from: this.loginService.getUser(),
       proposedName: this.form.value.name,
-      proposedTitle: { en: this.form.value.title },
-      proposedDescription: { en: this.form.value.description },
+      proposedTitle: { en: this.form.value.title ?? '' },
+      proposedDescription: { en: this.form.value.description ?? '' },
       justification: this.form.value.comment,
       categoryRef: this.selectedCategory.id,
       leaders: this.futureMembers,

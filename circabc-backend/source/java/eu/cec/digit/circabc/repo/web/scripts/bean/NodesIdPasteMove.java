@@ -68,6 +68,8 @@ public class NodesIdPasteMove extends CircabcDeclarativeWebScript {
     }
 
     try {
+      checkGroupReadOnlyMode(id);
+
       if (
         !this.currentUserPermissionCheckerService.hasAlfrescoAddChildrenPermission(
             id
@@ -94,23 +96,37 @@ public class NodesIdPasteMove extends CircabcDeclarativeWebScript {
       if (notify) {
         Set<NotifiableUser> notifiableUsers =
           notificationSubscriptionService.getNotifiableUsers(folderNodeRef);
-        notificationService.notifyNewFiles(
+        notificationService.notifyNewFilesAfterCommit(
           folderNodeRef,
           nodeRefs,
           notifiableUsers,
           MailTemplate.NOTIFY_MOVE_BULK
         );
       }
+    } catch (ReadOnlyAccessException roae) {
+      status.setCode(HttpServletResponse.SC_FORBIDDEN);
+      status.setMessage(roae.getMessage());
+      status.setRedirect(true);
+      if (logger.isWarnEnabled()) {
+        logger.warn("Read-only mode blocked paste/move on node: " + id, roae);
+      }
+      return null;
     } catch (AccessDeniedException ade) {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (Exception e) {
       status.setCode(HttpServletResponse.SC_NOT_ACCEPTABLE);
       status.setMessage(e.getMessage());
       status.setException(e);
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error(e.getMessage(), e);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);

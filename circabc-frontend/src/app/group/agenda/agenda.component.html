@@ -13,7 +13,7 @@
       <a style="font-size: 13px; margin-right: 15px" [routerLink]="['list']"
         >{{ 'label.view.as.list' | transloco }}</a
       >
-      @if (isEveAdmin()) {
+      @if (isEveAdmin() && !isReadOnly()) {
       <a
         tabindex="0"
         class="cta cta--plus dropdown-trigger"

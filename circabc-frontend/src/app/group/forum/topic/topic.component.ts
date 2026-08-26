@@ -32,6 +32,7 @@ import {
 } from 'app/core/generated/circabc';
 import { LoginService } from 'app/core/login.service';
 import { UiMessageService } from 'app/core/message/ui-message.service';
+import { ReadOnlyStateService } from 'app/core/read-only-state.service';
 import { Quote } from 'app/core/ui-model/index';
 import { getSuccessTranslation, getUserFullName } from 'app/core/util';
 import { BreadcrumbComponent } from 'app/group/breadcrumb/breadcrumb.component';
@@ -50,6 +51,8 @@ import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { SharedModule } from 'primeng/api';
 import { EditorModule } from 'primeng/editor';
 import { firstValueFrom } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from 'app/shared/confirm-dialog/confirm-dialog.component';
 
 interface FileWithId {
   id: number;
@@ -125,7 +128,9 @@ export class TopicComponent implements OnInit {
     private translateService: TranslocoService,
     private uiMessageService: UiMessageService,
     private permEvalService: PermissionEvaluatorService,
-    private userService: UserService
+    private userService: UserService,
+    private dialog: MatDialog,
+    private readOnlyStateService: ReadOnlyStateService
   ) {}
 
   public ngOnInit() {
@@ -301,6 +306,10 @@ export class TopicComponent implements OnInit {
     );
   }
 
+  public isReadOnly(): boolean {
+    return this.readOnlyStateService.isReadOnly();
+  }
+
   public nameExists(item: ModelNode): boolean {
     if (item === undefined) {
       return false;
@@ -446,13 +455,37 @@ export class TopicComponent implements OnInit {
   }
 
   private addFiles(filesList: FileList) {
+    const MAX_FILENAME_LENGTH = 73;
+    const invalidFiles: string[] = [];
+
     for (let i = 0; i < filesList.length; i += 1) {
       const fileItem = filesList.item(i);
       if (fileItem) {
-        this.attachmentRemainingSize.remainingSize -= fileItem.size;
-        this.filesToUpload.push({ file: fileItem, id: this.idCount });
-        this.idCount += 1;
+        if (fileItem.name.length > MAX_FILENAME_LENGTH) {
+          invalidFiles.push(fileItem.name);
+        } else {
+          this.attachmentRemainingSize.remainingSize -= fileItem.size;
+          this.filesToUpload.push({ file: fileItem, id: this.idCount });
+          this.idCount += 1;
+        }
       }
+    }
+
+    if (invalidFiles.length > 0) {
+      this.dialog.open(ConfirmDialogComponent, {
+        data: {
+          messageTranslated: this.translateService.translate(
+            'error.attachment.filename.too.long',
+            {
+              maxLength: MAX_FILENAME_LENGTH,
+            }
+          ),
+          title: this.translateService.translate(
+            'error.attachment.filename.too.long.title'
+          ),
+          layoutStyle: 'alert',
+        },
+      });
     }
   }
 

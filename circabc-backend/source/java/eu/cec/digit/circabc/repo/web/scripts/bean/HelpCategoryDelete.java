@@ -70,16 +70,25 @@ public class HelpCategoryDelete extends CircabcDeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
       status.setMessage("Invalid argument");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Invalid argument", e);
+      }
       return null;
     } catch (AccessDeniedException e) {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", e);
+      }
       return null;
     } catch (Exception e) {
       status.setCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
       status.setMessage("Internal server error");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Internal server error", e);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);

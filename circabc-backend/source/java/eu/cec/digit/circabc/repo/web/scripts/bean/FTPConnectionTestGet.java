@@ -56,6 +56,13 @@ public class FTPConnectionTestGet extends DeclarativeWebScript {
           e
         );
       }
+    } catch (IllegalArgumentException e) {
+      if (logger.isErrorEnabled()) {
+        logger.error(
+          "Problem during testing FTP connection, invalid destination",
+          e
+        );
+      }
     } catch (IllegalStateException e) {
       if (logger.isErrorEnabled()) {
         logger.error("Problem during testing FTP connection, illegal state", e);
@@ -119,11 +126,17 @@ public class FTPConnectionTestGet extends DeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request", inre);
+      }
       return null;
     } catch (AccessDeniedException ade) {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);

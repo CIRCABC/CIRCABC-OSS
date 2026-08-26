@@ -48,6 +48,11 @@ public class SimpleFtpClientImpl implements SimpleFtpClient {
     String path
   )
     throws IllegalStateException, IOException, FTPIllegalReplyException, FTPException {
+    String resolvedHost = FtpDestinationValidator.validateAndResolveHost(
+      host,
+      port
+    );
+
     this.host = host;
     this.port = port;
     this.username = username;
@@ -56,7 +61,7 @@ public class SimpleFtpClientImpl implements SimpleFtpClient {
 
     ftpClient = new FTPClient();
 
-    ftpClient.connect(host, port);
+    ftpClient.connect(resolvedHost, port);
     ftpClient.setPassive(true);
     ftpClient.login(username, password);
 

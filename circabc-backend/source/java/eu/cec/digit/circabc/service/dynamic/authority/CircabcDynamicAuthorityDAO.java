@@ -7,4 +7,6 @@ public interface CircabcDynamicAuthorityDAO {
     String groupNodeRef,
     String userName
   );
+
+  boolean isCategoryAdmin(String groupNodeRef, String userName);
 }

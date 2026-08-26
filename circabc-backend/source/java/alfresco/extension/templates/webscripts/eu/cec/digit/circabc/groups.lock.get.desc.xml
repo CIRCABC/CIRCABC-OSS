@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Get Interest Group lock status</shortname>
+  <description>Get the lock status of an Interest Group</description>
+  <url>/circabc/groups/{id}/lock</url>
+  <format default="json" />
+  <authentication>guest</authentication>
+  <transaction>required</transaction>
+</webscript>

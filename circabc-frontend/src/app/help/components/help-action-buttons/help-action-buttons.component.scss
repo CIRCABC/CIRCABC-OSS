@@ -1,0 +1,174 @@
+.help-action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  
+  // Distinct hover state - visual change on mouse over
+  &:hover:not(:disabled) {
+    background-color: #f5f5f5;
+    border-color: #999;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgb(0 0 0 / 0.1);
+  }
+  
+  // Distinct active/pressed state - visual change when clicked
+  &:active:not(:disabled) {
+    background-color: #e0e0e0;
+    border-color: #666;
+    transform: translateY(1px);
+    box-shadow: inset 0 2px 4px rgb(0 0 0 / 0.15);
+  }
+  
+  // Focus indicator for keyboard navigation
+  &:focus {
+    outline: 2px solid #06c;
+    outline-offset: 2px;
+  }
+  
+  // Disabled state
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.button-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+  transition: transform 0.2s ease-in-out;
+}
+
+.add-button {
+  border-color: #28a745;
+  
+  &:hover:not(:disabled) {
+    background-color: #28a745;
+    border-color: #28a745;
+    color: #fff;
+    
+    .button-icon {
+      transform: scale(1.1);
+    }
+  }
+  
+  &:active:not(:disabled) {
+    background-color: #218838;
+    border-color: #1e7e34;
+    color: #fff;
+    transform: translateY(1px);
+    box-shadow: inset 0 2px 4px rgb(0 0 0 / 0.2);
+  }
+}
+
+.edit-button {
+  border-color: #17a2b8;
+  
+  &:hover:not(:disabled) {
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+    color: #fff;
+    
+    .button-icon {
+      transform: scale(1.1);
+    }
+  }
+  
+  &:active:not(:disabled) {
+    background-color: #138496;
+    border-color: #117a8b;
+    color: #fff;
+    transform: translateY(1px);
+    box-shadow: inset 0 2px 4px rgb(0 0 0 / 0.2);
+  }
+}
+
+.delete-button {
+  border-color: #dc3545;
+  
+  &:hover:not(:disabled) {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: #fff;
+    
+    .button-icon {
+      transform: scale(1.1);
+    }
+  }
+  
+  &:active:not(:disabled) {
+    background-color: #c82333;
+    border-color: #bd2130;
+    color: #fff;
+    transform: translateY(1px);
+    box-shadow: inset 0 2px 4px rgb(0 0 0 / 0.2);
+  }
+}
+
+// Screen reader only text
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+// Responsive design for mobile devices
+@media (max-width: 768px) {
+  .help-action-buttons {
+    gap: 0.25rem; // Reduced gap for mobile to save space
+  }
+  
+  .action-button {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0.4rem;
+  }
+  
+  .button-icon {
+    font-size: 1.1rem;
+  }
+}
+
+// Responsive design for small mobile devices
+@media (max-width: 480px) {
+  .help-action-buttons {
+    gap: 0.25rem;
+  }
+  
+  .action-button {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0.35rem;
+  }
+  
+  .button-icon {
+    font-size: 1rem;
+  }
+}
+
+// Ensure minimum touch target size on all touch devices
+@media (pointer: coarse) {
+  .action-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}

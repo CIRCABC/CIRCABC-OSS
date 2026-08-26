@@ -72,6 +72,14 @@ public class GroupsApplicantsPut extends CircabcDeclarativeWebScript {
           "Current Authority update applicant's status, not enough permission"
         );
       }
+      // Only "clean" (accept) effectively adds a member; block it while the
+      // IG is in read-only mode. "decline" is housekeeping and is allowed so
+      // leaders can still clear pending requests during a lock.
+      if ("clean".equals(action) && !this.groupLockApi.canWriteOrAdmin(id)) {
+        throw new ReadOnlyAccessException(
+          "Interest group is in read-only mode"
+        );
+      }
       ApplicantAction body = ApplicantActionJsonParser.parseJSON(req);
       body.setAction(action);
       this.groupsApi.groupsIdMembersApplicantsPut(id, body);
@@ -79,11 +87,27 @@ public class GroupsApplicantsPut extends CircabcDeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
+      return null;
+    } catch (ReadOnlyAccessException roe) {
+      status.setCode(HttpServletResponse.SC_FORBIDDEN);
+      status.setMessage(roe.getMessage());
+      status.setRedirect(true);
+      if (logger.isWarnEnabled()) {
+        logger.warn(
+          "Read-only mode prevented applicant approval: " + roe.getMessage()
+        );
+      }
       return null;
     } catch (InvalidNodeRefException | ParseException | IOException inre) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request", inre);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);

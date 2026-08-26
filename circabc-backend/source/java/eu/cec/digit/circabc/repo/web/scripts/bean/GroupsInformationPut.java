@@ -1,6 +1,7 @@
 package eu.cec.digit.circabc.repo.web.scripts.bean;
 
 import eu.cec.digit.circabc.service.profile.permissions.InformationPermissions;
+import io.swagger.api.GroupLockApi;
 import io.swagger.api.InformationApi;
 import io.swagger.model.InformationPage;
 import io.swagger.util.Converter;
@@ -33,6 +34,7 @@ public class GroupsInformationPut extends DeclarativeWebScript {
   private InformationApi informationApi;
   private NodeService nodeService;
   private CurrentUserPermissionCheckerService currentUserPermissionCheckerService;
+  private GroupLockApi groupLockApi;
 
   @Override
   protected Map<String, Object> executeImpl(
@@ -45,6 +47,9 @@ public class GroupsInformationPut extends DeclarativeWebScript {
     Map<String, String> templateVars = req.getServiceMatch().getTemplateVars();
     String id = templateVars.get("igId");
     try {
+      if (groupLockApi != null && !groupLockApi.canWriteOrAdmin(id)) {
+        throw new AccessDeniedException("Interest group is in read-only mode");
+      }
       NodeRef infRef =
         this.nodeService.getChildByName(
             Converter.createNodeRefFromId(id),
@@ -68,21 +73,33 @@ public class GroupsInformationPut extends DeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (InvalidNodeRefException inre) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request - InvalidNodeRef");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request - InvalidNodeRef", inre);
+      }
       return null;
     } catch (IOException e) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request - bad URL");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request - bad URL", e);
+      }
       return null;
     } catch (ParseException e) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request - parse error");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request - parse error", e);
+      }
       return null;
     }
 
@@ -116,5 +133,13 @@ public class GroupsInformationPut extends DeclarativeWebScript {
 
   public void setNodeService(NodeService nodeService) {
     this.nodeService = nodeService;
+  }
+
+  public GroupLockApi getGroupLockApi() {
+    return this.groupLockApi;
+  }
+
+  public void setGroupLockApi(GroupLockApi groupLockApi) {
+    this.groupLockApi = groupLockApi;
   }
 }

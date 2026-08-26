@@ -435,7 +435,7 @@ public class ReportStructure extends TreeWalkerVisitorBase implements Processor
 		if(dynamicPropertyDefinitions != null && notEmpty(dynamicPropertyDefinitions.getDefinitions()))
 		{
 			final List<DynamicPropertyDefinition> definitions = dynamicPropertyDefinitions.getDefinitions();
-			report.appendSubSection("Dynamic properties defined (" + definitions.size()+ " on " + DynamicPropertyService.MAX_PROPERTY_BY_IG_IN_CIRCA + " possible):");
+			report.appendSubSection("Dynamic properties defined (" + definitions.size()+ " on " + DynamicPropertyService.MAX_PROPERTY_BY_IG + " possible):");
 
 			Object values = null;
 			DynPropertyType type = null;

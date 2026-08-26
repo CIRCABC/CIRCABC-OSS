@@ -2013,6 +2013,28 @@
 			<value>#{CircabcService}</value>
 		</managed-property>
 	</managed-bean>
+
+	<managed-bean>
+		<description>The bean that backs up the Export Interest Group Dialog</description>
+		<managed-bean-name>ExportIgDialog</managed-bean-name>
+		<managed-bean-class>eu.cec.digit.circabc.web.wai.dialog.admin.migration.ExportIgDialog</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+		<managed-property>
+			<property-name>categoryHeadersBean</property-name>
+			<value>#{CategoryHeadersBean}</value>
+		</managed-property>
+	</managed-bean>
+
+	<managed-bean>
+		<description>The bean that backs up the Import Interest Group Dialog</description>
+		<managed-bean-name>ImportIgDialog</managed-bean-name>
+		<managed-bean-class>eu.cec.digit.circabc.web.wai.dialog.admin.migration.ImportIgDialog</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+		<managed-property>
+			<property-name>importService</property-name>
+			<value>#{ImportService}</value>
+		</managed-property>
+	</managed-bean>
 	
 	<managed-bean>
 		<description>The bean that backs up edit (own) user profile</description>
@@ -6391,6 +6413,16 @@
 			<from-outcome>manage-export</from-outcome>
 			<to-view-id
       >/jsp/extension/wai/dialog/admin/migration/manage-export.jsp</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>export-ig</from-outcome>
+			<to-view-id
+      >/jsp/extension/wai/dialog/admin/migration/export-ig.jsp</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>import-ig</from-outcome>
+			<to-view-id
+      >/jsp/extension/wai/dialog/admin/migration/import-ig.jsp</to-view-id>
 		</navigation-case>
 		<navigation-case>
 			<from-outcome>upload</from-outcome>

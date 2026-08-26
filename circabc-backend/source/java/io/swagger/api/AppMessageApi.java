@@ -1,15 +1,13 @@
 package io.swagger.api;
 
-import java.util.List;
-
-import org.apache.poi.ss.usermodel.Workbook;
-
 import eu.cec.digit.circabc.service.app.message.DistributionEmailDAO;
 import io.swagger.model.AppMessage;
 import io.swagger.model.DisplayConfiguration;
 import io.swagger.model.EnableConfiguration;
 import io.swagger.model.PagedAppMessages;
 import io.swagger.model.PagedEmails;
+import java.util.List;
+import org.apache.poi.ss.usermodel.Workbook;
 
 /**
  * @author beaurpi

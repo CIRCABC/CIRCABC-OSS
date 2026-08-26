@@ -1,0 +1,116 @@
+Index: src/freemarker/ext/beans/BeansWrapper.java
+===================================================================
+--- src/freemarker/ext/beans/BeansWrapper.java	(revision 1550)
++++ src/freemarker/ext/beans/BeansWrapper.java	(working copy)
+@@ -48,6 +48,10 @@
+  * individuals on behalf of the Visigoth Software Society. For more
+  * information on the Visigoth Software Society, please see
+  * http://www.visigoths.org/
++ * 
++ * 2011 - Alfresco Software, Ltd.
++ * Alfresco Software has modified source of this file
++ * The details of changes as svn diff can be found in svn at location root/projects/3rd-party/src 
+  */
+ 
+ package freemarker.ext.beans;
+@@ -1153,7 +1157,7 @@
+                         pda[i], clazz, accessibleMethods,
+                         classMap);
+             }
+-            if(exposureLevel < EXPOSE_PROPERTIES_ONLY)
++            if(exposureLevel < EXPOSE_PROPERTIES_ONLY && mda != null)
+             {
+                 MethodAppearanceDecision decision = new MethodAppearanceDecision();  
+                 for(int i = mda.length - 1; i >= 0; --i)
+--- src/freemarker/ext/beans/ClassString.java.orig	2011-09-06 15:18:03.582295743 +0100
++++ src/freemarker/ext/beans/ClassString.java	2011-09-06 15:18:13.794289960 +0100
+@@ -48,6 +48,10 @@
+  * individuals on behalf of the Visigoth Software Society. For more
+  * information on the Visigoth Software Society, please see
+  * http://www.visigoths.org/
++ * 
++ * 2011 - Alfresco Software, Ltd.
++ * Alfresco Software has modified source of this file
++ * The details of changes as svn diff can be found in svn at location root/projects/3rd-party/src 
+  */
+ package freemarker.ext.beans;
+ 
+@@ -69,13 +73,21 @@
+     private static final Class NUMBER_CLASS = Number.class;
+ 
+     private final Class[] classes;
++    private final boolean[] isNull;
+     
+     ClassString(Object[] objects) {
+         int l = objects.length;
+         classes = new Class[l];
++        isNull = new boolean[l];
+         for(int i = 0; i < l; ++i) {
+             Object obj = objects[i];
+-            classes[i] = obj == null ? MethodUtilities.OBJECT_CLASS : obj.getClass();
++            if(obj == null) {
++               classes[i] = MethodUtilities.OBJECT_CLASS;
++               isNull[i] = true;
++            } else {
++               classes[i] = obj.getClass();
++               isNull[i] = false;
++            }
+         }
+     }
+     
+@@ -220,14 +232,14 @@
+             }
+         }
+         for(int i = 0; i < fl; ++i) {
+-            if(!isMethodInvocationConvertible(formalTypes[i], classes[i])) {
++            if(!isMethodInvocationConvertible(formalTypes[i], classes[i], isNull[i])) {
+                 return false;
+             }
+         }
+         if(varArg) {
+             Class varArgType = formalTypes[fl].getComponentType();
+             for(int i = fl; i < cl; ++i) {
+-    		if(!isMethodInvocationConvertible(varArgType, classes[i])) {
++    		if(!isMethodInvocationConvertible(varArgType, classes[i], isNull[i])) {
+                     return false;
+                 }
+             }
+@@ -252,7 +264,7 @@
+      * type or an object type of a primitive type that can be converted to
+      * the formal type.
+      */
+-    static boolean isMethodInvocationConvertible(Class formal, Class actual) {
++    static boolean isMethodInvocationConvertible(Class formal, Class actual, boolean isNull) {
+         // Check for identity or widening reference conversion
+         if(formal.isAssignableFrom(actual)) {
+             return true;
+@@ -292,6 +304,9 @@
+             // This can actually cause us trouble as this is a narrowing 
+             // conversion, not widening. 
+             return isBigDecimalConvertible(formal, actual);
++        } else if(isNull) {
++           // Object versions can take a null
++           return true;
+         }
+         return false;
+     }
+--- src\freemarker\template\utility\StringUtil.java.orig        Sat May 21 22:53:16 2011
++++ src\freemarker\template\utility\StringUtil.java     Wed Jan 16 12:44:45 2013
+@@ -933,7 +933,7 @@
+         int ln = s.length();
+         for (int i = 0; i < ln; i++) {
+             char c = s.charAt(i);
+-            if (c == '"' || c == '\'' || c == '\\' || c == '>' || c < 0x20) {
++            if (c == '"' || c == '/' || c == '\'' || c == '\\' || c == '>' || c < 0x20) {
+                 StringBuffer b = new StringBuffer(ln + 4);
+                 b.append(s.substring(0, i));
+                 while (true) {
+@@ -943,6 +943,8 @@
+                         b.append("\\'");
+                     } else if (c == '\\') {
+                         b.append("\\\\");
++                    } else if (c == '/') {
++                        b.append("\\/");
+                     } else if (c == '>') {
+                         b.append("\\>");
+                     } else if (c < 0x20) {

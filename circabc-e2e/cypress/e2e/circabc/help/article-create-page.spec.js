@@ -5,8 +5,9 @@ describe('The Create Help Article Page', function () {
 
   it('successfully Create Help Article', function () {
     cy.visit('help/start').contains('Section1');
-    cy.get('ul > .ng-star-inserted > a').click();
-    cy.get('.article-list > .actions > .cta').click();
+    cy.get('[data-cy="category-header"]').first().click();
+    cy.get('[data-cy="add-section"]').first().click();
+    cy.get('[data-cy="add-article-choice"]').click();
     cy.get('[data-cy="text"]').type('Article1');
     cy.get('.field > .custom-select > .ng-valid').select('en');
     cy.get('.ql-editor').type('Space 1 Description');

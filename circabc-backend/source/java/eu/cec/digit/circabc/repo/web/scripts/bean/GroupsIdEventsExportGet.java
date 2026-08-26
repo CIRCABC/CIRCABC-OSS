@@ -145,6 +145,7 @@ public class GroupsIdEventsExportGet extends AbstractWebScript {
       this.export(eventItems, format.toLowerCase(), res);
     } catch (AccessDeniedException ade) {
       res.setStatus(HttpServletResponse.SC_FORBIDDEN);
+      logger.error("Access denied", ade);
     } catch (Exception e) {
       logger.error("Could not export events.", e);
       throw new IOException("Could not export events.", e);

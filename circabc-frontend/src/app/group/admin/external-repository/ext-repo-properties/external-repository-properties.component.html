@@ -3,25 +3,17 @@
     <div class="grid-item">{{ 'label.name' | transloco }}</div>
     <div class="grid-item">{{ 'label.request.on' | transloco }}</div>
     <div class="grid-item">{{ 'label.status' | transloco }}</div>
-    <ng-template
-      ngFor
-      let-repo
-      [ngForOf]="form.controls.repos.value"
-      let-i="index"
+    <ng-container
+      *ngFor="let repoControl of reposFormArray.controls; let i = index"
     >
-      <div class="grid-item">{{ repo.name }}</div>
+      <div class="grid-item">{{ repoControl.get('name')?.value }}</div>
       <div class="grid-item">
-        {{ repo.requestedOn | date: 'yyyy-MM-dd HH:mm' }}
+        {{ repoControl.get('requestedOn')?.value | date: 'yyyy-MM-dd HH:mm' }}
       </div>
       <div class="grid-item" [formGroupName]="i">
-        <mat-slide-toggle
-          formControlName="enabled"
-          [checked]="repo.enabled"
-          (toggleChange)="toggleChange(i)"
-        >
-        </mat-slide-toggle>
+        <mat-slide-toggle formControlName="enabled"> </mat-slide-toggle>
       </div>
-    </ng-template>
+    </ng-container>
   </section>
   @if (saving) {
   <div class="field">

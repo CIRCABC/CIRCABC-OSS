@@ -4,24 +4,35 @@ import eu.cec.digit.circabc.model.CircabcModel;
 import eu.cec.digit.circabc.service.struct.ManagementService;
 import eu.cec.digit.circabc.service.user.LdapUserService;
 import eu.cec.digit.circabc.util.CircabcUserDataBean;
+import io.swagger.exception.ValidationException;
 import io.swagger.model.EmailDefinition;
 import io.swagger.model.HelpArticle;
 import io.swagger.model.HelpCategory;
 import io.swagger.model.HelpLink;
 import io.swagger.model.HelpSearchResult;
+import io.swagger.model.HelpSubcategory;
+import io.swagger.model.I18nProperty;
+import io.swagger.model.ImportResult;
 import io.swagger.util.ApiToolBox;
 import io.swagger.util.Converter;
 import io.swagger.util.CurrentUserPermissionCheckerService;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import org.alfresco.model.ContentModel;
 import org.alfresco.rest.framework.core.exceptions.InvalidArgumentException;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
@@ -98,6 +109,9 @@ public class HelpApiImpl implements HelpApi {
   private String serviceNowUser;
   private String serviceNowPassword;
   private String environmentName;
+  private String assignmentGroup;
+  private String businessService;
+  private String serviceOffering;
 
   //Proxy parameters
   private boolean proxyEnable;
@@ -115,6 +129,8 @@ public class HelpApiImpl implements HelpApi {
   private ApiToolBox apiToolBox;
   private EmailApi emailApi;
   private LdapUserService ldapUserService;
+  private io.swagger.service.FaqExportService faqExportService;
+  private io.swagger.service.FaqImportService faqImportService;
 
   private static final Log logger = LogFactory.getLog(HelpApiImpl.class);
 
@@ -123,6 +139,7 @@ public class HelpApiImpl implements HelpApi {
     NodeRef faqsRef = getFaqsRef();
 
     List<HelpCategory> result = new ArrayList<>();
+    final Map<String, Date> createdDateMap = new HashMap<>();
 
     if (faqsRef != null) {
       for (ChildAssociationRef child : nodeService.getChildAssocs(faqsRef)) {
@@ -133,9 +150,23 @@ public class HelpApiImpl implements HelpApi {
           )
         ) {
           result.add(getHelpCategory(child.getChildRef().getId()));
+
+          final Serializable createdProp = nodeService.getProperty(
+            child.getChildRef(),
+            ContentModel.PROP_CREATED
+          );
+          if (createdProp instanceof Date) {
+            createdDateMap.put(child.getChildRef().getId(), (Date) createdProp);
+          }
         }
       }
     }
+
+    result.sort(
+      Comparator.comparingInt(HelpCategory::getSortOrder).thenComparing(c ->
+        createdDateMap.getOrDefault(c.getId(), new Date(0))
+      )
+    );
 
     return result;
   }
@@ -191,13 +222,25 @@ public class HelpApiImpl implements HelpApi {
     this.ldapUserService = ldapUserService;
   }
 
+  public void setFaqExportService(
+    io.swagger.service.FaqExportService faqExportService
+  ) {
+    this.faqExportService = faqExportService;
+  }
+
+  public void setFaqImportService(
+    io.swagger.service.FaqImportService faqImportService
+  ) {
+    this.faqImportService = faqImportService;
+  }
+
   //ServiceNow parameters
   public void setEnvironmentName(String environmentName) {
     this.environmentName = environmentName;
   }
 
-  public void setServiceNowEnable(boolean serviceNowEnable) {
-    this.serviceNowEnable = serviceNowEnable;
+  public void setServiceNowEnable(Boolean serviceNowEnable) {
+    this.serviceNowEnable = (serviceNowEnable != null && serviceNowEnable);
   }
 
   public void setServiceNowPrefix(boolean serviceNowPrefix) {
@@ -214,6 +257,18 @@ public class HelpApiImpl implements HelpApi {
 
   public void setServiceNowPassword(String serviceNowPassword) {
     this.serviceNowPassword = serviceNowPassword;
+  }
+
+  public void setAssignmentGroup(String assignmentGroup) {
+    this.assignmentGroup = assignmentGroup;
+  }
+
+  public void setBusinessService(String businessService) {
+    this.businessService = businessService;
+  }
+
+  public void setServiceOffering(String serviceOffering) {
+    this.serviceOffering = serviceOffering;
   }
 
   //Proxy parameters
@@ -255,6 +310,12 @@ public class HelpApiImpl implements HelpApi {
 
       name = getCleanFileName(name);
 
+      if (name == null || name.trim().isEmpty()) {
+        throw new InvalidArgumentException(
+          "Help category title cannot be empty"
+        );
+      }
+
       ChildAssociationRef categRef = nodeService.createNode(
         faqsRef,
         ContentModel.ASSOC_CONTAINS,
@@ -292,6 +353,18 @@ public class HelpApiImpl implements HelpApi {
   public HelpCategory getHelpCategory(String id) {
     NodeRef helpCategoryRef = Converter.createNodeRefFromId(id);
 
+    if (!nodeService.exists(helpCategoryRef)) {
+      throw new IllegalArgumentException(
+        "Help category not found with id: " + id
+      );
+    }
+
+    if (
+      !nodeService.hasAspect(helpCategoryRef, CircabcModel.ASPECT_HELP_CATEGORY)
+    ) {
+      throw new IllegalArgumentException("Node is not a help category: " + id);
+    }
+
     HelpCategory category = new HelpCategory();
     category.setId(helpCategoryRef.getId());
 
@@ -305,17 +378,38 @@ public class HelpApiImpl implements HelpApi {
       category.setTitle(Converter.toI18NProperty((MLText) title));
     }
 
-    Integer nbArticles = 0;
+    final Serializable sortOrderProp = nodeService.getProperty(
+      helpCategoryRef,
+      CircabcModel.PROP_HELP_CATEGORY_SORT_ORDER
+    );
+    category.setSortOrder(
+      sortOrderProp instanceof Integer ? (Integer) sortOrderProp : 0
+    );
+
+    int nbArticles = 0;
     for (ChildAssociationRef child : nodeService.getChildAssocs(
       helpCategoryRef
     )) {
-      if (
-        nodeService.hasAspect(
-          child.getChildRef(),
-          CircabcModel.ASPECT_HELP_ARTICLE
-        )
-      ) {
+      final NodeRef childRef = child.getChildRef();
+      if (nodeService.hasAspect(childRef, CircabcModel.ASPECT_HELP_ARTICLE)) {
+        // Legacy article directly under the category
         nbArticles++;
+      } else if (
+        nodeService.hasAspect(childRef, CircabcModel.ASPECT_HELP_SUBCATEGORY)
+      ) {
+        // Count articles inside each subcategory
+        for (ChildAssociationRef subChild : nodeService.getChildAssocs(
+          childRef
+        )) {
+          if (
+            nodeService.hasAspect(
+              subChild.getChildRef(),
+              CircabcModel.ASPECT_HELP_ARTICLE
+            )
+          ) {
+            nbArticles++;
+          }
+        }
       }
     }
 
@@ -331,7 +425,14 @@ public class HelpApiImpl implements HelpApi {
   ) {
     NodeRef helpCategoryRef = Converter.createNodeRefFromId(categoryId);
 
+    if (!nodeService.exists(helpCategoryRef)) {
+      throw new IllegalArgumentException(
+        "Help category not found with id: " + categoryId
+      );
+    }
+
     List<HelpArticle> result = new ArrayList<>();
+    Map<String, Date> createdDateMap = new HashMap<>();
 
     for (ChildAssociationRef child : nodeService.getChildAssocs(
       helpCategoryRef
@@ -342,11 +443,24 @@ public class HelpApiImpl implements HelpApi {
           CircabcModel.ASPECT_HELP_ARTICLE
         )
       ) {
-        result.add(
-          getHelpArticleInternal(child.getChildRef().getId(), loadContent)
+        final String childId = child.getChildRef().getId();
+        result.add(getHelpArticleInternal(childId, loadContent));
+
+        final Serializable createdProp = nodeService.getProperty(
+          child.getChildRef(),
+          ContentModel.PROP_CREATED
         );
+        if (createdProp instanceof Date) {
+          createdDateMap.put(childId, (Date) createdProp);
+        }
       }
     }
+
+    result.sort(
+      Comparator.comparingInt(HelpArticle::getSortOrder).thenComparing(a ->
+        createdDateMap.getOrDefault(a.getId(), new Date(0))
+      )
+    );
 
     return result;
   }
@@ -421,10 +535,59 @@ public class HelpApiImpl implements HelpApi {
         nodeService.getPrimaryParent(helpArticleRef).getParentRef().getId()
       );
 
+      final Serializable sortOrderProp = nodeService.getProperty(
+        helpArticleRef,
+        CircabcModel.PROP_HELP_ARTICLE_SORT_ORDER
+      );
+      result.setSortOrder(
+        sortOrderProp instanceof Integer ? (Integer) sortOrderProp : 0
+      );
+
       return result;
     }
 
     return null;
+  }
+
+  @Override
+  public List<HelpArticle> getSubcategoryArticles(
+    String subcategoryId,
+    Boolean loadContent
+  ) {
+    NodeRef helpSubcategoryRef = Converter.createNodeRefFromId(subcategoryId);
+
+    List<HelpArticle> result = new ArrayList<>();
+    Map<String, Date> createdDateMap = new HashMap<>();
+
+    for (ChildAssociationRef child : nodeService.getChildAssocs(
+      helpSubcategoryRef
+    )) {
+      if (
+        nodeService.hasAspect(
+          child.getChildRef(),
+          CircabcModel.ASPECT_HELP_ARTICLE
+        )
+      ) {
+        final String childId = child.getChildRef().getId();
+        result.add(getHelpArticleInternal(childId, loadContent));
+
+        final Serializable createdProp = nodeService.getProperty(
+          child.getChildRef(),
+          ContentModel.PROP_CREATED
+        );
+        if (createdProp instanceof Date) {
+          createdDateMap.put(childId, (Date) createdProp);
+        }
+      }
+    }
+
+    result.sort(
+      Comparator.comparingInt(HelpArticle::getSortOrder).thenComparing(a ->
+        createdDateMap.getOrDefault(a.getId(), new Date(0))
+      )
+    );
+
+    return result;
   }
 
   @Override
@@ -443,6 +606,10 @@ public class HelpApiImpl implements HelpApi {
     String name = title.getDefaultValue();
 
     name = getCleanFileName(name);
+
+    if (name == null || name.trim().isEmpty()) {
+      throw new InvalidArgumentException("Help article title cannot be empty");
+    }
 
     ChildAssociationRef articleRef = nodeService.createNode(
       helpCategoryRef,
@@ -472,6 +639,38 @@ public class HelpApiImpl implements HelpApi {
       Converter.toMLText(article.getContent())
     );
 
+    int nextSortOrder = 0;
+    for (ChildAssociationRef child : nodeService.getChildAssocs(
+      helpCategoryRef
+    )) {
+      if (
+        child.getChildRef().equals(articleRef.getChildRef()) ||
+        !nodeService.hasAspect(
+          child.getChildRef(),
+          CircabcModel.ASPECT_HELP_ARTICLE
+        )
+      ) {
+        continue;
+      }
+      final Serializable existingSortOrder = nodeService.getProperty(
+        child.getChildRef(),
+        CircabcModel.PROP_HELP_ARTICLE_SORT_ORDER
+      );
+      final int value = existingSortOrder instanceof Integer
+        ? (Integer) existingSortOrder
+        : 0;
+      if (value >= nextSortOrder) {
+        nextSortOrder = value + 1;
+      }
+    }
+
+    nodeService.setProperty(
+      articleRef.getChildRef(),
+      CircabcModel.PROP_HELP_ARTICLE_SORT_ORDER,
+      nextSortOrder
+    );
+    article.setSortOrder(nextSortOrder);
+
     article.setId(articleRef.getChildRef().getId());
 
     NodeRef usernameRef = personService.getPerson(
@@ -500,6 +699,916 @@ public class HelpApiImpl implements HelpApi {
     );
 
     return article;
+  }
+
+  @Override
+  public HelpArticle createSubcategoryArticle(
+    String subcategoryId,
+    HelpArticle article
+  ) {
+    final NodeRef helpSubcategoryRef = Converter.createNodeRefFromId(
+      subcategoryId
+    );
+
+    if (
+      !nodeService.hasAspect(
+        helpSubcategoryRef,
+        CircabcModel.ASPECT_HELP_SUBCATEGORY
+      )
+    ) {
+      throw new InvalidArgumentException(
+        "The target node is not a help subcategory"
+      );
+    }
+
+    MLText title = Converter.toMLText(article.getTitle());
+    String name = title.getDefaultValue();
+
+    name = getCleanFileName(name);
+
+    if (name == null || name.trim().isEmpty()) {
+      throw new InvalidArgumentException("Help article title cannot be empty");
+    }
+
+    ChildAssociationRef articleRef = nodeService.createNode(
+      helpSubcategoryRef,
+      ContentModel.ASSOC_CONTAINS,
+      QName.createQName(NamespaceService.ALFRESCO_URI, name),
+      ContentModel.TYPE_CONTENT
+    );
+    nodeService.addAspect(
+      articleRef.getChildRef(),
+      CircabcModel.ASPECT_HELP_ARTICLE,
+      null
+    );
+
+    nodeService.setProperty(
+      articleRef.getChildRef(),
+      ContentModel.PROP_NAME,
+      name
+    );
+    nodeService.setProperty(
+      articleRef.getChildRef(),
+      ContentModel.PROP_TITLE,
+      Converter.toMLText(article.getTitle())
+    );
+    nodeService.setProperty(
+      articleRef.getChildRef(),
+      ContentModel.PROP_DESCRIPTION,
+      Converter.toMLText(article.getContent())
+    );
+
+    int nextSortOrder = 0;
+    for (ChildAssociationRef child : nodeService.getChildAssocs(
+      helpSubcategoryRef
+    )) {
+      if (
+        child.getChildRef().equals(articleRef.getChildRef()) ||
+        !nodeService.hasAspect(
+          child.getChildRef(),
+          CircabcModel.ASPECT_HELP_ARTICLE
+        )
+      ) {
+        continue;
+      }
+      final Serializable existingSortOrder = nodeService.getProperty(
+        child.getChildRef(),
+        CircabcModel.PROP_HELP_ARTICLE_SORT_ORDER
+      );
+      final int value = existingSortOrder instanceof Integer
+        ? (Integer) existingSortOrder
+        : 0;
+      if (value >= nextSortOrder) {
+        nextSortOrder = value + 1;
+      }
+    }
+
+    nodeService.setProperty(
+      articleRef.getChildRef(),
+      CircabcModel.PROP_HELP_ARTICLE_SORT_ORDER,
+      nextSortOrder
+    );
+    article.setSortOrder(nextSortOrder);
+
+    article.setId(articleRef.getChildRef().getId());
+    article.setParentId(subcategoryId);
+
+    NodeRef usernameRef = personService.getPerson(
+      nodeService
+        .getProperty(articleRef.getChildRef(), ContentModel.PROP_CREATOR)
+        .toString()
+    );
+    String author =
+      nodeService
+        .getProperty(usernameRef, ContentModel.PROP_FIRSTNAME)
+        .toString() +
+      " " +
+      nodeService
+        .getProperty(usernameRef, ContentModel.PROP_LASTNAME)
+        .toString()
+        .toUpperCase();
+    article.setAuthor(author);
+
+    article.setLastUpdate(
+      new DateTime(
+        nodeService.getProperty(
+          articleRef.getChildRef(),
+          ContentModel.PROP_MODIFIED
+        )
+      )
+    );
+
+    return article;
+  }
+
+  @Override
+  public void reorderSubcategoryArticles(
+    String subcategoryId,
+    List<String> articleIds
+  ) {
+    final NodeRef helpSubcategoryRef = Converter.createNodeRefFromId(
+      subcategoryId
+    );
+
+    if (
+      !nodeService.hasAspect(
+        helpSubcategoryRef,
+        CircabcModel.ASPECT_HELP_SUBCATEGORY
+      )
+    ) {
+      throw new InvalidArgumentException("Subcategory not found");
+    }
+
+    final Map<String, NodeRef> subcategoryArticleRefs = new HashMap<>();
+    for (ChildAssociationRef child : nodeService.getChildAssocs(
+      helpSubcategoryRef
+    )) {
+      if (
+        nodeService.hasAspect(
+          child.getChildRef(),
+          CircabcModel.ASPECT_HELP_ARTICLE
+        )
+      ) {
+        subcategoryArticleRefs.put(
+          child.getChildRef().getId(),
+          child.getChildRef()
+        );
+      }
+    }
+
+    if (articleIds.size() != subcategoryArticleRefs.size()) {
+      if (logger.isWarnEnabled()) {
+        logger.warn(
+          "Reorder attempt with invalid list for subcategory '" +
+          subcategoryId +
+          "'. Expected " +
+          subcategoryArticleRefs.size() +
+          " articles, received " +
+          articleIds.size()
+        );
+      }
+      throw new InvalidArgumentException(
+        "The list must contain all articles of the subcategory. Expected " +
+        subcategoryArticleRefs.size() +
+        ", received " +
+        articleIds.size() +
+        "."
+      );
+    }
+
+    for (String articleId : articleIds) {
+      if (!subcategoryArticleRefs.containsKey(articleId)) {
+        if (logger.isWarnEnabled()) {
+          logger.warn(
+            "Reorder attempt with invalid article ID '" +
+            articleId +
+            "' for subcategory '" +
+            subcategoryId +
+            "'"
+          );
+        }
+        throw new InvalidArgumentException(
+          "Article with id '" +
+          articleId +
+          "' does not belong to subcategory '" +
+          subcategoryId +
+          "'"
+        );
+      }
+    }
+
+    for (int i = 0; i < articleIds.size(); i++) {
+      final String articleId = articleIds.get(i);
+      final NodeRef articleRef = subcategoryArticleRefs.get(articleId);
+      try {
+        nodeService.setProperty(
+          articleRef,
+          CircabcModel.PROP_HELP_ARTICLE_SORT_ORDER,
+          i
+        );
+      } catch (Exception e) {
+        if (logger.isErrorEnabled()) {
+          logger.error(
+            "Failed to persist sortOrder for article '" +
+            articleId +
+            "' in subcategory '" +
+            subcategoryId +
+            "'",
+            e
+          );
+        }
+        throw e;
+      }
+    }
+
+    if (logger.isInfoEnabled()) {
+      logger.info(
+        "Successfully reordered " +
+        articleIds.size() +
+        " articles in subcategory '" +
+        subcategoryId +
+        "'"
+      );
+    }
+  }
+
+  @Override
+  public void reorderCategoryArticles(
+    String categoryId,
+    List<String> articleIds
+  ) {
+    final NodeRef helpCategoryRef = Converter.createNodeRefFromId(categoryId);
+
+    if (
+      !nodeService.hasAspect(helpCategoryRef, CircabcModel.ASPECT_HELP_CATEGORY)
+    ) {
+      throw new InvalidArgumentException("Category not found");
+    }
+
+    final Map<String, NodeRef> categoryArticleRefs = new HashMap<>();
+    for (ChildAssociationRef child : nodeService.getChildAssocs(
+      helpCategoryRef
+    )) {
+      if (
+        nodeService.hasAspect(
+          child.getChildRef(),
+          CircabcModel.ASPECT_HELP_ARTICLE
+        )
+      ) {
+        categoryArticleRefs.put(
+          child.getChildRef().getId(),
+          child.getChildRef()
+        );
+      }
+    }
+
+    if (articleIds.size() != categoryArticleRefs.size()) {
+      if (logger.isWarnEnabled()) {
+        logger.warn(
+          "Reorder attempt with invalid list for category '" +
+          categoryId +
+          "'. Expected " +
+          categoryArticleRefs.size() +
+          " articles, received " +
+          articleIds.size()
+        );
+      }
+      throw new InvalidArgumentException(
+        "The list must contain all articles of the category. Expected " +
+        categoryArticleRefs.size() +
+        ", received " +
+        articleIds.size() +
+        "."
+      );
+    }
+
+    for (String articleId : articleIds) {
+      if (!categoryArticleRefs.containsKey(articleId)) {
+        if (logger.isWarnEnabled()) {
+          logger.warn(
+            "Reorder attempt with invalid article ID '" +
+            articleId +
+            "' for category '" +
+            categoryId +
+            "'"
+          );
+        }
+        throw new InvalidArgumentException(
+          "Article with id '" +
+          articleId +
+          "' does not belong to category '" +
+          categoryId +
+          "'"
+        );
+      }
+    }
+
+    for (int i = 0; i < articleIds.size(); i++) {
+      final String articleId = articleIds.get(i);
+      final NodeRef articleRef = categoryArticleRefs.get(articleId);
+      try {
+        nodeService.setProperty(
+          articleRef,
+          CircabcModel.PROP_HELP_ARTICLE_SORT_ORDER,
+          i
+        );
+      } catch (Exception e) {
+        if (logger.isErrorEnabled()) {
+          logger.error(
+            "Failed to persist sortOrder for article '" +
+            articleId +
+            "' in category '" +
+            categoryId +
+            "'",
+            e
+          );
+        }
+        throw e;
+      }
+    }
+
+    if (logger.isInfoEnabled()) {
+      logger.info(
+        "Successfully reordered " +
+        articleIds.size() +
+        " articles in category '" +
+        categoryId +
+        "'"
+      );
+    }
+  }
+
+  @Override
+  public void reorderCategories(List<String> categoryIds) {
+    final NodeRef faqsRef = getFaqsRef();
+
+    if (faqsRef == null) {
+      throw new InvalidArgumentException("FAQs root not found");
+    }
+
+    final Map<String, NodeRef> categoryRefs = new HashMap<>();
+    for (ChildAssociationRef child : nodeService.getChildAssocs(faqsRef)) {
+      if (
+        nodeService.hasAspect(
+          child.getChildRef(),
+          CircabcModel.ASPECT_HELP_CATEGORY
+        )
+      ) {
+        categoryRefs.put(child.getChildRef().getId(), child.getChildRef());
+      }
+    }
+
+    if (categoryIds.size() != categoryRefs.size()) {
+      if (logger.isWarnEnabled()) {
+        logger.warn(
+          "Reorder attempt with invalid list for categories. Expected " +
+          categoryRefs.size() +
+          " categories, received " +
+          categoryIds.size()
+        );
+      }
+      throw new InvalidArgumentException(
+        "The list must contain all categories. Expected " +
+        categoryRefs.size() +
+        ", received " +
+        categoryIds.size() +
+        "."
+      );
+    }
+
+    for (String categoryId : categoryIds) {
+      if (!categoryRefs.containsKey(categoryId)) {
+        if (logger.isWarnEnabled()) {
+          logger.warn(
+            "Reorder attempt with invalid category ID '" + categoryId + "'"
+          );
+        }
+        throw new InvalidArgumentException(
+          "Category with id '" + categoryId + "' does not exist"
+        );
+      }
+    }
+
+    for (int i = 0; i < categoryIds.size(); i++) {
+      final String categoryId = categoryIds.get(i);
+      final NodeRef categoryRef = categoryRefs.get(categoryId);
+      try {
+        nodeService.setProperty(
+          categoryRef,
+          CircabcModel.PROP_HELP_CATEGORY_SORT_ORDER,
+          i
+        );
+      } catch (Exception e) {
+        if (logger.isErrorEnabled()) {
+          logger.error(
+            "Failed to persist sortOrder for category '" + categoryId + "'",
+            e
+          );
+        }
+        throw e;
+      }
+    }
+
+    if (logger.isInfoEnabled()) {
+      logger.info(
+        "Successfully reordered " + categoryIds.size() + " categories"
+      );
+    }
+  }
+
+  @Override
+  public List<HelpSubcategory> getCategorySubcategories(String categoryId) {
+    final NodeRef helpCategoryRef = Converter.createNodeRefFromId(categoryId);
+
+    final List<HelpSubcategory> result = new ArrayList<>();
+    final Map<String, Date> createdDateMap = new HashMap<>();
+
+    for (ChildAssociationRef child : nodeService.getChildAssocs(
+      helpCategoryRef
+    )) {
+      final NodeRef childRef = child.getChildRef();
+
+      if (
+        nodeService.hasAspect(childRef, CircabcModel.ASPECT_HELP_SUBCATEGORY)
+      ) {
+        // Skip if the child has the same ID as the parent category (data corruption)
+        if (childRef.getId().equals(categoryId)) {
+          if (logger.isWarnEnabled()) {
+            logger.warn(
+              "Category '" +
+              categoryId +
+              "' has itself as a child with ASPECT_HELP_SUBCATEGORY. Skipping to prevent circular reference."
+            );
+          }
+          continue;
+        }
+
+        final HelpSubcategory subcategory = new HelpSubcategory();
+        subcategory.setId(childRef.getId());
+        subcategory.setParentId(categoryId);
+
+        final Serializable title = nodeService.getProperty(
+          childRef,
+          ContentModel.PROP_TITLE
+        );
+        if (title instanceof String) {
+          subcategory.setTitle(Converter.toI18NProperty((String) title));
+        } else if (title instanceof MLText) {
+          subcategory.setTitle(Converter.toI18NProperty((MLText) title));
+        }
+
+        final Serializable sortOrderProp = nodeService.getProperty(
+          childRef,
+          CircabcModel.PROP_HELP_SUBCATEGORY_SORT_ORDER
+        );
+        subcategory.setSortOrder(
+          sortOrderProp instanceof Integer ? (Integer) sortOrderProp : 0
+        );
+
+        int articleCount = 0;
+        Date latestArticleUpdate = null;
+        for (ChildAssociationRef subcatChild : nodeService.getChildAssocs(
+          childRef
+        )) {
+          if (
+            nodeService.hasAspect(
+              subcatChild.getChildRef(),
+              CircabcModel.ASPECT_HELP_ARTICLE
+            )
+          ) {
+            articleCount++;
+
+            final Serializable modifiedProp = nodeService.getProperty(
+              subcatChild.getChildRef(),
+              ContentModel.PROP_MODIFIED
+            );
+            if (modifiedProp instanceof Date) {
+              Date articleModified = (Date) modifiedProp;
+              if (
+                latestArticleUpdate == null ||
+                articleModified.after(latestArticleUpdate)
+              ) {
+                latestArticleUpdate = articleModified;
+              }
+            }
+          }
+        }
+        subcategory.setNumberOfArticles(articleCount);
+
+        if (latestArticleUpdate != null) {
+          subcategory.setLastUpdate(
+            new DateTime(latestArticleUpdate).toString()
+          );
+        }
+
+        result.add(subcategory);
+
+        final Serializable createdProp = nodeService.getProperty(
+          childRef,
+          ContentModel.PROP_CREATED
+        );
+        if (createdProp instanceof Date) {
+          createdDateMap.put(childRef.getId(), (Date) createdProp);
+        }
+      }
+    }
+
+    result.sort(
+      Comparator.comparingInt(HelpSubcategory::getSortOrder).thenComparing(s ->
+        createdDateMap.getOrDefault(s.getId(), new Date(0))
+      )
+    );
+
+    return result;
+  }
+
+  @Override
+  public HelpSubcategory createHelpSubcategory(
+    String categoryId,
+    HelpSubcategory subcategory
+  ) {
+    final NodeRef helpCategoryRef = Converter.createNodeRefFromId(categoryId);
+
+    if (
+      !nodeService.hasAspect(helpCategoryRef, CircabcModel.ASPECT_HELP_CATEGORY)
+    ) {
+      throw new InvalidArgumentException(
+        "The target node is not a help category"
+      );
+    }
+
+    final MLText title = Converter.toMLText(subcategory.getTitle());
+    String name = title.getDefaultValue();
+
+    if (name == null || name.isEmpty()) {
+      if (!subcategory.getTitle().keySet().isEmpty()) {
+        final String key = (String) subcategory
+          .getTitle()
+          .keySet()
+          .toArray()[0];
+        name = subcategory.getTitle().get(key);
+      }
+    }
+
+    name = getCleanFileName(name);
+
+    if (name == null || name.trim().isEmpty()) {
+      throw new InvalidArgumentException(
+        "Help subcategory title cannot be empty"
+      );
+    }
+
+    final ChildAssociationRef subcatRef = nodeService.createNode(
+      helpCategoryRef,
+      ContentModel.ASSOC_CONTAINS,
+      QName.createQName(NamespaceService.ALFRESCO_URI, name),
+      ContentModel.TYPE_FOLDER
+    );
+
+    nodeService.addAspect(
+      subcatRef.getChildRef(),
+      CircabcModel.ASPECT_HELP_SUBCATEGORY,
+      null
+    );
+
+    nodeService.setProperty(
+      subcatRef.getChildRef(),
+      ContentModel.PROP_NAME,
+      name
+    );
+    nodeService.setProperty(
+      subcatRef.getChildRef(),
+      ContentModel.PROP_TITLE,
+      Converter.toMLText(subcategory.getTitle())
+    );
+
+    int nextSortOrder = 0;
+    for (ChildAssociationRef child : nodeService.getChildAssocs(
+      helpCategoryRef
+    )) {
+      if (
+        child.getChildRef().equals(subcatRef.getChildRef()) ||
+        !nodeService.hasAspect(
+          child.getChildRef(),
+          CircabcModel.ASPECT_HELP_SUBCATEGORY
+        )
+      ) {
+        continue;
+      }
+      final Serializable existingSortOrder = nodeService.getProperty(
+        child.getChildRef(),
+        CircabcModel.PROP_HELP_SUBCATEGORY_SORT_ORDER
+      );
+      final int value = existingSortOrder instanceof Integer
+        ? (Integer) existingSortOrder
+        : 0;
+      if (value >= nextSortOrder) {
+        nextSortOrder = value + 1;
+      }
+    }
+
+    nodeService.setProperty(
+      subcatRef.getChildRef(),
+      CircabcModel.PROP_HELP_SUBCATEGORY_SORT_ORDER,
+      nextSortOrder
+    );
+
+    subcategory.setId(subcatRef.getChildRef().getId());
+    subcategory.setSortOrder(nextSortOrder);
+    subcategory.setParentId(categoryId);
+    subcategory.setNumberOfArticles(0);
+
+    if (logger.isInfoEnabled()) {
+      logger.info(
+        "Created help subcategory '" +
+        name +
+        "' with sortOrder " +
+        nextSortOrder +
+        " in category '" +
+        categoryId +
+        "'"
+      );
+    }
+
+    return subcategory;
+  }
+
+  @Override
+  public HelpSubcategory getHelpSubcategory(String id) {
+    final NodeRef helpSubcategoryRef = Converter.createNodeRefFromId(id);
+
+    final HelpSubcategory subcategory = new HelpSubcategory();
+    subcategory.setId(helpSubcategoryRef.getId());
+
+    final Serializable title = nodeService.getProperty(
+      helpSubcategoryRef,
+      ContentModel.PROP_TITLE
+    );
+    if (title instanceof String) {
+      subcategory.setTitle(Converter.toI18NProperty((String) title));
+    } else if (title instanceof MLText) {
+      subcategory.setTitle(Converter.toI18NProperty((MLText) title));
+    }
+
+    final Serializable sortOrderProp = nodeService.getProperty(
+      helpSubcategoryRef,
+      CircabcModel.PROP_HELP_SUBCATEGORY_SORT_ORDER
+    );
+    subcategory.setSortOrder(
+      sortOrderProp instanceof Integer ? (Integer) sortOrderProp : 0
+    );
+
+    final ChildAssociationRef parentAssoc = nodeService.getPrimaryParent(
+      helpSubcategoryRef
+    );
+    if (parentAssoc != null) {
+      subcategory.setParentId(parentAssoc.getParentRef().getId());
+    }
+
+    int articleCount = 0;
+    Date latestArticleUpdate = null;
+    for (ChildAssociationRef child : nodeService.getChildAssocs(
+      helpSubcategoryRef
+    )) {
+      if (
+        nodeService.hasAspect(
+          child.getChildRef(),
+          CircabcModel.ASPECT_HELP_ARTICLE
+        )
+      ) {
+        articleCount++;
+
+        final Serializable modifiedProp = nodeService.getProperty(
+          child.getChildRef(),
+          ContentModel.PROP_MODIFIED
+        );
+        if (modifiedProp instanceof Date) {
+          Date articleModified = (Date) modifiedProp;
+          if (
+            latestArticleUpdate == null ||
+            articleModified.after(latestArticleUpdate)
+          ) {
+            latestArticleUpdate = articleModified;
+          }
+        }
+      }
+    }
+    subcategory.setNumberOfArticles(articleCount);
+
+    if (latestArticleUpdate != null) {
+      subcategory.setLastUpdate(new DateTime(latestArticleUpdate).toString());
+    }
+
+    return subcategory;
+  }
+
+  @Override
+  public HelpSubcategory updateHelpSubcategory(
+    String id,
+    HelpSubcategory subcategory
+  ) {
+    final NodeRef helpSubcategoryRef = Converter.createNodeRefFromId(id);
+
+    if (subcategory.getTitle() != null) {
+      nodeService.setProperty(
+        helpSubcategoryRef,
+        ContentModel.PROP_TITLE,
+        Converter.toMLText(subcategory.getTitle())
+      );
+    }
+
+    return getHelpSubcategory(id);
+  }
+
+  @Override
+  public void deleteHelpSubcategory(String id) {
+    final NodeRef helpSubcategoryRef = Converter.createNodeRefFromId(id);
+
+    if (
+      !nodeService.hasAspect(
+        helpSubcategoryRef,
+        CircabcModel.ASPECT_HELP_SUBCATEGORY
+      )
+    ) {
+      throw new InvalidArgumentException(
+        "The target node is not a help subcategory"
+      );
+    }
+
+    // Delete all articles within the subcategory (cascade delete)
+    for (ChildAssociationRef child : nodeService.getChildAssocs(
+      helpSubcategoryRef
+    )) {
+      if (
+        nodeService.hasAspect(
+          child.getChildRef(),
+          CircabcModel.ASPECT_HELP_ARTICLE
+        )
+      ) {
+        nodeService.deleteNode(child.getChildRef());
+      }
+    }
+
+    // Delete the subcategory itself
+    nodeService.deleteNode(helpSubcategoryRef);
+  }
+
+  @Override
+  public void reorderCategorySubcategories(
+    String categoryId,
+    List<String> subcategoryIds
+  ) {
+    final NodeRef helpCategoryRef = Converter.createNodeRefFromId(categoryId);
+
+    if (
+      !nodeService.hasAspect(helpCategoryRef, CircabcModel.ASPECT_HELP_CATEGORY)
+    ) {
+      throw new InvalidArgumentException("Category not found");
+    }
+
+    final Map<String, NodeRef> categorySubcategoryRefs = new HashMap<>();
+    for (ChildAssociationRef child : nodeService.getChildAssocs(
+      helpCategoryRef
+    )) {
+      if (
+        nodeService.hasAspect(
+          child.getChildRef(),
+          CircabcModel.ASPECT_HELP_SUBCATEGORY
+        )
+      ) {
+        final String subcatId = child.getChildRef().getId();
+        categorySubcategoryRefs.put(subcatId, child.getChildRef());
+
+        if (logger.isDebugEnabled()) {
+          final Serializable title = nodeService.getProperty(
+            child.getChildRef(),
+            ContentModel.PROP_TITLE
+          );
+          logger.debug(
+            "Found subcategory in category '" +
+            categoryId +
+            "': ID=" +
+            subcatId +
+            ", Title=" +
+            title
+          );
+        }
+      }
+    }
+
+    if (logger.isDebugEnabled()) {
+      logger.debug(
+        "Category '" +
+        categoryId +
+        "' has " +
+        categorySubcategoryRefs.size() +
+        " subcategories: " +
+        categorySubcategoryRefs.keySet()
+      );
+    }
+
+    if (subcategoryIds.size() != categorySubcategoryRefs.size()) {
+      if (logger.isWarnEnabled()) {
+        logger.warn(
+          "Reorder attempt with invalid list for category '" +
+          categoryId +
+          "'. Expected " +
+          categorySubcategoryRefs.size() +
+          " subcategories, received " +
+          subcategoryIds.size() +
+          ". Expected IDs: " +
+          categorySubcategoryRefs.keySet() +
+          ", Received IDs: " +
+          subcategoryIds
+        );
+      }
+      throw new InvalidArgumentException(
+        "The list must contain all subcategories of the category. Expected " +
+        categorySubcategoryRefs.size() +
+        ", received " +
+        subcategoryIds.size() +
+        "."
+      );
+    }
+
+    // Check for duplicates in the received list
+    final Set<String> uniqueSubcategoryIds = new HashSet<>(subcategoryIds);
+    if (uniqueSubcategoryIds.size() != subcategoryIds.size()) {
+      if (logger.isWarnEnabled()) {
+        logger.warn(
+          "Reorder attempt with duplicate IDs for category '" +
+          categoryId +
+          "'. Received " +
+          subcategoryIds.size() +
+          " IDs but only " +
+          uniqueSubcategoryIds.size() +
+          " unique. IDs: " +
+          subcategoryIds
+        );
+      }
+      throw new InvalidArgumentException(
+        "The list contains duplicate subcategory IDs. Received " +
+        subcategoryIds.size() +
+        " IDs but only " +
+        uniqueSubcategoryIds.size() +
+        " are unique."
+      );
+    }
+
+    for (String subcategoryId : subcategoryIds) {
+      if (!categorySubcategoryRefs.containsKey(subcategoryId)) {
+        if (logger.isWarnEnabled()) {
+          logger.warn(
+            "Reorder attempt with invalid subcategory ID '" +
+            subcategoryId +
+            "' for category '" +
+            categoryId +
+            "'"
+          );
+        }
+        throw new InvalidArgumentException(
+          "Subcategory with id '" +
+          subcategoryId +
+          "' does not belong to category '" +
+          categoryId +
+          "'"
+        );
+      }
+    }
+
+    for (int i = 0; i < subcategoryIds.size(); i++) {
+      final String subcategoryId = subcategoryIds.get(i);
+      final NodeRef subcategoryRef = categorySubcategoryRefs.get(subcategoryId);
+      try {
+        nodeService.setProperty(
+          subcategoryRef,
+          CircabcModel.PROP_HELP_SUBCATEGORY_SORT_ORDER,
+          i
+        );
+      } catch (Exception e) {
+        if (logger.isErrorEnabled()) {
+          logger.error(
+            "Failed to persist sortOrder for subcategory '" +
+            subcategoryId +
+            "' in category '" +
+            categoryId +
+            "'",
+            e
+          );
+        }
+        throw e;
+      }
+    }
+
+    if (logger.isInfoEnabled()) {
+      logger.info(
+        "Successfully reordered " +
+        subcategoryIds.size() +
+        " subcategories in category '" +
+        categoryId +
+        "'"
+      );
+    }
   }
 
   public PersonService getPersonService() {
@@ -581,6 +1690,38 @@ public class HelpApiImpl implements HelpApi {
       );
     }
 
+    // Delete all subcategories and their articles (cascade delete)
+    for (ChildAssociationRef child : nodeService.getChildAssocs(
+      helpCategoryRef
+    )) {
+      NodeRef childRef = child.getChildRef();
+      if (
+        nodeService.hasAspect(childRef, CircabcModel.ASPECT_HELP_SUBCATEGORY)
+      ) {
+        // Delete all articles within the subcategory
+        for (ChildAssociationRef article : nodeService.getChildAssocs(
+          childRef
+        )) {
+          if (
+            nodeService.hasAspect(
+              article.getChildRef(),
+              CircabcModel.ASPECT_HELP_ARTICLE
+            )
+          ) {
+            nodeService.deleteNode(article.getChildRef());
+          }
+        }
+        // Delete the subcategory
+        nodeService.deleteNode(childRef);
+      } else if (
+        nodeService.hasAspect(childRef, CircabcModel.ASPECT_HELP_ARTICLE)
+      ) {
+        // Delete articles directly under the category
+        nodeService.deleteNode(childRef);
+      }
+    }
+
+    // Finally, delete the category itself
     nodeService.deleteNode(helpCategoryRef);
   }
 
@@ -756,7 +1897,13 @@ public class HelpApiImpl implements HelpApi {
         }
       }
 
-      name = "link--" + getCleanFileName(name);
+      String cleanName = getCleanFileName(name);
+
+      if (cleanName == null || cleanName.trim().isEmpty()) {
+        throw new InvalidArgumentException("Help link title cannot be empty");
+      }
+
+      name = "link--" + cleanName;
 
       ChildAssociationRef linkRef = nodeService.createNode(
         faqLinksRef,
@@ -963,6 +2110,7 @@ public class HelpApiImpl implements HelpApi {
   private Ticket createServiceNowTicket(
     String userName,
     String emailFrom,
+    String serviceOffering,
     String subject,
     String content
   ) throws Exception {
@@ -978,6 +2126,8 @@ public class HelpApiImpl implements HelpApi {
         userName +
         ", email: " +
         emailFrom +
+        ", serviceOffering: " +
+        serviceOffering +
         ", subject:" +
         subject +
         ", content: " +
@@ -1006,8 +2156,9 @@ public class HelpApiImpl implements HelpApi {
     json.append("{");
     json.append("\"incident\":");
     json.append("{");
-    json.append("\"assignment_group\":\"DIGIT CIRCABC Support\",");
-    json.append("\"business_service\":\"CIRCABC service\",");
+    json.append("\"assignment_group\":\"" + assignmentGroup + "\",");
+    json.append("\"business_service\":\"" + businessService + "\",");
+    json.append("\"service_offering\":\"" + serviceOffering + "\",");
     json.append("\"category\":\"incident\",");
 
     if (currentUserPermissionCheckerService.isGuest()) {
@@ -1069,9 +2220,7 @@ public class HelpApiImpl implements HelpApi {
     String description = content != null
       ? Converter.convertHtmlToJsonText(content)
       : "";
-    json.append("\"description\": \"" + description + "\",");
-
-    json.append("\"service_offering\": \"CIRCABC\"");
+    json.append("\"description\": \"" + description + "\"");
 
     //Do we keep default impact, priority and urgency?
     //json.append("\"impact\": \"3\",");
@@ -1131,13 +2280,15 @@ public class HelpApiImpl implements HelpApi {
         }
       } else {
         // we did not receive HTTP 201 response code
-        logger.warn(
-          "Error when invoking ServiceNow API to create a ticket for user " +
-          userName +
-          ": " +
-          response.getStatusLine().toString()
+        StringBuilder errorMsg = new StringBuilder();
+        errorMsg.append(
+          "Error when invoking ServiceNow API to create a ticket. "
         );
-        throw new HttpException(response.getStatusLine().toString());
+        errorMsg.append("Response Status: ");
+        errorMsg.append(response.getStatusLine().toString());
+        errorMsg.append(". ServiceNow response: ");
+        errorMsg.append(result);
+        throw new HttpException(errorMsg.toString());
       }
     } catch (UnsupportedEncodingException e) {
       logger.error(e.getMessage(), e);
@@ -1171,7 +2322,7 @@ public class HelpApiImpl implements HelpApi {
       URLEncoder.encode(fileName, "UTF-8");
     if (logger.isDebugEnabled()) {
       logger.debug(
-        "About to execture POST method to Rest endpoint URL: " +
+        "About to exectue POST method to Rest endpoint URL: " +
         endpointURL +
         " to attach the file " +
         attachment.getName() +
@@ -1184,7 +2335,7 @@ public class HelpApiImpl implements HelpApi {
 
     HttpPost post = new HttpPost(endpointURL);
 
-    post.setHeader("Content-Type", "application/octetd-stream");
+    post.setHeader("Content-Type", "application/octet-stream");
     post.setHeader(
       "Authorization",
       "Basic " +
@@ -1257,53 +2408,62 @@ public class HelpApiImpl implements HelpApi {
       );
     }
 
-    //Is the integration with ServiceNow API enable for this environment?
-    if (serviceNowEnable) {
-      // if reason is not OTHER, the field subject is empty
-      // use the reason for the subject
+    // Is the integration with ServiceNow API enabled and URL configured?
+    if (serviceNowEnable && serviceNowUrl != null && !serviceNowUrl.isEmpty()) {
+      // If reason is not OTHER, we will:
+      //    1. change the value of serviceOffering which is "CIRCABC - General request" by default
+      //    2. give a value related to reason field for the subject of the email because it is empty
       if (!OTHER.equals(reason)) {
         if (UPLOAD_DOWNLOAD.equals(reason)) {
           subject = "Upload or Download";
+          serviceOffering = "CIRCABC - Upload or download";
         } else if (ACCESS_PERMISSION.equals(reason)) {
           subject = "Access Permission";
+          serviceOffering = "CIRCABC - Access management";
         } else if (ADMINISTER_GROUP.equals(reason)) {
           subject = "Interest Group Administration";
+          serviceOffering = "CIRCABC - Account management";
         }
       }
 
-      // prefix the subject with the environment name
+      // Prefix the subject with the environment name
       if (
-        serviceNowPrefix && environmentName != "" && environmentName != null
+        serviceNowPrefix &&
+        environmentName != null &&
+        !environmentName.isEmpty()
       ) {
         subject = "[" + environmentName + "] - " + subject;
       }
 
       Ticket ticket = null;
 
-      // invoking ServiceNow API to create ServiceNow ticket
+      // Invoking ServiceNow API to create ServiceNow ticket
       try {
-        ticket = createServiceNowTicket(name, emailFrom, subject, content);
+        ticket = createServiceNowTicket(
+          name,
+          emailFrom,
+          serviceOffering,
+          subject,
+          content
+        );
       } catch (Exception e) {
-        //something wrong happend when invoking ServiceNow API to create a ticket
+        // Something wrong happened when invoking ServiceNow API to create a ticket
         logger.warn(e.getCause());
       }
 
-      // if we were able to create the ServiceNow Ticket
+      // If we were able to create the ServiceNow Ticket
       if (ticket != null) {
-        // Check if we need to add an attachment
-        // Currently, the UI let you attach only 1 file but the interface accept a list
-        // In the future, if we need to change the implementation and manage several
-        // attachments, this is the place!
+        // Attachments
         if (attachementsFiles != null && !attachementsFiles.isEmpty()) {
           File attachment = attachementsFiles.get(0);
           addAttachmentToServiceNowTicket(ticket, attachment);
         }
 
-        // send confirmation Email
+        // Send confirmation email
         if (logger.isDebugEnabled()) {
           logger.debug("Send Confirmation email");
         }
-        // Add ServiceNow Ticket number to the confirmation email
+
         EmailDefinition emailConfirmation =
           emailApi.prepareConfirmationForHelpdeskContact(
             reason,
@@ -1315,23 +2475,23 @@ public class HelpApiImpl implements HelpApi {
           );
         emailApi.mailPost(emailConfirmation, false);
       } else {
-        //if we do not receive an ServiceNow incident ticket, it means that there was an issue with ServiceNow API
-        //We will then send a message to the helpdesk instead
+        // If ServiceNow failed, fallback to helpdesk email
         sendEmailToHelpdesk(
           reason,
           name,
           emailFrom,
-          subject,
+          (subject == null || subject.isEmpty()) ? reason : subject,
           content,
           attachementsFiles
         );
       }
     } else {
+      // ServiceNow disabled or not configured
       sendEmailToHelpdesk(
         reason,
         name,
         emailFrom,
-        subject,
+        (subject == null || subject.isEmpty()) ? reason : subject,
         content,
         attachementsFiles
       );
@@ -1433,6 +2593,147 @@ public class HelpApiImpl implements HelpApi {
 
     public void setSys_id(String sys_id) {
       this.sys_id = sys_id;
+    }
+  }
+
+  @Override
+  public String exportFaq() throws Exception {
+    if (logger.isInfoEnabled()) {
+      final String userName = authenticationService.getCurrentUserName();
+      logger.info("FAQ export requested by user: " + userName);
+    }
+
+    try {
+      return faqExportService.exportFaqStructure();
+    } catch (Exception e) {
+      if (logger.isErrorEnabled()) {
+        final String userName = authenticationService.getCurrentUserName();
+        logger.error("FAQ export failed for user: " + userName, e);
+      }
+      throw e;
+    }
+  }
+
+  @Override
+  public ImportResult importFaq(
+    final InputStream inputStream,
+    final String fileName
+  ) throws Exception {
+    final String userName = authenticationService.getCurrentUserName();
+
+    if (logger.isInfoEnabled()) {
+      logger.info(
+        String.format(
+          "FAQ import requested by user: %s, file: %s",
+          userName,
+          fileName
+        )
+      );
+    }
+
+    try {
+      // Read file content from InputStream
+      final byte[] fileBytes = org.apache.commons.io.IOUtils.toByteArray(
+        inputStream
+      );
+
+      // Validate file size (max 10MB)
+      final long maxFileSize = 10 * 1024 * 1024; // 10MB in bytes
+      if (fileBytes.length > maxFileSize) {
+        if (logger.isWarnEnabled()) {
+          logger.warn(
+            String.format(
+              "FAQ import rejected - file too large: %d bytes (max: %d bytes), user: %s",
+              fileBytes.length,
+              maxFileSize,
+              userName
+            )
+          );
+        }
+        throw new IllegalArgumentException(
+          "File size exceeds maximum allowed size of 10MB"
+        );
+      }
+
+      // Validate file is not empty
+      if (fileBytes.length == 0) {
+        if (logger.isWarnEnabled()) {
+          logger.warn("FAQ import rejected - empty file, user: " + userName);
+        }
+        throw new IllegalArgumentException("File is empty");
+      }
+
+      // Read file content as string
+      final String jsonContent = new String(fileBytes, StandardCharsets.UTF_8);
+
+      // Call import service
+      final ImportResult result = faqImportService.importFaqStructure(
+        jsonContent
+      );
+
+      if (logger.isInfoEnabled()) {
+        logger.info(
+          String.format(
+            "FAQ import completed successfully for user: %s, sectioen: %d, subsections: %d, articles: %d",
+            userName,
+            result.getCategoriesProcessed(),
+            result.getSubcategoriesProcessed(),
+            result.getArticlesProcessed()
+          )
+        );
+      }
+
+      return result;
+    } catch (ValidationException e) {
+      if (logger.isErrorEnabled()) {
+        logger.error(
+          String.format(
+            "FAQ import validation failed for user: %s, file: %s, errors: %s",
+            userName,
+            fileName,
+            e.getValidationErrors()
+          ),
+          e
+        );
+      }
+      throw e;
+    } catch (IllegalArgumentException e) {
+      if (logger.isErrorEnabled()) {
+        logger.error(
+          String.format(
+            "FAQ import failed - invalid argument for user: %s, file: %s, message: %s",
+            userName,
+            fileName,
+            e.getMessage()
+          ),
+          e
+        );
+      }
+      throw e;
+    } catch (IOException e) {
+      if (logger.isErrorEnabled()) {
+        logger.error(
+          String.format(
+            "FAQ import failed - IO error for user: %s, file: %s",
+            userName,
+            fileName
+          ),
+          e
+        );
+      }
+      throw new Exception("Failed to read file content", e);
+    } catch (Exception e) {
+      if (logger.isErrorEnabled()) {
+        logger.error(
+          String.format(
+            "FAQ import failed for user: %s, file: %s",
+            userName,
+            fileName
+          ),
+          e
+        );
+      }
+      throw e;
     }
   }
 }

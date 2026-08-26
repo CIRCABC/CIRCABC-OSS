@@ -46,10 +46,13 @@
         <a
           tabindex="0"
           class="cta cta--plus"
-          [class.disabled]="shouldDisablePermissionSetting()"
+          [class.disabled]="isPermissionEditingDisabled()"
+          [attr.aria-disabled]="isPermissionEditingDisabled()"
           (click)="showAddPermissionModal()"
           title="{{
-            shouldDisablePermissionSetting()
+            readOnlyState.isReadOnly()
+              ? ('text.permissions.readonly.warning' | transloco)
+              : shouldDisablePermissionSetting()
               ? ('members.no.permission' | transloco)
               : ''
           }}"
@@ -57,10 +60,12 @@
         >
         } @if (isFolder()) {
         <cbc-add-permission-dropdown
-          [disabled]="shouldDisablePermissionSetting()"
+          [disabled]="isPermissionEditingDisabled()"
           (launchCreate)="addPermission($event)"
           title="{{
-            shouldDisablePermissionSetting()
+            readOnlyState.isReadOnly()
+              ? ('text.permissions.readonly.warning' | transloco)
+              : shouldDisablePermissionSetting()
               ? ('members.no.permission' | transloco)
               : ''
           }}"
@@ -69,7 +74,22 @@
       </div>
     </div>
 
-    @if (perms) {
+    @if (readOnlyState.isReadOnly()) {
+    <div class="alert" role="alert" aria-live="polite">
+      <div class="alert-icon">
+        <img
+          src="img/exclamation.png"
+          alt=""
+          aria-hidden="true"
+          width="24"
+          height="24"
+        />
+      </div>
+      <div>
+        <strong>{{ 'text.permissions.readonly.warning' | transloco }}</strong>
+      </div>
+    </div>
+    } @if (perms) {
     <section>
       <div class="main switch-container">
         <h3>
@@ -105,8 +125,10 @@
             class="cmn-toggle cmn-toggle-round"
             type="checkbox"
             [checked]="perms.inherited"
-            [disabled]="processing"
-            (click)="toggleInheritance()"
+            [disabled]="processing || readOnlyState.isReadOnly()"
+            [attr.title]="readOnlyState.isReadOnly() ?
+            ('text.permissions.readonly.warning' | transloco) : null"
+            (click)="readOnlyState.isReadOnly() ? null : toggleInheritance()"
           />
           <label for="cmn-toggle-1" class="nonBlockLabel"></label>
           <span id="changePerm{{ perms.inherited ? 'Yes' : 'No' }}"
@@ -184,7 +206,8 @@
                     }
                   </td>
                   <td>
-                    @if (hasProfilePermissionDeletable(groupName)) {
+                    @if (hasProfilePermissionDeletable(groupName) &&
+                    !readOnlyState.isReadOnly()) {
                     <a
                       tabindex="0"
                       (click)="prepareDeletePermissionEntry(groupName, 'group')"
@@ -288,7 +311,8 @@
                       }
                     </td>
                     <td>
-                      @if (hasUserPermissionDeletable(userid)) {
+                      @if (hasUserPermissionDeletable(userid) &&
+                      !readOnlyState.isReadOnly()) {
                       <a
                         tabindex="0"
                         (click)="prepareDeletePermissionEntry(userid, 'user')"
@@ -358,7 +382,7 @@
                     <td class="cell-left-border"></td>
                     <td class="cell-checkbox"></td>
                     <td class="cell-file-name" style="max-width: 400px">
-                      {{ share.igName }}
+                      {{ share.igName }} @if (!readOnlyState.isReadOnly()) {
                       <ul class="actions" style="width: 160px">
                         <li>
                           <a tabindex="0" (click)="editSharePermission(share)"
@@ -371,6 +395,7 @@
                           ></cbc-inline-delete>
                         </li>
                       </ul>
+                      }
                     </td>
                     <td>{{ 'permissions.' + share.permission | transloco }}</td>
                   </tr>

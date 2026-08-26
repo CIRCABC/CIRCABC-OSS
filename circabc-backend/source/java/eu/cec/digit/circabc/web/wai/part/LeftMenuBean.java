@@ -146,9 +146,11 @@ public class LeftMenuBean implements Serializable {
         logger.error("DocumentException during getting revision number", e);
       }
     } catch (NullPointerException e) {
-      if (logger.isErrorEnabled()) {
+      //Do not log this exception anymore.
+      //We do not want to pollute the logs with old UI exceptions
+      /*if (logger.isErrorEnabled()) {
         logger.error("NullPointerException during getting revision number", e);
-      }
+      }*/
     }
 
     return result;

@@ -143,6 +143,9 @@ public class ExportActionExecuter extends ActionExecuterAbstractBase {
       ExportActionStatus.READY.toString()
     );
 
+    // Initialize execution time accumulator to avoid "null" prefix in status
+    action.setParameterValue(PARAM_EXE_TIME, "");
+
     String exportDirectory = (String) action.getParameterValue(
       PARAM_EXPORT_DIRECTORY
     );

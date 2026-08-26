@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Import FAQ structure</shortname>
+  <description>Import FAQ structure from a JSON file. Creates or updates categories, subcategories, and articles. Restricted to admin users only.</description>
+  <url>/circabc/help/import</url>
+  <format default="json" />
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

@@ -87,6 +87,7 @@ public class LoginBeanFilter
     logRecord.setService("Directory");
     logRecord.setActivity("Login");
     logRecord.setUser(userName);
+    boolean authenticationEnabled = true;
     try {
       AuthenticationUtil.setRunAsUserSystem();
       if (!personService.personExists(userName)) {
@@ -124,12 +125,18 @@ public class LoginBeanFilter
           }
         }
 
-        if (!userService.getAuthenticationEnabled(userName)) {
-          userService.setAuthenticationEnabled(userName, true);
-        }
+        authenticationEnabled = userService.getAuthenticationEnabled(userName);
       }
     } finally {
       AuthenticationUtil.setRunAsUser(userName);
+    }
+
+    if (!authenticationEnabled) {
+      AuthenticationUtil.clearCurrentSecurityContext();
+      ((HttpServletResponse) response).sendError(
+          HttpServletResponse.SC_FORBIDDEN
+        );
+      return;
     }
 
     try {

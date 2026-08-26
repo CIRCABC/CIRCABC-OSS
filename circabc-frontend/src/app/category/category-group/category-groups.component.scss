@@ -4,6 +4,16 @@ h3 {
 }
 
 .row {
+  .group-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .group-info {
+    flex: 1;
+  }
+
   .group-title {
     font-size: 13px;
     font-weight: bold;
@@ -12,6 +22,32 @@ h3 {
   .grey-name {
     color: #757575;
     font-size: 11px;
+  }
+
+  .group-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+
+    &:hover {
+      background-color: rgb(0 0 0 / 0.05);
+    }
+
+    &:focus {
+      outline: 2px solid #004a8c;
+      outline-offset: 2px;
+    }
   }
 
   .profile {

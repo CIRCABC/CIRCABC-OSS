@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
 import { ActionEmitterResult, ActionResult } from 'app/action-result';
@@ -7,6 +7,7 @@ import {
   InterestGroupService,
   Node as ModelNode,
 } from 'app/core/generated/circabc';
+import { ReadOnlyStateService } from 'app/core/read-only-state.service';
 import { InlineDeleteComponent } from 'app/shared/delete/inline-delete.component';
 import { DownloadPipe } from 'app/shared/pipes/download.pipe';
 import { SecurePipe } from 'app/shared/pipes/secure.pipe';
@@ -32,6 +33,8 @@ export class LogosComponent implements OnInit {
   public group?: InterestGroup;
   public logos: ModelNode[] = [];
   public showUploadModal = false;
+
+  public readonly readOnlyState = inject(ReadOnlyStateService);
 
   constructor(
     private route: ActivatedRoute,

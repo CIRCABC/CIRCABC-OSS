@@ -16,7 +16,8 @@
         <a [routerLink]="['../../contact']"
           >{{ 'label.send.email' | transloco }}</a
         >
-        } @if (currentGroup && (isDirAdmin() || isDirManageMembers())) {
+        } @if (currentGroup && (isDirAdmin() || isDirManageMembers()) &&
+        !readOnlyState.isReadOnly()) {
         <a [routerLink]="['../../../applicants']"
           >{{ 'label.member.requests' | transloco }}</a
         >
@@ -32,6 +33,23 @@
       </cbc-reponsive-sub-menu>
     </div>
   </div>
+
+  @if (readOnlyState.isReadOnly()) {
+  <div class="alert" role="alert" aria-live="polite">
+    <div class="alert-icon">
+      <img
+        src="img/exclamation.png"
+        alt=""
+        aria-hidden="true"
+        width="24"
+        height="24"
+      />
+    </div>
+    <div>
+      <strong>{{ 'text.bulk.invite.readonly.warning' | transloco }}</strong>
+    </div>
+  </div>
+  }
 
   <section class="box">
     <form [formGroup]="bulkInviteForm">
@@ -216,14 +234,16 @@
                       [checked]="allSelected"
                     />
                   </th>
-                  <th> {{ 'label.ig' | transloco }} </th>
+                  <th>{{ 'label.ig' | transloco }}</th>
                   @if (this.fileToUpload !== undefined) {
-                  <th> {{ 'label.file' | transloco }} </th>
+                  <th>{{ 'label.file' | transloco }}</th>
                   }
-                  <th> {{ 'label.username' | transloco }} </th>
-                  <th> {{ 'label.email' | transloco }} </th>
-                  <th> {{ 'label.profile' | transloco }} </th>
-                  <th> {{ 'label.status' | transloco }} </th>
+                  <th>{{ 'label.username' | transloco }}</th>
+                  <th>{{ 'label.email' | transloco }}</th>
+                  <th style="width: 200px">
+                    {{ 'label.profile' | transloco }}
+                  </th>
+                  <th>{{ 'label.status' | transloco }}</th>
                 </tr>
               </thead>
 
@@ -287,6 +307,7 @@
                         <option
                           [selected]="member.profileId === profile.name"
                           [value]="profile.name"
+                          [title]="profile.name"
                         >
                           {{ truncateProfileTitle(profile.title) }}
                         </option>
@@ -361,8 +382,12 @@
             <a
               class="cta"
               [routerLink]="['.']"
-              (click)="!canInvite() ? '' : invite()"
-              [class.disabled]="!canInvite()"
+              (click)="(!canInvite() || readOnlyState.isReadOnly()) ? '' :
+              invite()"
+              [class.disabled]="!canInvite() || readOnlyState.isReadOnly()"
+              [attr.aria-disabled]="!canInvite() || readOnlyState.isReadOnly()"
+              [attr.title]="readOnlyState.isReadOnly() ?
+              ('text.bulk.invite.readonly.warning' | transloco) : null"
               >{{ 'label.invite' | transloco }}</a
             >
             <a class="button" [routerLink]="['.']" (click)="close()"

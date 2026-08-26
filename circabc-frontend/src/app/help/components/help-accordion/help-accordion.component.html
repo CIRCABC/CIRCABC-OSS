@@ -1,0 +1,56 @@
+@if (isLoading()) {
+<div class="loading-indicator" role="status" aria-live="polite">
+  Loading help content...
+</div>
+} @if (error()) {
+<div class="error-message" role="alert">{{ error() }}</div>
+} @if (hierarchyData(); as hierarchy) {
+<div class="accordion-container">
+  @if (isAdminOrSupport()) {
+  <div class="add-category-header">
+    <button type="button" class="cta" (click)="onAddCategoryClick()">
+      {{ 'help.add.section' | transloco }}
+    </button>
+    <a
+      data-cy="add-link"
+      tabindex="0"
+      style="font-size: 13px; margin: 12px 30px"
+      (click)="onAddLinkClick()"
+    >
+      {{ 'help.add.link' | transloco }}
+    </a>
+  </div>
+  }
+  <ul
+    cdkDropList
+    [cdkDropListDisabled]="!isAdminOrSupport()"
+    (cdkDropListDropped)="onCategoryDrop($event)"
+    class="category-list"
+  >
+    @for (category of displayCategories(); track category.id) {
+    <li cdkDrag [class.draggable]="isAdminOrSupport()">
+      @if (isAdminOrSupport()) {
+      <div class="drag-handle" cdkDragHandle title="Drag to reorder">⋮⋮</div>
+      }
+      <div class="category-content">
+        <app-help-category-panel
+          [category]="category"
+          (categoryChanged)="onCategoryChanged()"
+        />
+      </div>
+    </li>
+    }
+  </ul>
+</div>
+}
+
+<cbc-help-category-form-modal
+  [(visible)]="showCreateCategoryModal"
+  (saved)="onCategorySaved($event)"
+  (cancelled)="showCreateCategoryModal.set(false)"
+/>
+
+<cbc-add-link
+  [(showModal)]="showCreateLinkModal"
+  (linkCreated)="onLinkSaved($event)"
+/>

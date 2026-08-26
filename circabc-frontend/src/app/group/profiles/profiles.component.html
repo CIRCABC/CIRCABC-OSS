@@ -10,7 +10,8 @@
     <div class="page-header__actions">
       <ul class="links">
         <cbc-reponsive-sub-menu>
-          @if (currentGroup && (isDirAdmin() || isDirManageMembers())) {
+          @if (currentGroup && (isDirAdmin() || isDirManageMembers()) &&
+          !readOnlyState.isReadOnly()) {
           <a [routerLink]="['../members/bulk-invite', currentGroup.id]"
             >{{ 'label.bulk.invite' | transloco }}</a
           >
@@ -18,7 +19,8 @@
           <a [routerLink]="['../members/contact']"
             >{{ 'label.send.email' | transloco }}</a
           >
-          } @if (currentGroup && (isDirAdmin() || isDirManageMembers())) {
+          } @if (currentGroup && (isDirAdmin() || isDirManageMembers()) &&
+          !readOnlyState.isReadOnly()) {
           <a [routerLink]="['../applicants']"
             >{{ 'label.member.requests' | transloco }}</a
           >
@@ -30,9 +32,11 @@
         </cbc-reponsive-sub-menu>
 
         <li>
+          @if (!readOnlyState.isReadOnly()) {
           <a tabindex="0" class="cta cta--plus" (click)="showAddProfile()"
             >{{ 'label.add.profile' | transloco }}</a
           >
+          }
         </li>
       </ul>
     </div>
@@ -96,6 +100,7 @@
             }
             <ul class="actions">
               <li></li>
+              @if (!readOnlyState.isReadOnly()) {
               <li>
                 <a tabindex="0" (click)="prepareEdit(profile)"
                   >{{ 'label.edit' | transloco }}</a
@@ -119,7 +124,7 @@
                   >{{ 'label.export.stop' | transloco }}</a
                 >
               </li>
-              }
+              } }
             </ul>
           </td>
           <td
@@ -148,6 +153,7 @@
   </section>
 </div>
 
+@if (!readOnlyState.isReadOnly()) {
 <cbc-create-profile
   [groupId]="nodeId"
   [showDialog]="showModal"
@@ -166,3 +172,4 @@
   [showModal]="showImportModal"
   (profileImported)="onProfileImport($event)"
 />
+}

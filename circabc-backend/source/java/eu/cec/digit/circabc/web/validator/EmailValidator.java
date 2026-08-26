@@ -21,7 +21,7 @@
 package eu.cec.digit.circabc.web.validator;
 
 import eu.cec.digit.circabc.service.user.UserService;
-import javax.mail.internet.AddressException;
+import io.swagger.util.EmailUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -56,14 +56,11 @@ public class EmailValidator {
    * @throws Exception Launch an exception with the corresponding message
    */
   public static void evaluate(String userEnteredEmailString) throws Exception {
-    // Test the minimum length
     if (!isValid(userEnteredEmailString)) {
+      if (logger.isDebugEnabled()) {
+        logger.debug("Invalid email address: " + userEnteredEmailString);
+      }
       throw new Exception(err_invalid);
-    }
-
-    // All is good
-    if (logger.isInfoEnabled()) {
-      logger.info("All clear");
     }
   }
 
@@ -78,14 +75,11 @@ public class EmailValidator {
     UserService userService,
     String userEnteredEmailString
   ) throws Exception {
-    // Test the minimum length
     if (isEmailExists(userService, userEnteredEmailString)) {
+      if (logger.isDebugEnabled()) {
+        logger.debug("Duplicate email address: " + userEnteredEmailString);
+      }
       throw new Exception(err_duplicate);
-    }
-
-    // All is good
-    if (logger.isInfoEnabled()) {
-      logger.info("All clear");
     }
   }
 
@@ -97,14 +91,10 @@ public class EmailValidator {
   }
 
   public static boolean isValid(String userEnteredEmailString) {
-    try {
-      new javax.mail.internet.InternetAddress(
-        userEnteredEmailString.trim()
-      ).validate();
-      return true;
-    } catch (AddressException e) {
+    if (userEnteredEmailString == null) {
       return false;
     }
+    return EmailUtil.isValidEmailAddress(userEnteredEmailString.trim());
   }
 
   public static String getErrorInvalid() {

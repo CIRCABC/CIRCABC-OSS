@@ -1,0 +1,104 @@
+@if (isOpen()) {
+<section class="article-viewer-section">
+  <article class="article-viewer" role="dialog" aria-labelledby="article-title">
+    <header class="article-header">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        @if (categoryName()) {
+        <span>{{ categoryName() }}</span>
+        } @if (subcategoryName()) {
+        <span class="separator">›</span>
+        <span>{{ subcategoryName() }}</span>
+        }
+      </nav>
+
+      @if (isHighlighted()) {
+      <img src="img/bookmark.png" class="promoted" alt="Promoted Article" />
+      }
+
+      <button
+        class="close-button"
+        (click)="onClose()"
+        [attr.aria-label]="'label.close' | transloco"
+        type="button"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </header>
+
+    <div class="article-content">
+      @if (isLoading()) {
+      <div class="loading-state">
+        <p>{{ 'label.loading' | transloco }}</p>
+      </div>
+      } @else if (errorMessage()) {
+      <div class="error-state">
+        <p>{{ errorMessage() }}</p>
+      </div>
+      } @else if (articleData()) { @if (isAdminOrSupport()) {
+      <header class="actions">
+        <a
+          data-cy="edit-article"
+          tabindex="0"
+          (click)="onEditArticle()"
+          (keydown.enter)="onEditArticle()"
+        >
+          {{ 'label.edit' | transloco }}
+        </a>
+        <a
+          data-cy="highlight-article"
+          tabindex="0"
+          (click)="onToggleHighlight()"
+          (keydown.enter)="onToggleHighlight()"
+          [class.disabled]="isHighlighting()"
+        >
+          {{ (isHighlighted() ? 'help.article.demote' : 'help.article.promote')
+          | transloco }}
+        </a>
+        <a
+          data-cy="delete-article"
+          tabindex="0"
+          (click)="onDeleteArticle()"
+          (keydown.enter)="onDeleteArticle()"
+        >
+          {{ 'label.delete' | transloco }}
+        </a>
+      </header>
+      }
+
+      <h1 id="article-title">{{ title() }}</h1>
+
+      @if (articleData()!.lastUpdate) {
+      <p class="last-update">
+        {{ 'help.last.update' | transloco }}: {{ articleData()!.lastUpdate |
+        date: 'dd/MM/yyyy' }}
+      </p>
+      }
+
+      <div class="content-body" [innerHTML]="sanitizedContent()"></div>
+      }
+    </div>
+  </article>
+</section>
+}
+
+<!-- Edit Article Modal -->
+@if (showEditModal()) {
+<cbc-add-help-article
+  [(showModal)]="showEditModal"
+  [articleId]="articleId() ?? undefined"
+  [categoryId]="categoryId() ?? undefined"
+  [subcategoryId]="subcategoryId() ?? undefined"
+  (articleUpdated)="onArticleUpdated($event)"
+/>
+}
+
+<!-- Delete Article Modal -->
+@if (showDeleteModal()) {
+<cbc-help-delete-confirmation-modal
+  [entityType]="'article'"
+  [entityTitle]="title()"
+  [hasChildren]="false"
+  [(visible)]="showDeleteModal"
+  (confirmed)="onDeleteConfirmed()"
+/>
+}

@@ -56,6 +56,7 @@ public class NodesIdPasteLink extends CircabcDeclarativeWebScript {
     String[] nodeIds = req.getParameterValues("nodeIds");
 
     try {
+      checkGroupReadOnlyMode(id);
       if (
         !this.currentUserPermissionCheckerService.hasAlfrescoAddChildrenPermission(
             id
@@ -77,12 +78,28 @@ public class NodesIdPasteLink extends CircabcDeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
+      return null;
+    } catch (ReadOnlyAccessException roe) {
+      status.setCode(HttpServletResponse.SC_FORBIDDEN);
+      status.setMessage(roe.getMessage());
+      status.setRedirect(true);
+      if (logger.isWarnEnabled()) {
+        logger.warn(
+          "Read-only mode prevented paste-as-link: " + roe.getMessage()
+        );
+      }
       return null;
     } catch (Exception e) {
       status.setCode(HttpServletResponse.SC_NOT_ACCEPTABLE);
       status.setMessage(e.getMessage());
       status.setException(e);
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error(e.getMessage(), e);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);

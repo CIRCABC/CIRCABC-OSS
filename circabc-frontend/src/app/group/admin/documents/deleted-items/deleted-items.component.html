@@ -69,6 +69,7 @@
                 [number]="restorableNodes.length"
               ></cbc-number-badge>
             </li>
+            @if (!readOnly()) {
             <li>
               <a tabindex="0" (click)="restoreNodes()"
                 ><img src="img/icon-last-blue.png" alt="Restore" />{{
@@ -81,6 +82,7 @@
                 'label.delete' | transloco }}</a
               >
             </li>
+            }
           </ul>
         </td>
         }
@@ -127,6 +129,7 @@
           {{ archiveNode.deletedDate | date: 'yyyy MM dd, HH:mm' }}
         </td>
         <td class="cell-access-level">
+          @if (!readOnly()) {
           <a
             tabindex="0"
             title="{{ 'label.restore' | transloco }}"
@@ -143,6 +146,7 @@
             [useIcon]="true"
             [useText]="false"
           ></cbc-inline-delete>
+          }
         </td>
       </tr>
       }
@@ -154,6 +158,7 @@
     <li>
       <cbc-number-badge [number]="restorableNodes.length"></cbc-number-badge>
     </li>
+    @if (!readOnly()) {
     <li>
       <a tabindex="0" (click)="restoreNodes()"
         ><img src="img/icon-last-blue.png" alt="Restore" />{{ 'label.restore' |
@@ -166,6 +171,7 @@
         'label.delete' | transloco }}</a
       >
     </li>
+    }
   </ul>
   }
 

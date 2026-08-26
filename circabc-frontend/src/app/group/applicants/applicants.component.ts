@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import {
@@ -21,6 +21,7 @@ import {
   UserService,
 } from 'app/core/generated/circabc';
 import { LoginService } from 'app/core/login.service';
+import { ReadOnlyStateService } from 'app/core/read-only-state.service';
 import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
 import { ReponsiveSubMenuComponent } from 'app/shared/reponsive-sub-menu/reponsive-sub-menu.component';
 import { firstValueFrom } from 'rxjs';
@@ -60,6 +61,8 @@ export class ApplicantsComponent implements OnInit {
   public currentGroup!: InterestGroup;
   public alreadyMember = false;
   public state: 'init' | 'inc' | 'dec' = 'init';
+
+  public readonly readOnlyState = inject(ReadOnlyStateService);
 
   constructor(
     private route: ActivatedRoute,

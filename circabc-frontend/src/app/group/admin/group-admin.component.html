@@ -14,11 +14,21 @@
     >
     }
     <div class="page-header__actions">
-      @if (isDeleteRoute() === false && canDeleteGroup()) {
+      @if (isDeleteRoute() === false && canDeleteGroup() && !isGroupLocked()) {
       <a
         data-cy="delete-group"
         class="button button--red"
         [routerLink]="['./delete']"
+        >{{ 'label.delete' | transloco }}</a
+      >
+      } @else if (isDeleteRoute() === false && canDeleteGroup() &&
+      isGroupLocked()) {
+      <a
+        data-cy="delete-group-disabled"
+        class="button button--red disabled"
+        aria-disabled="true"
+        tabindex="-1"
+        [matTooltip]="'text.group.delete.locked.tooltip' | transloco"
         >{{ 'label.delete' | transloco }}</a
       >
       }
@@ -32,6 +42,31 @@
       >
         {{ 'label.actions' | transloco }} @if (showActionsDropdown) {
         <div class="dropdown dropdown--delete-request">
+          @if (!isGroupLocked()) {
+          <a
+            tabindex="0"
+            class="lock-group"
+            data-cy="igLockGroup"
+            (click)="openLockDialog()"
+            (keydown.enter)="openLockDialog()"
+            [matTooltip]="'text.group.lock.tooltip' | transloco"
+            [attr.aria-label]="'label.lock.the.group' | transloco"
+          >
+            {{ 'label.lock.the.group' | transloco }}
+          </a>
+          } @if (isGroupLocked()) {
+          <a
+            tabindex="0"
+            class="unlock-group"
+            data-cy="igUnlockGroup"
+            (click)="unlockGroup()"
+            (keydown.enter)="unlockGroup()"
+            [matTooltip]="'text.group.unlock.tooltip' | transloco"
+            [attr.aria-label]="'label.unlock.the.group' | transloco"
+          >
+            {{ 'label.unlock.the.group' | transloco }}
+          </a>
+          } @if (!isGroupLocked()) {
           <a
             tabindex="0"
             class="delete-request"
@@ -40,6 +75,17 @@
           >
             {{ 'label.request.delete.interest-group' | transloco }}
           </a>
+          } @else {
+          <a
+            tabindex="-1"
+            aria-disabled="true"
+            class="delete-request disabled"
+            data-cy="igReqDeleteDisabled"
+            [matTooltip]="'text.group.delete.locked.tooltip' | transloco"
+          >
+            {{ 'label.request.delete.interest-group' | transloco }}
+          </a>
+          }
         </div>
         }
       </div>

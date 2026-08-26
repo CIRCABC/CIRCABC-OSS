@@ -130,8 +130,7 @@ export class ExternalRepositoryPropertiesComponent implements OnInit {
     await this.load();
   }
 
-  public toggleChange(i: number) {
-    const reposFormArray = this.form.controls.repos as FormArray;
-    reposFormArray.at(i).value.enabled = !reposFormArray.at(i).value.enabled;
+  get reposFormArray() {
+    return this.form.get('repos') as FormArray;
   }
 }

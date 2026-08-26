@@ -1,0 +1,158 @@
+
+.accordion-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.loading-indicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 48px 24px;
+  color: #757575;
+  font-size: 14px;
+  text-align: center;
+}
+
+.error-message {
+  padding: 16px;
+  margin: 16px;
+  background: #ffebee;
+  border: 1px solid #ef5350;
+  border-radius: 4px;
+  color: #c62828;
+  font-size: 14px;
+}
+
+/* Responsive adjustments for mobile devices */
+@media (max-width: 767px) {
+  .accordion-container {
+    padding: 12px;
+    gap: 6px;
+  }
+
+  .loading-indicator {
+    padding: 32px 16px;
+    font-size: 13px;
+  }
+
+  .error-message {
+    margin: 12px;
+    padding: 12px;
+    font-size: 13px;
+  }
+}
+
+/* Tablet adjustments */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .accordion-container {
+    padding: 14px;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .loading-indicator {
+    color: #a0a0a0;
+  }
+
+  .error-message {
+    background: #3e2723;
+    border-color: #d32f2f;
+    color: #ffcdd2;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .error-message {
+    border-width: 2px;
+  }
+}
+
+/* Add category button header */
+.add-category-header {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 0 16px 0;
+  margin-bottom: 8px;
+}
+
+@media (max-width: 767px) {
+  .add-category-header {
+    padding: 0 0 12px 0;
+    margin-bottom: 6px;
+  }
+}
+
+/* Category List Styles */
+.category-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.category-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.drag-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 44px;
+  color: #757575;
+  cursor: grab;
+  user-select: none;
+  font-size: 16px;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 8px;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.drag-handle:hover {
+  color: #212121;
+}
+
+.category-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Drag-and-Drop Styles */
+.draggable {
+  cursor: move;
+}
+
+.cdk-drag-preview {
+  opacity: 0.8;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.4;
+  background: #f5f5f5;
+  border: 2px dashed #e0e0e0;
+  border-radius: 4px;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.cdk-drop-list-dragging .cdk-drag {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}

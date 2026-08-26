@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -14,6 +14,7 @@ import {
   InterestGroupService,
 } from 'app/core/generated/circabc';
 import { GroupReloadListenerService } from 'app/core/group-reload-listener.service';
+import { ReadOnlyStateService } from 'app/core/read-only-state.service';
 import { fileNameValidator } from 'app/core/validation.service';
 import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
 import { FocusDirective } from 'app/shared/directives/focus.directive';
@@ -38,6 +39,8 @@ export class AdminGeneralComponent implements OnInit {
   public ig!: InterestGroup;
   public igForm!: FormGroup;
   public saving = false;
+
+  public readonly readOnlyState = inject(ReadOnlyStateService);
 
   constructor(
     private route: ActivatedRoute,

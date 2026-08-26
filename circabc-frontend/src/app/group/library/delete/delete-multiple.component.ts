@@ -52,7 +52,6 @@ export class DeleteMultipleComponent implements OnChanges {
   public deleting = false;
   public progressValue = 0;
   public progressMax = 0;
-  private notify = true;
   notifyFormGroup = this.notifyFormBuilder.group({
     notify: true,
   });
@@ -87,19 +86,15 @@ export class DeleteMultipleComponent implements OnChanges {
   }
 
   public async deleteAll() {
-    if (!this.notifyFormGroup.controls.notify.value) {
-      this.notify = false;
-    }
+    const notify = this.notifyFormGroup.controls.notify.value ?? false;
     this.deleting = true;
     for (const node of this.nodes) {
       if (node.id) {
         if (node.type && node.type.indexOf('folder') !== -1) {
-          await firstValueFrom(
-            this.spaceService.deleteSpace(node.id, this.notify)
-          );
+          await firstValueFrom(this.spaceService.deleteSpace(node.id, notify));
         } else if (node.type && node.type.indexOf('folder') === -1) {
           await firstValueFrom(
-            this.contentService.deleteContent(node.id, this.notify)
+            this.contentService.deleteContent(node.id, notify)
           );
         }
         this.clipboardService.removeItem(node);

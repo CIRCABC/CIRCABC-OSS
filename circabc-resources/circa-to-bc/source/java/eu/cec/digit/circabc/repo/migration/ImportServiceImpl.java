@@ -94,6 +94,8 @@ public class ImportServiceImpl implements ImportService
 
 	private boolean failOnError = true;
 
+	private io.swagger.api.SyncApi syncApi;
+
 	private Map<String, MigrationTracer<ImportRoot>> runningJournals = new HashMap<String, MigrationTracer<ImportRoot>>();
 
 	public NodeRef storeNewImportFile(final InputStream streamApiFile, final InputStream streamLogsFile, final String shortLabel, final String description) throws ImportationException
@@ -469,6 +471,40 @@ public class ImportServiceImpl implements ImportService
 			//final NodeRef logFile = fileArchiver.storeImportationLogResult(iteration, processId, journalAsDom(journal));
 			final NodeRef logFile = fileArchiver.storeImportationLogResultDocument(iteration, processId, journalAsDom(journal));
 			journal.setLogFile(logFile);
+
+			// 11. Sync imported IG to CBC tables
+			if(syncApi != null)
+			{
+				try
+				{
+					final ImportRoot root = journal.getUnmarshalledObject();
+					if(root != null && root.getCircabc() != null)
+					{
+						for(final eu.cec.digit.circabc.migration.entities.generated.nodes.CategoryHeader header : root.getCircabc().getCategoryHeaders())
+						{
+							for(final eu.cec.digit.circabc.migration.entities.generated.nodes.Category cat : header.getCategories())
+							{
+								for(final eu.cec.digit.circabc.migration.entities.generated.nodes.InterestGroup ig : cat.getInterestGroups())
+								{
+									final NodeRef igRef = ig.getNodeReference();
+									if(igRef != null)
+									{
+										syncApi.syncGroup(igRef.getId());
+										if(logger.isInfoEnabled())
+										{
+											logger.info("Synced IG to CBC tables: " + ig.getName().getValue() + " (" + igRef.getId() + ")");
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				catch(Exception e)
+				{
+					logger.warn("Failed to sync IG to CBC tables after import: " + e.getMessage(), e);
+				}
+			}
 
 		}
 		catch(final Throwable t)
@@ -896,6 +932,11 @@ public class ImportServiceImpl implements ImportService
 	public final void setFailOnError(boolean failOnError)
 	{
 		this.failOnError = failOnError;
+	}
+
+	public final void setSyncApi(io.swagger.api.SyncApi syncApi)
+	{
+		this.syncApi = syncApi;
 	}
 
 }

@@ -51,19 +51,31 @@ public class UsersRetrievalPost extends DeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Empty Query");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Empty Query", inre);
+      }
       return null;
     } catch (AccessDeniedException ade) {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (IOException e) {
       status.setCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
       status.setMessage("Error reading the file");
+      if (logger.isErrorEnabled()) {
+        logger.error("Error reading the file", e);
+      }
       return null;
     } catch (InvalidFormatException e) {
       status.setCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
       status.setMessage("Error, invalid file type");
+      if (logger.isErrorEnabled()) {
+        logger.error("Error, invalid file type", e);
+      }
       return null;
     }
 

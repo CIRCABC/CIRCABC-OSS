@@ -1067,6 +1067,57 @@
 	    </addColumn>
 	</changeSet>
 
+	<changeSet id="39" author="CIRCABC" dbms="oracle">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="cbc_ig_lock"/></not>
+		</preConditions>
+		<comment>Create cbc_ig_lock table for Interest Group lock feature (Oracle)</comment>
+		<createTable tableName="cbc_ig_lock">
+			<column name="id" type="number(19,0)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="ig_id" type="number(19,0)">
+				<constraints nullable="false" />
+			</column>
+			<column name="lock_message" type="clob">
+				<constraints nullable="true" />
+			</column>
+			<column name="read_only" type="number(1,0)">
+				<constraints nullable="false" />
+			</column>
+			<column name="locked_by" type="varchar2(255 char)">
+				<constraints nullable="false" />
+			</column>
+			<column name="locked_date" type="timestamp">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		<createSequence sequenceName="cbc_ig_lock_seq" startValue="1" incrementBy="1" />
+	</changeSet>
+
+	<changeSet id="40" author="CIRCABC" dbms="oracle">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="0">
+				SELECT COUNT(*) FROM user_constraints
+				WHERE table_name = 'CBC_IG_LOCK'
+				AND constraint_name = 'UK_IG_LOCK_IG_ID'
+				AND constraint_type = 'U'
+			</sqlCheck>
+		</preConditions>
+		<comment>Add unique constraint on cbc_ig_lock.ig_id (Oracle)</comment>
+		<addUniqueConstraint tableName="cbc_ig_lock"
+			columnNames="ig_id" constraintName="uk_ig_lock_ig_id" />
+	</changeSet>
+
+	<changeSet id="42" author="CIRCABC" dbms="oracle">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="cbc_ig_lock" columnName="read_only" />
+		</preConditions>
+		<comment>Add default value 0 to cbc_ig_lock.read_only (Oracle)</comment>
+		<addDefaultValue tableName="cbc_ig_lock" columnName="read_only"
+			defaultValueNumeric="0" />
+	</changeSet>
+
 	<changeSet id="10031" author="Slobodan Filipovic" dbms="mysql"   >
         <createTable tableName="cbc_headers">
             <column name="id" type="bigint"  >
@@ -1393,6 +1444,63 @@
 		<addColumn tableName="cbc_interest_groups">
 	        <column name="to_be_deleted" type="boolean"/>
 	    </addColumn>
+	</changeSet>
+
+	<changeSet id="10039" author="CIRCABC" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="cbc_ig_lock"/></not>
+		</preConditions>
+		<comment>Create cbc_ig_lock table for Interest Group lock feature</comment>
+		<createTable tableName="cbc_ig_lock">
+			<column name="id" type="bigint" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="ig_id" type="bigint">
+				<constraints nullable="false" />
+			</column>
+			<column name="lock_message" type="text">
+				<constraints nullable="true" />
+			</column>
+			<column name="read_only" type="boolean" defaultValueBoolean="false">
+				<constraints nullable="false" />
+			</column>
+			<column name="locked_by" type="varchar(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="locked_date" type="timestamp">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+	</changeSet>
+
+	<changeSet id="10040" author="CIRCABC" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="0">
+				SELECT COUNT(*) FROM information_schema.TABLE_CONSTRAINTS
+				WHERE CONSTRAINT_SCHEMA = DATABASE()
+				AND TABLE_NAME = 'cbc_ig_lock'
+				AND CONSTRAINT_NAME = 'uk_ig_lock_ig_id'
+				AND CONSTRAINT_TYPE = 'UNIQUE'
+			</sqlCheck>
+		</preConditions>
+		<comment>Add unique constraint on cbc_ig_lock.ig_id</comment>
+		<addUniqueConstraint tableName="cbc_ig_lock"
+			columnNames="ig_id" constraintName="uk_ig_lock_ig_id" />
+	</changeSet>
+
+	<changeSet id="10041" author="CIRCABC" dbms="mysql">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="0">
+				SELECT COUNT(*) FROM information_schema.STATISTICS
+				WHERE TABLE_SCHEMA = DATABASE()
+				AND TABLE_NAME = 'cbc_ig_lock'
+				AND INDEX_NAME = 'idx_ig_lock_ig_id'
+			</sqlCheck>
+		</preConditions>
+		<comment>Add index on cbc_ig_lock.ig_id</comment>
+		<createIndex tableName="cbc_ig_lock" indexName="idx_ig_lock_ig_id">
+			<column name="ig_id" />
+		</createIndex>
 	</changeSet>
 
 

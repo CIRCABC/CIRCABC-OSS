@@ -35,6 +35,8 @@ public class Node {
 
   private Boolean hasGuestAccess = false;
 
+  private String originalNodeRef = null;
+
   /**
    * Get id
    *
@@ -275,5 +277,20 @@ public class Node {
 
   public void setHasGuestAccess(Boolean hasGuestAccess) {
     this.hasGuestAccess = hasGuestAccess;
+  }
+
+  /**
+   * NodeRef of the node in the source system this node was migrated from.
+   * Populated only for nodes carrying the {@code ci:migrated} aspect
+   * ({@code ci:originalNodeRef} property); {@code null} otherwise.
+   *
+   * @return the original (source) node reference, or {@code null}
+   */
+  public String getOriginalNodeRef() {
+    return originalNodeRef;
+  }
+
+  public void setOriginalNodeRef(String originalNodeRef) {
+    this.originalNodeRef = originalNodeRef;
   }
 }

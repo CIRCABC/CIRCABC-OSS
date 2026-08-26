@@ -29,6 +29,7 @@ circabc-frontend/out-tsc/
 circabc-backend/.classpath
 circabc-backend/.project
 circabc-frontend/.cache/
+circabc-frontend/src/assets/*.*.*/
 circabc-frontend/src/assets/*.*.*.*/ 
 circabc-backend/node_modules/
 circabc-frontend/.env
@@ -56,7 +57,11 @@ circabc-backend/.project
 circabc-docker/docker-compose-tomcat-dev-collipe.yml
 circabc-docker/tomcat/license
 circabc-docker/tomcat/license/Alfresco-ent42-EuropeanCommissionCommissioneuropenneEUCexp6292025 2.lic
-circabc-docker/tomcat/dist
-circabc-docker/angular/distcircabc-docker/tomcat/dist/
-circabc-docker/solr/dist/
-circabc-docker/angular/dist/
+circabc-sync/repo_sync_workspace/bitbucket_repo
+circabc-sync/repo_sync_workspace/github_repo
+.kiro/steering/product.md
+.kiro/steering/structure.md
+.kiro/steering/tech.md
+
+# Security assessment deliverables (contains vulnerability findings - do not commit)
+deliverables/

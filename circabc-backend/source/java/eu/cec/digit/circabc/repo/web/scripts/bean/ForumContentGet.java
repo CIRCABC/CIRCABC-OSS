@@ -3,6 +3,7 @@ package eu.cec.digit.circabc.repo.web.scripts.bean;
 import io.swagger.api.ForumsApi;
 import io.swagger.model.PagedNodes;
 import io.swagger.util.CurrentUserPermissionCheckerService;
+import io.swagger.util.GroupLockGuard;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -10,6 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.alfresco.repo.node.MLPropertyInterceptor;
 import org.alfresco.repo.security.permissions.AccessDeniedException;
 import org.alfresco.service.cmr.repository.InvalidNodeRefException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.DeclarativeWebScript;
@@ -21,12 +24,18 @@ import org.springframework.extensions.webscripts.WebScriptRequest;
  */
 public class ForumContentGet extends DeclarativeWebScript {
 
+  /**
+   * A logger for the class
+   */
+  static final Log logger = LogFactory.getLog(ForumContentGet.class);
+
   private static final int START_PAGE = 0;
 
   private static final int DEFAULT_NUMBER_RESULTS = 100;
 
   private ForumsApi forumsApi;
   private CurrentUserPermissionCheckerService currentUserPermissionCheckerService;
+  private GroupLockGuard groupLockGuard;
 
   @Override
   protected Map<String, Object> executeImpl(
@@ -69,6 +78,8 @@ public class ForumContentGet extends DeclarativeWebScript {
 
     try {
       if (id != null) {
+        this.groupLockGuard.checkAccess(id);
+
         if (
           !this.currentUserPermissionCheckerService.hasAlfrescoReadPermission(
               id
@@ -88,11 +99,17 @@ public class ForumContentGet extends DeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (InvalidNodeRefException inre) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request", inre);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);
@@ -120,5 +137,9 @@ public class ForumContentGet extends DeclarativeWebScript {
   ) {
     this.currentUserPermissionCheckerService =
       currentUserPermissionCheckerService;
+  }
+
+  public void setGroupLockGuard(GroupLockGuard groupLockGuard) {
+    this.groupLockGuard = groupLockGuard;
   }
 }

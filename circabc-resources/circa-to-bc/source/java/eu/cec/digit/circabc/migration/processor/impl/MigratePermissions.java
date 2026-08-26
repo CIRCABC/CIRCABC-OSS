@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -20,6 +21,7 @@ import org.alfresco.service.cmr.repository.MLText;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.PermissionService;
 
+import eu.cec.digit.circabc.migration.entities.ElementsConverter;
 import eu.cec.digit.circabc.migration.entities.ElementsHelper;
 import eu.cec.digit.circabc.migration.entities.TypedProperty.DescriptionProperty;
 import eu.cec.digit.circabc.migration.entities.TypedProperty.TitleProperty;
@@ -44,6 +46,7 @@ import eu.cec.digit.circabc.migration.entities.generated.permissions.NewsgroupPe
 import eu.cec.digit.circabc.migration.entities.generated.permissions.NewsgroupUserRights;
 import eu.cec.digit.circabc.migration.entities.generated.permissions.NotificationItem;
 import eu.cec.digit.circabc.migration.entities.generated.permissions.Notifications;
+import eu.cec.digit.circabc.migration.entities.generated.properties.I18NProperty;
 import eu.cec.digit.circabc.migration.journal.JournalLine;
 import eu.cec.digit.circabc.migration.journal.JournalLine.Parameter;
 import eu.cec.digit.circabc.migration.journal.JournalLine.Status;
@@ -345,6 +348,7 @@ public class MigratePermissions extends MigrateProcessorBase
          private final Boolean exported;
          private final TitleProperty titles;
          private final DescriptionProperty descriptions;
+         private final List<I18NProperty> i18NTitles;
          private NodeRef targetInterestGroup = null;
 
          public MigrateProfileCallback(final MigrationTracer journal, final Directory directory, final GlobalAccessProfile globalAccessProfile, final String name)
@@ -361,6 +365,7 @@ public class MigratePermissions extends MigrateProcessorBase
              exported = false;
              this.titles = globalAccessProfile.getTitle();
              this.descriptions = globalAccessProfile.getDescription();
+             this.i18NTitles = globalAccessProfile.getI18NTitles();
              targetInterestGroup = null;
              targetProfileName = null;
          }
@@ -379,6 +384,7 @@ public class MigratePermissions extends MigrateProcessorBase
              exported = accessProfile.isExported();
              this.titles = accessProfile.getTitle();
              this.descriptions =  accessProfile.getDescription();
+             this.i18NTitles = accessProfile.getI18NTitles();
              targetInterestGroup = null;
              targetProfileName = null;
          }
@@ -396,6 +402,7 @@ public class MigratePermissions extends MigrateProcessorBase
              exported = false;
              this.titles = importedProfile.getTitle();
              this.descriptions = importedProfile.getDescription();
+             this.i18NTitles = importedProfile.getI18NTitles();
              if(importRoot.getCircabc() == null)
              {
             	 final Category category = ElementsHelper.getElementCategory(directory);
@@ -522,7 +529,14 @@ public class MigratePermissions extends MigrateProcessorBase
 						 profileService.exportProfile(noderef, profileName, true);
 					 }
 				 }
-				 if(titles != null && titles.getValue() != null)
+				 if(i18NTitles != null && !i18NTitles.isEmpty())
+				 {
+					 // Prefer i18NTitles: properly handles multilingual values without
+					 // the MLText.toString() issue that produces "{en=test}"
+					 final MLText mltext = ElementsConverter.adpatI18NProperties(i18NTitles);
+					 profileService.addProfileTitles(noderef, profileName, mltext);
+				 }
+				 else if(titles != null && titles.getValue() != null)
 	             {
 					 final MLText mltext;
 					 if(titles.getValue() instanceof MLText)
@@ -536,6 +550,13 @@ public class MigratePermissions extends MigrateProcessorBase
 
 					 profileService.addProfileTitles(noderef, profileName, mltext);
 	             }
+				 else
+				 {
+					 // Fallback: use profile name as title in English when title is null
+					 final MLText mltext = new MLText();
+					 mltext.put(Locale.ENGLISH, profileName);
+					 profileService.addProfileTitles(noderef, profileName, mltext);
+				 }
 				 if(descriptions != null && descriptions.getValue() != null)
 				 {
 					 final MLText mltext;

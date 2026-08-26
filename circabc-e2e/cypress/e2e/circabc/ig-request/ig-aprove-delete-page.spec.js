@@ -6,6 +6,7 @@ describe('The Aprove Delete IG Page', function () {
     );
   });
   it('successfully aprove delete forum', function () {
+    cy.wait(3000);
     cy.visit('explore', {
       failOnStatusCode: false,
     });
@@ -13,13 +14,19 @@ describe('The Aprove Delete IG Page', function () {
     cy.get(':nth-child(1) > .link').click();
     cy.get('.sub-menu > .ng-star-inserted').click();
     cy.get(':nth-child(6) > .tab > .tab-text').click();
-    cy.wait(1000);
+    cy.wait(2000);
     cy.get(
       '#mat-tab-group-0-label-1 > .mdc-tab__content > .mdc-tab__text-label',
     ).click();
+
+    // Wait until the delete request row is visible before approving
     cy.get(
       ':nth-child(1) > .g-request > :nth-child(1) > .actions > [data-cy="approve"]',
-    ).click();
+      { timeout: 30000 },
+    )
+      .should('be.visible')
+      .click();
+
     cy.wait(1000);
     cy.get('[data-cy="delete-button"]').click();
     cy.contains('Success');

@@ -76,16 +76,22 @@ public class CategoryRequestGroupPut extends CircabcDeclarativeWebScript {
 
       GroupCreationRequest body =
         InterestGroupJsonParser.parseGroupCreationRequest(req);
-      this.categoriesApi.categoriesGroupRequestPut(requestId, body);
+      this.categoriesApi.categoriesGroupRequestPut(categoryId, requestId, body);
     } catch (AccessDeniedException ade) {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (InvalidNodeRefException | ParseException | IOException inre) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request", inre);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);

@@ -1,0 +1,57 @@
+version: "3"
+services:
+  db:
+#    image: container-registry.oracle.com/database/standard:12.1.0.2
+    build: oracle
+    container_name: oracle-db
+    ports:
+      - 1521:1521
+      - 5500:5500
+    env_file:
+      - ./oracle/db_env.dat
+    privileged: true
+    shm_size: 4g
+    volumes:
+      - /u01/app/oracle/oradata
+  #    - ./oracle/init:/u01/app/oracle/scripts/setup # not working, I had to patch the image (phico)
+      - ./oracle/init/setup.sql:/home/oracle/setup/setup.sql
+    environment:
+      - ORACLE_PWD=password
+    command: /home/oracle/setup/dockerInitPatched.sh      
+  #    - ORACLE_SID=PDB1
+    restart: unless-stopped
+
+  weblogic:
+    build: weblogic
+    container_name: weblogic
+    ports:
+    - 80:7001
+    - 443:7002
+    volumes:
+      - ./weblogic/license:/u01/oracle/user_projects/domains/base_domain/alfresco/extension/license
+      - ./weblogic:/u01/oracle/properties
+      - ./weblogic/dist:/u01/oracle/user_projects/domains/base_domain/autodeploy
+    depends_on:
+      - db
+    #command: bash -c "while ! curl -s oracle-db:5500 > /dev/null; do echo waiting for oracle-db; sleep 3; done; /u01/oracle/user_projects/domains/base_domain/startWebLogic.sh"
+ 
+  openldap:
+    #image: docker.io/bitnami/openldap:2-debian-10
+    build: openldap/bitnami-docker-openldap/2/debian-10
+    container_name: openldap
+    privileged: true
+    ports:
+      - '389:1389'
+      - '1636:1636'
+    environment:
+      - LDAP_ADMIN_USERNAME=admin
+      - LDAP_ADMIN_PASSWORD=EC1234
+      - LDAP_ROOT=dc=cec,dc=eu,dc=int
+     
+    volumes:
+      - 'openldap_data:/bitnami/openldap'
+      - ./openldap/imports/ldifs:/ldifs
+      - ./openldap/imports/schema/cudperson.ldif:/schema/custom.ldif
+volumes:
+  openldap_data:
+    driver: local

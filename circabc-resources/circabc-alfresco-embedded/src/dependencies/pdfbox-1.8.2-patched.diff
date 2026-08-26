@@ -1,0 +1,138 @@
+Index: pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java
+===================================================================
+--- pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java	(revision 1504982)
++++ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/PDPage.java	(working copy)
+@@ -833,7 +833,10 @@
+             for (int i=0; i < annots.size(); i++)
+             {
+                 COSBase item = annots.getObject(i);
+-                actuals.add( PDAnnotation.createAnnotation( item ) );
++                if (item != null)
++                {
++                    actuals.add( PDAnnotation.createAnnotation( item ) );
++                }
+             }
+             retval = new COSArrayList<PDAnnotation>(actuals, annots);
+         }
+Index: pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java
+===================================================================
+--- pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java	(revision 1504982)
++++ pdfbox/src/main/java/org/apache/pdfbox/pdmodel/font/PDSimpleFont.java	(working copy)
+@@ -30,6 +30,7 @@
+ import java.util.HashMap;
+ 
+ import org.apache.fontbox.afm.FontMetric;
++import org.apache.fontbox.cmap.CMap;
+ 
+ import org.apache.commons.logging.Log;
+ import org.apache.commons.logging.LogFactory;
+@@ -47,6 +48,9 @@
+ import org.apache.pdfbox.pdmodel.common.PDRectangle;
+ import org.apache.pdfbox.util.ResourceLoader;
+ 
++import java.util.LinkedHashMap;
++import java.util.Map;
++
+ /**
+  * This class contains implementation details of the simple pdf fonts.
+  *
+@@ -70,6 +74,19 @@
+      */
+     private static final Log LOG = LogFactory.getLog(PDSimpleFont.class);
+     
++    // LRU map of 20 CMap object loaded from local resources.
++    // Avoids a lock on the class loader.
++    @SuppressWarnings("serial")
++    private static Map<String, CMapValue> localResource =
++            new LinkedHashMap<String, CMapValue>()
++            {
++                @Override
++                protected boolean removeEldestEntry(Map.Entry<String, CMapValue> eldest)
++                {
++                    return size() > 20;
++                }
++            };
++    
+     /**
+      * Constructor.
+      */
+@@ -430,7 +447,7 @@
+             String resourceName = resourceRootCMAP + cmapName;
+             try 
+             {
+-                cmap = parseCmap( resourceRootCMAP, ResourceLoader.loadResource( resourceName ) );
++                cmap = loadCmap( resourceRootCMAP, resourceName );
+                 if( cmap == null && encodingName == null)
+                 {
+                     LOG.error("Error: Could not parse predefined CMAP file for '" + cmapName + "'" );
+@@ -472,7 +489,7 @@
+                     String resourceName = resourceRootCMAP + cmapName;
+                     try 
+                     {
+-                        toUnicodeCmap = parseCmap( resourceRootCMAP, ResourceLoader.loadResource( resourceName ));
++                        toUnicodeCmap = loadCmap( resourceRootCMAP, resourceName );
+                     }
+                     catch(IOException exception) 
+                     {
+@@ -487,6 +504,31 @@
+         }
+     }
+     
++    private CMap loadCmap(String root, String resourceName) throws IOException
++    {
++        synchronized(localResource)
++        {
++            CMapValue value = localResource.get(resourceName);
++            if (value != null)
++            {
++                return value.cmap;
++            }
++            
++            CMap cmap = parseCmap(root, ResourceLoader.loadResource(resourceName));
++            localResource.put(resourceName, new CMapValue(cmap));
++            return cmap;
++        }
++    }
++    
++    private class CMapValue
++    {
++        CMap cmap;
++        CMapValue(CMap cmap)
++        {
++            this.cmap = cmap;
++        }
++    }
++    
+     private boolean isFontSubstituted = false;
+     
+     /**
+Index: pdfbox/src/main/java/org/apache/pdfbox/pdfparser/PDFParser.java
+===================================================================
+--- pdfbox/src/main/java/org/apache/pdfbox/pdfparser/PDFParser.java	(revision 1504982)
++++ pdfbox/src/main/java/org/apache/pdfbox/pdfparser/PDFParser.java	(working copy)
+@@ -58,6 +58,9 @@
+ 
+     private static final String PDF_HEADER = "%PDF-";
+     private static final String FDF_HEADER = "%FDF-";
++
++    private static final String OxFFFFFFFF = Long.toString(0xFFFFFFFFL);
++
+     /**
+      * A list of duplicate objects found when Parsing the PDF
+      * File.
+@@ -730,6 +733,15 @@
+                     LOG.warn("invalid xref line: " + currentLine);
+                     break;
+                 }
++                // Handle a not so uncommon xref table encoding error, by overriding the
++                // entryType as free ('f') when the original int offset is -1 (0xFFFFFFFF)
++                // and has been encoded in error as 4294967295. Google search returned
++                // over 7000 hits.
++                if (OxFFFFFFFF.equals(splitString[0]))
++                {
++                    splitString[splitString.length-1] = "f";
++                    splitString[2] = "f";
++                }
+                 /* This supports the corrupt table as reported in
+                  * PDFBOX-474 (XXXX XXX XX n) */
+                 if(splitString[splitString.length-1].equals("n"))

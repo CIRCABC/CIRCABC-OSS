@@ -82,6 +82,10 @@
             alias="CircabcPermission"
             type="eu.cec.digit.circabc.service.dynamic.authority.CircabcPermission"
         />
+		<typeAlias
+      alias="GroupLock"
+      type="eu.cec.digit.circabc.repo.app.model.GroupLock"
+    />
 	</typeAliases>
 	
 	<mappers>

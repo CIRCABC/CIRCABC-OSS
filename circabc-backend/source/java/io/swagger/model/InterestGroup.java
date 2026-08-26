@@ -36,6 +36,8 @@ public class InterestGroup {
 
   private Boolean toBeDeleted = false;
 
+  private GroupLockInfo lockInfo = null;
+
   public InterestGroup() {
     this.informationId = "";
     this.libraryId = "";
@@ -209,7 +211,8 @@ public class InterestGroup {
       Objects.equals(this.allowApply, interestGroup.allowApply) &&
       Objects.equals(this.logoUrl, interestGroup.logoUrl) &&
       Objects.equals(this.contact, interestGroup.contact) &&
-      Objects.equals(this.toBeDeleted, interestGroup.toBeDeleted)
+      Objects.equals(this.toBeDeleted, interestGroup.toBeDeleted) &&
+      Objects.equals(this.lockInfo, interestGroup.lockInfo)
     );
   }
 
@@ -229,7 +232,8 @@ public class InterestGroup {
       allowApply,
       logoUrl,
       contact,
-      toBeDeleted
+      toBeDeleted,
+      lockInfo
     );
   }
 
@@ -279,6 +283,9 @@ public class InterestGroup {
       "    toBeDeleted: " +
       toIndentedString(toBeDeleted) +
       "\n" +
+      "    lockInfo: " +
+      toIndentedString(lockInfo) +
+      "\n" +
       "}"
     );
   }
@@ -318,6 +325,19 @@ public class InterestGroup {
 
   public void setToBeDeleted(Boolean toBeDeleted) {
     this.toBeDeleted = toBeDeleted;
+  }
+
+  /**
+   * Get lockInfo
+   *
+   * @return lockInfo
+   */
+  public GroupLockInfo getLockInfo() {
+    return lockInfo;
+  }
+
+  public void setLockInfo(GroupLockInfo lockInfo) {
+    this.lockInfo = lockInfo;
   }
 
   /**

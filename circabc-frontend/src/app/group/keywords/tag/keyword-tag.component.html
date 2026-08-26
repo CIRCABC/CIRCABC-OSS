@@ -8,7 +8,7 @@
   >
   }
   <span class="keywordTagValue">{{ keyword().title[key] }}</span>
-  @if (removable() && !deleting) {
+  @if (canRemove() && !deleting) {
   <span class="removeAction"
     >&nbsp;<a tabindex="0" (click)="removeKeyword(keyword())" title="Delete"
       >x</a

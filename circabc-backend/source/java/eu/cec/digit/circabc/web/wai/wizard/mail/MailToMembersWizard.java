@@ -841,7 +841,7 @@ public class MailToMembersWizard extends AbstractMailToUsersBean {
             user.setHomeSpaceNodeRef(
               getManagementService().getGuestHomeNodeRef()
             );
-            getUserService().createUser(user, false);
+            getUserService().createUser(user, true);
           }
           addUserToSet(onlineUsers, userName);
         } else {

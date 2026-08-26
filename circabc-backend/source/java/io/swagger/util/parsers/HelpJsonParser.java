@@ -3,6 +3,7 @@ package io.swagger.util.parsers;
 import io.swagger.model.HelpArticle;
 import io.swagger.model.HelpCategory;
 import io.swagger.model.HelpLink;
+import io.swagger.model.HelpSubcategory;
 import io.swagger.util.SupportedLanguages;
 import java.io.IOException;
 import org.json.simple.JSONObject;
@@ -37,13 +38,72 @@ public class HelpJsonParser {
 
     Object titles = json.get(TITLE);
     if (titles instanceof JSONObject) {
+      JSONObject titlesObj = (JSONObject) titles;
       for (String code : SupportedLanguages.availableLangCodes) {
-        if (((JSONObject) titles).containsKey(code)) {
-          body
-            .getTitle()
-            .put(code, String.valueOf(((JSONObject) titles).get(code)));
+        if (titlesObj.containsKey(code)) {
+          String titleValue = String.valueOf(titlesObj.get(code));
+          if (
+            titleValue != null &&
+            !titleValue.trim().isEmpty() &&
+            !"null".equals(titleValue)
+          ) {
+            body.getTitle().put(code, titleValue);
+          }
         }
       }
+
+      // If no valid titles were found in supported languages, throw exception
+      if (body.getTitle().isEmpty()) {
+        throw new IllegalArgumentException(
+          "Help category must have at least one non-empty title in a supported language. " +
+          "Received title object: " +
+          titlesObj.toJSONString()
+        );
+      }
+    } else if (titles == null) {
+      throw new IllegalArgumentException("Help category title is required");
+    }
+
+    return body;
+  }
+
+  public static HelpSubcategory parseSubcategory(WebScriptRequest req)
+    throws IOException, ParseException {
+    String cBody = req.getContent().getContent();
+    JSONParser parser = new JSONParser();
+    JSONObject json = (JSONObject) parser.parse(cBody);
+
+    HelpSubcategory body = new HelpSubcategory();
+    if (json.get(ID) != null) {
+      body.setId(String.valueOf(json.get(ID)));
+    }
+
+    Object titles = json.get(TITLE);
+    if (titles instanceof JSONObject) {
+      JSONObject titlesObj = (JSONObject) titles;
+      for (String code : SupportedLanguages.availableLangCodes) {
+        if (titlesObj.containsKey(code)) {
+          String titleValue = String.valueOf(titlesObj.get(code));
+          if (
+            titleValue != null &&
+            !titleValue.trim().isEmpty() &&
+            !"null".equals(titleValue)
+          ) {
+            body.getTitle().put(code, titleValue);
+          }
+        }
+      }
+
+      // If no valid titles were found in supported languages, throw exception
+      if (body.getTitle().isEmpty()) {
+        throw new IllegalArgumentException(
+          "Help subcategory must have at least one non-empty title in a supported language. " +
+          "Received title object: " +
+          titlesObj.toJSONString()
+        );
+      }
+    } else if (titles == null) {
+      throw new IllegalArgumentException("Help subcategory title is required");
     }
 
     return body;
@@ -62,13 +122,30 @@ public class HelpJsonParser {
 
     Object titles = json.get(TITLE);
     if (titles instanceof JSONObject) {
+      JSONObject titlesObj = (JSONObject) titles;
       for (String code : SupportedLanguages.availableLangCodes) {
-        if (((JSONObject) titles).containsKey(code)) {
-          body
-            .getTitle()
-            .put(code, String.valueOf(((JSONObject) titles).get(code)));
+        if (titlesObj.containsKey(code)) {
+          String titleValue = String.valueOf(titlesObj.get(code));
+          if (
+            titleValue != null &&
+            !titleValue.trim().isEmpty() &&
+            !"null".equals(titleValue)
+          ) {
+            body.getTitle().put(code, titleValue);
+          }
         }
       }
+
+      // If no valid titles were found in supported languages, throw exception
+      if (body.getTitle().isEmpty()) {
+        throw new IllegalArgumentException(
+          "Help article must have at least one non-empty title in a supported language. " +
+          "Received title object: " +
+          titlesObj.toJSONString()
+        );
+      }
+    } else if (titles == null) {
+      throw new IllegalArgumentException("Help article title is required");
     }
 
     Object contents = json.get(CONTENT);
@@ -98,13 +175,30 @@ public class HelpJsonParser {
 
     Object titles = json.get(TITLE);
     if (titles instanceof JSONObject) {
+      JSONObject titlesObj = (JSONObject) titles;
       for (String code : SupportedLanguages.availableLangCodes) {
-        if (((JSONObject) titles).containsKey(code)) {
-          body
-            .getTitle()
-            .put(code, String.valueOf(((JSONObject) titles).get(code)));
+        if (titlesObj.containsKey(code)) {
+          String titleValue = String.valueOf(titlesObj.get(code));
+          if (
+            titleValue != null &&
+            !titleValue.trim().isEmpty() &&
+            !"null".equals(titleValue)
+          ) {
+            body.getTitle().put(code, titleValue);
+          }
         }
       }
+
+      // If no valid titles were found in supported languages, throw exception
+      if (body.getTitle().isEmpty()) {
+        throw new IllegalArgumentException(
+          "Help link must have at least one non-empty title in a supported language. " +
+          "Received title object: " +
+          titlesObj.toJSONString()
+        );
+      }
+    } else if (titles == null) {
+      throw new IllegalArgumentException("Help link title is required");
     }
 
     Object href = json.get(HREF);

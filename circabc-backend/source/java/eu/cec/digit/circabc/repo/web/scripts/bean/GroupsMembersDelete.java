@@ -51,6 +51,11 @@ public class GroupsMembersDelete extends CircabcDeclarativeWebScript {
           "Not enough rights for deleting a user"
         );
       }
+      if (!this.groupLockApi.canWriteOrAdmin(id)) {
+        throw new ReadOnlyAccessException(
+          "Interest group is in read-only mode"
+        );
+      }
 
       //DIGITCIRCABC-5060 If the user subscribed to Notifications from Newsgroup and/or Library, remove the subscription(s)
       //-->
@@ -81,11 +86,27 @@ public class GroupsMembersDelete extends CircabcDeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
+      return null;
+    } catch (ReadOnlyAccessException roe) {
+      status.setCode(HttpServletResponse.SC_FORBIDDEN);
+      status.setMessage(roe.getMessage());
+      status.setRedirect(true);
+      if (logger.isWarnEnabled()) {
+        logger.warn(
+          "Read-only mode prevented member delete: " + roe.getMessage()
+        );
+      }
       return null;
     } catch (InvalidNodeRefException inre) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request", inre);
+      }
       return null;
     }
 

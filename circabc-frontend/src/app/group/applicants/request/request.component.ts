@@ -3,9 +3,11 @@ import {
   OnChanges,
   OnInit,
   SimpleChanges,
+  inject,
   output,
   input,
 } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import {
   AbstractControl,
   FormBuilder,
@@ -26,6 +28,7 @@ import {
   UserProfile,
 } from 'app/core/generated/circabc';
 import { UiMessageService } from 'app/core/message/ui-message.service';
+import { ReadOnlyStateService } from 'app/core/read-only-state.service';
 import { getErrorTranslation } from 'app/core/util';
 import { ControlMessageComponent } from 'app/shared/control-message/control-message.component';
 import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
@@ -57,6 +60,8 @@ export class RequestComponent implements OnInit, OnChanges {
   public inviteForm!: FormGroup;
   public declineForm!: FormGroup;
   public processing = false;
+
+  public readonly readOnlyState = inject(ReadOnlyStateService);
 
   constructor(
     private fb: FormBuilder,
@@ -126,6 +131,15 @@ export class RequestComponent implements OnInit, OnChanges {
   }
 
   public async invite() {
+    // Defensive guard: block the accept if the IG became read-only after the
+    // page was opened. Decline stays allowed so leaders can still housekeep.
+    if (this.readOnlyState.isReadOnly()) {
+      this.uiMessageService.addWarningMessage(
+        this.translateService.translate('text.member.request.readonly.warning')
+      );
+      return;
+    }
+
     this.processing = true;
 
     const body: MembershipPostDefinition = {};
@@ -160,14 +174,40 @@ export class RequestComponent implements OnInit, OnChanges {
       );
 
       this.requestProcessed.emit(this.applicant());
-    } catch (_error) {
-      const res = this.translateService.translate(
-        getErrorTranslation(ActionType.ADD_MEMBERSHIPS)
-      );
-      this.uiMessageService.addErrorMessage(res, false);
+    } catch (error: unknown) {
+      this.handleAcceptError(error);
     }
 
     this.processing = false;
+  }
+
+  /**
+   * Surfaces backend failures during applicant approval. On HTTP 403 with a
+   * read-only message, reflect the state locally so the "Accept" CTA is
+   * immediately disabled and the user gets an actionable warning.
+   */
+  private handleAcceptError(error: unknown): void {
+    if (error instanceof HttpErrorResponse) {
+      const backendMessage = error.error?.message ?? '';
+      const isReadOnly =
+        error.status === 403 &&
+        typeof backendMessage === 'string' &&
+        backendMessage.toLowerCase().includes('read-only');
+
+      if (isReadOnly) {
+        this.readOnlyState.setReadOnly(true);
+        this.uiMessageService.addWarningMessage(
+          this.translateService.translate(
+            'text.member.request.readonly.warning'
+          )
+        );
+        return;
+      }
+    }
+    const res = this.translateService.translate(
+      getErrorTranslation(ActionType.ADD_MEMBERSHIPS)
+    );
+    this.uiMessageService.addErrorMessage(res, false);
   }
 
   public async decline() {

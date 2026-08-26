@@ -1,6 +1,6 @@
 openapi: '3.0.3'
 info:
-  version: '4.2.4.3'
+  version: '4.2.5'
   title: CIRCABC REST API
   description: >
     This is the first version of the CIRCABC REST API used by the new User
@@ -84,6 +84,160 @@ paths:
           description: OK
         '400':
           description: Bad request
+        '403':
+          description: Unauthorized action
+        '500':
+          description: Internal Server Error
+  '/admin/sync/all':
+    x-swagger-router-controller: sync
+    post:
+      operationId: syncAll
+      security:
+        - basicAuth: []
+      tags:
+        - Sync
+      description: >
+        Triggers a full resynchronization of all CBC tables from Alfresco data.
+        Deletes all CBC data and reloads from scratch.
+        Restricted to CIRCABC and Alfresco administrators.
+      responses:
+        '200':
+          description: Sync completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncResult'
+        '403':
+          description: Unauthorized action
+        '500':
+          description: Internal Server Error
+  '/admin/sync/users':
+    x-swagger-router-controller: sync
+    post:
+      operationId: syncUsers
+      security:
+        - basicAuth: []
+      tags:
+        - Sync
+      description: >
+        Resynchronizes users from Alfresco to CBC tables.
+        Adds missing users without deleting existing ones.
+        Restricted to CIRCABC and Alfresco administrators.
+      responses:
+        '200':
+          description: Sync completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncResult'
+        '403':
+          description: Unauthorized action
+        '500':
+          description: Internal Server Error
+  '/admin/sync/groups/{id}':
+    x-swagger-router-controller: sync
+    post:
+      operationId: syncGroup
+      security:
+        - basicAuth: []
+      tags:
+        - Sync
+      description: >
+        Resynchronizes a specific Interest Group from Alfresco to CBC tables.
+        Deletes and recreates the group data in CBC.
+        Restricted to CIRCABC and Alfresco administrators.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The node ID of the Interest Group to sync
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Sync completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncResult'
+        '403':
+          description: Unauthorized action
+        '404':
+          description: Interest Group not found
+        '500':
+          description: Internal Server Error
+  '/admin/sync/categories/{id}':
+    x-swagger-router-controller: sync
+    post:
+      operationId: syncCategory
+      security:
+        - basicAuth: []
+      tags:
+        - Sync
+      description: >
+        Resynchronizes a specific Category (and all its Interest Groups) from Alfresco to CBC tables.
+        Restricted to CIRCABC and Alfresco administrators.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The node ID of the Category to sync
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Sync completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncResult'
+        '403':
+          description: Unauthorized action
+        '404':
+          description: Category not found
+        '500':
+          description: Internal Server Error
+  '/admin/sync/admins':
+    x-swagger-router-controller: sync
+    post:
+      operationId: syncAdmins
+      security:
+        - basicAuth: []
+      tags:
+        - Sync
+      description: >
+        Resynchronizes CIRCABC administrators from Alfresco to CBC tables.
+        Restricted to CIRCABC and Alfresco administrators.
+      responses:
+        '200':
+          description: Sync completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncResult'
+        '403':
+          description: Unauthorized action
+        '500':
+          description: Internal Server Error
+  '/admin/sync/status':
+    x-swagger-router-controller: sync
+    get:
+      operationId: getSyncStatus
+      security:
+        - basicAuth: []
+      tags:
+        - Sync
+      description: >
+        Returns a comparison of record counts between Alfresco and CBC tables
+        to detect desynchronization. Does not modify any data.
+        Restricted to CIRCABC and Alfresco administrators.
+      responses:
+        '200':
+          description: Sync status retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncStatus'
         '403':
           description: Unauthorized action
         '500':
@@ -3441,6 +3595,85 @@ paths:
           description: Invalid reference
         '500':
           description: Internal Server Error
+  '/groups/{id}/lock':
+    post:
+      operationId: lockGroup
+      security:
+        - basicAuth: []
+      tags:
+        - GroupLock
+      description: Lock an Interest Group, restricting access to leaders and category admins only
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroupLockRequest'
+        required: true
+      responses:
+        '200':
+          description: Interest group successfully locked
+        '403':
+          description: Unauthorized action
+        '409':
+          description: Interest group is already locked
+        '404':
+          description: Interest group not found
+        '500':
+          description: Internal Server Error
+    delete:
+      operationId: unlockGroup
+      security:
+        - basicAuth: []
+      tags:
+        - GroupLock
+      description: Unlock a previously locked Interest Group, restoring normal access
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Interest group successfully unlocked
+        '403':
+          description: Unauthorized action
+        '409':
+          description: Interest group is not locked
+        '404':
+          description: Interest group not found
+        '500':
+          description: Internal Server Error
+    get:
+      operationId: getGroupLockInfo
+      security:
+        - basicAuth: []
+      tags:
+        - GroupLock
+      description: Get the lock status and information for an Interest Group
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupLockInfo'
+        '404':
+          description: Interest group not found
+        '500':
+          description: Internal Server Error
   '/nodes/{id}/repositories/{repoId}':
     get:
       operationId: getExternalRepositoryNodeLog
@@ -4901,6 +5134,14 @@ paths:
           required: false
           schema:
             type: boolean
+        - name: skipExpiredItems
+          in: query
+          description: |
+            If true, expired items (based on bprop:expiration_date) are skipped. Default is false.
+          required: false
+          schema:
+            type: boolean
+            default: false
       responses:
         '200':
           description: ok
@@ -4976,6 +5217,14 @@ paths:
           required: false
           schema:
             type: string
+        - name: skipExpiredItems
+          in: query
+          description: |
+            If true, expired items (based on bprop:expiration_date) are skipped. Default is false.
+          required: false
+          schema:
+            type: boolean
+            default: false
       responses:
         '200':
           description: ok
@@ -7150,6 +7399,120 @@ paths:
           description: Invalid input
         '500':
           description: Internal Server Error
+  '/nodes/{id}/originalnoderef':
+    x-swagger-router-controller: nodes
+    get:
+      operationId: getOriginalNodeRef
+      security:
+        - basicAuth: []
+      tags:
+        - Nodes
+      description: |
+        Get the original (source) node reference (ci:originalNodeRef) of a node. CIRCABC administrators only.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OriginalNodeRef'
+        '403':
+          description: Unauthorized action
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    put:
+      operationId: setOriginalNodeRef
+      security:
+        - basicAuth: []
+      tags:
+        - Nodes
+      description: |
+        Set (create or update) the original (source) node reference of a node. CIRCABC administrators only.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OriginalNodeRef'
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OriginalNodeRef'
+        '403':
+          description: Unauthorized action
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    delete:
+      operationId: deleteOriginalNodeRef
+      security:
+        - basicAuth: []
+      tags:
+        - Nodes
+      description: |
+        Remove the ci:migrated aspect (and ci:originalNodeRef) from a node. CIRCABC administrators only.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ok
+        '403':
+          description: Unauthorized action
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  '/nodes/resolve/{originalId}':
+    x-swagger-router-controller: nodes
+    get:
+      operationId: resolveByOriginalNodeRef
+      security:
+        - basicAuth: []
+      tags:
+        - Nodes
+      description: |
+        Resolve the migrated node whose ci:originalNodeRef matches the given original node id (a workspace://SpacesStore uuid). Available to any user, but the current user must have READ permission on the resolved node (403 if found but not permitted, 404 if none).
+      parameters:
+        - name: originalId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Node'
+        '403':
+          description: Unauthorized action
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
   '/nodes/{id}/keywords':
     get:
       operationId: getKeywords
@@ -8019,7 +8382,7 @@ paths:
       parameters:
         - name: q
           in: query
-          required: true
+          required: false
           description: the text used to query in the system
           schema:
             type: string
@@ -8639,117 +9002,7 @@ paths:
           description: Invalid reference
         '500':
           description: Internal Server Error
-  /app/messages/config:
-    put:
-      operationId: setDisplayOldMessage
-      security:
-        - basicAuth: []
-      tags:
-        - AppMessage
-      description: >
-        use this method to enable / disable the fisplay of the old system
-        message
 
-        in the new ui
-      responses:
-        '200':
-          description: OK
-        '403':
-          description: Unauthorized action
-        '405':
-          description: Invalid reference
-        '500':
-          description: Internal Server Error
-      requestBody:
-        $ref: '#/components/requestBodies/setDisplayOldMessageBody'
-    get:
-      operationId: getDisplayOldMessage
-      security:
-        - basicAuth: []
-      tags:
-        - AppMessage
-      description: >
-        use this method to enable / disable the fisplay of the old system
-        message
-
-        in the new ui
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DisplayConfiguration'
-        '403':
-          description: Unauthorized action
-        '405':
-          description: Invalid reference
-        '500':
-          description: Internal Server Error
-  /app/messages/old/config:
-    get:
-      operationId: getEnableOldMessage
-      security:
-        - basicAuth: []
-      tags:
-        - AppMessage
-      description: >
-        use this method to enable / disable the fisplay of the old system
-        message
-
-        in the new ui
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EnableConfiguration'
-        '403':
-          description: Unauthorized action
-        '405':
-          description: Invalid reference
-        '500':
-          description: Internal Server Error
-    put:
-      operationId: setEnableOldMessage
-      security:
-        - basicAuth: []
-      tags:
-        - AppMessage
-      description: |
-        use this method to enable / disable the old system message
-      responses:
-        '200':
-          description: OK
-        '403':
-          description: Unauthorized action
-        '405':
-          description: Invalid reference
-        '500':
-          description: Internal Server Error
-      requestBody:
-        $ref: '#/components/requestBodies/setDisplayOldMessageBody'
-  /app/messages/old:
-    put:
-      operationId: setOldMessage
-      security:
-        - basicAuth: []
-      tags:
-        - AppMessage
-      description: |
-        use this method to set the old system message
-      responses:
-        '200':
-          description: OK
-        '403':
-          description: Unauthorized action
-        '405':
-          description: Invalid reference
-        '500':
-          description: Internal Server Error
-      requestBody:
-        $ref: '#/components/requestBodies/AppMessage'
   '/restricted/spaces/{id}/children':
     x-swagger-router-controller: library
     get:
@@ -9014,6 +9267,33 @@ paths:
           description: Internal Server Error
       requestBody:
         $ref: '#/components/requestBodies/HelpCategory'
+  '/help/categories/order':
+    x-swagger-router-controller: help
+    put:
+      operationId: putCategoriesOrder
+      security:
+        - basicAuth: []
+      tags:
+        - Help
+      description: |
+        reorder the help categories
+      responses:
+        '200':
+          description: ok
+        '400':
+          description: Invalid input
+        '403':
+          description: Unauthorized action
+        '500':
+          description: Internal Server Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+        required: true
   '/help/categories/{id}':
     x-swagger-router-controller: help
     get:
@@ -9154,6 +9434,301 @@ paths:
           description: Internal Server Error
       requestBody:
         $ref: '#/components/requestBodies/HelpArticle'
+  '/help/categories/{id}/articles/order':
+    x-swagger-router-controller: help
+    put:
+      operationId: putCategoryArticlesOrder
+      security:
+        - basicAuth: []
+      tags:
+        - Help
+      description: |
+        reorder the articles of a help category
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ok
+        '400':
+          description: Invalid input
+        '403':
+          description: Unauthorized action
+        '500':
+          description: Internal Server Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+        required: true
+  '/help/categories/{id}/subcategories':
+    x-swagger-router-controller: help
+    get:
+      operationId: getCategorySubcategories
+      security:
+        - basicAuth: []
+      tags:
+        - Help
+      description: |
+        retrieve the list of subcategories for a help category
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HelpSubcategory'
+        '500':
+          description: Internal Server Error
+    post:
+      operationId: createCategorySubcategory
+      security:
+        - basicAuth: []
+      tags:
+        - Help
+      description: |
+        create a new subcategory under the help category
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HelpSubcategory'
+        '403':
+          description: Unauthorized action
+        '405':
+          description: Invalid input
+        '500':
+          description: Internal Server Error
+      requestBody:
+        $ref: '#/components/requestBodies/HelpSubcategory'
+  '/help/subcategories/{id}':
+    x-swagger-router-controller: help
+    get:
+      operationId: getHelpSubcategory
+      security:
+        - basicAuth: []
+      tags:
+        - Help
+      description: |
+        retrieve a help subcategory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HelpSubcategory'
+        '500':
+          description: Internal Server Error
+    put:
+      operationId: putHelpSubcategory
+      security:
+        - basicAuth: []
+      tags:
+        - Help
+      description: |
+        edit an existing help subcategory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HelpSubcategory'
+        '403':
+          description: Unauthorized action
+        '405':
+          description: Invalid input
+        '500':
+          description: Internal Server Error
+      requestBody:
+        $ref: '#/components/requestBodies/HelpSubcategory'
+    delete:
+      operationId: deleteHelpSubcategory
+      security:
+        - basicAuth: []
+      tags:
+        - Help
+      description: |
+        remove an existing help subcategory
+        if it contains articles, it will return a 409 conflict error
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ok
+        '403':
+          description: Unauthorized action
+        '409':
+          description: Conflict - subcategory contains articles
+        '500':
+          description: Internal Server Error
+  '/help/categories/{id}/subcategories/order':
+    x-swagger-router-controller: help
+    put:
+      operationId: putCategorySubcategoriesOrder
+      security:
+        - basicAuth: []
+      tags:
+        - Help
+      description: |
+        reorder the subcategories of a help category
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ok
+        '400':
+          description: Invalid input
+        '403':
+          description: Unauthorized action
+        '500':
+          description: Internal Server Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+        required: true
+  '/help/subcategories/{id}/articles':
+    x-swagger-router-controller: help
+    get:
+      operationId: getSubcategoryArticles
+      security:
+        - basicAuth: []
+      tags:
+        - Help
+      description: |
+        retrieve the list of articles for a help subcategory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: skipcontent
+          in: query
+          description: load or not the content of an article
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HelpArticle'
+        '500':
+          description: Internal Server Error
+    post:
+      operationId: postSubcategoryArticle
+      security:
+        - basicAuth: []
+      tags:
+        - Help
+      description: |
+        add a new article under the help subcategory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HelpArticle'
+        '403':
+          description: Unauthorized action
+        '405':
+          description: Invalid input
+        '500':
+          description: Internal Server Error
+      requestBody:
+        $ref: '#/components/requestBodies/HelpArticle'
+  '/help/subcategories/{id}/articles/order':
+    x-swagger-router-controller: help
+    put:
+      operationId: putSubcategoryArticlesOrder
+      security:
+        - basicAuth: []
+      tags:
+        - Help
+      description: |
+        reorder the articles of a help subcategory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ok
+        '400':
+          description: Invalid input
+        '403':
+          description: Unauthorized action
+        '500':
+          description: Internal Server Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+        required: true
   '/help/articles/{id}':
     x-swagger-router-controller: help
     get:
@@ -9454,6 +10029,94 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/SupportFileData'
+  /help/export:
+    x-swagger-router-controller: help
+    get:
+      operationId: exportFaqStructure
+      security:
+        - basicAuth: []
+      tags:
+        - Help
+      description: |
+        Export the complete FAQ structure to a JSON file.
+        This endpoint is restricted to admin users only (isAdmin or isCircabcAdmin).
+        Returns a JSON file containing all categories, subcategories, and articles with complete hierarchy and multilingual content.
+      responses:
+        '200':
+          description: Successfully exported FAQ structure
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FaqCategoryExport'
+          headers:
+            Content-Disposition:
+              description: Attachment header with filename including timestamp
+              schema:
+                type: string
+                example: 'attachment; filename="faq-export-2024-01-15T10-30-00.json"'
+        '401':
+          description: Unauthorized - User is not authenticated
+        '403':
+          description: Forbidden - User is not an admin
+        '500':
+          description: Internal Server Error - Export operation failed
+  /help/import:
+    x-swagger-router-controller: help
+    post:
+      operationId: importFaqStructure
+      security:
+        - basicAuth: []
+      tags:
+        - Help
+      description: |
+        Import FAQ structure from a JSON file.
+        This endpoint is restricted to admin users only (isAdmin or isCircabcAdmin).
+        Validates the file format and referential integrity before processing.
+        Creates or updates categories, subcategories, and articles from the import file.
+      responses:
+        '200':
+          description: Successfully imported FAQ structure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FaqImportResult'
+        '400':
+          description: Bad Request - Invalid JSON format or schema validation failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - User is not authenticated
+        '403':
+          description: Forbidden - User is not an admin
+        '422':
+          description: Unprocessable Entity - Referential integrity validation failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error - Import operation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: JSON file containing FAQ structure to import
+              required:
+                - file
   '/history/{userId}/groups/{groupId}/recoverable':
     get:
       operationId: isUserRecoverable
@@ -9819,6 +10482,8 @@ tags:
     description: all the operations related to the external repositories
   - name: Info
     description: informations about the current running node
+  - name: GroupLock
+    description: all the operations related to locking and unlocking Interest Groups
 components:
   requestBodies:
     ExternalRepoTransaction:
@@ -9916,17 +10581,17 @@ components:
           schema:
             $ref: '#/components/schemas/AppMessage'
       required: true
-    setDisplayOldMessageBody:
-      content:
-        application/json:
-          schema:
-            type: boolean
-      required: true
     HelpCategory:
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/HelpCategory'
+      required: true
+    HelpSubcategory:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/HelpSubcategory'
       required: true
     TicketRequestInfo:
       content:
@@ -9939,6 +10604,88 @@ components:
       description: HTTP Basic Authentication
       scheme: basic
   schemas:
+    GroupLockRequest:
+      type: object
+      description: Request body for locking an Interest Group
+      properties:
+        message:
+          type: string
+          description: HTML rich text message shown to members when they try to access the locked group
+        readOnly:
+          type: boolean
+          description: When true, even leaders and category admins are restricted to read-only access
+          default: false
+    GroupLockInfo:
+      type: object
+      description: Lock status and information for an Interest Group
+      properties:
+        locked:
+          type: boolean
+          description: Whether the Interest Group is currently locked
+        message:
+          type: string
+          description: HTML rich text message configured during lock
+        readOnly:
+          type: boolean
+          description: Whether the group is in read-only mode
+        lockedBy:
+          type: string
+          description: Username of the user who locked the group
+        lockedDate:
+          type: string
+          format: date-time
+          description: Date and time when the group was locked
+    SyncResult:
+      type: object
+      description: Result of a sync operation
+      properties:
+        message:
+          type: string
+          description: Human-readable result message
+        durationMs:
+          type: integer
+          format: int64
+          description: Duration of the sync operation in milliseconds
+        groupId:
+          type: string
+          description: ID of the synced group (only for group sync)
+        categoryId:
+          type: string
+          description: ID of the synced category (only for category sync)
+    SyncStatus:
+      type: object
+      description: Comparison of record counts between Alfresco and CBC tables
+      properties:
+        syncEnabled:
+          type: boolean
+          description: Whether sync is enabled in the configuration
+        readFromDatabase:
+          type: boolean
+          description: Whether reads are served from CBC database
+        users:
+          type: object
+          properties:
+            alfrescoCount:
+              type: integer
+              description: Number of users in Alfresco
+            cbcCount:
+              type: integer
+              description: Number of users in CBC tables
+            delta:
+              type: integer
+              description: Difference (alfrescoCount - cbcCount)
+        interestGroups:
+          type: object
+          properties:
+            alfrescoCount:
+              type: integer
+              description: Number of Interest Groups in Alfresco
+            cbcCount:
+              type: integer
+              description: Number of Interest Groups in CBC tables
+            delta:
+              type: integer
+              description: Difference (alfrescoCount - cbcCount)
     TicketRequestInfo:
       type: object
       required:
@@ -10039,6 +10786,8 @@ components:
             To know what are the permissions for each services inside one group.
         logoUrl:
           type: string
+        lockInfo:
+          $ref: '#/components/schemas/GroupLockInfo'
     InterestGroupPostModel:
       type: object
       description: The object of an Interest group in CIRCABC to be created
@@ -10183,6 +10932,24 @@ components:
           type: boolean
         hasGuestAccess:
           type: boolean
+        originalNodeRef:
+          type: string
+          description: >
+            For nodes created by the CIRCABC migration/import process, the NodeRef
+            of the original (source) node they were migrated from (stored via the
+            ci:migrated aspect). Absent for non-migrated nodes.
+    OriginalNodeRef:
+      type: object
+      description: >
+        The original (source) node reference of a migrated node
+        (ci:originalNodeRef, stored via the ci:migrated aspect).
+      properties:
+        id:
+          type: string
+          description: The id of the node the reference is stored on.
+        originalNodeRef:
+          type: string
+          description: The NodeRef of the original (source) node.
     ArchiveNode:
       allOf:
         - $ref: '#/components/schemas/Node'
@@ -11594,8 +12361,26 @@ components:
           type: string
         title:
           $ref: '#/components/schemas/i18nProperty'
+        sortOrder:
+          type: integer
         numberOfArticles:
           type: number
+    HelpSubcategory:
+      type: object
+      description: Representation of an Help Subcategory in CIRCABC in a JSON object
+      properties:
+        id:
+          type: string
+        title:
+          $ref: '#/components/schemas/i18nProperty'
+        sortOrder:
+          type: integer
+        parentId:
+          type: string
+        numberOfArticles:
+          type: number
+        lastUpdate:
+          type: string
     HelpArticle:
       type: object
       description: Representation of an Help Article in CIRCABC in a JSON object
@@ -11617,18 +12402,8 @@ components:
           type: boolean
         visitCounter:
           type: number
-    DisplayConfiguration:
-      type: object
-      description: Representation of configuration in a JSON object
-      properties:
-        display:
-          type: boolean
-    EnableConfiguration:
-      type: object
-      description: Representation of configuration in a JSON object
-      properties:
-        enable:
-          type: boolean
+        sortOrder:
+          type: integer
     DynamicPropertyDefinitionUpdatedValues:
       type: object
       properties:
@@ -11699,6 +12474,128 @@ components:
           $ref: '#/components/schemas/i18nProperty'
         href:
           type: string
+    FaqCategoryExport:
+      type: object
+      description: Representation of an exported FAQ Category with complete hierarchy
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the category
+        title:
+          $ref: '#/components/schemas/i18nProperty'
+        numberOfArticles:
+          type: integer
+          description: Total number of articles in this category and its subcategories
+        subcategories:
+          type: array
+          items:
+            $ref: '#/components/schemas/FaqSubcategoryExport'
+          description: List of subcategories belonging to this category
+      required:
+        - id
+        - title
+        - subcategories
+    FaqSubcategoryExport:
+      type: object
+      description: Representation of an exported FAQ Subcategory with articles
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the subcategory
+        title:
+          $ref: '#/components/schemas/i18nProperty'
+        sortOrder:
+          type: integer
+          description: Display order of the subcategory within its parent category
+        parentId:
+          type: string
+          description: Reference to the parent category ID
+        numberOfArticles:
+          type: integer
+          description: Number of articles in this subcategory
+        articles:
+          type: array
+          items:
+            $ref: '#/components/schemas/FaqArticleExport'
+          description: List of articles belonging to this subcategory
+      required:
+        - id
+        - title
+        - sortOrder
+        - parentId
+        - articles
+    FaqArticleExport:
+      type: object
+      description: Representation of an exported FAQ Article with complete content
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the article
+        parentId:
+          type: string
+          description: Reference to the parent subcategory ID
+        title:
+          $ref: '#/components/schemas/i18nProperty'
+        content:
+          $ref: '#/components/schemas/i18nProperty'
+        highlighted:
+          type: boolean
+          description: Whether the article is marked as highlighted
+        sortOrder:
+          type: integer
+          description: Display order of the article within its parent subcategory
+      required:
+        - id
+        - parentId
+        - title
+        - content
+        - highlighted
+        - sortOrder
+    FaqImportResult:
+      type: object
+      description: Result of FAQ import operation with statistics
+      properties:
+        message:
+          type: string
+          description: Success message
+          example: 'FAQ import completed successfully'
+        categoriesProcessed:
+          type: integer
+          description: Number of categories created or updated
+        subcategoriesProcessed:
+          type: integer
+          description: Number of subcategories created or updated
+        articlesProcessed:
+          type: integer
+          description: Number of articles created or updated
+      required:
+        - message
+        - categoriesProcessed
+        - subcategoriesProcessed
+        - articlesProcessed
+    ErrorResponse:
+      type: object
+      description: Error response with details
+      properties:
+        status:
+          type: integer
+          description: HTTP status code
+        message:
+          type: string
+          description: Error message
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp of the error
+        errors:
+          type: array
+          items:
+            type: string
+          description: List of specific validation or processing errors
+      required:
+        - status
+        - message
+        - timestamp
     GroupPath:
       type: object
       properties:

@@ -24,6 +24,8 @@ import eu.cec.digit.circabc.util.CircabcUserDataBean;
 import io.swagger.model.*;
 import io.swagger.util.ApiToolBox;
 import io.swagger.util.Converter;
+import io.swagger.util.CurrentUserPermissionCheckerService;
+import io.swagger.util.RestInputSanitizer;
 import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -39,6 +41,7 @@ import org.alfresco.repo.action.executer.AddFeaturesActionExecuter;
 import org.alfresco.repo.nodelocator.CompanyHomeNodeLocator;
 import org.alfresco.repo.nodelocator.NodeLocatorService;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
+import org.alfresco.repo.security.permissions.AccessDeniedException;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.action.Action;
@@ -178,6 +181,7 @@ public class CategoriesApiImpl implements CategoriesApi {
   private UserService userService;
   private ManagementService managementService;
   private GroupRequestsDaoService groupRequestsDaoService;
+  private CurrentUserPermissionCheckerService currentUserPermissionCheckerService;
 
   private GroupsApi groupsApi;
   private ProfilesApi profilesApi;
@@ -697,7 +701,7 @@ public class CategoriesApiImpl implements CategoriesApi {
         userDataBean.setHomeSpaceNodeRef(
           managementService.getGuestHomeNodeRef()
         );
-        userService.createUser(userDataBean, false);
+        userService.createUser(userDataBean, true);
       }
       groupsApi.groupsIdMembersPostNoSync(igRef, body);
     }
@@ -1430,7 +1434,9 @@ public class CategoriesApiImpl implements CategoriesApi {
     if (ig.getContact() != null) {
       igRootprops.put(
         CircabcModel.PROP_CONTACT_INFORMATION,
-        Converter.toMLText(ig.getContact())
+        Converter.toMLText(
+          RestInputSanitizer.sanitizeRichText(ig.getContact())
+        )
       );
     }
 
@@ -1458,7 +1464,9 @@ public class CategoriesApiImpl implements CategoriesApi {
     if (ig.getDescription() != null) {
       uiFacetsProps.put(
         ContentModel.PROP_DESCRIPTION,
-        Converter.toMLText(ig.getDescription())
+        Converter.toMLText(
+          RestInputSanitizer.sanitizeRichText(ig.getDescription())
+        )
       );
     } else {
       uiFacetsProps.put(ContentModel.PROP_DESCRIPTION, null);
@@ -1657,6 +1665,19 @@ public class CategoriesApiImpl implements CategoriesApi {
     String categoryId,
     GroupCreationRequest body
   ) {
+    // Block external users from creating interest group requests
+    if (currentUserPermissionCheckerService.isExternalUser()) {
+      throw new AccessDeniedException(
+        "External users are not allowed to create interest group requests"
+      );
+    }
+
+    if (body == null) {
+      throw new IllegalArgumentException(
+        "GroupCreationRequest body cannot be null for category: " + categoryId
+      );
+    }
+
     NodeRef categoryRef = Converter.createNodeRefFromId(categoryId);
     body.setCategoryRef(categoryRef.getId());
     groupRequestsDaoService.saveRequest(body);
@@ -1904,7 +1925,7 @@ public class CategoriesApiImpl implements CategoriesApi {
   @Override
   public void selectCategoryLogoByLogoId(String categoryId, String logoId) {
     NodeRef categoryRef = Converter.createNodeRefFromId(categoryId);
-    NodeRef logoRef = Converter.createNodeRefFromId(logoId);
+    NodeRef logoRef = requireCategoryLogo(categoryRef, logoId);
 
     nodeService.setProperty(categoryRef, CircabcModel.PROP_LOGO_REF, logoRef);
   }
@@ -1915,7 +1936,7 @@ public class CategoriesApiImpl implements CategoriesApi {
     String logoId
   ) {
     NodeRef categoryRef = Converter.createNodeRefFromId(categoryId);
-    NodeRef logoRef = Converter.createNodeRefFromId(logoId);
+    NodeRef logoRef = requireCategoryLogo(categoryRef, logoId);
 
     Serializable logoRefSerialized = nodeService.getProperty(
       categoryRef,
@@ -1928,6 +1949,25 @@ public class CategoriesApiImpl implements CategoriesApi {
     nodeService.deleteNode(logoRef);
 
     return getCategoryLogoByCategoryId(categoryId);
+  }
+
+  private NodeRef requireCategoryLogo(NodeRef categoryRef, String logoId) {
+    NodeRef logoRef = Converter.createNodeRefFromId(logoId);
+    NodeRef logoFolderRef = getLogoFolderRef(categoryRef);
+
+    if (logoFolderRef != null && nodeService.exists(logoRef)) {
+      ChildAssociationRef parentAssoc = nodeService.getPrimaryParent(logoRef);
+      if (
+        parentAssoc != null &&
+        logoFolderRef.equals(parentAssoc.getParentRef())
+      ) {
+        return logoRef;
+      }
+    }
+
+    throw new AccessDeniedException(
+      "Logo does not belong to the authorized category"
+    );
   }
 
   @Override
@@ -2013,7 +2053,7 @@ public class CategoriesApiImpl implements CategoriesApi {
               userId
             );
             uData.setHomeSpaceNodeRef(managementService.getGuestHomeNodeRef());
-            userService.createUser(uData, false);
+            userService.createUser(uData, true);
           }
           authorityService.addAuthority(circabcAdminGroup, userId);
           userIdsAdded.add(userId);
@@ -2614,12 +2654,28 @@ public class CategoriesApiImpl implements CategoriesApi {
     this.groupRequestsDaoService = groupRequestsDaoService;
   }
 
+  public CurrentUserPermissionCheckerService getCurrentUserPermissionCheckerService() {
+    return currentUserPermissionCheckerService;
+  }
+
+  public void setCurrentUserPermissionCheckerService(
+    CurrentUserPermissionCheckerService currentUserPermissionCheckerService
+  ) {
+    this.currentUserPermissionCheckerService =
+      currentUserPermissionCheckerService;
+  }
+
   @Override
   public void categoriesIdGroupRequestApprovalPost(
     String categoryId,
     GroupCreationRequestApproval body,
     String username
   ) {
+    requireGroupCreationRequestInCategory(
+      categoryId,
+      String.valueOf(body.getId())
+    );
+
     if (body.getAgreement() == -1) {
       groupRequestsDaoService.updateGroupCreationRequestApproval(
         username,
@@ -2657,11 +2713,48 @@ public class CategoriesApiImpl implements CategoriesApi {
     return groupRequestsDaoService.getCategoryGroupCreationRequests(requestId);
   }
 
+  private void requireGroupCreationRequestInCategory(
+    String categoryId,
+    String requestId
+  ) {
+    GroupCreationRequest request = groupRequestGet(requestId);
+
+    if (
+      request == null ||
+      !Objects.equals(categoryId, request.getCategoryRef())
+    ) {
+      throw new AccessDeniedException(
+        "Group creation request does not belong to the authorized category"
+      );
+    }
+  }
+
+  private GroupDeletionRequest requireGroupDeletionRequestInCategory(
+    String categoryId,
+    String requestId
+  ) {
+    GroupDeletionRequest request =
+      groupRequestsDaoService.getCategoryGroupDeletionRequests(requestId);
+
+    if (
+      request == null ||
+      !Objects.equals(categoryId, request.getCategoryRef())
+    ) {
+      throw new AccessDeniedException(
+        "Group deletion request does not belong to the authorized category"
+      );
+    }
+
+    return request;
+  }
+
   @Override
   public void categoriesGroupRequestPut(
+    String categoryId,
     String requestId,
     GroupCreationRequest body
   ) {
+    requireGroupCreationRequestInCategory(categoryId, requestId);
     groupRequestsDaoService.putCategoryGroupCreationRequest(requestId, body);
   }
 
@@ -2671,6 +2764,28 @@ public class CategoriesApiImpl implements CategoriesApi {
     List<User> igLeaders = getLeaders(body.getGroupId());
     InterestGroup interestGroup =
       this.groupsApi.getInterestGroup(body.getGroupId());
+
+    // Refuse to accept a deletion request for a locked Interest Group. The IG must
+    // be unlocked before a removal can be requested. Mirrors the direct-delete
+    // check performed in GroupsApiImpl.groupsIdDelete.
+    final GroupLockInfo lockInfo = interestGroup != null
+      ? interestGroup.getLockInfo()
+      : null;
+    if (lockInfo != null && Boolean.TRUE.equals(lockInfo.getLocked())) {
+      if (logger.isWarnEnabled()) {
+        logger.warn(
+          "Refused deletion request for IG " +
+          body.getGroupId() +
+          ": Interest Group is locked (lockedBy=" +
+          lockInfo.getLockedBy() +
+          ")"
+        );
+      }
+      throw new GroupLockApiImpl.GroupLockedForDeletionException(
+        "Interest Group is locked and must be unlocked before a removal can be requested"
+      );
+    }
+
     User userFrom = usersApi.usersUserIdGet(body.getFrom().getUserId());
     body.setLeaders(igLeaders);
     String title = interestGroup.getTitle() != null
@@ -2692,7 +2807,7 @@ public class CategoriesApiImpl implements CategoriesApi {
     body.setName(interestGroup.getName());
     groupRequestsDaoService.saveRequestDeletion(body);
     try {
-      //email for Cat Admins
+      // email for Cat Admins
       catAdmins.forEach(user -> {
         EmailDefinition email = emailApi.prepareEmailForGroupDeletionRequest(
           user,
@@ -2703,7 +2818,7 @@ public class CategoriesApiImpl implements CategoriesApi {
         );
         emailApi.mailPost(email, false);
       });
-      //email for Leaders
+      // email for Leaders
       igLeaders.forEach(user -> {
         // Remove the user from the list of CatAdmins if they are also a leader
         List<User> filteredCatAdmins = new ArrayList<>(catAdmins);
@@ -2772,7 +2887,8 @@ public class CategoriesApiImpl implements CategoriesApi {
     String username
   ) {
     GroupDeletionRequest groupDeletionRequest =
-      groupRequestsDaoService.getCategoryGroupDeletionRequests(
+      requireGroupDeletionRequestInCategory(
+        categoryId,
         String.valueOf(body.getId())
       );
     List<User> admins = categoriesIdAdminsGet(categoryId);
@@ -2794,15 +2910,16 @@ public class CategoriesApiImpl implements CategoriesApi {
     List<User> toUsers = new ArrayList<>(uniqueUsers);
 
     if (body.getArgument() != null && body.getAgreement() == -1) {
-      //send email to requester
+      // send email to requester
       groupDeletionRequest.setRejectedMessage(body.getArgument());
       EmailDefinition emailDef = emailApi.prepareRefusalGroupDeleteRequest(
         groupDeletionRequest,
-        ig.getName()
+        ig.getName(),
+        ig.getTitle().getDefaultValue()
       );
       emailApi.mailPost(emailDef, false);
 
-      //send email to leaders
+      // send email to leaders
       leaders
         .stream()
         .filter(leader -> !leader.equals(groupDeletionRequest.getFrom())) // Exclude the requester
@@ -2811,6 +2928,7 @@ public class CategoriesApiImpl implements CategoriesApi {
             emailApi.prepareRefusalGroupDeleteRequestLeaders(
               groupDeletionRequest,
               ig.getName(),
+              ig.getTitle().getDefaultValue(),
               leader
             );
           emailApi.mailPost(emailDef_leaders, false);
@@ -2824,7 +2942,8 @@ public class CategoriesApiImpl implements CategoriesApi {
           emailApi.prepareAcceptationGroupDeleteRequest(
             user,
             groupDeletionRequest,
-            ig.getName()
+            ig.getName(),
+            ig.getTitle().getDefaultValue()
           );
         emailApi.mailPost(emailDef, false);
       });

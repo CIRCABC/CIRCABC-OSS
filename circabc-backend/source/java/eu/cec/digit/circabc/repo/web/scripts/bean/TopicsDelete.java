@@ -35,6 +35,7 @@ public class TopicsDelete extends CircabcDeclarativeWebScript {
     String id = templateVars.get("id");
 
     try {
+      checkGroupReadOnlyMode(id);
       if (
         !this.currentUserPermissionCheckerService.hasAlfrescoDeletePermission(
             id
@@ -47,15 +48,31 @@ public class TopicsDelete extends CircabcDeclarativeWebScript {
       this.recordBeforeDelete(id);
       this.topicsApi.topicsIdDelete(id);
       model.put("message", "ok");
+    } catch (ReadOnlyAccessException roae) {
+      status.setCode(HttpServletResponse.SC_FORBIDDEN);
+      status.setMessage(roae.getMessage());
+      status.setRedirect(true);
+      if (logger.isWarnEnabled()) {
+        logger.warn(
+          "Read-only mode blocked topic delete: " + roae.getMessage()
+        );
+      }
+      return null;
     } catch (AccessDeniedException ade) {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (InvalidNodeRefException inre) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request", inre);
+      }
       return null;
     }
 

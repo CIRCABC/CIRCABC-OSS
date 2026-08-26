@@ -27,6 +27,7 @@ import {
 } from 'app/core/generated/circabc';
 import { LoginService } from 'app/core/login.service';
 import { SaveAsService } from 'app/core/save-as.service';
+import { ReadOnlyStateService } from 'app/core/read-only-state.service';
 import { Quote } from 'app/core/ui-model/index';
 import { InlineDeleteComponent } from 'app/shared/delete/inline-delete.component';
 import { HintComponent } from 'app/shared/hint/hint.component';
@@ -87,6 +88,7 @@ export class PostComponent {
     private permEvalService: PermissionEvaluatorService,
     private loginService: LoginService,
     private saveAsService: SaveAsService,
+    private readOnlyStateService: ReadOnlyStateService,
     private router: Router,
     @Optional()
     @Inject(BASE_PATH)
@@ -136,6 +138,9 @@ export class PostComponent {
   }
 
   public canDeleteComment(): boolean {
+    if (this.readOnlyStateService.isReadOnly()) {
+      return false;
+    }
     return (
       this.permEvalService.isLibAdmin(this.post) ||
       this.permEvalService.isNewsgroupAdmin(this.post) ||
@@ -145,6 +150,9 @@ export class PostComponent {
   }
 
   public canPostComment(): boolean {
+    if (this.readOnlyStateService.isReadOnly()) {
+      return false;
+    }
     return (
       this.permEvalService.isLibAccess(this.post) ||
       this.permEvalService.isNewsgroupPost(this.post) ||
@@ -153,6 +161,9 @@ export class PostComponent {
   }
 
   public canEditComment(): boolean {
+    if (this.readOnlyStateService.isReadOnly()) {
+      return false;
+    }
     return (
       this.permEvalService.isLibAdminOrFullEdit(this.post) ||
       this.permEvalService.isNewsgroupModerate(this.post) ||

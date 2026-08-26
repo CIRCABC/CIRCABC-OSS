@@ -1,0 +1,60 @@
+.choice-content {
+  padding: 1rem 0;
+}
+
+.choice-description {
+  margin-bottom: 1.5rem;
+  color: #666;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.choice-buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.choice-button {
+  display: block;
+  width: 155px;
+  height: 87px;
+  border: 1px solid #dedede;
+  background: #eef5f4;
+  border-radius: 3px;
+  padding-top: 55px;
+  margin: 0;
+  text-shadow: none;
+  background-repeat: no-repeat;
+  background-position: 50% 10%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1rem;
+  font-weight: 400;
+
+  &:hover {
+    border-color: #0073e6;
+    background-color: #f5f9ff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgb(0 115 230 / 0.2);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:focus {
+    outline: 2px solid #0073e6;
+    outline-offset: 2px;
+  }
+
+  &.files {
+    background-image: url(^img/bigicon-files.png);
+  }
+
+  &.folder {
+    background-image: url(^img/bigicon-folder.png);
+    padding-top: 60px;
+  }
+}

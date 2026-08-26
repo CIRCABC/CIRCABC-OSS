@@ -33,9 +33,9 @@ public class BulkInviteMembersGet extends DeclarativeWebScript {
   ) {
     Map<String, Object> model = new HashMap<>(7, 1.0f);
 
-    String igIds = req.getParameter("igIds");
+    String[] igIdsArray = req.getParameterValues("igIds");
 
-    if ((igIds == null) || igIds.trim().isEmpty()) {
+    if ((igIdsArray == null) || igIdsArray.length == 0) {
       throw new IllegalArgumentException("'igIds' cannot be empty.");
     }
 
@@ -50,20 +50,22 @@ public class BulkInviteMembersGet extends DeclarativeWebScript {
     try {
       List<String> igs = new ArrayList<>();
 
-      StringTokenizer tokenizer = new StringTokenizer(igIds, ",");
+      for (String nodeId : igIdsArray) {
+        if (nodeId != null && !nodeId.trim().isEmpty()) {
+          String trimmedNodeId = nodeId.trim();
 
-      while (tokenizer.hasMoreTokens()) {
-        String nodeId = tokenizer.nextToken().trim();
+          if (
+            !this.currentUserPermissionCheckerService.hasAlfrescoReadPermission(
+                trimmedNodeId
+              )
+          ) {
+            throw new AccessDeniedException(
+              "No access on node:" + trimmedNodeId
+            );
+          }
 
-        if (
-          !this.currentUserPermissionCheckerService.hasAlfrescoReadPermission(
-              nodeId
-            )
-        ) {
-          throw new AccessDeniedException("No access on node:" + nodeId);
+          igs.add(trimmedNodeId);
         }
-
-        igs.add(nodeId);
       }
 
       List<BulkImportUserData> members =
@@ -74,11 +76,17 @@ public class BulkInviteMembersGet extends DeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied: ", ade);
+      }
       return null;
     } catch (InvalidNodeRefException inre) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request: ", inre);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);

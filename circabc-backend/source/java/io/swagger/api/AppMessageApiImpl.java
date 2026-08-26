@@ -90,34 +90,6 @@ public class AppMessageApiImpl implements AppMessageApi {
   public List<AppMessage> getAppMessages() {
     List<AppMessage> result = new ArrayList<>();
 
-    if (Boolean.TRUE.equals(getDisplayOldMessage().getDisplay())) {
-      // old system message compatibility
-
-      NodeRef messageRef = getOldMessageRef();
-      if (messageRef != null) {
-        AppMessage message = new AppMessage();
-        message.setId(-1);
-
-        Serializable content = nodeService.getProperty(
-          messageRef,
-          SystemMessageModel.PROP_SYSTEMMESSAGE_TEXT
-        );
-        if (content != null) {
-          message.setContent(content.toString());
-        } else {
-          message.setContent("");
-        }
-
-        message.setEnabled(
-          (Boolean) nodeService.getProperty(
-            messageRef,
-            SystemMessageModel.PROP_IS_SYSTEMMESSAGE_ENABLED
-          )
-        );
-        result.add(message);
-      }
-    }
-
     List<AppMessageDAO> allTemplates =
       appMessageDaoService.selectAppMessageTemplates(-1, -1);
     for (AppMessageDAO template : allTemplates) {

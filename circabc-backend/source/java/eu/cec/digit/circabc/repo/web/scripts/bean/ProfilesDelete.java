@@ -70,6 +70,16 @@ public class ProfilesDelete extends CircabcDeclarativeWebScript {
             "Impossible to delete a profile, not enough permissions"
           );
         }
+        final String igId =
+          this.currentUserPermissionCheckerService.getNodeService()
+            .getPrimaryParent(profileRef)
+            .getParentRef()
+            .getId();
+        if (!this.groupLockApi.canWriteOrAdmin(igId)) {
+          throw new ReadOnlyAccessException(
+            "Interest group is in read-only mode"
+          );
+        }
         this.recordBeforeDelete(id);
         this.profilesApi.profilesIdDelete(profileRef);
       }
@@ -77,11 +87,27 @@ public class ProfilesDelete extends CircabcDeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
+      return null;
+    } catch (ReadOnlyAccessException roe) {
+      status.setCode(HttpServletResponse.SC_FORBIDDEN);
+      status.setMessage(roe.getMessage());
+      status.setRedirect(true);
+      if (logger.isWarnEnabled()) {
+        logger.warn(
+          "Read-only mode prevented profile delete: " + roe.getMessage()
+        );
+      }
       return null;
     } catch (InvalidNodeRefException inre) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request", inre);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);

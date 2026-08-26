@@ -27,12 +27,14 @@ import eu.cec.digit.circabc.migration.entities.TypedProperty.AdaptProperty;
 import eu.cec.digit.circabc.migration.entities.TypedProperty.CreatedProperty;
 import eu.cec.digit.circabc.migration.entities.TypedProperty.CreatorProperty;
 import eu.cec.digit.circabc.migration.entities.TypedProperty.DescriptionProperty;
+import eu.cec.digit.circabc.migration.entities.TypedProperty.DisplayOldInformationProperty;
 import eu.cec.digit.circabc.migration.entities.TypedProperty.IndexPageProperty;
 import eu.cec.digit.circabc.migration.entities.TypedProperty.ModifiedProperty;
 import eu.cec.digit.circabc.migration.entities.TypedProperty.ModifierProperty;
 import eu.cec.digit.circabc.migration.entities.TypedProperty.OwnerProperty;
 import eu.cec.digit.circabc.migration.entities.TypedProperty.TitleProperty;
 import eu.cec.digit.circabc.migration.entities.adapter.AdaptPropertyAdapter;
+import eu.cec.digit.circabc.migration.entities.adapter.DisplayOldInformationPropertyAdapter;
 import eu.cec.digit.circabc.migration.entities.adapter.IndexPagePropertyAdapter;
 import eu.cec.digit.circabc.migration.entities.generated.permissions.Notifications;
 import eu.cec.digit.circabc.migration.entities.generated.properties.ExtendedProperty;
@@ -67,9 +69,11 @@ import eu.cec.digit.circabc.migration.entities.generated.properties.I18NProperty
     "notifications",
     "indexPage",
     "adapt",
+    "displayOldInformation",
     "infSpaces",
     "infMLContents",
-    "infContents"
+    "infContents",
+    "infNews"
 })
 @XmlRootElement(name = "information")
 public class Information
@@ -87,12 +91,18 @@ public class Information
     @XmlJavaTypeAdapter(AdaptPropertyAdapter.class)
     @XmlSchemaType(name = "boolean")
     protected AdaptProperty adapt;
+    @XmlElement(namespace = "https://circabc.europa.eu/Import/PropertiesSchema/1.0", type = String.class, defaultValue = "false")
+    @XmlJavaTypeAdapter(DisplayOldInformationPropertyAdapter.class)
+    @XmlSchemaType(name = "boolean")
+    protected DisplayOldInformationProperty displayOldInformation;
     @XmlElement(name = "infSpace")
     protected List<InfSpace> infSpaces;
     @XmlElement(name = "infMLContent")
     protected List<InfMLContent> infMLContents;
     @XmlElement(name = "infContent")
     protected List<InfContent> infContents;
+    @XmlElement(name = "infNews")
+    protected List<InfNews> infNews;
 
     /**
      * Default no-arg constructor
@@ -188,6 +198,14 @@ public class Information
         this.adapt = value;
     }
 
+    public DisplayOldInformationProperty getDisplayOldInformation() {
+        return displayOldInformation;
+    }
+
+    public void setDisplayOldInformation(DisplayOldInformationProperty value) {
+        this.displayOldInformation = value;
+    }
+
     /**
      * Gets the value of the infSpaces property.
      * 
@@ -275,6 +293,29 @@ public class Information
         return this.infContents;
     }
 
+    public List<InfNews> getInfNews() {
+        if (infNews == null) {
+            infNews = new ArrayList<InfNews>();
+        }
+        return this.infNews;
+    }
+
+    public Information withInfNews(InfNews... values) {
+        if (values != null) {
+            for (InfNews value : values) {
+                getInfNews().add(value);
+            }
+        }
+        return this;
+    }
+
+    public Information withInfNews(Collection<InfNews> values) {
+        if (values != null) {
+            getInfNews().addAll(values);
+        }
+        return this;
+    }
+
     public Information withNotifications(Notifications value) {
         setNotifications(value);
         return this;
@@ -287,6 +328,11 @@ public class Information
 
     public Information withAdapt(AdaptProperty value) {
         setAdapt(value);
+        return this;
+    }
+
+    public Information withDisplayOldInformation(DisplayOldInformationProperty value) {
+        setDisplayOldInformation(value);
         return this;
     }
 

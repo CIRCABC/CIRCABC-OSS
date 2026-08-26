@@ -1,4 +1,11 @@
-import { Component, Inject, OnInit, Optional, signal } from '@angular/core';
+import {
+  Component,
+  Inject,
+  OnInit,
+  Optional,
+  inject,
+  signal,
+} from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
@@ -17,6 +24,7 @@ import {
   NodesService,
 } from 'app/core/generated/circabc';
 import { UiMessageService } from 'app/core/message/ui-message.service';
+import { ReadOnlyStateService } from 'app/core/read-only-state.service';
 import { SaveAsService } from 'app/core/save-as.service';
 import { SelectableKeyword } from 'app/core/ui-model/index';
 import { getSuccessTranslation } from 'app/core/util';
@@ -60,6 +68,8 @@ export class KeywordsComponent implements OnInit {
   public loading = false;
   private basePath!: string;
   public showAddDropdown = false;
+
+  public readonly readOnlyState = inject(ReadOnlyStateService);
 
   allSelected = signal<boolean>(false);
 
@@ -163,7 +173,26 @@ export class KeywordsComponent implements OnInit {
   }
 
   public showDeleteAllModal() {
+    if (this.readOnlyState.isReadOnly()) {
+      return;
+    }
     this.showMultipleDeleteWizard = true;
+  }
+
+  public openCreateModal() {
+    if (this.readOnlyState.isReadOnly()) {
+      return;
+    }
+    this.showCreateModal = true;
+    this.showAddDropdown = false;
+  }
+
+  public openImportModal() {
+    if (this.readOnlyState.isReadOnly()) {
+      return;
+    }
+    this.showImportModal = true;
+    this.showAddDropdown = false;
   }
 
   public async refreshAfterAllDeletion(result: ActionEmitterResult) {
@@ -213,6 +242,9 @@ export class KeywordsComponent implements OnInit {
   }
 
   public showUpdateKeyword(keyword: SelectableKeyword) {
+    if (this.readOnlyState.isReadOnly()) {
+      return;
+    }
     this.showCreateModal = true;
     this.selectedKeyword = keyword;
   }

@@ -1,0 +1,23 @@
+<h2>{{ 'help.subsections' | transloco }}</h2>
+<nav aria-label="Subsection navigation">
+  <ul role="list">
+    @for (subcategory of subcategories(); track subcategory.id) {
+    <li [class.selected]="subcategory.id === currentId()">
+      <a
+        [routerLink]="['/help/category', categoryId(), 'subcategory', subcategory.id]"
+      >
+        {{ subcategory.title | cbcI18n }}
+        <p class="metadata">
+          {{ subcategory.numberOfArticles ?? 0 }} {{ 'help.articles' | transloco
+          }} @if (subcategory.lastUpdate) {
+          <span>
+            • {{ 'label.last.updated.on' | transloco }} {{
+            subcategory.lastUpdate | date }}</span
+          >
+          }
+        </p>
+      </a>
+    </li>
+    }
+  </ul>
+</nav>

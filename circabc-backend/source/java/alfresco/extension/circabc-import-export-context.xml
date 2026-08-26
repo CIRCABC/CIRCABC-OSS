@@ -38,6 +38,12 @@
         <property name="authorityService">
            <ref bean="AuthorityService" />
         </property>
+        <property name="permissionService">
+           <ref bean="PermissionService" />
+        </property>
+        <property name="circabcService">
+           <ref bean="circabcService" />
+        </property>
     </bean>
 	
 	<!-- Importer Component -->
@@ -133,6 +139,9 @@
 		</property>
 		<property name="transactionService">
 			<ref bean="transactionService" />
+		</property>
+		<property name="circabcDaoService">
+			<ref bean="circabcDaoService" />
 		</property>
     </bean>
 	

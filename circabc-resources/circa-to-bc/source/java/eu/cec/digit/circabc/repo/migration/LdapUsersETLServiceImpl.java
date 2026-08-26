@@ -149,6 +149,33 @@ public class LdapUsersETLServiceImpl implements ETLService
     }
 
     /* (non-Javadoc)
+     * @see eu.cec.digit.circabc.service.migration.ETLService#passThroughEtl(java.lang.String)
+     */
+    public void passThroughEtl(final String iterationName) throws ETLException
+    {
+        try
+        {
+            final MigrationIteration iteration = fileArchiver.getIterationByName(iterationName);
+            final NodeRef originalRef = iteration.getOriginalFileNodeRef();
+            if(originalRef == null)
+            {
+                throw new ETLException("No original file found for iteration: " + iterationName);
+            }
+            final ImportRoot importRoot = unmarshall(originalRef);
+            final Date importProcessId = new Date();
+            fileArchiver.storeTransformedValidFile(iteration, importProcessId, JavaXmlBinder.marshallInStream(importRoot));
+        }
+        catch(ETLException e)
+        {
+            throw e;
+        }
+        catch(Exception e)
+        {
+            throw new ETLException("Pass-through ETL failed for iteration " + iterationName + ": " + e.getMessage(), e);
+        }
+    }
+
+    /* (non-Javadoc)
      * @see eu.cec.digit.circabc.service.migration.ETLService#getIterations(boolean)
      */
     public List<MigrationIteration> getIterations(final boolean sortAscending) throws ETLException

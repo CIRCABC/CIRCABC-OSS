@@ -1,6 +1,5 @@
 package io.swagger.api;
 
-import io.swagger.exception.EmptyQueryStringException;
 import io.swagger.model.PagedSearchNodes;
 import java.util.Date;
 
@@ -28,5 +27,5 @@ public interface SearchApi {
     String[] dynamicProperties,
     String sort,
     boolean order
-  ) throws EmptyQueryStringException;
+  );
 }

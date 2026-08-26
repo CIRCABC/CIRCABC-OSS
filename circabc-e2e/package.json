@@ -11,23 +11,31 @@
     "cy:run-oss": "cross-env CYPRESS_INTERNAL_BROWSER_CONNECT_TIMEOUT=60000 cypress run --config-file cypress.config.oss.ts",
     "cy:run-oss:chrome": "cross-env CYPRESS_INTERNAL_BROWSER_CONNECT_TIMEOUT=60000 cypress run --config-file cypress.config.oss.ts --browser chrome",
     "cy:run-oss:firefox": "cross-env CYPRESS_INTERNAL_BROWSER_CONNECT_TIMEOUT=60000 cypress run --config-file cypress.config.oss.ts --browser firefox",
+    "cy:run-oss-tomcat": "cross-env CYPRESS_INTERNAL_BROWSER_CONNECT_TIMEOUT=60000 cypress run --config-file cypress.config.osstomcat.ts",
+    "cy:run-oss-tomcat:chrome": "cross-env CYPRESS_INTERNAL_BROWSER_CONNECT_TIMEOUT=60000 cypress run --config-file cypress.config.osstomcat.ts --browser chrome",
+    "cy:run-oss-tomcat:firefox": "cross-env CYPRESS_INTERNAL_BROWSER_CONNECT_TIMEOUT=60000 cypress run --config-file cypress.config.osstomcat.ts --browser firefox",
+    "cy:run-aws": "cross-env CYPRESS_INTERNAL_BROWSER_CONNECT_TIMEOUT=60000 cypress run --config-file cypress.config.aws.ts",
+    "cy:run-aws:chrome": "cross-env CYPRESS_INTERNAL_BROWSER_CONNECT_TIMEOUT=60000 cypress run --config-file cypress.config.aws.ts --browser chrome",
+    "cy:run-aws:firefox": "cross-env CYPRESS_INTERNAL_BROWSER_CONNECT_TIMEOUT=60000 cypress run --config-file cypress.config.aws.ts --browser firefox",
     "cy:run:a11y": "cross-env CYPRESS_INTERNAL_BROWSER_CONNECT_TIMEOUT=60000 cypress run --spec cypress/e2e/circabc/accessibility/accessibility.spec.js",
     "cy:run-ent": "cypress run --config-file cypress-ent.json",
     "cy:open": "cypress open",
     "cy:open-oss": "cypress open --config-file cypress.config.oss.ts",
+    "cy:open-oss-tomcat": "cypress open --config-file cypress.config.osstomcat.ts",
+    "cy:open-aws": "cypress open --config-file cypress.config.aws.ts",
     "cy:open-ent": "cypress open --config-file cypress-ent.json",
     "tsc": "tsc  --project tsconfig.json --pretty",
     "format-fix": "prettier --write --single-quote --list-different  \"cypress/e2e/**/*.js\" "
   },
   "devDependencies": {
-    "axe-core": "4.10.2",
-    "cypress": "^13.17.0",
-    "cypress-axe": "1.5.0",
+    "axe-core": "4.10.3",
+    "cypress": "14.5.1",
+    "cypress-axe": "1.6.0",
     "cypress-file-upload": "5.0.8",
-    "prettier": "3.4.2"
+    "prettier": "3.6.2"
   },
   "dependencies": {
     "cross-env": "7.0.3",
-    "typescript": "5.7.3"
+    "typescript": "5.8.3"
   }
 }

@@ -77,8 +77,8 @@
           >
           }
         </cbc-reponsive-sub-menu>
-        } @if ( isLibAdmin() | cbcIfOrRoles : [node, ['LibManageOwn',
-        'LibFullEdit', 'LibAdmin'], []] ) {
+        } @if ( !isReadOnly() && (isLibAdmin() | cbcIfOrRoles : [node,
+        ['LibManageOwn', 'LibFullEdit', 'LibAdmin'], []]) ) {
         <cbc-add-dropdown
           [currentNode]="node"
           [enableAddImport]="isLibAdmin()"

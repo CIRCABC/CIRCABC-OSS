@@ -66,22 +66,9 @@ public class SpaceDelete extends CircabcDeclarativeWebScript {
     String id = templateVars.get("id");
     NodeRef nodeRef = new NodeRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, id);
 
-    if (notify) {
-      Set<NotifiableUser> users =
-        notificationSubscriptionService.getNotifiableUsers(nodeRef);
-      final List<NodeRef> nodeRefs = new ArrayList<>();
-
-      nodeRefs.add(nodeRef);
-
-      notificationService.notifyNewFiles(
-        nodeRef,
-        nodeRefs,
-        users,
-        MailTemplate.NOTIFY_DELETE_BULK
-      );
-    }
-
     try {
+      checkGroupReadOnlyMode(id);
+
       if (
         !this.currentUserPermissionCheckerService.hasAlfrescoDeletePermission(
             id
@@ -91,23 +78,56 @@ public class SpaceDelete extends CircabcDeclarativeWebScript {
           "Cannot delete the space, not enough permissions"
         );
       }
+
+      if (notify) {
+        Set<NotifiableUser> users =
+          notificationSubscriptionService.getNotifiableUsers(nodeRef);
+        final List<NodeRef> nodeRefs = new ArrayList<>();
+
+        nodeRefs.add(nodeRef);
+
+        notificationService.notifyDeletedFilesAfterCommit(
+          nodeRef,
+          nodeRefs,
+          users,
+          MailTemplate.NOTIFY_DELETE_BULK
+        );
+      }
+
       this.recordBeforeDelete(id);
       this.spacesApi.spaceDelete(id);
       model.put("result", "ok");
+    } catch (ReadOnlyAccessException roae) {
+      status.setCode(HttpServletResponse.SC_FORBIDDEN);
+      status.setMessage(roae.getMessage());
+      status.setRedirect(true);
+      if (logger.isWarnEnabled()) {
+        logger.warn("Read-only mode blocked write on space: " + id, roae);
+      }
+      return null;
     } catch (AccessDeniedException ade) {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (InvalidNodeRefException inre) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request", inre);
+      }
       return null;
     } catch (InvalidTypeException ite) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad noderef type");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad noderef type", ite);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);

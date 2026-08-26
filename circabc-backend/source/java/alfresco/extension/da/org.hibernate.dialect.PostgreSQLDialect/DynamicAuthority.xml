@@ -6,7 +6,7 @@
     <cache
       eviction="LRU"
       flushInterval="3600000"
-      size="10000"
+      size="50000"
       readOnly="true"
     />
     
@@ -73,5 +73,21 @@
         cbc_profile_users.user_id = cbc_users.id where
         cbc_interest_groups.node_ref = #{nodeRef} and
         cbc_users.user_name= #{userName}
+    </select>
+    
+  <select
+    id="select_IsCategoryAdmin"
+    parameterMap="parameter_NodeRefUserName"
+    resultType="int"
+    useCache="true"
+    flushCache="false"
+  >
+        SELECT COUNT(*) AS row_count
+        FROM cbc_category_admins ca
+        JOIN cbc_categories cat ON ca.category_id = cat.id
+        JOIN cbc_interest_groups ig ON ig.category_id = cat.id
+        JOIN cbc_users u ON ca.user_id = u.id
+        WHERE ig.node_ref = #{nodeRef}
+          AND u.user_name = #{userName}
     </select>
 </mapper>

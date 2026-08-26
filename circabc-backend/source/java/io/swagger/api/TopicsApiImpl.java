@@ -15,6 +15,7 @@ import io.swagger.model.Node;
 import io.swagger.model.PagedNodes;
 import io.swagger.util.ApiToolBox;
 import io.swagger.util.Converter;
+import io.swagger.util.RestInputSanitizer;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -247,7 +248,7 @@ public class TopicsApiImpl implements TopicsApi {
         .getWriter(postNodeRef, ContentModel.PROP_CONTENT, true);
       writer.setMimetype(MimetypeMap.MIMETYPE_HTML);
       writer.setEncoding("UTF-8");
-      writer.putContent(body.getText());
+      writer.putContent(RestInputSanitizer.sanitizeRichText(body.getText()));
 
       // attach files
       for (FileAttachmentData fileToAdd : filesToAdd) {
@@ -316,7 +317,9 @@ public class TopicsApiImpl implements TopicsApi {
         .getWriter(postRef, ContentModel.PROP_CONTENT, true);
       writer.setMimetype(MimetypeMap.MIMETYPE_HTML);
       writer.setEncoding("UTF-8");
-      writer.putContent(body.getProperties().get(MESSAGE));
+      writer.putContent(
+        RestInputSanitizer.sanitizeRichText(body.getProperties().get(MESSAGE))
+      );
     }
 
     if (moderationService.isContainerModerated(postRef)) {

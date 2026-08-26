@@ -1,0 +1,1 @@
+copy  circabc-frontend\apis\openapi.yaml circabc-backend\source\web\swagger-ui\swagger.yaml

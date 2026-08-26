@@ -36,7 +36,7 @@ public class DocumentWebServiceLocator
 
   // Use to get a proxy class for DocumentService
   private java.lang.String DocumentService_address =
-    "";
+    "http://dighbust.cc.cec.eu.int:11031/hermes/Proxy/1.16/DocumentWebServicePS";
   // The WSDD service name defaults to the port name.
   private java.lang.String DocumentServiceWSDDServiceName = "DocumentService";
   private java.util.HashSet ports = null;

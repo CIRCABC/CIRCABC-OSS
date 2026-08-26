@@ -4,6 +4,7 @@ import eu.cec.digit.circabc.service.profile.permissions.DirectoryPermissions;
 import io.swagger.api.GroupsApi;
 import io.swagger.model.PagedUserProfile;
 import io.swagger.util.CurrentUserPermissionCheckerService;
+import io.swagger.util.GroupLockGuard;
 import java.util.*;
 import javax.servlet.http.HttpServletResponse;
 import org.alfresco.repo.node.MLPropertyInterceptor;
@@ -26,6 +27,7 @@ public class GroupsMembersFilterGet extends DeclarativeWebScript {
 
   private GroupsApi groupsApi;
   private CurrentUserPermissionCheckerService currentUserPermissionCheckerService;
+  private GroupLockGuard groupLockGuard;
 
   @Override
   protected Map<String, Object> executeImpl(
@@ -73,6 +75,8 @@ public class GroupsMembersFilterGet extends DeclarativeWebScript {
     String id = templateVars.get("igId");
 
     try {
+      this.groupLockGuard.checkAccessByIgId(id);
+
       if (
         !this.currentUserPermissionCheckerService.hasAnyOfDirectoryPermission(
             id,
@@ -102,11 +106,17 @@ public class GroupsMembersFilterGet extends DeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (InvalidNodeRefException inre) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request", inre);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);
@@ -134,5 +144,9 @@ public class GroupsMembersFilterGet extends DeclarativeWebScript {
   ) {
     this.currentUserPermissionCheckerService =
       currentUserPermissionCheckerService;
+  }
+
+  public void setGroupLockGuard(GroupLockGuard groupLockGuard) {
+    this.groupLockGuard = groupLockGuard;
   }
 }

@@ -10,6 +10,8 @@ import java.util.List;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.archive.NodeArchiveService;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
+import org.alfresco.repo.security.permissions.AccessDeniedException;
+import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.repository.StoreRef;
@@ -166,18 +168,24 @@ public class ArchiveApiImpl implements ArchiveApi {
     RestoreNodeMetadata restoreNodeMetadata
   ) {
     if (!"".equals(restoreNodeMetadata.getArchiveNodeId())) {
+      NodeRef nodeRef = Converter.createArchiveNodeRefFromId(
+        restoreNodeMetadata.getArchiveNodeId()
+      );
+      requireArchiveNodeInInterestGroup(id, nodeRef);
+
+      NodeRef spaceRef = null;
+      if (!"".equals(restoreNodeMetadata.getTargetFolderId())) {
+        spaceRef = Converter.createNodeRefFromId(
+          restoreNodeMetadata.getTargetFolderId()
+        );
+        requireNodeInInterestGroup(id, spaceRef);
+      }
+
       String userName = AuthenticationUtil.getRunAsUser();
 
       AuthenticationUtil.setRunAsUserSystem();
 
-      NodeRef nodeRef = Converter.createArchiveNodeRefFromId(
-        restoreNodeMetadata.getArchiveNodeId()
-      );
-
-      if (!"".equals(restoreNodeMetadata.getTargetFolderId())) {
-        NodeRef spaceRef = Converter.createNodeRefFromId(
-          restoreNodeMetadata.getTargetFolderId()
-        );
+      if (spaceRef != null) {
         nodeArchiveService.restoreArchivedNode(nodeRef, spaceRef, null, null);
       } else {
         nodeArchiveService.restoreArchivedNode(nodeRef);
@@ -189,14 +197,66 @@ public class ArchiveApiImpl implements ArchiveApi {
 
   @Override
   public void groupsIdDocumentsDeletedNodeIdDelete(String id, String nodeId) {
+    NodeRef nodeRef = Converter.createArchiveNodeRefFromId(nodeId);
+    requireArchiveNodeInInterestGroup(id, nodeRef);
+
     String userName = AuthenticationUtil.getRunAsUser();
 
     AuthenticationUtil.setRunAsUserSystem();
 
-    NodeRef nodeRef = Converter.createArchiveNodeRefFromId(nodeId);
-
     nodeArchiveService.purgeArchivedNode(nodeRef);
 
     AuthenticationUtil.setRunAsUser(userName);
+  }
+
+  private void requireArchiveNodeInInterestGroup(
+    String id,
+    NodeRef archiveNodeRef
+  ) {
+    // Archived nodes live in the archive store and are only readable under the
+    // system context, so resolve the owning IG id as system before comparing.
+    String runAsUser = AuthenticationUtil.getRunAsUser();
+    AuthenticationUtil.setRunAsUserSystem();
+    Object archivedIgId;
+    try {
+      archivedIgId =
+        nodeService.getProperty(
+          archiveNodeRef,
+          CircabcModel.PROP_IG_ROOT_NODE_ID_ARCHIVED
+        );
+    } finally {
+      AuthenticationUtil.setRunAsUser(runAsUser);
+    }
+
+    if (id == null || !id.equals(archivedIgId)) {
+      throw new AccessDeniedException(
+        "Archived node does not belong to the authorized interest group"
+      );
+    }
+  }
+
+  private void requireNodeInInterestGroup(String id, NodeRef nodeRef) {
+    NodeRef currentNodeRef = nodeRef;
+
+    while (currentNodeRef != null && nodeService.exists(currentNodeRef)) {
+      if (nodeService.hasAspect(currentNodeRef, CircabcModel.ASPECT_IGROOT)) {
+        if (id.equals(currentNodeRef.getId())) {
+          return;
+        }
+        break;
+      }
+
+      ChildAssociationRef parentAssoc = nodeService.getPrimaryParent(
+        currentNodeRef
+      );
+      if (parentAssoc == null) {
+        break;
+      }
+      currentNodeRef = parentAssoc.getParentRef();
+    }
+
+    throw new AccessDeniedException(
+      "Restore target does not belong to the authorized interest group"
+    );
   }
 }

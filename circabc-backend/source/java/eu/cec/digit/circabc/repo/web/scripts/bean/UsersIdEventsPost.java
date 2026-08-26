@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.alfresco.repo.node.MLPropertyInterceptor;
 import org.alfresco.repo.security.permissions.AccessDeniedException;
 import org.alfresco.service.cmr.security.AuthenticationService;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptRequest;
@@ -18,6 +20,11 @@ import org.springframework.extensions.webscripts.WebScriptRequest;
  * @author schwerr
  */
 public class UsersIdEventsPost extends CircabcDeclarativeWebScript {
+
+  /**
+   * A logger for the class
+   */
+  static final Log logger = LogFactory.getLog(UsersIdEventsPost.class);
 
   private EventsApi eventsApi;
   private CurrentUserPermissionCheckerService currentUserPermissionCheckerService;
@@ -58,12 +65,18 @@ public class UsersIdEventsPost extends CircabcDeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (Exception e) {
       status.setCode(HttpServletResponse.SC_NOT_ACCEPTABLE);
       status.setMessage(e.getMessage());
       status.setException(e);
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Could not update the event (accept or reject)", e);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);

@@ -52,6 +52,7 @@ import eu.cec.digit.circabc.migration.entities.generated.nodes.Events;
 import eu.cec.digit.circabc.migration.entities.generated.nodes.Forum;
 import eu.cec.digit.circabc.migration.entities.generated.nodes.InfContent;
 import eu.cec.digit.circabc.migration.entities.generated.nodes.InfMLContent;
+import eu.cec.digit.circabc.migration.entities.generated.nodes.InfNews;
 import eu.cec.digit.circabc.migration.entities.generated.nodes.InfSpace;
 import eu.cec.digit.circabc.migration.entities.generated.nodes.Information;
 import eu.cec.digit.circabc.migration.entities.generated.nodes.InformationContentVersion;
@@ -223,7 +224,7 @@ public class SetCircaMetadataVisitor implements XMLNodesVisitor
             MetadataUtils.setTitledNodeProperty(contentNode, singleMLText(document.getLanguage(), document.getTitle()), singleMLText(document.getLanguage(), document.getAbstractDesc()), computeCreator(document.getOwner(), document.getCreator()), logger);
             MetadataUtils.setNamedNodeProperty(contentNode, computeAlternative(document, contentNode), logger);
             MetadataUtils.setContentNodeProperty(contentNode, computeUri(contentNode), document.getVersion(), logger);
-            MetadataUtils.setContentProperty(contentNode, computeSecurityRanking(document.getAvailability()), computeDate(document.getExpiration()), computeCreator(document.getCreator(), document.getOwner()), computeStatus(document.getStatus()), computeDate(document.getIssued()), document.getReference(), computeKeywords(contentNode, document.getSubject()), computeDynAttr(contentNode, document.getDynAttribute1(), 1) , computeDynAttr(contentNode, document.getDynAttribute2(), 2), computeDynAttr(contentNode, document.getDynAttribute3(), 3), computeDynAttr(contentNode, document.getDynAttribute4(), 4), computeDynAttr(contentNode, document.getDynAttribute5(), 5), logger);
+            MetadataUtils.setContentProperty(contentNode, computeSecurityRanking(document.getAvailability()), computeDate(document.getExpiration()), computeCreator(document.getCreator(), document.getOwner()), computeStatus(document.getStatus()), computeDate(document.getIssued()), document.getReference(), computeKeywords(contentNode, document.getSubject()), computeDynAttr(contentNode, document.getDynAttribute1(), 1) , computeDynAttr(contentNode, document.getDynAttribute2(), 2), computeDynAttr(contentNode, document.getDynAttribute3(), 3), computeDynAttr(contentNode, document.getDynAttribute4(), 4), computeDynAttr(contentNode, document.getDynAttribute5(), 5));
         }
         else
         {
@@ -269,6 +270,11 @@ public class SetCircaMetadataVisitor implements XMLNodesVisitor
         MetadataUtils.setNamedNodeProperty(space, FilePathUtils.retreiveFileName(ElementsHelper.getExportationPath(space)), logger);
     }
 
+    public void visit(final InfNews infNews) throws Exception
+    {
+        // News nodes are only used in CIRCABC (not Circa) export
+    }
+
     public void visit(final LibraryContentVersion contentNode) throws Exception
     {
         final Document document = retreiveDocument(contentNode);
@@ -279,7 +285,7 @@ public class SetCircaMetadataVisitor implements XMLNodesVisitor
             MetadataUtils.setTitledNodeProperty(contentNode, singleMLText(document.getLanguage(), document.getTitle()), singleMLText(document.getLanguage(), document.getAbstractDesc()), computeCreator(document.getOwner(), document.getCreator()), logger);
             MetadataUtils.setNamedNodeProperty(contentNode, computeAlternative(document, contentNode), logger);
             MetadataUtils.setContentNodeProperty(contentNode, computeUri(contentNode), document.getVersion(), logger);
-            MetadataUtils.setContentProperty(contentNode, computeSecurityRanking(document.getAvailability()), computeDate(document.getExpiration()), computeCreator(document.getCreator(), document.getOwner()), computeStatus(document.getStatus()), computeDate(document.getIssued()), document.getReference(), computeKeywords(contentNode, document.getSubject()), computeDynAttr(contentNode, document.getDynAttribute1(), 1) , computeDynAttr(contentNode, document.getDynAttribute2(), 2), computeDynAttr(contentNode, document.getDynAttribute3(), 3), computeDynAttr(contentNode, document.getDynAttribute4(), 4), computeDynAttr(contentNode, document.getDynAttribute5(), 5), logger);
+            MetadataUtils.setContentProperty(contentNode, computeSecurityRanking(document.getAvailability()), computeDate(document.getExpiration()), computeCreator(document.getCreator(), document.getOwner()), computeStatus(document.getStatus()), computeDate(document.getIssued()), document.getReference(), computeKeywords(contentNode, document.getSubject()), computeDynAttr(contentNode, document.getDynAttribute1(), 1) , computeDynAttr(contentNode, document.getDynAttribute2(), 2), computeDynAttr(contentNode, document.getDynAttribute3(), 3), computeDynAttr(contentNode, document.getDynAttribute4(), 4), computeDynAttr(contentNode, document.getDynAttribute5(), 5));
         }
         else
         {

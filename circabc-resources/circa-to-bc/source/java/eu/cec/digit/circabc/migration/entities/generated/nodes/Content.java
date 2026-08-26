@@ -31,6 +31,21 @@ import eu.cec.digit.circabc.migration.entities.TypedProperty.DynamicProperty2;
 import eu.cec.digit.circabc.migration.entities.TypedProperty.DynamicProperty3;
 import eu.cec.digit.circabc.migration.entities.TypedProperty.DynamicProperty4;
 import eu.cec.digit.circabc.migration.entities.TypedProperty.DynamicProperty5;
+import eu.cec.digit.circabc.migration.entities.TypedProperty.DynamicProperty20;
+import eu.cec.digit.circabc.migration.entities.TypedProperty.DynamicProperty19;
+import eu.cec.digit.circabc.migration.entities.TypedProperty.DynamicProperty18;
+import eu.cec.digit.circabc.migration.entities.TypedProperty.DynamicProperty17;
+import eu.cec.digit.circabc.migration.entities.TypedProperty.DynamicProperty16;
+import eu.cec.digit.circabc.migration.entities.TypedProperty.DynamicProperty15;
+import eu.cec.digit.circabc.migration.entities.TypedProperty.DynamicProperty14;
+import eu.cec.digit.circabc.migration.entities.TypedProperty.DynamicProperty13;
+import eu.cec.digit.circabc.migration.entities.TypedProperty.DynamicProperty12;
+import eu.cec.digit.circabc.migration.entities.TypedProperty.DynamicProperty11;
+import eu.cec.digit.circabc.migration.entities.TypedProperty.DynamicProperty10;
+import eu.cec.digit.circabc.migration.entities.TypedProperty.DynamicProperty9;
+import eu.cec.digit.circabc.migration.entities.TypedProperty.DynamicProperty8;
+import eu.cec.digit.circabc.migration.entities.TypedProperty.DynamicProperty7;
+import eu.cec.digit.circabc.migration.entities.TypedProperty.DynamicProperty6;
 import eu.cec.digit.circabc.migration.entities.TypedProperty.ExpirationDateProperty;
 import eu.cec.digit.circabc.migration.entities.TypedProperty.IssueDateProperty;
 import eu.cec.digit.circabc.migration.entities.TypedProperty.ModifiedProperty;
@@ -48,6 +63,21 @@ import eu.cec.digit.circabc.migration.entities.adapter.DynamicProperty2Adapter;
 import eu.cec.digit.circabc.migration.entities.adapter.DynamicProperty3Adapter;
 import eu.cec.digit.circabc.migration.entities.adapter.DynamicProperty4Adapter;
 import eu.cec.digit.circabc.migration.entities.adapter.DynamicProperty5Adapter;
+import eu.cec.digit.circabc.migration.entities.adapter.DynamicProperty20Adapter;
+import eu.cec.digit.circabc.migration.entities.adapter.DynamicProperty19Adapter;
+import eu.cec.digit.circabc.migration.entities.adapter.DynamicProperty18Adapter;
+import eu.cec.digit.circabc.migration.entities.adapter.DynamicProperty17Adapter;
+import eu.cec.digit.circabc.migration.entities.adapter.DynamicProperty16Adapter;
+import eu.cec.digit.circabc.migration.entities.adapter.DynamicProperty15Adapter;
+import eu.cec.digit.circabc.migration.entities.adapter.DynamicProperty14Adapter;
+import eu.cec.digit.circabc.migration.entities.adapter.DynamicProperty13Adapter;
+import eu.cec.digit.circabc.migration.entities.adapter.DynamicProperty12Adapter;
+import eu.cec.digit.circabc.migration.entities.adapter.DynamicProperty11Adapter;
+import eu.cec.digit.circabc.migration.entities.adapter.DynamicProperty10Adapter;
+import eu.cec.digit.circabc.migration.entities.adapter.DynamicProperty9Adapter;
+import eu.cec.digit.circabc.migration.entities.adapter.DynamicProperty8Adapter;
+import eu.cec.digit.circabc.migration.entities.adapter.DynamicProperty7Adapter;
+import eu.cec.digit.circabc.migration.entities.adapter.DynamicProperty6Adapter;
 import eu.cec.digit.circabc.migration.entities.adapter.ExpirationDatePropertyAdapter;
 import eu.cec.digit.circabc.migration.entities.adapter.IssueDatePropertyAdapter;
 import eu.cec.digit.circabc.migration.entities.adapter.ReferencePropertyAdapter;
@@ -98,6 +128,21 @@ import eu.cec.digit.circabc.migration.entities.generated.properties.KeywordRefer
     "dynamicProperty3",
     "dynamicProperty4",
     "dynamicProperty5",
+    "dynamicProperty6",
+    "dynamicProperty7",
+    "dynamicProperty8",
+    "dynamicProperty9",
+    "dynamicProperty10",
+    "dynamicProperty11",
+    "dynamicProperty12",
+    "dynamicProperty13",
+    "dynamicProperty14",
+    "dynamicProperty15",
+    "dynamicProperty16",
+    "dynamicProperty17",
+    "dynamicProperty18",
+    "dynamicProperty19",
+    "dynamicProperty20",
     "versions",
     "notifications",
     "libraryUserRights",
@@ -147,6 +192,51 @@ public class Content
     @XmlElement(namespace = "https://circabc.europa.eu/Import/PropertiesSchema/1.0", type = String.class)
     @XmlJavaTypeAdapter(DynamicProperty5Adapter.class)
     protected DynamicProperty5 dynamicProperty5;
+    @XmlElement(namespace = "https://circabc.europa.eu/Import/PropertiesSchema/1.0", type = String.class)
+    @XmlJavaTypeAdapter(DynamicProperty6Adapter.class)
+    protected DynamicProperty6 dynamicProperty6;
+    @XmlElement(namespace = "https://circabc.europa.eu/Import/PropertiesSchema/1.0", type = String.class)
+    @XmlJavaTypeAdapter(DynamicProperty7Adapter.class)
+    protected DynamicProperty7 dynamicProperty7;
+    @XmlElement(namespace = "https://circabc.europa.eu/Import/PropertiesSchema/1.0", type = String.class)
+    @XmlJavaTypeAdapter(DynamicProperty8Adapter.class)
+    protected DynamicProperty8 dynamicProperty8;
+    @XmlElement(namespace = "https://circabc.europa.eu/Import/PropertiesSchema/1.0", type = String.class)
+    @XmlJavaTypeAdapter(DynamicProperty9Adapter.class)
+    protected DynamicProperty9 dynamicProperty9;
+    @XmlElement(namespace = "https://circabc.europa.eu/Import/PropertiesSchema/1.0", type = String.class)
+    @XmlJavaTypeAdapter(DynamicProperty10Adapter.class)
+    protected DynamicProperty10 dynamicProperty10;
+    @XmlElement(namespace = "https://circabc.europa.eu/Import/PropertiesSchema/1.0", type = String.class)
+    @XmlJavaTypeAdapter(DynamicProperty11Adapter.class)
+    protected DynamicProperty11 dynamicProperty11;
+    @XmlElement(namespace = "https://circabc.europa.eu/Import/PropertiesSchema/1.0", type = String.class)
+    @XmlJavaTypeAdapter(DynamicProperty12Adapter.class)
+    protected DynamicProperty12 dynamicProperty12;
+    @XmlElement(namespace = "https://circabc.europa.eu/Import/PropertiesSchema/1.0", type = String.class)
+    @XmlJavaTypeAdapter(DynamicProperty13Adapter.class)
+    protected DynamicProperty13 dynamicProperty13;
+    @XmlElement(namespace = "https://circabc.europa.eu/Import/PropertiesSchema/1.0", type = String.class)
+    @XmlJavaTypeAdapter(DynamicProperty14Adapter.class)
+    protected DynamicProperty14 dynamicProperty14;
+    @XmlElement(namespace = "https://circabc.europa.eu/Import/PropertiesSchema/1.0", type = String.class)
+    @XmlJavaTypeAdapter(DynamicProperty15Adapter.class)
+    protected DynamicProperty15 dynamicProperty15;
+    @XmlElement(namespace = "https://circabc.europa.eu/Import/PropertiesSchema/1.0", type = String.class)
+    @XmlJavaTypeAdapter(DynamicProperty16Adapter.class)
+    protected DynamicProperty16 dynamicProperty16;
+    @XmlElement(namespace = "https://circabc.europa.eu/Import/PropertiesSchema/1.0", type = String.class)
+    @XmlJavaTypeAdapter(DynamicProperty17Adapter.class)
+    protected DynamicProperty17 dynamicProperty17;
+    @XmlElement(namespace = "https://circabc.europa.eu/Import/PropertiesSchema/1.0", type = String.class)
+    @XmlJavaTypeAdapter(DynamicProperty18Adapter.class)
+    protected DynamicProperty18 dynamicProperty18;
+    @XmlElement(namespace = "https://circabc.europa.eu/Import/PropertiesSchema/1.0", type = String.class)
+    @XmlJavaTypeAdapter(DynamicProperty19Adapter.class)
+    protected DynamicProperty19 dynamicProperty19;
+    @XmlElement(namespace = "https://circabc.europa.eu/Import/PropertiesSchema/1.0", type = String.class)
+    @XmlJavaTypeAdapter(DynamicProperty20Adapter.class)
+    protected DynamicProperty20 dynamicProperty20;
     protected LibraryContentVersions versions;
     @XmlElement(namespace = "https://circabc.europa.eu/Import/PermissionsSchema/1.0")
     protected Notifications notifications;
@@ -472,6 +562,126 @@ public class Content
      */
     public void setDynamicProperty5(DynamicProperty5 value) {
         this.dynamicProperty5 = value;
+    }
+
+    public DynamicProperty6 getDynamicProperty6() {
+        return dynamicProperty6;
+    }
+
+    public void setDynamicProperty6(DynamicProperty6 value) {
+        this.dynamicProperty6 = value;
+    }
+
+    public DynamicProperty7 getDynamicProperty7() {
+        return dynamicProperty7;
+    }
+
+    public void setDynamicProperty7(DynamicProperty7 value) {
+        this.dynamicProperty7 = value;
+    }
+
+    public DynamicProperty8 getDynamicProperty8() {
+        return dynamicProperty8;
+    }
+
+    public void setDynamicProperty8(DynamicProperty8 value) {
+        this.dynamicProperty8 = value;
+    }
+
+    public DynamicProperty9 getDynamicProperty9() {
+        return dynamicProperty9;
+    }
+
+    public void setDynamicProperty9(DynamicProperty9 value) {
+        this.dynamicProperty9 = value;
+    }
+
+    public DynamicProperty10 getDynamicProperty10() {
+        return dynamicProperty10;
+    }
+
+    public void setDynamicProperty10(DynamicProperty10 value) {
+        this.dynamicProperty10 = value;
+    }
+
+    public DynamicProperty11 getDynamicProperty11() {
+        return dynamicProperty11;
+    }
+
+    public void setDynamicProperty11(DynamicProperty11 value) {
+        this.dynamicProperty11 = value;
+    }
+
+    public DynamicProperty12 getDynamicProperty12() {
+        return dynamicProperty12;
+    }
+
+    public void setDynamicProperty12(DynamicProperty12 value) {
+        this.dynamicProperty12 = value;
+    }
+
+    public DynamicProperty13 getDynamicProperty13() {
+        return dynamicProperty13;
+    }
+
+    public void setDynamicProperty13(DynamicProperty13 value) {
+        this.dynamicProperty13 = value;
+    }
+
+    public DynamicProperty14 getDynamicProperty14() {
+        return dynamicProperty14;
+    }
+
+    public void setDynamicProperty14(DynamicProperty14 value) {
+        this.dynamicProperty14 = value;
+    }
+
+    public DynamicProperty15 getDynamicProperty15() {
+        return dynamicProperty15;
+    }
+
+    public void setDynamicProperty15(DynamicProperty15 value) {
+        this.dynamicProperty15 = value;
+    }
+
+    public DynamicProperty16 getDynamicProperty16() {
+        return dynamicProperty16;
+    }
+
+    public void setDynamicProperty16(DynamicProperty16 value) {
+        this.dynamicProperty16 = value;
+    }
+
+    public DynamicProperty17 getDynamicProperty17() {
+        return dynamicProperty17;
+    }
+
+    public void setDynamicProperty17(DynamicProperty17 value) {
+        this.dynamicProperty17 = value;
+    }
+
+    public DynamicProperty18 getDynamicProperty18() {
+        return dynamicProperty18;
+    }
+
+    public void setDynamicProperty18(DynamicProperty18 value) {
+        this.dynamicProperty18 = value;
+    }
+
+    public DynamicProperty19 getDynamicProperty19() {
+        return dynamicProperty19;
+    }
+
+    public void setDynamicProperty19(DynamicProperty19 value) {
+        this.dynamicProperty19 = value;
+    }
+
+    public DynamicProperty20 getDynamicProperty20() {
+        return dynamicProperty20;
+    }
+
+    public void setDynamicProperty20(DynamicProperty20 value) {
+        this.dynamicProperty20 = value;
     }
 
     /**

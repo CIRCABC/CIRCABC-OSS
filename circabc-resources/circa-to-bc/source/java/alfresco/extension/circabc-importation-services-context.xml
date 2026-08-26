@@ -52,7 +52,11 @@
 		<property name="postProcessors">
 			<list>
 				<!--  Check result? Send Mail? Set a special property? ...  -->
+				<value>eu.cec.digit.circabc.migration.processor.impl.MigrateFavourites</value>
 			</list>
+		</property>
+		<property name="syncApi">
+			<ref bean="syncApi" />
 		</property>
 	</bean>
 
@@ -159,6 +163,7 @@
                	eu.cec.digit.circabc.service.migration.ETLService.proposeUsers=ACL_METHOD.ROLE_ADMINISTRATOR
                	eu.cec.digit.circabc.service.migration.ETLService.applyEtl=ACL_METHOD.ROLE_ADMINISTRATOR
                	eu.cec.digit.circabc.service.migration.ETLService.getIterations=ACL_METHOD.ROLE_ADMINISTRATOR
+               	eu.cec.digit.circabc.service.migration.ETLService.passThroughEtl=ACL_METHOD.ROLE_ADMINISTRATOR
             </value>
         </property>
     </bean>

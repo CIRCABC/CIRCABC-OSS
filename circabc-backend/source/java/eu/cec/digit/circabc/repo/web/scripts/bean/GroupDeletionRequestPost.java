@@ -28,6 +28,11 @@ public class GroupDeletionRequestPost extends CircabcDeclarativeWebScript {
    */
   static final Log logger = LogFactory.getLog(GroupDeletionRequestPost.class);
 
+  /**
+   * HTTP 423 "Locked" — HttpServletResponse has no constant for it.
+   */
+  private static final int SC_LOCKED = 423;
+
   private NodeService nodeService;
   private CategoriesApi categoriesApi;
   private CurrentUserPermissionCheckerService currentUserPermissionCheckerService;
@@ -82,11 +87,31 @@ public class GroupDeletionRequestPost extends CircabcDeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
+      return null;
+    } catch (
+      io.swagger.api.GroupLockApiImpl.GroupLockedForDeletionException gle
+    ) {
+      status.setCode(SC_LOCKED);
+      status.setMessage(
+        "Interest Group is locked. Unlock the group before requesting its removal."
+      );
+      status.setRedirect(true);
+      if (logger.isWarnEnabled()) {
+        logger.warn(
+          "Delete request refused for IG " + groupId + ": " + gle.getMessage()
+        );
+      }
       return null;
     } catch (InvalidNodeRefException | ParseException | IOException inre) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request", inre);
+      }
       return null;
     }
 

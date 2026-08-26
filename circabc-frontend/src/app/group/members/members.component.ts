@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, Optional } from '@angular/core';
+import { Component, Inject, OnInit, Optional, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
@@ -26,6 +26,7 @@ import {
 } from 'app/core/generated/circabc';
 import { LoginService } from 'app/core/login.service';
 import { UiMessageService } from 'app/core/message/ui-message.service';
+import { ReadOnlyStateService } from 'app/core/read-only-state.service';
 import { SaveAsService } from 'app/core/save-as.service';
 import { SelectableUserProfile } from 'app/core/ui-model/index';
 import {
@@ -120,6 +121,8 @@ export class MembersComponent implements OnInit {
   private lastName = '';
   private email = '';
   private searchProfile = '';
+
+  public readonly readOnlyState = inject(ReadOnlyStateService);
 
   // properties for the exporter (format to export the file and the file id)
   public exportFormats = [

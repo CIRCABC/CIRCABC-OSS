@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>reorder articles in a help subcategory</shortname>
+  <description>reorder articles in a help subcategory</description>
+  <url>/circabc/help/subcategories/{id}/articles/order</url>
+  <format default="json" />
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

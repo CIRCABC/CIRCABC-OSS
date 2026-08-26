@@ -69,16 +69,25 @@ public class LdapUserGet extends DeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage(inre.getMessage());
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error(inre.getMessage(), inre);
+      }
       return null;
     } catch (AccessDeniedException ade) {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (NotFoundException ne) {
       status.setCode(HttpServletResponse.SC_NO_CONTENT);
       status.setMessage(ne.getMessage());
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error(ne.getMessage(), ne);
+      }
       return null;
     }
 

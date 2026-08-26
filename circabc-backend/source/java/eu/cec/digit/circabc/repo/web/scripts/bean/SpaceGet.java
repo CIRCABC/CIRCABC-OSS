@@ -3,6 +3,7 @@ package eu.cec.digit.circabc.repo.web.scripts.bean;
 import io.swagger.api.SpacesApi;
 import io.swagger.model.PagedNodes;
 import io.swagger.util.CurrentUserPermissionCheckerService;
+import io.swagger.util.GroupLockGuard;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -30,6 +31,7 @@ public class SpaceGet extends DeclarativeWebScript {
   private static final int DEFAULT_NUMBER_RESULTS = 25;
   private SpacesApi spacesApi;
   private CurrentUserPermissionCheckerService currentUserPermissionCheckerService;
+  private GroupLockGuard groupLockGuard;
 
   @Override
   protected Map<String, Object> executeImpl(
@@ -80,9 +82,17 @@ public class SpaceGet extends DeclarativeWebScript {
     String fileOnlyParam = req.getParameter("fileOnly");
     boolean fileOnly = "true".equals(fileOnlyParam);
 
+    // Optional flag: by default do NOT skip expired items
+    String skipExpiredParam = req.getParameter("skipExpiredItems");
+    boolean skipExpiredItems = (skipExpiredParam == null)
+      ? false
+      : Boolean.parseBoolean(skipExpiredParam);
+
     Map<String, String> templateVars = req.getServiceMatch().getTemplateVars();
     String id = templateVars.get("id");
     try {
+      this.groupLockGuard.checkAccess(id);
+
       if (
         !this.currentUserPermissionCheckerService.hasAlfrescoReadPermission(id)
       ) {
@@ -106,7 +116,8 @@ public class SpaceGet extends DeclarativeWebScript {
               -1,
               sort,
               folderOnly,
-              fileOnly
+              fileOnly,
+              skipExpiredItems
             );
         model.put("data", nodes.getData());
         model.put("total", nodes.getTotal());
@@ -118,7 +129,8 @@ public class SpaceGet extends DeclarativeWebScript {
               nbLimit,
               sort,
               folderOnly,
-              fileOnly
+              fileOnly,
+              skipExpiredItems
             );
         model.put("data", nodes.getData());
         model.put("total", nodes.getTotal());
@@ -127,11 +139,17 @@ public class SpaceGet extends DeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (InvalidNodeRefException inre) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request", inre);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);
@@ -158,5 +176,9 @@ public class SpaceGet extends DeclarativeWebScript {
   ) {
     this.currentUserPermissionCheckerService =
       currentUserPermissionCheckerService;
+  }
+
+  public void setGroupLockGuard(GroupLockGuard groupLockGuard) {
+    this.groupLockGuard = groupLockGuard;
   }
 }

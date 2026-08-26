@@ -93,7 +93,12 @@ public class EmailJsonParser {
     result.setLastname(lname);
 
     String email = (String) u.get(EMAIL);
-    result.setEmail(email);
+    String sanitized = io.swagger.util.EmailUtil.sanitizeEmailAddresses(email);
+    result.setEmail(
+      sanitized != null && !sanitized.isEmpty()
+        ? sanitized.split(",\\s*")[0]
+        : ""
+    );
 
     return result;
   }
@@ -132,7 +137,14 @@ public class EmailJsonParser {
           }
           Object addrObj = distrib.get(EMAIL_ADDRESS);
           if (addrObj != null) {
-            item.setEmailAddress(addrObj.toString().toLowerCase());
+            String sanitized = io.swagger.util.EmailUtil.sanitizeEmailAddresses(
+              addrObj.toString()
+            );
+            item.setEmailAddress(
+              sanitized != null && !sanitized.isEmpty()
+                ? sanitized.split(",\\s*")[0].toLowerCase()
+                : ""
+            );
           }
           result.add(item);
         }

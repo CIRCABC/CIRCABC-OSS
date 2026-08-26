@@ -25,6 +25,8 @@ public class HelpArticle {
 
   private Integer visitCounter = null;
 
+  private Integer sortOrder = 0;
+
   @Override
   public boolean equals(java.lang.Object o) {
     if (this == o) {
@@ -42,13 +44,14 @@ public class HelpArticle {
       Objects.equals(this.author, helpCategory.author) &&
       Objects.equals(this.parentId, helpCategory.parentId) &&
       Objects.equals(this.highlighted, helpCategory.highlighted) &&
-      Objects.equals(this.visitCounter, helpCategory.visitCounter)
+      Objects.equals(this.visitCounter, helpCategory.visitCounter) &&
+      Objects.equals(this.sortOrder, helpCategory.sortOrder)
     );
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, title, content);
+    return Objects.hash(id, title, content, sortOrder);
   }
 
   @Override
@@ -78,6 +81,9 @@ public class HelpArticle {
       "\n" +
       "    visitCounter: " +
       toIndentedString(visitCounter) +
+      "\n" +
+      "    sortOrder: " +
+      toIndentedString(sortOrder) +
       "\n" +
       "}"
     );
@@ -152,5 +158,13 @@ public class HelpArticle {
 
   public void setVisitCounter(Integer visitCounter) {
     this.visitCounter = visitCounter;
+  }
+
+  public Integer getSortOrder() {
+    return sortOrder;
+  }
+
+  public void setSortOrder(Integer sortOrder) {
+    this.sortOrder = sortOrder;
   }
 }

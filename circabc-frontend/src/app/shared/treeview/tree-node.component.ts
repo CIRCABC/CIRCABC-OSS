@@ -164,7 +164,7 @@ export class TreeNodeComponent implements OnInit, OnDestroy {
 
   private async listSpaces() {
     const subspaces = await firstValueFrom(
-      this.spaceService.getSubspaces(this.node.nodeId, '', 'title', 'ASC')
+      this.spaceService.getSubspaces(this.node.nodeId, '', 'title', 'ASC', true)
     );
     for (const space of subspaces) {
       let text: string | undefined =

@@ -46,6 +46,24 @@
           'label.yes' : 'label.no' ) | transloco }}</span
         >
       </div>
+      @if(isPreviewable() ) {
+      <div class="field switch">
+        <div class="label">
+          {{ 'descriptor.share.direct.open' | transloco }}
+        </div>
+        <input
+          id="addOpen"
+          class="cmn-toggle cmn-toggle-round"
+          type="checkbox"
+          formControlName="addOpen"
+        />
+        <label for="addOpen" class="nonBlockLabel"></label>
+        <span
+          >{{ (customisationForm.controls['addOpen'].value === true ?
+          'label.yes' : 'label.no' ) | transloco }}</span
+        >
+      </div>
+      }
     </form>
     }
   </span>

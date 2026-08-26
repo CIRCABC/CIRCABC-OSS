@@ -78,6 +78,7 @@ public class LoginBean extends org.alfresco.web.bean.LoginBean {
   protected String domain = UserModel.ALFRESCO_USER_PREFIX;
   private boolean registrationProcess;
   private boolean badParameters;
+  private String validatedActivationUserName;
 
   private transient UserService userService;
   private transient ProfileManagerServiceFactory profileManagerServiceFactory;
@@ -106,16 +107,32 @@ public class LoginBean extends org.alfresco.web.bean.LoginBean {
    * Action that perform the activation of an account and, if all is correct, log the user
    */
   public String activateAndLoginCirca() {
+    final String activationUserName = validatedActivationUserName;
+    validatedActivationUserName = null;
+
+    if (activationUserName == null) {
+      Utils.addErrorMessage(
+        Application.getMessage(
+          FacesContext.getCurrentInstance(),
+          MSG_ERROR_REGISTRATION_PARAMETERS
+        )
+      );
+      badParameters = true;
+      return null;
+    }
+
     AuthenticationUtil.runAs(
       new AuthenticationUtil.RunAsWork<Object>() {
         public Object doWork() {
-          // 	activate the user if we are in a registration process scope and the parameters are valid
-          authenticationService.setAuthenticationEnabled(getUsername(), true);
+          authenticationService.setAuthenticationEnabled(
+            activationUserName,
+            true
+          );
 
           if (logger.isDebugEnabled()) {
             logger.warn(
               "The user " +
-              getUsername() +
+              activationUserName +
               " is now correctly registred in circabc. Its account is set as active."
             );
           }
@@ -233,7 +250,7 @@ public class LoginBean extends org.alfresco.web.bean.LoginBean {
       return false;
     }
 
-    registrationProcess = false;
+    registrationProcess = validatedActivationUserName != null;
     badParameters = false;
 
     Map params = FacesContext.getCurrentInstance()
@@ -246,6 +263,11 @@ public class LoginBean extends org.alfresco.web.bean.LoginBean {
     final String activationID = (String) params.get(
       SelfRegistrationDialog.ACTIVATION_KEY_URL_PARAM
     );
+
+    if (paramUserName != null || activationID != null) {
+      validatedActivationUserName = null;
+      registrationProcess = false;
+    }
 
     getAuthenticationService().authenticateAsGuest();
 
@@ -286,6 +308,8 @@ public class LoginBean extends org.alfresco.web.bean.LoginBean {
                       activationID
                     );
                   }
+                } else {
+                  validatedActivationUserName = paramUserName;
                 }
               } else {
                 // the activation key doesn't correspond to the user id
@@ -334,6 +358,8 @@ public class LoginBean extends org.alfresco.web.bean.LoginBean {
           activationID
         );
       }
+    } else if (validatedActivationUserName == null) {
+      badParameters = true;
     }
 
     return true;

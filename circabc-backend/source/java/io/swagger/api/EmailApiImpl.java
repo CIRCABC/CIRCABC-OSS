@@ -94,7 +94,15 @@ public class EmailApiImpl implements EmailApi {
         authorityService.authorityExists(u.getUserId()) &&
         !"".equals(u.getEmail())
       ) {
-        mails.add(u.getEmail().toLowerCase());
+        String sanitized = io.swagger.util.EmailUtil.sanitizeEmailAddresses(
+          u.getEmail()
+        );
+        if (sanitized != null && !sanitized.isEmpty()) {
+          String[] validEmails = sanitized.split(",\\s*");
+          for (String email : validEmails) {
+            mails.add(email.toLowerCase());
+          }
+        }
       }
     }
 
@@ -114,7 +122,15 @@ public class EmailApiImpl implements EmailApi {
       );
       for (UserProfile up : lUserProfiles) {
         if (listOfGroups.contains(up.getProfile().getGroupName())) {
-          mails.add(up.getUser().getEmail().toLowerCase());
+          String sanitized = io.swagger.util.EmailUtil.sanitizeEmailAddresses(
+            up.getUser().getEmail()
+          );
+          if (sanitized != null && !sanitized.isEmpty()) {
+            String[] validEmails = sanitized.split(",\\s*");
+            for (String email : validEmails) {
+              mails.add(email.toLowerCase());
+            }
+          }
         }
       }
     }
@@ -464,9 +480,13 @@ public class EmailApiImpl implements EmailApi {
       MailTemplate.GROUP_REQUEST
     );
 
-    String categoryName = nodeService
-      .getProperty(categRef, ContentModel.PROP_NAME)
-      .toString();
+    Object categoryNameProp = nodeService.getProperty(
+      categRef,
+      ContentModel.PROP_NAME
+    );
+    String categoryName = categoryNameProp != null
+      ? categoryNameProp.toString()
+      : "";
     model.put(CATEGORY_NAME, categoryName);
     model.put("categRef", categRef);
 
@@ -490,8 +510,16 @@ public class EmailApiImpl implements EmailApi {
     model.put(FROM_USER, body.getFrom());
     model.put("futureLeaders", body.getLeaders());
     model.put("proposedName", body.getProposedName());
-    model.put("proposedTitle", body.getProposedTitle().get("en"));
-    model.put("proposedDescription", body.getProposedDescription().get("en"));
+    model.put(
+      "proposedTitle",
+      body.getProposedTitle() != null ? body.getProposedTitle().get("en") : ""
+    );
+    model.put(
+      "proposedDescription",
+      body.getProposedDescription() != null
+        ? body.getProposedDescription().get("en")
+        : ""
+    );
     model.put(JUSTIFICATION, body.getJustification());
     result.setUsers(toUsers);
     result.setContent(mail.getBody(model));
@@ -782,7 +810,15 @@ public class EmailApiImpl implements EmailApi {
         );
 
         for (UserProfile leader : groupAdmins) {
-          listOfEmails.add(leader.getUser().getEmail());
+          String sanitized = io.swagger.util.EmailUtil.sanitizeEmailAddresses(
+            leader.getUser().getEmail()
+          );
+          if (sanitized != null && !sanitized.isEmpty()) {
+            String[] validEmails = sanitized.split(",\\s*");
+            for (String email : validEmails) {
+              listOfEmails.add(email);
+            }
+          }
         }
       }
     }
@@ -1588,6 +1624,7 @@ public class EmailApiImpl implements EmailApi {
   public EmailDefinition prepareRefusalGroupDeleteRequestLeaders(
     GroupDeletionRequest body,
     String igName,
+    String igTitle,
     User user
   ) {
     EmailDefinition result = new EmailDefinition();
@@ -1641,6 +1678,7 @@ public class EmailApiImpl implements EmailApi {
     NodeRef toUserRef = personService.getPerson(userId);
 
     model.put("igName", igName);
+    model.put("igTitle", igTitle);
     model.put("toUserRef", toUserRef);
     model.put("reason", body.getRejectedMessage());
 
@@ -1653,7 +1691,8 @@ public class EmailApiImpl implements EmailApi {
   @Override
   public EmailDefinition prepareRefusalGroupDeleteRequest(
     GroupDeletionRequest body,
-    String igName
+    String igName,
+    String igTitle
   ) {
     EmailDefinition result = new EmailDefinition();
     final Map<String, Object> model = mailPreferencesService.buildDefaultModel(
@@ -1708,6 +1747,7 @@ public class EmailApiImpl implements EmailApi {
     NodeRef toUserRef = personService.getPerson(userId);
 
     model.put("igName", igName);
+    model.put("igTitle", igTitle);
     model.put(FROM_USER, body.getFrom());
     model.put("toUserRef", toUserRef);
     model.put("reason", body.getRejectedMessage());
@@ -1722,7 +1762,8 @@ public class EmailApiImpl implements EmailApi {
   public EmailDefinition prepareAcceptationGroupDeleteRequest(
     User user,
     GroupDeletionRequest body,
-    String igName
+    String igName,
+    String igTitle
   ) {
     EmailDefinition result = new EmailDefinition();
     final Map<String, Object> model = mailPreferencesService.buildDefaultModel(
@@ -1776,6 +1817,7 @@ public class EmailApiImpl implements EmailApi {
     User fromUser = usersApi.usersUserIdGet(body.getFrom().getUserId());
 
     model.put("igName", igName);
+    model.put("igTitle", igTitle);
     model.put(FROM_USER, fromUser);
     model.put("toUserRef", toUserRef);
 

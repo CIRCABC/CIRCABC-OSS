@@ -71,7 +71,13 @@ public class ContentPut extends CircabcDeclarativeWebScript {
     String id = templateVars.get("id");
 
     try {
-      Boolean notify = true;
+      checkGroupReadOnlyMode(id);
+
+      // Default to NOT notifying. A missing "notify" parameter
+      // must not trigger a mass notification to all group subscribers (e.g. on
+      // a metadata-only edit such as a title correction). Callers that want to
+      // notify must pass notify=true explicitly.
+      Boolean notify = false;
       String notifyString = req.getParameter("notify");
       if (notifyString != null) {
         notify = Boolean.parseBoolean(notifyString);
@@ -112,7 +118,7 @@ public class ContentPut extends CircabcDeclarativeWebScript {
 
         nodeRefs.add(nodeRef);
 
-        notificationService.notifyNewFiles(
+        notificationService.notifyNewFilesAfterCommit(
           nodeRef,
           nodeRefs,
           users,
@@ -121,30 +127,53 @@ public class ContentPut extends CircabcDeclarativeWebScript {
       }
 
       model.put("node", this.nodesApi.getNodeById(id));
+    } catch (ReadOnlyAccessException roae) {
+      status.setCode(HttpServletResponse.SC_FORBIDDEN);
+      status.setMessage(roae.getMessage());
+      status.setRedirect(true);
+      if (logger.isWarnEnabled()) {
+        logger.warn("Read-only mode blocked write on content: " + id, roae);
+      }
+      return null;
     } catch (AccessDeniedException ade) {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (InvalidNodeRefException inre) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request", inre);
+      }
       return null;
     } catch (DuplicateChildNodeNameException dcnne) {
       status.setCode(HttpServletResponse.SC_CONFLICT);
       status.setMessage("Duplicate node name");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Duplicate node name", dcnne);
+      }
       return null;
     } catch (InvalidTypeException ite) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad noderef type");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad noderef type", ite);
+      }
       return null;
     } catch (IOException | ParseException e) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad body");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad body", e);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);

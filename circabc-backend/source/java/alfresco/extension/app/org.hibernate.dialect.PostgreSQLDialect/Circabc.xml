@@ -1323,6 +1323,19 @@
 		CBC_CAT_TITLE_TRANS VALUES (#{categoryId}, #{localeId}, #{titleTrans,
 		jdbcType=VARCHAR})
 	</insert>
+
+	<delete id="delete_all_cat_title_trans">
+		DELETE FROM CBC_CAT_TITLE_TRANS
+	</delete>
+
+	<delete id="delete_all_ig_trans">
+		DELETE FROM CBC_IG_TRANS
+	</delete>
+
+	<delete id="delete_all_profile_title_trans">
+		DELETE FROM CBC_PROFILE_TITLE_TRANS
+	</delete>
+
 	<delete id="delete_all">
 		{call
 		declare
@@ -1380,4 +1393,21 @@
 					AND cbc_users.user_name = #{value}
 			)  A
 	</select>
+
+	<insert id="insert_group_lock" parameterType="GroupLock">
+		INSERT INTO cbc_ig_lock (ig_id, lock_message, read_only, locked_by, locked_date)
+		VALUES (#{igId}, #{lockMessage,jdbcType=VARCHAR}, #{readOnly}, #{lockedBy}, #{lockedDate})
+	</insert>
+
+	<delete id="delete_group_lock" parameterType="long">
+		DELETE FROM cbc_ig_lock WHERE ig_id = #{value}
+	</delete>
+
+	<select id="select_group_lock" parameterType="long" resultType="GroupLock">
+		SELECT id, ig_id AS igId, lock_message AS lockMessage, read_only AS readOnly,
+			locked_by AS lockedBy, locked_date AS lockedDate
+		FROM cbc_ig_lock
+		WHERE ig_id = #{value}
+	</select>
+
 </mapper>

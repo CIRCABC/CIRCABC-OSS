@@ -153,12 +153,13 @@
           style="background-color: #eef5f4"
           *cbcIfRoleGE="[topicNode, 'NwsPost', []]"
         >
+          @if (!isReadOnly()) {
           <div style="padding: 30px; font-size: 16px">
             <a tabindex="0" (click)="openNewPost()"
               >{{ 'forum.add.comment' | transloco }}</a
             >
           </div>
-          @if (postOpen) {
+          } @if (postOpen) {
           <span class="right-left-margin">
             <form [formGroup]="addPostForm">
               <div class="field field--textarea right-left-margin">

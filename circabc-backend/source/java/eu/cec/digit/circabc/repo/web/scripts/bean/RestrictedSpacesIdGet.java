@@ -3,6 +3,7 @@ package eu.cec.digit.circabc.repo.web.scripts.bean;
 import io.swagger.api.SpacesApi;
 import io.swagger.model.PagedNodes;
 import io.swagger.util.CurrentUserPermissionCheckerService;
+import io.swagger.util.GroupLockGuard;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -30,6 +31,7 @@ public class RestrictedSpacesIdGet extends DeclarativeWebScript {
   private static final int DEFAULT_NUMBER_RESULTS = 25;
   private SpacesApi spacesApi;
   private CurrentUserPermissionCheckerService currentUserPermissionCheckerService;
+  private GroupLockGuard groupLockGuard;
 
   @Override
   protected Map<String, Object> executeImpl(
@@ -76,6 +78,8 @@ public class RestrictedSpacesIdGet extends DeclarativeWebScript {
     Map<String, String> templateVars = req.getServiceMatch().getTemplateVars();
     String id = templateVars.get("id");
     try {
+      this.groupLockGuard.checkAccess(id);
+
       if (
         ((page == null) ||
           Objects.equals(page, "-1") ||
@@ -112,11 +116,17 @@ public class RestrictedSpacesIdGet extends DeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (InvalidNodeRefException inre) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request", inre);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);
@@ -143,5 +153,9 @@ public class RestrictedSpacesIdGet extends DeclarativeWebScript {
   ) {
     this.currentUserPermissionCheckerService =
       currentUserPermissionCheckerService;
+  }
+
+  public void setGroupLockGuard(GroupLockGuard groupLockGuard) {
+    this.groupLockGuard = groupLockGuard;
   }
 }

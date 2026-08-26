@@ -1,13 +1,11 @@
 package eu.cec.digit.circabc.service.dynamic.authority.ibatis;
 
+import eu.cec.digit.circabc.service.dynamic.authority.CircabcDynamicAuthorityDAO;
+import eu.cec.digit.circabc.service.dynamic.authority.CircabcPermission;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.mybatis.spring.SqlSessionTemplate;
-
-import eu.cec.digit.circabc.service.dynamic.authority.CircabcDynamicAuthorityDAO;
-import eu.cec.digit.circabc.service.dynamic.authority.CircabcPermission;
 
 public class CircabcDynamicAuthorityDAOImpl
   implements CircabcDynamicAuthorityDAO {
@@ -38,5 +36,19 @@ public class CircabcDynamicAuthorityDAOImpl
       SELECT_GROUP_PERMISSION,
       params
     );
+  }
+
+  @Override
+  public boolean isCategoryAdmin(String groupNodeRef, String userName) {
+    Map<String, Object> params = new HashMap<>(2);
+
+    params.put("nodeRef", groupNodeRef);
+    params.put("userName", userName);
+
+    int result = (int) template.selectOne(
+      "dynamic-authority.select_IsCategoryAdmin",
+      params
+    );
+    return result > 0;
   }
 }

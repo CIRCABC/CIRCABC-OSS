@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>circabc.export</shortname>
+  <description>Export a CIRCABC Interest Group to the migration XML format</description>
+  <url>/circabc/export</url>
+  <format default="json" />
+  <authentication>admin</authentication>
+  <transaction>required</transaction>
+</webscript>

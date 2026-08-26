@@ -8,6 +8,8 @@ import org.alfresco.repo.security.authentication.AuthenticationUtil.RunAsWork;
 import org.alfresco.service.cmr.ml.MultilingualContentService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.repository.Path;
+import org.alfresco.service.namespace.NamespaceService;
 
 public class CircabcDynamicAuthorityServiceImpl
   implements CircabcDynamicAuthorityService {
@@ -17,6 +19,8 @@ public class CircabcDynamicAuthorityServiceImpl
   private MultilingualContentService multilingualContentService;
 
   private CircabcDynamicAuthorityDAO circabcDAO;
+
+  private NamespaceService namespaceService;
 
   public void setNodeService(NodeService nodeService) {
     this.nodeService = nodeService;
@@ -30,6 +34,10 @@ public class CircabcDynamicAuthorityServiceImpl
 
   public void setCircabcDAO(CircabcDynamicAuthorityDAO circabcDAO) {
     this.circabcDAO = circabcDAO;
+  }
+
+  public void setNamespaceService(NamespaceService namespaceService) {
+    this.namespaceService = namespaceService;
   }
 
   @Override
@@ -88,6 +96,9 @@ public class CircabcDynamicAuthorityServiceImpl
     String userName,
     CircabcServiceType serviceType
   ) {
+    if (circabcDAO.isCategoryAdmin(group.toString(), userName)) {
+      return true;
+    }
     List<CircabcPermission> permissions = circabcDAO.getGroupPermission(
       group.toString(),
       userName
@@ -100,9 +111,11 @@ public class CircabcDynamicAuthorityServiceImpl
       ) {
         return true;
       }
+      // check for Newsgroup admin and NewsGroup moderator
       if (
         serviceType == CircabcServiceType.NEWSGROUP &&
-        permission.getNewsGroupPermission().equals("NwsAdmin")
+        (permission.getNewsGroupPermission().equals("NwsAdmin") ||
+          permission.getNewsGroupPermission().equals("NwsModerate"))
       ) {
         return true;
       }
@@ -118,14 +131,35 @@ public class CircabcDynamicAuthorityServiceImpl
   }
 
   @Override
+  public boolean isCategoryAdmin(NodeRef group, String userName) {
+    return circabcDAO.isCategoryAdmin(group.toString(), userName);
+  }
+
+  @Override
   public boolean isCircabcNode(NodeRef nodeRef) {
     return AuthenticationUtil.runAs(
       new RunAsWork<Boolean>() {
         public Boolean doWork() throws Exception {
-          return nodeService.hasAspect(
-            nodeRef,
-            CircabcModel.ASPECT_CIRCABC_MANAGEMENT
-          );
+          // First, keep existing aspect check
+          if (
+            nodeService.hasAspect(
+              nodeRef,
+              CircabcModel.ASPECT_CIRCABC_MANAGEMENT
+            )
+          ) {
+            return true;
+          }
+          // Fallback: check if node is under /app:company_home/cm:CircaBC
+          try {
+            Path path = nodeService.getPath(nodeRef);
+            String prefixPath = path.toPrefixString(namespaceService);
+            return (
+              prefixPath != null &&
+              prefixPath.startsWith("/app:company_home/cm:CircaBC")
+            );
+          } catch (Exception e) {
+            return false;
+          }
         }
       },
       AuthenticationUtil.getSystemUserName()

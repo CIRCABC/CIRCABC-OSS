@@ -100,7 +100,8 @@ export class AddSpaceComponent implements OnInit, OnDestroy {
         1,
         'modified_DESC',
         false,
-        false
+        false,
+        true
       )
     );
 

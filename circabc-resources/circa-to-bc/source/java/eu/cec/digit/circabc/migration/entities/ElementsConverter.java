@@ -194,7 +194,7 @@ public abstract class ElementsConverter
 			labels = new MLText(propertyDefinition.getValue());
 		}
 
-		if(DynamicPropertyType.SELECTION.equals(type) && propertyDefinition.getSelectionCases() != null)
+		if((DynamicPropertyType.SELECTION.equals(type) || DynamicPropertyType.MULTI_SELECTION.equals(type)) && propertyDefinition.getSelectionCases() != null)
 		{
 			final StringBuffer buff = new StringBuffer("");
 			for(final String select : propertyDefinition.getSelectionCases())

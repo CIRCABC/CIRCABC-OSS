@@ -9,6 +9,7 @@
 package eu.cec.digit.circabc.migration.entities.generated.user;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -99,7 +100,8 @@ import eu.cec.digit.circabc.migration.entities.generated.properties.ExtendedProp
     "contentLanguageFilter",
     "interfaceLanguage",
     "globalNotification",
-    "personalInformation"
+    "personalInformation",
+    "favourites"
 })
 @XmlRootElement(name = "person")
 public class Person
@@ -156,6 +158,8 @@ public class Person
     @XmlElement(type = String.class, defaultValue = "false")
     @XmlJavaTypeAdapter(PersonalInformationPropertyAdapter.class)
     protected PersonalInformationProperty personalInformation;
+    @XmlElement(name = "favourite")
+    protected List<String> favourites;
 
     /**
      * Default no-arg constructor
@@ -571,6 +575,34 @@ public class Person
      */
     public void setPersonalInformation(PersonalInformationProperty value) {
         this.personalInformation = value;
+    }
+
+    /**
+     * Gets the value of the favourites property.
+     *
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     *
+     * @return
+     *     list of favourite node references
+     */
+    public List<String> getFavourites() {
+        if (favourites == null) {
+            favourites = new ArrayList<String>();
+        }
+        return this.favourites;
+    }
+
+    /**
+     * Sets the value of the favourites property.
+     *
+     * @param favourites
+     *     list of favourite node references
+     */
+    public void setFavourites(List<String> favourites) {
+        this.favourites = favourites;
     }
 
     public Person withUserId(UserIdProperty value) {

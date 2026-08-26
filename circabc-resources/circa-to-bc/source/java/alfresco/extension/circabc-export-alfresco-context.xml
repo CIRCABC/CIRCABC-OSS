@@ -1,0 +1,157 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+    <bean id="circabc-export-alfresco-properties"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="ignoreUnresolvablePlaceholders"><value>true</value></property>
+        <property name="properties">
+            <props>
+                <!-- Default: empty means relative URLs. Override in alfresco-global.properties -->
+                <prop key="circabc.export.alfresco.base.url"></prop>
+            </props>
+        </property>
+    </bean>
+
+    <!-- ============================================================== -->
+    <!-- CIRCABC Export: Alfresco-native readers for exporting CIRCABC   -->
+    <!-- Interest Groups from the local Alfresco repository.            -->
+    <!-- ============================================================== -->
+
+    <!-- Alfresco-native file reader (library) -->
+    <bean id="migration.alfrescoLibFileReader" class="eu.cec.digit.circabc.migration.reader.impl.alfresco.AlfrescoFileReader">
+        <property name="nodeService"><ref bean="NodeService" /></property>
+        <property name="versionService"><ref bean="versionService" /></property>
+        <property name="multilingualContentService"><ref bean="multilingualContentService" /></property>
+        <property name="managementService"><ref bean="managementService" /></property>
+        <property name="alfrescoBaseUrl"><value>${circabc.export.alfresco.base.url}</value></property>
+    </bean>
+
+    <!-- Alfresco-native file reader (information) - same impl -->
+    <bean id="migration.alfrescoInfFileReader" parent="migration.alfrescoLibFileReader" />
+
+    <!-- Alfresco-native security reader -->
+    <bean id="migration.alfrescoSecurityReader" class="eu.cec.digit.circabc.migration.reader.impl.alfresco.AlfrescoSecurityReader">
+        <property name="nodeService"><ref bean="NodeService" /></property>
+        <property name="permissionService"><ref bean="permissionService" /></property>
+        <property name="profileManagerServiceFactory"><ref bean="profileManagerServiceFactory" /></property>
+        <property name="managementService"><ref bean="managementService" /></property>
+        <property name="notificationSubscriptionService"><ref bean="notificationSubscriptionService" /></property>
+    </bean>
+
+    <!-- Alfresco-native metadata reader -->
+    <bean id="migration.alfrescoMetadataReader" class="eu.cec.digit.circabc.migration.reader.impl.alfresco.AlfrescoMetadataReader">
+        <property name="nodeService"><ref bean="NodeService" /></property>
+        <property name="contentService"><ref bean="ContentService" /></property>
+        <property name="keywordsService"><ref bean="keywordsService" /></property>
+        <property name="dynamicPropertyService"><ref bean="dynamicPropertiesService" /></property>
+        <property name="multilingualContentService"><ref bean="multilingualContentService" /></property>
+        <property name="alfrescoBaseUrl"><value>${circabc.export.alfresco.base.url}</value></property>
+    </bean>
+
+    <!-- Alfresco-native user reader -->
+    <bean id="migration.alfrescoUserReader" class="eu.cec.digit.circabc.migration.reader.impl.alfresco.AlfrescoUserReader">
+        <property name="nodeService"><ref bean="NodeService" /></property>
+        <property name="personService"><ref bean="personService" /></property>
+        <property name="profileManagerServiceFactory"><ref bean="profileManagerServiceFactory" /></property>
+    </bean>
+
+    <!-- Alfresco-native calendar reader -->
+    <bean id="migration.alfrescoCalendarReader" class="eu.cec.digit.circabc.migration.reader.impl.alfresco.AlfrescoCalendarReader">
+        <property name="nodeService"><ref bean="NodeService" /></property>
+    </bean>
+
+    <!-- Alfresco-native newsgroup reader -->
+    <bean id="migration.alfrescoNewsgroupReader" class="eu.cec.digit.circabc.migration.reader.impl.alfresco.AlfrescoNewsgroupReader">
+        <property name="nodeService"><ref bean="NodeService" /></property>
+    </bean>
+
+    <!-- Alfresco-native log file reader -->
+    <bean id="migration.alfrescoLogFileReader" class="eu.cec.digit.circabc.migration.reader.impl.alfresco.AlfrescoLogFileReader" />
+
+    <!-- ============================================================== -->
+    <!-- CIRCABC Export REST API Webscript                               -->
+    <!-- ============================================================== -->
+
+    <bean id="webscript.eu.cec.digit.circabc.circabc.export.post"
+          class="eu.cec.digit.circabc.repo.web.scripts.bean.CircabcExportPost"
+          parent="webscript">
+        <property name="circabcExportService"><ref bean="CircabcExportService" /></property>
+    </bean>
+
+    <!-- ============================================================== -->
+    <!-- CIRCABC Export Service: reuses ExportServiceImpl with           -->
+    <!-- Alfresco-native readers instead of Circa FTP/NNTP/LDAP readers -->
+    <!-- ============================================================== -->
+
+    <bean id="circabcExportService" class="eu.cec.digit.circabc.repo.migration.ExportServiceImpl">
+        <property name="transactionService"><ref bean="transactionService" /></property>
+        <property name="taskExecutor"><ref bean="exportationTaskExecutor" /></property>
+        <property name="serviceRegistry"><ref bean="circabcServiceRegistry" /></property>
+        <property name="libFileReader"><ref bean="migration.alfrescoLibFileReader" /></property>
+        <property name="infFileReader"><ref bean="migration.alfrescoInfFileReader" /></property>
+        <property name="securityReader"><ref bean="migration.alfrescoSecurityReader" /></property>
+        <property name="metadataReader"><ref bean="migration.alfrescoMetadataReader" /></property>
+        <property name="userReader"><ref bean="migration.alfrescoUserReader" /></property>
+        <property name="calendarReader"><ref bean="migration.alfrescoCalendarReader" /></property>
+        <property name="newsgroupReader"><ref bean="migration.alfrescoNewsgroupReader" /></property>
+        <property name="logFileReader"><ref bean="migration.alfrescoLogFileReader" /></property>
+        <property name="fileArchiver"><ref bean="migration.fileArchiver" /></property>
+        <property name="implementationName"><value>CIRCABC Export</value></property>
+        <property name="multilingualContentService"><ref bean="multilingualContentService" /></property>
+        <property name="nodeService"><ref bean="NodeService" /></property>
+    </bean>
+
+    <!-- Proxied CIRCABC Export Service -->
+    <bean id="CircabcExportService" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="proxyInterfaces">
+            <value>eu.cec.digit.circabc.service.migration.ExportService</value>
+        </property>
+        <property name="target"><ref bean="circabcExportService" /></property>
+        <property name="interceptorNames">
+            <list>
+                <idref local="CircabcExportService_transaction" />
+                <idref bean="AuditMethodInterceptor" />
+                <idref local="CircabcExportService_security" />
+            </list>
+        </property>
+    </bean>
+
+    <bean id="CircabcExportService_transaction" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+        <property name="transactionManager"><ref bean="transactionManager" /></property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="CircabcExportService_security" class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor">
+        <property name="authenticationManager"><ref bean="authenticationManager" /></property>
+        <property name="accessDecisionManager"><ref bean="accessDecisionManager" /></property>
+        <property name="afterInvocationManager"><ref bean="afterInvocationManager" /></property>
+        <property name="objectDefinitionSource">
+            <value>
+                eu.cec.digit.circabc.service.migration.ExportService.getCategoryNames=ACL_METHOD.ROLE_ADMINISTRATOR
+                eu.cec.digit.circabc.service.migration.ExportService.getInterestGroups=ACL_METHOD.ROLE_ADMINISTRATOR
+                eu.cec.digit.circabc.service.migration.ExportService.runExport=ACL_METHOD.ROLE_ADMINISTRATOR
+                eu.cec.digit.circabc.service.migration.ExportService.asynchRunExport=ACL_METHOD.ROLE_ADMINISTRATOR
+                eu.cec.digit.circabc.service.migration.ExportService.getInterestGroupDepedencies=ACL_METHOD.ROLE_ADMINISTRATOR
+                eu.cec.digit.circabc.service.migration.ExportService.getRunningIterations=ACL_METHOD.ROLE_ADMINISTRATOR
+                eu.cec.digit.circabc.service.migration.ExportService.getRunningIterationsJournal=ACL_METHOD.ROLE_ADMINISTRATOR
+                eu.cec.digit.circabc.service.migration.ExportService.getImplementationName=ACL_METHOD.ROLE_ADMINISTRATOR
+            </value>
+        </property>
+    </bean>
+
+    <!-- ============================================================== -->
+    <!-- Pass-through ETL REST API Webscript                            -->
+    <!-- ============================================================== -->
+
+    <bean id="webscript.eu.cec.digit.circabc.circabc.etl.passthrough.post"
+          class="eu.cec.digit.circabc.repo.web.scripts.bean.CircabcPassThroughEtlPost"
+          parent="webscript">
+        <property name="etlService"><ref bean="MigrationEtlService" /></property>
+    </bean>
+
+</beans>

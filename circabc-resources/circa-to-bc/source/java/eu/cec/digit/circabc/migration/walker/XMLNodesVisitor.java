@@ -18,6 +18,7 @@ import eu.cec.digit.circabc.migration.entities.generated.nodes.Events;
 import eu.cec.digit.circabc.migration.entities.generated.nodes.Forum;
 import eu.cec.digit.circabc.migration.entities.generated.nodes.InfContent;
 import eu.cec.digit.circabc.migration.entities.generated.nodes.InfMLContent;
+import eu.cec.digit.circabc.migration.entities.generated.nodes.InfNews;
 import eu.cec.digit.circabc.migration.entities.generated.nodes.InfSpace;
 import eu.cec.digit.circabc.migration.entities.generated.nodes.Information;
 import eu.cec.digit.circabc.migration.entities.generated.nodes.InformationContentVersion;
@@ -235,6 +236,13 @@ public interface XMLNodesVisitor
 	 * @param space the node to visit
 	 */
 	public void visit(InfSpace space) throws Exception;
+
+	/**
+	 * visit a news node in information service
+	 *
+	 * @param infNews the node to visit
+	 */
+	public void visit(InfNews infNews) throws Exception;
 
 	/**
 	 * visit an url

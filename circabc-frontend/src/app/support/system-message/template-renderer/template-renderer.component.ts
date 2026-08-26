@@ -36,12 +36,4 @@ export class TemplateRendererComponent {
       this.delete.emit();
     }
   }
-
-  public async useAsOldMessage() {
-    try {
-      await firstValueFrom(this.appMessageService.setOldMessage(this.template));
-    } catch (error) {
-      console.error(error);
-    }
-  }
 }

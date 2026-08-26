@@ -71,6 +71,8 @@ public class NodesContentUploadPost extends CircabcDeclarativeWebScript {
     try {
       String id = templateVars.get("id");
 
+      checkGroupReadOnlyMode(id);
+
       if (
         !this.currentUserPermissionCheckerService.verifyMemberPermission(
             id,
@@ -226,6 +228,14 @@ public class NodesContentUploadPost extends CircabcDeclarativeWebScript {
       );
 
       model.put("nodeRef", fileRef.getId());
+    } catch (ReadOnlyAccessException roae) {
+      status.setCode(HttpServletResponse.SC_FORBIDDEN);
+      status.setMessage(roae.getMessage());
+      status.setRedirect(true);
+      if (logger.isWarnEnabled()) {
+        logger.warn("Read-only mode blocked upload", roae);
+      }
+      return null;
     } catch (AccessDeniedException e) {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied for guest");

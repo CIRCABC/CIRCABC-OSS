@@ -1,3 +1,4 @@
+@if (shouldDisplay()) {
 <section
   class="box box--message ui-message-show"
   style="width: 100%"
@@ -51,7 +52,15 @@
         >{{ 'error.ui.additional.message.bug.found.contact' | transloco }}</a
       >
     </p>
+    } @if (showCheckbox) {
+    <div class="box--message--suppression">
+      <label>
+        <input type="checkbox" [(ngModel)]="doNotShowAgain" />
+        {{ 'message.do_not_show_again' | transloco }}
+      </label>
+    </div>
     }
   </div>
   <br style="clear: both" />
 </section>
+}

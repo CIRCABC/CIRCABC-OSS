@@ -34,9 +34,24 @@
         class="separator"
         alt="Arrow Right"
       />
-      }
+      } @if (subcategory) {
+      <a [routerLink]="['/help/category', category.id]">
+        {{ category.title | cbcI18n }}
+      </a>
+      } @else {
       <a [routerLink]="['../..']"> {{ category.title | cbcI18n }} </a>
-      @if (article) {
+      } @if (subcategory) {
+      <img
+        src="img/small-arrow-right.png"
+        class="separator"
+        alt="Arrow Right"
+      />
+      <a
+        [routerLink]="['/help/category', category.id, 'subcategory', subcategory.id]"
+      >
+        {{ subcategory.title | cbcI18n }}
+      </a>
+      } @if (article) {
       <img
         src="img/small-arrow-right.png"
         class="separator"
@@ -71,6 +86,11 @@
       <cbc-article-list-select
         [currentId]="article.id"
         [articles]="articles"
+        [isAdminOrSupport]="isAdminOrSupport()"
+        (articleDropped)="onArticleDrop($event)"
+        (addArticleClicked)="onAddArticle()"
+        (editArticleClicked)="onEditArticle($event)"
+        (deleteArticleClicked)="onDeleteArticle($event)"
       ></cbc-article-list-select>
     </aside>
     } @if (article) {
@@ -100,14 +120,25 @@
 
 @if (article) {
 <cbc-delete-help-article
-  [articleId]="article.id"
+  [articleId]="selectedArticleId || article.id"
   [(showModal)]="showDeleteModal"
-  (articleDeleted)="redirectAfterDeletion($event)"
+  (articleDeleted)="onArticleDeleted($event)"
 />
-} @if (article) {
+}
+
+<!-- Edit modal for existing article -->
+@if (article) {
 <cbc-add-help-article
   [articleId]="article.id"
   [(showModal)]="showEditModal"
-  (articleUpdated)="refresh($event)"
+  (articleUpdated)="onArticleUpdated($event)"
 />
 }
+
+<!-- Create modal for new article -->
+<cbc-add-help-article
+  [categoryId]="category.id"
+  [subcategoryId]="subcategory?.id"
+  [(showModal)]="showCreateModal"
+  (articleCreated)="onArticleCreated($event)"
+/>

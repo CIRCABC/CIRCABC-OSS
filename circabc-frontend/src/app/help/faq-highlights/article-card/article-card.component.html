@@ -1,7 +1,6 @@
 <div class="article-card">
   <h3>
-    <a
-      [routerLink]="['/help/category', article().parentId, 'article', article().id]"
+    <a href="#" (click)="onArticleClick($event)"
       >{{ article().title | cbcI18n }}</a
     >
   </h3>

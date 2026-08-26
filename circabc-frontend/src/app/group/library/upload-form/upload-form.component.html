@@ -93,7 +93,13 @@
 <div class="upload-actions">
   <div class="buttons-group">
     @if (!uploading && !uploadFinished && filesToUpload.length > 0) {
-    <a tabindex="0" data-cy="upload" class="cta" (click)="uploadFiles()">
+    <a
+      tabindex="0"
+      data-cy="upload"
+      class="cta"
+      (click)="uploadFiles()"
+      [class.disabled]="anyInvalidName()"
+    >
       {{ 'label.upload' | transloco }}</a
     >
     } @if (!uploading && !uploadFinished) {

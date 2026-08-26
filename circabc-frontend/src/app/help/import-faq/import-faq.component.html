@@ -1,0 +1,71 @@
+<div class="import-faq-container">
+  <input
+    #fileInput
+    type="file"
+    accept=".json"
+    (change)="onFileSelected($event)"
+    style="display: none"
+  />
+
+  <button
+    type="button"
+    class="cta"
+    (click)="fileInput.click()"
+    [disabled]="isImporting()"
+  >
+    @if (isImporting()) {
+    <span
+      class="spinner-border spinner-border-sm me-2"
+      role="status"
+      aria-hidden="true"
+    ></span>
+    {{ 'help.import.importing' | transloco }} } @else { {{ 'help.import.button'
+    | transloco }} }
+  </button>
+</div>
+
+<!-- Error Dialog -->
+<cbc-modal
+  [(visible)]="showErrorDialog"
+  [title]="'help.import.error.title' | transloco"
+  [okLabel]="'help.import.error.ok' | transloco"
+  [displayCloseButton]="false"
+  (ok)="closeErrorDialog()"
+>
+  <div class="alert alert-danger" role="alert">
+    <strong>{{ errorMessage() }}</strong>
+    @if (validationErrors().length > 0) {
+    <ul class="mt-2 mb-0">
+      @for (error of validationErrors(); track error) {
+      <li>{{ error }}</li>
+      }
+    </ul>
+    }
+  </div>
+</cbc-modal>
+
+<!-- Success Dialog -->
+<cbc-modal
+  [(visible)]="showSuccessDialog"
+  [title]="'help.import.success.title' | transloco"
+  [okLabel]="'label.ok' | transloco"
+  [displayCloseButton]="false"
+  (ok)="closeSuccessDialog()"
+>
+  <div class="alert alert-success" role="alert"> {{ successMessage() }} </div>
+</cbc-modal>
+
+<!-- Confirmation Dialog -->
+<cbc-modal
+  [(visible)]="showConfirmDialog"
+  [title]="'help.import.confirm.title' | transloco"
+  [okLabel]="'help.import.confirm.ok' | transloco"
+  [cancelLabel]="'help.import.confirm.cancel' | transloco"
+  (ok)="confirmImport()"
+  (cancelModal)="cancelImport()"
+>
+  <div class="alert alert-warning" role="alert">
+    <strong>{{ 'help.import.confirm.warning' | transloco }}</strong>
+  </div>
+  <p>{{ 'help.import.confirm.message' | transloco }}</p>
+</cbc-modal>

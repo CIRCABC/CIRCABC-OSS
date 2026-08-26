@@ -48,6 +48,9 @@ import org.alfresco.model.ContentModel;
 import org.alfresco.model.ForumModel;
 import org.alfresco.model.RenditionModel;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
+import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
+import org.alfresco.repo.transaction.RetryingTransactionHelper.RetryingTransactionCallback;
+import org.alfresco.repo.transaction.TransactionListenerAdapter;
 import org.alfresco.service.Auditable;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.MLText;
@@ -57,6 +60,7 @@ import org.alfresco.service.cmr.repository.Path;
 import org.alfresco.service.cmr.security.AuthenticationService;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.QName;
+import org.alfresco.service.transaction.TransactionService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.mail.MailSendException;
@@ -96,6 +100,8 @@ public class NotificationServiceImpl implements NotificationService {
   private LogService logService;
 
   private PersonService personService;
+
+  private TransactionService transactionService;
 
   /*
    * (non-Javadoc)
@@ -1046,36 +1052,113 @@ public class NotificationServiceImpl implements NotificationService {
     this.personService = personService;
   }
 
-  @Override
-  public void notifyNewFiles(
-    NodeRef parentRef,
-    List<NodeRef> nodeRefs,
-    Set<NotifiableUser> notifiableUsers,
-    MailTemplate notifyDocBulk
+  public TransactionService getTransactionService() {
+    return transactionService;
+  }
+
+  public void setTransactionService(TransactionService transactionService) {
+    this.transactionService = transactionService;
+  }
+
+  private void notifyNewFiles(
+    final NodeRef parentRef,
+    final List<NodeRef> nodeRefs,
+    final Set<NotifiableUser> notifiableUsers,
+    final MailTemplate notifyDocBulk
   ) {
-    String igTitle = null;
-    if (igTitle == null) {
-      igTitle = getCurrentIgTitle(parentRef);
+    dispatchBulkNotification(
+      buildBulkNotification(
+        parentRef,
+        nodeRefs,
+        notifiableUsers,
+        notifyDocBulk
+      ),
+      "Library"
+    );
+  }
+
+  @Override
+  public void notifyDeletedFilesAfterCommit(
+    final NodeRef parentRef,
+    final List<NodeRef> nodeRefs,
+    final Set<NotifiableUser> notifiableUsers,
+    final MailTemplate notifyDocBulk
+  ) {
+    // Build the mails and capture the audit data NOW, while the nodes still
+    // exist (they will be gone once the transaction commits).
+    final BulkNotificationData prepared = buildBulkNotification(
+      parentRef,
+      nodeRefs,
+      notifiableUsers,
+      notifyDocBulk
+    );
+
+    // No active transaction: nothing to defer, send right away.
+    if (AlfrescoTransactionSupport.getTransactionId() == null) {
+      dispatchBulkNotification(prepared, "Library");
+      return;
     }
-    MailWrapper mail = getMailPreferencesService()
+
+    // Defer only the SMTP send + audit logging until the transaction commits.
+    final String currentUser = AuthenticationUtil.getFullyAuthenticatedUser();
+    AlfrescoTransactionSupport.bindListener(
+      new TransactionListenerAdapter() {
+        @Override
+        public void afterCommit() {
+          AuthenticationUtil.runAs(
+            (AuthenticationUtil.RunAsWork<Void>) () -> {
+              transactionService
+                .getRetryingTransactionHelper()
+                .doInTransaction(
+                  (RetryingTransactionCallback<Void>) () -> {
+                    dispatchBulkNotification(prepared, "Library");
+                    return null;
+                  },
+                  false,
+                  true
+                );
+              return null;
+            },
+            currentUser
+          );
+        }
+      }
+    );
+  }
+
+  /**
+   * Renders the mails and captures the audit data for a bulk notification.
+   *
+   * <p>Everything that requires reading the (possibly soon-to-be-deleted) nodes
+   * happens here, so the result can be sent safely after the nodes are gone.
+   */
+  private BulkNotificationData buildBulkNotification(
+    final NodeRef parentRef,
+    final List<NodeRef> nodeRefs,
+    final Set<NotifiableUser> notifiableUsers,
+    final MailTemplate notifyDocBulk
+  ) {
+    final String igTitle = getCurrentIgTitle(parentRef);
+    final MailWrapper mail = getMailPreferencesService()
       .getDefaultMailTemplate(parentRef, notifyDocBulk);
+    final List<TemplatableNode> nodes = convertToTemplateNodes(
+      nodeRefs,
+      parentRef
+    );
 
-    List<TemplatableNode> nodes = convertToTemplateNodes(nodeRefs, parentRef);
-
-    // iterate users and send them emails
+    final List<PreparedMail> mails = new ArrayList<>(notifiableUsers.size());
     for (final NotifiableUser user : notifiableUsers) {
-      String email = user.getEmailAddress();
-      Locale userLocale = user.getNotificationLanguage() != null
+      final String email = user.getEmailAddress();
+      final Locale userLocale = user.getNotificationLanguage() != null
         ? user.getNotificationLanguage()
         : DEFAULT_MAIL_LOCALE;
 
-      Map<String, Object> model = getMailPreferencesService()
+      final Map<String, Object> model = getMailPreferencesService()
         .buildDefaultModel(parentRef, user.getPerson(), null);
-      boolean connectFailed = false;
       model.put("parent", parentRef);
       model.put("nodes", nodes);
 
-      String subject;
+      final String subject;
       if (nodes.size() == 1) {
         TemplatableNode firstNode = nodes.get(0);
         String title = firstNode.getTitle() == null
@@ -1094,23 +1177,67 @@ public class NotificationServiceImpl implements NotificationService {
         subject = mail.getSubject(model, userLocale) + " [ " + igTitle + " ]";
       }
 
+      final String body = mail.getBody(model, userLocale);
+      mails.add(new PreparedMail(email, user.getUserName(), subject, body));
+    }
+
+    // Capture the audit data while parentRef still exists.
+    final String bestTitle = getBestTitle(parentRef);
+    final Long dbId = (Long) getNodeService()
+      .getProperty(parentRef, ContentModel.PROP_NODE_DBID);
+    Long igId = null;
+    String igName = null;
+    final NodeRef igNodeRef = getManagementService()
+      .getCurrentInterestGroup(parentRef);
+    if (igNodeRef != null) {
+      igId = (Long) getNodeService()
+        .getProperty(igNodeRef, ContentModel.PROP_NODE_DBID);
+      igName = (String) getNodeService()
+        .getProperty(igNodeRef, ContentModel.PROP_NAME);
+    }
+    final Path path = getNodeService().getPath(parentRef);
+    String displayPath = PathUtils.getCircabcPath(path, true);
+    displayPath = displayPath.endsWith("contains")
+      ? displayPath.substring(0, displayPath.length() - "contains".length())
+      : displayPath;
+
+    return new BulkNotificationData(
+      mails,
+      bestTitle,
+      dbId,
+      igId,
+      igName,
+      displayPath
+    );
+  }
+
+  /**
+   * Sends the prepared mails and writes the audit log. Reads only the CIRCABC
+   * root (for the logos) and uses the pre-captured audit data, so it is safe to
+   * run after the affected nodes have been deleted.
+   */
+  private void dispatchBulkNotification(
+    final BulkNotificationData data,
+    final String service
+  ) {
+    for (final PreparedMail pm : data.mails) {
+      boolean connectFailed = false;
       boolean result = false;
-      if (email != null) {
+      if (pm.email != null) {
         try {
           result = getMailService()
             .send(
               getMailFrom(),
-              email,
+              pm.email,
               null,
-              subject,
-              mail.getBody(model, userLocale),
+              pm.subject,
+              pm.body,
               true,
               false
             );
         } catch (final MailSendException mse) {
           if (!connectFailed) {
-            // Don't want to log all errors for the same kind of
-            // exception
+            // Don't want to log all errors for the same kind of exception
             connectFailed = true;
             if (logger.isErrorEnabled()) {
               logger.error("Could not connect to Mail Server:", mse);
@@ -1118,15 +1245,140 @@ public class NotificationServiceImpl implements NotificationService {
           }
         } catch (final Exception e) {
           if (logger.isWarnEnabled()) {
-            logger.warn("Could not send notification to user:" + user, e);
+            logger.warn(
+              "Could not send notification to user:" + pm.userName,
+              e
+            );
           }
         }
       }
-      String to = (email == null ? user.getUserName() : email);
+      String to = (pm.email == null ? pm.userName : pm.email);
       to = (to == null ? "email and user name are null!" : to);
 
-      LogNotification(parentRef, to, "Library", result, false);
+      logPreparedNotification(data, to, service, result);
     }
+  }
+
+  /**
+   * Writes a notification audit record from pre-captured data (no node read),
+   * mirroring the non-admin branch of {@link #LogNotification}.
+   */
+  private void logPreparedNotification(
+    final BulkNotificationData data,
+    final String to,
+    final String service,
+    final boolean ok
+  ) {
+    LogRecord logRecord = new LogRecord();
+    logRecord.setActivity("Send Notification");
+    logRecord.setService(service);
+    logRecord.setInfo("Node: " + data.bestTitle + "; To: " + to);
+    logRecord.setOK(ok);
+    logRecord.setDocumentID(data.dbId);
+    if (data.igId != null) {
+      logRecord.setIgID(data.igId);
+      logRecord.setIgName(data.igName);
+    }
+    logRecord.setUser(AuthenticationUtil.getFullyAuthenticatedUser());
+    logRecord.setPath(data.displayPath);
+    getLogService().log(logRecord);
+  }
+
+  /** A fully rendered mail, ready to be sent without any further node access. */
+  private static final class PreparedMail {
+
+    private final String email;
+    private final String userName;
+    private final String subject;
+    private final String body;
+
+    private PreparedMail(
+      final String email,
+      final String userName,
+      final String subject,
+      final String body
+    ) {
+      this.email = email;
+      this.userName = userName;
+      this.subject = subject;
+      this.body = body;
+    }
+  }
+
+  /** Rendered mails plus the audit data captured while the nodes still exist. */
+  private static final class BulkNotificationData {
+
+    private final List<PreparedMail> mails;
+    private final String bestTitle;
+    private final Long dbId;
+    private final Long igId;
+    private final String igName;
+    private final String displayPath;
+
+    private BulkNotificationData(
+      final List<PreparedMail> mails,
+      final String bestTitle,
+      final Long dbId,
+      final Long igId,
+      final String igName,
+      final String displayPath
+    ) {
+      this.mails = mails;
+      this.bestTitle = bestTitle;
+      this.dbId = dbId;
+      this.igId = igId;
+      this.igName = igName;
+      this.displayPath = displayPath;
+    }
+  }
+
+  @Override
+  public void notifyNewFilesAfterCommit(
+    final NodeRef parentRef,
+    final List<NodeRef> nodeRefs,
+    final Set<NotifiableUser> notifiableUsers,
+    final MailTemplate notifyDocBulk
+  ) {
+    // No active transaction: nothing to defer, send right away.
+    if (AlfrescoTransactionSupport.getTransactionId() == null) {
+      notifyNewFiles(parentRef, nodeRefs, notifiableUsers, notifyDocBulk);
+      return;
+    }
+
+    // Capture the caller so the deferred send keeps the same security context.
+    final String currentUser = AuthenticationUtil.getFullyAuthenticatedUser();
+
+    // Defer the actual sending until the enclosing transaction commits. On a
+    // transaction retry the failed attempt's listener is discarded (it never
+    // commits) and a new one is bound, so the mails are sent exactly once.
+    AlfrescoTransactionSupport.bindListener(
+      new TransactionListenerAdapter() {
+        @Override
+        public void afterCommit() {
+          AuthenticationUtil.runAs(
+            (AuthenticationUtil.RunAsWork<Void>) () -> {
+              transactionService
+                .getRetryingTransactionHelper()
+                .doInTransaction(
+                  (RetryingTransactionCallback<Void>) () -> {
+                    notifyNewFiles(
+                      parentRef,
+                      nodeRefs,
+                      notifiableUsers,
+                      notifyDocBulk
+                    );
+                    return null;
+                  },
+                  false,
+                  true
+                );
+              return null;
+            },
+            currentUser
+          );
+        }
+      }
+    );
   }
 
   @Override

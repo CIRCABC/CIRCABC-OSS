@@ -128,6 +128,24 @@ public interface CircabcModel extends BaseCircabcModel {
   );
 
   /**
+   * Migrated Node Aspect name. Applied to nodes created by the migration/import
+   * process to keep a reference to the original (source) node.
+   */
+  QName ASPECT_MIGRATED = QName.createQName(
+    CircabcModel.CIRCABC_CONTENT_MODEL_1_0_URI,
+    "migrated"
+  );
+
+  /**
+   * Original node reference property of the {@link #ASPECT_MIGRATED} aspect.
+   * Holds the NodeRef of the node in the source system the node was migrated from.
+   */
+  QName PROP_ORIGINAL_NODE_REF = QName.createQName(
+    CircabcModel.CIRCABC_CONTENT_MODEL_1_0_URI,
+    "originalNodeRef"
+  );
+
+  /**
    * Event Root Aspect name
    */
   QName ASPECT_EVENT_ROOT = QName.createQName(
@@ -557,6 +575,18 @@ public interface CircabcModel extends BaseCircabcModel {
     CircabcModel.CIRCABC_CONTENT_MODEL_1_0_URI,
     "helpArticleHighlighted"
   );
+  QName ASPECT_HELP_SUBCATEGORY = QName.createQName(
+    CircabcModel.CIRCABC_CONTENT_MODEL_1_0_URI,
+    "helpSubcategory"
+  );
+  QName PROP_HELP_SUBCATEGORY_SORT_ORDER = QName.createQName(
+    CircabcModel.CIRCABC_CONTENT_MODEL_1_0_URI,
+    "subcategorySortOrder"
+  );
+  QName PROP_HELP_CATEGORY_SORT_ORDER = QName.createQName(
+    CircabcModel.CIRCABC_CONTENT_MODEL_1_0_URI,
+    "categorySortOrder"
+  );
   QName ASPECT_HELP_LINK = QName.createQName(
     CircabcModel.CIRCABC_CONTENT_MODEL_1_0_URI,
     "helpLink"
@@ -564,6 +594,10 @@ public interface CircabcModel extends BaseCircabcModel {
   QName PROP_HELP_LINK_HREF = QName.createQName(
     CircabcModel.CIRCABC_CONTENT_MODEL_1_0_URI,
     "href"
+  );
+  QName PROP_HELP_ARTICLE_SORT_ORDER = QName.createQName(
+    CircabcModel.CIRCABC_CONTENT_MODEL_1_0_URI,
+    "sortOrder"
   );
 
   QName PROP_DISPLAY_OLD_APP_MESSAGE = QName.createQName(

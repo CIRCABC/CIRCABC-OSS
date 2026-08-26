@@ -112,6 +112,7 @@
               [orientationRight]="false"
               [enableDirectDownload]="isFile() && !isLink()"
               [securityRanking]="node.properties!.security_ranking"
+              [isPreviewable]="isPreviewable()"
             >
             </cbc-share>
 
@@ -648,8 +649,8 @@
               >
             </li>
             } @if ( isFile() && !isMultiLingual() && !isLink() &&
-            !isLibraryLink(node) | cbcIfRoleGE: [node, 'LibEditOnly',
-            ['LibManageOwn']] ) {
+            !isLibraryLink(node) && isLastVersionOfContent() | cbcIfRoleGE:
+            [node, 'LibEditOnly', ['LibManageOwn']] ) {
             <li>
               <a
                 tabindex="0"
@@ -664,15 +665,17 @@
                 >{{ 'label.take.ownership' | transloco }}</a
               >
             </li>
-            } @if ( isFile() && !isLink() && !isLibraryLink(node) | cbcIfRoleGE:
-            [node, 'LibEditOnly', ['LibManageOwn']] ) {
+            } @if ( isFile() && !isLink() && !isLibraryLink(node) &&
+            isLastVersionOfContent() | cbcIfRoleGE: [node, 'LibEditOnly',
+            ['LibManageOwn']] ) {
             <li>
               <a class="checkout" [routerLink]="['.']" (click)="checkout()"
                 >{{ 'label.checkout' | transloco }}</a
               >
             </li>
-            } @if ( isFile() && !isLink() && !isLibraryLink(node) | cbcIfRoleGE:
-            [node, 'LibEditOnly', ['LibManageOwn']] ) {
+            } @if ( isFile() && !isLink() && !isLibraryLink(node) &&
+            isLastVersionOfContent() | cbcIfRoleGE: [node, 'LibEditOnly',
+            ['LibManageOwn']] ) {
             <li>
               <a class="auto-upload" [routerLink]="['..', 'auto-upload']"
                 >{{ 'label.configure.auto.upload' | transloco }}</a
@@ -690,14 +693,13 @@
                 >{{ 'label.history' | transloco }}</a
               >
             </li>
-            @if (isPreviewable()) {
+            @if (isPreviewable() && isLastVersionOfContent()) {
             <li>
               <a tabindex="0" class="content-preview" (click)="previewContent()"
                 >{{ 'label.preview' | transloco }}</a
               >
             </li>
-            }
-
+            } @if (isLastVersionOfContent()) {
             <li
               *cbcIfRoles="[
                 node,
@@ -711,6 +713,7 @@
               >
               </cbc-delete-action>
             </li>
+            }
           </ul>
           } @if (canSendToAresBridge()) {
           <mat-divider></mat-divider>

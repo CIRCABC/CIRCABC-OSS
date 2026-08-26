@@ -1,0 +1,11 @@
+<webscript>
+  <shortname>Sync CIRCABC administrators to CBC tables</shortname>
+  <description>
+    Resynchronizes CIRCABC administrators from Alfresco to CBC tables.
+    Restricted to CIRCABC and Alfresco administrators.
+  </description>
+  <url>/circabc/admin/sync/admins</url>
+  <format default="json" />
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

@@ -36,7 +36,7 @@ public class EntityWebServiceLocator
 
   // Use to get a proxy class for EntityService
   private java.lang.String EntityService_address =
-    "";
+    "http://dighbust.cc.cec.eu.int:11031/hermes/Proxy/1.16/EntityWebServicePS";
   // The WSDD service name defaults to the port name.
   private java.lang.String EntityServiceWSDDServiceName = "EntityService";
   private java.util.HashSet ports = null;

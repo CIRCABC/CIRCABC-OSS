@@ -54,6 +54,15 @@ public interface ETLService
 
 
 	/**
+	 * Pass-through ETL: validates the XML schema and stores it as valid.xml
+	 * without user transformation. Use when source and target share the same LDAP.
+	 *
+	 * @param iterationName				The iteration name
+	 * @throws ETLException
+	 */
+	public abstract void passThroughEtl(final String iterationName) throws ETLException;
+
+	/**
 	 * Get the ETL - import history ready for a transformation process.
 	 *
 	 * @param sortAscending					sort the list ascending or not

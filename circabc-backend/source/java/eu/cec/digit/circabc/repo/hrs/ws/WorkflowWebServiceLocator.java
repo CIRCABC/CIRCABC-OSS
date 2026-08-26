@@ -36,7 +36,7 @@ public class WorkflowWebServiceLocator
 
   // Use to get a proxy class for WorkflowService
   private java.lang.String WorkflowService_address =
-    "";
+    "http://dighbust.cc.cec.eu.int:11031/hermes/Proxy/1.16/WorkflowWebServicePS";
   // The WSDD service name defaults to the port name.
   private java.lang.String WorkflowServiceWSDDServiceName = "WorkflowService";
   private java.util.HashSet ports = null;
