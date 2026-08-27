@@ -80,6 +80,18 @@
     </bean>
 
     <!-- ============================================================== -->
+    <!-- Task executor for export operations                            -->
+    <!-- (defined here for OSS standalone; in full circa-to-bc module   -->
+    <!--  this is provided by circabc-exportation-customization-context) -->
+    <!-- ============================================================== -->
+
+    <bean id="exportationTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="2" />
+        <property name="maxPoolSize" value="4" />
+        <property name="queueCapacity" value="25" />
+    </bean>
+
+    <!-- ============================================================== -->
     <!-- CIRCABC Export Service: reuses ExportServiceImpl with           -->
     <!-- Alfresco-native readers instead of Circa FTP/NNTP/LDAP readers -->
     <!-- ============================================================== -->

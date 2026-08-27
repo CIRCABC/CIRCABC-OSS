@@ -6,12 +6,16 @@ This project is a fully open-source release of CIRCABC, based on Alfresco Commun
 
 ### Prerequisites
 
-- Install Java JDK 1.8+
+- Install Java JDK 1.8 (required — newer versions are not supported)
   - Set `JAVA_HOME` variable and add `JAVA_HOME/bin` to your `PATH`
+  - Recommended: [Eclipse Temurin JDK 8](https://adoptium.net/temurin/releases/?version=8)
 
-- Install Maven
+- Install Maven 3.6+
   - Set `M2_HOME` variable and add `M2_HOME/bin` to your `PATH`
-  - Edit `M2_HOME/conf/settings.xml`
+
+- Install Node.js 20.x and npm (used by the frontend Maven build)
+
+- Install Docker and Docker Compose
 
 - Download and add `alfresco.war` to `circabc-resources` folder:  
   - Download Alfresco 4.2.f Community Edition from the Alfresco website:  
@@ -40,12 +44,11 @@ mvn clean
 
 Run the following command to build the entire CIRCABC application (frontend and backend):
 
-
 ```bash
-mvn clean package -Dbackend-target.env=tomcat-docker -Dfrontend-target.env=docker
+mvn clean install -Dbackend-target.env=tomcat-docker -Dfrontend-target.env=docker
 ```
 
-(File : circabc-build/docker-tomcat-build.sh)
+> **Note:** The build uses `npm install --legacy-peer-deps` for frontend dependencies. This is normal and handles peer dependency conflicts in the Angular project.
 
 ## Deploying CIRCABC Web Application in Docker Environment
 
@@ -59,13 +62,11 @@ The aim of this project is to provide an easy-to-install environment for the OSS
   - Angular Nginx container running CIRCABC Angular application
   - Reverse Proxy (Nginx) abstracting the connections to CIRCABC apps to avoid any CORS configuration
 
-![docker-env](doc/Slide2.PNG)
+![docker-env](circabc-docker/doc/Slide2.PNG)
 
 Go to the `circabc` root folder and copy the artifacts to the Docker dist folders. (Note that this step can be automated with your CI/CD tools.)
 
 Copy backend and frontend archives to the `circabc-docker` directories:
-
-
 
 ```bash
 rm -rf circabc-docker/tomcat/dist
@@ -77,48 +78,45 @@ mkdir -p circabc-docker/angular/dist/circabc
 cp -rf circabc-frontend/dist/circabc/* circabc-docker/angular/dist/circabc/
 ```
 
-(File : circabc-build/docker-tomcat-deploy.sh)
-
 ## Running CIRCABC Web Application in Docker Environment
 
-
 Go to the `circabc-docker` folder.
+
+> **Important:** Make sure ports 80, 3306, and 8443 are not already in use on your system.  
+> If port 80 is occupied, you can change it in `circabc-docker/docker-compose-tomcat.yml` (e.g., `7080:80`).
 
 Launch:
 
 ```bash
-docker-compose -f docker-compose-tomcat.yml down 
-docker-compose -f docker-compose-tomcat.yml up --build
+docker compose -f docker-compose-tomcat.yml down 
+docker compose -f docker-compose-tomcat.yml up --build
 ```
 
-(File : circabc-build/docker-tomcat-run.sh)
+> **Note:** The first startup takes 2-3 minutes while Alfresco initializes the database schema.  
+> You may see warnings about ImageMagick or pdf2swf not being found — these are optional transformers and can be safely ignored.
 
 ## Using CIRCABC Web Application in Docker Environment
 
 ### Main CIRCABC Web Application
 
 Connect to the exposed IP of the Nginx container:  
-http://your_host_ip/ui/login
+http://localhost/ui/login
 
 You can connect with the following default credentials:
 
 - Default Alfresco admin username/password: `admin/admin`
 
-![docker-env](doc/circabc.PNG)
-
 ### Swagger API
 
 You can configure CIRCABC with the REST API using the Swagger UI:  
-http://your_host_ip/swagger-ui/index.html
-
-![docker-env](doc/swagger.PNG)
+http://localhost/swagger-ui/index.html
 
 ## Creating Sample Users and Data
 
 Optionally, you can launch E2E tests with Cypress to create sample users and data:
 
 1. Install node and npm locally.
-2. Install and launch cypress tests :
+2. Install and launch cypress tests:
 ```bash
 cd circabc-e2e
 npm install cypress --save-dev
@@ -137,7 +135,7 @@ Then you should be able to connect with any users defined in `circabc-e2e/cypres
 ## Notes
 
 - You cannot run this version in a cluster — only one node can run at a time. Hazelcast is not used as a distributed cache, unlike in Alfresco Enterprise.
-- If you want to run an Alfresco instance with multi-store support, you can use the open-source alternative to Alfresco Enterprise :  
+- If you want to run an Alfresco instance with multi-store support, you can use the open-source alternative to Alfresco Enterprise:  
   Acosix GitHub project: https://github.com/Acosix/alfresco-simple-content-stores
 
 ## License

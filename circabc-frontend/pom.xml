@@ -39,7 +39,7 @@
                     <goal>npm</goal>
                 </goals>
                 <configuration>
-                    <arguments>ci</arguments>
+                    <arguments>install --legacy-peer-deps</arguments>
                 </configuration>
                 </execution>
 
