@@ -122,10 +122,7 @@ border-bottom: 4px solid #8dcb6c; padding-top: 15px;
         <tr>
           <td>
 			<table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
-			  <tr>
-				<td align="center" height="25" style="height:25px; font-size: 0;">&nbsp;</td>
-			  </tr>
-               <tr class="presentation-header" style="border-bottom: 4px solid #8dcb6c; padding-top: 15px;">
+               <tr class="presentation-header" style="border-bottom: 4px solid #8dcb6c; padding-top: 10px;">
                 <td align="center">
 					<img src="cid:mailHeaderEULogoCid" border="0" alt="CIRCABC" />
                 </td>

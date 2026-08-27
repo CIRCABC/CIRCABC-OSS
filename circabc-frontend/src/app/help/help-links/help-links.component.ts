@@ -1,4 +1,10 @@
-import { Component, Input, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  input,
+  output,
+} from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -14,21 +20,16 @@ import { firstValueFrom } from 'rxjs';
   templateUrl: './help-links.component.html',
   styleUrl: './help-links.component.scss',
   imports: [RouterLink, InlineDeleteComponent, I18nPipe, TranslocoModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HelpLinksComponent {
-  // TODO: Skipped for migration because:
-  //  This input is used in a control flow expression (e.g. `@if` or `*ngIf`)
-  //  and migrating would break narrowing currently.
-  @Input()
-  links: HelpLink[] = [];
+  readonly links = input.required<HelpLink[]>();
   readonly linkDeleted = output();
   readonly clickedForEdition = output<string>();
 
-  constructor(
-    private sanitizer: DomSanitizer,
-    private helpService: HelpService,
-    private loginService: LoginService
-  ) {}
+  private readonly sanitizer = inject(DomSanitizer);
+  private readonly helpService = inject(HelpService);
+  private readonly loginService = inject(LoginService);
 
   public sanitizeLinkRef(href: string | undefined) {
     assertDefined(href);

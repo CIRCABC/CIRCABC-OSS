@@ -1,0 +1,15 @@
+Index: org/apache/cxf/jaxrs/impl/HttpHeadersImpl.java
+===================================================================
+--- org/apache/cxf/jaxrs/impl/HttpHeadersImpl.java	(revision 1)
++++ org/apache/cxf/jaxrs/impl/HttpHeadersImpl.java	(working copy)
+@@ -129,6 +129,10 @@
+         if (HttpUtils.isDateRelatedHeader(headerName)) {
+             return values;
+         }
++        if (values.get(0) == null)
++        {
++            return Collections.singletonList("");
++        }
+         String[] ls =  values.get(0).split(",");
+         if (ls.length == 1) {
+             return Collections.singletonList(ls[0].trim());

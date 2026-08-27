@@ -1,0 +1,3 @@
+This project is distrubuted under the EUPL licence.
+You can see this licence to the following address:
+http://www.osor.eu/eupl

@@ -99,11 +99,17 @@ public class HeaderPost extends CircabcDeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (DuplicateChildNodeNameException dce) {
       status.setCode(HttpServletResponse.SC_CONFLICT);
       status.setMessage(dce.getMessage());
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error(dce.getMessage(), dce);
+      }
       return null;
     }
   }

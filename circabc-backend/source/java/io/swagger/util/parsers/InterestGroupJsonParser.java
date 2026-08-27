@@ -169,7 +169,15 @@ public class InterestGroupJsonParser {
       fromUser.setUserId(String.valueOf(from.get(USER_ID)));
       fromUser.setFirstname(String.valueOf(from.get(FIRSTNAME)));
       fromUser.setLastname(String.valueOf(from.get(LASTNAME)));
-      fromUser.setEmail(String.valueOf(from.get(EMAIL)));
+      String email = String.valueOf(from.get(EMAIL));
+      String sanitized = io.swagger.util.EmailUtil.sanitizeEmailAddresses(
+        email
+      );
+      fromUser.setEmail(
+        sanitized != null && !sanitized.isEmpty()
+          ? sanitized.split(",\\s*")[0]
+          : ""
+      );
       body.setFrom(fromUser);
     }
 
@@ -202,7 +210,15 @@ public class InterestGroupJsonParser {
         u.setUserId(String.valueOf(user.get(USER_ID)));
         u.setFirstname(String.valueOf(user.get(FIRSTNAME)));
         u.setLastname(String.valueOf(user.get(LASTNAME)));
-        u.setEmail(String.valueOf(user.get(EMAIL)));
+        String email = String.valueOf(user.get(EMAIL));
+        String sanitized = io.swagger.util.EmailUtil.sanitizeEmailAddresses(
+          email
+        );
+        u.setEmail(
+          sanitized != null && !sanitized.isEmpty()
+            ? sanitized.split(",\\s*")[0]
+            : ""
+        );
         body.addLeadersItem(u);
       }
     }

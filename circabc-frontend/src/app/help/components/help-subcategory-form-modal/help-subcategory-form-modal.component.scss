@@ -1,0 +1,26 @@
+.loading-container {
+  padding: 1rem;
+  text-align: center;
+}
+
+.validation-error {
+  margin-top: 0.5rem;
+
+  .p-error {
+    color: #c00;
+    font-size: 0.875rem;
+  }
+}
+
+.error-message {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  border-radius: 4px;
+  background-color: #fee;
+  border: 1px solid #fcc;
+
+  .p-error {
+    margin: 0;
+    color: #c00;
+  }
+}

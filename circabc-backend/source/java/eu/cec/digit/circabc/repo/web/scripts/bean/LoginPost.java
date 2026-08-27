@@ -5,22 +5,16 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
-import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
 import org.alfresco.repo.security.authentication.AuthenticationException;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.security.AuthenticationService;
 import org.alfresco.service.transaction.TransactionService;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.extensions.surf.util.Content;
 import org.springframework.extensions.webscripts.*;
 
 public class LoginPost extends DeclarativeWebScript {
-
-  static final Log logger = LogFactory.getLog(LoginPost.class);
 
   private AuthenticationService authenticationService;
 
@@ -91,10 +85,6 @@ public class LoginPost extends DeclarativeWebScript {
 
     Map<String, Object> model = login(username, password);
 
-    if (model == null && isUserDisabled(username)) {
-      enableUser(username);
-      model = login(username, password);
-    }
     if (model == null) {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Login failed");
@@ -118,38 +108,6 @@ public class LoginPost extends DeclarativeWebScript {
       return model;
     } catch (AuthenticationException e) {
       return null;
-    } finally {
-      AuthenticationUtil.clearCurrentSecurityContext();
-    }
-  }
-
-  private boolean isUserDisabled(String username) {
-    try {
-      AuthenticationUtil.setRunAsUser(AuthenticationUtil.getSystemUserName());
-      return !authenticationService.getAuthenticationEnabled(username);
-    } catch (Exception e) {
-      return false;
-    } finally {
-      AuthenticationUtil.clearCurrentSecurityContext();
-    }
-  }
-
-  private void enableUser(String username) {
-    UserTransaction trx = transactionService.getNonPropagatingUserTransaction(
-      false
-    );
-    try {
-      trx.begin();
-      AuthenticationUtil.setRunAsUser("admin");
-      userService.setAuthenticationEnabled(username, true);
-      trx.commit();
-    } catch (Exception e) {
-      logger.error("Unable to enable user: " + username, e);
-      try {
-        trx.rollback();
-      } catch (IllegalStateException | SecurityException | SystemException ex) {
-        logger.error("Unable to rollback transaction: ", ex);
-      }
     } finally {
       AuthenticationUtil.clearCurrentSecurityContext();
     }

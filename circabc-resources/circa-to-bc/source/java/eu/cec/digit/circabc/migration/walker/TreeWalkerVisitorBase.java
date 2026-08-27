@@ -27,6 +27,7 @@ import eu.cec.digit.circabc.migration.entities.generated.nodes.Events;
 import eu.cec.digit.circabc.migration.entities.generated.nodes.Forum;
 import eu.cec.digit.circabc.migration.entities.generated.nodes.InfContent;
 import eu.cec.digit.circabc.migration.entities.generated.nodes.InfMLContent;
+import eu.cec.digit.circabc.migration.entities.generated.nodes.InfNews;
 import eu.cec.digit.circabc.migration.entities.generated.nodes.InfSpace;
 import eu.cec.digit.circabc.migration.entities.generated.nodes.Information;
 import eu.cec.digit.circabc.migration.entities.generated.nodes.InformationContentVersion;
@@ -370,6 +371,11 @@ public abstract class TreeWalkerVisitorBase implements XMLWalkerVisitor
 	{
 		visit(newsgroup, newsgroup.getNotifications());
 		visitNodeChilds(newsgroup);
+		// Visit topics directly under newsgroups root
+		for(final Topic topic : newsgroup.getTopics())
+		{
+			visit(topic);
+		}
 	}
 
 	/**
@@ -637,6 +643,15 @@ public abstract class TreeWalkerVisitorBase implements XMLWalkerVisitor
 	{
 		visit(space, space.getInformationUserRights());
 		visitNodeChilds( space);
+	}
+
+	/**
+	 * Walk through a given InfNews
+	 */
+	public void visit(final InfNews infNews) throws Exception
+	{
+		visit(infNews, infNews.getNotifications());
+		visitNodeChilds(infNews);
 	}
 
 	/**

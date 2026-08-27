@@ -55,6 +55,7 @@ import org.alfresco.repo.policy.BehaviourFilter;
 import org.alfresco.service.NotAuditable;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
+import org.alfresco.service.cmr.favourites.FavouritesService;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.cmr.security.PersonService;
@@ -305,6 +306,11 @@ public interface CircabcServiceRegistry {
   QName CIRCABC_ARES_BRIDGE_SERVICE = QName.createQName(
     CircabcNameSpaceService.CEC_DIGIT_URI,
     "aresBridgeService"
+  );
+
+  QName FAVOURITES_SERVICE = QName.createQName(
+    NamespaceService.ALFRESCO_URI,
+    "FavouritesService"
   );
 
   /**
@@ -632,4 +638,7 @@ public interface CircabcServiceRegistry {
 
   @NotAuditable
   AresBridgeServiceImpl getAresBridgeService();
+
+  @NotAuditable
+  FavouritesService getFavouritesService();
 }

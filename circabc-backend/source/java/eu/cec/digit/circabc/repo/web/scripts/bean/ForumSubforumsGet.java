@@ -2,6 +2,7 @@ package eu.cec.digit.circabc.repo.web.scripts.bean;
 
 import io.swagger.api.ForumsApi;
 import io.swagger.util.CurrentUserPermissionCheckerService;
+import io.swagger.util.GroupLockGuard;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -10,6 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.alfresco.repo.node.MLPropertyInterceptor;
 import org.alfresco.repo.security.permissions.AccessDeniedException;
 import org.alfresco.service.cmr.repository.InvalidNodeRefException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.DeclarativeWebScript;
@@ -21,8 +24,14 @@ import org.springframework.extensions.webscripts.WebScriptRequest;
  */
 public class ForumSubforumsGet extends DeclarativeWebScript {
 
+  /**
+   * A logger for the class
+   */
+  static final Log logger = LogFactory.getLog(ForumSubforumsGet.class);
+
   private ForumsApi forumsApi;
   private CurrentUserPermissionCheckerService currentUserPermissionCheckerService;
+  private GroupLockGuard groupLockGuard;
 
   @Override
   protected Map<String, Object> executeImpl(
@@ -51,6 +60,8 @@ public class ForumSubforumsGet extends DeclarativeWebScript {
     }
     try {
       if (id != null) {
+        this.groupLockGuard.checkAccess(id);
+
         model.put("id", id);
 
         if (
@@ -76,11 +87,17 @@ public class ForumSubforumsGet extends DeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (InvalidNodeRefException inre) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request", inre);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);
@@ -108,5 +125,9 @@ public class ForumSubforumsGet extends DeclarativeWebScript {
   ) {
     this.currentUserPermissionCheckerService =
       currentUserPermissionCheckerService;
+  }
+
+  public void setGroupLockGuard(GroupLockGuard groupLockGuard) {
+    this.groupLockGuard = groupLockGuard;
   }
 }

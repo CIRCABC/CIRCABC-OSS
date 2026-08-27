@@ -1,0 +1,26 @@
+@if (loading()) {
+<cbc-horizontal-loader />
+} @else {
+<main class="locked-page" role="main" aria-labelledby="locked-heading">
+  <section class="locked-content">
+    <img
+      src="img/icon-lock-closed.svg"
+      alt=""
+      aria-hidden="true"
+      class="locked-icon"
+      width="64"
+      height="64"
+    />
+    <h1 id="locked-heading" class="locked-heading">
+      This interest group is currently locked
+    </h1>
+    @if (lockInfo()?.message) {
+    <div
+      class="locked-message"
+      [innerHTML]="lockInfo()!.message"
+      aria-label="Lock message"
+    ></div>
+    }
+  </section>
+</main>
+}

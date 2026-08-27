@@ -268,7 +268,7 @@ export class EditNodeComponent implements OnInit, OnDestroy {
             : this.editNodeForm.value.expirationDate === undefined ||
                 this.editNodeForm.value.expirationDate === '' ||
                 !this.editNodeForm.value.expirationDateActived
-              ? 'null'
+              ? null
               : this.editNodeForm.value.expirationDate,
         issue_date:
           this.editNodeForm.value.issueDate === undefined

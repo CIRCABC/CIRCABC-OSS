@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 import org.alfresco.repo.security.permissions.AccessDeniedException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptRequest;
@@ -18,6 +20,11 @@ import org.springframework.extensions.webscripts.WebScriptRequest;
  * @author schwerr
  */
 public class EventsIdDelete extends CircabcDeclarativeWebScript {
+
+  /**
+   * A logger for the class
+   */
+  static final Log logger = LogFactory.getLog(EventsIdDelete.class);
 
   private EventsApi eventsApi;
   private CurrentUserPermissionCheckerService currentUserPermissionCheckerService;
@@ -41,6 +48,7 @@ public class EventsIdDelete extends CircabcDeclarativeWebScript {
     }
 
     try {
+      checkGroupReadOnlyMode(id);
       if (
         !this.currentUserPermissionCheckerService.hasAnyOfEventPermission(
             id,
@@ -53,16 +61,30 @@ public class EventsIdDelete extends CircabcDeclarativeWebScript {
       }
       this.recordBeforeDelete(id);
       this.eventsApi.eventsIdDelete(id, UpdateMode.valueOf(updateMode));
+    } catch (ReadOnlyAccessException roae) {
+      status.setCode(HttpServletResponse.SC_FORBIDDEN);
+      status.setMessage(roae.getMessage());
+      status.setRedirect(true);
+      if (logger.isWarnEnabled()) {
+        logger.warn("Read-only mode blocked event delete: " + id, roae);
+      }
+      return null;
     } catch (AccessDeniedException ade) {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (Exception e) {
       status.setCode(HttpServletResponse.SC_NOT_ACCEPTABLE);
       status.setMessage(e.getMessage());
       status.setException(e);
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Impossible to delete the event", e);
+      }
       return null;
     }
 

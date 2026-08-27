@@ -8,9 +8,8 @@ describe('The Delete Help Section Page', function () {
       failOnStatusCode: false,
     });
     cy.wait(5000);
-    cy.get('.help-categories > ul > :nth-child(1) > a').click();
-    cy.get('.selected > a').click();
-    cy.get('.actions > :nth-child(2)').click();
+    cy.get('[data-cy="category-header"]').first().click();
+    cy.get('[data-cy="delete-section"]').first().click();
     cy.get('[data-cy="ok"]').click();
     cy.contains('Success');
   });

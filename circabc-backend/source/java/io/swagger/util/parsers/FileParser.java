@@ -85,7 +85,12 @@ public class FileParser {
 
     User u = new User();
     u.setUserId(userId);
-    u.setEmail(email);
+    String sanitized = io.swagger.util.EmailUtil.sanitizeEmailAddresses(email);
+    u.setEmail(
+      sanitized != null && !sanitized.isEmpty()
+        ? sanitized.split(",\\s*")[0]
+        : ""
+    );
 
     if (!hasUser(u, result)) {
       result.add(u);

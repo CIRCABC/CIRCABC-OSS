@@ -95,14 +95,52 @@ public interface NotificationService {
     throws Exception;
 
   /**
-   * * new method to notify the users of a multiple upload of files
+   * Notifies the users of a multiple upload of files (create/update/move). The
+   * actual mail sending is deferred until the current transaction commits
+   * successfully.
    *
-   * @param parentRef
-   * @param nodeRefs
-   * @param notifiableUsers
-   * @param notifyDocBulk
+   * <p>This avoids sending (and re-sending) notifications while the enclosing
+   * transaction is still in flight: web script transactions are retryable, so
+   * sending mail inline would re-send every already-sent mail on each retry
+   * (duplicate/triple notifications). It also guarantees no mail is sent for a
+   * transaction that eventually rolls back.
+   *
+   * <p>Callers must only use this variant when the involved nodes still exist
+   * after commit (create/update/move). For delete flows the nodes are gone at
+   * commit time, so {@link #notifyDeletedFilesAfterCommit(NodeRef, List, Set,
+   * MailTemplate)} must be used before the deletion instead.
+   *
+   * @param parentRef       the parent node
+   * @param nodeRefs        the affected nodes
+   * @param notifiableUsers the users to notify
+   * @param notifyDocBulk   the mail template to use
    */
-  void notifyNewFiles(
+  void notifyNewFilesAfterCommit(
+    NodeRef parentRef,
+    List<NodeRef> nodeRefs,
+    Set<NotifiableUser> notifiableUsers,
+    MailTemplate notifyDocBulk
+  );
+
+  /**
+   * Variant of {@link #notifyNewFilesAfterCommit(NodeRef, List, Set,
+   * MailTemplate)} for delete flows.
+   *
+   * <p>The mail content and audit data are built <b>immediately</b> (while the
+   * nodes still exist), and only the actual mail sending and audit logging are
+   * deferred until the current transaction commits successfully. This must be
+   * called <b>before</b> the nodes are deleted.
+   *
+   * <p>As with the after-commit variant, this prevents duplicate/re-sent
+   * notifications when the enclosing (retryable) transaction retries, and
+   * avoids sending mail for a transaction that eventually rolls back.
+   *
+   * @param parentRef       the parent node (still existing at call time)
+   * @param nodeRefs        the nodes about to be deleted
+   * @param notifiableUsers the users to notify
+   * @param notifyDocBulk   the mail template to use
+   */
+  void notifyDeletedFilesAfterCommit(
     NodeRef parentRef,
     List<NodeRef> nodeRefs,
     Set<NotifiableUser> notifiableUsers,

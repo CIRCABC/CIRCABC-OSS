@@ -133,6 +133,7 @@ public class MigratePermissionsAndProperties extends MigrateProcessorBase
     	{
 			migrateProperties.visit(interestGroup, interestGroup.getLogoDefinitions());
     	}
+		migrateProperties.visitAllowApply(interestGroup);
 		this.visit(interestGroup.getDirectory());
 	}
 

@@ -1,5 +1,15 @@
 import { DatePipe, Location } from '@angular/common';
-import { Component, Input, OnInit, output, input, signal } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  OnChanges,
+  output,
+  input,
+  signal,
+  SimpleChanges,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
 
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
@@ -40,6 +50,7 @@ import {
   getSuccessTranslation,
   isContentPreviewable,
   isContentPreviewableFull,
+  isContentPreviewableOss,
 } from 'app/core/util';
 import { ClipboardService } from 'app/group/library/clipboard/clipboard.service';
 import { ContentPreviewExtendedComponent } from 'app/group/library/content-preview-ext/content-preview-ext.component';
@@ -66,6 +77,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { firstValueFrom } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { AlfrescoService } from 'app/core/alfresco.service';
+import { ReadOnlyStateService } from 'app/core/read-only-state.service';
 
 @Component({
   selector: 'cbc-library-browser',
@@ -97,7 +109,7 @@ import { AlfrescoService } from 'app/core/alfresco.service';
     MatDialogModule,
   ],
 })
-export class LibraryBrowserComponent implements OnInit {
+export class LibraryBrowserComponent implements OnInit, OnChanges {
   public readonly MAX_NODES = 160;
   private listingOptions: ListingOptions = {
     page: 1,
@@ -180,7 +192,9 @@ export class LibraryBrowserComponent implements OnInit {
     private userService: UserService,
     private aresBridgeHelperService: AresBridgeHelperService,
     private dialog: MatDialog,
-    private alfrescoService: AlfrescoService
+    private alfrescoService: AlfrescoService,
+    private cdr: ChangeDetectorRef,
+    private readOnlyStateService: ReadOnlyStateService
   ) {
     // analyses which condition should make the shared space message disappear...
     this.router.events.subscribe((value) => {
@@ -227,6 +241,12 @@ export class LibraryBrowserComponent implements OnInit {
         this.isAresBridgeEnabled =
           await this.aresBridgeHelperService.isAresBridgeEnabled(igId);
       }
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['contents'] && !changes['contents'].isFirstChange()) {
+      this.cdr.detectChanges();
     }
   }
 
@@ -355,6 +375,10 @@ export class LibraryBrowserComponent implements OnInit {
     return false;
   }
 
+  public isReadOnly(): boolean {
+    return this.readOnlyStateService.isReadOnly();
+  }
+
   isFile(node: ModelNode): boolean {
     if (node.type) {
       return node.type.indexOf('folder') === -1 && !this.isLibraryLink(node);
@@ -442,15 +466,21 @@ export class LibraryBrowserComponent implements OnInit {
       (node.properties.destinationIgId || node.properties.destinationId)
     ) {
       this.storeSharedLinkNavigationInfo(node);
-      this.router.navigate(
-        [
-          `/group/${node.properties.destinationIgId}/library/${node.properties.destinationId}`,
-        ],
-        { queryParams: { fromLink: 'true' } }
-      );
-    } else {
-      const text = this.translateService.translate('spaces.sharing.error');
-      this.uiMessageService.addErrorMessage(text);
+      this.router
+        .navigate(
+          [
+            `/group/${node.properties.destinationIgId}/library/${node.properties.destinationId}`,
+          ],
+          { queryParams: { fromLink: 'true' } }
+        )
+        .then((resolve) => {
+          if (!resolve) {
+            const text = this.translateService.translate(
+              'spaces.sharing.error'
+            );
+            this.uiMessageService.addErrorMessage(text);
+          }
+        });
     }
   }
 
@@ -576,7 +606,7 @@ export class LibraryBrowserComponent implements OnInit {
     if (environment.useAlfrescoAPI) {
       return isContentPreviewableFull(content);
     }
-    return isContentPreviewable(content);
+    return isContentPreviewableOss(content);
   }
 
   public async previewContent(content: SelectableNode) {
@@ -915,6 +945,10 @@ export class LibraryBrowserComponent implements OnInit {
   }
 
   public areNodesDeletable(): boolean {
+    if (this.readOnlyStateService.isReadOnly()) {
+      return false;
+    }
+
     let result = true;
 
     const selecteds: SelectableNode[] = [];

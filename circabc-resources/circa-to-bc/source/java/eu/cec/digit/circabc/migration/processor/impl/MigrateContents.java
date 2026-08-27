@@ -484,10 +484,32 @@ public class MigrateContents extends MigrateProcessorBase
 
 			final Map<String, Serializable> versionProperties = new HashMap<String, Serializable>(3);
 			versionProperties.put(Version2Model.PROP_DESCRIPTION, versionNote);
-			versionProperties.put(Version2Model.PROP_VERSION_TYPE, VersionType.MAJOR);
+			versionProperties.put(Version2Model.PROP_VERSION_TYPE, determineVersionType(versionlabel));
 			versionProperties.put(CustomLabelAwareVersionServiceImpl.PROP_CUSTOM_VERSION_LABEL, versionlabel);
 
 			versionService.createVersion(contentNodeRef, versionProperties);
+		}
+
+		/**
+		 * Determine the VersionType (MAJOR or MINOR) from the version label string.
+		 * A version like "1.0", "2.0" is MAJOR; "0.1", "1.1", "1.2" is MINOR.
+		 */
+		private VersionType determineVersionType(final String versionLabel) {
+			if (versionLabel == null || versionLabel.trim().isEmpty()) {
+				return VersionType.MAJOR;
+			}
+			try {
+				final String[] parts = versionLabel.split("\\.");
+				if (parts.length >= 2) {
+					final int minorPart = Integer.parseInt(parts[1]);
+					if (minorPart > 0) {
+						return VersionType.MINOR;
+					}
+				}
+			} catch (NumberFormatException e) {
+				// Fall through to default
+			}
+			return VersionType.MAJOR;
 		}
 
         protected QName getType()

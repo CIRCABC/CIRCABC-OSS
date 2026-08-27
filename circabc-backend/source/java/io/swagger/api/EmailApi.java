@@ -148,18 +148,21 @@ public interface EmailApi {
 
   EmailDefinition prepareRefusalGroupDeleteRequest(
     GroupDeletionRequest body,
-    String igName
+    String igName,
+    String igTitle
   );
 
   EmailDefinition prepareRefusalGroupDeleteRequestLeaders(
     GroupDeletionRequest body,
     String igName,
+    String igTitle,
     User user
   );
 
   EmailDefinition prepareAcceptationGroupDeleteRequest(
     User userTo,
     GroupDeletionRequest body,
-    String igName
+    String igName,
+    String igTitle
   );
 }

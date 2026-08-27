@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 
 import { I18nSelectPipe } from '@angular/common';
 import { MatMenuModule } from '@angular/material/menu';
@@ -13,6 +13,7 @@ import { EULoginService } from 'app/core/eulogin.service';
 import { type InterestGroup, UserService } from 'app/core/generated/circabc';
 import { LoginService } from 'app/core/login.service';
 import { UiMessageService } from 'app/core/message/ui-message.service';
+import { ReadOnlyStateService } from 'app/core/read-only-state.service';
 import { RedirectionService } from 'app/core/redirection.service';
 import { getSuccessTranslation } from 'app/core/util';
 import { LeaderContactComponent } from 'app/group/leader-contact/leader-contact.component';
@@ -50,6 +51,8 @@ export class DescriptorComponent implements OnInit {
   public showApplicationModal = false;
   public showContactLeadersModal = false;
   public alreadyMember = false;
+
+  public readonly readOnlyState = inject(ReadOnlyStateService);
 
   constructor(
     private translateService: TranslocoService,
@@ -119,12 +122,17 @@ export class DescriptorComponent implements OnInit {
     return (
       this.group.allowApply &&
       !this.loginService.isGuest() &&
-      !this.alreadyMember
+      !this.alreadyMember &&
+      !this.readOnlyState.isReadOnly()
     );
   }
 
   isJoinEnabledGuest() {
-    return this.group.allowApply && this.loginService.isGuest();
+    return (
+      this.group.allowApply &&
+      this.loginService.isGuest() &&
+      !this.readOnlyState.isReadOnly()
+    );
   }
 
   onRequestCanceled(_result: ActionEmitterResult) {
@@ -182,6 +190,6 @@ export class DescriptorComponent implements OnInit {
 
   public euLoginCreate() {
     window.location.href =
-      '';
+      'https://ecas.cc.cec.eu.int:7002/cas/eim/external/register.cgi';
   }
 }

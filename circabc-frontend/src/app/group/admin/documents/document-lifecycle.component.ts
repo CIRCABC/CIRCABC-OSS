@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
+import { ReadOnlyStateService } from 'app/core/read-only-state.service';
 import { SetTitlePipe } from 'app/shared/pipes/set-title.pipe';
 import { DeletedItemsComponent } from './deleted-items/deleted-items.component';
 import { ExpiredItemsComponent } from './expired-items/expired-items.component';
@@ -21,6 +22,8 @@ export class DocumentLifecycleComponent implements OnInit {
   public showDeletedItems = false;
   public showExpiredItems = true;
   public groupId!: string;
+
+  public readonly readOnlyState = inject(ReadOnlyStateService);
 
   constructor(private route: ActivatedRoute) {}
 

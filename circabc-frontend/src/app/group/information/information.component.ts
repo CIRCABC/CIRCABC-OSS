@@ -21,6 +21,7 @@ import {
 } from 'app/core/generated/circabc';
 import { LoginService } from 'app/core/login.service';
 import { UiMessageService } from 'app/core/message/ui-message.service';
+import { ReadOnlyStateService } from 'app/core/read-only-state.service';
 import { getErrorTranslation } from 'app/core/util';
 import { ListingOptions } from 'app/group/listing-options/listing-options';
 import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
@@ -77,7 +78,8 @@ export class InformationComponent implements OnInit {
     private notificationService: NotificationService,
     private nodesService: NodesService,
     private translateService: TranslocoService,
-    private uiMessageService: UiMessageService
+    private uiMessageService: UiMessageService,
+    private readOnlyStateService: ReadOnlyStateService
   ) {}
 
   public ngOnInit(): void {
@@ -207,6 +209,9 @@ export class InformationComponent implements OnInit {
   }
 
   canAddNews(): boolean {
+    if (this.readOnlyStateService.isReadOnly()) {
+      return false;
+    }
     if (this.informationPage?.permissions) {
       return (
         this.informationPage.permissions.InfManage === 'ALLOWED' ||

@@ -6,12 +6,14 @@ export class UiMessage {
   public active: boolean;
   public autoclose = false;
   public displayTime = 5;
+  public id?: string;
 
   public constructor(
     level: UiMessageLevel,
     content: string,
     autoclose?: boolean,
-    displayTime?: number
+    displayTime?: number,
+    id?: string
   ) {
     this.level = level;
     this.body = content;
@@ -21,6 +23,9 @@ export class UiMessage {
     }
     if (displayTime) {
       this.displayTime = displayTime;
+    }
+    if (id) {
+      this.id = id;
     }
   }
 }

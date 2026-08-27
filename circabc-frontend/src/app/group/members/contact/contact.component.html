@@ -8,7 +8,8 @@
     <div class="page-header__actions">
       <ul class="links">
         <cbc-reponsive-sub-menu>
-          @if (currentIg && (isDirAdmin() || isDirManageMembers())) {
+          @if (currentIg && (isDirAdmin() || isDirManageMembers()) &&
+          !readOnlyState.isReadOnly()) {
           <a [routerLink]="['../bulk-invite', currentIg.id]"
             >{{ 'label.bulk.invite' | transloco }}</a
           >
@@ -16,7 +17,8 @@
           <a [routerLink]="['.']" class="selected"
             >{{ 'label.send.email' | transloco }}</a
           >
-          @if (currentIg && (isDirAdmin() || isDirManageMembers())) {
+          @if (currentIg && (isDirAdmin() || isDirManageMembers()) &&
+          !readOnlyState.isReadOnly()) {
           <a [routerLink]="['../../applicants']"
             >{{ 'label.member.requests' | transloco }}</a
           >

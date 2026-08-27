@@ -1,0 +1,58 @@
+File: net\sf\jooreports\openoffice\converter\OpenOfficeDocumentConverter.java
+16,18d15
+< // 2012 - Alfresco Software, Ltd.
+< // Alfresco Software has modified source of this file
+< // The details of changes as svn diff can be found in svn at location root/enterpriseprojects/3rd-party/src 
+123,136c120,124
+<                 XComponentLoader desktop = openOfficeConnection.getDesktop();
+<                 // Hack to support loading of non western characters in text files. Alfresco has converted the files
+<                 // to UTF-8. The extra three properties are taken from the equivalent JOD properties.
+<                 PropertyValue[] propertyValues = (isTextUtf8())
+<                     ? new PropertyValue[] {
+<                         property("ReadOnly", Boolean.TRUE),
+<                         property("FilterOptions", "utf8"),
+<                         property("FilterName", "Text (encoded)"),
+<                         property("UpdateDocModel", ONE),
+<                         property("Hidden", Boolean.TRUE)}
+<                     : new PropertyValue[] {
+<                         property("ReadOnly", Boolean.TRUE),
+<                         property("Hidden", Boolean.TRUE)};
+<                 XComponent document = desktop.loadComponentFromURL(inputUrl, "_blank", 0, propertyValues);
+---
+> 		XComponentLoader desktop = openOfficeConnection.getDesktop();
+> 		XComponent document = desktop.loadComponentFromURL(inputUrl, "_blank", 0, new PropertyValue[] {
+> 			property("ReadOnly", Boolean.TRUE),
+> 			property("Hidden", Boolean.TRUE)
+> 		});
+File: net\sf\jooreports\openoffice\converter\AbstractOpenOfficeDocumentConverter.java
+1,3d0
+< // 2012 - Alfresco Software, Ltd.
+< // Alfresco Software has modified source of this file
+< // The details of changes as svn diff can be found in svn at location root/enterpriseprojects/3rd-party/src 
+29,38d25
+<         
+<         protected static Short ONE = 1;
+<         protected static ThreadLocal<Boolean> textUtf8 = new ThreadLocal<Boolean>()
+<         {
+<             @Override
+<             protected Boolean initialValue()
+<             {
+<                 return false;
+<             }
+<         };
+133,147d119
+< 
+<         /**
+<          * For the current Thread, indicates that the next import is a text file that is encoded as UTF8.
+<          */
+<         public boolean setTextUtf8(boolean textUtf8) {
+<             OpenOfficeDocumentConverter.textUtf8.set(textUtf8);
+<             return textUtf8;
+<         }
+<         
+<         /**
+<          * Return {@true} if the source file for the current Thread is a text file that is encoded as UTF8.
+<          */
+<         public boolean isTextUtf8() {
+<             return textUtf8.get();
+<         }

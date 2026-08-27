@@ -5,6 +5,7 @@ import eu.cec.digit.circabc.service.profile.permissions.EventPermissions;
 import io.swagger.api.EventsApi;
 import io.swagger.util.Converter;
 import io.swagger.util.CurrentUserPermissionCheckerService;
+import io.swagger.util.GroupLockGuard;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -14,6 +15,8 @@ import org.alfresco.repo.node.MLPropertyInterceptor;
 import org.alfresco.repo.security.permissions.AccessDeniedException;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.DeclarativeWebScript;
@@ -27,9 +30,15 @@ import org.springframework.extensions.webscripts.WebScriptRequest;
  */
 public class GroupsIdEventsGet extends DeclarativeWebScript {
 
+  /**
+   * A logger for the class
+   */
+  static final Log logger = LogFactory.getLog(GroupsIdEventsGet.class);
+
   private EventsApi eventsApi;
   private CurrentUserPermissionCheckerService currentUserPermissionCheckerService;
   private NodeService nodeService;
+  private GroupLockGuard groupLockGuard;
 
   @Override
   protected Map<String, Object> executeImpl(
@@ -50,6 +59,8 @@ public class GroupsIdEventsGet extends DeclarativeWebScript {
     Date endDate;
 
     try {
+      this.groupLockGuard.checkAccessByIgId(igId);
+
       NodeRef groupRef = Converter.createNodeRefFromId(igId);
       NodeRef evtNodeRef =
         this.nodeService.getChildByName(
@@ -98,12 +109,18 @@ public class GroupsIdEventsGet extends DeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (Exception e) {
       status.setCode(HttpServletResponse.SC_NOT_ACCEPTABLE);
       status.setMessage(e.getMessage());
       status.setException(e);
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error(e.getMessage(), e);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);
@@ -151,5 +168,9 @@ public class GroupsIdEventsGet extends DeclarativeWebScript {
    */
   public void setNodeService(NodeService nodeService) {
     this.nodeService = nodeService;
+  }
+
+  public void setGroupLockGuard(GroupLockGuard groupLockGuard) {
+    this.groupLockGuard = groupLockGuard;
   }
 }

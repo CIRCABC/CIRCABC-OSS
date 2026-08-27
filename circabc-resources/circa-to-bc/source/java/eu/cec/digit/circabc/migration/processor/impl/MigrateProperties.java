@@ -111,6 +111,19 @@ public class MigrateProperties extends MigrateProcessorBase
 		apply(new MigrateKeywordCallback(getJournal(), interestGroup, keywordDefinitions));
 	}
 
+	/**
+	 * Import the "open to new members" flag (canRegisteredApply) onto the IG root node.
+	 * A null value means the source did not carry the flag, so it is left untouched.
+	 */
+	public void visitAllowApply(final InterestGroup interestGroup) throws Exception
+	{
+		final Boolean allowApply = interestGroup.getAllowApply();
+		if(allowApply != null)
+		{
+			visit(interestGroup, CircabcModel.PROP_CAN_REGISTERED_APPLY, allowApply, false, isFirstImport());
+		}
+	}
+
 	@Override
     public void visit(final Node node, final KeywordReferences keywords) throws Exception
 	{

@@ -5,10 +5,9 @@ import { DatePipe } from '@angular/common';
 import { TranslocoModule } from '@jsverse/transloco';
 import { News } from 'app/core/generated/circabc';
 import { SaveAsService } from 'app/core/save-as.service';
-import { urlWellFormed } from 'app/core/util';
 import { DownloadPipe } from 'app/shared/pipes/download.pipe';
 import { I18nPipe } from 'app/shared/pipes/i18n.pipe';
-import { SafePipe } from 'app/shared/pipes/safe.pipe';
+import { SafePipe, isAllowedResourceUrl } from 'app/shared/pipes/safe.pipe';
 import { SecurePipe } from 'app/shared/pipes/secure.pipe';
 import { UserCardComponent } from 'app/shared/user-card/user-card.component';
 
@@ -119,9 +118,7 @@ export class SimpleNewsCardComponent {
 
   getSanitizedContent() {
     if (this.news?.properties?.newsContent) {
-      return this.sanitizer.bypassSecurityTrustHtml(
-        this.news.properties.newsContent
-      );
+      return this.news.properties.newsContent;
     }
 
     return '';
@@ -135,11 +132,7 @@ export class SimpleNewsCardComponent {
   }
 
   public hasValidUrl(): boolean {
-    return (
-      this.news?.properties?.newsUrl !== undefined &&
-      this.news.properties.newsUrl !== '' &&
-      urlWellFormed(this.news.properties.newsUrl)
-    );
+    return isAllowedResourceUrl(this.news?.properties?.newsUrl);
   }
 
   public getAuthor(): string {

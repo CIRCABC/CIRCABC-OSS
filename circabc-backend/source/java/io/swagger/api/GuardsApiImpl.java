@@ -4,6 +4,7 @@ import eu.cec.digit.circabc.model.CircabcModel;
 import eu.cec.digit.circabc.repo.app.CircabcDaoServiceImpl;
 import eu.cec.digit.circabc.service.profile.permissions.*;
 import io.swagger.exception.NonExistingNodeException;
+import io.swagger.model.GroupLockInfo;
 import io.swagger.model.GuardAuthorization;
 import io.swagger.util.Converter;
 import java.util.Set;
@@ -28,6 +29,7 @@ public class GuardsApiImpl implements GuardsApi {
   private AuthorityService authorityService;
   private NodeService nodeService;
   private GroupsApi groupsApi;
+  private GroupLockApi groupLockApi;
 
   @Override
   public GuardAuthorization guardsGroupIdGet(String id) {
@@ -36,6 +38,27 @@ public class GuardsApiImpl implements GuardsApi {
     GuardAuthorization result = new GuardAuthorization();
     result.setGranted(false);
 
+    // --- Check lock state first ---
+    if (groupLockApi != null) {
+      final GroupLockInfo lockInfo = groupLockApi.getGroupLockInfo(id);
+      if (lockInfo != null && Boolean.TRUE.equals(lockInfo.getLocked())) {
+        // IG is locked — only leaders and category admins may enter normally.
+        if (isLeaderOrCategoryAdminViaPermission(igRef)) {
+          // Admin gets in; propagate read-only flag so the UI can enforce it.
+          result.setGranted(true);
+          if (Boolean.TRUE.equals(lockInfo.getReadOnly())) {
+            result.setReadOnly(true);
+          }
+        } else {
+          // Non-admin: signal locked so the frontend redirects to the locked page
+          // instead of treating this as a generic "access denied".
+          result.setLocked(true);
+        }
+        return result;
+      }
+    }
+
+    // --- No lock — apply normal access rules ---
     final Set<AccessPermission> allSetPermissions =
       permissionService.getAllSetPermissions(igRef);
     boolean isPublic = isAuthorityVisible(allSetPermissions, GUEST);
@@ -52,7 +75,6 @@ public class GuardsApiImpl implements GuardsApi {
       result.setGranted(true);
     } else if (!isRegistered) {
       String username = authenticationService.getCurrentUserName();
-
       if (username != null && !username.equals(GUEST)) {
         result.setGranted(
           permissionService
@@ -62,7 +84,57 @@ public class GuardsApiImpl implements GuardsApi {
       }
     }
 
+    // If access is granted and IG is in read-only mode, signal it in the response.
+    if (
+      Boolean.TRUE.equals(result.getGranted()) &&
+      groupLockApi != null &&
+      groupLockApi.isReadOnly(id)
+    ) {
+      result.setReadOnly(true);
+    }
+
     return result;
+  }
+
+  /**
+   * Checks whether the currently authenticated user has leader or category-admin rights
+   * on the given IG node, using the permission service directly.
+   */
+  private boolean isLeaderOrCategoryAdminViaPermission(
+    final NodeRef igNodeRef
+  ) {
+    if (
+      permissionService
+        .hasPermission(igNodeRef, DirectoryPermissions.DIRADMIN.toString())
+        .equals(AccessStatus.ALLOWED)
+    ) {
+      return true;
+    }
+    if (
+      permissionService
+        .hasPermission(
+          igNodeRef,
+          DirectoryPermissions.DIRMANAGEMEMBERS.toString()
+        )
+        .equals(AccessStatus.ALLOWED)
+    ) {
+      return true;
+    }
+    final NodeRef categoryNodeRef = nodeService
+      .getPrimaryParent(igNodeRef)
+      .getParentRef();
+    if (
+      categoryNodeRef != null &&
+      nodeService.hasAspect(categoryNodeRef, CircabcModel.ASPECT_CATEGORY)
+    ) {
+      return permissionService
+        .hasPermission(
+          categoryNodeRef,
+          CategoryPermissions.CIRCACATEGORYADMIN.toString()
+        )
+        .equals(AccessStatus.ALLOWED);
+    }
+    return false;
   }
 
   private boolean isAuthorityVisible(
@@ -414,5 +486,13 @@ public class GuardsApiImpl implements GuardsApi {
 
   public void setAuthorityService(AuthorityService authorityService) {
     this.authorityService = authorityService;
+  }
+
+  public GroupLockApi getGroupLockApi() {
+    return groupLockApi;
+  }
+
+  public void setGroupLockApi(GroupLockApi groupLockApi) {
+    this.groupLockApi = groupLockApi;
   }
 }

@@ -444,7 +444,7 @@ public class InviteCircabcUsersWizard extends AbstractMailToUsersBean {
               );
               ldapUserDetail = getUserService().getLDAPUserDataByUid(authority);
               user.copyLdapProperties(ldapUserDetail);
-              getUserService().createUser(user, false);
+              getUserService().createUser(user, true);
             }
 
             // found a User authority

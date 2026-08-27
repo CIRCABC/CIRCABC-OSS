@@ -74,6 +74,7 @@ import eu.cec.digit.circabc.migration.entities.generated.properties.KeywordDefin
 @XmlType(name = "interestGroup", propOrder = {
     "i18NContactInfos",
     "contactInfo",
+    "allowApply",
     "keywordDefinitions",
     "dynamicPropertyDefinitions",
     "notifications",
@@ -98,6 +99,8 @@ public class InterestGroup
     @XmlElement(namespace = "https://circabc.europa.eu/Import/PropertiesSchema/1.0", type = String.class)
     @XmlJavaTypeAdapter(ContactInfoPropertyAdapter.class)
     protected ContactInfoProperty contactInfo;
+    @XmlElement(namespace = "https://circabc.europa.eu/Import/PropertiesSchema/1.0")
+    protected Boolean allowApply;
     @XmlElement(namespace = "https://circabc.europa.eu/Import/PropertiesSchema/1.0")
     protected KeywordDefinitions keywordDefinitions;
     @XmlElement(namespace = "https://circabc.europa.eu/Import/PropertiesSchema/1.0")
@@ -199,6 +202,31 @@ public class InterestGroup
      */
     public void setContactInfo(ContactInfoProperty value) {
         this.contactInfo = value;
+    }
+
+    /**
+     * Gets the value of the allowApply property (whether registered users may
+     * apply for membership, i.e. the group is open to new members).
+     *
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *
+     */
+    public Boolean getAllowApply() {
+        return allowApply;
+    }
+
+    /**
+     * Sets the value of the allowApply property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *
+     */
+    public void setAllowApply(Boolean value) {
+        this.allowApply = value;
     }
 
     /**
@@ -483,6 +511,11 @@ public class InterestGroup
 
     public InterestGroup withContactInfo(ContactInfoProperty value) {
         setContactInfo(value);
+        return this;
+    }
+
+    public InterestGroup withAllowApply(Boolean value) {
+        setAllowApply(value);
         return this;
     }
 

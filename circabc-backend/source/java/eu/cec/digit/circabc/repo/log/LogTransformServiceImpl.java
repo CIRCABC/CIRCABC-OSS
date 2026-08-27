@@ -48,8 +48,19 @@ public class LogTransformServiceImpl implements LogTransformService {
     if (nodeRef == null) {
       dbLogRecord.setDocumentID(logRestDAO.getNodeID());
       dbLogRecord.setPath(logRestDAO.getNodePath());
-      if (logRestDAO.getNodeParent() != null) {
-        setContainerData(dbLogRecord, new NodeRef(logRestDAO.getNodeParent()));
+      if (
+        logRestDAO.getNodeParent() != null &&
+        !logRestDAO.getNodeParent().equals("null")
+      ) {
+        try {
+          setContainerData(
+            dbLogRecord,
+            new NodeRef(logRestDAO.getNodeParent())
+          );
+        } catch (IllegalArgumentException e) {
+          // Invalid NodeRef format, use circabc root instead
+          setContainerData(dbLogRecord, managementService.getCircabcNodeRef());
+        }
       } else {
         setContainerData(dbLogRecord, managementService.getCircabcNodeRef());
       }
@@ -247,6 +258,13 @@ public class LogTransformServiceImpl implements LogTransformService {
   }
 
   private void setContainerData(LogRecordDAO dbLogRecord, NodeRef nodeRef) {
+    if (nodeRef == null) {
+      if (logger.isWarnEnabled()) {
+        logger.warn("Cannot set container data: NodeRef is null");
+      }
+      return;
+    }
+
     if (
       apiToolBox
         .getNodeService()
@@ -268,10 +286,19 @@ public class LogTransformServiceImpl implements LogTransformService {
           nodeRef
         );
       }
-      long interestGroupID = apiToolBox.getDatabaseID(currentInterestGroup);
-      dbLogRecord.setIgID(interestGroupID);
-      String interestGroupName = apiToolBox.getName(currentInterestGroup);
-      dbLogRecord.setIgName(interestGroupName);
+
+      if (currentInterestGroup != null) {
+        long interestGroupID = apiToolBox.getDatabaseID(currentInterestGroup);
+        dbLogRecord.setIgID(interestGroupID);
+        String interestGroupName = apiToolBox.getName(currentInterestGroup);
+        dbLogRecord.setIgName(interestGroupName);
+      } else {
+        if (logger.isWarnEnabled()) {
+          logger.warn(
+            "Cannot determine interest group for NodeRef: " + nodeRef.getId()
+          );
+        }
+      }
     }
   }
 

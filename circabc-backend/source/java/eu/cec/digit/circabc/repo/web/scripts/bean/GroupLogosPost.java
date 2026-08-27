@@ -55,6 +55,11 @@ public class GroupLogosPost extends CircabcDeclarativeWebScript {
           "Cannot upload a new logo, not enough permissions"
         );
       }
+      if (!this.groupLockApi.canWriteOrAdmin(groupId)) {
+        throw new ReadOnlyAccessException(
+          "Interest group is in read-only mode"
+        );
+      }
 
       FormData form = (FormData) req.parseContent();
 
@@ -85,11 +90,27 @@ public class GroupLogosPost extends CircabcDeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
+      return null;
+    } catch (ReadOnlyAccessException roe) {
+      status.setCode(HttpServletResponse.SC_FORBIDDEN);
+      status.setMessage(roe.getMessage());
+      status.setRedirect(true);
+      if (logger.isWarnEnabled()) {
+        logger.warn(
+          "Read-only mode prevented logo upload: " + roe.getMessage()
+        );
+      }
       return null;
     } catch (InvalidNodeRefException inre) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request", inre);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);

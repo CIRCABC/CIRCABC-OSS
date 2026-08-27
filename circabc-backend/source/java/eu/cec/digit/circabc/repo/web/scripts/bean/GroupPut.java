@@ -65,6 +65,11 @@ public class GroupPut extends CircabcDeclarativeWebScript {
         }
 
         InterestGroup body = InterestGroupJsonParser.parsePartialJSON(req);
+        if (!this.groupLockApi.canWriteOrAdmin(groupIp)) {
+          throw new ReadOnlyAccessException(
+            "Interest group is in read-only mode"
+          );
+        }
         this.groupsApi.groupsIdPut(groupIp, body);
         model.put("message", "ok");
       }
@@ -72,11 +77,27 @@ public class GroupPut extends CircabcDeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
+      return null;
+    } catch (ReadOnlyAccessException roe) {
+      status.setCode(HttpServletResponse.SC_FORBIDDEN);
+      status.setMessage(roe.getMessage());
+      status.setRedirect(true);
+      if (logger.isWarnEnabled()) {
+        logger.warn(
+          "Read-only mode prevented group update: " + roe.getMessage()
+        );
+      }
       return null;
     } catch (InvalidNodeRefException | ParseException | IOException inre) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request", inre);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);

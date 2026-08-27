@@ -37,6 +37,9 @@ export class NavigatorComponent implements OnInit, OnDestroy {
   @Input()
   public currentIg!: InterestGroup;
 
+  @Input()
+  public isIgLocked = false;
+
   public location: 'default' | 'in-group' = 'default';
 
   public isGuest = false;
@@ -291,6 +294,16 @@ export class NavigatorComponent implements OnInit, OnDestroy {
     if (this.isShareEnabled()) {
       window.location.href = environment.shareURL;
     }
+  }
+
+  public get igLockMessage(): string {
+    const message = this.currentIg?.lockInfo?.message;
+    if (message && message.trim() !== '') {
+      const tmp = document.createElement('div');
+      tmp.innerHTML = message;
+      return tmp.textContent ?? tmp.innerText ?? '';
+    }
+    return 'This Interest Group has been locked by the administrator.';
   }
 
   public uiSwitchEnabled() {

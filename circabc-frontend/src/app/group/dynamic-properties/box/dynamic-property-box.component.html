@@ -11,7 +11,7 @@
     <span>{{ val }}</span>
     }
   </div>
-  }
+  } @if (!readOnlyState.isReadOnly()) {
   <div class="actions">
     <a tabindex="0" (click)="bubbleDynpropEdit()"
       >{{ 'label.edit' | transloco }}</a
@@ -20,4 +20,5 @@
       >{{ 'label.delete' | transloco }}</a
     >
   </div>
+  }
 </section>

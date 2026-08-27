@@ -11,6 +11,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 import org.alfresco.repo.security.permissions.AccessDeniedException;
 import org.alfresco.service.cmr.repository.InvalidNodeRefException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.json.simple.parser.ParseException;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.Status;
@@ -20,6 +22,11 @@ import org.springframework.extensions.webscripts.WebScriptRequest;
  * @author beaurpi
  */
 public class ForumContentPost extends CircabcDeclarativeWebScript {
+
+  /**
+   * A logger for the class
+   */
+  static final Log logger = LogFactory.getLog(ForumContentPost.class);
 
   private ForumsApi forumsApi;
   private CurrentUserPermissionCheckerService currentUserPermissionCheckerService;
@@ -36,6 +43,7 @@ public class ForumContentPost extends CircabcDeclarativeWebScript {
     String id = templateVars.get("id");
 
     try {
+      checkGroupReadOnlyMode(id);
       if (id != null) {
         Node body = NodeJsonParser.parseSimpleJSON(req);
 
@@ -56,11 +64,27 @@ public class ForumContentPost extends CircabcDeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
+      return null;
+    } catch (ReadOnlyAccessException roae) {
+      status.setCode(HttpServletResponse.SC_FORBIDDEN);
+      status.setMessage(roae.getMessage());
+      status.setRedirect(true);
+      if (logger.isWarnEnabled()) {
+        logger.warn(
+          "Read-only mode blocked forum content post: " + roae.getMessage()
+        );
+      }
       return null;
     } catch (InvalidNodeRefException | ParseException | IOException inre) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request", inre);
+      }
       return null;
     }
 

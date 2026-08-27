@@ -57,16 +57,25 @@ public class PostAbusesGet extends DeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (InvalidTypeException ite) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad noderef type");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad noderef type", ite);
+      }
       return null;
     } catch (Exception inre) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request", inre);
+      }
       return null;
     }
 

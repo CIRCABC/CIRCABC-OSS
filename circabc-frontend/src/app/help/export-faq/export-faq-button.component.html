@@ -1,0 +1,19 @@
+<button
+  type="button"
+  class="cta"
+  (click)="exportFaq()"
+  [disabled]="isExporting()"
+>
+  @if (isExporting()) {
+  <span
+    class="spinner-border spinner-border-sm me-2"
+    role="status"
+    aria-hidden="true"
+  ></span>
+  {{ 'help.export.exporting' | transloco }} } @else { {{ 'help.export.button' |
+  transloco }} }
+</button>
+
+@if (errorMessage()) {
+<div class="alert alert-danger mt-2" role="alert"> {{ errorMessage() }} </div>
+}

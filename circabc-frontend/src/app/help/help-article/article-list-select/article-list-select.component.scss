@@ -7,10 +7,14 @@
 
     li {
       padding: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
 
       a {
         display: inline-block;
-        width: 100%;
+        flex: 1;
         color: #035;
 
         .metadata {
@@ -18,6 +22,10 @@
           padding: 10px 10px 0;
           margin: 0;
         }
+      }
+
+      cbc-help-action-buttons {
+        flex-shrink: 0;
       }
 
       &.selected {
@@ -36,7 +44,26 @@
         background-color: rgb(255 255 255 / 0.521);
         border-radius: 3px;
       }
+
+      &.draggable {
+        cursor: grab;
+
+        &:hover {
+          box-shadow: 0 4px 8px rgb(0 0 0 / 0.15);
+        }
+
+        &:active {
+          cursor: grabbing;
+        }
+      }
     }
+  }
+
+  .add-article-button {
+    margin-top: 1rem;
+    padding: 0.5rem;
+    display: flex;
+    justify-content: center;
   }
 }
 

@@ -56,7 +56,8 @@ import eu.cec.digit.circabc.migration.entities.generated.properties.I18NProperty
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "newsgroups", propOrder = {
     "notifications",
-    "fora"
+    "fora",
+    "topics"
 })
 @XmlRootElement(name = "newsgroups")
 public class Newsgroups
@@ -69,6 +70,8 @@ public class Newsgroups
     protected Notifications notifications;
     @XmlElement(name = "forum")
     protected List<Forum> fora;
+    @XmlElement(name = "topic")
+    protected List<Topic> topics;
 
     /**
      * Default no-arg constructor
@@ -141,6 +144,16 @@ public class Newsgroups
         return this.fora;
     }
 
+    /**
+     * Gets the value of the topics property (topics directly under newsgroups root).
+     */
+    public List<Topic> getTopics() {
+        if (topics == null) {
+            topics = new ArrayList<Topic>();
+        }
+        return this.topics;
+    }
+
     public Newsgroups withNotifications(Notifications value) {
         setNotifications(value);
         return this;
@@ -158,6 +171,22 @@ public class Newsgroups
     public Newsgroups withFora(Collection<Forum> values) {
         if (values!= null) {
             getFora().addAll(values);
+        }
+        return this;
+    }
+
+    public Newsgroups withTopics(Topic... values) {
+        if (values!= null) {
+            for (Topic value: values) {
+                getTopics().add(value);
+            }
+        }
+        return this;
+    }
+
+    public Newsgroups withTopics(Collection<Topic> values) {
+        if (values!= null) {
+            getTopics().addAll(values);
         }
         return this;
     }

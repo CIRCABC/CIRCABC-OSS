@@ -858,6 +858,7 @@ public abstract class BaseWaiDialog
               logRecord.setOK(true);
             } catch (Throwable e) {
               logRecord.setOK(false);
+              logger.error("Error during async finish execution", e);
             }
             getLogService().log(logRecord);
             return ignoredOutcome;

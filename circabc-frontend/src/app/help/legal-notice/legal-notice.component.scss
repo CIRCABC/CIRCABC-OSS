@@ -15,3 +15,14 @@ ul li {
   padding-left: 10px;
   padding-right: 10px;
 }
+
+.listStyleNone {
+  li {
+    list-style-type: none;
+  }
+}
+
+.linkHighlight {
+  font-weight: bold !important;
+  text-decoration: underline !important;
+}

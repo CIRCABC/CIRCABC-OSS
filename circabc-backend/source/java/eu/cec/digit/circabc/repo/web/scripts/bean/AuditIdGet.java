@@ -14,12 +14,19 @@ import org.alfresco.repo.node.MLPropertyInterceptor;
 import org.alfresco.repo.security.permissions.AccessDeniedException;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.DeclarativeWebScript;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptRequest;
 
 public class AuditIdGet extends DeclarativeWebScript {
+
+  /**
+   * A logger for the class
+   */
+  static final Log logger = LogFactory.getLog(AuditIdGet.class);
 
   private LogService logService;
   private NodeService nodeService;
@@ -63,15 +70,18 @@ public class AuditIdGet extends DeclarativeWebScript {
           ContentModel.PROP_NODE_DBID
         );
 
-      String user = req.getParameter("userId").isEmpty()
+      String userParam = req.getParameter("userId");
+      String user = (userParam == null || userParam.isEmpty())
         ? null
-        : req.getParameter("userId");
-      String service = req.getParameter("service").isEmpty()
+        : userParam;
+      String serviceParam = req.getParameter("service");
+      String service = (serviceParam == null || serviceParam.isEmpty())
         ? null
-        : req.getParameter("service");
-      String method = req.getParameter("activity").isEmpty()
+        : serviceParam;
+      String methodParam = req.getParameter("activity");
+      String method = (methodParam == null || methodParam.isEmpty())
         ? null
-        : req.getParameter("activity");
+        : methodParam;
       Date fromDate = Converter.convertStringToDate(req.getParameter("from"));
       Date toDate = Converter.convertStringToDate(req.getParameter("to"));
 
@@ -88,12 +98,18 @@ public class AuditIdGet extends DeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied: ", ade);
+      }
       return null;
     } catch (Exception e) {
       status.setCode(HttpServletResponse.SC_NOT_ACCEPTABLE);
       status.setMessage(e.getMessage());
       status.setException(e);
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Failed to get the activities for node: " + id, e);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);

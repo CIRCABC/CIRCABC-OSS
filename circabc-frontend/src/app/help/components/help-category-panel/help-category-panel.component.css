@@ -1,0 +1,306 @@
+/* CSS Custom Properties for theming */
+:host {
+  --accordion-panel-padding: 16px;
+  --accordion-nested-indent: 24px;
+  --accordion-item-gap: 8px;
+  --accordion-bg-primary: #ffffff;
+  --accordion-bg-hover: #f5f5f5;
+  --accordion-bg-expanded: #fafafa;
+  --accordion-border-color: #e0e0e0;
+  --accordion-text-primary: #212121;
+  --accordion-text-secondary: #757575;
+  --accordion-focus-color: #1976d2;
+  --accordion-transition-duration: 300ms;
+  --accordion-transition-timing: ease-in-out;
+  --accordion-focus-outline-width: 2px;
+  --accordion-min-touch-target: 44px;
+}
+
+/* Category Panel Container */
+.category-panel {
+  border: 1px solid var(--accordion-border-color);
+  border-radius: 4px;
+  margin-bottom: var(--accordion-item-gap);
+  background: var(--accordion-bg-primary);
+  overflow: hidden;
+}
+
+/* Category Header Container */
+.category-header-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Category Header Button */
+.category-header {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--accordion-panel-padding);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--accordion-text-primary);
+  text-align: left;
+  min-height: var(--accordion-min-touch-target);
+  transition: background-color 150ms ease;
+}
+
+/* Category Actions */
+.category-actions {
+  padding-right: var(--accordion-panel-padding);
+  display: flex;
+  align-items: center;
+}
+
+.category-header:hover {
+  background: var(--accordion-bg-hover);
+}
+
+.category-header:focus {
+  outline: var(--accordion-focus-outline-width) solid
+    var(--accordion-focus-color);
+  outline-offset: -2px;
+}
+
+/* Category Name */
+.category-name {
+  flex: 1;
+}
+
+/* Expansion Icon */
+.expansion-icon {
+  transition: transform var(--accordion-transition-duration)
+    var(--accordion-transition-timing);
+  font-size: 12px;
+  color: var(--accordion-text-secondary);
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+.expansion-icon.rotated {
+  transform: rotate(-180deg);
+}
+
+/* Category Content Area */
+.category-content {
+  padding: 0 var(--accordion-panel-padding) var(--accordion-panel-padding);
+  animation: slideDown var(--accordion-transition-duration)
+    var(--accordion-transition-timing);
+}
+
+/* Add Subsection Container */
+/* Removed - no longer needed as Add button is in action buttons */
+
+/* Slide Down Animation */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Section Headings */
+.section-heading {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accordion-text-secondary);
+  margin: 12px 0 8px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Subcategory and Article Lists */
+.subcategory-list,
+.article-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.subcategory-list li,
+.article-list li {
+  margin-bottom: 4px;
+}
+
+/* Drag-and-Drop Styles */
+.draggable {
+  cursor: move;
+  cursor: grab;
+}
+
+.draggable:active {
+  cursor: grabbing;
+}
+
+/* CDK Drag Preview */
+.cdk-drag-preview {
+  opacity: 0.8;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  background: var(--accordion-bg-primary);
+}
+
+/* CDK Drag Placeholder */
+.cdk-drag-placeholder {
+  opacity: 0.4;
+  background: var(--accordion-bg-hover);
+  border: 2px dashed var(--accordion-border-color);
+  border-radius: 4px;
+}
+
+/* CDK Drag Animating */
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* CDK Drop List Dragging */
+.cdk-drop-list-dragging .cdk-drag {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* Responsive Breakpoints */
+
+/* Mobile: 320px - 767px */
+@media (max-width: 767px) {
+  :host {
+    --accordion-panel-padding: 12px;
+    --accordion-nested-indent: 16px;
+    --accordion-item-gap: 6px;
+  }
+
+  .category-header {
+    font-size: 14px;
+  }
+
+  .section-heading {
+    font-size: 13px;
+  }
+}
+
+/* Tablet: 768px - 1023px */
+@media (min-width: 768px) and (max-width: 1023px) {
+  :host {
+    --accordion-panel-padding: 14px;
+    --accordion-nested-indent: 20px;
+  }
+}
+
+/* Desktop: 1024px+ */
+@media (min-width: 1024px) {
+  :host {
+    --accordion-panel-padding: 16px;
+    --accordion-nested-indent: 24px;
+  }
+}
+
+/* Accessibility Enhancements */
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .category-panel {
+    border-width: 2px;
+  }
+
+  .category-header:focus {
+    outline-width: 3px;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .expansion-icon {
+    transition: none;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  :host {
+    --accordion-bg-primary: #1e1e1e;
+    --accordion-bg-hover: #2d2d2d;
+    --accordion-bg-expanded: #252525;
+    --accordion-border-color: #404040;
+    --accordion-text-primary: #e0e0e0;
+    --accordion-text-secondary: #a0a0a0;
+    --accordion-focus-color: #64b5f6;
+  }
+}
+
+/* Drag Handle Styles */
+.subcategory-list li,
+.article-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.drag-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: var(--accordion-text-secondary);
+  cursor: grab;
+  user-select: none;
+  font-size: 16px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.drag-handle:hover {
+  color: var(--accordion-text-primary);
+}
+
+.subcategory-content,
+.article-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Paste Button */
+.paste-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 10px 16px;
+  margin-top: 8px;
+  background: transparent;
+  border: 2px dashed var(--accordion-border-color);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--accordion-text-secondary);
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+.paste-btn:hover {
+  background: var(--accordion-bg-hover);
+  border-color: var(--accordion-focus-color);
+  color: var(--accordion-focus-color);
+}
+
+.paste-btn:focus {
+  outline: 2px solid var(--accordion-focus-color);
+  outline-offset: -2px;
+}

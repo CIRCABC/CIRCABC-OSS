@@ -1,0 +1,12 @@
+version: "3"
+services:
+  weblogic:
+    build: weblogic
+    container_name: weblogic
+    ports:
+    - 80:7001
+    volumes:
+      - ./weblogic/license:/u01/oracle/user_projects/domains/base_domain/alfresco/extension/license
+      - ./weblogic:/u01/oracle/properties
+      - ./weblogic/dist:/u01/oracle/user_projects/domains/base_domain/autodeploy
+    

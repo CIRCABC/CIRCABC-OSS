@@ -502,6 +502,26 @@
         description-id="move_ig_dialog_description"
       />
 
+			<!-- Definition of the export Ig dialog -->
+			<dialog
+        name="exportIgDialog"
+        page="/jsp/extension/wai/dialog/admin/migration/export-ig.jsp"
+        managed-bean="ExportIgDialog"
+        icon="/images/icons/add_content_large.gif"
+        title="Export Interest Group"
+        description="Export a CIRCABC Interest Group"
+      />
+
+			<!-- Definition of the import Ig dialog -->
+			<dialog
+        name="importIgDialog"
+        page="/jsp/extension/wai/dialog/admin/migration/import-ig.jsp"
+        managed-bean="ImportIgDialog"
+        icon="/images/icons/add_content_large.gif"
+        title="Import CIRCABC Export"
+        description="Import a previously exported CIRCABC Interest Group"
+      />
+
 			<!-- Definition of an advanced circabc creation wizard           -->
 			<dialog
         name="createCircabcDialogWai"

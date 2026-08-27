@@ -19,6 +19,7 @@ import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptRequest;
+import ucar.nc2.util.xml.Parse;
 
 public class CategoryPut extends CircabcDeclarativeWebScript {
 
@@ -85,24 +86,18 @@ public class CategoryPut extends CircabcDeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied to category: " + categoryId, ade);
+      }
       return null;
-    } catch (InvalidNodeRefException inre) {
+    } catch (InvalidNodeRefException | IOException | ParseException e) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
-      return null;
-    } catch (IOException e) {
-      status.setCode(HttpServletResponse.SC_BAD_REQUEST);
-      status.setMessage("Bad body");
-      status.setRedirect(true);
-      return null;
-    } catch (ParseException e) {
       if (logger.isErrorEnabled()) {
-        logger.error("Parse execption " + req, e);
+        logger.error("Bad request " + req, e);
       }
-      status.setCode(HttpServletResponse.SC_BAD_REQUEST);
-      status.setMessage("Bad body");
-      status.setRedirect(true);
+      return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);
     }

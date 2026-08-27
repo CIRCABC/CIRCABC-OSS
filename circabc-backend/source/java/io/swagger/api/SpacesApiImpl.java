@@ -13,6 +13,7 @@ import eu.cec.digit.circabc.service.struct.ManagementService;
 import io.swagger.model.*;
 import io.swagger.util.ApiToolBox;
 import io.swagger.util.Converter;
+import io.swagger.util.RestInputSanitizer;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -121,7 +122,8 @@ public class SpacesApiImpl implements SpacesApi {
     int nbLimit,
     String sort,
     boolean folderOnly,
-    boolean fileOnly
+    boolean fileOnly,
+    boolean skipExpiredItems
   ) {
     PagedNodes pagedResult = new PagedNodes();
 
@@ -143,8 +145,7 @@ public class SpacesApiImpl implements SpacesApi {
 
       sortProps.add(sortFolderFirstPair);
 
-      // BUG DIGITCIRCABC-4900
-      if (!"".contentEquals(sort)) {
+      if (sort != null && !"".equals(sort)) {
         String localName = sort.replace("_DESC", "").replace("_ASC", "");
         String namespace = NamespaceService.CONTENT_MODEL_1_0_URI;
         if (
@@ -196,12 +197,12 @@ public class SpacesApiImpl implements SpacesApi {
         }
         // if expiration_date is before current date we don't put this node on the
         // result
-        if (dateStr != null) {
+        if (skipExpiredItems && dateStr != null && !dateStr.trim().isEmpty()) {
           SimpleDateFormat dateFormat = new SimpleDateFormat(
             "EEE MMM dd HH:mm:ss zzz yyyy"
           );
           try {
-            Date parsedDate = dateFormat.parse(dateStr);
+            Date parsedDate = dateFormat.parse(dateStr.trim());
             Timestamp expireDate = new Timestamp(parsedDate.getTime());
 
             Timestamp currentTimestamp = new Timestamp(
@@ -214,7 +215,9 @@ public class SpacesApiImpl implements SpacesApi {
             throw new AlfrescoRuntimeException("ParseException.", e);
           }
         }
-        if (!isExpirededDate) result.add(nodesApi.getNode(childRef));
+        if (!skipExpiredItems || !isExpirededDate) {
+          result.add(nodesApi.getNode(childRef));
+        }
       }
 
       pagedResult.setTotal((long) items.size());
@@ -299,7 +302,9 @@ public class SpacesApiImpl implements SpacesApi {
     MLText titles = Converter.toMLText(body.getTitle());
     secureNodeService.setProperty(nodeRef, ContentModel.PROP_TITLE, titles);
 
-    MLText descriptions = Converter.toMLText(body.getDescription());
+    MLText descriptions = Converter.toMLText(
+      RestInputSanitizer.sanitizeRichText(body.getDescription())
+    );
     secureNodeService.setProperty(
       nodeRef,
       ContentModel.PROP_DESCRIPTION,
@@ -383,7 +388,9 @@ public class SpacesApiImpl implements SpacesApi {
     this.secureNodeService.setProperty(
         nodeRef,
         ContentModel.PROP_DESCRIPTION,
-        Converter.toMLText(body.getDescription())
+        Converter.toMLText(
+          RestInputSanitizer.sanitizeRichText(body.getDescription())
+        )
       );
 
     try {
@@ -422,6 +429,9 @@ public class SpacesApiImpl implements SpacesApi {
     NodeRef createdNode = null;
 
     if (secureNodeService.hasAspect(nodeRef, CircabcModel.ASPECT_LIBRARY)) {
+      String safeUrl = RestInputSanitizer.requireSafeHttpUrl(
+        body.getProperties().get("url")
+      );
       String name = body.getName();
       name = name.replace(" ", "_");
 
@@ -443,7 +453,7 @@ public class SpacesApiImpl implements SpacesApi {
       secureNodeService.setProperty(
         createdNode,
         DocumentModel.PROP_URL,
-        body.getProperties().get("url")
+        safeUrl
       );
     }
 
@@ -907,8 +917,20 @@ public class SpacesApiImpl implements SpacesApi {
       searchParameters.setLanguage(SearchService.LANGUAGE_LUCENE);
       searchParameters.addStore(Repository.getStoreRef());
 
-      if (!sort.equalsIgnoreCase("")) {
-        searchParameters.addSort(sort.split("_")[0], sort.endsWith("ASC"));
+      if (sort != null && !sort.equalsIgnoreCase("")) {
+        String localName = sort.replace("_DESC", "").replace("_ASC", "");
+        String sortField;
+        if (
+          localName.equals("security_ranking") ||
+          localName.equals(EXPIRATION_DATE) ||
+          localName.equals("status")
+        ) {
+          sortField =
+            DocumentModel.CIRCABC_DOCUMENT_MODEL_PREFIX + ":" + localName;
+        } else {
+          sortField = NamespaceService.CONTENT_MODEL_PREFIX + ":" + localName;
+        }
+        searchParameters.addSort(sortField, sort.endsWith("ASC"));
       }
 
       FileFilterMode.setClient(Client.cmis);

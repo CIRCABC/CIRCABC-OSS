@@ -160,6 +160,18 @@ public interface RemoteFileReader
 	public abstract boolean isDocument(final String path) throws ExportationException;
 
 	/**
+	 * Return true if the path target is an Information News node.
+	 *
+	 * @param path
+	 * @return
+	 * @throws ExportationException
+	 */
+	public default boolean isNews(final String path) throws ExportationException
+	{
+		return false;
+	}
+
+	/**
 	 * Return the size of the file (bytes). A  negative value is returned if the information is not available.
 	 *
 	 * @param path

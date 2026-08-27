@@ -25,7 +25,7 @@
         >
         }
       </cbc-reponsive-sub-menu>
-      }
+      } @if (!readOnlyState.isReadOnly()) {
       <a
         tabindex="0"
         class="cta cta--plus"
@@ -33,6 +33,7 @@
         [class.disabled]="dynamicProperties.length === 20"
         >{{ 'dynamic-property.add' | transloco }}</a
       >
+      }
     </div>
   </div>
   @if (dynamicProperties.length === 20) {

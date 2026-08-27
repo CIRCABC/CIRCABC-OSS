@@ -56,6 +56,8 @@ public class NodesIdPasteCopy extends CircabcDeclarativeWebScript {
     String[] nodeIds = req.getParameterValues("nodeIds");
 
     try {
+      checkGroupReadOnlyMode(id);
+
       if (
         !this.currentUserPermissionCheckerService.hasAlfrescoAddChildrenPermission(
             id
@@ -73,16 +75,30 @@ public class NodesIdPasteCopy extends CircabcDeclarativeWebScript {
           folderNodeRef,
           ClipboardAction.COPY.getValue()
         );
+    } catch (ReadOnlyAccessException roae) {
+      status.setCode(HttpServletResponse.SC_FORBIDDEN);
+      status.setMessage(roae.getMessage());
+      status.setRedirect(true);
+      if (logger.isWarnEnabled()) {
+        logger.warn("Read-only mode blocked paste/copy on node: " + id, roae);
+      }
+      return null;
     } catch (AccessDeniedException ade) {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (Exception e) {
       status.setCode(HttpServletResponse.SC_NOT_ACCEPTABLE);
       status.setMessage(e.getMessage());
       status.setException(e);
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error(e.getMessage(), e);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);

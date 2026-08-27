@@ -77,16 +77,25 @@ public class GroupsMembersExpirationPut extends CircabcDeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (InvalidNodeRefException inre) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request", inre);
+      }
       return null;
     } catch (java.text.ParseException e) {
       status.setCode(HttpServletResponse.SC_NOT_ACCEPTABLE);
       status.setMessage("Bad body");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad body", e);
+      }
       return null;
     }
 

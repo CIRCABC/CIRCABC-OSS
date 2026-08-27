@@ -118,6 +118,7 @@ public class ContentIdCheckin extends CircabcDeclarativeWebScript {
     String versionNote = req.getParameter("comment");
 
     try {
+      checkGroupReadOnlyMode(id);
       if (
         !this.currentUserPermissionCheckerService.hasAlfCheckinPermission(
             workingCopyRef.getId()
@@ -155,16 +156,30 @@ public class ContentIdCheckin extends CircabcDeclarativeWebScript {
           );
 
       this.circabcRenditionService.addRequest(checkedInNodeRef);
+    } catch (ReadOnlyAccessException roae) {
+      status.setCode(HttpServletResponse.SC_FORBIDDEN);
+      status.setMessage(roae.getMessage());
+      status.setRedirect(true);
+      if (logger.isWarnEnabled()) {
+        logger.warn("Read-only mode blocked checkin: " + roae.getMessage());
+      }
+      return null;
     } catch (AccessDeniedException ade) {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (Exception e) {
       status.setCode(HttpServletResponse.SC_NOT_ACCEPTABLE);
       status.setMessage(e.getMessage());
       status.setException(e);
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error(e.getMessage(), e);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);

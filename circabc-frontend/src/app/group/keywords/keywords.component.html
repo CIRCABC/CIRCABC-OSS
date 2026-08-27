@@ -26,7 +26,7 @@
         >
         }
       </cbc-reponsive-sub-menu>
-      }
+      } @if (!readOnlyState.isReadOnly()) {
       <div
         tabindex="0"
         class="cta cta--plus dropdown-trigger"
@@ -36,12 +36,12 @@
         <div class="dropdown dropdown--add-file">
           <ul>
             <li>
-              <a tabindex="0" class="keyword" (click)="showCreateModal = true">
+              <a tabindex="0" class="keyword" (click)="openCreateModal()">
                 {{ 'label.keyword' | transloco }}
               </a>
             </li>
             <li>
-              <a tabindex="0" class="import" (click)="showImportModal = true">
+              <a tabindex="0" class="import" (click)="openImportModal()">
                 {{ 'label.import' | transloco }}
               </a>
             </li>
@@ -49,6 +49,7 @@
         </div>
         }
       </div>
+      }
     </div>
   </div>
   <section class="table-container">
@@ -78,7 +79,8 @@
       </thead>
       <tbody>
         <tr>
-          @if (selection !== undefined && selection.length > 0) {
+          @if (selection !== undefined && selection.length > 0 &&
+          !readOnlyState.isReadOnly()) {
           <td colspan="3">
             <ul class="bulk-actions">
               <li>
@@ -111,6 +113,7 @@
             <div class="file-name">
               <cbc-keyword-tag [keyword]="keyword"></cbc-keyword-tag>
             </div>
+            @if (!readOnlyState.isReadOnly()) {
             <ul class="actions">
               <li>
                 <cbc-delete-keyword
@@ -124,6 +127,7 @@
                 >
               </li>
             </ul>
+            }
           </td>
         </tr>
         }
@@ -147,7 +151,8 @@
         style="vertical-align: middle; margin: 0 25px"
       />
     </div>
-    } @if (selection !== undefined && selection.length > 0) {
+    } @if (selection !== undefined && selection.length > 0 &&
+    !readOnlyState.isReadOnly()) {
     <ul class="bulk-actions">
       <li>
         <cbc-number-badge [number]="selection.length"></cbc-number-badge>

@@ -1,0 +1,593 @@
+Index: com/sun/pdfview/BaseWatchable.java
+===================================================================
+--- com/sun/pdfview/BaseWatchable.java	(revision 140)
++++ com/sun/pdfview/BaseWatchable.java	(working copy)
+@@ -38,6 +38,7 @@
+     private static boolean SuppressSetErrorStackTrace = false;
+     /** the thread we are running in */
+     private Thread thread;
++	private Exception exception;
+ 
+     /** 
+      * Creates a new instance of BaseWatchable
+@@ -303,12 +304,17 @@
+      * Set an error on this watchable
+      */
+     protected void setError(Exception error) {
++    	exception = error;
+         if (!SuppressSetErrorStackTrace) {
+             error.printStackTrace();
+         }
+ 
+         setStatus(Watchable.ERROR);
+     }
++    
++    public Exception getException() {
++    	return exception;
++    }
+ 
+     private String getStatusString() {
+         switch (getStatus()) {
+Index: com/sun/pdfview/font/cid/PDFCMap.java
+===================================================================
+--- com/sun/pdfview/font/cid/PDFCMap.java	(revision 0)
++++ com/sun/pdfview/font/cid/PDFCMap.java	(working copy)
+@@ -0,0 +1,106 @@
++/*
++ * Copyright 2004 Sun Microsystems, Inc., 4150 Network Circle,
++ * Santa Clara, California 95054, U.S.A. All rights reserved.
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ * 
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ * 
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
++ */
++package com.sun.pdfview.font.cid;
++
++import java.io.ByteArrayInputStream;
++import java.io.IOException;
++import java.util.HashMap;
++
++import com.sun.pdfview.PDFObject;
++
++/**
++ * A CMap maps from a character in a composite font to a font/glyph number
++ * pair in a CID font.
++ *
++ * @author  jkaplan
++ */
++public abstract class PDFCMap {
++    /**
++     * A cache of known CMaps by name
++     */
++    private static HashMap<String, PDFCMap> cache;
++    
++    /** Creates a new instance of CMap */
++    protected PDFCMap() {}
++    
++    /**
++     * Get a CMap, given a PDF object containing one of the following:
++     *  a string name of a known CMap
++     *  a stream containing a CMap definition
++     */
++    public static PDFCMap getCMap(PDFObject map) throws IOException {
++        if (map.getType() == PDFObject.NAME) {
++            return getCMap(map.getStringValue());
++        } else if (map.getType() == PDFObject.STREAM) {
++            return parseCMap(map);
++        } else {
++            throw new IOException("CMap type not Name or Stream!");
++        }
++    }
++       
++    /**
++     * Get a CMap, given a string name
++     */
++    public static PDFCMap getCMap(String mapName) throws IOException {
++        if (cache == null) {
++            populateCache();
++        }
++        
++        if (!cache.containsKey(mapName)) {
++            throw new IOException("Unknown CMap: " + mapName);
++        }
++            
++        return cache.get(mapName);
++    }
++    
++    /**
++     * Populate the cache with well-known types
++     */
++    protected static void populateCache() {
++        cache = new HashMap<String, PDFCMap>();
++    
++        // add the Identity-H map
++        cache.put("Identity-H", new PDFCMap() {
++            @Override
++			public char map(char src) {
++                return src;
++            }
++        });
++    }
++    
++    /**
++     * Parse a CMap from a CMap stream
++     */
++    protected static PDFCMap parseCMap(PDFObject map) throws IOException {
++       	return new ToUnicodeMap(map);
++    }
++    
++    /**
++     * Map a given source character to a destination character
++     */
++    public abstract char map(char src);
++    
++    /**
++     * Get the font number assoicated with a given source character
++     */
++    public int getFontID(char src) {
++        return 0;
++    }
++    
++}
+\ No newline at end of file
+Index: com/sun/pdfview/font/cid/ToUnicodeMap.java
+===================================================================
+--- com/sun/pdfview/font/cid/ToUnicodeMap.java	(revision 0)
++++ com/sun/pdfview/font/cid/ToUnicodeMap.java	(working copy)
+@@ -0,0 +1,254 @@
++package com.sun.pdfview.font.cid;
++
++import java.io.BufferedReader;
++import java.io.IOException;
++import java.io.StringReader;
++import java.io.UnsupportedEncodingException;
++import java.util.ArrayList;
++import java.util.HashMap;
++import java.util.List;
++import java.util.Map;
++
++import com.sun.pdfview.PDFObject;
++
++/*****************************************************************************
++ * Parses a CMAP and builds a lookup table to map CMAP based codes to unicode.
++ * This is not a fully functional CMAP parser but a stripped down parser
++ * that should be able to parse some limited variants of CMAPs that are
++ * used for the ToUnicode mapping found for some Type0 fonts.
++ *
++ * @author  Bernd Rosstauscher
++ * @since 03.08.2011
++ ****************************************************************************/
++
++public class ToUnicodeMap extends PDFCMap {
++	
++	/*****************************************************************************
++	 * Small helper class to define a code range.
++	 ****************************************************************************/
++
++	private static class CodeRangeMapping {
++		char srcStart;
++		char srcEnd;
++		
++		CodeRangeMapping(char srcStart, char srcEnd) {
++			this.srcStart = srcStart;
++			this.srcEnd = srcEnd;
++		}
++		
++		boolean contains(char c) {
++			return this.srcStart <= c 
++								&& c <= this.srcEnd;
++		}
++		
++	}
++	
++	/*****************************************************************************
++	 * Small helper class to define a char range.
++	 ****************************************************************************/
++
++	private static class CharRangeMapping {
++		char srcStart;
++		char srcEnd;
++		char destStart;
++		
++		CharRangeMapping(char srcStart, char srcEnd, char destStart) {
++			this.srcStart = srcStart;
++			this.srcEnd = srcEnd;
++			this.destStart = destStart;
++		}
++		
++		boolean contains(char c) {
++			return this.srcStart <= c 
++								&& c <= this.srcEnd;
++		}
++		
++		char map(char src) {
++			return (char) (this.destStart + (src-this.srcStart));
++		}
++		
++	}
++	
++	private Map<Character, Character> singleCharMappings;
++	private List<CharRangeMapping> charRangeMappings;
++	private List<CodeRangeMapping> codeRangeMappings;
++
++	/*************************************************************************
++	 * Constructor
++	 * @param map 
++	 * @throws IOException 
++	 ************************************************************************/
++	
++	public ToUnicodeMap(PDFObject map) throws IOException {
++		super();
++		this.singleCharMappings = new HashMap<Character, Character>();
++		this.charRangeMappings = new ArrayList<CharRangeMapping>();
++		this.codeRangeMappings = new ArrayList<CodeRangeMapping>();
++		parseMappings(map);
++	}
++	
++	/*************************************************************************
++	 * @param map
++	 * @throws IOException 
++	 ************************************************************************/
++	
++	private void parseMappings(PDFObject map) throws IOException {
++		try {
++			StringReader reader = new StringReader(new String(map.getStream(), "ASCII"));
++			BufferedReader bf = new BufferedReader(reader);
++			String line = bf.readLine();
++			while (line != null) {
++				if (line.contains("beginbfchar")) {
++					parseSingleCharMappingSection(bf);
++				}
++				if (line.contains("beginbfrange")) {
++					parseCharRangeMappingSection(bf);
++				}
++				if (line.contains("begincodespacerange")) {
++					parseCodeRangeMappingSection(bf);
++				}
++				line = bf.readLine();
++			}
++		} catch (UnsupportedEncodingException e) {
++			throw new IOException(e);
++		} 
++	}
++
++	/*************************************************************************
++	 * @param bf
++	 * @throws IOException 
++	 ************************************************************************/
++	
++	private void parseCharRangeMappingSection(BufferedReader bf) throws IOException {
++		String line = bf.readLine();
++		while (line != null) {
++			if (line.contains("endbfrange")) {
++				break;
++			}
++			parseRangeLine(line);
++			line = bf.readLine();
++		}
++	}
++
++	private void parseCodeRangeMappingSection(BufferedReader bf) throws IOException {
++		String line = bf.readLine();
++		while (line != null) {
++			if (line.contains("endcodespacerange")) {
++				break;
++			}
++			parseCodeRangeLine(line);
++			line = bf.readLine();
++		}
++	}
++
++	/*************************************************************************
++	 * @param line
++	 * @return
++	 ************************************************************************/
++	
++	private void parseRangeLine(String line) {
++		String[] mapping = line.split(" ");
++		if (mapping.length == 3) {
++			Character srcStart = parseChar(mapping[0]);
++			Character srcEnd = parseChar(mapping[1]);
++			Character destStart = parseChar(mapping[2]);
++			this.charRangeMappings.add(new CharRangeMapping(srcStart, srcEnd, destStart));
++		}
++	}
++
++	private void parseCodeRangeLine(String line) {
++		String[] mapping = line.split(" ");
++		if (mapping.length == 2) {
++			Character srcStart = parseChar(mapping[0]);
++			Character srcEnd = parseChar(mapping[1]);
++			this.codeRangeMappings.add(new CodeRangeMapping(srcStart, srcEnd));
++		}
++	}
++
++	/*************************************************************************
++	 * @param bf
++	 * @throws IOException 
++	 ************************************************************************/
++	
++	private void parseSingleCharMappingSection(BufferedReader bf) throws IOException {
++		String line = bf.readLine();
++		while (line != null) {
++			if (line.contains("endbfchar")) {
++				break;
++			}
++			parseSingleCharMappingLine(line);
++			line = bf.readLine();
++		}
++	}
++
++	/*************************************************************************
++	 * @param line
++	 * @return
++	 ************************************************************************/
++	
++	private void parseSingleCharMappingLine(String line) {
++		String[] mapping = line.split(" ");
++		if (mapping.length == 2 
++				&& mapping[0].startsWith("<")
++				&& mapping[1].startsWith("<")) {
++			this.singleCharMappings.put(parseChar(mapping[0]), parseChar(mapping[1]));
++		}
++	}
++
++	/*************************************************************************
++	 * Parse a string of the format <0F3A> to a char.
++	 * @param charDef
++	 * @return
++	 ************************************************************************/
++	
++	private Character parseChar(String charDef) {
++		if (charDef.startsWith("<")) {
++			charDef = charDef.substring(1);
++		}
++		if (charDef.endsWith(">")) {
++			charDef = charDef.substring(0, charDef.length()-1);
++		}
++		int result = Integer.decode("0x"+charDef);
++		return (char) result;
++	}
++
++	/*************************************************************************
++	 * map
++	 * @see com.sun.pdfview.font.cid.PDFCMap#map(char)
++	 ************************************************************************/
++	@Override
++	public char map(char src) {
++		Character mappedChar = null;
++		for (CodeRangeMapping codeRange : this.codeRangeMappings) {
++			if(codeRange.contains(src)) {
++				mappedChar = this.singleCharMappings.get(src);
++				if (mappedChar == null) {
++					mappedChar = lookupInRanges(src);
++				}
++				break;
++			}
++		}
++		if (mappedChar == null) {
++			// TODO XOND 27.03.2012: PDF Spec. "9.7.6.3Handling Undefined Characters"
++			mappedChar = 0;
++		}
++		return mappedChar;
++	}
++
++	/*************************************************************************
++	 * @param src
++	 * @return
++	 ************************************************************************/
++	
++	private Character lookupInRanges(char src) {
++		Character mappedChar = null;
++		for (CharRangeMapping rangeMapping : this.charRangeMappings) {
++			if (rangeMapping.contains(src)) {
++				mappedChar = rangeMapping.map(src);
++				break;
++			}
++		}
++		return mappedChar;
++	}
++
++}
+\ No newline at end of file
+Index: com/sun/pdfview/font/CIDFontType0.java
+===================================================================
+--- com/sun/pdfview/font/CIDFontType0.java	(revision 0)
++++ com/sun/pdfview/font/CIDFontType0.java	(working copy)
+@@ -0,0 +1,62 @@
++package com.sun.pdfview.font;
++
++import java.io.IOException;
++
++import com.sun.pdfview.PDFObject;
++import com.sun.pdfview.font.cid.PDFCMap;
++
++/*****************************************************************************
++ * At the moment this is not fully supported to parse CID based fonts
++ * As a hack we try to use a built in font as substitution and use a
++ * toUnicode map to translate the characters if available.
++ * 
++ *
++ * @version $Id: CIDFontType0.java,v 1.1 2011-08-03 15:48:56 bros Exp $ 
++ * @author  Bernd Rosstauscher
++ * @since 03.08.2011
++ ****************************************************************************/
++
++public class CIDFontType0 extends BuiltinFont {
++
++	private PDFCMap glyphLookupMap;
++
++	/*************************************************************************
++	 * Constructor
++	 * @param baseFont
++	 * @param fontObj
++	 * @param descriptor
++	 * @throws IOException
++	 ************************************************************************/
++	
++	public CIDFontType0(String baseFont, PDFObject fontObj,
++			PDFFontDescriptor descriptor) throws IOException {
++		super(baseFont, fontObj, descriptor);
++	}
++	
++	/*************************************************************************
++	 * @param fontObj
++	 * @throws IOException
++	 ************************************************************************/
++	
++	public void parseToUnicodeMap(PDFObject fontObj) throws IOException {
++		PDFObject toUnicode = fontObj.getDictRef("ToUnicode");
++		if (toUnicode != null) {
++			PDFCMap cmap = PDFCMap.getCMap(toUnicode);
++			this.glyphLookupMap = cmap;
++		}
++	}
++	
++	 /**
++     * Get a character from the first font in the descendant fonts array
++     */
++    @Override
++	protected PDFGlyph getGlyph(char src, String name) {
++        //TODO BROS 03.08.2011 Hack for unsupported Type0 CID based fonts
++		// If we have a toUnicodeMap then try to use that one when mapping to our build in font.
++    	// See "9.10 Extraction of Text Content" in the PDF spec.
++        if (this.glyphLookupMap != null) {
++        	src = this.glyphLookupMap.map(src);
++        }
++		return super.getGlyph(src, name);
++    }
++}
+\ No newline at end of file
+Index: com/sun/pdfview/font/PDFFont.java
+===================================================================
+--- com/sun/pdfview/font/PDFFont.java	(revision 140)
++++ com/sun/pdfview/font/PDFFont.java	(working copy)
+@@ -187,11 +187,18 @@
+             // load a type 3 font
+             font = new Type3Font(baseFont, obj, resources, descriptor);
+         } else if (subType.equals("CIDFontType2")) {
+-            font = new CIDFontType2(baseFont, obj, descriptor);
++        	if(descriptor.getFontFile2() != null) {
++                font = new CIDFontType2(baseFont, obj, descriptor);
++        	}else {
++                // fake it with a built-in font
++                font = new BuiltinFont(baseFont, obj, descriptor);
++        	}
+         } else if (subType.equals("CIDFontType0")) {
+-            font = new CIDFontType2(baseFont, obj, descriptor);
+-//            font = new CIDFontType0(baseFont, obj, descriptor);
+-//            throw new IOException ("CIDFontType0 is unimplemented. " + obj);
++        	if(descriptor.getFontFile2() !=null){
++                font = new CIDFontType2(baseFont, obj, descriptor);
++        	}else {
++                font = new CIDFontType0(baseFont, obj, descriptor);
++        	}
+         } else {
+             throw new PDFParseException("Don't know how to handle a '" +
+                     subType + "' font");
+Index: com/sun/pdfview/font/Type0Font.java
+===================================================================
+--- com/sun/pdfview/font/Type0Font.java	(revision 140)
++++ com/sun/pdfview/font/Type0Font.java	(working copy)
+@@ -48,7 +48,12 @@
+         fonts = new PDFFont[descendantFonts.length];
+         
+         for (int i = 0; i < descendantFonts.length; i++) {
+-            fonts[i] = PDFFont.getFont(descendantFonts[i], null);
++            PDFFont descFont = PDFFont.getFont(descendantFonts[i], null);
++            if (descFont instanceof CIDFontType0) {
++            	((CIDFontType0)descFont).parseToUnicodeMap(fontObj);
++            }
++        	
++            fonts[i] = descFont;
+         }
+     }
+     
+Index: com/sun/pdfview/PDFFile.java
+===================================================================
+--- com/sun/pdfview/PDFFile.java	(revision 140)
++++ com/sun/pdfview/PDFFile.java	(working copy)
+@@ -42,6 +42,7 @@
+ 
+     public final static int             NUL_CHAR = 0;
+     public final static int             FF_CHAR = 12;
++    private static final String OxFFFFFFFF = Long.toString(0xFFFFFFFFL);
+ 
+     private String versionString = "1.1";
+     private int majorVersion = 1;
+@@ -1189,10 +1190,15 @@
+                 // upgrade
+                 if (xrefEntries[objNum] == null) {
+                     PDFXrefEntry entry;
+-                    final byte entryType = refline[17];
++                    String offsetStr = new String(refline, 0, 10);
++                    // Handle a not so uncommon xref table encoding error, by overriding the
++                    // entryType as free ('f') when the original int offset is -1 (0xFFFFFFFF)
++                    // and has been encoded in error as 4294967295. Google search returned
++                    // over 7000 hits.
++					final byte entryType = OxFFFFFFFF.equals(offsetStr) ? (byte)'f' : refline[17];
+                     if (entryType == 'n') {
+                         // active entry
+-                        int offset = Integer.parseInt(new String(refline, 0, 10));
++						int offset = Integer.parseInt(offsetStr);
+                         int generation = Integer.parseInt(new String(refline, 11, 5));
+                         final PDFXref ref = new PDFXref(objNum, generation);
+                         entry = PDFXrefEntry.toBodyObject(generation, offset);
+@@ -1669,8 +1675,14 @@
+             }
+         }
+ 
+-        if (parser != null && !parser.isFinished()) {
+-            parser.go(wait);
++        if (parser != null) {
++        	if (!parser.isFinished()) {
++        		parser.go(wait);
++        	}
++        	if (wait && parser.getStatus() == Watchable.ERROR) {
++                System.out.println("PDFRenderer: An error took place. Returning a null page");
++                return null;
++        	}	
+         }
+ 
+         return page;
+Index: com/sun/pdfview/PDFImage.java
+===================================================================
+--- com/sun/pdfview/PDFImage.java	(revision 140)
++++ com/sun/pdfview/PDFImage.java	(working copy)
+@@ -313,9 +313,9 @@
+ //            	ImageIO.write(bi, "png", new File("/tmp/test/" + System.identityHashCode(this) + ".png"));
+             return bi;
+         } catch (IOException ioe) {
+-            System.out.println("Error reading image");
+-            ioe.printStackTrace();
+-            return null;
++            // For ALF-6162 we want to know the image is invalid so we can try another transformer or
++            // display a place holder.
++            throw new RuntimeException("Error reading image: "+ioe.getMessage(), ioe);
+         }
+     }
+ 
+Index: com/sun/pdfview/PDFPage.java
+===================================================================
+--- com/sun/pdfview/PDFPage.java	(revision 140)
++++ com/sun/pdfview/PDFPage.java	(working copy)
+@@ -237,6 +237,9 @@
+ 
+             if (!renderer.isFinished()) {
+                 renderer.go(wait);
++                if (renderer.getStatus() == Watchable.ERROR) {
++                	throw new RuntimeException(renderer.getException());
++                }
+             }
+         }
+ 

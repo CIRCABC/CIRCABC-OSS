@@ -1,5 +1,6 @@
 package io.swagger.api;
 
+import eu.cec.digit.circabc.CircabcConfig;
 import eu.cec.digit.circabc.aspect.ContentNotifyAspect;
 import eu.cec.digit.circabc.business.helper.MetadataManager;
 import eu.cec.digit.circabc.model.CircabcModel;
@@ -20,6 +21,7 @@ import eu.cec.digit.circabc.web.ui.common.UtilsCircabc;
 import io.swagger.model.*;
 import io.swagger.util.Converter;
 import io.swagger.util.CurrentUserPermissionCheckerService;
+import io.swagger.util.RestInputSanitizer;
 import java.io.*;
 import java.text.MessageFormat;
 import java.text.ParseException;
@@ -333,13 +335,25 @@ public class ContentApiImpl implements ContentApi {
         for (Entry<Locale, NodeRef> entry : modelTrans.entrySet()) {
           NodeRef tmpRef = entry.getValue();
           if (!tmpRef.equals(nodeRef)) {
+            applyTemporaryAspectIfOlaf(tmpRef);
             this.nodeService.deleteNode(tmpRef);
           }
         }
       }
     }
 
+    applyTemporaryAspectIfOlaf(nodeRef);
     this.nodeService.deleteNode(nodeRef);
+  }
+
+  /**
+   * For OLAF environments, apply cm:temporary aspect before deletion to bypass the archive store
+   * (trashcan). This ensures permanent deletion without going through the recycle bin.
+   */
+  private void applyTemporaryAspectIfOlaf(NodeRef nodeRef) {
+    if (CircabcConfig.OLAF) {
+      nodeService.addAspect(nodeRef, ContentModel.ASPECT_TEMPORARY, null);
+    }
   }
 
   @Override
@@ -394,6 +408,16 @@ public class ContentApiImpl implements ContentApi {
   @Override
   public void contentIdPut(String id, Node body) {
     NodeRef nodeRef = Converter.createNodeRefFromId(id);
+
+    String safeUrl = null;
+    if (
+      nodeService.hasAspect(nodeRef, DocumentModel.ASPECT_URLABLE) &&
+      body.getProperties().get(URL) != null
+    ) {
+      safeUrl = RestInputSanitizer.requireSafeHttpUrl(
+        body.getProperties().get(URL)
+      );
+    }
 
     this.nodeService.setProperty(
         nodeRef,
@@ -460,18 +484,18 @@ public class ContentApiImpl implements ContentApi {
     // in case it's a URL
     if (
       nodeService.hasAspect(nodeRef, DocumentModel.ASPECT_URLABLE) &&
-      body.getProperties().get(URL) != null
+      safeUrl != null
     ) {
-      String url = body.getProperties().get(URL);
-      this.nodeService.setProperty(nodeRef, DocumentModel.PROP_URL, url);
+      this.nodeService.setProperty(nodeRef, DocumentModel.PROP_URL, safeUrl);
     } else {
-      ContentData cData = (ContentData) nodeService.getProperty(
+      final ContentData currentCData = (ContentData) nodeService.getProperty(
         nodeRef,
         ContentModel.PROP_CONTENT
       );
 
       // FIX BUG DIGITCIRACB-4844 - ContentData.setEncoding and
       // ContentData.setMimetype methods return a new object
+      ContentData cData = currentCData;
       if (body.getProperties().get(ENCODING) != null) {
         cData = ContentData.setEncoding(
           cData,
@@ -485,8 +509,13 @@ public class ContentApiImpl implements ContentApi {
         );
       }
 
-      //FIX BUG DIGITCIRACB-4844 - Save the updated cData
-      this.nodeService.setProperty(nodeRef, ContentModel.PROP_CONTENT, cData);
+      // FIX BUG DIGITCIRACB-4844 - Save the updated cData only when the
+      // mimetype/encoding actually changed. Changing the content-type is a
+      // metadata correction, not a content modification, so re-writing an
+      // unchanged cm:content must be avoided.
+      if (cData != null && !cData.equals(currentCData)) {
+        this.nodeService.setProperty(nodeRef, ContentModel.PROP_CONTENT, cData);
+      }
     }
   }
 
@@ -738,7 +767,7 @@ public class ContentApiImpl implements ContentApi {
             logger.error("Can not rollback transaction" + e1);
           }
         }
-        throw new InvalidOperationException("Can not copy document");
+        throw new InvalidOperationException("Can not copy document" + e);
       }
     }
 

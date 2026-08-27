@@ -379,5 +379,45 @@
 			<value>${log.job.enabled}</value>
 		</property>
 	</bean>
-	
+
+	<!-- Job that automatically deletes expired documents (OLAF only) -->
+	<!-- Runs daily at 2:00 AM -->
+	<bean id="expiredDocumentsTrigger" class="org.alfresco.util.CronTriggerBean">
+		<property name="jobDetail">
+			<bean
+        id="expiredDocumentsJobDetail"
+        class="org.springframework.scheduling.quartz.JobDetailBean"
+      >
+				<property name="jobClass">
+					<value>eu.cec.digit.circabc.service.expiration.ExpiredDocumentsJob</value>
+				</property>
+				<property name="jobDataAsMap">
+					<map>
+						<entry key="nodeService">
+							<ref bean="nodeService" />
+						</entry>
+						<entry key="searchService">
+							<ref bean="searchService" />
+						</entry>
+						<entry key="lockService">
+							<ref bean="circabcLockService" />
+						</entry>
+						<entry key="transactionService">
+							<ref bean="transactionService" />
+						</entry>
+					</map>
+				</property>
+			</bean>
+		</property>
+		<property name="cronExpression">
+			<value>${expired.documents.job.cron}</value>
+		</property>
+		<property name="scheduler">
+			<ref bean="schedulerFactory" />
+		</property>
+		<property name="enabled">
+			<value>${expired.documents.job.enabled}</value>
+		</property>
+	</bean>
+
 </beans>

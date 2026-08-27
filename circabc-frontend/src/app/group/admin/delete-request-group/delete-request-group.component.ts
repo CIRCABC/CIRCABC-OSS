@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
 import { LoginService } from 'app/core/login.service';
 import { AbstractControl, ReactiveFormsModule } from '@angular/forms';
@@ -7,7 +7,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SpinnerComponent } from '../../../shared/spinner/spinner.component';
 import { firstValueFrom } from 'rxjs';
 import { ControlMessageComponent } from '../../../shared/control-message/control-message.component';
-import { User } from 'app/core/generated/circabc/model/user';
 import {
   InterestGroup,
   CategoryService,
@@ -19,6 +18,8 @@ import { MatCardModule } from '@angular/material/card';
 export interface DialogData {
   group: InterestGroup;
 }
+
+type ComponentState = 'checking' | 'form' | 'pending' | 'submitting' | 'error';
 
 @Component({
   selector: 'cbc-group-delete-request-post',
@@ -34,20 +35,14 @@ export interface DialogData {
   ],
 })
 export class DeleteRequestGroupComponent implements OnInit {
-  public form!: FormGroup;
-  public groupDeletionRequestInput!: GroupDeletionRequestInput;
-  private user!: User;
-  public processing = false;
-  public isPending = true;
-  public dialogData!: DialogData;
+  private readonly fb = inject(FormBuilder);
+  private readonly loginService = inject(LoginService);
+  private readonly categoryService = inject(CategoryService);
+  readonly dialogRef = inject(MatDialogRef<DeleteRequestGroupComponent>);
+  readonly data = inject<DialogData>(MAT_DIALOG_DATA);
 
-  constructor(
-    private fb: FormBuilder,
-    private loginService: LoginService,
-    private categoryService: CategoryService,
-    public dialogRef: MatDialogRef<DeleteRequestGroupComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: DialogData
-  ) {}
+  public form!: FormGroup;
+  public state: ComponentState = 'checking';
 
   async ngOnInit() {
     this.form = this.fb.group({
@@ -55,47 +50,55 @@ export class DeleteRequestGroupComponent implements OnInit {
       title: [],
       justification: [],
     });
-    this.form.controls.name.patchValue(this.data.group.name);
-    this.form.controls.title.patchValue(this.data.group.title);
+    this.form.controls['name'].patchValue(this.data.group.name);
+    this.form.controls['title'].patchValue(this.data.group.title);
 
-    this.user = this.loginService.getUser();
+    await this.checkPendingRequest();
+  }
 
-    if (this.data.group.id) {
-      this.processing = true;
-      this.isPending = await firstValueFrom(
+  private async checkPendingRequest(): Promise<void> {
+    if (!this.data.group.id) {
+      this.state = 'form';
+      return;
+    }
+
+    this.state = 'checking';
+    try {
+      const isPending = await firstValueFrom(
         this.categoryService.isDeleteRequestPending(this.data.group.id)
       );
-      this.processing = false;
+      this.state = isPending ? 'pending' : 'form';
+    } catch {
+      this.state = 'error';
     }
   }
 
-  public async requestDeleteGroup() {
-    this.processing = true;
-    if (this.user) {
-      if (this.form.value.justification) {
-        this.form.controls.justification.patchValue(
-          this.form.value.justification
-        );
-      } else {
-        this.form.controls.justification.patchValue({ en: '' });
-      }
-      this.groupDeletionRequestInput = {
-        justification: this.form.value.justification.en,
-      };
-      if (this.data.group.id) {
-        await firstValueFrom(
-          this.categoryService.postGroupDeletionRequest(
-            this.data.group.id,
-            this.groupDeletionRequestInput
-          )
-        );
-      }
+  public async requestDeleteGroup(): Promise<void> {
+    const user = this.loginService.getUser();
+    if (!(user && this.data.group.id)) {
+      return;
     }
-    this.processing = false;
-    this.dialogRef.close();
+
+    this.state = 'submitting';
+    try {
+      const justificationValue = this.form.value.justification;
+      const groupDeletionRequestInput: GroupDeletionRequestInput = {
+        justification: justificationValue?.en ?? '',
+      };
+
+      await firstValueFrom(
+        this.categoryService.postGroupDeletionRequest(
+          this.data.group.id,
+          groupDeletionRequestInput
+        )
+      );
+      this.dialogRef.close(true);
+    } catch {
+      this.state = 'error';
+    }
   }
 
   get justificationControl(): AbstractControl {
-    return this.form.controls.justification;
+    return this.form.controls['justification'];
   }
 }

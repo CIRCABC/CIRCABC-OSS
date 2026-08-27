@@ -68,11 +68,17 @@ public class HelpLinksPost extends CircabcDeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (IOException | ParseException e) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Internal error");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Internal error", e);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);

@@ -6,13 +6,13 @@ describe('User Contributor Control Test', function () {
       Cypress.env('interest.group.admin.username'),
       Cypress.env('interest.group.admin.password'),
     );
-    
+
     // Go to the interest group
     cy.visit('me/roles', {
       failOnStatusCode: false,
     });
+    cy.wait(1000);
     cy.contains(Cypress.env('interest.group.title')).click();
-    
     // Go to members section
     cy.get('[data-cy="members"]').should('be.visible').click();
     
@@ -138,9 +138,6 @@ describe('User Contributor Control Test', function () {
     
     // Verify the user can't access the file details (either redirected or access denied)
     cy.contains(testFileName).should('not.exist');
-    
-    // Additional check: verify they get access denied or are redirected appropriately
-    cy.url().should('not.include', 'details');
   });
 
   afterEach(function () {

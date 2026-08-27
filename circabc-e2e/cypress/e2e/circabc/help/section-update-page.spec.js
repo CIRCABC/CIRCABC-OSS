@@ -8,8 +8,8 @@ describe('The Update Help Section Page', function () {
       failOnStatusCode: false,
     });
 
-    cy.get('.help-categories > ul > .ng-star-inserted > a').click();
-    cy.get('.article-list > .actions > :nth-child(1)').click();
+    cy.get('[data-cy="category-header"]').first().click();
+    cy.get('[data-cy="edit-section"]').first().click();
     cy.get('[data-cy="text"]').type(' updated');
     cy.get('[data-cy="ok"]').click();
 

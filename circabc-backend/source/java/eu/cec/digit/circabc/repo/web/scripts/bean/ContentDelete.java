@@ -62,6 +62,8 @@ public class ContentDelete extends CircabcDeclarativeWebScript {
     }
 
     try {
+      checkGroupReadOnlyMode(id);
+
       boolean notify = true;
       if (req.getParameter("notify") != null) {
         notify = "true".equals(req.getParameter("notify"));
@@ -82,7 +84,7 @@ public class ContentDelete extends CircabcDeclarativeWebScript {
 
         nodeRefs.add(nodeRef);
 
-        notificationService.notifyNewFiles(
+        notificationService.notifyDeletedFilesAfterCommit(
           nodeRef,
           nodeRefs,
           users,
@@ -93,20 +95,37 @@ public class ContentDelete extends CircabcDeclarativeWebScript {
       recordBeforeDelete(id);
       this.contentApi.contentIdDelete(id);
       model.put("result", "ok");
+    } catch (ReadOnlyAccessException roae) {
+      status.setCode(HttpServletResponse.SC_FORBIDDEN);
+      status.setMessage(roae.getMessage());
+      status.setRedirect(true);
+      if (logger.isWarnEnabled()) {
+        logger.warn("Read-only mode blocked write on content: " + id, roae);
+      }
+      return null;
     } catch (AccessDeniedException ade) {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (InvalidNodeRefException inre) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request", inre);
+      }
       return null;
     } catch (InvalidTypeException ite) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad noderef type");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad noderef type", ite);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);

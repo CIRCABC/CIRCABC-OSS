@@ -11,7 +11,7 @@ describe('Delete interest group', function () {
     });
     cy.get('[data-cy=categories]>.group-title').click();
     cy.get('[data-cy=group-list]').click();
-    cy.get('[data-cy=groups]>.group-title').click();
+    cy.get('[data-cy=groups]>.group-row>.group-info>.group-title').click();
     cy.get('[data-cy=admin]').click();
     cy.get('[data-cy=delete-group]').click();
     cy.get('[data-cy=verify]').click();

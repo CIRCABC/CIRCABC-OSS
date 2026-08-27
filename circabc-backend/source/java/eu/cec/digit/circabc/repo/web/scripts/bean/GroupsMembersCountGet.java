@@ -3,6 +3,7 @@ package eu.cec.digit.circabc.repo.web.scripts.bean;
 import eu.cec.digit.circabc.service.profile.permissions.DirectoryPermissions;
 import io.swagger.api.GroupsApi;
 import io.swagger.util.CurrentUserPermissionCheckerService;
+import io.swagger.util.GroupLockGuard;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
@@ -25,6 +26,7 @@ public class GroupsMembersCountGet extends DeclarativeWebScript {
 
   private GroupsApi groupsApi;
   private CurrentUserPermissionCheckerService currentUserPermissionCheckerService;
+  private GroupLockGuard groupLockGuard;
 
   @Override
   protected Map<String, Object> executeImpl(
@@ -40,6 +42,8 @@ public class GroupsMembersCountGet extends DeclarativeWebScript {
     String id = templateVars.get("id");
 
     try {
+      this.groupLockGuard.checkAccessByIgId(id);
+
       if (
         !this.currentUserPermissionCheckerService.hasAnyOfDirectoryPermission(
             id,
@@ -57,11 +61,17 @@ public class GroupsMembersCountGet extends DeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (InvalidNodeRefException inre) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request", inre);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);
@@ -89,5 +99,9 @@ public class GroupsMembersCountGet extends DeclarativeWebScript {
   ) {
     this.currentUserPermissionCheckerService =
       currentUserPermissionCheckerService;
+  }
+
+  public void setGroupLockGuard(GroupLockGuard groupLockGuard) {
+    this.groupLockGuard = groupLockGuard;
   }
 }

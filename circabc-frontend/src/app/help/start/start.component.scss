@@ -13,6 +13,25 @@
     'mainCol aside';
   grid-column-gap: 25px;
   grid-row-gap: 25px;
+  transition: grid-template-columns 0.4s ease-in-out;
+
+  &.article-open {
+    grid-template-columns: 100%;
+    grid-template-areas:
+      'highlights'
+      'mainCol';
+  }
+
+  .main-content-wrapper {
+    grid-area: mainCol;
+    display: flex;
+    gap: 5px;
+    position: relative;
+    -ms-grid-row: 2;
+    -ms-grid-column: 1;
+  }
+
+
 
   /* IE 10+ olny */
   @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
@@ -33,9 +52,52 @@
   }
 
   .help-categories {
-    -ms-grid-row: 2;
-    -ms-grid-column: 1;
-    grid-area: mainCol;
+    flex-shrink: 0;
+    width: 100%;
+    transition: width 0.4s ease-in-out;
+
+    &.compressed {
+      width: 45%;
+      transition: none;
+    }
+  }
+
+  .resize-handle {
+    width: 10px;
+    cursor: col-resize;
+    background-color: transparent;
+    position: relative;
+    flex-shrink: 0;
+    display: flex;
+    align-items: stretch; 
+    z-index: 10;
+
+    &:hover .resize-handle-bar,
+    &:active .resize-handle-bar {
+      background-color: rgb(0 73 122);
+    }
+
+    .resize-handle-bar {
+      width: 3px;
+      background-color: #ddd;
+      margin: auto;
+      transition: background-color 0.2s ease-in-out;
+      border-radius: 2px;
+    }
+  }
+
+  .help-article-viewer {
+    flex-shrink: 0;
+    width: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: width 0.4s ease-in-out, opacity 0.4s ease-in-out;
+
+    &.visible {
+      width: calc(55% - 25px);
+      opacity: 1;
+      transition: opacity 0.4s ease-in-out;
+    }
   }
 
   .help-links {
@@ -43,6 +105,15 @@
     -ms-grid-row-span: 2;
     -ms-grid-column: 2;
     grid-area: aside;
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+
+    &.hidden {
+      opacity: 0;
+      visibility: hidden;
+      width: 0;
+      overflow: hidden;
+    }
   }
 
   @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
@@ -64,6 +135,11 @@
       .help-categories {
         -ms-grid-column: 1;
         -ms-grid-row: 3;
+        width: 100% !important;
+
+        &.compressed {
+          width: 100% !important;
+        }
       }
 
       .help-links {
@@ -71,6 +147,28 @@
         -ms-grid-row-span: 0;
         -ms-grid-row: 4;
       }
+
+      .main-content-wrapper {
+        flex-direction: column;
+      }
+
+      .resize-handle {
+        display: none;
+      }
+
+      .help-article-viewer {
+        width: 100% !important;
+
+        &.visible {
+          width: 100% !important;
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: variables-mixins-keyframes.$break-small) {
+    & {
+      margin: 0 10px 15px;
     }
   }
 
@@ -116,7 +214,7 @@ h2 {
   background-image: url(^img/compass-help.jpg);
   background-position-y: 50%;
   background-repeat: no-repeat;
-  background-size: 100%;
+  background-size: cover;
   height: 250px;
   margin-bottom: -80px;
   position: relative;
@@ -125,6 +223,15 @@ h2 {
   @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
     & {
       background-position-y: 0%;
+      height: 180px;
+      margin-bottom: -60px;
+    }
+  }
+
+  @media screen and (max-width: variables-mixins-keyframes.$break-small) {
+    & {
+      height: 140px;
+      margin-bottom: -40px;
     }
   }
 
@@ -146,10 +253,23 @@ h2 {
     @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
       & {
         margin: 50px 25px;
+        padding: 10px 25px;
       }
 
       h1 {
         display: none;
+      }
+    }
+
+    @media screen and (max-width: variables-mixins-keyframes.$break-small) {
+      & {
+        margin: 30px 10px;
+        padding: 8px 15px;
+      }
+
+      img {
+        width: 30px;
+        margin-right: 15px;
       }
     }
   }
@@ -160,6 +280,10 @@ h2 {
   background-color: #fff;
   padding: 25px;
   color: #035;
+
+  @media screen and (max-width: variables-mixins-keyframes.$break-small) {
+    padding: 15px;
+  }
 
   ul li {
     a {
@@ -180,6 +304,11 @@ h2 {
       margin: 10px 0;
       display: inline-block;
       width: 100%;
+
+      @media screen and (max-width: variables-mixins-keyframes.$break-small) {
+        padding: 12px;
+        font-size: 120%;
+      }
 
       &:hover {
         background-color: #f5f5f5;

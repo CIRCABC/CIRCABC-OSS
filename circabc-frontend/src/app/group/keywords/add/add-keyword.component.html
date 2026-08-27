@@ -1,4 +1,4 @@
-@if (!showModal && hasKeywords()) {
+@if (!showModal && hasKeywords() && !readOnlyState.isReadOnly()) {
 <a tabindex="0" class="add--button" (click)="openModal()"
   >{{ 'label.add' | transloco }} +</a
 >

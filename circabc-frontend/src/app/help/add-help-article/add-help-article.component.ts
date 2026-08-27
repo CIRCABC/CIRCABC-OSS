@@ -46,6 +46,7 @@ export class AddHelpArticleComponent implements OnInit, OnChanges {
   @Input()
   showModal = false;
   readonly categoryId = input<string>();
+  readonly subcategoryId = input<string>();
   readonly articleId = input<string>();
   readonly showModalChange = output<boolean>();
   readonly articleCreated = output<ActionEmitterResult>();
@@ -114,10 +115,13 @@ export class AddHelpArticleComponent implements OnInit, OnChanges {
   }
 
   public async createArticle() {
+    const subcategoryId = this.subcategoryId();
     const categoryId = this.categoryId();
-    if (categoryId === undefined) {
+
+    if (subcategoryId === undefined && categoryId === undefined) {
       return;
     }
+
     this.creating = true;
     const result: ActionEmitterResult = {};
     result.type = ActionType.ADD_HELP_ARTICLE;
@@ -128,9 +132,17 @@ export class AddHelpArticleComponent implements OnInit, OnChanges {
         title: this.newArticlForm.value.title,
         content: this.model,
       };
-      await firstValueFrom(
-        this.helpService.createCategoryArticle(categoryId, body)
-      );
+
+      if (subcategoryId) {
+        await firstValueFrom(
+          this.helpService.postSubcategoryArticle(subcategoryId, body)
+        );
+      } else if (categoryId) {
+        await firstValueFrom(
+          this.helpService.createCategoryArticle(categoryId, body)
+        );
+      }
+
       result.result = ActionResult.SUCCEED;
       this.showModal = false;
       this.model = {};

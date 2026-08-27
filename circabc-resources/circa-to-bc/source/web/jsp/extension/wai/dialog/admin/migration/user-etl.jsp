@@ -57,6 +57,7 @@
 		<div class="ContentMainButton">
 			<div class="divButtonDialog">
 					<h:commandButton id="finish-button" styleClass="dialogButton" value="#{cmsg.nextButtonLabel}"  action="#{MigrationETLBean.finish}" onclick="showWaitProgress();"/><br />
+					<h:commandButton id="skip-etl-button" styleClass="dialogButton" value="Skip ETL (Pass-through)" actionListener="#{MigrationETLBean.skipEtl}" /><br />
                		<h:commandButton id="cancel-button" styleClass="dialogButton" value="#{msg.cancel}" action="finish" />
 			</div>
 		</div>

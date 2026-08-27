@@ -1,0 +1,137 @@
+<div class="category-panel" [class.expanded]="isExpanded()">
+  <div class="category-header-container">
+    <button
+      class="category-header"
+      data-cy="category-header"
+      role="button"
+      [attr.aria-expanded]="isExpanded()"
+      [attr.aria-controls]="'category-content-' + category().id"
+      [attr.id]="'category-header-' + category().id"
+      (click)="toggleExpansion()"
+      (keydown)="handleKeyDown($event)"
+    >
+      <span class="category-name">{{ category().name }}</span>
+      <span class="expansion-icon" [class.rotated]="isExpanded()">▼</span>
+    </button>
+
+    @if (isAdminOrSupport()) {
+    <div class="category-actions">
+      <cbc-help-action-buttons
+        [entityType]="'section'"
+        [showAdd]="true"
+        (addClicked)="onAddClick()"
+        (editClicked)="onEditCategory()"
+        (deleteClicked)="onDeleteCategory()"
+      />
+    </div>
+    }
+  </div>
+
+  @if (isExpanded()) {
+  <div
+    class="category-content"
+    [id]="'category-content-' + category().id"
+    role="region"
+    [attr.aria-labelledby]="'category-header-' + category().id"
+  >
+    @if (displaySubcategories().length > 0) {
+    <ul
+      cdkDropList
+      [cdkDropListDisabled]="!isAdminOrSupport()"
+      (cdkDropListDropped)="onSubcategoryDrop($event)"
+      class="subcategory-list"
+    >
+      @for (subcategory of displaySubcategories(); track subcategory.id) {
+      <li cdkDrag [class.draggable]="isAdminOrSupport()">
+        @if (isAdminOrSupport()) {
+        <div class="drag-handle" cdkDragHandle title="Drag to reorder">
+          ⋮⋮
+        </div>
+        }
+        <div class="subcategory-content">
+          <app-help-subcategory-panel
+            [subcategory]="subcategory"
+            [categoryId]="category().id"
+            [categoryName]="category().name"
+            (subcategoryChanged)="onCategoryChanged()"
+          />
+        </div>
+      </li>
+      }
+    </ul>
+    } @if (displayArticles().length > 0) {
+    <h3 class="section-heading">Articles</h3>
+    <ul
+      cdkDropList
+      [cdkDropListDisabled]="!isAdminOrSupport()"
+      (cdkDropListDropped)="onArticleDrop($event)"
+      class="article-list"
+    >
+      @for (article of displayArticles(); track article.id) {
+      <li cdkDrag [class.draggable]="isAdminOrSupport()">
+        @if (isAdminOrSupport()) {
+        <div class="drag-handle" cdkDragHandle title="Drag to reorder">
+          ⋮⋮
+        </div>
+        }
+        <div class="article-content">
+          <app-help-article-item
+            [article]="article"
+            (articleClicked)="onArticleClicked($event)"
+          />
+        </div>
+      </li>
+      }
+    </ul>
+    } @if (isAdminOrSupport() && hasArticleCopied()) {
+    <button
+      type="button"
+      class="paste-btn"
+      (click)="onPasteArticle()"
+      [attr.aria-label]="'help.paste.article.here' | transloco"
+    >
+      📌 {{ 'help.paste.article.here' | transloco }}
+    </button>
+    }
+  </div>
+  }
+</div>
+
+<!-- Edit Category Modal -->
+@if (showEditModal()) {
+<cbc-help-category-form-modal
+  [categoryId]="category().id"
+  [(visible)]="showEditModal"
+  (saved)="onCategoryUpdated($event)"
+/>
+}
+
+<!-- Delete Category Modal -->
+@if (showDeleteModal()) {
+<cbc-help-delete-confirmation-modal
+  [entityType]="'section'"
+  [entityTitle]="category().name"
+  [hasChildren]="displaySubcategories().length > 0"
+  [childrenCount]="displaySubcategories().length"
+  [(visible)]="showDeleteModal"
+  (confirmed)="onDeleteCategoryConfirmed()"
+/>
+}
+
+<!-- Add Subcategory Modal -->
+@if (showAddSubcategoryModal()) {
+<cbc-help-subcategory-form-modal
+  [categoryId]="category().id"
+  [(visible)]="showAddSubcategoryModal"
+  (saved)="onSubcategorySaved($event)"
+/>
+}
+
+<!-- Add Article Modal -->
+@if (showAddArticleModal()) {
+<cbc-add-help-article
+  [(showModal)]="showAddArticleModal"
+  [categoryId]="category().id"
+  (articleCreated)="onArticleCreated($event)"
+/>
+}

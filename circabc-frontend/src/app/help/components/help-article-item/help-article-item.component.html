@@ -1,0 +1,33 @@
+<div class="article-item-wrapper">
+  <a
+    data-cy="article-item"
+    class="article-item"
+    (click)="onArticleClick()"
+    (keydown)="handleKeyDown($event)"
+    tabindex="0"
+    [attr.aria-label]="'Navigate to article: ' + article().title"
+    role="button"
+  >
+    <span class="article-icon" aria-hidden="true">📄</span>
+    <span class="article-content">
+      <span class="article-title">{{ article().title }}</span>
+      @if (article().lastUpdate) {
+      <span class="article-date"
+        >{{ 'label.last.updated.on' | transloco }} {{
+        formatDate(article().lastUpdate!) }}</span
+      >
+      }
+    </span>
+  </a>
+  @if (isAdminOrSupport()) {
+  <button
+    type="button"
+    class="copy-btn"
+    (click)="onCopyClick($event)"
+    aria-label="Copy article"
+    title="Copy article"
+  >
+    📋
+  </button>
+  }
+</div>

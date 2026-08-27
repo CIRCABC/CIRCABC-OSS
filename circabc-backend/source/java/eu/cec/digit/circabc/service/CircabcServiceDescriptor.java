@@ -58,6 +58,7 @@ import org.alfresco.repo.policy.BehaviourFilter;
 import org.alfresco.service.NotAuditable;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
+import org.alfresco.service.cmr.favourites.FavouritesService;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.cmr.security.PersonService;
@@ -379,5 +380,10 @@ public class CircabcServiceDescriptor
   @Override
   public AresBridgeServiceImpl getAresBridgeService() {
     return (AresBridgeServiceImpl) getService(CIRCABC_ARES_BRIDGE_SERVICE);
+  }
+
+  @Override
+  public FavouritesService getFavouritesService() {
+    return (FavouritesService) getService(FAVOURITES_SERVICE);
   }
 }

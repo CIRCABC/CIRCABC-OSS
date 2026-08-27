@@ -1,0 +1,112 @@
+<div class="subcategory-panel" [class.expanded]="isExpanded()">
+  <div class="subcategory-header-container">
+    <button
+      class="subcategory-header"
+      data-cy="subcategory-header"
+      role="button"
+      [attr.aria-expanded]="isExpanded()"
+      [attr.aria-controls]="'subcategory-content-' + subcategory().id"
+      [attr.aria-labelledby]="'subcategory-header-' + subcategory().id"
+      [id]="'subcategory-header-' + subcategory().id"
+      (click)="toggleExpansion()"
+      (keydown)="handleKeyDown($event)"
+    >
+      <span class="subcategory-name">{{ subcategory().name }}</span>
+      <span class="article-count"
+        >{{ displayArticles().length }} {{ displayArticles().length === 1 ?
+        'article' : 'articles' }}</span
+      >
+      <span class="expansion-icon" [class.rotated]="isExpanded()"> ▼ </span>
+    </button>
+
+    @if (isAdminOrSupport()) {
+    <div class="subcategory-actions">
+      <cbc-help-action-buttons
+        [entityType]="'article'"
+        [showAdd]="true"
+        [showEdit]="false"
+        [showDelete]="false"
+        (addClicked)="onAddArticle()"
+      />
+      <cbc-help-action-buttons
+        [entityType]="'subsection'"
+        [showAdd]="false"
+        (editClicked)="onEditSubcategory()"
+        (deleteClicked)="onDeleteSubcategory()"
+      />
+    </div>
+    }
+  </div>
+
+  @if (isExpanded()) {
+  <div
+    class="subcategory-content"
+    [id]="'subcategory-content-' + subcategory().id"
+    role="region"
+    [attr.aria-labelledby]="'subcategory-header-' + subcategory().id"
+  >
+    <ul
+      cdkDropList
+      [cdkDropListDisabled]="!isAdminOrSupport()"
+      (cdkDropListDropped)="onArticleDrop($event)"
+      class="article-list"
+    >
+      @for (article of displayArticles(); track article.id) {
+      <li cdkDrag [class.draggable]="isAdminOrSupport()">
+        @if (isAdminOrSupport()) {
+        <div class="drag-handle" cdkDragHandle title="Drag to reorder">
+          ⋮⋮
+        </div>
+        }
+        <div class="article-content">
+          <app-help-article-item
+            [article]="article"
+            (articleClicked)="onArticleClicked($event)"
+          />
+        </div>
+      </li>
+      }
+    </ul>
+
+    @if (isAdminOrSupport() && hasArticleCopied()) {
+    <button
+      type="button"
+      class="paste-btn"
+      (click)="onPasteArticle()"
+      [attr.aria-label]="'help.paste.article.here' | transloco"
+    >
+      📌 {{ 'help.paste.article.here' | transloco }}
+    </button>
+    }
+  </div>
+  }
+</div>
+
+<!-- Subcategory Edit Modal -->
+@if (showEditModal()) {
+<cbc-help-subcategory-form-modal
+  [(visible)]="showEditModal"
+  [categoryId]="categoryId()"
+  [subcategoryId]="subcategory().id"
+  (saved)="onSubcategorySaved($event)"
+/>
+}
+
+<!-- Subcategory Delete Modal -->
+@if (showDeleteModal()) {
+<cbc-help-delete-confirmation-modal
+  [(visible)]="showDeleteModal"
+  [entityType]="'subsection'"
+  [entityTitle]="subcategory().name"
+  [hasChildren]="displayArticles().length > 0"
+  [childrenCount]="displayArticles().length"
+  (confirmed)="onDeleteConfirmed()"
+/>
+}
+
+<!-- Add Article Modal -->
+<cbc-add-help-article
+  [(showModal)]="showAddArticleModal"
+  [subcategoryId]="subcategory().id"
+  (articleCreated)="onArticleCreated($event)"
+/>

@@ -7,7 +7,7 @@ describe('The Create a link on Help Section Page', function () {
     cy.visit('help/start', {
       failOnStatusCode: false,
     });
-    cy.get('header.actions > :nth-child(1)').click();
+    cy.get('[data-cy="add-link"]').click();
     cy.get('[data-cy="text"]').type('Link1');
     cy.get('#href').type('http://link1.test');
     cy.get('[data-cy="ok"]').click();

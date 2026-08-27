@@ -1,0 +1,53 @@
+version: "3"
+services:
+  db:
+    container_name: db
+    image: mysql:5.6
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+    volumes:
+      - ./mysql/init:/docker-entrypoint-initdb.d/:ro
+      - ../../volumes/mysql-data:/var/lib/mysql
+    command: --lower_case_table_names=1 --transaction-isolation=READ-COMMITTED
+
+  tomcat:
+    build: tomcat
+    image: tomcat-circabc
+    ports:
+      - "81:8080"
+    container_name: tomcat
+    depends_on:
+      - db
+    volumes:
+      - ./tomcat/dist:/usr/local/tomcat/webapps/
+      - ../../volumes/single-content-store:/usr/local/tomcat/circabc_shared/contentstore
+      - ./tomcat/license:/usr/local/tomcat/lib/license
+
+  angular:
+    build: angular
+    image: angular-circabc
+    ports:
+      - "82:80"
+    container_name: angular
+    depends_on:
+      - tomcat
+  solr:
+    build: solr
+    image: solr-circabc
+    ports:
+      - "84:8080"
+    container_name: solr
+    depends_on:
+      - tomcat
+  proxy: 
+    image: nginx:alpine
+    container_name: proxy-circabc
+    depends_on:
+      - angular
+    volumes:
+      - ./proxy/conf:/etc/nginx
+    ports:
+      - 80:80
+      - 8443:443

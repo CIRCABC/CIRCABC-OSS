@@ -736,10 +736,7 @@ public class ProfilesApiImpl implements ProfilesApi {
       visPerms
     );
 
-    if (
-      body.getGroupName().equals(GUEST) &&
-      body.getPermissions().get(VISIBILITY_KEY).equals(VISIBILITY_PERM)
-    ) {
+    if (body.getGroupName().equals(GUEST)) {
       NodeRef groupRef = nodeService
         .getPrimaryParent(profileRef)
         .getParentRef();
@@ -808,10 +805,7 @@ public class ProfilesApiImpl implements ProfilesApi {
       }
     }
 
-    if (
-      body.getGroupName().equals("GROUP_EVERYONE") &&
-      body.getPermissions().get(VISIBILITY_KEY).equals(VISIBILITY_PERM)
-    ) {
+    if (body.getGroupName().equals("GROUP_EVERYONE")) {
       NodeRef groupRef = nodeService
         .getPrimaryParent(profileRef)
         .getParentRef();
@@ -821,53 +815,125 @@ public class ProfilesApiImpl implements ProfilesApi {
         false
       ).get(0);
       boolean mustUpdate = false;
+
+      // If EVERYONE is losing access, ensure guest also loses it
       if (
-        body.getPermissions().get(INFORMATION_KEY).equals("InfNoAccess") &&
-        !body
-          .getPermissions()
-          .get(INFORMATION_KEY)
-          .equals(guestProfile.getPermissions().get(INFORMATION_KEY))
+        !body.getPermissions().get(LIBRARY_KEY).equals("LibAccess") &&
+        guestProfile.getPermissions().get(LIBRARY_KEY).equals("LibAccess")
       ) {
-        guestProfile.getPermissions().put(INFORMATION_KEY, "InfNoAccess");
+        // Remove current access before synchronizing
+        guestProfile.getPermissions().remove(LIBRARY_KEY);
+        guestProfile
+          .getPermissions()
+          .put(LIBRARY_KEY, body.getPermissions().get(LIBRARY_KEY));
         mustUpdate = true;
       }
-      if (
+      // Legacy check for backward compatibility
+      else if (
         body.getPermissions().get(LIBRARY_KEY).equals("LibNoAccess") &&
         !body
           .getPermissions()
           .get(LIBRARY_KEY)
           .equals(guestProfile.getPermissions().get(LIBRARY_KEY))
       ) {
+        // Remove current access before synchronizing
+        guestProfile.getPermissions().remove(LIBRARY_KEY);
         guestProfile.getPermissions().put(LIBRARY_KEY, "LibNoAccess");
         mustUpdate = true;
       }
+
+      // Handle Information permission
       if (
+        !body.getPermissions().get(INFORMATION_KEY).equals("InfAccess") &&
+        guestProfile.getPermissions().get(INFORMATION_KEY).equals("InfAccess")
+      ) {
+        // Remove current access before synchronizing
+        guestProfile.getPermissions().remove(INFORMATION_KEY);
+        guestProfile
+          .getPermissions()
+          .put(INFORMATION_KEY, body.getPermissions().get(INFORMATION_KEY));
+        mustUpdate = true;
+      } else if (
+        body.getPermissions().get(INFORMATION_KEY).equals("InfNoAccess") &&
+        !body
+          .getPermissions()
+          .get(INFORMATION_KEY)
+          .equals(guestProfile.getPermissions().get(INFORMATION_KEY))
+      ) {
+        // Remove current access before synchronizing
+        guestProfile.getPermissions().remove(INFORMATION_KEY);
+        guestProfile.getPermissions().put(INFORMATION_KEY, "InfNoAccess");
+        mustUpdate = true;
+      }
+
+      // Handle Directory permission
+      if (
+        !body.getPermissions().get(DIRECTORY_KEY).equals("DirAccess") &&
+        guestProfile.getPermissions().get(DIRECTORY_KEY).equals("DirAccess")
+      ) {
+        // Remove current access before synchronizing
+        guestProfile.getPermissions().remove(DIRECTORY_KEY);
+        guestProfile
+          .getPermissions()
+          .put(DIRECTORY_KEY, body.getPermissions().get(DIRECTORY_KEY));
+        mustUpdate = true;
+      } else if (
         body.getPermissions().get(DIRECTORY_KEY).equals("DirNoAccess") &&
         !body
           .getPermissions()
           .get(DIRECTORY_KEY)
           .equals(guestProfile.getPermissions().get(DIRECTORY_KEY))
       ) {
+        // Remove current access before synchronizing
+        guestProfile.getPermissions().remove(DIRECTORY_KEY);
         guestProfile.getPermissions().put(DIRECTORY_KEY, "DirNoAccess");
         mustUpdate = true;
       }
+
+      // Handle Events permission
       if (
+        !body.getPermissions().get(EVENT_KEY).equals("EveAccess") &&
+        guestProfile.getPermissions().get(EVENT_KEY).equals("EveAccess")
+      ) {
+        // Remove current access before synchronizing
+        guestProfile.getPermissions().remove(EVENT_KEY);
+        guestProfile
+          .getPermissions()
+          .put(EVENT_KEY, body.getPermissions().get(EVENT_KEY));
+        mustUpdate = true;
+      } else if (
         body.getPermissions().get(EVENT_KEY).equals("EveNoAccess") &&
         !body
           .getPermissions()
           .get(EVENT_KEY)
           .equals(guestProfile.getPermissions().get(EVENT_KEY))
       ) {
+        // Remove current access before synchronizing
+        guestProfile.getPermissions().remove(EVENT_KEY);
         guestProfile.getPermissions().put(EVENT_KEY, "EveNoAccess");
         mustUpdate = true;
       }
+
+      // Handle Newsgroups permission
       if (
+        !body.getPermissions().get(NEWSGROUP_KEY).equals("NwsAccess") &&
+        guestProfile.getPermissions().get(NEWSGROUP_KEY).equals("NwsAccess")
+      ) {
+        // Remove current access before synchronizing
+        guestProfile.getPermissions().remove(NEWSGROUP_KEY);
+        guestProfile
+          .getPermissions()
+          .put(NEWSGROUP_KEY, body.getPermissions().get(NEWSGROUP_KEY));
+        mustUpdate = true;
+      } else if (
         body.getPermissions().get(NEWSGROUP_KEY).equals("NwsNoAccess") &&
         !body
           .getPermissions()
           .get(NEWSGROUP_KEY)
           .equals(guestProfile.getPermissions().get(NEWSGROUP_KEY))
       ) {
+        // Remove current access before synchronizing
+        guestProfile.getPermissions().remove(NEWSGROUP_KEY);
         guestProfile.getPermissions().put(NEWSGROUP_KEY, "NwsNoAccess");
         mustUpdate = true;
       }

@@ -16,6 +16,13 @@ export const helpRoutes: Routes = [
           ),
       },
       {
+        path: 'hierarchy',
+        loadComponent: () =>
+          import(
+            'app/help/components/help-accordion/help-accordion.component'
+          ).then((m) => m.HelpAccordionComponent),
+      },
+      {
         path: 'about',
         loadComponent: () =>
           import('./about/about.component').then((m) => m.AboutComponent),
@@ -25,6 +32,20 @@ export const helpRoutes: Routes = [
         loadComponent: () =>
           import('app/help/help-category/help-category.component').then(
             (m) => m.HelpCategoryComponent
+          ),
+      },
+      {
+        path: 'category/:categoryId/subcategory/:subcategoryId',
+        loadComponent: () =>
+          import('app/help/help-subcategory/help-subcategory.component').then(
+            (m) => m.HelpSubcategoryComponent
+          ),
+      },
+      {
+        path: 'category/:categoryId/subcategory/:subcategoryId/article/:articleId',
+        loadComponent: () =>
+          import('app/help/help-article/help-article.component').then(
+            (m) => m.HelpArticleComponent
           ),
       },
       {

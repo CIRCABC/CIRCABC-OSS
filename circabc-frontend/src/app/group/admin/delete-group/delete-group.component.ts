@@ -90,6 +90,7 @@ export class DeleteGroupComponent implements OnInit {
 
   public async cleanLocks() {
     this.cleaningLocks = true;
+    let errorOccurred = false;
     try {
       if (this.conditions?.lockedNodes) {
         for (const node of this.conditions.lockedNodes) {
@@ -98,9 +99,14 @@ export class DeleteGroupComponent implements OnInit {
           }
         }
       }
-      this.verifyConditions();
     } catch (error) {
+      errorOccurred = true;
       console.error(error);
+    }
+    if (!errorOccurred) {
+      // clone this.conditions to avoid reference issues
+      this.conditions = { ...this.conditions };
+      this.conditions.lockedNodes = [];
     }
     this.cleaningLocks = false;
   }

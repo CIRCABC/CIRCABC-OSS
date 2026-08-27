@@ -1,0 +1,12 @@
+<webscript>
+  <shortname>Sync a specific Interest Group to CBC tables</shortname>
+  <description>
+    Resynchronizes a specific Interest Group from Alfresco to CBC tables.
+    Deletes and recreates the group data in CBC.
+    Restricted to CIRCABC and Alfresco administrators.
+  </description>
+  <url>/circabc/admin/sync/groups/{id}</url>
+  <format default="json" />
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

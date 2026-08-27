@@ -95,6 +95,9 @@ export class AddLinkComponent implements OnInit, OnChanges {
         this.newLinkForm.reset();
         this.editMode = false;
         this.linkId = undefined;
+        this.showModal = false;
+        this.showModalChange.emit(this.showModal);
+        this.linkIdChange.emit(this.linkId);
       }
     } catch (error) {
       console.error(error);
@@ -112,6 +115,8 @@ export class AddLinkComponent implements OnInit, OnChanges {
       );
       this.linkCreated.emit({ result: ActionResult.SUCCEED });
       this.newLinkForm.reset();
+      this.showModal = false;
+      this.showModalChange.emit(this.showModal);
     } catch (error) {
       console.error(error);
     }

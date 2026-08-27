@@ -1,7 +1,8 @@
-import { Component, output, input, computed } from '@angular/core';
+import { Component, inject, output, input, computed } from '@angular/core';
 
 import { TranslocoModule } from '@jsverse/transloco';
 import { DynamicPropertyDefinition } from 'app/core/generated/circabc';
+import { ReadOnlyStateService } from 'app/core/read-only-state.service';
 import { TitleTag } from 'app/group/dynamic-properties/title/title';
 import { TitleTagComponent } from 'app/group/dynamic-properties/title/title-tag.component';
 
@@ -16,6 +17,8 @@ export class DynamicPropertyBoxComponent {
   readonly property = input.required<DynamicPropertyDefinition>();
   readonly dynnamicPropDelete = output<DynamicPropertyDefinition>();
   readonly dynamicPropEdit = output<DynamicPropertyDefinition>();
+
+  public readonly readOnlyState = inject(ReadOnlyStateService);
 
   // Use computed signal to memoize the title array
   readonly titleAsArray = computed(() => {

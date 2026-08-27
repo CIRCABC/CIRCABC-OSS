@@ -43,6 +43,7 @@ import {
   getSuccessTranslation,
   isContentPreviewable,
   isContentPreviewableFull,
+  isContentPreviewableOss,
 } from 'app/core/util';
 import { BreadcrumbComponent } from 'app/group/breadcrumb/breadcrumb.component';
 import { AddPostComponent } from 'app/group/forum/post/add-post.component';
@@ -249,6 +250,9 @@ export class DetailsComponent implements OnInit {
           this.node.name
         ) {
           this.saveAsService.saveAs(this.nodeId, this.node.name);
+        }
+        if (queryParams.open && queryParams.open === 'true' && this.node.name) {
+          this.previewContent();
         }
       });
     });
@@ -1270,7 +1274,7 @@ export class DetailsComponent implements OnInit {
     if (environment.useAlfrescoAPI) {
       return isContentPreviewableFull(this.node);
     }
-    return isContentPreviewable(this.node);
+    return isContentPreviewableOss(this.node);
   }
 
   public async previewContent() {

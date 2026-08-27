@@ -44,6 +44,7 @@ public class GroupsKeywordsPost extends CircabcDeclarativeWebScript {
           "Not enought permissions to create a new keyword"
         );
       }
+      checkGroupReadOnlyMode(id);
 
       KeywordDefinition body = KeywordJsonParser.parseJsonPartialKeyword(req);
       model.put("keyword", this.keywordsApi.groupsIdKeywordsPost(id, body));
@@ -51,11 +52,27 @@ public class GroupsKeywordsPost extends CircabcDeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
+      return null;
+    } catch (ReadOnlyAccessException roe) {
+      status.setCode(HttpServletResponse.SC_FORBIDDEN);
+      status.setMessage(roe.getMessage());
+      status.setRedirect(true);
+      if (logger.isWarnEnabled()) {
+        logger.warn(
+          "Read-only mode prevented keyword creation: " + roe.getMessage()
+        );
+      }
       return null;
     } catch (InvalidNodeRefException | ParseException | IOException inre) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request", inre);
+      }
       return null;
     }
 

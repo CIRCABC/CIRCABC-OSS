@@ -1,4 +1,4 @@
-import { Component, OnInit, output, input } from '@angular/core';
+import { Component, OnInit, inject, output, input } from '@angular/core';
 
 import { TranslocoModule } from '@jsverse/transloco';
 import {
@@ -7,6 +7,7 @@ import {
   ActionType,
 } from 'app/action-result';
 import { KeywordsService, Node as ModelNode } from 'app/core/generated/circabc';
+import { ReadOnlyStateService } from 'app/core/read-only-state.service';
 import { SelectableKeyword } from 'app/core/ui-model/index';
 import { arrayDiff } from 'app/core/util';
 import { KeywordTagComponent } from 'app/group/keywords/tag/keyword-tag.component';
@@ -30,6 +31,8 @@ export class AddKeywordComponent implements OnInit {
   public availableKeywords: SelectableKeyword[] = [];
   public usedKeywords: SelectableKeyword[] = [];
 
+  public readonly readOnlyState = inject(ReadOnlyStateService);
+
   constructor(private keywordsService: KeywordsService) {}
 
   ngOnInit(): void {
@@ -37,6 +40,9 @@ export class AddKeywordComponent implements OnInit {
   }
 
   public async openModal() {
+    if (this.readOnlyState.isReadOnly()) {
+      return;
+    }
     await this.loadAvailableKeywords();
     this.showModal = true;
   }
@@ -79,6 +85,9 @@ export class AddKeywordComponent implements OnInit {
   }
 
   public async add() {
+    if (this.readOnlyState.isReadOnly()) {
+      return;
+    }
     let keywordsAdded = false;
     this.adding = true;
     for (const keyword of this.availableKeywords) {

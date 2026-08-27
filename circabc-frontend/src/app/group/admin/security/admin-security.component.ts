@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
@@ -6,6 +6,7 @@ import {
   InterestGroup,
   InterestGroupService,
 } from 'app/core/generated/circabc';
+import { ReadOnlyStateService } from 'app/core/read-only-state.service';
 import { SetTitlePipe } from 'app/shared/pipes/set-title.pipe';
 import { SpinnerComponent } from 'app/shared/spinner/spinner.component';
 import { firstValueFrom } from 'rxjs';
@@ -26,6 +27,8 @@ export class AdminSecurityComponent implements OnInit {
   public securityForm!: FormGroup;
   public ig?: InterestGroup;
   public saving = false;
+
+  public readonly readOnlyState = inject(ReadOnlyStateService);
 
   constructor(
     private route: ActivatedRoute,

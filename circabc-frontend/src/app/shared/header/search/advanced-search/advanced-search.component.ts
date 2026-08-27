@@ -6,19 +6,27 @@ import {
   SimpleChanges,
   output,
   input,
+  inject,
+  signal,
 } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
+  FormControl,
   FormGroup,
   ReactiveFormsModule,
-  Validators,
 } from '@angular/forms';
+import { firstValueFrom } from 'rxjs';
 
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { UserPreferencesService } from 'app/core/user-preferences.service';
 import { HelpSearchResult } from 'app/core/generated/circabc/model/helpSearchResult';
-import { InterestGroup, SearchConfig } from 'app/core/generated/circabc';
+import {
+  DynamicPropertiesService,
+  DynamicPropertyDefinition,
+  InterestGroup,
+  SearchConfig,
+} from 'app/core/generated/circabc';
 import { LangSelectorComponent } from 'app/shared/lang/lang-selector.component';
 import { DatePicker } from 'primeng/datepicker';
 import { FormUserFinderComponent } from 'app/shared/form-user-finder/form-user-finder.component';
@@ -68,6 +76,12 @@ export class AdvancedSearchComponent
   public nodeId!: string;
   public saveAsWindow = false;
 
+  private readonly dynamicPropertiesService = inject(DynamicPropertiesService);
+  private readonly translateService = inject(TranslocoService);
+  public readonly dynamicProperties = signal<DynamicPropertyDefinition[]>([]);
+  public readonly dynamicPropertiesExpanded = signal<boolean>(true);
+  public readonly dynamicPropertiesError = signal<boolean>(false);
+
   public constructor(
     private fb: FormBuilder,
     public userPreferences: UserPreferencesService
@@ -90,13 +104,51 @@ export class AdvancedSearchComponent
 
   public ngOnInit(): void {
     this.buildForm();
+    this.loadDynamicProperties();
+  }
+
+  private async loadDynamicProperties(): Promise<void> {
+    const groupId = this.groupId();
+    if (!groupId) {
+      return;
+    }
+
+    try {
+      const definitions = await firstValueFrom(
+        this.dynamicPropertiesService.getDynamicPropertyDefinitions(groupId)
+      );
+
+      const validProperties = definitions.filter(
+        (prop) => prop.index !== undefined && prop.index !== null
+      );
+
+      this.dynamicProperties.set(validProperties);
+
+      for (const prop of validProperties) {
+        const initialValue =
+          prop.propertyType === 'SELECTION' ||
+          prop.propertyType === 'MULTI_SELECTION'
+            ? ''
+            : null;
+        this.searchAdvancedForm.addControl(
+          `dynAttr_${prop.index}`,
+          new FormControl(initialValue)
+        );
+      }
+    } catch (error) {
+      this.dynamicPropertiesError.set(true);
+      console.error(
+        `Failed to load dynamic properties for group ${groupId}:`,
+        error
+      );
+    }
   }
 
   private buildForm(): void {
     this.searchAdvancedForm = this.fb.group(
       {
         searchName: null,
-        searchString: [null, Validators.required],
+        searchString: [null],
         language: null,
         searchIn: 'ALL',
         creatorUser: null,
@@ -134,6 +186,35 @@ export class AdvancedSearchComponent
     this.userPreferences.deleteConfiguration(searchName);
   }
 
+  public toggleDynamicSection(): void {
+    this.dynamicPropertiesExpanded.update((v) => !v);
+  }
+
+  public resetForm(): void {
+    this.searchAdvancedForm.reset({
+      searchIn: 'ALL',
+    });
+
+    for (const prop of this.dynamicProperties()) {
+      const controlKey = `dynAttr_${prop.index}`;
+      const control = this.searchAdvancedForm.get(controlKey);
+      if (control) {
+        const resetValue =
+          prop.propertyType === 'SELECTION' ||
+          prop.propertyType === 'MULTI_SELECTION'
+            ? ''
+            : null;
+        control.setValue(resetValue);
+      }
+    }
+
+    this.dynamicPropertiesExpanded.set(true);
+  }
+
+  get currentLang(): string {
+    return this.translateService.getActiveLang();
+  }
+
   public async search() {
     const userid = this.searchAdvancedForm.value.creatorUser
       ? this.searchAdvancedForm.value.creatorUser.userId
@@ -156,7 +237,8 @@ export class AdvancedSearchComponent
       keywords = undefined;
     }
 
-    const data = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const data: Record<string, any> = {
       searchString: this.searchAdvancedForm.value.searchString,
       language: this.searchAdvancedForm.value.language,
       searchIn: this.searchAdvancedForm.value.searchIn,
@@ -178,7 +260,32 @@ export class AdvancedSearchComponent
       securityRanking: this.searchAdvancedForm.value.securityRanking,
       version: this.searchAdvancedForm.value.version,
     };
-    this.advancedSearch.emit(data);
+
+    // Map dynamic property values to dynAttr1-dynAttr20
+    for (let i = 1; i <= 20; i++) {
+      const controlKey = `dynAttr_${i}`;
+      const control = this.searchAdvancedForm.get(controlKey);
+
+      if (control) {
+        const value = control.value;
+        // Use == for comparison since prop.index may come as string from API
+        const propDef = this.dynamicProperties().find(
+          (p) => Number(p.index) === i
+        );
+
+        if (value === null || value === undefined || value === '') {
+          data[`dynAttr${i}`] = undefined;
+        } else if (propDef?.propertyType === 'DATE_FIELD') {
+          data[`dynAttr${i}`] = convertDateFormat(value);
+        } else {
+          data[`dynAttr${i}`] = value;
+        }
+      } else {
+        data[`dynAttr${i}`] = undefined;
+      }
+    }
+
+    this.advancedSearch.emit({ ...data, isAdvancedSearch: true });
   }
 
   get searchStringControl(): AbstractControl {

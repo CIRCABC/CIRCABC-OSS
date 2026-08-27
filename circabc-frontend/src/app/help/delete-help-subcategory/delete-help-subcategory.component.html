@@ -1,0 +1,15 @@
+<cbc-modal
+  [title]="'label.delete'"
+  (ok)="delete()"
+  (cancelModal)="cancel()"
+  [okLabel]="'label.delete'"
+  [(visible)]="showModal"
+  [executing]="deleting"
+  [executingLabel]="'label.deleting'"
+>
+  @if (errorMessage) {
+  <div class="notification is-danger" role="alert">
+    {{ errorMessage | transloco }}
+  </div>
+  } {{ 'help.delete.subcategory.confirmation' | transloco }}
+</cbc-modal>

@@ -527,6 +527,34 @@ public class MigrationETLBean extends BaseWaiDialog
 		return parameters;
 	}
 
+    /**
+     * Action handler for pass-through ETL (skip user transformation).
+     * Validates schema and marks iteration as ready for import.
+     */
+    public void skipEtl(final ActionEvent event)
+    {
+        final String iterationName = getSelectedIteration();
+        if(iterationName == null)
+        {
+            Utils.addErrorMessage(translate(ERROR_NO_SELECT));
+            return;
+        }
+        try
+        {
+            getEtlService().passThroughEtl(iterationName);
+            Utils.addStatusMessage(FacesMessage.SEVERITY_INFO,
+                "Pass-through ETL completed for iteration: " + iterationName + ". Ready for import.");
+        }
+        catch(ETLException e)
+        {
+            if(logger.isErrorEnabled())
+            {
+                logger.error("Pass-through ETL failed", e);
+            }
+            Utils.addErrorMessage("Pass-through ETL failed: " + e.getMessage());
+        }
+    }
+
     @Override
     protected String doPostCommitProcessing(final FacesContext context, final String outcome)
     {

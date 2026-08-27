@@ -7,7 +7,6 @@ import eu.cec.digit.circabc.service.dynamic.property.DynamicProperty;
 import eu.cec.digit.circabc.service.dynamic.property.DynamicPropertyService;
 import eu.cec.digit.circabc.service.dynamic.property.DynamicPropertyType;
 import eu.cec.digit.circabc.util.DateUtils;
-import io.swagger.exception.EmptyQueryStringException;
 import io.swagger.model.Node;
 import io.swagger.model.PagedSearchNodes;
 import io.swagger.model.SearchNode;
@@ -65,10 +64,13 @@ public class SearchApiImpl implements SearchApi {
     String[] dynamicProperties,
     String sort,
     boolean order
-  ) throws EmptyQueryStringException {
+  ) {
     if ("".equals(q) || q == null) {
-      throw new EmptyQueryStringException("The query text cannot be empty");
+      q = "*";
     }
+
+    // Sanitize consecutive wildcards (e.g. "***" or "a**b") into single ones
+    q = q.replaceAll("\\*{2,}", "*");
 
     PagedSearchNodes result = new PagedSearchNodes();
 
@@ -188,18 +190,48 @@ public class SearchApiImpl implements SearchApi {
       }
     }
 
-    // We need to manage the special case of Agenda if we search for ALL or in
-    // Agenda
-    if (all) {
-      queryBuilder.append("(");
-      queryBuilder.append((buildQueryParameter(q, search)));
-      queryBuilder.append(OR);
-      queryBuilder.append(buildQueryParameterforAgenda(q));
-      queryBuilder.append(")");
-    } else if (agenda) {
-      queryBuilder.append(buildQueryParameterforAgenda(q));
+    // If q is a wildcard "*", skip the text search clause to avoid Lucene errors
+    // with bare wildcards. Replace with a type filter that matches all content.
+    // Also force searchFor to exclude TEXT/CONTENT to prevent Lucene issues.
+    boolean skipTextQuery = "*".equals(q.trim());
+
+    // If q is shorter than 3 characters, avoid searching in content (TEXT)
+    // to prevent Lucene performance issues. Only search by name and title.
+    // For agenda/events, wrap the term with wildcards (*term*) to force a
+    // "contains" match in Solr 1.4 and avoid false positives from token analysis.
+    // For name/title in library, keep q unchanged to maintain consistent behavior
+    // with queries >= 3 chars (no wildcard wrapping).
+    // Exception: if user explicitly chose TEXT (content search), respect that
+    // choice entirely.
+    boolean shortQuery = !skipTextQuery && q.trim().length() < 3;
+    if (shortQuery) {
+      if ("ALL".equalsIgnoreCase(search)) {
+        search = "NAME_TITLE";
+      }
+      // If search is TEXT, leave everything unchanged
+    }
+
+    // Prepare a wildcard-wrapped version for agenda/event searches only
+    String qForAgenda = shortQuery ? "*" + q.trim() + "*" : q;
+
+    if (skipTextQuery) {
+      // When no query text is provided (wildcard), do not search in content.
+      // Only match by type to avoid Lucene errors with bare wildcards.
+      queryBuilder.append("(TYPE:\"cm:content\" OR TYPE:\"cm:folder\")");
     } else {
-      queryBuilder.append(buildQueryParameter(q, search));
+      // We need to manage the special case of Agenda if we search for ALL or in
+      // Agenda
+      if (all) {
+        queryBuilder.append("(");
+        queryBuilder.append((buildQueryParameter(q, search)));
+        queryBuilder.append(OR);
+        queryBuilder.append(buildQueryParameterforAgenda(qForAgenda));
+        queryBuilder.append(")");
+      } else if (agenda) {
+        queryBuilder.append(buildQueryParameterforAgenda(qForAgenda));
+      } else {
+        queryBuilder.append(buildQueryParameter(q, search));
+      }
     }
 
     // Did we provide a language filter?
@@ -320,7 +352,7 @@ public class SearchApiImpl implements SearchApi {
     int i = 0;
     while (i < 20 && !isDynamicPropertyFound) {
       isDynamicPropertyFound = (dynamicProperties[i] != null &&
-        dynamicProperties[i] != "");
+        !dynamicProperties[i].isEmpty());
       ++i;
     }
     if (isDynamicPropertyFound && nodeId != null) {
@@ -359,6 +391,10 @@ public class SearchApiImpl implements SearchApi {
     long numberOfResults = 0;
 
     for (NodeRef ref : rs.getNodeRefs()) {
+      // if node does not exists skip it
+      if (!nodeService.exists(ref)) {
+        continue;
+      }
       SearchNode psn = new SearchNode();
       Node n = nodesApi.getNode(ref);
       psn.setId(n.getId());
@@ -448,43 +484,64 @@ public class SearchApiImpl implements SearchApi {
         queryBuilder.append(OR);
         queryBuilder.append("@title:").append(q);
         queryBuilder.append(")");
+      } else if (searchFor.equalsIgnoreCase("NAME_TITLE")) {
+        queryBuilder.append("@name:").append(q);
+        queryBuilder.append(OR);
+        queryBuilder.append("@title:").append(q);
+        queryBuilder.append(")");
       } else if (searchFor.equalsIgnoreCase("TEXT")) {
         queryBuilder.append("TEXT:").append(q);
+        queryBuilder.append(")");
       } else if (searchFor.equalsIgnoreCase("NAME")) {
         queryBuilder.append("@name:").append(q);
+        queryBuilder.append(")");
       } else if (searchFor.equalsIgnoreCase("TITLE")) {
         queryBuilder.append("@title:").append(q);
         queryBuilder.append(")");
       }
     } else {
       queryBuilder.append("(");
-      String[] queryItems = q.split(" ");
+      String[] queryItems = q.split("\\s+");
 
       for (int i = 0; i < queryItems.length; i++) {
+        // Preserve user-provided wildcards at the start or end of a term.
+        // Only escape the inner part of the term, keeping * intact.
+        String escapedItem;
+        boolean startsWithWild = queryItems[i].startsWith("*");
+        boolean endsWithWild = queryItems[i].endsWith("*");
+        if (startsWithWild || endsWithWild) {
+          String inner = queryItems[i];
+          String prefix = "";
+          String suffix = "";
+          if (startsWithWild) {
+            prefix = "*";
+            inner = inner.substring(1);
+          }
+          if (endsWithWild && inner.length() > 0) {
+            suffix = "*";
+            inner = inner.substring(0, inner.length() - 1);
+          }
+          escapedItem = prefix + QueryParser.escape(inner) + suffix;
+        } else {
+          escapedItem = QueryParser.escape(queryItems[i]);
+        }
+
         if (searchFor.equalsIgnoreCase("ALL")) {
-          queryBuilder
-            .append("TEXT:")
-            .append(QueryParser.escape(queryItems[i]));
+          queryBuilder.append("TEXT:").append(escapedItem);
           queryBuilder.append(OR);
-          queryBuilder
-            .append("@name:")
-            .append(QueryParser.escape(queryItems[i]));
+          queryBuilder.append("@name:").append(escapedItem);
           queryBuilder.append(OR);
-          queryBuilder
-            .append("@title:")
-            .append(QueryParser.escape(queryItems[i]));
+          queryBuilder.append("@title:").append(escapedItem);
+        } else if (searchFor.equalsIgnoreCase("NAME_TITLE")) {
+          queryBuilder.append("@name:").append(escapedItem);
+          queryBuilder.append(OR);
+          queryBuilder.append("@title:").append(escapedItem);
         } else if (searchFor.equalsIgnoreCase("TEXT")) {
-          queryBuilder
-            .append("TEXT:")
-            .append(QueryParser.escape(queryItems[i]));
+          queryBuilder.append("TEXT:").append(escapedItem);
         } else if (searchFor.equalsIgnoreCase("NAME")) {
-          queryBuilder
-            .append("@name:")
-            .append(QueryParser.escape(queryItems[i]));
+          queryBuilder.append("@name:").append(escapedItem);
         } else if (searchFor.equalsIgnoreCase("TITLE")) {
-          queryBuilder
-            .append("@title:")
-            .append(QueryParser.escape(queryItems[i]));
+          queryBuilder.append("@title:").append(escapedItem);
         }
         if (i + 1 < queryItems.length) {
           queryBuilder.append(OR);
@@ -511,12 +568,33 @@ public class SearchApiImpl implements SearchApi {
         .append(")");
     } else {
       queryBuilder.append("((");
-      String[] queryItems = q.split(" ");
+      String[] queryItems = q.split("\\s+");
 
       for (int i = 0; i < queryItems.length; i++) {
+        // Preserve user-provided wildcards at the start or end of a term.
+        String escapedItem;
+        boolean startsWithWild = queryItems[i].startsWith("*");
+        boolean endsWithWild = queryItems[i].endsWith("*");
+        if (startsWithWild || endsWithWild) {
+          String inner = queryItems[i];
+          String prefix = "";
+          String suffix = "";
+          if (startsWithWild) {
+            prefix = "*";
+            inner = inner.substring(1);
+          }
+          if (endsWithWild && inner.length() > 0) {
+            suffix = "*";
+            inner = inner.substring(0, inner.length() - 1);
+          }
+          escapedItem = prefix + QueryParser.escape(inner) + suffix;
+        } else {
+          escapedItem = QueryParser.escape(queryItems[i]);
+        }
+
         queryBuilder
           .append("@" + EventModel.CIRCABC_EVENT_MODEL_PREFIX + "\\:title:")
-          .append(QueryParser.escape(queryItems[i]));
+          .append(escapedItem);
         if (i + 1 < queryItems.length) {
           queryBuilder.append(OR);
         }
@@ -559,9 +637,13 @@ public class SearchApiImpl implements SearchApi {
     int i = 1;
     for (QName qName : DocumentModel.ALL_DYN_PROPS) {
       String dynamicProperty = dynamicProperties[i - 1];
-      if (dynamicProperty != null && !dynamicProperty.toString().equals("")) {
+      if (dynamicProperty != null && !dynamicProperty.isEmpty()) {
         String value = dynamicProperty.trim();
         final DynamicProperty property = map.get(qName);
+        if (property == null) {
+          i++;
+          continue;
+        }
         if (property.getType().equals(DynamicPropertyType.MULTI_SELECTION)) {
           final String validValues = property.getValidValues().trim();
           if (validValues.contains(value)) {

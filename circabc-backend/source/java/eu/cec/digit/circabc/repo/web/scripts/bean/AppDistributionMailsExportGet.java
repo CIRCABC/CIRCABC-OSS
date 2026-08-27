@@ -51,8 +51,14 @@ public class AppDistributionMailsExportGet extends AbstractWebScript {
       workbook.write(outStream);
     } catch (AccessDeniedException ade) {
       res.setStatus(HttpStatus.FORBIDDEN_403);
+      if (logger.isErrorEnabled()) {
+        logger.error(ade.getMessage(), ade);
+      }
     } catch (IOException e) {
       res.setStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
+      if (logger.isErrorEnabled()) {
+        logger.error(e.getMessage(), e);
+      }
     } finally {
       if (outStream != null) {
         outStream.close();

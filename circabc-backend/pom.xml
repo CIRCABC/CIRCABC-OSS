@@ -652,6 +652,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<alfrescoVersion>4.2.4.15.r112167-b152.6069</alfrescoVersion>
 		<backend-target.env>tomcat-docker</backend-target.env>
+		<migration.export.enable>false</migration.export.enable>
 	</properties>
 
 </project>

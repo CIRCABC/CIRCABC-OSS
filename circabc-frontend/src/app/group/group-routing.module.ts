@@ -29,7 +29,12 @@ export const groupRoutes: Routes = [
 
     { path: '', loadComponent: () => import('app/group/dashboard/dashboard.component').then(m => m.DashboardComponent) , canActivate: [canActivateGroup] },
       {
+        path: 'locked',
+        loadComponent: () => import('app/group/group-locked/group-locked-page.component').then(m => m.GroupLockedPageComponent),
+      },
+      {
         path: 'library',
+        canActivate: [canActivateGroup],
         children: libraryRoutes
       },
       {

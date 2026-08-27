@@ -4,11 +4,49 @@
       <li class="row" style="padding: 0px"></li>
       @for (group of interestGroups; track group.id) {
       <li data-cy="groups" class="row">
-        <a [routerLink]="['/group', group.id]" class="group-title"
-          >{{ getNameOrTitle(group) }}</a
-        >
-        <br />
-        <span class="grey-name"> {{ group.name }} </span>
+        <div class="group-row">
+          <div class="group-info">
+            <a [routerLink]="['/group', group.id]" class="group-title"
+              >{{ getNameOrTitle(group) }}</a
+            >
+            <br />
+            <span class="grey-name"> {{ group.name }} </span>
+          </div>
+          <div class="group-actions">
+            @if (!isGroupLocked(group.id)) {
+            <button
+              type="button"
+              class="action-btn"
+              aria-label="Lock the Interest Group"
+              (click)="openLockDialog(group.id!)"
+              data-cy="lock"
+            >
+              <img
+                src="img/icon-lock-closed.svg"
+                alt="Lock"
+                width="16"
+                height="16"
+              />
+            </button>
+            } @if (isGroupLocked(group.id)) {
+            <button
+              type="button"
+              class="action-btn"
+              matTooltip="Unlock the Interest Group"
+              aria-label="Unlock the Interest Group"
+              (click)="unlockGroup(group.id!)"
+              data-cy="unlock"
+            >
+              <img
+                src="img/icon-lock-open.svg"
+                alt="Unlock"
+                width="16"
+                height="16"
+              />
+            </button>
+            }
+          </div>
+        </div>
       </li>
       } @if (interestGroups.length === 0) {
       <li class="row">

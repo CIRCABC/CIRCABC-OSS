@@ -148,8 +148,11 @@ export default defineConfig({
         'cypress/e2e/circabc/profile/create-page.spec.js',
         'cypress/e2e/circabc/profile/update-page.spec.js',
         'cypress/e2e/circabc/profile/delete-page.spec.js',
+        'cypress/e2e/circabc/profile/access-registered.spec.js',
         'cypress/e2e/circabc/dynamic-authority/leader.spec.js',
         'cypress/e2e/circabc/dynamic-authority/owner.spec.js',
+        'cypress/e2e/circabc/ig-lock-unlock/lock-page.spec.js',
+        'cypress/e2e/circabc/ig-lock-unlock/locked-access-control.spec.js',
         'cypress/e2e/circabc/accessibility/accessibility.spec.js',
       ];
       return config;

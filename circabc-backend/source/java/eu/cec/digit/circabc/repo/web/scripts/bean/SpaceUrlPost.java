@@ -58,6 +58,8 @@ public class SpaceUrlPost extends CircabcDeclarativeWebScript {
     String id = templateVars.get("id");
 
     try {
+      checkGroupReadOnlyMode(id);
+
       if (
         !this.currentUserPermissionCheckerService.hasAlfrescoAddChildrenPermission(
             id
@@ -71,20 +73,37 @@ public class SpaceUrlPost extends CircabcDeclarativeWebScript {
       Node body = NodeJsonParser.parseUrlBasicJSON(req);
 
       model.put("n", this.spacesApi.spacesIdUrlPost(id, body));
+    } catch (ReadOnlyAccessException roae) {
+      status.setCode(HttpServletResponse.SC_FORBIDDEN);
+      status.setMessage(roae.getMessage());
+      status.setRedirect(true);
+      if (logger.isWarnEnabled()) {
+        logger.warn("Read-only mode blocked write on space URL: " + id, roae);
+      }
+      return null;
     } catch (AccessDeniedException ade) {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (InvalidNodeRefException inre) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request", inre);
+      }
       return null;
     } catch (IOException | ParseException e) {
       status.setCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
       status.setMessage("Error");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Error", e);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);

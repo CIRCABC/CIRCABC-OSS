@@ -17,10 +17,16 @@
 
 @if (isShowDeleted() && groupId) {
 <section>
-  <cbc-deleted-items [groupId]="groupId"></cbc-deleted-items>
+  <cbc-deleted-items
+    [groupId]="groupId"
+    [readOnly]="readOnlyState.isReadOnly()"
+  ></cbc-deleted-items>
 </section>
 } @if (isShowExpired() && groupId) {
 <section>
-  <cbc-expired-items [groupId]="groupId"></cbc-expired-items>
+  <cbc-expired-items
+    [groupId]="groupId"
+    [readOnly]="readOnlyState.isReadOnly()"
+  ></cbc-expired-items>
 </section>
 }

@@ -419,7 +419,7 @@ public class GroupRequestsDaoServiceImpl implements GroupRequestsDaoService {
         userDataBean.setHomeSpaceNodeRef(
           managementService.getGuestHomeNodeRef()
         );
-        userService.createUser(userDataBean, false);
+        userService.createUser(userDataBean, true);
       }
       leaders.add(leader.getUserId());
     }

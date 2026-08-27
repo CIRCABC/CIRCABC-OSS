@@ -31,7 +31,12 @@ export class ErrorInterceptor implements HttpInterceptor {
         } else {
           errorResponse = `Server Side Error: ${error.message}`;
         }
-        if (!url.includes('/ticket/')) {
+        if (
+          !(
+            url.includes('/ticket/') ||
+            (url.includes('/users/') && statusCode === 401)
+          )
+        ) {
           analyticsService.trackHTTPError(
             url,
             method,

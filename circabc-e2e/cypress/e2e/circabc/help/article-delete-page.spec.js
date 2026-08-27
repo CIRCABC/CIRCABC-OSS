@@ -5,9 +5,9 @@ describe('The Delete Help Article Page', function () {
 
   it('successfully Delete Help Article', function () {
     cy.visit('help/start').contains('Section1');
-    cy.get('ul > .ng-star-inserted > a').click();
-    cy.get('.article-list > ul > :nth-child(1) > a').click();
-    cy.get('.actions > :nth-child(3)').click();
+    cy.get('[data-cy="category-header"]').first().click();
+    cy.get('[data-cy="article-item"]').first().click();
+    cy.get('[data-cy="delete-article"]').click();
     cy.get('[data-cy="ok"]').click();
     cy.contains('Success');
   });

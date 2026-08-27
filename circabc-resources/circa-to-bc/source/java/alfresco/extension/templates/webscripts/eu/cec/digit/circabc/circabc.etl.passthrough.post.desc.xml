@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>circabc.etl.passthrough</shortname>
+  <description>Pass-through ETL: validates XML schema and marks iteration as ready for import without user transformation</description>
+  <url>/circabc/etl/passthrough</url>
+  <format default="json" />
+  <authentication>admin</authentication>
+  <transaction>required</transaction>
+</webscript>

@@ -1,0 +1,95 @@
+<section
+  class="lock-group-dialog"
+  role="dialog"
+  aria-labelledby="lock-dialog-title"
+>
+  <header>
+    <h2 id="lock-dialog-title" mat-dialog-title>Lock the interest group</h2>
+  </header>
+
+  <div mat-dialog-content>
+    <p class="explanation">{{'text.group.lock.information' | transloco}}</p>
+
+    <form [formGroup]="lockForm">
+      <div class="field">
+        <label for="lock-message">Message</label>
+        <div class="editor-container">
+          <p-editor
+            id="lock-message"
+            formControlName="message"
+            [style]="{ height: '200px' }"
+            aria-label="Lock message for members"
+            data-cy="messagelock"
+          >
+            <p-header>
+              <span class="ql-formats">
+                <button class="ql-bold" aria-label="Bold"></button>
+                <button class="ql-italic" aria-label="Italic"></button>
+                <button class="ql-underline" aria-label="Underline"></button>
+              </span>
+              <span class="ql-formats">
+                <button
+                  class="ql-list"
+                  aria-label="Ordered list"
+                  value="ordered"
+                ></button>
+                <button
+                  class="ql-list"
+                  aria-label="Bullet list"
+                  value="bullet"
+                ></button>
+              </span>
+              <span class="ql-formats">
+                <button class="ql-link" aria-label="Insert link"></button>
+              </span>
+            </p-header>
+          </p-editor>
+        </div>
+      </div>
+      <p class="explanation">
+        {{'text.group.lock.information.readonly' | transloco}}
+      </p>
+      <div class="field toggle-group">
+        <label for="read-only-toggle">Read-only</label>
+        <mat-slide-toggle
+          id="read-only-toggle"
+          formControlName="readOnly"
+          data-cy="readonly"
+        ></mat-slide-toggle>
+        <span class="toggle-label">
+          {{ lockForm.controls.readOnly.value ? 'Yes' : 'No' }}
+        </span>
+      </div>
+    </form>
+  </div>
+
+  <div mat-dialog-actions class="buttons-group">
+    @if (loading()) {
+    <span class="loading-indicator">
+      <cbc-spinner></cbc-spinner>
+    </span>
+    } @else {
+    <a
+      tabindex="0"
+      role="button"
+      class="cta"
+      (click)="onLock()"
+      (keydown.enter)="onLock()"
+      aria-label="Lock the interest group"
+      data-cy="confirmlock"
+    >
+      Lock
+    </a>
+    <a
+      tabindex="0"
+      role="button"
+      class="button"
+      (click)="onCancel()"
+      (keydown.enter)="onCancel()"
+      aria-label="Cancel"
+    >
+      Cancel
+    </a>
+    }
+  </div>
+</section>

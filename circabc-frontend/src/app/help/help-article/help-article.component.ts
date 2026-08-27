@@ -1,3 +1,4 @@
+import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -9,8 +10,10 @@ import {
   HelpArticle,
   HelpCategory,
   HelpService,
+  HelpSubcategory,
 } from 'app/core/generated/circabc';
 import { LoginService } from 'app/core/login.service';
+import { UiMessageService } from 'app/core/message/ui-message.service';
 import { AddHelpArticleComponent } from 'app/help/add-help-article/add-help-article.component';
 import { DeleteHelpArticleComponent } from 'app/help/delete-help-article/delete-help-article.component';
 import { ArticleListSelectComponent } from 'app/help/help-article/article-list-select/article-list-select.component';
@@ -39,10 +42,13 @@ export class HelpArticleComponent implements OnInit {
   public articles: HelpArticle[] = [];
   public article!: HelpArticle;
   public category!: HelpCategory;
+  public subcategory: HelpSubcategory | undefined;
   public loading = false;
   public dropdownVisible = false;
   public showDeleteModal = false;
   public showEditModal = false;
+  public showCreateModal = false;
+  public selectedArticleId: string | undefined;
   public switchCategoryForm!: FormGroup;
   public loadingError = false;
 
@@ -53,7 +59,8 @@ export class HelpArticleComponent implements OnInit {
     private loginService: LoginService,
     private translateService: TranslocoService,
     private sanitizer: DomSanitizer,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private uiMessageService: UiMessageService
   ) {}
 
   async ngOnInit() {
@@ -74,9 +81,13 @@ export class HelpArticleComponent implements OnInit {
             params.categoryId
           );
         }
-      });
 
-      this.route.params.subscribe(async (params) => {
+        if (params.subcategoryId) {
+          await this.loadSubcategory(params.subcategoryId);
+        } else {
+          this.subcategory = undefined;
+        }
+
         if (params.articleId) {
           await this.loadArticle(params.articleId);
         }
@@ -103,6 +114,21 @@ export class HelpArticleComponent implements OnInit {
     }
   }
 
+  async loadSubcategory(id: string) {
+    try {
+      this.subcategory = await firstValueFrom(
+        this.helpService.getHelpSubcategory(id)
+      );
+
+      this.articles = await firstValueFrom(
+        this.helpService.getSubcategoryArticles(id, true)
+      );
+    } catch (error) {
+      console.error('Failed to load subcategory', error);
+      this.subcategory = undefined;
+    }
+  }
+
   async loadArticle(id: string) {
     try {
       this.article = await firstValueFrom(this.helpService.getHelpArticle(id));
@@ -122,19 +148,6 @@ export class HelpArticleComponent implements OnInit {
     }
 
     return false;
-  }
-
-  public async redirectAfterDeletion(res: ActionEmitterResult) {
-    if (res.result === ActionResult.SUCCEED) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this.router.navigate(['../../'], { relativeTo: this.route });
-    }
-  }
-
-  public async refresh(_result: ActionEmitterResult) {
-    if (this.article.id) {
-      await this.loadArticle(this.article.id);
-    }
   }
 
   public getContent() {
@@ -205,5 +218,89 @@ export class HelpArticleComponent implements OnInit {
       ['../../../', this.switchCategoryForm.value.categoryId],
       { relativeTo: this.route }
     );
+  }
+
+  public async onArticleDrop(event: {
+    previousIndex: number;
+    currentIndex: number;
+  }) {
+    const previousOrder = this.articles.map((a) => a.id);
+    moveItemInArray(this.articles, event.previousIndex, event.currentIndex);
+    const newOrder = this.articles
+      .map((a) => a.id)
+      .filter((id): id is string => id !== undefined);
+
+    try {
+      const subcategoryId = this.subcategory?.id;
+      const categoryId = this.category?.id;
+      if (subcategoryId) {
+        await firstValueFrom(
+          this.helpService.putSubcategoryArticlesOrder(subcategoryId, newOrder)
+        );
+      } else if (categoryId) {
+        await firstValueFrom(
+          this.helpService.putCategoryArticlesOrder(categoryId, newOrder)
+        );
+      }
+    } catch (error) {
+      console.error('Failed to save article order', error);
+      // Revert to previous order on error
+      this.articles = previousOrder
+        .map((id) => this.articles.find((a) => a.id === id))
+        .filter((a): a is HelpArticle => a !== undefined);
+    }
+  }
+
+  public onAddArticle(): void {
+    this.selectedArticleId = undefined;
+    this.showCreateModal = true;
+  }
+
+  public onEditArticle(articleId: string): void {
+    this.selectedArticleId = articleId;
+    this.showEditModal = true;
+  }
+
+  public onDeleteArticle(articleId: string): void {
+    this.selectedArticleId = articleId;
+    this.showDeleteModal = true;
+  }
+
+  public async onArticleCreated(result: ActionEmitterResult): Promise<void> {
+    if (result.result === ActionResult.SUCCEED) {
+      // Reload articles list
+      if (this.subcategory?.id) {
+        await this.loadSubcategory(this.subcategory.id);
+      } else if (this.category?.id) {
+        await this.loadCategory(this.category.id);
+      }
+    }
+  }
+
+  public async onArticleUpdated(result: ActionEmitterResult): Promise<void> {
+    if (result.result === ActionResult.SUCCEED) {
+      // Reload current article and articles list
+      if (this.article?.id) {
+        await this.loadArticle(this.article.id);
+      }
+      if (this.subcategory?.id) {
+        await this.loadSubcategory(this.subcategory.id);
+      } else if (this.category?.id) {
+        await this.loadCategory(this.category.id);
+      }
+    }
+  }
+
+  public async onArticleDeleted(result: ActionEmitterResult): Promise<void> {
+    if (result.result === ActionResult.SUCCEED) {
+      // Navigate back to category or subcategory page
+      if (this.subcategory) {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        this.router.navigate(['../../'], { relativeTo: this.route });
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        this.router.navigate(['../../'], { relativeTo: this.route });
+      }
+    }
   }
 }

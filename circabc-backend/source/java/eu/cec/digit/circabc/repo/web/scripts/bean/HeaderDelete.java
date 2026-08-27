@@ -43,16 +43,25 @@ public class HeaderDelete extends CircabcDeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Header is not empty");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Header is not empty", iae);
+      }
       return null;
     } catch (AccessDeniedException ade) {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (InvalidNodeRefException inre) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Invalid id");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Invalid id", inre);
+      }
       return null;
     }
   }

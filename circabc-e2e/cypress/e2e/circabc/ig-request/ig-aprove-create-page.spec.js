@@ -7,6 +7,7 @@ describe('The Aprove Create IG Page', function () {
   });
 
   it('successfully aprove create IG', function () {
+    cy.wait(3000);
     cy.visit('explore', {
       failOnStatusCode: false,
     });
@@ -19,15 +20,19 @@ describe('The Aprove Create IG Page', function () {
     cy.wait(1000);
     cy.get(':nth-child(6) > .tab > .tab-text').click();
     cy.wait(1000);
-    cy.get(
-      ':nth-child(1) > .g-request > :nth-child(1) > .actions > [data-cy="approve"]',
-    ).click();
+
+    // Wait until the create request row is visible before approving
+    cy.get(':nth-child(1) > .g-request > :nth-child(1) > .actions > [data-cy="approve"]', { timeout: 30000 })
+      .should('be.visible')
+      .click();
+
     cy.wait(1000);
     cy.get('.ql-editor').type(
       "Ah, ha, ha, ha, stayin' alive, stayin' alive ..  stayin' aliiiiiiive",
     );
     cy.get('form.ng-touched > .actions > .cta').click();
     cy.contains('Success');
+    cy.wait(1000);
   });
 
   afterEach(function () {

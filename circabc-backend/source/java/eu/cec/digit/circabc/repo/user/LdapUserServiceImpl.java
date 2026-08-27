@@ -32,8 +32,6 @@ import javax.naming.LimitExceededException;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.*;
-import javax.naming.ldap.InitialLdapContext;
-import javax.naming.ldap.LdapContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.owasp.esapi.ESAPI;
@@ -42,9 +40,9 @@ public class LdapUserServiceImpl implements LdapUserService {
 
   private static final String BLANK_DELIM = " ";
   private static final String CN = "cn";
-  private static final int LDAP_SEARCH_COUNT_LIMIT = 2000;
+  private static final int LDAP_SEARCH_COUNT_LIMIT = 100;
   private static final int LDAP_SEARCH_SCOPE_LEVEL =
-    SearchControls.ONELEVEL_SCOPE; // SearchControls.SUBTREE_SCOPE
+    SearchControls.SUBTREE_SCOPE;
   private static final String UID = "uid";
   private static final String MODIFICATION_DATE = "modificationDate";
   private static final String EC_MONIKER = "ecMoniker";
@@ -179,7 +177,9 @@ public class LdapUserServiceImpl implements LdapUserService {
         }
         throw npe;
       }
-      env.put("com.sun.jndi.ldap.connect.pool", "true");
+      env.put("com.sun.jndi.ldap.connect.pool", "false");
+      // Follow LDAP referrals (required to access external users in EUDS)
+      env.put(Context.REFERRAL, "follow");
     }
   }
 
@@ -224,7 +224,9 @@ public class LdapUserServiceImpl implements LdapUserService {
       DG,
     };
     try {
+      logger.info("LDAP getLDAPUserDataByUid: query=" + ldapSearchString);
       ctx = new InitialDirContext(env);
+      logger.info("LDAP getLDAPUserDataByUid: connection OK");
       final SearchControls controls = new SearchControls();
       controls.setSearchScope(LDAP_SEARCH_SCOPE_LEVEL);
       controls.setCountLimit(LDAP_SEARCH_COUNT_LIMIT);
@@ -914,11 +916,38 @@ public class LdapUserServiceImpl implements LdapUserService {
     final String[] returningAttrs,
     final String ldapSearchString
   ) {
+    try {
+      return doGetUsersWithMail(returningAttrs, ldapSearchString);
+    } catch (final RuntimeException e) {
+      // Retry once on connection closed errors (stale pooled connection)
+      if (
+        e.getCause() instanceof NamingException &&
+        e.getMessage() != null &&
+        e.getMessage().contains("LDAP")
+      ) {
+        if (logger.isWarnEnabled()) {
+          logger.warn(
+            "LDAP getUsersWithMail: first attempt failed, retrying...",
+            e
+          );
+        }
+        return doGetUsersWithMail(returningAttrs, ldapSearchString);
+      }
+      throw e;
+    }
+  }
+
+  private List<SearchResultRecord> doGetUsersWithMail(
+    final String[] returningAttrs,
+    final String ldapSearchString
+  ) {
     final List<SearchResultRecord> users = new ArrayList<>();
-    LdapContext ctx = null;
+    DirContext ctx = null;
     NamingEnumeration<?> results = null;
     try {
-      ctx = new InitialLdapContext(env, null);
+      logger.info("LDAP getUsersWithMail: query=" + ldapSearchString);
+      ctx = new InitialDirContext(env);
+      logger.info("LDAP getUsersWithMail: connection OK");
 
       final SearchControls controls = new SearchControls();
       // controls.setSearchScope(SearchControls.SUBTREE_SCOPE);

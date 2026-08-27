@@ -69,6 +69,7 @@ public class EULoginServlet extends BaseServlet {
     logRecord.setService("Directory");
     logRecord.setActivity("Login");
     logRecord.setUser(userName);
+    boolean authenticationEnabled = true;
     try {
       AuthenticationUtil.setRunAsUserSystem();
       if (!personService.personExists(userName)) {
@@ -105,17 +106,23 @@ public class EULoginServlet extends BaseServlet {
             }
           }
         }
-        if (!userService.getAuthenticationEnabled(userName)) {
-          userService.setAuthenticationEnabled(userName, true);
+        authenticationEnabled = userService.getAuthenticationEnabled(userName);
+        if (authenticationEnabled) {
+          nodeService.setProperty(
+            nodeRef,
+            UserModel.PROP_LAST_LOGIN_TIME,
+            new Date()
+          );
         }
-        nodeService.setProperty(
-          nodeRef,
-          UserModel.PROP_LAST_LOGIN_TIME,
-          new Date()
-        );
       }
     } finally {
       AuthenticationUtil.setRunAsUser(userName);
+    }
+
+    if (!authenticationEnabled) {
+      AuthenticationUtil.clearCurrentSecurityContext();
+      response.sendError(HttpServletResponse.SC_FORBIDDEN);
+      return;
     }
 
     try {

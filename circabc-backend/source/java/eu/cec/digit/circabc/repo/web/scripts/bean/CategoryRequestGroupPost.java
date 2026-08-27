@@ -67,7 +67,7 @@ public class CategoryRequestGroupPost extends CircabcDeclarativeWebScript {
       MLPropertyInterceptor.setMLAware(false);
     }
     try {
-      // no special permission check required here.
+      // External user check is performed in categoriesIdGroupRequestPost
       GroupCreationRequest body =
         InterestGroupJsonParser.parseGroupCreationRequest(req);
       this.categoriesApi.categoriesIdGroupRequestPost(categoryId, body);
@@ -75,11 +75,17 @@ public class CategoryRequestGroupPost extends CircabcDeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied. ", ade);
+      }
       return null;
     } catch (InvalidNodeRefException | ParseException | IOException inre) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request. ", inre);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);

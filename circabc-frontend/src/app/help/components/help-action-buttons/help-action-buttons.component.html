@@ -1,0 +1,58 @@
+<div
+  class="help-action-buttons"
+  role="group"
+  [attr.aria-label]="'help.actions.' + entityType() | transloco"
+>
+  @if (showAdd()) {
+  <button
+    type="button"
+    class="action-button add-button"
+    [attr.data-cy]="'add-' + entityType()"
+    [attr.aria-label]="'help.actions.add.' + entityType() | transloco"
+    [disabled]="disabled()"
+    [pTooltip]="'help.actions.add.' + entityType() | transloco"
+    tooltipPosition="top"
+    (click)="onAddClick()"
+    (keydown.enter)="onAddClick()"
+  >
+    <span class="button-icon" aria-hidden="true">➕</span>
+    <span class="sr-only"
+      >{{ 'help.actions.add.' + entityType() | transloco }}</span
+    >
+  </button>
+  } @if (showEdit()) {
+  <button
+    type="button"
+    class="action-button edit-button"
+    [attr.data-cy]="'edit-' + entityType()"
+    [attr.aria-label]="'help.actions.edit.' + entityType() | transloco"
+    [disabled]="disabled()"
+    [pTooltip]="'help.actions.edit.' + entityType() | transloco"
+    tooltipPosition="top"
+    (click)="onEditClick()"
+    (keydown.enter)="onEditClick()"
+  >
+    <span class="button-icon" aria-hidden="true">✏️</span>
+    <span class="sr-only"
+      >{{ 'help.actions.edit.' + entityType() | transloco }}</span
+    >
+  </button>
+  } @if (showDelete()) {
+  <button
+    type="button"
+    class="action-button delete-button"
+    [attr.data-cy]="'delete-' + entityType()"
+    [attr.aria-label]="'help.actions.delete.' + entityType() | transloco"
+    [disabled]="disabled()"
+    [pTooltip]="'help.actions.delete.' + entityType() | transloco"
+    tooltipPosition="top"
+    (click)="onDeleteClick()"
+    (keydown.enter)="onDeleteClick()"
+  >
+    <span class="button-icon" aria-hidden="true">🗑️</span>
+    <span class="sr-only"
+      >{{ 'help.actions.delete.' + entityType() | transloco }}</span
+    >
+  </button>
+  }
+</div>

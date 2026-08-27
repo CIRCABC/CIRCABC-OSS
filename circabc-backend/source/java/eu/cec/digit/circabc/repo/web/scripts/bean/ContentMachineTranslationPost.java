@@ -43,6 +43,7 @@ public class ContentMachineTranslationPost extends CircabcDeclarativeWebScript {
     }
 
     try {
+      checkGroupReadOnlyMode(id);
       if (
         !this.currentUserPermissionCheckerService.hasAnyOfLibraryPermission(
             id,
@@ -62,11 +63,27 @@ public class ContentMachineTranslationPost extends CircabcDeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
+      return null;
+    } catch (ReadOnlyAccessException roe) {
+      status.setCode(HttpServletResponse.SC_FORBIDDEN);
+      status.setMessage(roe.getMessage());
+      status.setRedirect(true);
+      if (logger.isWarnEnabled()) {
+        logger.warn(
+          "Read-only mode prevented machine translation: " + roe.getMessage()
+        );
+      }
       return null;
     } catch (InvalidNodeRefException | InvalidAspectException inre) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request", inre);
+      }
       return null;
     }
     return model;

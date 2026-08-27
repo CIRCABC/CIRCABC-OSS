@@ -24,6 +24,7 @@ import {
 import { LibraryIdService } from 'app/core/libraryId.service';
 import { LoginService } from 'app/core/login.service';
 import { UiMessageService } from 'app/core/message/ui-message.service';
+import { ReadOnlyStateService } from 'app/core/read-only-state.service';
 import { getSuccessTranslation } from 'app/core/util';
 import { BreadcrumbComponent } from 'app/group/breadcrumb/breadcrumb.component';
 import { FlatMessageComponent } from 'app/shared/flat-message/flat-message.component';
@@ -119,7 +120,8 @@ export class LibraryComponent implements OnInit {
     private permEvalService: PermissionEvaluatorService,
     private userService: UserService,
     private cookieService: CookieService,
-    private libraryIdService: LibraryIdService
+    private libraryIdService: LibraryIdService,
+    private readOnlyStateService: ReadOnlyStateService
   ) {}
 
   public async ngOnInit() {
@@ -318,7 +320,8 @@ export class LibraryComponent implements OnInit {
             this.preferences.library.listing.page,
             this.preferences.library.listing.sort,
             false,
-            false
+            false,
+            true
           )
         );
       }
@@ -411,6 +414,10 @@ export class LibraryComponent implements OnInit {
 
   isLibraryRoot(): boolean {
     return this.node.name === 'Library';
+  }
+
+  isReadOnly(): boolean {
+    return this.readOnlyStateService.isReadOnly();
   }
 
   private async saveListing(listingOptions: ListingOptions) {

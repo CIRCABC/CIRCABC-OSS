@@ -35,7 +35,6 @@ export class DeleteActionComponent {
 
   public showModal = false;
   public deleting = false;
-  private notify = true;
 
   public get confirmationMessage(): string {
     const node = this.node();
@@ -63,9 +62,7 @@ export class DeleteActionComponent {
   ) {}
 
   public async delete() {
-    if (!this.notifyFormGroup.controls.notify.value) {
-      this.notify = false;
-    }
+    const notify = this.notifyFormGroup.controls.notify.value ?? false;
     const node = this.node();
     if (node.id) {
       this.deleting = true;
@@ -78,9 +75,7 @@ export class DeleteActionComponent {
         result.type = ActionType.DELETE_SPACE;
 
         try {
-          await firstValueFrom(
-            this.spaceService.deleteSpace(node.id, this.notify)
-          );
+          await firstValueFrom(this.spaceService.deleteSpace(node.id, notify));
           result.result = ActionResult.SUCCEED;
           this.clipboardService.removeItem(node);
           this.showModal = false;
@@ -95,7 +90,7 @@ export class DeleteActionComponent {
 
         try {
           await firstValueFrom(
-            this.contentService.deleteContent(node.id, this.notify)
+            this.contentService.deleteContent(node.id, notify)
           );
           result.result = ActionResult.SUCCEED;
           this.clipboardService.removeItem(node);

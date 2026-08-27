@@ -1,0 +1,547 @@
+/**
+ * Help Accordion Hierarchy Theme
+ * 
+ * Comprehensive theming system for the help article accordion hierarchy.
+ * Includes CSS custom properties for theming, responsive breakpoints,
+ * dark mode, high contrast mode, and reduced motion support.
+ * 
+ * WCAG 2.1 AA Compliant:
+ * - Normal text: 4.5:1 contrast ratio
+ * - Large text and UI components: 3:1 contrast ratio
+ * - Focus indicators: 3:1 contrast ratio
+ */
+
+/* ============================================================================
+   CSS Custom Properties - Light Mode (Default)
+   ============================================================================ */
+
+:root {
+  /* Spacing Variables */
+  --accordion-panel-padding: 16px;
+  --accordion-nested-indent: 24px;
+  --accordion-item-gap: 8px;
+  
+  /* Color Variables - Light Mode */
+  /* Background colors with WCAG AA compliant contrast */
+  --accordion-bg-primary: #fff;
+  --accordion-bg-hover: #f5f5f5;
+  --accordion-bg-expanded: #fafafa;
+  --accordion-border-color: #e0e0e0;
+  
+  /* Text colors - 4.5:1 contrast ratio for normal text */
+  --accordion-text-primary: #212121;      /* 16.1:1 contrast on white */
+  --accordion-text-secondary: #757575;    /* 4.6:1 contrast on white */
+  
+  /* Interactive colors - 3:1 contrast ratio for UI components */
+  --accordion-focus-color: #1976d2;       /* 4.5:1 contrast on white */
+  
+  /* Animation Variables */
+  --accordion-transition-duration: 300ms;
+  --accordion-transition-timing: ease-in-out;
+  
+  /* Accessibility Variables */
+  --accordion-focus-outline-width: 2px;
+  --accordion-min-touch-target: 44px;
+}
+
+/* ============================================================================
+   Dark Mode Support
+   ============================================================================ */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Background colors - Dark Mode */
+    --accordion-bg-primary: #1e1e1e;
+    --accordion-bg-hover: #2d2d2d;
+    --accordion-bg-expanded: #252525;
+    --accordion-border-color: #404040;
+    
+    /* Text colors - Maintaining 4.5:1 contrast on dark backgrounds */
+    --accordion-text-primary: #e0e0e0;      /* 12.6:1 contrast on #1e1e1e */
+    --accordion-text-secondary: #a0a0a0;    /* 5.7:1 contrast on #1e1e1e */
+    
+    /* Interactive colors - Dark Mode */
+    --accordion-focus-color: #64b5f6;       /* 6.3:1 contrast on #1e1e1e */
+  }
+  
+  /* Error message styling for dark mode */
+  .error-message {
+    background: #3e2723;
+    border-color: #d32f2f;
+    color: #ffcdd2;
+  }
+}
+
+/* ============================================================================
+   Responsive Breakpoints
+   ============================================================================ */
+
+/* Mobile: 320px - 767px */
+@media (max-width: 767px) {
+  :root {
+    --accordion-panel-padding: 12px;
+    --accordion-nested-indent: 16px;
+    --accordion-item-gap: 6px;
+  }
+  
+  .category-header {
+    font-size: 14px;
+    padding: 12px;
+  }
+  
+  .subcategory-header {
+    font-size: 13px;
+    padding: 10px;
+  }
+  
+  .article-item {
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+}
+
+/* Tablet: 768px - 1023px */
+@media (min-width: 768px) and (max-width: 1023px) {
+  :root {
+    --accordion-panel-padding: 14px;
+    --accordion-nested-indent: 20px;
+  }
+  
+  .category-header {
+    font-size: 15px;
+  }
+  
+  .subcategory-header {
+    font-size: 13.5px;
+  }
+  
+  .article-item {
+    font-size: 13.5px;
+  }
+}
+
+/* Desktop: 1024px+ */
+@media (min-width: 1024px) {
+  :root {
+    --accordion-panel-padding: 16px;
+    --accordion-nested-indent: 24px;
+  }
+  
+  .category-header {
+    font-size: 16px;
+  }
+  
+  .subcategory-header {
+    font-size: 14px;
+  }
+  
+  .article-item {
+    font-size: 14px;
+  }
+}
+
+/* ============================================================================
+   High Contrast Mode Support
+   ============================================================================ */
+
+@media (prefers-contrast: more) {
+  :root {
+    /* Increase border widths for better visibility */
+    --accordion-focus-outline-width: 3px;
+  }
+  
+  .category-panel,
+  .subcategory-panel {
+    border-width: 2px;
+  }
+  
+  .category-header:focus,
+  .subcategory-header:focus,
+  .article-item:focus {
+    outline-width: 3px;
+    outline-offset: 2px;
+  }
+  
+  /* Ensure expansion icons are highly visible */
+  .expansion-icon {
+    font-weight: bold;
+  }
+}
+
+/* ============================================================================
+   Reduced Motion Support
+   ============================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .expansion-icon {
+    transition: none;
+  }
+  
+  .category-content,
+  .subcategory-content {
+    animation: none;
+  }
+  
+  .cdk-drag-animating,
+  .cdk-drop-list-dragging .cdk-drag {
+    transition: none;
+  }
+}
+
+/* ============================================================================
+   Category Panel Styles
+   ============================================================================ */
+
+.category-panel {
+  border: 1px solid var(--accordion-border-color);
+  border-radius: 4px;
+  margin-bottom: var(--accordion-item-gap);
+  background: var(--accordion-bg-primary);
+  overflow: hidden;
+}
+
+.category-panel.expanded {
+  background: var(--accordion-bg-expanded);
+}
+
+.category-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--accordion-panel-padding);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--accordion-text-primary);
+  text-align: left;
+  min-height: var(--accordion-min-touch-target);
+  transition: background-color 150ms ease;
+}
+
+.category-header:hover {
+  background: var(--accordion-bg-hover);
+}
+
+.category-header:focus {
+  outline: var(--accordion-focus-outline-width) solid var(--accordion-focus-color);
+  outline-offset: -2px;
+}
+
+.category-header:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.category-header:focus-visible {
+  outline: var(--accordion-focus-outline-width) solid var(--accordion-focus-color);
+  outline-offset: -2px;
+}
+
+.category-name {
+  flex: 1;
+}
+
+.expansion-icon {
+  transition: transform var(--accordion-transition-duration) var(--accordion-transition-timing);
+  font-size: 12px;
+  color: var(--accordion-text-secondary);
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+.expansion-icon.rotated {
+  transform: rotate(-180deg);
+}
+
+.category-content {
+  padding: 0 var(--accordion-panel-padding) var(--accordion-panel-padding);
+  animation: slideDown var(--accordion-transition-duration) var(--accordion-transition-timing);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================================================
+   Subcategory Panel Styles
+   ============================================================================ */
+
+.subcategory-panel {
+  border-left: 3px solid var(--accordion-border-color);
+  margin-left: var(--accordion-nested-indent);
+  margin-bottom: var(--accordion-item-gap);
+  padding-left: 12px;
+}
+
+.subcategory-panel.expanded {
+  border-left-color: var(--accordion-focus-color);
+}
+
+.subcategory-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--accordion-text-primary);
+  text-align: left;
+  min-height: var(--accordion-min-touch-target);
+  border-radius: 4px;
+  transition: background-color 150ms ease;
+}
+
+.subcategory-header:hover {
+  background: var(--accordion-bg-hover);
+}
+
+.subcategory-header:focus {
+  outline: var(--accordion-focus-outline-width) solid var(--accordion-focus-color);
+  outline-offset: -2px;
+}
+
+.subcategory-header:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.subcategory-header:focus-visible {
+  outline: var(--accordion-focus-outline-width) solid var(--accordion-focus-color);
+  outline-offset: -2px;
+}
+
+.subcategory-name {
+  flex: 1;
+}
+
+.subcategory-content {
+  padding-left: 12px;
+  animation: slideDown var(--accordion-transition-duration) var(--accordion-transition-timing);
+}
+
+/* ============================================================================
+   Article Item Styles
+   ============================================================================ */
+
+.article-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  margin-bottom: 4px;
+  margin-left: var(--accordion-nested-indent);
+  background: transparent;
+  border-radius: 4px;
+  text-decoration: none;
+  color: var(--accordion-text-primary);
+  font-size: 14px;
+  min-height: var(--accordion-min-touch-target);
+  transition: background-color 150ms ease;
+}
+
+.article-item:hover {
+  background: var(--accordion-bg-hover);
+  text-decoration: none;
+}
+
+.article-item:focus {
+  outline: var(--accordion-focus-outline-width) solid var(--accordion-focus-color);
+  outline-offset: -2px;
+  text-decoration: none;
+}
+
+.article-item:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.article-item:focus-visible {
+  outline: var(--accordion-focus-outline-width) solid var(--accordion-focus-color);
+  outline-offset: -2px;
+}
+
+.article-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.article-title {
+  flex: 1;
+}
+
+/* ============================================================================
+   Drag and Drop Styles
+   ============================================================================ */
+
+.subcategory-list,
+.article-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.subcategory-list li,
+.article-list li {
+  margin-bottom: 4px;
+}
+
+.draggable {
+  cursor: move;
+  cursor: grab;
+}
+
+.draggable:active {
+  cursor: grabbing;
+}
+
+.cdk-drag-preview {
+  opacity: 0.8;
+  box-shadow: 0 5px 15px rgb(0 0 0 / 0.3);
+  border-radius: 4px;
+  background: var(--accordion-bg-primary);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.4;
+  background: var(--accordion-bg-hover);
+  border: 2px dashed var(--accordion-border-color);
+  border-radius: 4px;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.cdk-drop-list-dragging .cdk-drag {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* ============================================================================
+   Loading and Error States
+   ============================================================================ */
+
+.loading-indicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 48px 24px;
+  color: var(--accordion-text-secondary);
+  font-size: 14px;
+}
+
+.error-message {
+  padding: 16px;
+  background: #ffebee;
+  border: 1px solid #ef5350;
+  border-radius: 4px;
+  color: #c62828;
+  font-size: 14px;
+  margin: 16px 0;
+}
+
+/* Ensure error message has sufficient contrast */
+@media (prefers-color-scheme: light) {
+  .error-message {
+    /* Light mode: #c62828 on #ffebee = 5.9:1 contrast (WCAG AA compliant) */
+    background: #ffebee;
+    border-color: #ef5350;
+    color: #c62828;
+  }
+}
+
+/* ============================================================================
+   Accordion Container
+   ============================================================================ */
+
+.accordion-container {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* ============================================================================
+   Section Headers (for subcategories and articles sections)
+   ============================================================================ */
+
+.category-content h3,
+.subcategory-content h3 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accordion-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 12px 0 8px;
+  padding: 0;
+}
+
+/* ============================================================================
+   Touch Target Enhancements for Mobile
+   ============================================================================ */
+
+@media (max-width: 767px) {
+  /* Ensure adequate spacing between touch targets */
+  .category-panel {
+    margin-bottom: 12px;
+  }
+  
+  .subcategory-panel {
+    margin-bottom: 10px;
+  }
+  
+  .article-item {
+    margin-bottom: 8px;
+  }
+  
+  /* Increase touch target size on mobile */
+  .category-header,
+  .subcategory-header,
+  .article-item {
+    min-height: 48px; /* Slightly larger than 44px for better mobile UX */
+  }
+}
+
+/* ============================================================================
+   Print Styles
+   ============================================================================ */
+
+@media print {
+  .category-panel,
+  .subcategory-panel {
+    border: 1px solid #000;
+    page-break-inside: avoid;
+  }
+  
+  .expansion-icon {
+    display: none;
+  }
+  
+  .category-content,
+  .subcategory-content {
+    display: block !important;
+    animation: none;
+  }
+  
+  .draggable {
+    cursor: default;
+  }
+}

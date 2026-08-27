@@ -14,6 +14,10 @@ public interface CircabcDynamicAuthorityService {
   NodeRef findGroup(NodeRef nodeRef);
   CircabcServiceType findServiceType(NodeRef nodeRef);
   boolean isGroupMember(NodeRef group, String userName);
+  /**
+   * Returns true if the user is Category Admin of the Interest Group that contains the node.
+   */
+  boolean isCategoryAdmin(NodeRef group, String userName);
   boolean isAdmin(
     NodeRef group,
     String userName,

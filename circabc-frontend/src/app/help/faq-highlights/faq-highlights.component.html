@@ -12,7 +12,10 @@
     </div>
     <div class="card-container">
       @for (article of displayedArticles; track article.id) {
-      <cbc-article-card [article]="article"></cbc-article-card>
+      <cbc-article-card
+        [article]="article"
+        (articleClicked)="onArticleClicked($event)"
+      ></cbc-article-card>
       }
     </div>
     <div class="next-slider">
@@ -24,4 +27,11 @@
     </div>
   </div>
 </section>
+
+<!-- Article Modal -->
+<app-help-article-modal
+  [articleId]="selectedArticleId()"
+  [(visible)]="showArticleModal"
+  (closed)="onModalClosed()"
+/>
 }

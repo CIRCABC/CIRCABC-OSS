@@ -54,6 +54,8 @@ public class GlobalStatisticsJobListener implements Job {
     throws JobExecutionException {
     JobDataMap jobData = context.getJobDetail().getJobDataMap();
 
+    logger.info("GlobalStatisticsJobListener triggered");
+
     String enabledOnHostname = (String) jobData.get("enabledOnHostname");
 
     if (enabledOnHostname != null && !enabledOnHostname.isEmpty()) {
@@ -84,7 +86,7 @@ public class GlobalStatisticsJobListener implements Job {
     Integer lockResult = lockJobFile();
 
     if (lockResult == 1) {
-      logger.debug("Running GlobalStatisticsJobListener");
+      logger.info("Running GlobalStatisticsJobListener - lock acquired");
       long start = System.currentTimeMillis();
 
       try {
@@ -107,15 +109,17 @@ public class GlobalStatisticsJobListener implements Job {
         );
 
         long end = System.currentTimeMillis();
-        logger.debug(
-          ("End of GlobalStatisticsJobListenerJob. Processing took " +
-            (end - start) +
-            " ms")
+        logger.info(
+          "End of GlobalStatisticsJobListenerJob. Processing took " +
+          (end - start) +
+          " ms"
         );
       } finally {
         AuthenticationUtil.clearCurrentSecurityContext();
         unlockJobFile();
       }
+    } else {
+      logger.info("GlobalStatisticsJobListener skipped - lock already held");
     }
   }
 

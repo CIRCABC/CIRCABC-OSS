@@ -51,6 +51,12 @@ public class BulkInviteUsersPost extends CircabcDeclarativeWebScript {
         throw new AccessDeniedException("No access on node: " + igId);
       }
 
+      if (!this.groupLockApi.canWriteOrAdmin(igId)) {
+        throw new ReadOnlyAccessException(
+          "Interest group is in read-only mode"
+        );
+      }
+
       boolean createNewProfiles = req
         .getParameter("createNewProfiles")
         .equals("true");
@@ -70,17 +76,36 @@ public class BulkInviteUsersPost extends CircabcDeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request: ", inre);
+      }
       return null;
     } catch (AccessDeniedException ade) {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied: ", ade);
+      }
+      return null;
+    } catch (ReadOnlyAccessException roe) {
+      status.setCode(HttpServletResponse.SC_FORBIDDEN);
+      status.setMessage(roe.getMessage());
+      status.setRedirect(true);
+      if (logger.isWarnEnabled()) {
+        logger.warn(
+          "Read-only mode prevented bulk invite: " + roe.getMessage()
+        );
+      }
       return null;
     } catch (Exception e) {
       status.setCode(HttpServletResponse.SC_NOT_ACCEPTABLE);
       status.setMessage(e.getMessage());
       status.setException(e);
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error(e.getMessage(), e);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);

@@ -49,6 +49,7 @@ import { UpdateExpiredDateComponent } from './update-expired-date/update-expired
 })
 export class ExpiredItemsComponent implements OnInit {
   readonly groupId = input.required<string>();
+  readonly readOnly = input<boolean>(false);
 
   public currentIg!: InterestGroup;
   public listingOptions: ListingOptions = {

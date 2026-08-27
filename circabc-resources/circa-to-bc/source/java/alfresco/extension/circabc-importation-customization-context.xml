@@ -112,5 +112,14 @@
        	<property name="timeToWaitMs" value="${import.resource.validator.timetowait}" />
     </bean>
 
+    <!-- HTTP resource handler for fetching content from a remote Alfresco/CIRCABC instance -->
+    <bean id="migration.alfrescoHttpResourceHandler"
+          class="eu.cec.digit.circabc.migration.processor.common.AlfrescoHttpResourceHandler"
+          init-method="register">
+        <property name="username" value="${circabc.import.remote.username}" />
+        <property name="password" value="${circabc.import.remote.password}" />
+        <property name="resourceManager" ref="migration.resourceManager" />
+    </bean>
+
 
 </beans>

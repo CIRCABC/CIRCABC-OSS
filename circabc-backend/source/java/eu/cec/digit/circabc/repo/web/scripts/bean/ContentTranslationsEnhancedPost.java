@@ -54,6 +54,7 @@ public class ContentTranslationsEnhancedPost
     try {
       String id = templateVars.get("id");
 
+      checkGroupReadOnlyMode(id);
       if (
         !currentUserPermissionCheckerService.hasAnyOfLibraryPermission(
           id,
@@ -191,11 +192,28 @@ public class ContentTranslationsEnhancedPost
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
+      return null;
+    } catch (ReadOnlyAccessException roe) {
+      status.setCode(HttpServletResponse.SC_FORBIDDEN);
+      status.setMessage(roe.getMessage());
+      status.setRedirect(true);
+      if (logger.isWarnEnabled()) {
+        logger.warn(
+          "Read-only mode prevented enhanced translation upload: " +
+          roe.getMessage()
+        );
+      }
       return null;
     } catch (InvalidNodeRefException inre) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request", inre);
+      }
       return null;
     } catch (MaxFileSizeException e) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);

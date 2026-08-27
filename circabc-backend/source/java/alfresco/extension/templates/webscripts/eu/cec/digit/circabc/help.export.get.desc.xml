@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Export FAQ structure</shortname>
+  <description>Export the complete FAQ structure (categories, subcategories, articles) to JSON format. Restricted to admin users only.</description>
+  <url>/circabc/help/export</url>
+  <format default="json" />
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

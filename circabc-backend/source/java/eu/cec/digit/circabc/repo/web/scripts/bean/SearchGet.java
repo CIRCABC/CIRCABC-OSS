@@ -1,7 +1,6 @@
 package eu.cec.digit.circabc.repo.web.scripts.bean;
 
 import io.swagger.api.SearchApi;
-import io.swagger.exception.EmptyQueryStringException;
 import io.swagger.model.PagedSearchNodes;
 import io.swagger.util.Converter;
 import io.swagger.util.CurrentUserPermissionCheckerService;
@@ -157,17 +156,26 @@ public class SearchGet extends DeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied during search operation", ade);
+      }
       return null;
-    } catch (InvalidNodeRefException | EmptyQueryStringException inre) {
+    } catch (InvalidNodeRefException inre) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request during search operation", inre);
+      }
       return null;
     } catch (Exception e) {
       status.setCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
       status.setMessage(e.getMessage());
       status.setException(e);
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Unexpected error during search operation", e);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);

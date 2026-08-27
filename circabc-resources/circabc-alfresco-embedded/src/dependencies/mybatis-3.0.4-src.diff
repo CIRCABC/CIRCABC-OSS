@@ -1,0 +1,211 @@
+diff mybatis-3.0.4-sources-patched/org/apache/ibatis/session/Configuration.java mybatis-3.0.4-sources/org/apache/ibatis/session/Configuration.java
+101,107d100
+<   protected boolean useLocalCaches = false;
+< 
+<   public void setUseLocalCaches(boolean useLocalCaches)
+<   {
+< 	this.useLocalCaches = useLocalCaches;
+<   }
+< 	
+297,298d289
+< 	executor.setUseLocalCache(useLocalCaches);
+< 
+
+diff mybatis-3.0.4-sources-patched/org/apache/ibatis/executor/BaseExecutor.java mybatis-3.0.4-sources/org/apache/ibatis/executor/BaseExecutor.java 
+29,30d28
+<   protected boolean useLocalCache = false;
+< 
+39,43c37,38
+<     if(useLocalCache)
+<     {
+< 	    this.localCache = new PerpetualCache("LocalCache");
+< 	    this.localOutputParameterCache = new PerpetualCache("LocalOutputParameterCache");
+<     }
+---
+>     this.localCache = new PerpetualCache("LocalCache");
+>     this.localOutputParameterCache = new PerpetualCache("LocalOutputParameterCache");
+47,55d41
+<   
+<   public void setUseLocalCache(boolean useLocalCache) {
+< 	this.useLocalCache = useLocalCache;
+<     if(useLocalCache)
+<     {
+< 	    this.localCache = new PerpetualCache("LocalCache");
+< 	    this.localOutputParameterCache = new PerpetualCache("LocalOutputParameterCache");
+<     }
+<   }
+74,78c60,61
+<       if(useLocalCache)
+<       {
+< 	      localCache = null;
+< 	      localOutputParameterCache = null;
+<       }
+---
+>       localCache = null;
+>       localOutputParameterCache = null;
+105,116c88,102
+<     if(useLocalCache) {
+<       try {
+<     	queryStack++;
+<     	CacheKey key = createCacheKey(ms, parameter, rowBounds);
+<     	list = (List) localCache.getObject(key);
+<     	if (list != null) {
+<     	  handleLocallyCachedOutputParameters(ms, key, parameter);
+<     	} else {
+<     	  list = queryFromDatabase(ms, parameter, rowBounds, resultHandler, key);
+<     	}
+<       } finally {
+<     	queryStack--;
+---
+>     try {
+>       queryStack++;
+>       CacheKey key = createCacheKey(ms, parameter, rowBounds);
+>       list = (List) localCache.getObject(key);
+>       if (list != null) {
+>         handleLocallyCachedOutputParameters(ms, key, parameter);
+>       } else {
+>         list = queryFromDatabase(ms, parameter, rowBounds, resultHandler, key);
+>       }
+>     } finally {
+>       queryStack--;
+>     }
+>     if (queryStack == 0) {
+>       for (DeferredLoad deferredLoad : deferredLoads) {
+>         deferredLoad.load();
+118,125d103
+< 
+<       if (queryStack == 0) {
+<           for (DeferredLoad deferredLoad : deferredLoads) {
+<             deferredLoad.load();
+<           }
+<         }
+<     } else {
+<       list = doQuery(ms, parameter, rowBounds, resultHandler);
+127d104
+< 
+193c170
+<     if (!closed && useLocalCache) {
+---
+>     if (!closed) {
+219c196
+<     if (ms.getStatementType() == StatementType.CALLABLE && useLocalCache) {
+---
+>     if (ms.getStatementType() == StatementType.CALLABLE) {
+
+diff mybatis-3.0.4-sources-patched/org/apache/ibatis/executor/CachingExecutor.java mybatis-3.0.4-sources/org/apache/ibatis/executor/CachingExecutor.java 
+36,38d35
+<   public void setUseLocalCache(boolean useLocalCache) {
+< 	delegate.setUseLocalCache(useLocalCache);
+<   }
+
+
+diff mybatis-3.0.4-sources-patched/org/apache/ibatis/executor/Executor.java mybatis-3.0.4-sources/org/apache/ibatis/executor/Executor.java 31,32d30
+<   void setUseLocalCache(boolean useLocalCache);
+< 
+43c41
+< }
+\ No newline at end of file
+---
+> }
+
+diff mybatis-3.0.4-sources-patched/org/apache/ibatis/ognl/Ognl.java mybatis-3.0.4-sources/org/apache/ibatis/ognl/Ognl.java 
+35,38d34
+< import java.util.concurrent.ConcurrentHashMap;
+< import java.util.concurrent.locks.ReentrantReadWriteLock;
+< import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
+< import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
+103,131d98
+<     // a cache of string expressions to parsed expressions
+<   private static final Map<String, Node> expressionCache = new ConcurrentHashMap<String, Node>();
+<   private static final ReadLock readLock;
+<   private static final WriteLock writeLock;
+< 
+<   static
+<   {
+<       ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
+<       readLock = rwLock.readLock();
+<       writeLock = rwLock.writeLock();
+<   }
+< 
+<   private static Node cacheExpression(String expression) throws ParseException
+<   {
+<       try
+<       {
+<           Node node = new OgnlParser(new StringReader(expression)).topLevelExpression();
+< 
+<           writeLock.lock();
+<           expressionCache.put(expression, node);
+< 
+<           return node;
+<       }
+<       finally
+<       {
+<           writeLock.unlock();
+<       }
+<   }
+<   
+143,163c110,111
+<       Node node = null;
+< 
+<       try
+<       {
+<           readLock.lock();
+< 
+<           // look in the expression cache first
+<           node = expressionCache.get(expression);
+<       }
+<       finally
+<       {
+<           readLock.unlock();
+<       }
+< 
+<       if(node == null)
+<       {
+<           // nothing cached for this expression, parse the expression and cache it
+<           node = cacheExpression(expression);
+<       }
+< 
+<       return node;
+---
+>       OgnlParser parser = new OgnlParser(new StringReader(expression));
+>       return parser.topLevelExpression();
+
+diff org/apache/ibatis/reflection/Reflector.java ../mybatis-3.0.4-sources-patched/org/apache/ibatis/reflection/Reflector.java 
+2a3,16
+> import java.lang.reflect.Constructor;
+> import java.lang.reflect.Field;
+> import java.lang.reflect.Method;
+> import java.lang.reflect.Modifier;
+> import java.lang.reflect.ReflectPermission;
+> import java.util.ArrayList;
+> import java.util.Collection;
+> import java.util.HashMap;
+> import java.util.Iterator;
+> import java.util.List;
+> import java.util.Locale;
+> import java.util.Map;
+> import java.util.concurrent.ConcurrentHashMap;
+> 
+9,11d22
+< import java.lang.reflect.*;
+< import java.util.*;
+< 
+20c31
+<   private static final Map<Class, Reflector> REFLECTOR_MAP = Collections.synchronizedMap(new HashMap<Class, Reflector>());
+---
+>   private static final Map<Class, Reflector> REFLECTOR_MAP = new ConcurrentHashMap<Class, Reflector>();
+391,397c402,405
+<       synchronized (clazz) {
+<         Reflector cached = REFLECTOR_MAP.get(clazz);
+<         if (cached == null) {
+<           cached = new Reflector(clazz);
+<           REFLECTOR_MAP.put(clazz, cached);
+<         }
+<         return cached;
+---
+>       Reflector cached = REFLECTOR_MAP.get(clazz);
+>       if (cached == null) {
+>         cached = new Reflector(clazz);
+>         REFLECTOR_MAP.put(clazz, cached);
+398a407
+>       return cached;

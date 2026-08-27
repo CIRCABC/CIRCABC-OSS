@@ -21,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import eu.cec.digit.circabc.aspect.ContentNotifyAspect;
+import eu.cec.digit.circabc.model.CircabcModel;
 import eu.cec.digit.circabc.migration.entities.ElementsHelper;
 import eu.cec.digit.circabc.migration.entities.XMLElement;
 import eu.cec.digit.circabc.migration.entities.generated.ImportRoot;
@@ -200,6 +201,7 @@ public abstract class MigrateProcessorBase extends TreeWalkerVisitorBase impleme
 	                 final NodeRef nodeRef = executeImpl(node);
 	                 ElementsHelper.setNodeRef(node, nodeRef);
 	                 applyUIFacets(nodeRef, getIcon());
+	                 applyMigratedAspect(node, nodeRef);
 
 					 final JournalLine journalLineNode = JournalLine.createNode(Status.SUCCESS, ElementsHelper.getQualifiedPath(node), nodeRef.toString());
 					 super.getJournal().journalize(journalLineNode);
@@ -274,6 +276,22 @@ public abstract class MigrateProcessorBase extends TreeWalkerVisitorBase impleme
 				super.getJournal().journalize(journalLineNode);
 			}
 		}
+
+        /**
+         * If the node carries an original (source) NodeRef recorded during export,
+         * store it on the created node via the ci:migrated aspect (ci:originalNodeRef
+         * property) so the origin of the migrated node is preserved.
+         */
+        protected void applyMigratedAspect(final Node node, final NodeRef ref)
+        {
+        	final NodeRef original = node.getOriginalNodeRef();
+        	if(original != null && ref != null)
+        	{
+        		final Map<QName, Serializable> migratedProps = new HashMap<QName, Serializable>(1);
+        		migratedProps.put(CircabcModel.PROP_ORIGINAL_NODE_REF, original.toString());
+        		getNodeService().addAspect(ref, CircabcModel.ASPECT_MIGRATED, migratedProps);
+        	}
+        }
 
         protected void applyUIFacets(final NodeRef ref, final String icon)
         {

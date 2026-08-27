@@ -62,6 +62,10 @@
 						<circabc:actionLink id="migration-console-action-export" value="#{cmsg.migration_console_action_export}" action="manage-export" actionListener="#{ManageExportationsBean.reset}" tooltip="#{cmsg.migration_console_action_export}" rendered="#{ManageExportationsBean.exportAvailable == true}" /><br />
 						</li>
 						<li>
+						<circabc:actionLink id="migration-console-action-circabc-export" value="CIRCABC IG Export" action="wai:dialog:exportIgDialog" tooltip="Export a CIRCABC Interest Group (reads from Alfresco repository)" rendered="#{NavigationBean.currentUser.admin == true}" /><br />
+						</li>						<li>
+						<circabc:actionLink id="migration-console-action-circabc-import" value="CIRCABC IG Import" action="wai:dialog:importIgDialog" tooltip="Import a previously exported CIRCABC Interest Group" rendered="#{NavigationBean.currentUser.admin == true}" /><br />
+						</li>						<li>
 						<circabc:actionLink id="migration-console-action-bulk-user" value="#{cmsg.migration_console_action_big_bang}" action="manage-bulk-user-export" actionListener="#{ManageBulkUserExport.reset}" tooltip="#{cmsg.migration_console_action_big_bang}" rendered="#{ManageExportationsBean.exportAvailable == true}" /><br />
 						</li>
 						<li>

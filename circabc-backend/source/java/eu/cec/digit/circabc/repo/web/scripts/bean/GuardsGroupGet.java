@@ -51,9 +51,8 @@ public class GuardsGroupGet extends DeclarativeWebScript {
       MLPropertyInterceptor.setMLAware(false);
     }
     try {
-      GuardAuthorization guardAuthorization = new GuardAuthorization();
-      guardAuthorization.setGranted(
-        this.currentUserPermissionCheckerService.canAccessInterestGroup(groupIp)
+      GuardAuthorization guardAuthorization = guardsApi.guardsGroupIdGet(
+        groupIp
       );
       model.put("result", guardAuthorization);
     } catch (AccessDeniedException ade) {

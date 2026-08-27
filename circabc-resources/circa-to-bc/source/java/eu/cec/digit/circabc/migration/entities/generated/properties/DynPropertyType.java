@@ -36,7 +36,8 @@ public enum DynPropertyType {
     DATE_FIELD,
     TEXT_FIELD,
     TEXT_AREA,
-    SELECTION;
+    SELECTION,
+    MULTI_SELECTION;
 
     public String value() {
         return name();

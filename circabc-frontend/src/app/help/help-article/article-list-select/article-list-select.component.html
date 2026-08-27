@@ -1,8 +1,35 @@
 <h2>{{ 'help.articles.in.section' | transloco }}</h2>
-<ul>
+<ul
+  cdkDropList
+  [cdkDropListDisabled]="!isAdminOrSupport()"
+  (cdkDropListDropped)="onDrop({ previousIndex: $event.previousIndex, currentIndex: $event.currentIndex })"
+>
   @for (article of articles(); track article.id) {
-  <li [class.selected]="article.id === currentId()">
+  <li
+    cdkDrag
+    [class.selected]="article.id === currentId()"
+    [class.draggable]="isAdminOrSupport()"
+    [title]="isAdminOrSupport() ? ('help.drag.to.reorder' | transloco) : ''"
+  >
     <a [routerLink]="['..', article.id]">{{ article.title | cbcI18n }}</a>
+    @if (isAdminOrSupport()) {
+    <cbc-help-action-buttons
+      [entityType]="'article'"
+      [showAdd]="false"
+      (editClicked)="onEditArticle(article.id)"
+      (deleteClicked)="onDeleteArticle(article.id)"
+    />
+    }
   </li>
   }
 </ul>
+@if (isAdminOrSupport()) {
+<div class="add-article-button">
+  <cbc-help-action-buttons
+    [entityType]="'article'"
+    [showEdit]="false"
+    [showDelete]="false"
+    (addClicked)="onAddArticle()"
+  />
+</div>
+}

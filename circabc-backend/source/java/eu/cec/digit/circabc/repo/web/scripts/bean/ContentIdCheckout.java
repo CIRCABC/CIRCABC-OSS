@@ -71,6 +71,8 @@ public class ContentIdCheckout extends CircabcDeclarativeWebScript {
     }
 
     try {
+      checkGroupReadOnlyMode(id);
+
       if (
         !this.currentUserPermissionCheckerService.hasAlfCheckoutPermission(id)
       ) {
@@ -100,16 +102,30 @@ public class ContentIdCheckout extends CircabcDeclarativeWebScript {
       permissionService.setInheritParentPermissions(workingCopyNodeRef, false);
 
       model.put("workingCopyId", workingCopyNodeRef.getId());
+    } catch (ReadOnlyAccessException roae) {
+      status.setCode(HttpServletResponse.SC_FORBIDDEN);
+      status.setMessage(roae.getMessage());
+      status.setRedirect(true);
+      if (logger.isWarnEnabled()) {
+        logger.warn("Locked IG blocked checkout on node: " + id, roae);
+      }
+      return null;
     } catch (AccessDeniedException ade) {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (Exception e) {
       status.setCode(HttpServletResponse.SC_NOT_ACCEPTABLE);
       status.setMessage(e.getMessage());
       status.setException(e);
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error(e.getMessage(), e);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);

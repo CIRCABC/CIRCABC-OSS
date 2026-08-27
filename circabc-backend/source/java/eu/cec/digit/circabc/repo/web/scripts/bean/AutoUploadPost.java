@@ -49,24 +49,33 @@ public class AutoUploadPost extends CircabcDeclarativeWebScript {
 
       String configurationBody = req.getContent().getContent();
 
-      this.autoUploadApi.addAutoUploadEntry(configurationBody);
+      this.autoUploadApi.addAutoUploadEntry(igId, configurationBody);
 
       model.put("result", 1);
     } catch (InvalidNodeRefException inre) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request", inre);
+      }
       return null;
     } catch (AccessDeniedException ade) {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (Exception e) {
       status.setCode(HttpServletResponse.SC_NOT_ACCEPTABLE);
       status.setMessage(e.getMessage());
       status.setException(e);
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Unable to add the autoupload configuration", e);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);

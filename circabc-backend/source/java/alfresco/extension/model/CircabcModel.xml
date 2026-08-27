@@ -827,10 +827,38 @@
     
     <aspect name="ci:helpCategory">
       <title>A category for the new help service</title>
+      <properties>
+        <property name="ci:categorySortOrder">
+          <type>d:int</type>
+          <mandatory>false</mandatory>
+          <default>0</default>
+          <index enabled="false" />
+        </property>
+      </properties>
+    </aspect>
+
+    <aspect name="ci:helpSubcategory">
+      <title>A subcategory for the help service</title>
+      <properties>
+        <property name="ci:subcategorySortOrder">
+          <type>d:int</type>
+          <mandatory>false</mandatory>
+          <default>0</default>
+          <index enabled="false" />
+        </property>
+      </properties>
     </aspect>
     
     <aspect name="ci:helpArticle">
       <title>An article for the new help service</title>
+      <properties>
+        <property name="ci:sortOrder">
+          <type>d:int</type>
+          <mandatory>false</mandatory>
+          <default>0</default>
+          <index enabled="false" />
+        </property>
+      </properties>
     </aspect>
     
     <aspect name="ci:helpArticleHighlighted">
@@ -840,6 +868,23 @@
     
     <aspect name="ci:helpLink">
       <title>a Useful link in the help service</title>
+    </aspect>
+
+    <aspect name="ci:migrated">
+      <title>Migrated Node</title>
+      <!-- Marks a node created by the CIRCABC migration/import process and keeps a
+           reference to the original (source) node it was migrated from. -->
+      <properties>
+        <property name="ci:originalNodeRef">
+          <type>d:text</type>
+          <mandatory>false</mandatory>
+          <index enabled="true">
+            <atomic>true</atomic>
+            <stored>false</stored>
+            <tokenised>false</tokenised>
+          </index>
+        </property>
+      </properties>
     </aspect>
 
   </aspects>

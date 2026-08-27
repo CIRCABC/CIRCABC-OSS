@@ -7,10 +7,8 @@ describe('The Create Help Section Page', function () {
     cy.visit('help/start', {
       failOnStatusCode: false,
     });
-    cy.get(
-      ':nth-child(1) > .actions > cbc-inline-delete > .question > .ng-star-inserted',
-    ).click();
-    cy.get('#confirmDeletePerm').click();
+    cy.get('[data-cy="delete-inline"]').first().click();
+    cy.get('[data-cy="delete-inline-confirm"]').click();
     cy.contains('Success');
   });
 

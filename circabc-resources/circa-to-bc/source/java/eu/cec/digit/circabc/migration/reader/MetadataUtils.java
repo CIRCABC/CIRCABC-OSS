@@ -20,12 +20,14 @@ import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.MLText;
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import eu.cec.digit.circabc.migration.entities.ElementsConverter;
 import eu.cec.digit.circabc.migration.entities.ElementsHelper;
 import eu.cec.digit.circabc.migration.entities.TypedProperty;
 import eu.cec.digit.circabc.migration.entities.TypedProperty.NameProperty;
 import eu.cec.digit.circabc.migration.entities.XMLNode;
+import eu.cec.digit.circabc.migration.entities.adapter.DateAdapterUtils;
 import eu.cec.digit.circabc.migration.entities.generated.nodes.Content;
 import eu.cec.digit.circabc.migration.entities.generated.nodes.ContentNode;
 import eu.cec.digit.circabc.migration.entities.generated.nodes.Events;
@@ -294,95 +296,14 @@ public abstract class MetadataUtils
 		}
 	}
 
-	public static final void setContentProperty(final Content content, final String securityRanking, final Date expirationDate, final String author, final String status, final Date issueDate, final String reference, final List<Integer> keywords, final Serializable dynamicProperty1, final Serializable dynamicProperty2, final Serializable dynamicProperty3, final Serializable dynamicProperty4, final Serializable dynamicProperty5, final Log logger)
+	public static final void setContentProperty(final Content content, final String securityRanking, final Date expirationDate, final String author, final String status, final Date issueDate, final String reference, final List<Integer> keywords, final Serializable... dynamicProperties)
 	{
-		if(logger.isDebugEnabled())
-		{
-			logger.debug("  ---  Sec. Ranking:  " + securityRanking);
-			logger.debug("  ---  Expiration:    " + expirationDate);
-			logger.debug("  ---  Author:        " + author);
-			logger.debug("  ---  Status:        " + status);
-			logger.debug("  ---  Issue Date:    " + issueDate);
-			logger.debug("  ---  Reference:     " + reference);
-			logger.debug("  ---  Keywords:      " + keywords);
-			logger.debug("  ---  Dyn. Property1:" + dynamicProperty1);
-			logger.debug("  ---  Dyn. Property2:" + dynamicProperty2);
-			logger.debug("  ---  Dyn. Property3:" + dynamicProperty3);
-			logger.debug("  ---  Dyn. Property4:" + dynamicProperty4);
-			logger.debug("  ---  Dyn. Property5:" + dynamicProperty5);
-		}
-
-		final List<Integer> dynAttrIndexes = getDefinedAttributes(content, logger);
-
-		if(securityRanking != null)
-		{
-			content.setSecurityRanking(new TypedProperty.SecurityRankingProperty(securityRanking));
-		}
-		if (expirationDate != null)
-		{
-			content.setExpirationDate(new TypedProperty.ExpirationDateProperty(expirationDate));
-		}
-		if (author != null)
-		{
-			content.setAuthor(new TypedProperty.AuthorProperty(author));
-		}
-		if (status != null)
-		{
-			content.setStatus(new TypedProperty.StatusProperty(status));
-		}
-		if (issueDate != null)
-		{
-			content.setIssueDate(new TypedProperty.IssueDateProperty(issueDate));
-		}
-		if (reference != null)
-		{
-			content.setReference(new TypedProperty.ReferenceProperty(reference));
-		}
-		if (keywords != null && keywords.size() > 0)
-		{
-			content.setKeywords(new KeywordReferences(keywords));
-		}
-		if (dynamicProperty1 != null && dynAttrIndexes.contains(1))
-		{
-			content.setDynamicProperty1(new TypedProperty.DynamicProperty1(dynamicProperty1));
-		}
-		if (dynamicProperty2 != null && dynAttrIndexes.contains(2))
-		{
-			content.setDynamicProperty2(new TypedProperty.DynamicProperty2(dynamicProperty1));
-		}
-		if (dynamicProperty3 != null && dynAttrIndexes.contains(3))
-		{
-			content.setDynamicProperty3(new TypedProperty.DynamicProperty3(dynamicProperty3));
-		}
-		if (dynamicProperty4 != null && dynAttrIndexes.contains(4))
-		{
-			content.setDynamicProperty4(new TypedProperty.DynamicProperty4(dynamicProperty4));
-		}
-		if (dynamicProperty5 != null && dynAttrIndexes.contains(5))
-		{
-			content.setDynamicProperty5(new TypedProperty.DynamicProperty5(dynamicProperty5));
-		}
+		setContentProperty(content, securityRanking, expirationDate, author, status, issueDate, reference, keywords, dynamicProperties, LogFactory.getLog(MetadataUtils.class));
 	}
 
-	public static final void setContentProperty(final LibraryContentVersion content, final String securityRanking, final Date expirationDate, final String author, final String status, final Date issueDate, final String reference, final List<Integer> keywords, final Serializable dynamicProperty1, final Serializable dynamicProperty2, final Serializable dynamicProperty3, final Serializable dynamicProperty4, final Serializable dynamicProperty5, final Log logger)
+	public static final void setContentProperty(final Content content, final String securityRanking, final Date expirationDate, final String author, final String status, final Date issueDate, final String reference, final List<Integer> keywords, final Serializable[] dynamicProperties, final Log logger)
 	{
 		final List<Integer> dynAttrIndexes = getDefinedAttributes(content, logger);
-
-		if(logger.isDebugEnabled())
-		{
-			logger.debug("  ---  Sec. Ranking:  " + securityRanking);
-			logger.debug("  ---  Expiration:    " + expirationDate);
-			logger.debug("  ---  Author:        " + author);
-			logger.debug("  ---  Status:        " + status);
-			logger.debug("  ---  Issue Date:    " + issueDate);
-			logger.debug("  ---  Reference:     " + reference);
-			logger.debug("  ---  Keywords:      " + keywords);
-			logger.debug("  ---  Dyn. Property1:" + dynamicProperty1);
-			logger.debug("  ---  Dyn. Property2:" + dynamicProperty2);
-			logger.debug("  ---  Dyn. Property3:" + dynamicProperty3);
-			logger.debug("  ---  Dyn. Property4:" + dynamicProperty4);
-			logger.debug("  ---  Dyn. Property5:" + dynamicProperty5);
-		}
 
 		if(securityRanking != null)
 		{
@@ -412,25 +333,158 @@ public abstract class MetadataUtils
 		{
 			content.setKeywords(new KeywordReferences(keywords));
 		}
-		if (dynamicProperty1 != null && dynAttrIndexes.contains(1))
+		setDynamicProperties(content, dynAttrIndexes, dynamicProperties);
+	}
+
+	public static final void setContentProperty(final LibraryContentVersion content, final String securityRanking, final Date expirationDate, final String author, final String status, final Date issueDate, final String reference, final List<Integer> keywords, final Serializable... dynamicProperties)
+	{
+		final List<Integer> dynAttrIndexes = getDefinedAttributes(content, LogFactory.getLog(MetadataUtils.class));
+
+		if(securityRanking != null)
 		{
-			content.setDynamicProperty1(new TypedProperty.DynamicProperty1(dynamicProperty1));
+			content.setSecurityRanking(new TypedProperty.SecurityRankingProperty(securityRanking));
 		}
-		if (dynamicProperty2 != null && dynAttrIndexes.contains(2))
+		if (expirationDate != null)
 		{
-			content.setDynamicProperty2(new TypedProperty.DynamicProperty2(dynamicProperty1));
+			content.setExpirationDate(new TypedProperty.ExpirationDateProperty(expirationDate));
 		}
-		if (dynamicProperty3 != null && dynAttrIndexes.contains(3))
+		if (author != null)
 		{
-			content.setDynamicProperty3(new TypedProperty.DynamicProperty3(dynamicProperty3));
+			content.setAuthor(new TypedProperty.AuthorProperty(author));
 		}
-		if (dynamicProperty4 != null && dynAttrIndexes.contains(4))
+		if (status != null)
 		{
-			content.setDynamicProperty4(new TypedProperty.DynamicProperty4(dynamicProperty4));
+			content.setStatus(new TypedProperty.StatusProperty(status));
 		}
-		if (dynamicProperty5 != null && dynAttrIndexes.contains(5))
+		if (issueDate != null)
 		{
-			content.setDynamicProperty5(new TypedProperty.DynamicProperty5(dynamicProperty5));
+			content.setIssueDate(new TypedProperty.IssueDateProperty(issueDate));
+		}
+		if (reference != null)
+		{
+			content.setReference(new TypedProperty.ReferenceProperty(reference));
+		}
+		if (keywords != null && keywords.size() > 0)
+		{
+			content.setKeywords(new KeywordReferences(keywords));
+		}
+		setDynamicProperties(content, dynAttrIndexes, dynamicProperties);
+	}
+
+	public static final void setContentProperty(final LibraryTranslation content, final String securityRanking, final Date expirationDate, final String author, final String status, final Date issueDate, final String reference, final List<Integer> keywords, final Serializable... dynamicProperties)
+	{
+		final Log logger = LogFactory.getLog(MetadataUtils.class);
+		final List<Integer> dynAttrIndexes = getDefinedAttributes(content, logger);
+
+		if(logger.isDebugEnabled())
+		{
+			logger.debug("  ---  Author:        " + author);
+			logger.debug("  ---  Status:        " + status);
+			logger.debug("  ---  Issue Date:    " + issueDate);
+			logger.debug("  ---  Reference:     " + reference);
+			logger.debug("  ---  Keywords:      " + keywords);
+		}
+
+		// LibraryTranslation does not have securityRanking or expirationDate fields
+		if (author != null)
+		{
+			content.setAuthor(new TypedProperty.AuthorProperty(author.trim()));
+		}
+		if (status != null)
+		{
+			content.setStatus(new TypedProperty.StatusProperty(status));
+		}
+		if (issueDate != null)
+		{
+			content.setIssueDate(new TypedProperty.IssueDateProperty(issueDate));
+		}
+		if (reference != null)
+		{
+			content.setReference(new TypedProperty.ReferenceProperty(reference));
+		}
+		if (keywords != null && !keywords.isEmpty())
+		{
+			content.setKeywords(new KeywordReferences(keywords));
+		}
+		setDynamicProperties(content, dynAttrIndexes, dynamicProperties);
+	}
+
+	public static final void setContentProperty(final LibraryTranslationVersion content, final String securityRanking, final Date expirationDate, final String author, final String status, final Date issueDate, final String reference, final List<Integer> keywords, final Serializable... dynamicProperties)
+	{
+		final Log logger = LogFactory.getLog(MetadataUtils.class);
+		final List<Integer> dynAttrIndexes = getDefinedAttributes(content, logger);
+
+		if(logger.isDebugEnabled())
+		{
+			logger.debug("  ---  Author:        " + author);
+			logger.debug("  ---  Status:        " + status);
+			logger.debug("  ---  Issue Date:    " + issueDate);
+			logger.debug("  ---  Reference:     " + reference);
+			logger.debug("  ---  Keywords:      " + keywords);
+		}
+
+		// LibraryTranslationVersion does not have securityRanking or expirationDate fields
+		if (author != null)
+		{
+			content.setAuthor(new TypedProperty.AuthorProperty(author.trim()));
+		}
+		if (status != null)
+		{
+			content.setStatus(new TypedProperty.StatusProperty(status));
+		}
+		if (issueDate != null)
+		{
+			content.setIssueDate(new TypedProperty.IssueDateProperty(issueDate));
+		}
+		if (reference != null)
+		{
+			content.setReference(new TypedProperty.ReferenceProperty(reference));
+		}
+		if (keywords != null && !keywords.isEmpty())
+		{
+			content.setKeywords(new KeywordReferences(keywords));
+		}
+		setDynamicProperties(content, dynAttrIndexes, dynamicProperties);
+	}
+
+	/**
+	 * Sets dynamic properties 1..20 on a node using reflection-free approach.
+	 * The dynamicProperties array is indexed 0-based: index 0 = dynamicProperty1, etc.
+	 */
+	private static void setDynamicProperties(final Object node, final List<Integer> dynAttrIndexes, final Serializable[] dynamicProperties)
+	{
+		if (dynamicProperties == null) return;
+		for (int i = 0; i < dynamicProperties.length && i < 20; i++)
+		{
+			final int index = i + 1;
+			final Serializable val = dynamicProperties[i];
+			if (val == null || !dynAttrIndexes.contains(index)) continue;
+
+			// Skip empty string values (no value set for this property)
+			if (val instanceof String && ((String) val).trim().isEmpty()) continue;
+
+			try
+			{
+				// Convert Date values to XML dateTime format for proper marshalling/validation
+				final Serializable exportVal;
+				if (val instanceof Date)
+				{
+					exportVal = DateAdapterUtils.marshalDateTime((Date) val);
+				}
+				else
+				{
+					exportVal = val;
+				}
+
+				final String className = "eu.cec.digit.circabc.migration.entities.TypedProperty$DynamicProperty" + index;
+				final Class<?> propClass = Class.forName(className);
+				final Object typedProp = propClass.getConstructor(Serializable.class).newInstance(exportVal);
+				node.getClass().getMethod("setDynamicProperty" + index, propClass).invoke(node, typedProp);
+			}
+			catch (Exception e)
+			{
+				// Property not supported on this node type — skip silently
+			}
 		}
 	}
 
@@ -485,7 +539,7 @@ public abstract class MetadataUtils
 		}
 		if (dynamicProperty2 != null && dynAttrIndexes.contains(2))
 		{
-			content.setDynamicProperty2(new TypedProperty.DynamicProperty2(dynamicProperty1));
+			content.setDynamicProperty2(new TypedProperty.DynamicProperty2(dynamicProperty2));
 		}
 		if (dynamicProperty3 != null && dynAttrIndexes.contains(3))
 		{
@@ -552,7 +606,7 @@ public abstract class MetadataUtils
 		}
 		if (dynamicProperty2 != null && dynAttrIndexes.contains(2))
 		{
-			content.setDynamicProperty2(new TypedProperty.DynamicProperty2(dynamicProperty1));
+			content.setDynamicProperty2(new TypedProperty.DynamicProperty2(dynamicProperty2));
 		}
 		if (dynamicProperty3 != null && dynAttrIndexes.contains(3))
 		{

@@ -19,33 +19,49 @@ export class UiMessageService {
   public addInfoMessage(
     message: string,
     autoclose = false,
-    displayTime?: number
+    displayTime?: number,
+    id?: string
   ): void {
-    this.addMessage(message, UiMessageLevel.INFO, autoclose, displayTime);
+    this.addMessage(message, UiMessageLevel.INFO, autoclose, displayTime, id);
   }
 
   public addErrorMessage(
     message: string,
     autoclose = false,
-    displayTime?: number
+    displayTime?: number,
+    id?: string
   ): void {
-    this.addMessage(message, UiMessageLevel.ERROR, autoclose, displayTime);
+    this.addMessage(message, UiMessageLevel.ERROR, autoclose, displayTime, id);
   }
 
   public addWarningMessage(
     message: string,
     autoclose = false,
-    displayTime?: number
+    displayTime?: number,
+    id?: string
   ): void {
-    this.addMessage(message, UiMessageLevel.WARNING, autoclose, displayTime);
+    this.addMessage(
+      message,
+      UiMessageLevel.WARNING,
+      autoclose,
+      displayTime,
+      id
+    );
   }
 
   public addSuccessMessage(
     message: string,
     autoclose = false,
-    displayTime?: number
+    displayTime?: number,
+    id?: string
   ): void {
-    this.addMessage(message, UiMessageLevel.SUCCESS, autoclose, displayTime);
+    this.addMessage(
+      message,
+      UiMessageLevel.SUCCESS,
+      autoclose,
+      displayTime,
+      id
+    );
   }
 
   public removeMessage(message: UiMessage): void {
@@ -70,7 +86,8 @@ export class UiMessageService {
     message: string,
     level: UiMessageLevel,
     autoclose = false,
-    displayTime?: number
+    displayTime?: number,
+    id?: string
   ): void {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let finalDisplayTime: any;
@@ -83,7 +100,8 @@ export class UiMessageService {
         level,
         message,
         autoclose,
-        finalDisplayTime
+        finalDisplayTime,
+        id
       );
       this.messageSource.next(uiMessage);
     }

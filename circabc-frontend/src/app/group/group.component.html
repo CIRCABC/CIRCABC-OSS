@@ -1,7 +1,10 @@
 <div class="dashboards">
   <cbc-header></cbc-header>
   @if (group) {
-  <cbc-navigator [currentIg]="group"></cbc-navigator>
+  <cbc-navigator
+    [currentIg]="group"
+    [isIgLocked]="isGroupLocked"
+  ></cbc-navigator>
   } @if (isAccessingAsVisitor()) {
   <div class="wrap">
     @if (isAccessingAsVisitor()) {

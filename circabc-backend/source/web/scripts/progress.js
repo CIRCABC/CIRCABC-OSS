@@ -26,7 +26,14 @@ function showProgress()
     TB_overlaySize();
 
     new Element('div').setProperty('id', 'TB_load').injectInside(document.body);
-    $('TB_load').innerHTML = "<img src='" + getContextPath() + "/images/icons/process_animation.gif' width='174' height='14' />";
+    new Element('img')
+      .setProperty(
+        'src',
+        getContextPath() + "/images/icons/process_animation.gif"
+      )
+      .setProperty('width', '174')
+      .setProperty('height', '14')
+      .injectInside($('TB_load'));
 	TB_load_position();
 
     $('TB_overlay').set('tween', {

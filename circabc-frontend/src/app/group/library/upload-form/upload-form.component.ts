@@ -82,6 +82,8 @@ export class UploadFormComponent implements OnInit {
   public addNewFiles(files: FileUploadItem[]) {
     for (const file of files) {
       if (!this.isFileInSelection(file)) {
+        file.securityRanking = 'NORMAL';
+        file.status = 'DRAFT';
         this.filesToUpload.push(file);
         this.fileSelected = file;
       }
@@ -363,5 +365,36 @@ export class UploadFormComponent implements OnInit {
     };
 
     await firstValueFrom(this.permissionService.putPermission(nodeRef, body));
+  }
+
+  anyInvalidName(): boolean {
+    return this.filesToUpload.some((file) => {
+      if (
+        file.name === '' ||
+        file.name === undefined ||
+        file.name === null ||
+        file.name.trim() === ''
+      ) {
+        return true;
+      }
+      return this.nameValidator(file.name) !== null;
+    });
+  }
+
+  nameValidator(value: string) {
+    if (value === null) {
+      return null;
+    }
+    if (value === undefined || value.trim().length === 0) {
+      return { invalidFileName: { additionalInfo: 'empty name' } };
+    }
+    if (
+      value.match(/(.*[\"\*\\\>\<\?\/\:\|]+.*)|(.*[\.]?.*[\.]+$)|(.*[ ]+$)/)
+    ) {
+      return {
+        invalidFileName: { additionalInfo: ' " * \\ < > ? / : |' },
+      };
+    }
+    return null;
   }
 }

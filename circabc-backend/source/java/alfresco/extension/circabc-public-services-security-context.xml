@@ -109,7 +109,8 @@
   >
     <property name="nodeService" ref="NodeService" />
     <property name="circabcDAO" ref="circabcDynamicAuthorityDAO" />
-</bean>
+    <property name="namespaceService" ref="namespaceService" />
+  </bean>
 <!-- Add a bean to set up the circular reference after initialization -->
 <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
       depends-on="permissionService,MultilingualContentService">

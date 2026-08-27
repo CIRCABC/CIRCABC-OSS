@@ -1,0 +1,36 @@
+diff -ruabB ./old/org/apache/ws/security/message/token/UsernameToken.java ./new/org/apache/ws/security/message/token/UsernameToken.java
+--- ./old/org/apache/ws/security/message/token/UsernameToken.java	2008-05-13 09:39:32.000000000 +0300
++++ ./new/org/apache/ws/security/message/token/UsernameToken.java	2010-06-18 14:09:28.000000000 +0300
+@@ -27,6 +27,7 @@
+ import org.apache.ws.security.util.Base64;
+ import org.w3c.dom.Document;
+ import org.w3c.dom.Element;
++import org.w3c.dom.NamedNodeMap;
+ import org.w3c.dom.Node;
+ import org.w3c.dom.Text;
+ 
+@@ -140,8 +141,24 @@
+             return;
+         }
+         if (elementPassword != null) {
++            if(!elementPassword.hasAttribute("Type"))
++            {
++                NamedNodeMap attributes = elementPassword.getAttributes();
++                for(int i = 0; i < attributes.getLength(); i++) {
++                    Node attribute = attributes.item(i);
++                    if(attribute != null && "Type".equals(attribute.getLocalName()))
++                    {
++                        passwordType = attribute.getNodeValue();
++                        break;
++                    }                    
++                }
++                if(null == passwordType) {
++                    passwordType = WSConstants.PASSWORD_TEXT;
++                }
++            } else {
+             passwordType = elementPassword.getAttribute("Type");
+         }
++        }
+         if (passwordType != null
+                 && passwordType.equals(WSConstants.PASSWORD_DIGEST)) {
+             hashed = true;

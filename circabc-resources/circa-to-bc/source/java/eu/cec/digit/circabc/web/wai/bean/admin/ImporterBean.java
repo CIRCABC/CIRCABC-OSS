@@ -72,8 +72,12 @@ public class ImporterBean extends BaseWaiDialog {
 	
 	/**
 	 * Retrieves all the categories and fills a map for the select combo boxes.
-	 * 
-	 * @return
+	 * <p>
+	 * Uses defensive fallbacks so a missing/multilingual title cannot break the
+	 * dialog: title -> name -> nodeRef id. Ensures unique keys since {@link TreeMap}
+	 * would silently overwrite duplicates and does not accept null keys.
+	 *
+	 * @return the populated categories map
 	 */
 	private Map<String, Object> selectCategories() {
 		
@@ -81,15 +85,34 @@ public class ImporterBean extends BaseWaiDialog {
 		categories.put(SELECT_CATEGORY_NONE, SELECT_CATEGORY_NONE);
 		selectedCategory = SELECT_CATEGORY_NONE;
 		
-		List<NodeRef> categoryNodeRefs = getManagementService().getCategories();
+		final List<NodeRef> categoryNodeRefs = getManagementService().getCategories();
+		if (categoryNodeRefs == null) {
+			return categories;
+		}
 		
 		// Add the selected categories to the map
-		for (NodeRef categoryNodeRef : categoryNodeRefs) {
+		for (final NodeRef categoryNodeRef : categoryNodeRefs) {
 			
-			String title = (String) getNodeService().getProperty(categoryNodeRef, 
+			final Serializable rawTitle = getNodeService().getProperty(categoryNodeRef,
 							ContentModel.PROP_TITLE);
+			String title = rawTitle != null ? rawTitle.toString() : null;
 			
-			categories.put(title, categoryNodeRef.toString());
+			if (title == null || title.trim().isEmpty()) {
+				final Serializable rawName = getNodeService().getProperty(categoryNodeRef,
+								ContentModel.PROP_NAME);
+				title = rawName != null ? rawName.toString() : null;
+			}
+			if (title == null || title.trim().isEmpty()) {
+				title = categoryNodeRef.getId();
+			}
+			
+			// Prevent silent overwrite on duplicate titles
+			String key = title;
+			int suffix = 2;
+			while (categories.containsKey(key)) {
+				key = title + " (" + suffix++ + ")";
+			}
+			categories.put(key, categoryNodeRef.toString());
 		}
 		
 		return categories;
@@ -131,13 +154,20 @@ public class ImporterBean extends BaseWaiDialog {
 											CircabcExporter.CATEGORY_PREFIX;
 		
 		// List the files that start with prefix
-		String[] fileNames = exportDirectoryFile.list(new FilenameFilter() {
+		final String[] fileNames = exportDirectoryFile.list(new FilenameFilter() {
 			
 			@Override
 			public boolean accept(File dir, String name) {
 				return name.startsWith(prefix);
 			}
 		});
+		
+		// list() returns null when the path is not a directory or cannot be
+		// read (permission issue). Fail soft instead of throwing NPE.
+		if (fileNames == null) {
+			Utils.addErrorMessage(translate("migration_export_category_ig_dialog_page_error_directory"));
+			return packages;
+		}
 		
 		// Add the retrieved files to the combo box map
 		for (String fileName : fileNames) {

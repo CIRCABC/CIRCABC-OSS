@@ -21,6 +21,7 @@ import { firstValueFrom } from 'rxjs';
   ],
 })
 export class ShareComponent implements OnInit {
+  readonly isPreviewable = input(false);
   readonly sensitive = input(false);
   readonly showLabel = input(true);
   readonly orientationRight = input(true);
@@ -47,6 +48,26 @@ export class ShareComponent implements OnInit {
   ngOnInit(): void {
     this.customisationForm = this.formBuilder.group({
       addDownload: [false],
+      addOpen: [false],
+    });
+
+    // Mutual exclusion: only one can be selected at a time
+    this.customisationForm
+      .get('addDownload')
+      ?.valueChanges.subscribe((value) => {
+        if (value) {
+          this.customisationForm
+            .get('addOpen')
+            ?.setValue(false, { emitEvent: false });
+        }
+      });
+
+    this.customisationForm.get('addOpen')?.valueChanges.subscribe((value) => {
+      if (value) {
+        this.customisationForm
+          .get('addDownload')
+          ?.setValue(false, { emitEvent: false });
+      }
     });
   }
 
@@ -56,6 +77,9 @@ export class ShareComponent implements OnInit {
 
     this.customisationForm.controls.addDownload.setValue(
       this.routeLink.includes('download=true')
+    );
+    this.customisationForm.controls.addOpen.setValue(
+      this.routeLink.includes('open=true')
     );
   }
 
@@ -76,9 +100,19 @@ export class ShareComponent implements OnInit {
       result = result.substring(0, result.indexOf('download=') - 1);
     }
 
+    if (result.indexOf('open=') !== -1) {
+      result = result.substring(0, result.indexOf('open=') - 1);
+    }
+
     if (this.customisationForm.value.addDownload) {
       result = `${result}${
         result.indexOf('?') !== -1 ? '&download=true' : '?download=true'
+      }`;
+    }
+
+    if (this.customisationForm.value.addOpen) {
+      result = `${result}${
+        result.indexOf('?') !== -1 ? '&open=true' : '?open=true'
       }`;
     }
 

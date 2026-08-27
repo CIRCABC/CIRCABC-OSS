@@ -35,7 +35,6 @@
 
       <div class="flexField">
         <label>{{ 'label.search.search.for' | transloco }}</label>
-        <span style="color: red">&nbsp;*</span>
         <input
           type="text"
           formControlName="searchString"
@@ -74,7 +73,7 @@
               [dateFormat]="'dd/mm/yy'"
               [placeholder]="'dd/mm/yyyy'"
               [showIcon]="true"
-              [inputStyle]="{ width: '100%', height: '37px' }"
+              [inputStyle]="{ width: '100%', height: '38.75px' }"
               dataType="string"
             ></p-datepicker>
           </div>
@@ -86,7 +85,7 @@
               [dateFormat]="'dd/mm/yy'"
               [placeholder]="'dd/mm/yyyy'"
               [showIcon]="true"
-              [inputStyle]="{ width: '100%', height: '37px' }"
+              [inputStyle]="{ width: '100%', height: '38.75px' }"
               dataType="string"
             ></p-datepicker>
           </div>
@@ -106,7 +105,7 @@
               [dateFormat]="'dd/mm/yy'"
               [placeholder]="'dd/mm/yyyy'"
               [showIcon]="true"
-              [inputStyle]="{ width: '100%', height: '37px' }"
+              [inputStyle]="{ width: '100%', height: '38.75px' }"
               dataType="string"
             ></p-datepicker>
           </div>
@@ -118,7 +117,7 @@
               [dateFormat]="'dd/mm/yy'"
               [placeholder]="'dd/mm/yyyy'"
               [showIcon]="true"
-              [inputStyle]="{ width: '100%', height: '37px' }"
+              [inputStyle]="{ width: '100%', height: '38.75px' }"
               dataType="string"
             ></p-datepicker>
           </div>
@@ -200,7 +199,86 @@
     </div>
   </form>
 
-  @if(!saveAsWindow) {
+  @if (dynamicPropertiesError()) {
+  <div class="dynamic-properties-error" role="alert">
+    {{ 'label.dynamic.properties.load.error' | transloco }}
+  </div>
+  } @if (dynamicProperties().length > 0 && !dynamicPropertiesError()) {
+  <section class="dynamic-properties-section">
+    <button
+      type="button"
+      class="dynamic-properties-toggle"
+      (click)="toggleDynamicSection()"
+      [attr.aria-expanded]="dynamicPropertiesExpanded()"
+      aria-controls="dynamic-properties-content"
+    >
+      {{ 'label.dynamic.properties' | transloco }}
+      <span class="toggle-icon"
+        >{{ dynamicPropertiesExpanded() ? '▲' : '▼' }}</span
+      >
+    </button>
+
+    @if (dynamicPropertiesExpanded()) {
+    <div id="dynamic-properties-content" [formGroup]="searchAdvancedForm">
+      @for (prop of dynamicProperties(); track prop.index) {
+      <div class="flexField">
+        <label [for]="'dynAttr_' + prop.index"
+          >{{ prop.title[currentLang] || prop.name }}</label
+        >
+        @switch (prop.propertyType) { @case ('TEXT_FIELD') {
+        <input
+          type="text"
+          [id]="'dynAttr_' + prop.index"
+          [formControlName]="'dynAttr_' + prop.index"
+        />
+        } @case ('TEXT_AREA') {
+        <input
+          type="text"
+          [id]="'dynAttr_' + prop.index"
+          [formControlName]="'dynAttr_' + prop.index"
+        />
+        } @case ('SELECTION') {
+        <div class="custom-select select--form">
+          <select
+            [id]="'dynAttr_' + prop.index"
+            [formControlName]="'dynAttr_' + prop.index"
+          >
+            <option value="">{{ 'label.all' | transloco }}</option>
+            @for (val of prop.possibleValues; track val) {
+            <option [value]="val">{{ val }}</option>
+            }
+          </select>
+        </div>
+        } @case ('MULTI_SELECTION') {
+        <div class="custom-select select--form">
+          <select
+            [id]="'dynAttr_' + prop.index"
+            [formControlName]="'dynAttr_' + prop.index"
+          >
+            <option value="">{{ 'label.all' | transloco }}</option>
+            @for (val of prop.possibleValues; track val) {
+            <option [value]="val">{{ val }}</option>
+            }
+          </select>
+        </div>
+        } @case ('DATE_FIELD') {
+        <br />
+        <p-datepicker
+          [inputId]="'dynAttr_' + prop.index"
+          [formControlName]="'dynAttr_' + prop.index"
+          dateFormat="dd/mm/yy"
+          [showIcon]="true"
+          appendTo="body"
+          [inputStyle]="{ height: '38.75px', alignContent: 'center'  }"
+          dataType="string"
+        />
+        } }
+      </div>
+      }
+    </div>
+    }
+  </section>
+  } @if(!saveAsWindow) {
   <div class="actions buttons-group custom-buttons-group">
     <button
       class="cta"
@@ -208,6 +286,9 @@
       [class.disabled]="!searchAdvancedForm.valid"
     >
       {{ 'label.search' | transloco }}
+    </button>
+    <button class="button" type="button" (click)="resetForm()">
+      {{ 'label.clear' | transloco }}
     </button>
     <!-- <button class="button" (click)="saveSearch()">
       {{ 'label.save' | transloco }}

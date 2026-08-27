@@ -593,7 +593,7 @@ public class BulkUserImportServiceImpl implements BulkUserImportService {
     Boolean notify
   ) {
     if (!personService.personExists(user.getUser().getUserName())) {
-      userService.createUser(user.getUser(), false);
+      userService.createUser(user.getUser(), true);
     }
 
     igRootProfileManagerService.addPersonToProfile(

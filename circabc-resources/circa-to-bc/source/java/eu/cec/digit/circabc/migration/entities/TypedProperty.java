@@ -342,6 +342,16 @@ public interface TypedProperty extends Serializable
 		}
 	}
 
+	public class DisplayOldInformationProperty extends TypedPropertyBase
+	{
+		private static final long serialVersionUID = 1L;
+
+		public DisplayOldInformationProperty(final Boolean value)
+		{
+			super(value, CircabcModel.PROP_INF_DISPLAY_OLD_INFORMATION);
+		}
+	}
+
 	/**
 	 * Encapsulate a Week Start Day property value and its QName identifier
 	 *
@@ -497,6 +507,96 @@ public interface TypedProperty extends Serializable
 		{
 			super(value, DocumentModel.PROP_DYN_ATTR_5);
 		}
+	}
+
+	public class DynamicProperty6 extends TypedPropertyBase
+	{
+		private static final long serialVersionUID = 1L;
+		public DynamicProperty6(final Serializable value) { super(value, DocumentModel.PROP_DYN_ATTR_6); }
+	}
+
+	public class DynamicProperty7 extends TypedPropertyBase
+	{
+		private static final long serialVersionUID = 1L;
+		public DynamicProperty7(final Serializable value) { super(value, DocumentModel.PROP_DYN_ATTR_7); }
+	}
+
+	public class DynamicProperty8 extends TypedPropertyBase
+	{
+		private static final long serialVersionUID = 1L;
+		public DynamicProperty8(final Serializable value) { super(value, DocumentModel.PROP_DYN_ATTR_8); }
+	}
+
+	public class DynamicProperty9 extends TypedPropertyBase
+	{
+		private static final long serialVersionUID = 1L;
+		public DynamicProperty9(final Serializable value) { super(value, DocumentModel.PROP_DYN_ATTR_9); }
+	}
+
+	public class DynamicProperty10 extends TypedPropertyBase
+	{
+		private static final long serialVersionUID = 1L;
+		public DynamicProperty10(final Serializable value) { super(value, DocumentModel.PROP_DYN_ATTR_10); }
+	}
+
+	public class DynamicProperty11 extends TypedPropertyBase
+	{
+		private static final long serialVersionUID = 1L;
+		public DynamicProperty11(final Serializable value) { super(value, DocumentModel.PROP_DYN_ATTR_11); }
+	}
+
+	public class DynamicProperty12 extends TypedPropertyBase
+	{
+		private static final long serialVersionUID = 1L;
+		public DynamicProperty12(final Serializable value) { super(value, DocumentModel.PROP_DYN_ATTR_12); }
+	}
+
+	public class DynamicProperty13 extends TypedPropertyBase
+	{
+		private static final long serialVersionUID = 1L;
+		public DynamicProperty13(final Serializable value) { super(value, DocumentModel.PROP_DYN_ATTR_13); }
+	}
+
+	public class DynamicProperty14 extends TypedPropertyBase
+	{
+		private static final long serialVersionUID = 1L;
+		public DynamicProperty14(final Serializable value) { super(value, DocumentModel.PROP_DYN_ATTR_14); }
+	}
+
+	public class DynamicProperty15 extends TypedPropertyBase
+	{
+		private static final long serialVersionUID = 1L;
+		public DynamicProperty15(final Serializable value) { super(value, DocumentModel.PROP_DYN_ATTR_15); }
+	}
+
+	public class DynamicProperty16 extends TypedPropertyBase
+	{
+		private static final long serialVersionUID = 1L;
+		public DynamicProperty16(final Serializable value) { super(value, DocumentModel.PROP_DYN_ATTR_16); }
+	}
+
+	public class DynamicProperty17 extends TypedPropertyBase
+	{
+		private static final long serialVersionUID = 1L;
+		public DynamicProperty17(final Serializable value) { super(value, DocumentModel.PROP_DYN_ATTR_17); }
+	}
+
+	public class DynamicProperty18 extends TypedPropertyBase
+	{
+		private static final long serialVersionUID = 1L;
+		public DynamicProperty18(final Serializable value) { super(value, DocumentModel.PROP_DYN_ATTR_18); }
+	}
+
+	public class DynamicProperty19 extends TypedPropertyBase
+	{
+		private static final long serialVersionUID = 1L;
+		public DynamicProperty19(final Serializable value) { super(value, DocumentModel.PROP_DYN_ATTR_19); }
+	}
+
+	public class DynamicProperty20 extends TypedPropertyBase
+	{
+		private static final long serialVersionUID = 1L;
+		public DynamicProperty20(final Serializable value) { super(value, DocumentModel.PROP_DYN_ATTR_20); }
 	}
 
 	/**

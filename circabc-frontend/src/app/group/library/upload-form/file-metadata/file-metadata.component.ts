@@ -34,7 +34,9 @@ import {
   FormControl,
   FormGroup,
   ReactiveFormsModule,
+  Validators,
 } from '@angular/forms';
+import { nameValidator } from 'app/core/validation.service';
 
 @Component({
   selector: 'cbc-file-metadata',
@@ -93,7 +95,7 @@ export class FileMetadataComponent implements OnInit, OnChanges {
     this.step = 'main';
 
     this.fileForm = this.fb.group({
-      name: [],
+      name: ['', [Validators.required, nameValidator]],
       title: [],
       description: [],
       author: [],

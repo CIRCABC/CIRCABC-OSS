@@ -107,9 +107,19 @@
                 : currentIg.name
             }}"
           >
-            {{ (currentIg.title | cbcI18n) !== '' ? (currentIg.title | cbcI18n)
-            : ('en' | i18nSelect: currentIg.title) !== '' ? ('en' | i18nSelect:
-            currentIg.title) : currentIg.name }}</a
+            @if (isIgLocked) {
+            <img
+              src="img/icon-lock-closed.svg"
+              alt="Locked"
+              aria-label="This interest group is locked"
+              width="16"
+              height="16"
+              class="ig-lock-icon"
+              [title]="igLockMessage"
+            />
+            } {{ (currentIg.title | cbcI18n) !== '' ? (currentIg.title |
+            cbcI18n) : ('en' | i18nSelect: currentIg.title) !== '' ? ('en' |
+            i18nSelect: currentIg.title) : currentIg.name }}</a
           >
           }
         </div>

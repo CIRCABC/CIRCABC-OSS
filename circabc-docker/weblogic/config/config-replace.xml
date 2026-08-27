@@ -1,0 +1,39 @@
+    <realm>
+      <sec:authentication-provider xmlns:sch="https:\/\/www.cc.cec\/cas\/schemas" xsi:type="sch:ecas-identity-asserter-v2Type">
+        <sec:name>EcasIdentityAsserterV2<\/sec:name>
+        <sch:control-flag>SUFFICIENT<\/sch:control-flag>
+        <sch:ecas-base-url>https:\/\/webgate.ec.europa.eu<\/sch:ecas-base-url>
+        <sch:strict-ssl-hostname-verification>false<\/sch:strict-ssl-hostname-verification>
+        <sch:excluded-context-path>\/console<\/sch:excluded-context-path>
+      <\/sec:authentication-provider>
+      <sec:authentication-provider xsi:type="wls:default-authenticatorType">
+        <sec:name>DefaultAuthenticator<\/sec:name>
+        <sec:control-flag>OPTIONAL<\/sec:control-flag>
+      <\/sec:authentication-provider>
+      <sec:authentication-provider xsi:type="wls:default-identity-asserterType">
+        <sec:name>DefaultIdentityAsserter<\/sec:name>
+        <sec:active-type>AuthenticatedUser<\/sec:active-type>
+      <\/sec:authentication-provider>
+      <sec:role-mapper xmlns:xac="http:\/\/xmlns.oracle.com\/weblogic\/security\/xacml" xsi:type="xac:xacml-role-mapperType">
+        <sec:name>XACMLRoleMapper<\/sec:name>
+      <\/sec:role-mapper>
+      <sec:authorizer xmlns:xac="http:\/\/xmlns.oracle.com\/weblogic\/security\/xacml" xsi:type="xac:xacml-authorizerType">
+        <sec:name>XACMLAuthorizer<\/sec:name>
+      <\/sec:authorizer>
+      <sec:adjudicator xsi:type="wls:default-adjudicatorType">
+        <sec:name>DefaultAdjudicator<\/sec:name>
+      <\/sec:adjudicator>
+      <sec:credential-mapper xsi:type="wls:default-credential-mapperType">
+        <sec:name>DefaultCredentialMapper<\/sec:name>
+      <\/sec:credential-mapper>
+      <sec:cert-path-provider xsi:type="wls:web-logic-cert-path-providerType">
+        <sec:name>WebLogicCertPathProvider<\/sec:name>
+      <\/sec:cert-path-provider>
+      <sec:cert-path-builder>WebLogicCertPathProvider<\/sec:cert-path-builder>
+      <sec:name>myrealm<\/sec:name>
+      <sec:password-validator xmlns:pas="http:\/\/xmlns.oracle.com\/weblogic\/security\/providers\/passwordvalidator" xsi:type="pas:system-password-validatorType">
+        <sec:name>SystemPasswordValidator<\/sec:name>
+        <pas:min-password-length>8<\/pas:min-password-length>
+        <pas:min-numeric-or-special-characters>1<\/pas:min-numeric-or-special-characters>
+      <\/sec:password-validator>
+    <\/realm>

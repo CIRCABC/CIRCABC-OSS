@@ -662,7 +662,7 @@
               versionable="true"
               editOnline="true"
               forceUpdate="false"
-              revison="4"
+              revison="5"
             >classpath:alfresco/extension/customisation/templates/mails/parts/mailheader.ftl</file>
 						<file
               name="mailfooter.ftl"
@@ -771,7 +771,7 @@
               versionable="true"
               editOnline="false"
               forceUpdate="false"
-              revison="1"
+              revison="2"
             >classpath:alfresco/extension/customisation/templates/header/logo/header-eu-circabc-logo.png</file>
 					</space>
 				</space>

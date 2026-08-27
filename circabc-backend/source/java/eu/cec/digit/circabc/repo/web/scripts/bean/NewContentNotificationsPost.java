@@ -85,7 +85,7 @@ public class NewContentNotificationsPost extends CircabcDeclarativeWebScript {
 
       Set<NotifiableUser> notifiableUsers =
         notificationSubscriptionService.getNotifiableUsers(parentRef);
-      notificationService.notifyNewFiles(
+      notificationService.notifyNewFilesAfterCommit(
         parentRef,
         nodeRefs,
         notifiableUsers,

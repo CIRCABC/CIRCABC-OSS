@@ -49,6 +49,7 @@ public class SpacesIdSharePost extends CircabcDeclarativeWebScript {
     boolean mlAware = MLPropertyInterceptor.isMLAware();
 
     try {
+      checkGroupReadOnlyMode(spaceId);
       if (
         !this.currentUserPermissionCheckerService.hasAnyOfLibraryPermission(
             spaceId,
@@ -75,12 +76,28 @@ public class SpacesIdSharePost extends CircabcDeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
+      return null;
+    } catch (ReadOnlyAccessException roe) {
+      status.setCode(HttpServletResponse.SC_FORBIDDEN);
+      status.setMessage(roe.getMessage());
+      status.setRedirect(true);
+      if (logger.isWarnEnabled()) {
+        logger.warn(
+          "Read-only mode prevented share creation: " + roe.getMessage()
+        );
+      }
       return null;
     } catch (Exception e) {
       status.setCode(HttpServletResponse.SC_NOT_ACCEPTABLE);
       status.setMessage(e.getMessage());
       status.setException(e);
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error(e.getMessage(), e);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);

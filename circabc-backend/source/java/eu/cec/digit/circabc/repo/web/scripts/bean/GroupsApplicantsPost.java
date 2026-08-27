@@ -60,17 +60,38 @@ public class GroupsApplicantsPost extends CircabcDeclarativeWebScript {
           "Current Authority cannot post his membership application, not enough permission"
         );
       }
+      if (!this.groupLockApi.canWriteOrAdmin(id)) {
+        throw new ReadOnlyAccessException(
+          "Interest group is in read-only mode"
+        );
+      }
       ApplicantAction body = ApplicantActionJsonParser.parseJSON(req);
       this.groupsApi.groupsIdMembersApplicantsPost(id, body);
     } catch (AccessDeniedException ade) {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
+      return null;
+    } catch (ReadOnlyAccessException roe) {
+      status.setCode(HttpServletResponse.SC_FORBIDDEN);
+      status.setMessage(roe.getMessage());
+      status.setRedirect(true);
+      if (logger.isWarnEnabled()) {
+        logger.warn(
+          "Read-only mode prevented membership application: " + roe.getMessage()
+        );
+      }
       return null;
     } catch (InvalidNodeRefException | ParseException | IOException inre) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request", inre);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);

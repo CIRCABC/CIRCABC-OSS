@@ -35,6 +35,16 @@ import eu.cec.digit.circabc.migration.entities.generated.nodes.Library;
 import eu.cec.digit.circabc.migration.entities.generated.nodes.Newsgroups;
 import eu.cec.digit.circabc.migration.entities.generated.permissions.Guest;
 import eu.cec.digit.circabc.migration.entities.generated.permissions.RegistredUsers;
+import eu.cec.digit.circabc.migration.entities.generated.permissions.SimpleDirectoryPermissions;
+import eu.cec.digit.circabc.migration.entities.generated.permissions.SimpleEventPermissions;
+import eu.cec.digit.circabc.migration.entities.generated.permissions.SimpleInformationPermissions;
+import eu.cec.digit.circabc.migration.entities.generated.permissions.SimpleLibraryPermissions;
+import eu.cec.digit.circabc.migration.entities.generated.permissions.SimpleNewsgroupPermissions;
+import eu.cec.digit.circabc.migration.entities.generated.permissions.SimpleDirectoryPermissions;
+import eu.cec.digit.circabc.migration.entities.generated.permissions.SimpleEventPermissions;
+import eu.cec.digit.circabc.migration.entities.generated.permissions.SimpleInformationPermissions;
+import eu.cec.digit.circabc.migration.entities.generated.permissions.SimpleLibraryPermissions;
+import eu.cec.digit.circabc.migration.entities.generated.permissions.SimpleNewsgroupPermissions;
 import eu.cec.digit.circabc.migration.entities.generated.user.Person;
 import eu.cec.digit.circabc.migration.entities.generated.user.Persons;
 import eu.cec.digit.circabc.migration.reader.RemoteFileReader;
@@ -156,8 +166,20 @@ public abstract class BinderUtils
 			ig = createInterestGroup(igName);
 
 			ig.getDirectory()
-				.withGuest(new Guest())
-				.withRegistredUsers(new RegistredUsers());
+				.withGuest(new Guest()
+						.withVisibility(false)
+						.withInformationPermission(SimpleInformationPermissions.INF_NO_ACCESS)
+						.withLibraryPermission(SimpleLibraryPermissions.LIB_NO_ACCESS)
+						.withDirectoryPermission(SimpleDirectoryPermissions.DIR_NO_ACCESS)
+						.withEventPermission(SimpleEventPermissions.EVE_NO_ACCESS)
+						.withNewsgroupPermission(SimpleNewsgroupPermissions.NWS_NO_ACCESS))
+				.withRegistredUsers(new RegistredUsers()
+						.withVisibility(false)
+						.withInformationPermission(SimpleInformationPermissions.INF_NO_ACCESS)
+						.withLibraryPermission(SimpleLibraryPermissions.LIB_NO_ACCESS)
+						.withDirectoryPermission(SimpleDirectoryPermissions.DIR_NO_ACCESS)
+						.withEventPermission(SimpleEventPermissions.EVE_NO_ACCESS)
+						.withNewsgroupPermission(SimpleNewsgroupPermissions.NWS_NO_ACCESS));
 
 			ElementsHelper.setParent(category, ig);
 			ElementsHelper.setParent(ig, ig.getInformation());

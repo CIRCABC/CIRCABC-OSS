@@ -1,0 +1,10 @@
+# comment
+.git
+*/temp*
+*/*/temp*
+temp?
+*.log
+*.bak
+*.old
+*.md
+!README*.md

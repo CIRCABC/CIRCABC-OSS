@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>get all the subcategories of the category</shortname>
+  <description>get all the subcategories of the category</description>
+  <url>/circabc/help/categories/{id}/subcategories</url>
+  <format default="json" />
+  <authentication>guest</authentication>
+  <transaction>required</transaction>
+</webscript>

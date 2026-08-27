@@ -1,11 +1,12 @@
 {{ 'label.appearance.title' | transloco: { groupName: group?.name } |
-cbcSetTitle }}
+cbcSetTitle }} @if (!readOnlyState.isReadOnly()) {
 <a
   tabindex="0"
   class="cta cta--plus cta--upload"
   (click)="showUploadModal = true"
   >{{ 'admin.upload.logo.action' | transloco }}</a
 >
+}
 
 <h3>{{ 'label.appearance' | transloco }}</h3>
 
@@ -32,6 +33,7 @@ cbcSetTitle }}
         </td>
         <td class="fixedWidth"> {{ logo.name }} </td>
         <td class="fixedWidth">
+          @if (!readOnlyState.isReadOnly()) {
           <ul style="display: flex">
             <li>
               <a
@@ -55,6 +57,7 @@ cbcSetTitle }}
               ></cbc-inline-delete>
             </li>
           </ul>
+          }
         </td>
       </tr>
       }
@@ -62,7 +65,7 @@ cbcSetTitle }}
   </table>
 </section>
 
-@if (group) {
+@if (group && !readOnlyState.isReadOnly()) {
 <cbc-add-group-logo
   [groupId]="group.id"
   [showModal]="showUploadModal"

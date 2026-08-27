@@ -34,7 +34,8 @@ public interface SpacesApi {
     int nbLimit,
     String sort,
     boolean folderOnly,
-    boolean fileOnly
+    boolean fileOnly,
+    boolean skipExpiredItems
   );
 
   /**

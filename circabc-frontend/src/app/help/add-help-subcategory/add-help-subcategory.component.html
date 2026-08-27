@@ -1,0 +1,21 @@
+<cbc-modal
+  data-cy="subsection"
+  [title]="editMode ? 'help.update.subsection' : 'help.add.subsection'"
+  (ok)="editMode ? updateSubcategory() : createSubcategory()"
+  (cancelModal)="cancel()"
+  [okLabel]="editMode ? 'label.update' : 'label.create'"
+  [(visible)]="showModal"
+  [executing]="creating"
+  [executingLabel]="editMode ? 'label.updating' : 'label.creating'"
+  [showOkButton]="isValid && !creating"
+>
+  <form [formGroup]="newSubcategoryForm">
+    <cbc-multilingual-input
+      formControlName="title"
+      [label]="'label.title' | transloco"
+      [placeholder]="'label.title' | transloco"
+      [lang]="'en'"
+      [required]="true"
+    ></cbc-multilingual-input>
+  </form>
+</cbc-modal>

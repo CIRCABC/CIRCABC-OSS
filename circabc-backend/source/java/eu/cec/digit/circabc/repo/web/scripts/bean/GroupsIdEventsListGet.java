@@ -5,6 +5,7 @@ import io.swagger.api.EventsApi;
 import io.swagger.model.PagedEventItems;
 import io.swagger.util.Converter;
 import io.swagger.util.CurrentUserPermissionCheckerService;
+import io.swagger.util.GroupLockGuard;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -16,6 +17,8 @@ import org.alfresco.repo.node.MLPropertyInterceptor;
 import org.alfresco.repo.security.permissions.AccessDeniedException;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.DeclarativeWebScript;
 import org.springframework.extensions.webscripts.Status;
@@ -28,9 +31,15 @@ import org.springframework.extensions.webscripts.WebScriptRequest;
  */
 public class GroupsIdEventsListGet extends DeclarativeWebScript {
 
+  /**
+   * A logger for the class
+   */
+  static final Log logger = LogFactory.getLog(GroupsIdEventsListGet.class);
+
   private EventsApi eventsApi;
   private NodeService nodeService;
   private CurrentUserPermissionCheckerService currentUserPermissionCheckerService;
+  private GroupLockGuard groupLockGuard;
 
   @Override
   protected Map<String, Object> executeImpl(
@@ -48,6 +57,8 @@ public class GroupsIdEventsListGet extends DeclarativeWebScript {
     String sort = req.getParameter("sort");
 
     try {
+      this.groupLockGuard.checkAccessByIgId(igId);
+
       NodeRef groupRef = Converter.createNodeRefFromId(igId);
       NodeRef evtNodeRef =
         this.nodeService.getChildByName(
@@ -204,5 +215,9 @@ public class GroupsIdEventsListGet extends DeclarativeWebScript {
    */
   public void setNodeService(NodeService nodeService) {
     this.nodeService = nodeService;
+  }
+
+  public void setGroupLockGuard(GroupLockGuard groupLockGuard) {
+    this.groupLockGuard = groupLockGuard;
   }
 }

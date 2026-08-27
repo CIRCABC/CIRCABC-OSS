@@ -1,6 +1,7 @@
 package eu.cec.digit.circabc.util.exporter;
 
 import eu.cec.digit.circabc.model.CircabcModel;
+import eu.cec.digit.circabc.repo.app.CircabcDaoServiceImpl;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +39,7 @@ public class CircabcExporter {
   private MimetypeService mimetypeService = null;
   private SearchService searchService = null;
   private TransactionService transactionService = null;
+  private CircabcDaoServiceImpl circabcDaoService = null;
 
   private CircabcExporterService circabcExporterService = null;
 
@@ -253,7 +255,10 @@ public class CircabcExporter {
         );
       }
     } finally {
-      // Unlock node for access
+      // Unlock node for access — but only if there is no active manual lock
+      // for this IG in the database. If a Leader/CategoryAdmin locked the IG
+      // manually while the export was running, removing the aspect here would
+      // silently lift their lock, leaving the IG unprotected.
       callback = new RetryingTransactionCallback<Object>() {
         @Override
         public Object execute() throws Throwable {
@@ -263,17 +268,54 @@ public class CircabcExporter {
               CircabcModel.ASPECT_LOCKED_FOR_ACCESS
             )
           ) {
-            nodeService.removeAspect(
-              nodeRefToExport,
-              CircabcModel.ASPECT_LOCKED_FOR_ACCESS
-            );
+            final boolean hasManualLock = hasActiveManualLock(nodeRefToExport);
+            if (hasManualLock) {
+              logger.info(
+                "Export finished for node " +
+                nodeRefToExport +
+                " but a manual lock is active — keeping ASPECT_LOCKED_FOR_ACCESS."
+              );
+            } else {
+              nodeService.removeAspect(
+                nodeRefToExport,
+                CircabcModel.ASPECT_LOCKED_FOR_ACCESS
+              );
+            }
           }
-
           return null;
         }
       };
 
       txnHelper.doInTransaction(callback, false, true);
+    }
+  }
+
+  /**
+   * Returns {@code true} if the given IG node has an active manual lock record in the database.
+   * This is used by the export {@code finally} block to decide whether it is safe to remove the
+   * {@code ci:lockedForAccess} aspect after the export completes.
+   */
+  private boolean hasActiveManualLock(final NodeRef nodeRef) {
+    if (circabcDaoService == null) {
+      return false;
+    }
+    try {
+      final Long dbId = (Long) nodeService.getProperty(
+        nodeRef,
+        org.alfresco.model.ContentModel.PROP_NODE_DBID
+      );
+      if (dbId == null) {
+        return false;
+      }
+      return circabcDaoService.getGroupLock(dbId) != null;
+    } catch (final Exception e) {
+      logger.warn(
+        "Could not check manual lock state for node " +
+        nodeRef +
+        " — assuming no manual lock: " +
+        e.getMessage()
+      );
+      return false;
     }
   }
 
@@ -348,9 +390,28 @@ public class CircabcExporter {
           // Create export package handler
           ExportPackageHandler exportHandler = null;
 
+          // Validate output directory before attempting to write
+          File outputDir = new File(outputFolderPath);
+          if (!outputDir.exists()) {
+            boolean created = outputDir.mkdirs();
+            if (!created) {
+              throw new ExporterException(
+                "Export output directory does not exist and could not be created: " +
+                outputFolderPath
+              );
+            }
+            logger.info("Created export output directory: " + outputFolderPath);
+          }
+          if (!outputDir.canWrite()) {
+            throw new ExporterException(
+              "Export output directory is not writable (check permissions): " +
+              outputFolderPath
+            );
+          }
+
           if (createAcp) {
             exportHandler = new ACPExportPackageHandler(
-              new File(outputFolderPath),
+              outputDir,
               new File(fileName),
               new File(fileName),
               new File("content"),
@@ -359,7 +420,12 @@ public class CircabcExporter {
             );
           } else {
             File destDir = new File(outputFolderPath + "/" + fileName);
-            destDir.mkdirs();
+            if (!destDir.mkdirs() && !destDir.exists()) {
+              throw new ExporterException(
+                "Could not create export subdirectory: " +
+                destDir.getAbsolutePath()
+              );
+            }
             exportHandler = new FileExportPackageHandler(
               destDir,
               new File(fileName + ".xml"),
@@ -529,5 +595,17 @@ public class CircabcExporter {
     CircabcExporterService circabcExporterService
   ) {
     this.circabcExporterService = circabcExporterService;
+  }
+
+  /**
+   * Sets the value of the circabcDaoService. Used to check for active manual locks before
+   * removing the {@code ci:lockedForAccess} aspect at the end of an export.
+   *
+   * @param circabcDaoService the circabcDaoService to set.
+   */
+  public void setCircabcDaoService(
+    final CircabcDaoServiceImpl circabcDaoService
+  ) {
+    this.circabcDaoService = circabcDaoService;
   }
 }

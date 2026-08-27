@@ -10,7 +10,8 @@
 	"author": <#if article.author ??>"${article.author}"<#else>""</#if>,
 	"highlighted": <#if article.highlighted ??>${article.highlighted?string}<#else>false</#if>,
 	"parentId": <#if article.parentId ??>"${article.parentId}"<#else>""</#if>,
-	"visitCounter": <#if article.visitCounter ??>${article.visitCounter?c}<#else>0</#if>
+	"visitCounter": <#if article.visitCounter ??>${article.visitCounter?c}<#else>0</#if>,
+	"sortOrder": <#if article.sortOrder ??>${article.sortOrder?c}<#else>0</#if>
 }
 
 </#escape>

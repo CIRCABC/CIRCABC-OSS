@@ -118,7 +118,7 @@ const logA11yViolations = (violations) => {
       cy.task('log', `Affected Node: ${html}`);
     });
   });
-  cy.wait(500);
+  cy.wait(1000);
 };
 
 // Add violationCallback as a custom command

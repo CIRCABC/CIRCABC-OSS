@@ -13,11 +13,11 @@ public interface AutoUploadApi {
     int limit
   );
 
-  void removeAutoUploadEntry(long configurationId);
+  void removeAutoUploadEntry(String igId, long configurationId);
 
-  void toggleAutoUploadEntry(long configurationId, boolean enable);
+  void toggleAutoUploadEntry(String igId, long configurationId, boolean enable);
 
-  Configuration getAutoUploadEntry(String nodeId);
+  Configuration getAutoUploadEntry(String igId, String nodeId);
 
-  void addAutoUploadEntry(String autoUploadConfigurationJson);
+  void addAutoUploadEntry(String igId, String autoUploadConfigurationJson);
 }

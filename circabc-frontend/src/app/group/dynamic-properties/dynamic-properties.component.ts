@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { TranslocoModule } from '@jsverse/transloco';
@@ -16,6 +16,7 @@ import {
   Node as ModelNode,
   NodesService,
 } from 'app/core/generated/circabc';
+import { ReadOnlyStateService } from 'app/core/read-only-state.service';
 import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
 import { ReponsiveSubMenuComponent } from 'app/shared/reponsive-sub-menu/reponsive-sub-menu.component';
 import { firstValueFrom } from 'rxjs';
@@ -48,6 +49,8 @@ export class DynamicPropertiesComponent implements OnInit {
   public loading = false;
   public currentIg!: InterestGroup;
   public currentLibrary!: ModelNode;
+
+  public readonly readOnlyState = inject(ReadOnlyStateService);
 
   constructor(
     private dynamicPropertiesService: DynamicPropertiesService,
@@ -114,11 +117,17 @@ export class DynamicPropertiesComponent implements OnInit {
   }
 
   public showModalDelete(property: DynamicPropertyDefinition) {
+    if (this.readOnlyState.isReadOnly()) {
+      return;
+    }
     this.deleteModalShown = true;
     this.selectedProperty = property;
   }
 
   public showModalEdit(property: DynamicPropertyDefinition) {
+    if (this.readOnlyState.isReadOnly()) {
+      return;
+    }
     this.createModalShown = true;
     this.propertyToUpdate = property;
   }
@@ -131,6 +140,9 @@ export class DynamicPropertiesComponent implements OnInit {
   }
 
   public prepareCreateModal() {
+    if (this.readOnlyState.isReadOnly()) {
+      return;
+    }
     if (this.dynamicProperties.length < 20) {
       this.createModalShown = true;
     }

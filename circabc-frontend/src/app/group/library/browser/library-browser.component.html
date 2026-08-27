@@ -391,7 +391,7 @@
             >
             } @if (locked(content)) {
             <span>
-              <img src="img/icon-lock-blue.png" alt="" />
+              <img src="img/icon-lock-closed.svg" alt="" />
               {{ 'label.locked.by' | transloco }}
               <cbc-user-card
                 [userId]="content.properties.lockOwner"
@@ -422,7 +422,7 @@
               [sensitive]="isSensitive(content)"
               [showIcon]="false"
             ></cbc-save-as>
-            } @if (isLibAdmin(content) || isOwner(content)) {
+            } @if (!isReadOnly() && (isLibAdmin(content) || isOwner(content))) {
             <li>
               @if ( !locked(content) && !workingCopy(content) | cbcIfRoles : [
               content, ['LibAdmin', 'LibManageOwn', 'LibFullEdit'],
@@ -473,7 +473,11 @@
         </td>
         } @if (columnForm.value.title) {
         <td class="cell-title">
-          @if (isFile(content) && !isLink(content)) {
+          @if (isLink(content)) {
+          <a href="{{ url(content) }}" target="_blank"
+            >{{ getTitle(content) }}</a
+          >
+          } @if (isFile(content) && !isLink(content)) {
           <a [routerLink]="['../', content.id, 'details']"
             >{{ getTitle(content) }}</a
           >
@@ -497,7 +501,7 @@
               [sensitive]="isSensitive(content)"
               [showIcon]="false"
             ></cbc-save-as>
-            } @if (isLibAdmin(content) || isOwner(content)) {
+            } @if (!isReadOnly() && (isLibAdmin(content) || isOwner(content))) {
             <li>
               @if ( !locked(content) && !workingCopy(content) | cbcIfRoles : [
               content, ['LibAdmin', 'LibManageOwn', 'LibFullEdit'],

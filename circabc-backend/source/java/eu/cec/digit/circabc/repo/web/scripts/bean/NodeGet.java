@@ -3,6 +3,7 @@ package eu.cec.digit.circabc.repo.web.scripts.bean;
 import io.swagger.api.NodesApi;
 import io.swagger.model.Node;
 import io.swagger.util.CurrentUserPermissionCheckerService;
+import io.swagger.util.GroupLockGuard;
 import io.swagger.util.NodeUtil;
 import java.util.HashMap;
 import java.util.Locale;
@@ -28,6 +29,7 @@ public class NodeGet extends DeclarativeWebScript {
 
   private NodesApi nodesApi;
   private CurrentUserPermissionCheckerService currentUserPermissionCheckerService;
+  private GroupLockGuard groupLockGuard;
 
   @Override
   protected Map<String, Object> executeImpl(
@@ -51,6 +53,8 @@ public class NodeGet extends DeclarativeWebScript {
     Map<String, String> templateVars = req.getServiceMatch().getTemplateVars();
     String id = templateVars.get("id");
     try {
+      this.groupLockGuard.checkAccess(id);
+
       if (
         !this.currentUserPermissionCheckerService.hasAlfrescoReadPermission(id)
       ) {
@@ -73,6 +77,9 @@ public class NodeGet extends DeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (InvalidNodeRefException inre) {
       // BUG DIGITCIRCABC-4899
@@ -87,6 +94,9 @@ public class NodeGet extends DeclarativeWebScript {
         status.setMessage("Bad request");
       }
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error(inre.getMessage(), inre);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);
@@ -113,5 +123,9 @@ public class NodeGet extends DeclarativeWebScript {
   ) {
     this.currentUserPermissionCheckerService =
       currentUserPermissionCheckerService;
+  }
+
+  public void setGroupLockGuard(GroupLockGuard groupLockGuard) {
+    this.groupLockGuard = groupLockGuard;
   }
 }

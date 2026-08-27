@@ -37,8 +37,7 @@ h1 {
         display: inline-block;
         color: #035;
         max-width: 90%;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        word-break: break-all;
       }
 
       span {

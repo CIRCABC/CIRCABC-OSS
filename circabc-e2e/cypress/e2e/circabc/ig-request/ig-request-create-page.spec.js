@@ -6,6 +6,7 @@ describe('The Request Create IG Page', function () {
     );
   });
   it('successfully request create IG', function () {
+    cy.wait(3000);
     cy.visit('explore', {
       failOnStatusCode: false,
     });

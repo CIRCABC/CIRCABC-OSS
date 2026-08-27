@@ -17,6 +17,17 @@ import org.owasp.esapi.codecs.OracleCodec;
 
 public class CircabcDaoServiceImpl {
 
+  private static final String DEFAULT_ORDER_BY_COLUMN = "firstName";
+  private static final String DEFAULT_ORDER_BY_TYPE = "ASC";
+  private static final Set<String> ALLOWED_MEMBER_ORDER_BY_COLUMNS =
+    Collections.unmodifiableSet(
+      new HashSet<>(
+        Arrays.asList("firstName", "lastName", "email", "profileName")
+      )
+    );
+  private static final Set<String> ALLOWED_ORDER_BY_TYPES =
+    Collections.unmodifiableSet(new HashSet<>(Arrays.asList("ASC", "DESC")));
+
   private Codec codec = null;
   private SqlSessionTemplate sqlSessionTemplate = null;
 
@@ -96,8 +107,11 @@ public class CircabcDaoServiceImpl {
   }
 
   public void insertMultilingualProperties() {
+    sqlSessionTemplate.delete("Circabc.delete_all_cat_title_trans");
     sqlSessionTemplate.insert("Circabc.insert_cat_titles");
+    sqlSessionTemplate.delete("Circabc.delete_all_ig_trans");
     sqlSessionTemplate.insert("Circabc.insert_ig_titles");
+    sqlSessionTemplate.delete("Circabc.delete_all_profile_title_trans");
     sqlSessionTemplate.insert("Circabc.insert_profile_titles");
   }
 
@@ -620,6 +634,29 @@ public class CircabcDaoServiceImpl {
     return ESAPI.encoder().encodeForSQL(codec, string);
   }
 
+  private void addMemberOrderByParameters(
+    Map<String, Object> params,
+    String orderBy
+  ) {
+    String orderByColumn = DEFAULT_ORDER_BY_COLUMN;
+    String orderByType = DEFAULT_ORDER_BY_TYPE;
+
+    if (orderBy != null && !orderBy.isEmpty()) {
+      String[] orderByParts = orderBy.split("_", -1);
+      if (
+        orderByParts.length == 2 &&
+        ALLOWED_MEMBER_ORDER_BY_COLUMNS.contains(orderByParts[0]) &&
+        ALLOWED_ORDER_BY_TYPES.contains(orderByParts[1])
+      ) {
+        orderByColumn = orderByParts[0];
+        orderByType = orderByParts[1];
+      }
+    }
+
+    params.put("orderByColumn", orderByColumn);
+    params.put("orderByType", orderByType);
+  }
+
   public Integer getCountOfIGAdmins(long igID) {
     return (Integer) sqlSessionTemplate.selectOne(
       "Circabc.select_admin_count_by_ig_id",
@@ -660,16 +697,7 @@ public class CircabcDaoServiceImpl {
       params.put("text", "%" + sanitizeSQL(text.toLowerCase()) + "%");
     }
 
-    if (orderBy == null) {
-      params.put("orderByColumn", "firstName");
-      params.put("orderByType", "ASC");
-    } else if (orderBy.isEmpty()) {
-      params.put("orderByColumn", "firstName");
-      params.put("orderByType", "ASC");
-    } else {
-      params.put("orderByColumn", orderBy.split("_")[0]);
-      params.put("orderByType", orderBy.split("_")[1]);
-    }
+    addMemberOrderByParameters(params, orderBy);
 
     @SuppressWarnings("unchecked")
     List<UserWithProfile> result = (List<
@@ -732,16 +760,7 @@ public class CircabcDaoServiceImpl {
       params.put("email", "%" + sanitizeSQL(email.toLowerCase()) + "%");
     }
 
-    if (orderBy == null) {
-      params.put("orderByColumn", "firstName");
-      params.put("orderByType", "ASC");
-    } else if (orderBy.isEmpty()) {
-      params.put("orderByColumn", "firstName");
-      params.put("orderByType", "ASC");
-    } else {
-      params.put("orderByColumn", orderBy.split("_")[0]);
-      params.put("orderByType", orderBy.split("_")[1]);
-    }
+    addMemberOrderByParameters(params, orderBy);
 
     @SuppressWarnings("unchecked")
     List<UserWithProfile> result = (List<
@@ -1017,5 +1036,20 @@ public class CircabcDaoServiceImpl {
     props.put("id", igId);
     props.put("toBeDeleted", isToBeDeleted);
     sqlSessionTemplate.update("Circabc.update_to_be_deleted_by_id", props);
+  }
+
+  public void insertGroupLock(GroupLock lock) {
+    sqlSessionTemplate.insert("Circabc.insert_group_lock", lock);
+  }
+
+  public void deleteGroupLock(Long igId) {
+    sqlSessionTemplate.delete("Circabc.delete_group_lock", igId);
+  }
+
+  public GroupLock getGroupLock(Long igId) {
+    return (GroupLock) sqlSessionTemplate.selectOne(
+      "Circabc.select_group_lock",
+      igId
+    );
   }
 }

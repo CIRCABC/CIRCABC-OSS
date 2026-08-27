@@ -61,7 +61,10 @@ public class CheckDeletionGroupsGet extends DeclarativeWebScript {
         .getParentRef();
       String categoryId = categoryRef.getId();
       if (
-        !this.currentUserPermissionCheckerService.isCategoryAdmin(categoryId)
+        !this.currentUserPermissionCheckerService.isCategoryAdmin(categoryId) &&
+        !this.currentUserPermissionCheckerService.isInterestGroupDirAdmin(
+            groupRef.getId()
+          )
       ) {
         throw new AccessDeniedException(
           "Not enough permission to prepare the deletion of the group"

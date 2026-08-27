@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { SetTitlePipe } from 'app/shared/pipes/set-title.pipe';
 import { environment } from 'environments/environment';
@@ -9,11 +9,17 @@ import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
   selector: 'cbc-legal-notice',
   templateUrl: './legal-notice.component.html',
   styleUrl: './legal-notice.component.scss',
-  imports: [NgxExtendedPdfViewerModule, SetTitlePipe, TranslocoModule],
+  imports: [
+    NgxExtendedPdfViewerModule,
+    SetTitlePipe,
+    TranslocoModule,
+    RouterLink,
+  ],
 })
 export class LegalNoticeComponent implements OnInit {
   public step = 'privacy';
   public serverURL = environment.serverURL;
+  public isSCircabc = environment.circabcRelease === 'echa';
   public urlPSExists = false;
   public urlTOSExists = false;
   public urlACCESSExists = false;

@@ -14,6 +14,7 @@ import {
   NodesService,
 } from 'app/core/generated/circabc';
 import { LocalizationService } from 'app/core/localization.service';
+import { ReadOnlyStateService } from 'app/core/read-only-state.service';
 import { getFormattedDate as getFormattedDateGlobal } from 'app/core/util';
 import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
 import { SetTitlePipe } from 'app/shared/pipes/set-title.pipe';
@@ -110,7 +111,8 @@ export class AgendaComponent implements OnInit {
     private nodesService: NodesService,
     private permEvalService: PermissionEvaluatorService,
     private localizationService: LocalizationService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private readOnlyStateService: ReadOnlyStateService
   ) {}
 
   public ngOnInit() {
@@ -150,6 +152,10 @@ export class AgendaComponent implements OnInit {
 
   public isEveAdmin(): boolean {
     return this.permEvalService.isEveAdmin(this.eventRootNode);
+  }
+
+  public isReadOnly(): boolean {
+    return this.readOnlyStateService.isReadOnly();
   }
 
   public popupCreateEventWithCalendarDay(calendarSheetDate: Date): void {

@@ -341,7 +341,7 @@ export const availableTimezones: TimezoneEntry[] = [
     gmtAdjustment: 'GMT+03:00',
     useDaylightTime: '0',
     value: 'GMT+3',
-    text: '(GMT+03:00) Tbilisi',
+    text: '(GMT+03:00) Tbilisi, Damascus',
   },
   {
     id: '49',

@@ -1,0 +1,17 @@
+<!-- this build file compiles the json source code downloaded from www.json.org -->
+<project name="json" default="compile">
+  <property name="dist.jar" value="../lib/json.jar"/>
+
+  <target name="compile">
+    <mkdir dir="${java.io.tmpdir}/json"/>
+    <unzip src="json.zip" dest="${java.io.tmpdir}/json"/>
+    <javac target="1.5"
+           srcdir="${java.io.tmpdir}/json"
+           destdir="${java.io.tmpdir}/json"/>
+    <jar destfile="${dist.jar}"
+         basedir="${java.io.tmpdir}/json"
+         includes="**/*.class"/>
+    <delete dir="${java.io.tmpdir}/json"/>
+  </target>
+
+</project>

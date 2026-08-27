@@ -1,0 +1,17 @@
+Index: projects/web-framework-commons/source/web/modules/editors/tiny_mce/tiny_mce_src.js
+===================================================================
+--- projects/web-framework-commons/source/web/modules/editors/tiny_mce/tiny_mce_src.js	(revision 49099)
++++ projects/web-framework-commons/source/web/modules/editors/tiny_mce/tiny_mce_src.js	(working copy)
+@@ -13069,11 +13069,7 @@
+ 			if (s.document_base_url != tinymce.documentBaseURL)
+ 				t.iframeHTML += '<base href="' + t.documentBaseURI.getURI() + '" />';
+ 
+-			// IE8 doesn't support carets behind images setting ie7_compat would force IE8+ to run in IE7 compat mode.
+-			if (s.ie7_compat)
+-				t.iframeHTML += '<meta http-equiv="X-UA-Compatible" content="IE=7" />';
+-			else
+-				t.iframeHTML += '<meta http-equiv="X-UA-Compatible" content="IE=edge" />';
++           t.iframeHTML += '<meta http-equiv="X-UA-Compatible" content="IE=edge" />';
+ 
+ 			t.iframeHTML += '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />';
+ 

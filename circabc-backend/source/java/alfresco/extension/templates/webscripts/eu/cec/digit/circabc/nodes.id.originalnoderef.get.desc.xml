@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Get the original node reference of a node</shortname>
+  <description>Get the original (source) node reference (ci:originalNodeRef) of a node. CIRCABC admin only.</description>
+    <url>/circabc/nodes/{id}/originalnoderef</url>
+  <format default="json" />
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

@@ -56,6 +56,7 @@ public class PostsPut extends CircabcDeclarativeWebScript {
     disableNotificationThreadLocal.set(!notify);
 
     try {
+      checkGroupReadOnlyMode(id);
       if (
         !(currentUserPermissionCheckerService.hasAnyOfNewsGroupPermission(
             id,
@@ -125,15 +126,29 @@ public class PostsPut extends CircabcDeclarativeWebScript {
             attachmentsToDelete
           )
       );
+    } catch (ReadOnlyAccessException roae) {
+      status.setCode(HttpServletResponse.SC_FORBIDDEN);
+      status.setMessage(roae.getMessage());
+      status.setRedirect(true);
+      if (logger.isWarnEnabled()) {
+        logger.warn("Read-only mode blocked post update: " + roae.getMessage());
+      }
+      return null;
     } catch (AccessDeniedException ade) {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (InvalidNodeRefException | ParseException | IOException inre) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request", inre);
+      }
       return null;
     }
 

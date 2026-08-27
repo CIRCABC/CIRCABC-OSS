@@ -19,7 +19,7 @@
   border: 1px solid #fff;
   background: var(--theme-menu);
   box-shadow: 0 0 8px rgb(0 0 0 / 0.3);
-  width: 195px;
+  width: auto;
   position: absolute;
   top: 0;
   margin-bottom: 30px;
@@ -370,19 +370,14 @@
   top: 60px;
   right: -3px;
   padding: 20px;
-  display: block !important;
+  display: flex !important;
+  flex-direction: row;
+  gap: 15px;
   text-align: left;
 
   @media screen and (max-width: variables-mixins-keyframes.$break-small) {
+    flex-direction: column;
     width: 200px;
-  }
-
-  @media screen and (max-width: variables-mixins-keyframes.$break-small) {
-    display: block;
-  }
-
-  &:last-of-type {
-    margin: 0;
   }
 
   a {
@@ -409,4 +404,14 @@
   a.delete-request {
     background-image: url(^img/icon-garbage-blue.svg);
   }
+
+  a.lock-group {
+    background-image: url(^img/icon-lock-closed.svg);
+  }
+
+  a.unlock-group {
+    background-image: url(^img/icon-lock-open.svg);
+  }
 }
+
+

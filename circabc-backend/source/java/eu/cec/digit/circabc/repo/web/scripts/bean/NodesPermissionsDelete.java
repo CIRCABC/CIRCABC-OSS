@@ -52,6 +52,7 @@ public class NodesPermissionsDelete extends CircabcDeclarativeWebScript {
     String authority = templateVars.get("authority");
     String permission = templateVars.get("permission");
     try {
+      checkGroupReadOnlyMode(id);
       if (
         !(this.currentUserPermissionCheckerService.hasAnyOfLibraryPermission(
               id,
@@ -72,11 +73,27 @@ public class NodesPermissionsDelete extends CircabcDeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
+      return null;
+    } catch (ReadOnlyAccessException roe) {
+      status.setCode(HttpServletResponse.SC_FORBIDDEN);
+      status.setMessage(roe.getMessage());
+      status.setRedirect(true);
+      if (logger.isWarnEnabled()) {
+        logger.warn(
+          "Read-only mode prevented permission delete: " + roe.getMessage()
+        );
+      }
       return null;
     } catch (InvalidNodeRefException inre) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request", inre);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);

@@ -1,5 +1,10 @@
 package eu.cec.digit.circabc.util.importer;
 
+import eu.cec.digit.circabc.model.CircabcModel;
+import eu.cec.digit.circabc.service.app.CircabcService;
+import eu.cec.digit.circabc.service.profile.permissions.DirectoryPermissions;
+import eu.cec.digit.circabc.service.profile.permissions.IgPermissions;
+import eu.cec.digit.circabc.service.profile.permissions.VisibilityPermissions;
 import java.io.File;
 import java.io.Reader;
 import java.util.List;
@@ -17,6 +22,7 @@ import org.alfresco.service.cmr.repository.StoreRef;
 import org.alfresco.service.cmr.search.ResultSet;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.cmr.security.AuthorityService;
+import org.alfresco.service.cmr.security.PermissionService;
 import org.alfresco.service.cmr.view.*;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.QNamePattern;
@@ -41,6 +47,13 @@ public class CircabcImporter {
   private final String IG_MASTERGROUP = "circaIGRootMasterGroup";
   private final String GROUP_PREFIX = "GROUP_";
 
+  /**
+   * Local name of the {@code CircaCategoryAdmin} profile association name.
+   * Must match {@code CategoriesApiImpl.CATEGORY_ADMIN_PROFILE_NAME}.
+   */
+  private static final String CATEGORY_ADMIN_PROFILE_LOCAL_NAME =
+    "CircaCategoryAdmin";
+
   private final QName PROP_CIRCABC_SUBGROUP = QName.createQName(
     "http://www.cc.cec/circabc/model/content/1.0",
     "circaBCSubsGroup"
@@ -49,11 +62,22 @@ public class CircabcImporter {
     "http://www.cc.cec/circabc/model/content/1.0",
     "circaCategorySubsGroup"
   );
+  private final QName PROP_CIRCA_CATEGORY_PROFILE_GROUP_NAME =
+    QName.createQName(
+      "http://www.cc.cec/circabc/model/content/1.0",
+      "circaCategoryProfileGroupName"
+    );
+  private final QName ASSOC_CIRCA_CATEGORY_ADMIN_PROFILE = QName.createQName(
+    "http://www.cc.cec/circabc/model/content/1.0",
+    CATEGORY_ADMIN_PROFILE_LOCAL_NAME
+  );
 
   private NodeService nodeService;
   private SearchService searchService;
   private AuthorityService authorityService;
+  private PermissionService permissionService;
   private CircabcImporterService circabcImporterService;
+  private CircabcService circabcService;
 
   // XML Pull Parser Factory
   private XmlPullParserFactory factory;
@@ -172,15 +196,34 @@ public class CircabcImporter {
           if (importHeaders) {
             // -- exportFileName + CIRCABC_SUFFIX + "Header_SpacesStore"
             // category headers
-            doImport(
-              spacesStoreRootNodeRef,
-              "/cm:categoryRoot/cm:generalclassifiable/cm:CircaBCHeader",
-              null,
-              importFolderPath,
-              getPackage(packages, "Header_SpacesStore"),
-              keepUUIDs,
-              true
+            // Header_SpacesStore is only produced by CircabcExporter for
+            // Category exports (see CircabcExporter#export). Interest Group
+            // (IG) exports never contain a Header_SpacesStore ACP file, so
+            // requesting header import for an IG package must not fail —
+            // simply skip with an informative log message.
+            String headerPackage = getPackage(
+              packages,
+              "Header_SpacesStore",
+              false
             );
+            if (headerPackage != null) {
+              doImport(
+                spacesStoreRootNodeRef,
+                "/cm:categoryRoot/cm:generalclassifiable/cm:CircaBCHeader",
+                null,
+                importFolderPath,
+                headerPackage,
+                keepUUIDs,
+                true
+              );
+            } else if (logger.isInfoEnabled()) {
+              logger.info(
+                "Header import requested but no 'Header_SpacesStore' ACP file " +
+                "was found in the package list. This is expected for Interest " +
+                "Group (IG) exports, which do not contain category headers. " +
+                "Skipping header import."
+              );
+            }
           }
 
           if (importStructure) {
@@ -203,6 +246,16 @@ public class CircabcImporter {
               getPackage(packages, "Nodes_SpacesStore")
             );
             addAuthority(nodeRefWhereToImport, entityMasterGroupName);
+
+            applyStandardIgPermissionsIfNeeded(
+              nodeRefWhereToImport,
+              entityMasterGroupName
+            );
+
+            syncImportedIgToCbcDbIfNeeded(
+              nodeRefWhereToImport,
+              entityMasterGroupName
+            );
           }
           return null;
         }
@@ -298,6 +351,174 @@ public class CircabcImporter {
     }
 
     return entityMasterGroup;
+  }
+
+  private void applyStandardIgPermissionsIfNeeded(
+    NodeRef parentNode,
+    String entityMasterGroupName
+  ) {
+    if (permissionService == null) {
+      logger.warn(
+        "PermissionService is not wired on CircabcImporter — cannot apply " +
+        "standard IG permissions on the imported IG. The imported IG may not " +
+        "appear in the target Category's IG list."
+      );
+      return;
+    }
+
+    if (!nodeService.hasAspect(parentNode, CircabcModel.ASPECT_CATEGORY)) {
+      // Import target is not a Category (probably a nested folder import).
+      // The standard IG permissions do not apply here.
+      return;
+    }
+
+    NodeRef importedIgRef = findImportedIgRoot(
+      parentNode,
+      entityMasterGroupName
+    );
+    if (importedIgRef == null) {
+      // The imported entity is not an IG (it may be a nested folder or
+      // Category-level import). Nothing to do.
+      return;
+    }
+
+    String categoryAdminGroupName = getCategoryAdminGroupName(parentNode);
+    if (categoryAdminGroupName == null) {
+      logger.warn(
+        "Could not resolve the CircaCategoryAdmin group for Category " +
+        parentNode +
+        ". The imported IG " +
+        importedIgRef +
+        " will not receive the standard IG permissions and may not appear " +
+        "in the Category's IG list."
+      );
+      return;
+    }
+
+    permissionService.setPermission(
+      importedIgRef,
+      categoryAdminGroupName,
+      DirectoryPermissions.DIRADMIN.toString(),
+      true
+    );
+    permissionService.setPermission(
+      importedIgRef,
+      categoryAdminGroupName,
+      IgPermissions.IGDELETE.toString(),
+      true
+    );
+    permissionService.setPermission(
+      importedIgRef,
+      categoryAdminGroupName,
+      VisibilityPermissions.VISIBILITY.toString(),
+      true
+    );
+
+    if (logger.isInfoEnabled()) {
+      logger.info(
+        "Applied standard IG permissions (DirAdmin, IgDelete, Visibility) " +
+        "to imported IG " +
+        importedIgRef +
+        " for Category admin group '" +
+        categoryAdminGroupName +
+        "'."
+      );
+    }
+  }
+
+  private void syncImportedIgToCbcDbIfNeeded(
+    NodeRef parentNode,
+    String entityMasterGroupName
+  ) {
+    if (circabcService == null) {
+      logger.warn(
+        "CircabcService is not wired on CircabcImporter — cannot sync the " +
+        "imported IG to the CIRCABC DB tables. The imported IG may not " +
+        "appear in the Category's IG list on the frontend."
+      );
+      return;
+    }
+
+    if (!nodeService.hasAspect(parentNode, CircabcModel.ASPECT_CATEGORY)) {
+      // Import target is not a Category (probably a nested folder import).
+      // Nothing to sync at the IG level here.
+      return;
+    }
+
+    NodeRef importedIgRef = findImportedIgRoot(
+      parentNode,
+      entityMasterGroupName
+    );
+    if (importedIgRef == null) {
+      // The imported entity is not an IG. Nothing to sync.
+      return;
+    }
+
+    try {
+      circabcService.resyncInterestGroup(importedIgRef);
+      if (logger.isInfoEnabled()) {
+        logger.info(
+          "Synced imported IG " + importedIgRef + " to the CIRCABC DB tables."
+        );
+      }
+    } catch (Exception e) {
+      logger.error(
+        "Failed to sync imported IG " +
+        importedIgRef +
+        " to the CIRCABC DB tables. The IG exists in Alfresco but may not " +
+        "appear in the Category's IG list on the frontend until it is " +
+        "manually resynced.",
+        e
+      );
+    }
+  }
+
+  private NodeRef findImportedIgRoot(
+    NodeRef parentNode,
+    String entityMasterGroupName
+  ) {
+    if (entityMasterGroupName == null || entityMasterGroupName.isEmpty()) {
+      return null;
+    }
+    QName propIgRootMasterGroup = QName.createQName(
+      "http://www.cc.cec/circabc/model/content/1.0",
+      IG_MASTERGROUP
+    );
+    List<ChildAssociationRef> children = nodeService.getChildAssocs(parentNode);
+    for (ChildAssociationRef child : children) {
+      NodeRef childRef = child.getChildRef();
+      if (!nodeService.hasAspect(childRef, CircabcModel.ASPECT_IGROOT)) {
+        continue;
+      }
+      Object masterGroup = nodeService.getProperty(
+        childRef,
+        propIgRootMasterGroup
+      );
+      if (
+        masterGroup != null &&
+        entityMasterGroupName.equals(masterGroup.toString())
+      ) {
+        return childRef;
+      }
+    }
+    return null;
+  }
+
+  private String getCategoryAdminGroupName(NodeRef categoryRef) {
+    List<ChildAssociationRef> assocs = nodeService.getChildAssocs(
+      categoryRef,
+      CircabcModel.ASSOC_CIRCA_CATEGORY_PROFILE,
+      ASSOC_CIRCA_CATEGORY_ADMIN_PROFILE
+    );
+    if (assocs == null || assocs.isEmpty()) {
+      return null;
+    }
+    NodeRef categoryAdminProfileRef = assocs.get(0).getChildRef();
+    Object groupName = nodeService.getProperty(
+      categoryAdminProfileRef,
+      PROP_CIRCA_CATEGORY_PROFILE_GROUP_NAME
+    );
+    return groupName == null ? null : groupName.toString();
   }
 
   private void addAuthority(
@@ -446,14 +667,25 @@ public class CircabcImporter {
   }
 
   private String getPackage(List<String> packages, String identifier) {
+    return getPackage(packages, identifier, true);
+  }
+
+  private String getPackage(
+    List<String> packages,
+    String identifier,
+    boolean required
+  ) {
     for (String acp : packages) {
       if (acp.contains(identifier)) {
         return acp;
       }
     }
-    throw new ImporterException(
-      "The ACP file '" + identifier + "' was not found."
-    );
+    if (required) {
+      throw new ImporterException(
+        "The ACP file '" + identifier + "' was not found."
+      );
+    }
+    return null;
   }
 
   /**
@@ -542,6 +774,14 @@ public class CircabcImporter {
    */
   public void setAuthorityService(AuthorityService authorityService) {
     this.authorityService = authorityService;
+  }
+
+  public void setPermissionService(PermissionService permissionService) {
+    this.permissionService = permissionService;
+  }
+
+  public void setCircabcService(CircabcService circabcService) {
+    this.circabcService = circabcService;
   }
 
   /**

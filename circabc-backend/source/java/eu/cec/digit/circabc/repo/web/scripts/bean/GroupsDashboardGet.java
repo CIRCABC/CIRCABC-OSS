@@ -59,11 +59,26 @@ public class GroupsDashboardGet extends DeclarativeWebScript {
       }
       model.put("dashboard", this.groupsApi.getGroupDashboard(id));
     } catch (AccessDeniedException ade) {
+      if (logger.isErrorEnabled()) {
+        logger.error(
+          "User cannot get dashboard of IG, not enough permission",
+          ade
+        );
+      }
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (InvalidNodeRefException inre) {
+      if (logger.isErrorEnabled()) {
+        logger.error(
+          "User cannot get dashboard of IG, invalid node reference",
+          inre
+        );
+      }
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);

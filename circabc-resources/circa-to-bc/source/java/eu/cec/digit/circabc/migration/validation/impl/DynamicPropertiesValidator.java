@@ -50,7 +50,7 @@ public class DynamicPropertiesValidator extends JXPathValidator
 
 		debug(journal, "Cheking Dynamic properties for interest group ", interstGroup);
 
-		for(int x = 1; x <= DynamicPropertyService.MAX_PROPERTY_BY_IG_IN_CIRCA; ++x)
+		for(int x = 1; x <= DynamicPropertyService.MAX_PROPERTY_BY_IG; ++x)
 		{
 
 			final DynamicPropertyDefinition definition = (DynamicPropertyDefinition) context.selectSingleNode(
@@ -82,7 +82,7 @@ public class DynamicPropertiesValidator extends JXPathValidator
 
 			final List<String> selections = definition.getSelectionCases();
 			final boolean isDate = DynPropertyType.DATE_FIELD.equals(definition.getType());
-			final boolean isMulti = DynPropertyType.SELECTION.equals(definition.getType());
+			final boolean isMulti = DynPropertyType.SELECTION.equals(definition.getType()) || DynPropertyType.MULTI_SELECTION.equals(definition.getType());
 
 			if(isMulti && (selections == null || selections.size() < 1))
 			{
@@ -99,7 +99,7 @@ public class DynamicPropertiesValidator extends JXPathValidator
 				{
 					 error(journal, definition.getType() + " dynamic property value must be setted as a date! Impossible to parse:", value);
 				}
-				else if(isMulti && !selections.contains(value.getValue()))
+				else if(isMulti && !isValidMultiSelection(value.getValue(), selections))
 				{
 					error(journal, definition.getType() + " dynamic property value must be included in the selection possible valiues! Found: " + value.getValue() + " but one of the followings expected: " + selections);
 				}
@@ -135,6 +135,56 @@ public class DynamicPropertiesValidator extends JXPathValidator
 		{
 			return false;
 		}
+	}
+
+	/**
+	 * Validates a multi-selection value. The value may be a single item or multiple items
+	 * separated by comma, newline, or the CIRCABC multi-value separator.
+	 * An empty/null value is considered valid (no selection made).
+	 */
+	private boolean isValidMultiSelection(Serializable value, List<String> selections)
+	{
+		if(value == null)
+		{
+			return true;
+		}
+		final String strValue = value.toString().trim();
+		if(strValue.isEmpty())
+		{
+			return true;
+		}
+
+		// First check if the entire value is a single valid selection
+		if(selections.contains(strValue))
+		{
+			return true;
+		}
+
+		// Try splitting by common separators (newline, comma)
+		final String[] parts;
+		if(strValue.contains("\n"))
+		{
+			parts = strValue.split("\n");
+		}
+		else if(strValue.contains(","))
+		{
+			parts = strValue.split(",");
+		}
+		else
+		{
+			// Single value that's not in the list
+			return false;
+		}
+
+		for(final String part : parts)
+		{
+			final String trimmed = part.trim();
+			if(!trimmed.isEmpty() && !selections.contains(trimmed))
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 
 }

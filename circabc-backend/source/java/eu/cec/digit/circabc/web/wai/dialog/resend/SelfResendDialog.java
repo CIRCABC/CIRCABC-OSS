@@ -162,6 +162,18 @@ public class SelfResendDialog extends CreateCircabcUserWizard {
       RESET_PSW_DIALOG;
 
     if (validateFields(true, true)) {
+      if (
+        !UserNameValidator.isUsernameExists(getPersonService(), getUserName())
+      ) {
+        // Keep the recovery response identical without running reset side effects.
+        this.captchaResponse = "";
+        return (
+          CircabcNavigationHandler.CLOSE_WAI_DIALOG_OUTCOME +
+          CircabcNavigationHandler.OUTCOME_SEPARATOR +
+          CONGRATULATION_DIALOG
+        );
+      }
+
       final RetryingTransactionHelper txnHelper =
         Repository.getRetryingTransactionHelper(context);
       final RetryingTransactionCallback<String> callback =
@@ -298,20 +310,6 @@ public class SelfResendDialog extends CreateCircabcUserWizard {
     FacesContext context = FacesContext.getCurrentInstance();
     this.validationErrors = new HashMap<>(10);
 
-    if (validateUsername) {
-      try {
-        final String completeUserName = getUserName();
-
-        UserNameValidator.evaluateUserExists(
-          getPersonService(),
-          completeUserName
-        );
-      } catch (Exception ex) {
-        String message = translate(MSG_USER_DOES_NOT_EXISTS, getUserName());
-
-        validationErrors.put(USERNAME_FIELD, message);
-      }
-    }
     try {
       validateCaptcha(context, null, getCaptchaResponse());
     } catch (ValidatorException ex) {

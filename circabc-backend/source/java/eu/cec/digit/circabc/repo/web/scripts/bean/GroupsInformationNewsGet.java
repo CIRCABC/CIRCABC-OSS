@@ -4,6 +4,7 @@ import eu.cec.digit.circabc.service.profile.permissions.InformationPermissions;
 import io.swagger.api.InformationApi;
 import io.swagger.util.Converter;
 import io.swagger.util.CurrentUserPermissionCheckerService;
+import io.swagger.util.GroupLockGuard;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -34,6 +35,7 @@ public class GroupsInformationNewsGet extends DeclarativeWebScript {
   private InformationApi informationApi;
   private NodeService nodeService;
   private CurrentUserPermissionCheckerService currentUserPermissionCheckerService;
+  private GroupLockGuard groupLockGuard;
 
   @Override
   protected Map<String, Object> executeImpl(
@@ -73,6 +75,8 @@ public class GroupsInformationNewsGet extends DeclarativeWebScript {
     }
 
     try {
+      this.groupLockGuard.checkAccessByIgId(id);
+
       NodeRef infRef =
         this.nodeService.getChildByName(
             Converter.createNodeRefFromId(id),
@@ -99,11 +103,17 @@ public class GroupsInformationNewsGet extends DeclarativeWebScript {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage("Access denied");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (InvalidNodeRefException inre) {
       status.setCode(HttpServletResponse.SC_BAD_REQUEST);
       status.setMessage("Bad request");
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Bad request", inre);
+      }
       return null;
     } finally {
       MLPropertyInterceptor.setMLAware(mlAware);
@@ -145,5 +155,9 @@ public class GroupsInformationNewsGet extends DeclarativeWebScript {
    */
   public void setNodeService(NodeService nodeService) {
     this.nodeService = nodeService;
+  }
+
+  public void setGroupLockGuard(GroupLockGuard groupLockGuard) {
+    this.groupLockGuard = groupLockGuard;
   }
 }

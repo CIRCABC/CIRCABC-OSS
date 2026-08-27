@@ -123,7 +123,11 @@ public interface CategoriesApi {
     String username
   );
 
-  void categoriesGroupRequestPut(String requestId, GroupCreationRequest body);
+  void categoriesGroupRequestPut(
+    String categoryId,
+    String requestId,
+    GroupCreationRequest body
+  );
 
   void groupIdDeleteRequestPost(GroupDeletionRequest body);
 

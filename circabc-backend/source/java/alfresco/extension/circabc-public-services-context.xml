@@ -225,6 +225,9 @@
 		<property name="dynamicPropertyService">
 			<ref bean="dynamicPropertiesService" />
 		</property>
+		<property name="transactionService">
+			<ref bean="transactionService" />
+		</property>
 	</bean>
 
 	<!-- Proxied NotificationService -->
@@ -3479,6 +3482,9 @@
 		<property name="groupsApi">
 			<ref bean="groupsApi" />
 		</property>
+		<property name="searchService">
+			<ref bean="searchService" />
+		</property>
 	</bean>
 
 	<bean id="NodesApi" class="org.springframework.aop.framework.ProxyFactoryBean">
@@ -3978,6 +3984,9 @@
 		<property name="groupRequestsDaoService">
 			<ref bean="groupRequestsDaoService" />
 		</property>
+		<property name="currentUserPermissionCheckerService">
+			<ref bean="currentUserPermissionCheckerService" />
+		</property>
 	</bean>
 
 	<bean
@@ -4119,6 +4128,9 @@
 		</property>
 		<property name="nodeArchiveService">
 			<ref bean="nodeArchiveService" />
+		</property>
+		<property name="groupLockApi">
+			<ref bean="GroupLockApi" />
 		</property>
 	</bean>
 
@@ -4844,6 +4856,9 @@
 		<property name="authorityService">
 			<ref bean="AuthorityService" />
 		</property>
+		<property name="groupLockApi">
+			<ref bean="GroupLockApi" />
+		</property>
 	</bean>
 
 	<bean id="GuardsApi" class="org.springframework.aop.framework.ProxyFactoryBean">
@@ -4872,6 +4887,60 @@
 		</property>
 		<property name="transactionAttributes">
 			<props>
+				<prop key="*">${server.transaction.mode.default}</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="groupLockApi" class="io.swagger.api.GroupLockApiImpl">
+		<property name="nodeService">
+			<ref bean="NodeService" />
+		</property>
+		<property name="permissionService">
+			<ref bean="PermissionService" />
+		</property>
+		<property name="circabcDaoService">
+			<ref bean="circabcDaoService" />
+		</property>
+		<property name="transactionService">
+			<ref bean="transactionService" />
+		</property>
+		<property name="logService">
+			<ref bean="logService" />
+		</property>
+	</bean>
+
+	<bean id="GroupLockApi" class="org.springframework.aop.framework.ProxyFactoryBean">
+		<property name="proxyInterfaces">
+			<value>
+				io.swagger.api.GroupLockApi
+			</value>
+		</property>
+		<property name="target">
+			<ref bean="groupLockApi" />
+		</property>
+		<property name="interceptorNames">
+			<list>
+				<idref local="groupLockApi_transaction" />
+				<idref local="circabcMethodInterceptor" />
+			</list>
+		</property>
+	</bean>
+
+	<bean
+    id="groupLockApi_transaction"
+    class="org.springframework.transaction.interceptor.TransactionInterceptor"
+  >
+		<property name="transactionManager">
+			<ref bean="transactionManager" />
+		</property>
+		<property name="transactionAttributes">
+			<props>
+				<prop key="get*">PROPAGATION_REQUIRES_NEW,readOnly</prop>
+				<prop key="is*">PROPAGATION_REQUIRES_NEW,readOnly</prop>
+				<prop key="can*">PROPAGATION_REQUIRES_NEW,readOnly</prop>
+				<prop key="lock*">${server.transaction.mode.default}</prop>
+				<prop key="unlock*">${server.transaction.mode.default}</prop>
 				<prop key="*">${server.transaction.mode.default}</prop>
 			</props>
 		</property>
@@ -5142,6 +5211,20 @@
 		</property>
 	</bean>
 	
+	<bean id="faqValidationService" class="io.swagger.service.FaqValidationService">
+	</bean>
+	
+	<bean id="faqExportService" class="io.swagger.service.FaqExportService">
+		<constructor-arg ref="nodeService" />
+		<constructor-arg ref="managementService" />
+	</bean>
+	
+	<bean id="faqImportService" class="io.swagger.service.FaqImportService">
+		<constructor-arg ref="nodeService" />
+		<constructor-arg ref="managementService" />
+		<constructor-arg ref="faqValidationService" />
+	</bean>
+	
 	<bean id="helpApi" class="io.swagger.api.HelpApiImpl">
 		<property name="authenticationService">
 			<ref bean="authenticationService" />
@@ -5167,6 +5250,12 @@
 		<property name="emailApi">
 			<ref bean="emailApi" />
 		</property>
+		<property name="faqExportService">
+			<ref bean="faqExportService" />
+		</property>
+		<property name="faqImportService">
+			<ref bean="faqImportService" />
+		</property>
 		<property name="ldapUserService">
 			<ref
         bean="#{circabcConfig.USE_LDAP == true ? 'ldapUserService' : 'luceneUserService'}"
@@ -5186,6 +5275,15 @@
 		</property>
 			<property name="serviceNowPassword">
 			<value>${serviceNow.password}</value>
+		</property>
+		<property name="assignmentGroup">
+			<value>${assignment_group}</value>
+		</property>
+		<property name="businessService">
+			<value>${business_service}</value>
+		</property>
+		<property name="serviceOffering">
+			<value>${service_offering}</value>
 		</property>
 		<property name="environmentName">
 			<value>${mail.environment.name}</value>

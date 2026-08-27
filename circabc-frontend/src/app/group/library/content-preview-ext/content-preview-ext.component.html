@@ -22,6 +22,38 @@
       </ngx-extended-pdf-viewer>
       } @if (isImagePreview) {
       <img [src]="contentURL()" style="width: 100%" alt="Document preview" />
+      } @if (isTextPreview) {
+      <div
+        class="text-preview"
+        [textContent]="textContent"
+        style="
+          width: 100%;
+          max-height: 100vh;
+          overflow: auto;
+          white-space: pre-wrap;
+          word-wrap: break-word;
+          font-family: monospace;
+        "
+      ></div>
+      } @if (isTiffPreview) {
+      <img [src]="imageDataUrl" style="width: 100%" alt="TIFF preview" />
+      } @if (isWebpPreview) {
+      <img [src]="mediaContentURL()" style="width: 100%" alt="WebP preview" />
+      } @if (isPptxPreview) {
+      <div
+        #pptxContainer
+        class="pptx-preview"
+        style="width: 100%; height: 100vh; overflow: auto"
+      ></div>
+      } @if (isHtmlPreview || isMarkdownPreview || isSvgPreview || isWordPreview
+      || isExcelPreview || isRtfPreview || isCsvPreview) {
+      <iframe
+        title="HTML preview"
+        sandbox
+        referrerpolicy="no-referrer"
+        [srcdoc]="htmlContent"
+        style="width: 100%; height: calc(100vh - 40px); border: none"
+      ></iframe>
       } @if (isVideoPreview) {
       <video controls style="width: 100%">
         <source [src]="mediaContentURL()" />

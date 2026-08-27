@@ -9,7 +9,6 @@ import { ListingOptions } from 'app/group/listing-options/listing-options';
 import { HorizontalLoaderComponent } from 'app/shared/loader/horizontal-loader.component';
 import { PagerComponent } from 'app/shared/pager/pager.component';
 import { firstValueFrom } from 'rxjs';
-import { OldUiConfigurationComponent } from './old-ui-configuration/old-ui-configuration.component';
 import { TemplateRendererComponent } from './template-renderer/template-renderer.component';
 
 @Component({
@@ -21,7 +20,6 @@ import { TemplateRendererComponent } from './template-renderer/template-renderer
     HorizontalLoaderComponent,
     RouterLink,
     PagerComponent,
-    OldUiConfigurationComponent,
     TemplateRendererComponent,
     TranslocoModule,
   ],

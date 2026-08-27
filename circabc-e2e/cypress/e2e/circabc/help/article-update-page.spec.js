@@ -5,9 +5,9 @@ describe('The Update Help Article Page', function () {
 
   it('successfully Update Help Article', function () {
     cy.visit('help/start').contains('Section1');
-    cy.get('ul > .ng-star-inserted > a').click();
-    cy.get('.article-list > ul > :nth-child(1) > a').click();
-    cy.get('.help-article-container > .actions > :nth-child(1)').click();
+    cy.get('[data-cy="category-header"]').first().click();
+    cy.get('[data-cy="article-item"]').first().click();
+    cy.get('[data-cy="edit-article"]').click();
     cy.get('[data-cy="text"]').type(' updated');
     cy.get(
       '.modal-content > form.ng-untouched > .field > .custom-select > .ng-untouched',

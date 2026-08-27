@@ -38,6 +38,11 @@ public class GroupsIdEventsPost extends CircabcDeclarativeWebScript {
     String igId = templateVars.get("igId");
 
     try {
+      if (!this.groupLockApi.canWriteOrAdmin(igId)) {
+        throw new ReadOnlyAccessException(
+          "Interest group is in read-only mode"
+        );
+      }
       NodeRef groupRef = Converter.createNodeRefFromId(igId);
       NodeRef evtNodeRef =
         this.nodeService.getChildByName(
@@ -61,16 +66,32 @@ public class GroupsIdEventsPost extends CircabcDeclarativeWebScript {
       String appointmentBody = req.getContent().getContent();
 
       this.eventsApi.groupsIdEventsPost(igId, appointmentBody);
+    } catch (ReadOnlyAccessException roae) {
+      status.setCode(HttpServletResponse.SC_FORBIDDEN);
+      status.setMessage(roae.getMessage());
+      status.setRedirect(true);
+      if (logger.isWarnEnabled()) {
+        logger.warn(
+          "Read-only mode blocked event creation: " + roae.getMessage()
+        );
+      }
+      return null;
     } catch (AccessDeniedException ade) {
       status.setCode(HttpServletResponse.SC_FORBIDDEN);
       status.setMessage(ade.getMessage());
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error("Access denied", ade);
+      }
       return null;
     } catch (Exception e) {
       status.setCode(HttpServletResponse.SC_NOT_ACCEPTABLE);
       status.setMessage(e.getMessage());
       status.setException(e);
       status.setRedirect(true);
+      if (logger.isErrorEnabled()) {
+        logger.error(e.getMessage(), e);
+      }
       return null;
     }
 
