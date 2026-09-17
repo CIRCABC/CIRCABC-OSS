@@ -534,7 +534,10 @@
 		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
-			<version>1.14.2</version>
+			<!-- 1.15.4 fixes CVE-2022-36033 (XSS via javascript: URLs in the cleaner).
+			     Kept on the 1.15.x line so the deprecated Whitelist API used by the legacy
+			     WAI beans keeps compiling (Whitelist was removed in 1.16.1). Java 8 compatible. -->
+			<version>1.15.4</version>
 		</dependency>
 
 		<dependency>

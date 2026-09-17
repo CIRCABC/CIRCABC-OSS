@@ -48,4 +48,18 @@ public final class RestInputSanitizer {
 
     return value;
   }
+
+  /**
+   * Returns {@code true} only when the supplied value is an absolute http/https URL.
+   * <p>
+   * This is intentionally stricter than a {@code contains("http")} substring check: a value such
+   * as {@code javascript:alert(1)//http://x} contains the substring "http" but is not a safe URL,
+   * and would otherwise be rendered directly into an iframe {@code src} or anchor {@code href}.
+   *
+   * @param value the candidate URL (may be {@code null})
+   * @return {@code true} if the value is a valid absolute http or https URL
+   */
+  public static boolean isSafeHttpUrl(String value) {
+    return value != null && HTTP_URL_VALIDATOR.isValid(value);
+  }
 }

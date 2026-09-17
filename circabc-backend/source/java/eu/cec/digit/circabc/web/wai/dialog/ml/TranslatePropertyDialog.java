@@ -55,7 +55,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
+import org.jsoup.safety.Safelist;
 
 /**
  * Benas that back the translate propety dialog.
@@ -624,7 +624,7 @@ public class TranslatePropertyDialog extends BaseWaiDialog {
    */
   public void setValue(String value) {
     if (value != null && !(value.length() == 0)) {
-      Whitelist basicWhitelist = new Whitelist();
+      Safelist basicWhitelist = new Safelist();
       basicWhitelist.addTags(
         "p",
         "span",

@@ -65,7 +65,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
+import org.jsoup.safety.Safelist;
 import org.springframework.extensions.config.Config;
 import org.springframework.extensions.config.ConfigElement;
 
@@ -1229,7 +1229,7 @@ public class CreateCircabcNodesWizard extends InviteCircabcUsersWizard {
    */
   public void setContact(final String contact) {
     if (contact != null && !(contact.length() == 0)) {
-      Whitelist basicWhitelist = new Whitelist();
+      Safelist basicWhitelist = new Safelist();
       basicWhitelist.addTags(
         "p",
         "span",
@@ -1261,7 +1261,7 @@ public class CreateCircabcNodesWizard extends InviteCircabcUsersWizard {
    */
   public void setDescription(final String description) {
     if (description != null && !(description.length() == 0)) {
-      Whitelist basicWhitelist = new Whitelist();
+      Safelist basicWhitelist = new Safelist();
       basicWhitelist.addTags(
         "p",
         "span",

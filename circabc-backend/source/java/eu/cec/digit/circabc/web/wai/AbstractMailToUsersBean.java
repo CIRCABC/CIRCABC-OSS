@@ -58,7 +58,7 @@ import org.alfresco.web.ui.common.component.UIActionLink;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
+import org.jsoup.safety.Safelist;
 
 /**
  * @author Stephane Clinckart
@@ -304,7 +304,7 @@ public abstract class AbstractMailToUsersBean extends BaseWaiWizard {
   }
 
   public String cleanBody(final String bdy) {
-    Whitelist basicWhitelist = new Whitelist();
+    Safelist basicWhitelist = new Safelist();
     basicWhitelist.addTags(
       "p",
       "span",

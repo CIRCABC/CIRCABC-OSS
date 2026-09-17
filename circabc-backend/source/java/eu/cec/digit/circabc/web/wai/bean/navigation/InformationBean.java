@@ -29,6 +29,7 @@ import eu.cec.digit.circabc.web.WebClientHelper.ExtendedURLMode;
 import eu.cec.digit.circabc.web.app.CircabcNavigationHandler;
 import eu.cec.digit.circabc.web.bean.navigation.NavigableNodeType;
 import eu.cec.digit.circabc.web.wai.menu.ActionWrapper;
+import io.swagger.util.RestInputSanitizer;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -160,6 +161,13 @@ public class InformationBean extends LibraryBean {
         .getProperties()
         .get(CircabcModel.PROP_INF_INDEX_PAGE.toString());
       if (indexFileFound(currentNode.getNodeRef(), indexPage)) {
+        // Guard against a stored index page that carries an unsafe scheme such as
+        // "javascript:" flowing into the iframe src of information-home.jsp (XSS-VULN-05).
+        // A relative path (the normal case) has no scheme and is appended below; an
+        // absolute value is only allowed when it is a safe http/https URL.
+        if (isUnsafeIndexPage(indexPage)) {
+          return url;
+        }
         // redirect to the index page
         return (
           url +
@@ -174,6 +182,19 @@ public class InformationBean extends LibraryBean {
     } else {
       return url;
     }
+  }
+
+  /**
+   * A stored index page is unsafe when it declares a URL scheme (contains ':') that is not a
+   * valid absolute http/https URL. Plain relative paths (no scheme) are considered safe.
+   */
+  private boolean isUnsafeIndexPage(String indexPage) {
+    if (indexPage == null) {
+      return false;
+    }
+    return (
+      indexPage.contains(":") && !RestInputSanitizer.isSafeHttpUrl(indexPage)
+    );
   }
 
   public boolean isIndexFileFound() {

@@ -39,7 +39,7 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
+import org.jsoup.safety.Safelist;
 
 /**
  * Facade to read from the System Message node. The bean is initialized as a managed application
@@ -93,7 +93,7 @@ public class SystemMessageBean {
               SystemMessageModel.PROP_SYSTEMMESSAGE_TEXT
             );
         if (msgText != null) {
-          Whitelist basicsAndStyle = new Whitelist();
+          Safelist basicsAndStyle = new Safelist();
           basicsAndStyle.addTags(
             "p",
             "span",

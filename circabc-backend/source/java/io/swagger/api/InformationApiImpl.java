@@ -5,6 +5,7 @@ import io.swagger.model.InformationPage;
 import io.swagger.model.News;
 import io.swagger.model.PagedNews;
 import io.swagger.util.Converter;
+import io.swagger.util.RestInputSanitizer;
 import java.io.Serializable;
 import java.util.*;
 import org.alfresco.model.ContentModel;
@@ -68,7 +69,7 @@ public class InformationApiImpl implements InformationApi {
     }
 
     if (indexFileFound(infRef, indexPage)) {
-      if (!indexPage.contains("http")) {
+      if (!RestInputSanitizer.isSafeHttpUrl(indexPage)) {
         String igName = secureNodeService
           .getProperty(igRef, ContentModel.PROP_NAME)
           .toString();
@@ -92,6 +93,9 @@ public class InformationApiImpl implements InformationApi {
 
         result.setUrl(url);
       } else {
+        // Only absolute http/https URLs reach this branch, so the value is safe to
+        // expose directly as an iframe src (see XSS-VULN-04). A value such as
+        // "javascript:...//http" is rejected by isSafeHttpUrl and treated as a path above.
         result.setUrl(indexPage);
       }
     }
