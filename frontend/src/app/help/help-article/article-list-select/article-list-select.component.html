@@ -1,0 +1,8 @@
+<h2>{{ 'help.articles.in.section' | transloco }}</h2>
+<ul>
+  @for (article of articles(); track article.id) {
+  <li [class.selected]="article.id === currentId()">
+    <a [routerLink]="['..', article.id]">{{ article.title | cbcI18n }}</a>
+  </li>
+  }
+</ul>

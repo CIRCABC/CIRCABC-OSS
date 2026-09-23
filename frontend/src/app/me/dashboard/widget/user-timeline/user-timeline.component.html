@@ -1,0 +1,16 @@
+@if (loading()) {
+<section>
+  <cbc-spinner></cbc-spinner>
+  <header> {{ 'dashboard.' + when() + '.highlights' | transloco }} </header>
+  <p class="loadingPanel"> {{ 'dashboard.loading.text' | transloco }} </p>
+</section>
+} @if (error()) {
+<section>
+  <p class="loadingPanel">
+    <img src="img/error-triangle-orange-16.png" alt="Error icon" />&nbsp;{{
+    'dashboard.timeline.loading.error' | transloco: { period: when() } }}
+  </p>
+</section>
+} @if (userFeed() && !loading()) {
+<cbc-timeline-step [userFeed]="userFeed()!" [when]="when()" />
+}

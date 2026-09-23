@@ -1,0 +1,29 @@
+@if (hasMessages()) {
+<a tabindex="0" (click)="forceDisplayMessages()">
+  @if (!useBlueIcon()) {
+  <img
+    src="img/notifications-button-white.svg"
+    title="{{ 'label.has.app.messages' | transloco }}"
+    alt="notifications"
+  />
+  } @if (useBlueIcon()) {
+  <img
+    src="img/notifications-button-blue.svg"
+    title="{{ 'label.has.app.messages' | transloco }}"
+    alt="notifications"
+  />
+  }
+</a>
+} @if (!hasMessages() && !useBlueIcon()) {
+<img
+  src="img/notifications-button-disabled-gray.svg"
+  title="{{ 'label.has.app.no.messages' | transloco }}"
+  alt=" notifications"
+/>
+} @if (!hasMessages() && useBlueIcon()) {
+<img
+  src="img/notifications-button-blue-disabled.svg"
+  title="{{ 'label.has.app.no.messages' | transloco }}"
+  alt=" notifications"
+/>
+}

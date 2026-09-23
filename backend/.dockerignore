@@ -1,0 +1,24 @@
+# VCS and IDE
+.git
+.gitignore
+.vscode/
+.idea/
+
+# Node and Maven caches
+node_modules/
+**/.mvn/
+.mvn/
+
+# Maven/Gradle build outputs (keep only needed artifacts explicitly listed below)
+target/**
+!target/circabc-rest-1.0-SNAPSHOT.jar
+!target/extensions/
+!target/extensions/*.jar
+
+# Ensure ESAPI properties (and other runtime config files) are included in build context
+!target/classes/ESAPI.properties
+
+# Misc
+*.log
+.DS_Store
+Thumbs.db

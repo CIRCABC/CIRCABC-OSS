@@ -1,0 +1,44 @@
+@if (!mustConfirm() && !deleting()) {
+<a
+  tabindex="0"
+  data-cy="delete-inline"
+  class="question"
+  (click)="deleteAskConfirmation()"
+>
+  @if (image() !== '') {
+  <img
+    [src]="image()"
+    [height]="imageHeightWidth()"
+    [width]="imageHeightWidth()"
+    alt="delete icon"
+  />
+  } @if (useIcon() && image() === '') {
+  <img
+    src="img/rubbish-bin-blue-small.png"
+    alt="delete"
+    title="{{ deleteLabel() | transloco }}"
+  />
+  } @if (useText()) {
+  <span>{{ deleteLabel() | transloco }}</span>
+  }
+</a>
+} @if (mustConfirm() && !deleting()) {
+<span class="confirmation">
+  <span>{{ deleteLabel() | transloco }}</span>:&nbsp;
+  <a
+    tabindex="0"
+    data-cy="delete-inline-confirm"
+    id="confirmDeletePerm"
+    (click)="confirm()"
+    >{{ 'label.yes' | transloco }}</a
+  >
+  &nbsp;|&nbsp;
+  <a tabindex="0" id="cancelDeletePerm" (click)="cancel()"
+    >{{ 'label.no' | transloco }}</a
+  >
+</span>
+} @if (deleteInline() && mustConfirm() && deleting()) {
+<span>
+  <img src="img/ajax-loader.gif" alt="deleting" />
+</span>
+}

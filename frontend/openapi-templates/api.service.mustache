@@ -1,0 +1,383 @@
+{{>licenseInfo}}
+/* tslint:disable:no-unused-variable member-ordering */
+
+import { Service, inject, Injector, ResourceRef } from '@angular/core';
+import { rxResource } from '@angular/core/rxjs-interop';
+import { HttpClient, HttpHeaders, HttpParams,
+         HttpResponse, HttpEvent{{#httpContextInOptions}}, HttpContext {{/httpContextInOptions}}
+        }       from '@angular/common/http';
+import { Observable, firstValueFrom }                        from 'rxjs';
+import { OpenApiHttpParams, QueryParamStyle } from '../query.params';
+
+{{#imports}}
+// @ts-ignore
+import { {{ classname }} } from '{{ filename }}';
+{{/imports}}
+
+// @ts-ignore
+import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
+import { {{configurationClassName}} }                                     from '../configuration';
+import { BaseService } from '../api.base.service';
+{{#withInterfaces}}
+import {
+    {{classname}}Interface{{#useSingleRequestParameter}}{{#operations}}{{#operation}}{{#allParams.0}},
+    {{#prefixParameterInterfaces}}{{classname}}{{/prefixParameterInterfaces}}{{operationIdCamelCase}}RequestParams{{/allParams.0}}{{/operation}}{{/operations}}{{/useSingleRequestParameter}}
+} from './{{classFilename}}Interface';
+{{/withInterfaces}}
+
+{{#operations}}
+
+{{^withInterfaces}}
+{{#useSingleRequestParameter}}
+{{#operation}}
+{{#allParams.0}}
+export interface {{#prefixParameterInterfaces}}{{classname}}{{/prefixParameterInterfaces}}{{operationIdCamelCase}}RequestParams {
+{{#allParams}}
+    {{#description}}/** {{.}} */
+    {{/description}}{{paramName}}{{^required}}?{{/required}}: {{{dataType}}}{{#isNullable}} | null{{/isNullable}};
+{{/allParams}}
+}
+
+{{/allParams.0}}
+{{/operation}}
+{{/useSingleRequestParameter}}
+{{/withInterfaces}}
+
+{{#description}}
+/**
+ * {{&description}}
+ */
+{{/description}}
+{{#isProvidedInNone}}
+@Service({ autoProvided: false })
+{{/isProvidedInNone}}
+{{^isProvidedInNone}}
+@Service()
+{{/isProvidedInNone}}
+{{#withInterfaces}}
+export class {{classname}} extends BaseService implements {{classname}}Interface {
+{{/withInterfaces}}
+{{^withInterfaces}}
+export class {{classname}} extends BaseService {
+{{/withInterfaces}}
+
+    protected httpClient = inject(HttpClient);
+
+    constructor() {
+        super(
+            inject(BASE_PATH, { optional: true }) ?? undefined,
+            inject({{configurationClassName}}, { optional: true }) ?? undefined,
+        );
+    }
+
+{{#operation}}
+    /**
+{{#summary}}
+     * {{.}}
+{{/summary}}
+{{#notes}}
+     * {{.}}
+{{/notes}}
+     * @endpoint {{httpMethod}} {{{vendorExtensions.x-path-from-spec}}}
+     {{^useSingleRequestParameter}}
+     {{#allParams}}
+     * @param {{paramName}} {{description}}
+     {{/allParams}}
+     {{/useSingleRequestParameter}}
+     {{#useSingleRequestParameter}}
+     {{#allParams.0}}
+     * @param requestParameters
+     {{/allParams.0}}
+     {{/useSingleRequestParameter}}
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     * @param options additional options
+     {{#isDeprecated}}
+     * @deprecated
+     {{/isDeprecated}}
+     */
+    public {{nickname}}({{^useSingleRequestParameter}}{{#allParams}}{{paramName}}{{^required}}?{{/required}}: {{{dataType}}}, {{/allParams}}{{/useSingleRequestParameter}}{{#useSingleRequestParameter}}{{#allParams.0}}requestParameters{{^hasRequiredParams}}?{{/hasRequiredParams}}: {{#prefixParameterInterfaces}}{{classname}}{{/prefixParameterInterfaces}}{{operationIdCamelCase}}RequestParams, {{/allParams.0}}{{/useSingleRequestParameter}}observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: {{#produces}}'{{{mediaType}}}'{{^-last}} | {{/-last}}{{/produces}}{{^produces}}undefined{{/produces}},{{#httpContextInOptions}} context?: HttpContext{{/httpContextInOptions}}{{#httpTransferCacheInOptions}}, transferCache?: boolean{{/httpTransferCacheInOptions}}}): Observable<{{#returnType}}{{{returnType}}}{{#isResponseTypeFile}}|undefined{{/isResponseTypeFile}}{{/returnType}}{{^returnType}}void{{/returnType}}>;
+    public {{nickname}}({{^useSingleRequestParameter}}{{#allParams}}{{paramName}}{{^required}}?{{/required}}: {{{dataType}}}, {{/allParams}}{{/useSingleRequestParameter}}{{#useSingleRequestParameter}}{{#allParams.0}}requestParameters{{^hasRequiredParams}}?{{/hasRequiredParams}}: {{#prefixParameterInterfaces}}{{classname}}{{/prefixParameterInterfaces}}{{operationIdCamelCase}}RequestParams, {{/allParams.0}}{{/useSingleRequestParameter}}observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: {{#produces}}'{{{mediaType}}}'{{^-last}} | {{/-last}}{{/produces}}{{^produces}}undefined{{/produces}},{{#httpContextInOptions}} context?: HttpContext{{/httpContextInOptions}}{{#httpTransferCacheInOptions}}, transferCache?: boolean{{/httpTransferCacheInOptions}}}): Observable<HttpResponse<{{#returnType}}{{{returnType}}}{{#isResponseTypeFile}}|undefined{{/isResponseTypeFile}}{{/returnType}}{{^returnType}}void{{/returnType}}>>;
+    public {{nickname}}({{^useSingleRequestParameter}}{{#allParams}}{{paramName}}{{^required}}?{{/required}}: {{{dataType}}}, {{/allParams}}{{/useSingleRequestParameter}}{{#useSingleRequestParameter}}{{#allParams.0}}requestParameters{{^hasRequiredParams}}?{{/hasRequiredParams}}: {{#prefixParameterInterfaces}}{{classname}}{{/prefixParameterInterfaces}}{{operationIdCamelCase}}RequestParams, {{/allParams.0}}{{/useSingleRequestParameter}}observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: {{#produces}}'{{{mediaType}}}'{{^-last}} | {{/-last}}{{/produces}}{{^produces}}undefined{{/produces}},{{#httpContextInOptions}} context?: HttpContext{{/httpContextInOptions}}{{#httpTransferCacheInOptions}}, transferCache?: boolean{{/httpTransferCacheInOptions}}}): Observable<HttpEvent<{{#returnType}}{{{returnType}}}{{#isResponseTypeFile}}|undefined{{/isResponseTypeFile}}{{/returnType}}{{^returnType}}void{{/returnType}}>>;
+    public {{nickname}}({{^useSingleRequestParameter}}{{#allParams}}{{paramName}}{{^required}}?{{/required}}: {{{dataType}}}, {{/allParams}}{{/useSingleRequestParameter}}{{#useSingleRequestParameter}}{{#allParams.0}}requestParameters{{^hasRequiredParams}}?{{/hasRequiredParams}}: {{#prefixParameterInterfaces}}{{classname}}{{/prefixParameterInterfaces}}{{operationIdCamelCase}}RequestParams, {{/allParams.0}}{{/useSingleRequestParameter}}observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: {{#produces}}'{{{mediaType}}}'{{^-last}} | {{/-last}}{{/produces}}{{^produces}}undefined{{/produces}},{{#httpContextInOptions}} context?: HttpContext{{/httpContextInOptions}}{{#httpTransferCacheInOptions}}, transferCache?: boolean{{/httpTransferCacheInOptions}}}): Observable<any> {
+{{#allParams}}
+{{#useSingleRequestParameter}}
+        const {{paramName}} = requestParameters{{^hasRequiredVars}}?{{/hasRequiredVars}}.{{paramName}};
+{{/useSingleRequestParameter}}
+{{#required}}
+        if ({{paramName}} === null || {{paramName}} === undefined) {
+            throw new Error('Required parameter {{paramName}} was null or undefined when calling {{nickname}}.');
+        }
+{{/required}}
+{{/allParams}}
+
+{{#hasQueryParamsOrAuth}}
+        let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
+{{#queryParams}}
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            '{{baseName}}',
+            <any>{{paramName}},
+            {{#isQueryParamObjectFormatJson}}
+            QueryParamStyle.Json,
+            {{/isQueryParamObjectFormatJson}}
+            {{^isQueryParamObjectFormatJson}}
+            {{^style}}
+            {{#queryIsJsonMimeType}}
+            QueryParamStyle.Json,
+            {{/queryIsJsonMimeType}}
+            {{^queryIsJsonMimeType}}
+            QueryParamStyle.Form,
+            {{/queryIsJsonMimeType}}
+            {{/style}}
+            {{#style}}
+            {{#isDeepObject}}
+            QueryParamStyle.DeepObject,
+            {{/isDeepObject}}
+            {{#isFormStyle}}
+            QueryParamStyle.Form,
+            {{/isFormStyle}}
+            {{#isSpaceDelimited}}
+            QueryParamStyle.SpaceDelimited,
+            {{/isSpaceDelimited}}
+            {{#isPipeDelimited}}
+            QueryParamStyle.PipeDelimited,
+            {{/isPipeDelimited}}
+            {{#queryIsJsonMimeType}}
+            QueryParamStyle.Json,
+            {{/queryIsJsonMimeType}}
+            {{/style}}
+            {{/isQueryParamObjectFormatJson}}
+            {{isExplode}},
+        );
+
+{{/queryParams}}
+
+{{/hasQueryParamsOrAuth}}
+        let localVarHeaders = this.defaultHeaders;
+{{#headerParams}}
+        {{#isArray}}
+        if ({{paramName}}) {
+            localVarHeaders = localVarHeaders.set('{{baseName}}', [...{{paramName}}].join(COLLECTION_FORMATS['{{collectionFormat}}']));
+        }
+        {{/isArray}}
+        {{^isArray}}
+        if ({{paramName}} !== undefined && {{paramName}} !== null) {
+            localVarHeaders = localVarHeaders.set('{{baseName}}', String({{paramName}}));
+        }
+        {{/isArray}}
+{{/headerParams}}
+
+{{#authMethods}}
+        // authentication ({{name}}) required
+{{#isApiKey}}
+    {{#isKeyInHeader}}
+        localVarHeaders = this.configuration.addCredentialToHeaders('{{name}}', '{{keyParamName}}', localVarHeaders);
+    {{/isKeyInHeader}}
+    {{#isKeyInQuery}}
+        localVarQueryParameters = this.configuration.addCredentialToQuery('{{name}}', '{{keyParamName}}', localVarQueryParameters);
+    {{/isKeyInQuery}}
+{{/isApiKey}}
+{{#isBasic}}
+    {{#isBasicBasic}}
+        localVarHeaders = this.configuration.addCredentialToHeaders('{{name}}', 'Authorization', localVarHeaders, 'Basic ');
+    {{/isBasicBasic}}
+    {{#isBasicBearer}}
+        localVarHeaders = this.configuration.addCredentialToHeaders('{{name}}', 'Authorization', localVarHeaders, 'Bearer ');
+    {{/isBasicBearer}}
+{{/isBasic}}
+{{#isOAuth}}
+        localVarHeaders = this.configuration.addCredentialToHeaders('{{name}}', 'Authorization', localVarHeaders, 'Bearer ');
+{{/isOAuth}}
+{{#isOpenId}}
+        localVarHeaders = this.configuration.addCredentialToHeaders('{{name}}', 'Authorization', localVarHeaders, 'Bearer ');
+{{/isOpenId}}
+
+{{/authMethods}}
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+    {{#produces}}
+            '{{{mediaType}}}'{{^-last}},{{/-last}}
+    {{/produces}}
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+{{#httpContextInOptions}}
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+{{/httpContextInOptions}}
+{{#httpTransferCacheInOptions}}
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+{{/httpTransferCacheInOptions}}
+
+{{#bodyParam}}
+{{- duplicated below, don't forget to change}}
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            {{#consumes}}
+            '{{{mediaType}}}'{{^-last}},{{/-last}}
+            {{/consumes}}
+        ];
+{{/bodyParam}}
+{{#hasFormParams}}
+{{^bodyParam}}
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            {{#consumes}}
+            '{{{mediaType}}}'{{^-last}},{{/-last}}
+            {{/consumes}}
+        ];
+{{/bodyParam}}
+{{/hasFormParams}}
+{{#bodyParam}}
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+{{/bodyParam}}
+
+{{#hasFormParams}}
+        const canConsumeForm = this.canConsumeForm(consumes);
+
+        let localVarFormParams: { append(param: string, value: any): any; };
+        let localVarUseForm = false;
+        let localVarConvertFormParamsToString = false;
+{{#formParams}}
+{{#isFile}}
+        // use FormData to transmit files using content-type "multipart/form-data"
+        // see https://stackoverflow.com/questions/4007969/application-x-www-form-urlencoded-or-multipart-form-data
+        localVarUseForm = canConsumeForm;
+{{/isFile}}
+{{/formParams}}
+        if (localVarUseForm) {
+            localVarFormParams = new FormData();
+        } else {
+            localVarFormParams = new HttpParams({encoder: this.encoder});
+        }
+
+{{#formParams}}
+        {{#isArray}}
+        if ({{paramName}}) {
+        {{#isCollectionFormatMulti}}
+            {{paramName}}.forEach((element) => {
+                localVarFormParams = localVarFormParams.append('{{baseName}}{{#useSquareBracketsInArrayNames}}[]{{/useSquareBracketsInArrayNames}}', <any>element) as any || localVarFormParams;
+            })
+        {{/isCollectionFormatMulti}}
+        {{^isCollectionFormatMulti}}
+            if (localVarUseForm) {
+                {{paramName}}.forEach((element) => {
+                    localVarFormParams = localVarFormParams.append('{{baseName}}{{#useSquareBracketsInArrayNames}}[]{{/useSquareBracketsInArrayNames}}', <any>element) as any || localVarFormParams;
+            })
+            } else {
+                localVarFormParams = localVarFormParams.append('{{baseName}}{{#useSquareBracketsInArrayNames}}[]{{/useSquareBracketsInArrayNames}}', [...{{paramName}}].join(COLLECTION_FORMATS['{{collectionFormat}}'])) as any || localVarFormParams;
+            }
+        {{/isCollectionFormatMulti}}
+        }
+        {{/isArray}}
+        {{^isArray}}
+        if ({{paramName}} !== undefined) {
+            localVarFormParams = localVarFormParams.append('{{baseName}}', {{^isModel}}<any>{{paramName}}{{/isModel}}{{#isModel}}localVarUseForm ? new Blob([JSON.stringify({{paramName}})], {type: 'application/json'}) : <any>{{paramName}}{{/isModel}}) as any || localVarFormParams;
+        }
+        {{/isArray}}
+{{/formParams}}
+
+{{/hasFormParams}}
+    {{^isResponseFile}}
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+    {{/isResponseFile}}
+        let localVarPath = `{{{path}}}`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request{{^isResponseFile}}<{{#returnType}}{{{returnType}}}{{#isResponseTypeFile}}|undefined{{/isResponseTypeFile}}{{/returnType}}{{^returnType}}void{{/returnType}}>{{/isResponseFile}}('{{httpMethod}}', `${basePath}${localVarPath}`,
+            {
+    {{#httpContextInOptions}}
+                context: localVarHttpContext,
+    {{/httpContextInOptions}}
+    {{#bodyParam}}
+                body: {{paramName}},
+    {{/bodyParam}}
+    {{^bodyParam}}
+    {{#hasFormParams}}
+                body: localVarConvertFormParamsToString ? localVarFormParams.toString() : localVarFormParams,
+    {{/hasFormParams}}
+    {{/bodyParam}}
+    {{#hasQueryParamsOrAuth}}
+                params: localVarQueryParameters.toHttpParams(),
+    {{/hasQueryParamsOrAuth}}
+    {{#isResponseFile}}
+                responseType: "blob",
+    {{/isResponseFile}}
+    {{^isResponseFile}}
+                responseType: <any>responseType_,
+    {{/isResponseFile}}
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+    {{#httpTransferCacheInOptions}}
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+    {{/httpTransferCacheInOptions}}
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+{{#vendorExtensions.x-is-get}}
+{{#returnType}}
+{{^isResponseFile}}
+    /**
+     * Reactive `rxResource` variant of `{{nickname}}` (HTTP GET).
+     *
+     * Signal-based data fetching that wraps the Observable `{{nickname}}` method, so the
+     * request logic (path, query, headers, auth) is defined in exactly one place. The
+     * request re-runs automatically whenever a signal read inside `request` changes;
+     * returning `undefined` from `request` keeps the resource idle (no request is sent).
+     *
+     * Must be created within an injection context (e.g. a component/service field
+     * initializer), or pass `options.injector`.
+{{#isDeprecated}}
+     * @deprecated
+{{/isDeprecated}}
+     */
+    public {{nickname}}Resource({{#allParams.0}}request: () => {{#prefixParameterInterfaces}}{{classname}}{{/prefixParameterInterfaces}}{{operationIdCamelCase}}RequestParams | undefined, {{/allParams.0}}options?: { injector?: Injector }): ResourceRef<{{{returnType}}} | undefined> {
+        return rxResource({
+{{#allParams.0}}
+            params: request,
+            stream: ({ params }) => this.{{nickname}}(params),
+{{/allParams.0}}
+{{^allParams.0}}
+            stream: () => this.{{nickname}}(),
+{{/allParams.0}}
+            ...(options?.injector ? { injector: options.injector } : {}),
+        });
+    }
+
+{{/isResponseFile}}
+{{/returnType}}
+{{/vendorExtensions.x-is-get}}
+    /**
+     * Promise variant of `{{nickname}}` ({{httpMethod}}).
+     *
+     * Awaitable wrapper around the Observable `{{nickname}}` method (via `firstValueFrom`),
+     * so callers can `await` this call instead of subscribing or calling
+     * `firstValueFrom` themselves.
+{{#isDeprecated}}
+     * @deprecated
+{{/isDeprecated}}
+     */
+    public {{nickname}}Async({{#allParams.0}}requestParameters{{^hasRequiredParams}}?{{/hasRequiredParams}}: {{#prefixParameterInterfaces}}{{classname}}{{/prefixParameterInterfaces}}{{operationIdCamelCase}}RequestParams, {{/allParams.0}}options?: {httpHeaderAccept?: {{#produces}}'{{{mediaType}}}'{{^-last}} | {{/-last}}{{/produces}}{{^produces}}undefined{{/produces}},{{#httpContextInOptions}} context?: HttpContext{{/httpContextInOptions}}{{#httpTransferCacheInOptions}}, transferCache?: boolean{{/httpTransferCacheInOptions}}}): Promise<{{#returnType}}{{{returnType}}}{{#isResponseTypeFile}}|undefined{{/isResponseTypeFile}}{{/returnType}}{{^returnType}}void{{/returnType}}> {
+        return firstValueFrom(this.{{nickname}}({{#allParams.0}}requestParameters, {{/allParams.0}}'body', false, options));
+    }
+
+{{/operation}}}
+{{/operations}}

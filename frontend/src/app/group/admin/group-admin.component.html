@@ -1,0 +1,242 @@
+{{ 'label.admin.title' | transloco: { groupName:
+$safeNavigationMigration(group()?.name) } | cbcSetTitle }} @if (loading) {
+<cbc-horizontal-loader />
+}
+<div class="fluid admin page-container">
+  <div class="page-header">
+    @if (isDeleteRoute() === false) {
+    <h1 class="page-header__title">{{ 'admin.header.text' | transloco }}</h1>
+    } @if (isDeleteRoute() === true) {
+    <span class="page-header__title"
+      >{{ 'admin.delete.group' | transloco }}</span
+    >
+    }
+    <div class="page-header__actions">
+      @if (isDeleteRoute() === false && canDeleteGroup()) {
+      <a
+        data-cy="delete-group"
+        class="button button--red"
+        [routerLink]="['./delete']"
+        >{{ 'label.delete' | transloco }}</a
+      >
+      }
+    </div>
+    <div class="page-header__actions">
+      @if (displayRequestDeleteIg() === true) {
+      <button
+        type="button"
+        class="cta cta--dots dropdown-trigger"
+        (click)="toggleDropdown($event)"
+        (keydown.enter)="toggleDropdown($event)"
+      >
+        {{ 'label.actions' | transloco }} @if (showActionsDropdown) {
+        <div class="dropdown dropdown--delete-request">
+          <a
+            tabindex="0"
+            class="delete-request"
+            data-cy="igReqDelete"
+            (click)="openDialogRequestDeleteGroup()"
+          >
+            {{ 'label.request.delete.interest-group' | transloco }}
+          </a>
+        </div>
+        }
+      </button>
+      }
+    </div>
+  </div>
+
+  <section class="box box--tabs">
+    @if (isDeleteRoute() === false) {
+    <ul class="header">
+      <li>
+        <a
+          class="tab"
+          [class.tab--current]="isGeneralRoute()"
+          [routerLink]="['general']"
+          data-cy="admin-tab-general"
+        >
+          <img
+            src="img/settings.png"
+            title="General"
+            alt=""
+            width="16"
+            height="16"
+          />
+          <span class="tab-text">{{ 'admin.tab.general' | transloco }}</span>
+        </a>
+      </li>
+      <li>
+        <a
+          class="tab"
+          [class.tab--current]="isLogosRoute()"
+          [routerLink]="['logos']"
+          data-cy="admin-tab-logos"
+        >
+          <img
+            src="img/frame-landscape.png"
+            title="logos"
+            alt="logos"
+            width="16"
+            height="16"
+          />
+          <span class="tab-text">{{ 'label.appearance' | transloco }}</span>
+        </a>
+      </li>
+      <li>
+        <a
+          class="tab"
+          [class.tab--current]="isSecurityRoute()"
+          [routerLink]="['security']"
+          data-cy="admin-tab-security"
+        >
+          <img
+            src="img/padlock-818181.png"
+            width="16"
+            height="16"
+            title="Security"
+            alt=""
+          />
+          <span class="tab-text">{{ 'admin.tab.security' | transloco }}</span>
+        </a>
+      </li>
+      <li>
+        <a
+          class="tab"
+          [class.tab--current]="isDocumentLifecycleRoute()"
+          [routerLink]="['documents']"
+          data-cy="admin-tab-documents"
+        >
+          <img
+            src="img/recycle-symbol.png"
+            title="Lifecycle"
+            alt="lifecycle"
+            width="16"
+            height="16"
+          />
+          <span class="tab-text"
+            >{{ 'admin.tab.document.lifecycle' | transloco }}</span
+          >
+        </a>
+      </li>
+      <li>
+        <a
+          class="tab"
+          [class.tab--current]="isAutoUploadRoute()"
+          [routerLink]="['auto-upload']"
+          data-cy="autoupload-tab"
+        >
+          <img
+            src="img/upload.png"
+            title="AutoUpload"
+            alt="autoupload"
+            width="16"
+            height="16"
+          />
+          <span class="tab-text"
+            >{{ 'admin.tab.auto.upload' | transloco }}</span
+          >
+        </a>
+      </li>
+      <li>
+        <a
+          class="tab"
+          [class.tab--current]="isSummaryRoute()"
+          [routerLink]="['summary']"
+          data-cy="admin-tab-summary"
+        >
+          <img
+            src="img/graph-line-screen.png"
+            title="Graph"
+            alt="graph"
+            width="16"
+            height="16"
+          />
+          <span class="tab-text">{{ 'admin.tab.summary' | transloco }}</span>
+        </a>
+      </li>
+      @if (featureDisabled) {
+      <li>
+        <a
+          class="tab"
+          [class.tab--current]="isNotificationStatusRoute()"
+          [routerLink]="['notification-status']"
+        >
+          <img
+            src="img/bell-ringing-818181.png"
+            title="Notification Status"
+            alt="notification status"
+            width="16"
+            height="16"
+          />
+          <span class="tab-text"
+            >{{ 'admin.tab.notification.status' | transloco }}</span
+          >
+        </a>
+      </li>
+      } @if (featureDisabled) {
+      <li>
+        <a
+          class="tab"
+          [class.tab--current]="isPasteNotificationsRoute()"
+          [routerLink]="['paste-notifications']"
+        >
+          <img
+            src="img/ring-the-bell-818181.png"
+            title="Paste Notifications"
+            alt="paste notifications"
+            width="16"
+            height="16"
+          />
+          <span class="tab-text"
+            >{{ 'admin.tab.paste.notifications' | transloco }}</span
+          >
+        </a>
+      </li>
+      }
+      <li>
+        <a
+          class="tab"
+          [class.tab--current]="isLogRoute()"
+          [routerLink]="['log']"
+          data-cy="admin-tab-log"
+        >
+          <img
+            src="img/padnote.png"
+            title="padnote"
+            alt="padnote"
+            width="16"
+            height="16"
+          />
+          <span class="tab-text">{{ 'admin.tab.log.files' | transloco }}</span>
+        </a>
+      </li>
+      @if (isExternalRepositoryEnabled) {
+      <li>
+        <a
+          class="tab"
+          [class.tab--current]="isExternalRepositoryRoute()"
+          [routerLink]="['external-repository']"
+          data-cy="admin-tab-external-repository"
+        >
+          <img
+            src="img/padnote.png"
+            title="padnote"
+            alt="padnote"
+            width="16"
+            height="16"
+          />
+          <span class="tab-text"
+            >{{ 'admin.tab.external.repositories' | transloco }}</span
+          >
+        </a>
+      </li>
+      }
+    </ul>
+    }
+
+    <div class="main">
+      <router-outlet></router-outlet>
+    </div>
+  </section>
+</div>

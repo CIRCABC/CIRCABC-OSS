@@ -1,0 +1,4 @@
+src/app/app-info.ts
+src/app/app-routing.module.ts
+src/app/group/group-routing.module.ts
+src/app/core/generated/**/*.ts

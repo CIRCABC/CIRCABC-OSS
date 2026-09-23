@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!-- NOTE: although we use iBatis here rather than Hibernate, for consistency we make use of single SQL dialect property (hibernate.dialect) -->
+    <properties
+        resource="alfresco/module/circabc-rest/alfresco-global.properties"
+    />
+
+    <typeAliases>
+        <typeAlias
+            alias="Configuration"
+            type="io.swagger.model.Configuration"
+        />
+        <typeAlias alias="LogRecord" type="io.swagger.model.db.LogRecordDAO" />
+        <typeAlias
+            alias="LogActivity"
+            type="io.swagger.model.db.LogActivityDAO"
+        />
+        <typeAlias alias="LogRest" type="io.swagger.model.db.LogRestDAO" />
+        <typeAlias
+            alias="LogTemplate"
+            type="io.swagger.model.db.LogTemplateDAO"
+        />
+        <typeAlias
+            alias="LogSearchParameter"
+            type="io.swagger.model.db.LogSearchParameterDAO"
+        />
+        <typeAlias
+            alias="LogSearchLimitParameter"
+            type="io.swagger.model.db.LogSearchLimitParameterDAO"
+        />
+        <typeAlias
+            alias="LogSearchResult"
+            type="io.swagger.model.db.LogSearchResultDAO"
+        />
+        <typeAlias
+            alias="LogCountResult"
+            type="io.swagger.model.db.LogCountResultDAO"
+        />
+        <typeAlias
+            alias="ActivityCount"
+            type="io.swagger.model.db.ActivityCountDAO"
+        />
+        <typeAlias alias="Request" type="io.swagger.model.db.Request" />
+        <typeAlias alias="Response" type="io.swagger.model.db.Response" />
+        <typeAlias alias="Search" type="io.swagger.model.db.Search" />
+        <typeAlias
+            alias="SearchResult"
+            type="io.swagger.model.db.SearchResult"
+        />
+        <typeAlias
+            alias="SearchResultNotify"
+            type="io.swagger.model.db.SearchResultNotify"
+        />
+
+        <typeAlias
+            alias="UserActionLogDAO"
+            type="io.swagger.model.db.UserActionLogDAO"
+        />
+        <typeAlias
+            alias="UserNewsFeedRequest"
+            type="io.swagger.model.db.UserNewsFeedRequest"
+        />
+        <typeAlias
+            alias="VisitedLogRestParameters"
+            type="io.swagger.model.db.VisitedLogRestParametersDAO"
+        />
+        <typeAlias
+            alias="AppMessageDAO"
+            type="io.swagger.model.db.AppMessageDAO"
+        />
+        <typeAlias
+            alias="DistributionEmailDAO"
+            type="io.swagger.model.db.DistributionEmailDAO"
+        />
+        <typeAlias
+            alias="GroupCreationRequestDAO"
+            type="io.swagger.model.db.GroupCreationRequestDAO"
+        />
+        <typeAlias
+            alias="GroupDeletionRequestDAO"
+            type="io.swagger.model.db.GroupDeletionRequestDAO"
+        />
+        <typeAlias alias="KeyValue" type="io.swagger.model.db.KeyValue" />
+        <typeAlias
+            alias="KeyValueString"
+            type="io.swagger.model.db.KeyValueString"
+        />
+        <typeAlias
+            alias="UserPropertyHistoryDAO"
+            type="io.swagger.model.db.UserPropertyHistoryDAO"
+        />
+        <typeAlias
+            alias="UserRevocationRequestDAO"
+            type="io.swagger.model.db.UserRevocationRequestDAO"
+        />
+        <typeAlias
+            alias="MemberExpirationDAO"
+            type="io.swagger.model.db.MemberExpirationDAO"
+        />
+        <typeAlias
+            alias="AresBridgeDAO"
+            type="io.swagger.model.db.AresBridgeDAO"
+        />
+        <typeAlias
+            alias="CircabcPermission"
+            type="eu.europa.ec.digit.circabc.rest.dynamic.authority.CircabcPermission"
+        />
+        <typeAlias
+            alias="IgStatisticsParameter"
+            type="eu.europa.ec.digit.circabc.rest.service.statistic.ig.IgStatisticsParameter"
+        />
+    </typeAliases>
+
+    <mappers>
+        <!-- note: dialect property is set in properties resource above -->
+        <mapper
+            resource="alfresco/extension/sql/log/${hibernate.dialect}/CircabcLog.xml"
+        />
+        <mapper
+            resource="alfresco/extension/sql/lock/${hibernate.dialect}/CircabcLock.xml"
+        />
+        <mapper
+            resource="alfresco/extension/sql/auto/upload/${hibernate.dialect}/CircabcAutoUploadConfiguration.xml"
+        />
+        <mapper
+            resource="alfresco/extension/sql/ecorda/${hibernate.dialect}/CircabcEcorda.xml"
+        />
+        <mapper
+            resource="alfresco/extension/sql/translation/${hibernate.dialect}/Translation.xml"
+        />
+
+        <mapper
+            resource="alfresco/extension/sql/app/message/${hibernate.dialect}/app-message.xml"
+        />
+        <mapper
+            resource="alfresco/extension/sql/category/group/requests/${hibernate.dialect}/group-requests-sql.xml"
+        />
+        <mapper
+            resource="alfresco/extension/sql/history/${hibernate.dialect}/history-sql.xml"
+        />
+        <mapper
+            resource="alfresco/extension/sql/aresbridge/${hibernate.dialect}/AresBridge.xml"
+        />
+        <mapper
+            resource="alfresco/extension/sql/da/#resource.dialect#/DynamicAuthority.xml"
+        />
+        <mapper
+            resource="alfresco/extension/sql/statistics/ig/${hibernate.dialect}/GroupStatistics.xml"
+        />
+    </mappers>
+</configuration>

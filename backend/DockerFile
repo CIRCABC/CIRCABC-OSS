@@ -1,0 +1,74 @@
+# Dockerfile for CircaBC ACS with AMP and JAR extensions
+# This Dockerfile applies runtime dependencies to Alfresco Content Service
+
+FROM alfresco/alfresco-content-repository-community:26.1.0
+
+USER root
+
+# Copy main CircaBC JAR
+COPY target/circabc-rest-*.jar /usr/local/tomcat/webapps/alfresco/WEB-INF/lib/
+
+# Runtime dependencies (compile/runtime scope only - excluding test and provided)
+
+# OWASP ESAPI for security
+COPY target/extensions/esapi-2.7.0.0-jakarta.jar /usr/local/tomcat/webapps/alfresco/WEB-INF/lib/
+
+# iCal support (com.google.ical)
+COPY target/extensions/com.google.ical-20110304.jar /usr/local/tomcat/webapps/alfresco/WEB-INF/lib/
+
+# Liquibase for database migrations
+COPY target/extensions/liquibase-core-4.20.0.jar /usr/local/tomcat/webapps/alfresco/WEB-INF/lib/
+
+# Apache Lucene for search (lucene-queryparser)
+COPY target/extensions/lucene-queryparser-9.10.0.jar /usr/local/tomcat/webapps/alfresco/WEB-INF/lib/
+
+# Apache Lucene core for QueryBuilder
+COPY target/extensions/lucene-core-9.10.0.jar /usr/local/tomcat/webapps/alfresco/WEB-INF/lib/
+
+# iCal4j calendar support
+COPY target/extensions/ical4j-3.2.11.jar /usr/local/tomcat/webapps/alfresco/WEB-INF/lib/
+
+# HTML parsing with jsoup
+COPY target/extensions/jsoup-1.16.1.jar /usr/local/tomcat/webapps/alfresco/WEB-INF/lib/
+
+# FTP support
+COPY target/extensions/ftp4j-1.7.2.jar /usr/local/tomcat/webapps/alfresco/WEB-INF/lib/
+
+# ZIP file handling
+COPY target/extensions/truezip-6.8.4.jar /usr/local/tomcat/webapps/alfresco/WEB-INF/lib/
+
+# CSV parsing
+COPY target/extensions/opencsv-1.8.jar /usr/local/tomcat/webapps/alfresco/WEB-INF/lib/
+
+# Apache HttpComponents (httpclient v4 and v5)
+COPY target/extensions/httpclient-4.5.14.jar /usr/local/tomcat/webapps/alfresco/WEB-INF/lib/
+COPY target/extensions/httpclient5-5.4.3.jar /usr/local/tomcat/webapps/alfresco/WEB-INF/lib/
+
+# Apache Commons file upload for Jakarta Servlet 6
+COPY target/extensions/commons-fileupload2-jakarta-servlet6-2.0.0-M4.jar /usr/local/tomcat/webapps/alfresco/WEB-INF/lib/
+
+# ESAPI configuration files (ensure validator initialization succeeds)
+COPY target/classes/ESAPI.properties /usr/local/tomcat/webapps/alfresco/WEB-INF/classes/
+
+# JavaMelody monitoring
+COPY src/main/docker/extensions/alfresco-javamelody-addon-2.5.0.amp /usr/local/tomcat/amps/
+
+# OOTBee Support Tools (admin console diagnostics)
+COPY target/extensions/support-tools-repo-1.2.3.0-amp.amp /usr/local/tomcat/amps/
+
+RUN java -jar /usr/local/tomcat/alfresco-mmt/alfresco-mmt*.jar install \
+    /usr/local/tomcat/amps /usr/local/tomcat/webapps/alfresco -directory -nobackup -force
+
+# OOTBee Support Tools Spring 7 compatibility patch.
+# OOTBee 1.2.3.0 (latest release, targets ACS 25.x / Spring 6.x) calls the 4-arg
+# PropertyPlaceholderHelper(prefix, suffix, valueSeparator, ignoreUnresolvable) constructor,
+# which Spring Framework 7.0 (bundled in ACS 26.1.0) removed. This breaks the admin console
+# pages that read config placeholders (caches, solr-tracking, rendition-service2-transform,
+# command-console, jsconsole serverInfo) with "Java constructor ... not found".
+# Rewrite those calls to the surviving 5-arg form with a null escape character. Applied AFTER
+# the AMP install so it patches the files the AMP unpacked into WEB-INF/classes.
+# Remove once OOTBee ships a release (> 1.2.3.0) with Spring 7 support.
+RUN find /usr/local/tomcat/webapps/alfresco/WEB-INF/classes/alfresco/templates/webscripts/org/orderofthebee \
+    -name '*.js' -exec sed -i "s/'}', ':', true)/'}', ':', null, true)/g" {} +
+
+USER alfresco

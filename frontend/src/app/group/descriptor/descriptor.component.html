@@ -1,0 +1,87 @@
+@let _group = group(); @if (_group) {
+<section class="box box--group-summary">
+  <div class="group-summary__logo">
+    @if (!_group.logoUrl) {
+    <img src="img/placeholder_162x138.png" alt="" width="162" height="138" />
+    } @if (_group.logoUrl) {
+    <img
+      [attr.src]="getLogoRef() | cbcDownload | cbcSecure"
+      alt=""
+      width="162"
+      height="138"
+    />
+    }
+  </div>
+  @if (isJoinEnabled()) {
+  <a
+    tabindex="0"
+    (click)="showApplicationModal = true"
+    (keydown.enter)="showApplicationModal = true"
+    class="cta"
+    [class.disable_a_href]="!isJoinEnabled()"
+    >{{ 'descriptor.join-group' | transloco }}</a
+  >
+  } @if (isJoinEnabledGuest()) {
+  <button type="button" [matMenuTriggerFor]="menu" class="cta"
+    >{{ 'descriptor.join-group' | transloco }}
+  </button>
+  }
+
+  <mat-menu #menu>
+    <span class="title">{{ 'descriptor.join-group.title' | transloco }}</span>
+
+    @if (isGuest() && !useEULogin) {
+    <button [routerLink]="['/login']" class="cta menu-button-first">
+      {{ 'descriptor.join-group.connect' | transloco }}
+    </button>
+    } @if (isGuest() && useEULogin) {
+    <button (click)="euLogin()" class="cta menu-button-first">
+      {{ 'descriptor.join-group.connect' | transloco }}
+    </button>
+    }
+
+    <button class="cta menu-button" (click)="euLoginCreate()">
+      {{ 'descriptor.join-group.create-account' | transloco }}
+    </button>
+  </mat-menu>
+
+  @if (!isJoinEnabledGuest() && !isJoinEnabled()) {
+  <div style="padding-bottom: 50px"></div>
+  }
+
+  <div class="main">
+    <cbc-share [showLabel]="true"></cbc-share>
+    @if (isContactLeaderAvailable()) {
+    <a
+      tabindex="0"
+      class="contact-link"
+      (click)="showContactLeadersModal = true"
+      >{{ 'descriptor.contact-leaders' | transloco }}</a
+    >
+    }
+    <br />
+    @if (_group.description && hasDescription()) {
+    <div
+      class="description-container"
+      [innerHtml]="getLang() | i18nSelect: _group.description"
+    ></div>
+    } @if (!hasDescription()) {
+    <p>{{ 'descriptor.no-group-description' | transloco }}</p>
+    }
+    <div style="clear: both"></div>
+  </div>
+</section>
+}
+<cbc-membership-application
+  [groupId]="_group.id"
+  [showModal]="showApplicationModal"
+  (canceled)="onRequestCanceled($event)"
+  (finished)="onRequestFinished($event)"
+/>
+@if (isContactLeaderAvailable()) {
+<cbc-leader-contact
+  [showModal]="showContactLeadersModal"
+  [group]="_group"
+  (modalHide)="leaderContactRefresh($event)"
+/>
+}

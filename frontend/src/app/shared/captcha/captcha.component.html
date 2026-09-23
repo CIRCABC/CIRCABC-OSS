@@ -1,0 +1,52 @@
+<div class="field captcha-image-box">
+  <div class="captcha-img">
+    <img
+      id="imageCaptcha"
+      src="{{ captchaImage() }}"
+      alt="{{ 'label.captcha.image' | transloco }}"
+    />
+  </div>
+
+  <div class="captcha-buttons">
+    <div>Can't read this?</div>
+    <div class="captcha-button">
+      <button type="button" class="link-button" (click)="refresh()">
+        <img
+          src="img/icon-autoupload-blue.svg"
+          alt=""
+          aria-hidden="true"
+          width="20px"
+        />
+        <div>{{ 'label.refresh' | transloco }}</div>
+      </button>
+    </div>
+
+    <div class="captcha-button">
+      <audio
+        #playAudio
+        autostart="1"
+        [src]="audioCaptcha()"
+        id="audioCaptcha"
+        onplay="onPlayAudio()"
+      ></audio>
+
+      <button type="button" class="link-button" (click)="playAudio.play()">
+        <img
+          src="img/icon-audio-blue.svg"
+          alt=""
+          aria-hidden="true"
+          width="20px"
+        />
+        <div>{{ 'label.captcha.audio' | transloco }}</div>
+      </button>
+    </div>
+
+    <div>Powered by EU CAPTCHA</div>
+  </div>
+</div>
+
+<div class="field">
+  <label for="answer" class="mandatory">{{'label.answer' | transloco}}</label>
+  <input id="answer" type="text" [formControl]="answer" />
+  <cbc-control-message [control]="answer"></cbc-control-message>
+</div>

@@ -1,0 +1,8 @@
+<webscript>
+    <shortname>Import Interest Group from XML</shortname>
+    <description>Imports an IG from XML migration file into a category</description>
+    <url>/circabc/ig/{categoryId}/import</url>
+    <format default="json" />
+    <authentication>admin</authentication>
+    <transaction>required</transaction>
+</webscript>

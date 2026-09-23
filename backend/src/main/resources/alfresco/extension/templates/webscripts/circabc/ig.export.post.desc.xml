@@ -1,0 +1,8 @@
+<webscript>
+    <shortname>Export Interest Group to XML</shortname>
+    <description>Exports an IG structure to XML for migration between instances</description>
+    <url>/circabc/ig/{id}/export</url>
+    <format default="xml" />
+    <authentication>admin</authentication>
+    <transaction>required</transaction>
+</webscript>

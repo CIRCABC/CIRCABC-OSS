@@ -1,0 +1,267 @@
+<section class="user-mgmt--container">
+  <section class="user-mgmt-search">
+    <span class="step-number" aria-hidden="true">1</span>
+    <a
+      tabindex="0"
+      class="step-link"
+      [class.step-link-selected]="searchStep === 'search'"
+      (click)="searchStep = 'search'"
+      >{{ 'label.search.user' | transloco }}</a
+    >
+    <a
+      tabindex="0"
+      class="step-link"
+      [class.step-link-selected]="searchStep === 'import'"
+      (click)="searchStep = 'import'"
+      >{{ 'label.import.list' | transloco }}</a
+    >
+    <a
+      tabindex="0"
+      class="step-link"
+      [class.step-link-selected]="searchStep === 'selection'"
+      (click)="searchStep = 'selection'"
+      >{{ 'label.selection' | transloco }} ({{ selectedUsers().length }})</a
+    >
+    <br /><br />
+    @if (searchStep === 'search') {
+    <div>
+      <form [formGroup]="searchForm">
+        <input
+          formControlName="searchField"
+          type="text"
+          placeholder="search value"
+          aria-label="{{ 'label.search' | transloco }}"
+        />
+        &nbsp;&nbsp;
+        <button class="button" (click)="searchUsers()">
+          {{ 'label.search' | transloco }}
+        </button>
+        &nbsp;&nbsp;
+        <a tabindex="0" (click)="resetSearch()"
+          >{{ 'label.reset' | transloco }}</a
+        >
+      </form>
+      @if (searching()) {
+      <h3>{{ 'label.searching' | transloco }} <cbc-spinner></cbc-spinner></h3>
+      } @if (searchedUsers().length > 0) {
+      <h3>
+        {{ ('label.results' | transloco) + '(' + searchedUsers().length + ')' }}
+        <a tabindex="0" (click)="selectAllSearch()" class="select-all"
+          >{{ 'label.select.all' | transloco }}</a
+        >
+      </h3>
+      }
+
+      <div class="result-container">
+        <ol>
+          @for (user of searchedUsers(); track user.userId) {
+          <li>
+            <cbc-user-result-box
+              [user]="user"
+              [focusedUserId]="focusedUserId()"
+              (focusedUserIdChange)="focusUser($event)"
+              (selectionTriggered)="selection($event)"
+              (removeTriggered)="remove($event)"
+              [showSelect]="true"
+              [showRemove]="true"
+            ></cbc-user-result-box>
+          </li>
+          }
+        </ol>
+      </div>
+    </div>
+    } @if (searchStep === 'import') {
+    <div>
+      <form [formGroup]="fileForm">
+        <label for="listFile" class="visually-hidden"
+          >{{ 'label.upload' | transloco }}</label
+        >
+        <input
+          id="listFile"
+          formControlName="listFile"
+          type="file"
+          placeholder="search value"
+          (change)="fileChangeEvent($event)"
+        />
+        &nbsp;&nbsp;
+        <button class="button" (click)="retrieveUsers()">
+          {{ 'label.upload' | transloco }}
+        </button>
+        &nbsp;&nbsp;
+        <a tabindex="0" (click)="resetUpload()"
+          >{{ 'label.reset' | transloco }}</a
+        >
+      </form>
+      @if (searching()) {
+      <h3>{{ 'label.searching' | transloco }} <cbc-spinner></cbc-spinner></h3>
+      } @if (retrievedUsers().length > 0) {
+      <h3>
+        {{ ('label.results' | transloco) + '(' + retrievedUsers().length + ')'
+        }}<a tabindex="0" (click)="selectAllList()" class="select-all"
+          >{{ 'label.select.all' | transloco }}</a
+        >
+      </h3>
+      }
+
+      <div class="result-container">
+        <ol>
+          @for (user of retrievedUsers(); track user.userId) {
+          <li>
+            <cbc-user-result-box
+              [user]="user"
+              [focusedUserId]="focusedUserId()"
+              (focusedUserIdChange)="focusUser($event)"
+              (selectionTriggered)="selection($event)"
+              (removeTriggered)="remove($event)"
+              [showSelect]="true"
+              [showRemove]="true"
+            ></cbc-user-result-box>
+          </li>
+          }
+        </ol>
+      </div>
+    </div>
+    } @if (searchStep === 'selection') {
+    <div>
+      @if (selectedUsers().length === 0) {
+      <h4>{{ 'label.nothing.to.display' | transloco }}</h4>
+      }
+      <div class="result-container">
+        <ol>
+          @for (item of selectedUsers(); track item.userid) {
+          <li>
+            <cbc-user-result-box
+              [user]="item.user"
+              [focusedUserId]="focusedUserId()"
+              (focusedUserIdChange)="focusUser($event)"
+              (removeTriggered)="remove(item.user)"
+              [showSelect]="false"
+              [showRemove]="true"
+            ></cbc-user-result-box>
+          </li>
+          }
+        </ol>
+      </div>
+    </div>
+    }
+  </section>
+  @if (oneUserFocus() && !expectionNoAlfrescoUser()) {
+  <section class="user-mgmt-details">
+    <span class="step-number" aria-hidden="true">2</span>
+    <cbc-focused-user-box [user]="focusedUser()"></cbc-focused-user-box>
+    @if (oneUserFocus() && expectionNoAlfrescoUser()) {
+    <p>{{ 'label.no.alfresco.user.found' | transloco }}</p>
+    }
+  </section>
+  } @if (oneUserFocus() && !expectionNoAlfrescoUser()) {
+  <section class="user-mgmt-more">
+    <span class="step-number" aria-hidden="true">3</span>
+    <cbc-focused-user-membership-box
+      [userId]="focusedUserId()"
+    ></cbc-focused-user-membership-box>
+  </section>
+  } @if (!oneUserFocus() && selectedUsers().length > 0) {
+  <section class="users-mgmt-details">
+    <span class="step-number" aria-hidden="true">2</span>
+    <div class="bulk-actions">
+      <h2>{{ 'label.bulk.actions' | transloco }}</h2>
+      <a tabindex="0" class="button button--red" (click)="prepareRevocation()"
+        >{{ 'label.schedule.removal' | transloco }}</a
+      >
+      <span class="hint"
+        >{{ 'text.schedule.removal.explanation' | transloco }}</span
+      >
+      <br /><br />
+      <a tabindex="0" class="button button--red" (click)="prepareExpiration()"
+        >{{ 'label.set.expiration' | transloco }}</a
+      >
+      <span class="hint"
+        >{{ 'text.set.expiration.explanation' | transloco }}</span
+      >
+      <cbc-revocation-scheduler
+        [showModal]="showRevocationModal()"
+        [userIds]="selectedUserIds()"
+        (scheduled)="refreshAfterSchedule()"
+        (canceled)="cancelSchedule()"
+      ></cbc-revocation-scheduler>
+      <cbc-expiration-scheduler
+        [showModal]="showExpirationModal()"
+        [requests]="selectedUsers()"
+        (scheduled)="refreshAfterSchedule()"
+        (canceled)="cancelExpirationSchedule()"
+      ></cbc-expiration-scheduler>
+    </div>
+    <br />
+    <div>
+      <ul class="selection-summary">
+        @for (item of selectedUsers(); track item.userid) {
+        <li>
+          <div class="selection-user-summary">
+            <a
+              tabindex="0"
+              class="toggle-selection"
+              (click)="toggleProfiles(item.userid, 'reset')"
+              >{{ 'label.reset' | transloco }}</a
+            >
+            <a
+              tabindex="0"
+              class="toggle-selection"
+              (click)="toggleProfiles(item.userid, 'select')"
+              >{{ 'label.select.all' | transloco }}</a
+            >
+
+            {{ item.user.firstname }} {{ item.user.lastname }} [ {{
+            item.user.userId }} - {{ item.user.email }} ]
+          </div>
+          @if (!item.loadingMemberships) {
+          <ul class="selection-membership-summary">
+            @for (membership of item.memberships; track membership) {
+            <li>
+              <div class="selector">
+                <!-- NOSONAR: Native checkbox is keyboard accessible -->
+                <input
+                  type="checkbox"
+                  aria-label="{{ 'label.profile' | transloco }} {{ membership.interestGroup?.name }}"
+                  [checked]="membership.selected"
+                  (click)="
+                    toggleProfile(
+                      item.userid,
+                      $safeNavigationMigration(membership.profile?.name),
+                      $safeNavigationMigration(membership.interestGroup?.name)
+                    )
+                  "
+                  (keydown.enter)="
+                    toggleProfile(
+                      item.userid,
+                      $safeNavigationMigration(membership.profile?.name),
+                      $safeNavigationMigration(membership.interestGroup?.name)
+                    )
+                  "
+                />
+              </div>
+              @if (membership && membership.profile) {
+              <div class="profile">
+                <strong>{{ membership.profile.title | cbcI18n }}</strong>
+                <br />
+                {{ membership.profile.name }}
+              </div>
+              } @if (membership && membership.interestGroup) {
+              <div class="group">
+                <strong>{{ membership.interestGroup.title | cbcI18n }}</strong>
+                <br />
+                {{ membership.interestGroup.name }}
+              </div>
+              }
+            </li>
+            }
+          </ul>
+          } @if (item.loadingMemberships) {
+          <cbc-spinner></cbc-spinner>
+          }
+        </li>
+        }
+      </ul>
+    </div>
+  </section>
+  }
+</section>

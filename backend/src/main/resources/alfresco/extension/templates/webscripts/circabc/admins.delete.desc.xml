@@ -1,0 +1,8 @@
+<webscript>
+    <shortname>delete circabc administrator</shortname>
+    <description>delete circabc administrator</description>
+    <url>/circabc/admins/{userId}</url>
+    <format default="json" />
+    <authentication>user</authentication>
+    <transaction>required</transaction>
+</webscript>

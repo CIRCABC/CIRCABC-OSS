@@ -1,0 +1,29 @@
+.strong {
+  font-weight: bold;
+  margin: 0 25px;
+  display: inline-block;
+  width: 350px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+table {
+  width: 100%;
+
+  thead {
+    th {
+      text-align: left;
+
+      &.actions {
+        width: 20%;
+      }
+    }
+  }
+
+  tbody {
+    td.name {
+      width: 30%;
+    }
+  }
+}

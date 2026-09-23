@@ -1,0 +1,841 @@
+@if (isStoredInSharedLinkNavigationInfo()) {
+<div class="shared-link-banner">
+  <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+  {{ 'shared.space.link.access' | transloco }}
+  <a [routerLink]="['../../../', getOriginIgId(), 'library', getOriginId()]">
+    <i class="fa fa-arrow-right" aria-hidden="true"></i>
+    {{ 'shared.space.link.back' | transloco }}</a
+  >
+  <button
+    type="button"
+    class="button"
+    (click)="removeStoredLinkNavigationInfo()"
+    >{{ 'label.close' | transloco }}</button
+  >
+</div>
+}
+<section class="table-container">
+  <header class="header">
+    <cbc-pager
+      [length]="totalItems()"
+      [pageSize]="preferences().library.listing.limit"
+      [page]="preferences().library.listing.page"
+      (pageChange)="changePage($event)"
+    ></cbc-pager>
+    <span class="icons">
+      @if (!restrictedMode()) {
+      <button
+        type="button"
+        class="icon-button"
+        (click)="toggleTreeView()"
+        [attr.aria-label]="'label.toggle.folder.tree.view' | transloco"
+        [attr.aria-pressed]="treeView()"
+      >
+        <i
+          class="fa fa-sitemap"
+          [class.icon-active]="treeView()"
+          aria-hidden="true"
+        ></i>
+      </button>
+      }
+      <cbc-share [showLabel]="false" [orientationRight]="false"></cbc-share>
+      @if (!isGuest()) {
+      <div class="dropdown-trigger dropdown-trigger--with-icons">
+        <button
+          type="button"
+          class="icon-button"
+          [attr.aria-label]="(isSubscribedToNotifications() ? 'label.notifications.subscribed' : 'label.notifications.not.subscribed') | transloco"
+        >
+          <i
+            class="fa"
+            [class.fa-bell]="isSubscribedToNotifications()"
+            [class.fa-bell-slash-o]="!isSubscribedToNotifications()"
+            aria-hidden="true"
+          ></i>
+        </button>
+        <div class="dropdown dropdown--library-settings">
+          <div class="number-of-items">
+            {{ 'label.notifications' | transloco }}:
+            <div class="notification-actions">
+              @if (!isSubscribedToNotifications()) {
+              <button
+                type="button"
+                class="link-button"
+                (click)="changeNotificationSubscription('on')"
+              >
+                <i class="fa fa-bell" aria-hidden="true"></i>
+                {{ 'label.subscribe' | transloco }}
+              </button>
+              } @if (isSubscribedToNotifications()) {
+              <button
+                type="button"
+                class="link-button"
+                (click)="changeNotificationSubscription('off')"
+              >
+                <i class="fa fa-bell-slash-o" aria-hidden="true"></i>
+                {{ 'label.unsubscribe' | transloco }}
+              </button>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+      } @if (!restrictedMode()) {
+      <div class="dropdown-trigger">
+        <button
+          type="button"
+          class="icon-button"
+          aria-label="{{ 'label.column.settings' | transloco }}"
+        >
+          <i class="fa fa-cog" aria-hidden="true"></i>
+        </button>
+        <div class="dropdown dropdown--library-settings">
+          <div class="number-of-items">
+            {{ 'label.show' | transloco }}:
+            <a tabindex="0" (click)="changeLimit(10)">10</a>
+            <a tabindex="0" (click)="changeLimit(25)">25</a>
+            <a tabindex="0" (click)="changeLimit(50)">50</a>
+            <a tabindex="0" (click)="changeLimit(-1)">All</a>
+          </div>
+          <form [formGroup]="columnForm">
+            <ul>
+              <li>
+                <label>
+                  <input type="checkbox" formControlName="name" />
+                  {{ 'label.name' | transloco }}
+                </label>
+              </li>
+              <li>
+                <label>
+                  <input type="checkbox" formControlName="title" />
+                  {{ 'label.title' | transloco }}
+                </label>
+              </li>
+              <li>
+                <label>
+                  <input type="checkbox" formControlName="creation" />
+                  {{ 'admin.summary.statistics.created.date' | transloco }}
+                </label>
+              </li>
+              <li>
+                <label>
+                  <input type="checkbox" formControlName="modification" />
+                  {{ 'label.modification.date' | transloco }}
+                </label>
+              </li>
+              <li>
+                <label>
+                  <input type="checkbox" formControlName="description" />
+                  {{ 'label.description' | transloco }}
+                </label>
+              </li>
+              <li>
+                <label>
+                  <input type="checkbox" formControlName="size" />
+                  {{ 'admin.summary.statistics.library.size' | transloco }}
+                </label>
+              </li>
+              <li>
+                <label>
+                  <input type="checkbox" formControlName="version" />
+                  {{ 'label.version' | transloco }}
+                </label>
+              </li>
+              <li>
+                <label>
+                  <input type="checkbox" formControlName="expiration" />
+                  {{ 'label.expiration.date' | transloco }}
+                </label>
+              </li>
+              <li>
+                <label>
+                  <input type="checkbox" formControlName="author" />
+                  {{ 'label.author' | transloco }}
+                </label>
+              </li>
+              <li>
+                <label>
+                  <input type="checkbox" formControlName="status" />
+                  {{ 'label.status' | transloco }}
+                </label>
+              </li>
+              <li>
+                <label>
+                  <input type="checkbox" formControlName="securityRanking" />
+                  {{ 'label.security.marking' | transloco }}
+                </label>
+              </li>
+            </ul>
+          </form>
+        </div>
+      </div>
+      }
+    </span>
+  </header>
+
+  <table class="main">
+    <thead>
+      <tr>
+        <th scope="col"><span class="visually-hidden">Actions</span></th>
+        <th scope="col" class="cell-checkbox">
+          <span class="visually-hidden">Select</span>
+          <input
+            data-cy="select-all"
+            type="checkbox"
+            name=""
+            value=""
+            aria-label="{{ 'label.select.all' | transloco }}"
+            (click)="toggleSelect()"
+            (keydown.enter)="toggleSelect()"
+            [checked]="allSelected()"
+          />
+        </th>
+        <th scope="col" class="col-hidable">
+          <span class="visually-hidden">{{ 'label.type' | transloco }}</span>
+        </th>
+        @if (columnForm.value.name) {
+        <th
+          scope="col"
+          class="col-hidable"
+          [attr.aria-sort]="localListingOptions.sort === 'name_ASC' ? 'ascending' : localListingOptions.sort === 'name_DESC' ? 'descending' : null"
+        >
+          <button
+            type="button"
+            class="link-button"
+            (click)="changeSort('name')"
+            [class.underline-selector]="
+              localListingOptions.sort === 'name_ASC' ||
+              localListingOptions.sort === 'name_DESC'
+            "
+            [class.normal-selector]="
+              localListingOptions.sort !== 'name_ASC' &&
+              localListingOptions.sort !== 'name_DESC'
+            "
+            >{{ 'label.name' | transloco }}</button
+          >
+
+          @if (localListingOptions.sort === 'name_ASC') {
+          <span class="order-arrow-up" aria-hidden="true"></span>
+          } @if (localListingOptions.sort === 'name_DESC') {
+          <span class="order-arrow-down" aria-hidden="true"></span>
+          }
+        </th>
+        } @if (columnForm.value.title) {
+        <th
+          scope="col"
+          [attr.aria-sort]="localListingOptions.sort === 'title_ASC' ? 'ascending' : localListingOptions.sort === 'title_DESC' ? 'descending' : null"
+        >
+          <button
+            type="button"
+            class="link-button"
+            (click)="changeSort('title')"
+            >{{ 'label.title' | transloco }}</button
+          >
+          @if (localListingOptions.sort === 'title_ASC') {
+          <span class="order-arrow-up" aria-hidden="true"></span>
+          } @if (localListingOptions.sort === 'title_DESC') {
+          <span class="order-arrow-down" aria-hidden="true"></span>
+          }
+        </th>
+        } @if (columnForm.value.creation) {
+        <th
+          scope="col"
+          [attr.aria-sort]="localListingOptions.sort === 'created_ASC' ? 'ascending' : localListingOptions.sort === 'created_DESC' ? 'descending' : null"
+        >
+          <button
+            type="button"
+            class="link-button"
+            (click)="changeSort('created')"
+            >{{ 'label.created' | transloco }}</button
+          >
+          @if (localListingOptions.sort === 'created_ASC') {
+          <span class="order-arrow-up" aria-hidden="true"></span>
+          } @if (localListingOptions.sort === 'created_DESC') {
+          <span class="order-arrow-down" aria-hidden="true"></span>
+          }
+        </th>
+        } @if (columnForm.value.modification) {
+        <th
+          scope="col"
+          [attr.aria-sort]="localListingOptions.sort === 'modified_ASC' ? 'ascending' : localListingOptions.sort === 'modified_DESC' ? 'descending' : null"
+        >
+          <button
+            type="button"
+            class="link-button"
+            (click)="changeSort('modified')"
+            >{{ 'label.last.modification' | transloco }}</button
+          >
+          @if (localListingOptions.sort === 'modified_ASC') {
+          <span class="order-arrow-up" aria-hidden="true"></span>
+          } @if (localListingOptions.sort === 'modified_DESC') {
+          <span class="order-arrow-down" aria-hidden="true"></span>
+          }
+        </th>
+        } @if (columnForm.value.description) {
+        <th scope="col" class="col-hidable">
+          <a>{{ 'label.description' | transloco }}</a>
+          @if (localListingOptions.sort === 'description_ASC') {
+          <span class="order-arrow-up"></span>
+          } @if (localListingOptions.sort === 'description_DESC') {
+          <span class="order-arrow-down"></span>
+          }
+        </th>
+        } @if (columnForm.value.version) {
+        <th
+          scope="col"
+          class="col-hidable"
+          [attr.aria-sort]="localListingOptions.sort === 'versionLabel_ASC' ? 'ascending' : localListingOptions.sort === 'versionLabel_DESC' ? 'descending' : null"
+        >
+          <button
+            type="button"
+            class="link-button"
+            (click)="changeSort('versionLabel')"
+            >{{ 'label.version' | transloco }}</button
+          >
+          @if (localListingOptions.sort === 'versionLabel_ASC') {
+          <span class="order-arrow-up" aria-hidden="true"></span>
+          } @if (localListingOptions.sort === 'versionLabel_DESC') {
+          <span class="order-arrow-down" aria-hidden="true"></span>
+          }
+        </th>
+        } @if (columnForm.value.size) {
+        <th scope="col" class="col-hidable">
+          <span>{{ 'label.Size' | transloco }}</span>
+        </th>
+        } @if (columnForm.value.expiration) {
+        <th
+          scope="col"
+          class="col-hidable"
+          [attr.aria-sort]="localListingOptions.sort === 'expiration_date_ASC' ? 'ascending' : localListingOptions.sort === 'expiration_date_DESC' ? 'descending' : null"
+        >
+          <button
+            type="button"
+            class="link-button"
+            (click)="changeSort('expiration_date')"
+            >{{ 'label.expiration.date' | transloco }}</button
+          >
+          @if (localListingOptions.sort === 'expiration_date_ASC') {
+          <span class="order-arrow-up" aria-hidden="true"></span>
+          } @if (localListingOptions.sort === 'expiration_date_DESC') {
+          <span class="order-arrow-down" aria-hidden="true"></span>
+          }
+        </th>
+        } @if (columnForm.value.author) {
+        <th
+          scope="col"
+          class="col-hidable"
+          [attr.aria-sort]="localListingOptions.sort === 'author_ASC' ? 'ascending' : localListingOptions.sort === 'author_DESC' ? 'descending' : null"
+        >
+          <button
+            type="button"
+            class="link-button"
+            (click)="changeSort('author')"
+            >{{ 'label.author' | transloco }}</button
+          >
+          @if (localListingOptions.sort === 'author_ASC') {
+          <span class="order-arrow-up" aria-hidden="true"></span>
+          } @if (localListingOptions.sort === 'author_DESC') {
+          <span class="order-arrow-down" aria-hidden="true"></span>
+          }
+        </th>
+        } @if (columnForm.value.status) {
+        <th
+          scope="col"
+          class="col-hidable"
+          [attr.aria-sort]="localListingOptions.sort === 'status_ASC' ? 'ascending' : localListingOptions.sort === 'status_DESC' ? 'descending' : null"
+        >
+          <button
+            type="button"
+            class="link-button"
+            (click)="changeSort('status')"
+            >{{ 'label.status' | transloco }}</button
+          >
+          @if (localListingOptions.sort === 'status_ASC') {
+          <span class="order-arrow-up" aria-hidden="true"></span>
+          } @if (localListingOptions.sort === 'status_DESC') {
+          <span class="order-arrow-down" aria-hidden="true"></span>
+          }
+        </th>
+        } @if (columnForm.value.securityRanking) {
+        <th
+          scope="col"
+          class="col-hidable"
+          [attr.aria-sort]="localListingOptions.sort === 'security_ranking_ASC' ? 'ascending' : localListingOptions.sort === 'security_ranking_DESC' ? 'descending' : null"
+        >
+          <button
+            type="button"
+            class="link-button"
+            (click)="changeSort('security_ranking')"
+            >{{ 'label.security.marking' | transloco }}</button
+          >
+          @if (localListingOptions.sort === 'security_ranking_ASC') {
+          <span class="order-arrow-up" aria-hidden="true"></span>
+          } @if (localListingOptions.sort === 'security_ranking_DESC') {
+          <span class="order-arrow-down" aria-hidden="true"></span>
+          }
+        </th>
+        }
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        @if (contents().length !== 0 && getSelectedNodes().length > 0) {
+        <td [attr.colspan]="getColumnCount()">
+          <ul class="bulk-actions">
+            <li>
+              <cbc-number-badge
+                [number]="getSelectedNodes().length"
+                [limit]="MAX_NODES"
+              ></cbc-number-badge>
+            </li>
+            <li>
+              @if (!bulkDownloading() && !isGuest()) {
+              <button
+                type="button"
+                class="link-button"
+                (click)="bulkDownloadCheck()"
+              >
+                <i class="fa fa-download" aria-hidden="true"></i>
+                {{ 'label.download' | transloco }}</button
+              >
+              } @if (bulkDownloading()) {
+              <span>
+                <cbc-spinner [float]="'left'"></cbc-spinner>
+                {{ 'label.downloading' | transloco }}
+              </span>
+              }
+            </li>
+            @if (areNodesDeletable()) {
+            <li>
+              <button
+                type="button"
+                class="link-button"
+                data-cy="delete-all"
+                (click)="showDeleteAllModal()"
+              >
+                <i class="fa fa-trash-o" aria-hidden="true"></i>
+                {{ 'label.delete' | transloco }}</button
+              >
+            </li>
+            }
+            <li>
+              <button
+                type="button"
+                class="link-button"
+                data-cy="add-to-clipboard"
+                (click)="addSelectedToClipboard()"
+              >
+                <i class="fa fa-copy" aria-hidden="true"></i>
+                {{ 'label.copy' | transloco }}</button
+              >
+            </li>
+            @if (canSendToAresBridge()) {
+            <li>
+              <button
+                type="button"
+                class="link-button"
+                (click)="sendToAresBridge()"
+                title="{{ 'label.send.to.ares' | transloco }}"
+              >
+                <i class="fa fa-share-square-o" aria-hidden="true"></i>
+                {{ 'label.send.to.ares' | transloco }}</button
+              >
+              <cbc-hint
+                [text]="'library.browser.hint.ares' | transloco"
+                [floatEnable]="false"
+              ></cbc-hint>
+            </li>
+            }
+          </ul>
+        </td>
+        }
+      </tr>
+
+      @for (content of contents(); track content.id) {
+      <tr class="row">
+        <td class="cell-left-border"></td>
+        <td class="cell-checkbox">
+          <!-- NOSONAR: Native checkbox is keyboard accessible -->
+          <input
+            data-cy="row-checkbox"
+            type="checkbox"
+            name=""
+            value=""
+            [checked]="content.selected"
+            (click)="toggleSelected(content)"
+            (keydown.enter)="toggleSelected(content)"
+            [class.disabled-locked]="locked(content) || workingCopy(content)"
+            [attr.title]="getSelectCheckboxTooltip(content) | transloco"
+            [attr.aria-label]="'label.select.item' | transloco: { name: content.name }"
+          />
+        </td>
+        <td
+          class="cell-icon col-hidable"
+          [class.cell-icon--folder]="isFolder(content)"
+          [class.cell-icon--file]="isFile(content) && !isLink(content)"
+          [class.cell-icon--link]="isLink(content)"
+          [class.cell-icon--shared-space-link]="isSharedSpaceLink(content)"
+        >
+          <div class="icon"></div>
+        </td>
+        @if (columnForm.value.name) {
+        <td class="cell-file-name">
+          @if (content.properties) {
+          <div class="file-name">
+            <cbc-favourite-switch [node]="content"></cbc-favourite-switch>
+            @if (isFile(content) && !isLink(content)) {
+            <a [routerLink]="['../', content.id, 'details']"
+              >{{ content.name }}</a
+            >
+            } @if (isFolder(content) && !isSharedSpaceLink(content)) {
+            <a
+              [routerLink]="['../', content.id]"
+              [queryParams]="{
+                p: '1',
+                n: preferences().library.listing.limit,
+                sort: preferences().library.listing.sort
+              }"
+              >{{ content.name }}</a
+            >
+            } @if (isLink(content)) {
+            <a href="{{ url(content) }}" target="_blank">{{ content.name }}</a>
+            } @if (isLibraryLink(content)) {
+            <a
+              [routerLink]="[
+                '../',
+                getDestinationId(content.properties.destination),
+                'details'
+              ]"
+              >{{ content.name }}</a
+            >
+            } @if (isSharedSpaceLink(content)) {
+            <a tabindex="0" (click)="openSharedLinkNavigation(content)"
+              >{{ content.title | cbcI18n }}</a
+            >
+            } @if (locked(content)) {
+            <span>
+              <i class="fa fa-lock" aria-hidden="true"></i>
+              {{ 'label.locked.by' | transloco }}
+              <cbc-user-card
+                [userId]="content.properties.lockOwner"
+              ></cbc-user-card>
+            </span>
+            } @if (isFile(content) && multilingual(content) === 'true') {
+            <span>
+              <i class="fa fa-globe" aria-hidden="true"></i
+              ><sup>(+{{ getTranslationsCount(content) }})</sup> {{
+              locale(content) }}</span
+            >
+            }
+          </div>
+          }
+          <div class="filename--hidable col-hidable">
+            @if (!isLink(content)) {
+            <span>{{ content.name }}</span>
+            } @if (isLink(content)) {
+            <span>{{ url(content) }}</span>
+            }
+          </div>
+          <ul class="actions">
+            @if (isFile(content)) {
+            <li>
+              <cbc-save-as
+                [id]="content.id"
+                [name]="content.name"
+                [sensitive]="isSensitive(content)"
+                [showIcon]="false"
+              ></cbc-save-as>
+            </li>
+            } @if (isLibAdmin(content) || isOwner(content)) {
+            <li>
+              @if ( !locked(content) && !workingCopy(content) | cbcIfRoles : [
+              content, ['LibAdmin', 'LibManageOwn', 'LibFullEdit'],
+              ['LibManageOwn', 'LibFullEdit'] ] ) {
+              <cbc-delete-action
+                [node]="content"
+                (modalHide)="onDeletedElement($event)"
+              >
+              </cbc-delete-action>
+              }
+            </li>
+            }
+            <li>
+              @if (!locked(content) && !workingCopy(content)) {
+              <a
+                tabindex="0"
+                id="copyContentId"
+                (click)="addToClipboard(content)"
+                >{{ 'label.copy' | transloco }}</a
+              >
+              }
+            </li>
+            <li>
+              <a
+                id="DetailContentId"
+                [routerLink]="['../', content.id, 'details']"
+                >{{ 'label.details' | transloco }}</a
+              >
+            </li>
+            <li>
+              @if (isPreviewable(content)) {
+              <a
+                tabindex="0"
+                id="previewContentId"
+                (click)="previewContent(content)"
+                >{{ 'label.preview' | transloco }}</a
+              >
+              }
+            </li>
+            @if (isEditOnline(content)) {
+            <li>
+              <a tabindex="0" (click)="openDocInOffice(content)"
+                >{{ 'label.end.editing.in.office' | transloco }}</a
+              >
+            </li>
+            }
+          </ul>
+        </td>
+        } @if (columnForm.value.title) {
+        <td class="cell-title">
+          @if (isLink(content)) {
+          <a href="{{ url(content) }}" target="_blank"
+            >{{ getTitle(content) }}</a
+          >
+          } @if (isFile(content) && !isLink(content)) {
+          <a
+            [routerLink]="['../', content.id, 'details']"
+            [attr.aria-label]="getTitle(content) || content.name"
+            >{{ getTitle(content) }}</a
+          >
+          } @if (isFolder(content) && !isSharedSpaceLink(content)) {
+          <a
+            [routerLink]="['../', content.id]"
+            [queryParams]="{
+                p: '1',
+                n: preferences().library.listing.limit,
+                sort: preferences().library.listing.sort
+              }"
+            [attr.aria-label]="getTitle(content) || content.name"
+          >
+            {{ getTitle(content) }}</a
+          >
+          } @if (!columnForm.value.name && getTitle(content) !== '') {
+          <ul class="actions">
+            @if (isFile(content)) {
+            <li>
+              <cbc-save-as
+                [id]="content.id"
+                [name]="content.name"
+                [sensitive]="isSensitive(content)"
+                [showIcon]="false"
+              ></cbc-save-as>
+            </li>
+            } @if (isLibAdmin(content) || isOwner(content)) {
+            <li>
+              @if ( !locked(content) && !workingCopy(content) | cbcIfRoles : [
+              content, ['LibAdmin', 'LibManageOwn', 'LibFullEdit'],
+              ['LibManageOwn', 'LibFullEdit'] ] ) {
+              <cbc-delete-action
+                [node]="content"
+                (modalHide)="onDeletedElement($event)"
+              >
+              </cbc-delete-action>
+              }
+            </li>
+            }
+            <li>
+              @if (!locked(content) && !workingCopy(content)) {
+              <a
+                tabindex="0"
+                id="copyContentId"
+                (click)="addToClipboard(content)"
+                >{{ 'label.copy' | transloco }}</a
+              >
+              }
+            </li>
+            <li>
+              <a
+                id="DetailContentId"
+                [routerLink]="['../', content.id, 'details']"
+                >{{ 'label.details' | transloco }}</a
+              >
+            </li>
+            <li>
+              @if (isPreviewable(content)) {
+              <a
+                tabindex="0"
+                id="previewContentId"
+                (click)="previewContent(content)"
+                >{{ 'label.preview' | transloco }}</a
+              >
+              }
+            </li>
+            @if (isEditOnline(content)) {
+            <li>
+              <a tabindex="0" (click)="openDocInOffice(content)"
+                >{{ 'label.end.editing.in.office' | transloco }}</a
+              >
+            </li>
+            }
+          </ul>
+          }
+        </td>
+        } @if (columnForm.value.creation) {
+        <td class="cell-last-modification">
+          <span class="date"
+            >{{ created(content) | date: 'yyyy MM dd, HH:mm' }}</span
+          >
+        </td>
+        } @if (columnForm.value.modification) {
+        <td class="cell-last-modification">
+          <span class="date"
+            >{{ modified(content) | date: 'yyyy MM dd, HH:mm' }}</span
+          >
+          <cbc-user-card [userId]="modifier(content)"></cbc-user-card>
+        </td>
+        } @if (columnForm.value.description) {
+        <td class="col-hidable">
+          <div
+            class="cell-description-content"
+            [innerHTML]="content.description | cbcI18n"
+          ></div>
+        </td>
+        } @if (columnForm.value.version) {
+        <td class="col-hidable">{{ versionLabel(content) }}</td>
+        } @if (isFolder(content) && columnForm.value.size) {
+        <td class="col-hidable">-</td>
+        } @if (isFile(content) && columnForm.value.size) {
+        <td class="col-hidable">{{ size(content) | cbcSize: true }}</td>
+        } @if (columnForm.value.expiration) {
+        <td class="cell-expiration-date col-hidable">
+          {{ hasExpirationDate(content) ?
+          ($safeNavigationMigration(content.properties?.expiration_date) | date:
+          'yyyy MM dd, HH:mm') : ' ' }}
+        </td>
+        } @if (columnForm.value.author) {
+        <td class="col-hidable">{{ content.properties?.author }}</td>
+        } @if (columnForm.value.status) {
+        <td class="col-hidable">
+          {{ content.properties?.status === 'RELEASE' ? 'RELEASED' :
+          content.properties?.status }}
+        </td>
+        } @if (columnForm.value.securityRanking) {
+        <td class="col-hidable">{{ content.properties?.security_ranking }}</td>
+        }
+      </tr>
+      }
+    </tbody>
+  </table>
+
+  @if (contents().length === 0) {
+  <output class="empty-state">
+    <i class="fa fa-folder-open-o empty-state__icon" aria-hidden="true"></i>
+    <p class="empty-state__message">{{ 'label.empty.library' | transloco }}</p>
+  </output>
+  } @if (isNotItemToClipboardUndefined) {
+  <cbc-snackbar
+    [message]="'clipboard.item.added' | transloco: { name: itemToClipboard }"
+    (snackFinished)="itemToClipboard = undefined"
+  ></cbc-snackbar>
+  } @if (isNotSelectedItemsToClipboardUndefined) {
+  <cbc-snackbar
+    [message]="'clipboard.selected.item.added' | transloco "
+    (snackFinished)="selecteditemsToClipboard = false"
+  ></cbc-snackbar>
+  } @if (contents().length !== 0 && getSelectedNodes().length > 0) {
+  <ul class="bulk-actions">
+    <li>
+      <cbc-number-badge [number]="getSelectedNodes().length"></cbc-number-badge>
+    </li>
+    <li>
+      @if (!bulkDownloading() && !isGuest()) {
+      <button type="button" class="link-button" (click)="bulkDownloadCheck()">
+        <i class="fa fa-download" aria-hidden="true"></i>
+        {{ 'label.download' | transloco }}</button
+      >
+      }
+    </li>
+    @if (areNodesDeletable()) {
+    <li>
+      <button type="button" class="link-button" (click)="showDeleteAllModal()">
+        <i class="fa fa-trash-o" aria-hidden="true"></i>
+        {{ 'label.delete' | transloco }}</button
+      >
+    </li>
+    }
+    <li>
+      <button
+        type="button"
+        class="link-button"
+        (click)="addSelectedToClipboard()"
+      >
+        <i class="fa fa-copy" aria-hidden="true"></i>
+        {{ 'label.copy' | transloco }}</button
+      >
+    </li>
+    @if (canSendToAresBridge()) {
+    <li>
+      <button
+        type="button"
+        class="link-button"
+        (click)="sendToAresBridge()"
+        title="{{ 'label.send.to.ares' | transloco }}"
+      >
+        <i class="fa fa-share-square-o" aria-hidden="true"></i>
+        {{ 'label.send.to.ares' | transloco }}</button
+      >
+    </li>
+    }
+  </ul>
+  }
+
+  <div class="footer">
+    <cbc-pager
+      [length]="totalItems()"
+      [pageSize]="preferences().library.listing.limit"
+      [page]="preferences().library.listing.page"
+      (pageChange)="changePage($event)"
+    ></cbc-pager>
+  </div>
+</section>
+
+<cbc-delete-multiple
+  [nodes]="selection"
+  [showModal]="showMultipleDeleteWizard"
+  (modalHide)="afterMultipleDeletion($event)"
+/>
+<cbc-content-preview-ext
+  [showModal]="showPreview()"
+  [contentURL]="contentURL()"
+  [documentId]="previewDocumentId()"
+  [content]="contentToPreview"
+  (contentPreviewed)="closePreview()"
+/>
+
+@if (processing()) {
+<output
+  class="processing-overlay"
+  aria-label="{{ 'label.processing' | transloco }}"
+>
+  <cbc-spinner></cbc-spinner>
+</output>
+}
+
+<cbc-modal
+  [title]="'label.dialog.alert.snc.download.title'"
+  (ok)="bulkDownload()"
+  (cancelModal)="acceptSncShowModal = false"
+  [(visible)]="acceptSncShowModal"
+  [okLabel]="'label.confirm'"
+  [contentClass]="'modal-content'"
+>
+  <p [innerHTML]="message" class="message"></p>
+
+  @for (content of getSncFiles(); track content) {
+  <div>
+    <strong>{{content}} </strong>
+    <br />
+  </div>
+  }
+</cbc-modal>

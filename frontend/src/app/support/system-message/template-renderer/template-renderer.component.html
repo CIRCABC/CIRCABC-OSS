@@ -1,0 +1,41 @@
+@let _template = template(); @if (_template) {
+<section class="template">
+  <div class="side-information" role="note">
+    <span class="label"
+      >{{ 'admin.system.message.autoclose' | transloco }}:</span
+    >
+    {{ _template.dateClosure | date: 'y MMMM d, H:mm' }}
+    <br />
+    <span class="label">{{ 'label.level' | transloco }}:</span>
+    {{ _template.level }}
+    <br />
+    <span class="label">{{ 'label.enabled' | transloco }}:</span>
+    {{ _template.enabled }}
+    <br />
+    <span class="label"
+      >{{ 'admin.system.message.display.time' | transloco }}:</span
+    >
+    {{ _template.displayTime }}
+  </div>
+
+  <div class="template-content" [innerHTML]="_template.content"></div>
+
+  <div class="actions">
+    <a
+      data-cy="update-message"
+      [routerLink]="['update', _template.id]"
+      style="text-decoration: underline"
+      >{{ 'label.edit' | transloco }}</a
+    >
+
+    <cbc-inline-delete (deletionConfirmed)="onDelete()"></cbc-inline-delete>
+
+    <span>
+      &nbsp;|&nbsp; {{ 'admin.system.message.show.in.old' | transloco }} &nbsp;
+      <a tabindex="0" (click)="useAsOldMessage()"
+        >{{ 'label.apply' | transloco }}</a
+      >
+    </span>
+  </div>
+</section>
+}

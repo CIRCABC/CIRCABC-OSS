@@ -1,0 +1,16 @@
+:host {
+  display: block;
+}
+
+.editor-toolbar {
+  /* Quill will attach its toolbar behavior to the buttons inside this container */
+}
+
+.editor-container {
+  border: 1px solid #ccc;
+  border-top: 0;
+
+  :host-context(.ng-invalid.ng-touched) & {
+    border-color: #f44336;
+  }
+}

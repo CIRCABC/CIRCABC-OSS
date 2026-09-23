@@ -1,0 +1,25 @@
+@if (visible()) {
+<section
+  class="modal"
+  [class.modal-shown]="visible()"
+  [class.modal-hidden]="!visible()"
+  [ngStyle]="{ 'margin-top.px': 0 }"
+>
+  <div class="cancelButton">
+    <button type="button" (click)="onCancel()" (keydown.enter)="onCancel()">
+      <img alt="cancel icon" src="img/cancel.png" />
+    </button>
+  </div>
+
+  <section [ngClass]="contentClass()">
+    <ng-content></ng-content>
+    @if (executing()) {
+    <div class="field">
+      <div
+        >{{ executingLabel() | transloco }}... <cbc-spinner></cbc-spinner
+      ></div>
+    </div>
+    }
+  </section>
+</section>
+}

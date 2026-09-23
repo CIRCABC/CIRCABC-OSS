@@ -1,0 +1,68 @@
+<div [formGroup]="form" class="lang-selector-root">
+  @if (!compactMode()) {
+  <select
+    #languages
+    class="lang-select"
+    (change)="onLanguageChange(languages.value)"
+    [(value)]="currentLang"
+    formControlName="lang"
+    [attr.aria-label]="'label.language' | transloco"
+  >
+    @if (noSelectLangOption()) {
+    <option value=""></option>
+    } @for (lang of availableLang(); track lang.code) {
+    <option value="{{ lang.code }}">{{ lang.name }} ({{ lang.code }})</option>
+    }
+  </select>
+  } @if (compactMode()) {
+
+  <div
+    class="selector-compact"
+    [class.expanded]="expanded"
+    [class.on-light]="iconColorOnlyBlue()"
+  >
+    <button
+      type="button"
+      class="compact-trigger"
+      [matMenuTriggerFor]="menu"
+      (menuOpened)="expand()"
+      (menuClosed)="collapse()"
+      [attr.aria-label]="('label.language' | transloco) + ': ' + currentLang()"
+      [attr.aria-expanded]="expanded"
+    >
+      <svg
+        class="icon-globe"
+        aria-hidden="true"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <path
+          d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10A15.3 15.3 0 0 1 12 2z"
+        />
+      </svg>
+      <span class="lang-indicator">{{ currentLang() }}</span>
+      <svg
+        class="icon-chevron"
+        aria-hidden="true"
+        viewBox="0 0 12 12"
+        fill="currentColor"
+      >
+        <path d="M6 8.5L1.5 4h9z" />
+      </svg>
+    </button>
+  </div>
+
+  <mat-menu #menu="matMenu" panelClass="lang-menu">
+    @for (lang of availableLang(); track lang.code) {
+    <button type="button" mat-menu-item (click)="onLanguageChange(lang.code)">
+      <span class="lang-menu-flag">{{ lang.flag }}</span>
+      <span class="lang-menu-name">{{ lang.name }}</span>
+      <span class="lang-menu-code">{{ lang.code }}</span>
+    </button>
+    }
+  </mat-menu>
+  }
+</div>

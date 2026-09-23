@@ -1,0 +1,91 @@
+.modal {
+  min-width: 280px;
+  width: auto;
+  max-height: none;
+}
+
+.modal-show {
+  display: flex;
+}
+
+.flexContainer {
+  display: flex;
+  flex-flow: row;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.flexFullRow {
+  flex: 1 1 100%;
+}
+
+.flexFullRowWarn {
+  flex: 1 1 100%;
+  border: solid;
+  border-color: red;
+  padding: 5pt;
+}
+
+.flexWrap {
+  flex: 1 1 auto;
+  align-self: center;
+}
+
+.flex0 {
+  flex: 0;
+}
+
+:host ::ng-deep .description {
+  padding: 0 0 0 100px;
+}
+
+:host ::ng-deep .expanded {
+  width: auto;
+}
+
+@media screen and (max-width: 620px) {
+  :host ::ng-deep .description {
+    padding: 0 5px;
+  }
+}
+
+:host ::ng-deep .text {
+  width: 300px;
+}
+
+.access {
+  min-width: 100px;
+  padding-right: 15px;
+}
+
+mat-slider {
+  width: 100%;
+}
+
+.slide-container {
+  flex: 1 1 100%;
+  padding-top: 20px;
+
+  .slide-box {
+    flex: 1 1 auto;
+    align-items: center;
+    display: flex;
+    flex-wrap: nowrap;
+
+    .slide-label {
+      flex: 0;
+      min-width: 100px;
+      padding-right: 15px;
+    }
+
+    .slide {
+      flex: 1 1 auto;
+    }
+
+    .slide-permission {
+      flex: 0;
+      min-width: 100px;
+      padding-left: 20px;
+    }
+  }
+}

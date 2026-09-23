@@ -1,0 +1,202 @@
+.div-spinner {
+  margin-right: 0;
+  font-size: small;
+  float: right;
+  padding-top: 3px;
+}
+
+.padding-spinner-text {
+  padding-right: 10px;
+}
+
+.field label {
+  width: unset;
+}
+
+.view-select {
+  width: 100px;
+  height: 25px;
+}
+
+.select--form select {
+  width: 100px;
+  height: 25px;
+  padding-top: 0;
+  padding-bottom: 1px;
+  padding-left: 10px;
+}
+
+.field-select {
+  margin-bottom: 0;
+  font-size: 13px;
+  float: right;
+  color: var(--theme-text-muted);
+}
+
+.field-in-date {
+  width: 150px;
+  padding: 0;
+  font-size: 13px;
+  float: right;
+  height: 25px;
+  margin-right: 10px;
+  padding-left: 10px;
+}
+
+.apply-button {
+  float: right;
+  height: 24px;
+  padding-top: 3px;
+  margin-right: 10px;
+}
+
+.ui-inputtext {
+  max-width: 100px;
+  font-size: 13px;
+}
+
+.ui-calendar {
+  float: right;
+}
+
+.field {
+  float: right;
+  margin-bottom: 0;
+}
+
+/* Improved calendar header toolbar */
+.calendar-container > header.header {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--theme-border-color);
+  margin-bottom: 8px;
+  font-size: 12px;
+
+  .float-left {
+    float: none;
+    min-width: 0;
+  }
+
+  .field,
+  .field-select {
+    float: none;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 0;
+    font-size: 11px;
+  }
+
+  /* Ensure 'View as' is always pushed to the rightmost position */
+  .field-view-as {
+    margin-left: auto;
+  }
+
+  .custom-select {
+    overflow: visible;
+  }
+
+  .view-label {
+    white-space: nowrap;
+    font-size: 11px;
+    color: var(--theme-text-muted);
+  }
+
+  .view-select {
+    height: 22px;
+    width: 80px;
+  }
+
+  .select--form select {
+    height: 22px;
+    width: 80px;
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 6px;
+    font-size: 11px;
+  }
+
+  .nav-months .buttons {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    .previous-month,
+    .next-month {
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .current-month,
+    .current-day,
+    .current-week {
+      font-weight: 600;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+  }
+
+  form {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    .apply-button {
+      float: none;
+      margin-right: 0;
+      height: 22px;
+      font-size: 11px;
+      padding-top: 2px;
+    }
+
+    mat-form-field {
+      width: 120px;
+    }
+  }
+}
+
+@media screen and (max-width: 740px) {
+  .page-header__actions {
+    position: relative;
+    right: -5px;
+    top: 10px;
+  }
+
+  .calendar-container {
+    position: relative;
+    top: 20px;
+  }
+
+  .header-width {
+    min-width: 280px;
+  }
+
+  .view-select {
+    margin-right: 0;
+  }
+
+  .view-down {
+    margin-top: 15px;
+  }
+
+  .select--form select {
+    width: 80px;
+  }
+
+  .current-month {
+    font-size: 11px;
+  }
+
+  .current-week {
+    font-size: 11px;
+    width: 150px;
+  }
+
+  .current-day {
+    font-size: 11px;
+    width: 150px;
+  }
+}

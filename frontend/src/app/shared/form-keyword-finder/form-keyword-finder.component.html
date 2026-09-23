@@ -1,0 +1,22 @@
+<div class="field">
+  <label for="searchText">{{ label() | transloco }}</label>
+  <ul class="availableKeywords">
+    @for (keyword of availableKeywords(); track keyword.id) {
+    <li>
+      <!-- NOSONAR: Native checkbox is keyboard accessible -->
+      <input
+        type="checkbox"
+        aria-label="{{ keyword.name }}"
+        [checked]="keyword.selected"
+        (click)="toggleSelected(keyword)"
+        (keydown.enter)="toggleSelected(keyword)"
+      />
+      <cbc-keyword-tag [keyword]="keyword"></cbc-keyword-tag>
+    </li>
+    } @if (availableKeywords().length === 0) {
+    <li>
+      <span class="nothing">{{ 'label.nothing.to.select' | transloco }}</span>
+    </li>
+    }
+  </ul>
+</div>

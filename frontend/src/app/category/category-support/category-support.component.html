@@ -1,0 +1,72 @@
+<h2>{{ 'admin.category.support.title' | transloco }}</h2>
+<p> {{ 'admin.category.support.contact.explanation' | transloco }} </p>
+<form [formGroup]="categoryForm">
+  <div class="field switch">
+    <div class="label"
+      >{{ 'admin.category.support.contact.single' | transloco }}</div
+    >
+    <input
+      id="useSingleContact"
+      class="cmn-toggle cmn-toggle-round"
+      type="checkbox"
+      formControlName="useSingleContact"
+    />
+    <label
+      for="useSingleContact"
+      class="nonBlockLabel"
+      aria-label="{{ 'label.use.single.contact' | transloco }}"
+    ></label>
+    <span
+      >{{ (categoryForm.value.useSingleContact === true ? 'label.yes' :
+      'label.no') | transloco }}</span
+    >
+  </div>
+
+  @if (categoryForm.value.useSingleContact === true) {
+  <div class="field">
+    <label for="contactEmails">{{ 'label.email' | transloco }}</label>
+    <input
+      id="contactEmails"
+      type="email"
+      formControlName="contactEmail"
+      placeholder="email@domain.com"
+      email
+    />
+  </div>
+  } @if (categoryForm.value.useSingleContact === false) {
+  <div>
+    <p> {{ 'admin.category.support.contact.many.explanation' | transloco }} </p>
+    <ul class="list-of-admins">
+      @for (admin of administrators(); track admin.userId) {
+      <li class="row">
+        <a tabindex="0" (click)="toggleSelect(admin.email)">
+          <span class="admin-user"
+            >{{ admin.firstname + ' ' + admin.lastname }}</span
+          >&nbsp;<span class="admin-email">{{ admin.email }}</span>
+        </a>
+        @if (isEmailSelected(admin.email)) {
+        <img src="img/check.png" alt="selected" />
+        }
+      </li>
+      }
+    </ul>
+  </div>
+  } @if (updating()) {
+  <div class="field">
+    <div>{{ 'label.updating' | transloco }}...<cbc-spinner></cbc-spinner></div>
+  </div>
+  } @if (!updating()) {
+  <div class="buttons-group">
+    <a
+      tabindex="0"
+      class="cta"
+      (click)="update()"
+      [class.disabled]="!isFormValid()"
+      >{{ 'label.update' | transloco }}</a
+    >
+    <a tabindex="0" class="button" (click)="cancel()"
+      >{{ 'label.cancel' | transloco }}</a
+    >
+  </div>
+  }
+</form>

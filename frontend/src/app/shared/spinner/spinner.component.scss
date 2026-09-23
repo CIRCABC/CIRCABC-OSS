@@ -1,0 +1,29 @@
+@use 'css/global/variables-mixins-keyframes';
+
+.cssload-container {
+  height: 22px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cssload-speeding-wheel {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgb(0 51 85 / 0.2);
+  border-radius: variables-mixins-keyframes.$radius-full;
+  border-top-color: #035;
+  animation: cssload-spin 800ms infinite linear;
+}
+
+.white-speeding-wheel {
+  border-color: rgb(255 255 255 / 0.25);
+  border-top-color: #fff;
+}
+
+@keyframes cssload-spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}

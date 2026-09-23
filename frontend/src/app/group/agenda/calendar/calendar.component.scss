@@ -1,0 +1,55 @@
+@use 'css/global/variables-mixins-keyframes';
+
+.flex-calendar {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+
+  .day {
+    .events {
+      width: 100%;
+
+      a.empty-events {
+        display: none;
+        cursor: pointer;
+        width: 100%;
+        text-align: center;
+        vertical-align: middle;
+      }
+    }
+
+    &:hover {
+      .events {
+        a.empty-events {
+          display: block;
+        }
+      }
+    }
+  }
+}
+
+.flex-day {
+  width: calc(100% / 7);
+
+  @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+    width: 47%;
+  }
+
+  @media screen and (max-width: variables-mixins-keyframes.$break-small) {
+    width: 100%;
+  }
+}
+
+/* Override left-popup arrow and min-height for calendar/month view */
+.left-popup::after {
+  top: 25px;
+}
+
+.left-popup--calendar .events-of-the-day {
+  min-height: 280px;
+}
+
+.event-line {
+  margin-bottom: 0;
+  font-size: 11px;
+}

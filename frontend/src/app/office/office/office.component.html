@@ -1,0 +1,17 @@
+<h1>
+  @if (!isLogged) {
+  <p style="text-align: center"> {{ 'label.office.login' | transloco }} </p>
+  } @if (!isLogged) {
+  <p style="text-align: center"> {{ 'label.office.accounts' | transloco }} </p>
+  }
+  <mgt-login (loginCompleted)="onLogin()"></mgt-login>
+  @if (mode()==='edit' && isLogged) {
+  <p style="text-align: center"> {{ 'label.office.edit' | transloco }} </p>
+  } @if (mode()==='update' && isLogged) {
+  <p style="text-align: center"> {{ 'label.office.update' | transloco }} </p>
+  }
+  <mat-progress-spinner
+    style="margin: 0 auto"
+    [mode]="spinnerMode()"
+  ></mat-progress-spinner>
+</h1>

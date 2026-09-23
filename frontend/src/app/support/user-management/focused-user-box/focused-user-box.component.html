@@ -1,0 +1,60 @@
+@let _user = user();
+<h2>{{ 'label.details' | transloco }}</h2>
+@if (_user) {
+<section>
+  <dl class="user-details" style="font-size: 13px">
+    <div class="user-details__row">
+      <dt class="bold"> {{ 'label.userid' | transloco }}</dt>
+      <dd>{{ _user.userId }} </dd>
+    </div>
+    <div class="user-details__row">
+      <dt class="bold"> {{ 'label.firstname' | transloco }}</dt>
+      <dd>{{ _user.firstname }} </dd>
+    </div>
+    <div class="user-details__row">
+      <dt class="bold"> {{ 'label.lastname' | transloco }}</dt>
+      <dd>{{ _user.lastname }} </dd>
+    </div>
+    <div class="user-details__row">
+      <dt class="bold"> {{ 'label.email' | transloco }}</dt>
+      <dd>{{ _user.email }} </dd>
+    </div>
+    @if (_user.properties) {
+    <div class="user-details__row">
+      <dt class="bold"> {{ 'label.postal.address' | transloco }}</dt>
+      <dd>{{ _user.properties.address }} </dd>
+    </div>
+    } @if (_user.properties) {
+    <div class="user-details__row">
+      <dt class="bold"> {{ 'label.phone' | transloco }}</dt>
+      <dd>{{ _user.properties.phone }} </dd>
+    </div>
+    } @if (_user.properties) {
+    <div class="user-details__row">
+      <dt class="bold"> {{ 'label.organisation' | transloco }}</dt>
+      <dd>{{ _user.properties.organisation }} </dd>
+    </div>
+    } @if (_user.properties) {
+    <div class="user-details__row">
+      <dt class="bold"> {{ 'label.title' | transloco }}</dt>
+      <dd>{{ _user.properties.title }} </dd>
+    </div>
+    } @if (_user.properties) {
+    <div class="user-details__row">
+      <dt class="bold"> {{ 'label.description' | transloco }}</dt>
+      <dd>{{ _user.properties.description }} </dd>
+    </div>
+    } @if (_user.properties) {
+    <div class="user-details__row">
+      <dt class="bold"> {{ 'label.fax' | transloco }}</dt>
+      <dd>{{ _user.properties.fax }} </dd>
+    </div>
+    } @if (_user.properties) {
+    <div class="user-details__row">
+      <dt class="bold"> {{ 'label.url' | transloco }}</dt>
+      <dd>{{ _user.properties.url }} </dd>
+    </div>
+    }
+  </dl>
+</section>
+}

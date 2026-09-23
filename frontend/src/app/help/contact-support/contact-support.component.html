@@ -1,0 +1,174 @@
+{{ 'contact.support' | transloco | cbcSetTitle }}
+
+<div class="flexPage">
+  <div class="page-container">
+    <section class="box">
+      <header class="header">
+        <span class="title">{{ 'contact.support' | transloco }}</span>
+      </header>
+      <div class="main">
+        <div class="wrap-box-container">
+          <div class="wrap-box">
+            <form [formGroup]="contactForm" class="wrap-box-container">
+              <div class="wrap-box">
+                <div class="field">
+                  <label for="reason" class="mandatory"
+                    >{{ 'label.reason' | transloco }}</label
+                  >
+                  <div class="custom-select select--form">
+                    <select id="reason" formControlName="reason">
+                      @for (reason of reasons; track reason) {
+                      <option value="{{ reason }}">
+                        {{ reason | transloco }}
+                      </option>
+                      }
+                    </select>
+                  </div>
+                  @if (contactForm) {
+                  <cbc-control-message
+                    [control]="reasonControl"
+                  ></cbc-control-message>
+                  }
+                </div>
+                <div class="field">
+                  <label for="name" class="mandatory"
+                    >{{ 'label.name' | transloco }}</label
+                  >
+                  <input
+                    type="text"
+                    id="name"
+                    [readOnly]="!isGuest()"
+                    formControlName="name"
+                  />
+                  @if (contactForm) {
+                  <cbc-control-message
+                    [control]="nameControl"
+                  ></cbc-control-message>
+                  }
+                </div>
+                <div class="field">
+                  <label for="email" class="mandatory"
+                    >{{ 'label.email' | transloco }}</label
+                  >
+                  <input
+                    type="text"
+                    id="email"
+                    [readOnly]="!isGuest()"
+                    formControlName="email"
+                  />
+                  @if (contactForm) {
+                  <cbc-control-message
+                    [control]="emailControl"
+                  ></cbc-control-message>
+                  }
+                </div>
+              </div>
+              <div class="wrap-box">
+                @if (needsSubject()) {
+                <div class="field">
+                  <label for="subject" class="mandatory"
+                    >{{ 'label.subject' | transloco }}</label
+                  >
+                  <input type="text" id="subject" formControlName="subject" />
+                  @if (contactForm) {
+                  <cbc-control-message
+                    [control]="subjectControl"
+                  ></cbc-control-message>
+                  }
+                </div>
+                }
+
+                <div class="field">
+                  <label
+                    for="content"
+                    style="vertical-align: top"
+                    class="mandatory"
+                    >{{ 'label.text' | transloco }}</label
+                  >
+                  <div class="editor">
+                    <cbc-rich-text-editor
+                      id="content"
+                      formControlName="content"
+                      editorHeight="270px"
+                      ><span class="ql-formats">
+                        <button class="ql-bold" aria-label="Bold"></button>
+                        <button class="ql-italic" aria-label="Italic"></button>
+                        <button
+                          class="ql-underline"
+                          aria-label="Underline"
+                        ></button>
+                        <button class="ql-strike" aria-label="Strike"></button>
+                      </span>
+                      <span class="ql-formats">
+                        <button
+                          class="ql-blockquote"
+                          aria-label="Strike"
+                        ></button>
+                        <button
+                          class="ql-link"
+                          aria-label="link"
+                        ></button> </span
+                    ></cbc-rich-text-editor>
+                  </div>
+
+                  @if (contactForm) {
+                  <cbc-control-message
+                    [control]="contentControl"
+                  ></cbc-control-message>
+                  }
+                </div>
+
+                <div class="field field--file">
+                  <span class="label">{{ 'label.file' | transloco }}</span>
+                  <input
+                    type="file"
+                    id="file"
+                    class="inputfile inputfile-6"
+                    formControlName="file"
+                    (change)="fileChangeEvent($event)"
+                  />
+                  <label for="file"
+                    ><span class="result">{{ getFileName() }}</span
+                    ><span class="button"
+                      >{{ 'label.browse.file' | transloco }}</span
+                    >
+                  </label>
+                </div>
+              </div>
+            </form>
+          </div>
+          @if (isGuest()) {
+          <div class="wrap-box captcha">
+            <cbc-captcha></cbc-captcha>
+            @if(isWrongCaptcha()) {
+            <p class="text-error">{{'error.wrong.captcha' | transloco}}</p>
+            }
+          </div>
+          }
+        </div>
+
+        @if (processing()) {
+        <div class="actions">
+          <p>
+            {{ 'label.sending' | transloco }}...
+            <cbc-spinner></cbc-spinner>
+          </p>
+        </div>
+        } @if (!processing()) {
+        <div class="actions buttons-group">
+          <a
+            tabindex="0"
+            class="cta"
+            (click)="!contactForm.valid ? '' : contact()"
+            [class.disabled]="isDisabled()"
+            >{{ 'label.send' | transloco }}</a
+          >
+          <a class="button" [routerLink]="['/help/start']"
+            >{{ 'label.cancel' | transloco }}</a
+          >
+        </div>
+        }
+      </div>
+    </section>
+  </div>
+</div>

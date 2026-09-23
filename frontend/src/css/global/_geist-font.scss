@@ -1,0 +1,19 @@
+/* Geist Variable — single file covering weights 100–900 */
+/* Primary typeface for UI and headings */
+/* Source: https://github.com/vercel/geist-font (SIL Open Font License) */
+
+@font-face {
+  font-family: Geist;
+  font-display: swap;
+  src: url(fonts/geist/Geist-Variable.woff2) format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Geist Mono';
+  font-display: swap;
+  src: url(fonts/geist/GeistMono-Variable.woff2) format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+}

@@ -1,0 +1,60 @@
+{{ 'label.forums.title' | transloco: { groupName:
+$safeNavigationMigration(group()?.name) } | cbcSetTitle }} @if (loading()) {
+<cbc-horizontal-loader />
+}
+<div class="fluid forums page-container">
+  <div class="page-header">
+    <h1
+      class="page-header__title"
+      [attr.aria-label]="'forums.page.title' | transloco"
+      [innerHTML]="'forums.page.title' | transloco"
+    >
+      {{ 'forums.page.title' | transloco }}
+    </h1>
+    @if (group() && node()) {
+    <div class="page-header__actions">
+      <cbc-reponsive-sub-menu>
+        @if (!isNewsgroupRoot() && isNewsgroupAdmin()) {
+        <a
+          [routerLink]="['../../permissions', node()!.id]"
+          [queryParams]="{ from: 'forum' }"
+          >{{ 'label.permissions' | transloco }}</a
+        >
+        } @if (isNewsgroupAdmin()) {
+        <a
+          [routerLink]="['../../notification-status', node()!.id]"
+          [queryParams]="{ from: 'forum' }"
+          >{{ 'label.notifications' | transloco }}</a
+        >
+        } @if (isNewsgroupAdmin()) {
+        <a tabindex="0" (click)="showConfigurationModal = true"
+          >{{ 'label.configuration' | transloco }}</a
+        >
+        }
+      </cbc-reponsive-sub-menu>
+      @if (isNewsgroupPost() || isNewsgroupModerateAdmin()) {
+      <cbc-forum-dropdown
+        [currentNode]="node()!"
+        [enableAddTopic]="isNewsgroupPost() || isNewsgroupAdmin()"
+        [enableAddForum]="isNewsgroupModerateAdmin()"
+        (actionFinished)="refresh($event)"
+      ></cbc-forum-dropdown>
+      }
+    </div>
+    }
+  </div>
+
+  @if (group() && groupConfiguration()) {
+  <cbc-forum-browser
+    [forum]="node()!"
+    [groupConfiguration]="groupConfiguration()!"
+    [group]="group()!"
+  ></cbc-forum-browser>
+  }
+</div>
+
+<cbc-configure-forum-service
+  [(showModal)]="showConfigurationModal"
+  [groupId]="groupId()"
+  (modalHide)="refreshConf($event)"
+/>

@@ -1,0 +1,28 @@
+version: '3.4'
+
+networks:
+  eucaptcha-network:
+    driver: bridge
+
+services:
+  redis:
+    image: redislabs/redismod
+    networks:
+      - eucaptcha-network
+    ports:
+      - '6379:6379'
+  eucaptcha:
+    image: eucaptcha
+    networks:
+      - eucaptcha-network
+    depends_on:
+      - redis
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - 80:80
+    environment:
+      REDIS: redis
+      REDIS_PORT: 6379
+      # REDIS_PWD: trt

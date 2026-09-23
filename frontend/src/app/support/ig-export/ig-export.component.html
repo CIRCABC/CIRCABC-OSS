@@ -1,0 +1,89 @@
+<div class="export-page">
+  <h3 class="page-title">{{ 'admin.ig.export.title' | transloco }}</h3>
+  <p class="page-subtitle">Export an Interest Group as XML</p>
+
+  <div class="form-steps">
+    <!-- Step 1: Header -->
+    <div class="step">
+      <span class="step-indicator">1</span>
+      <div class="step-content">
+        <mat-form-field appearance="outline">
+          <mat-label
+            >{{ 'admin.ig.export.header.label' | transloco }}</mat-label
+          >
+          <mat-select
+            [value]="selectedHeaderId()"
+            (selectionChange)="onHeaderChange($event.value)"
+          >
+            @for (h of headersResource.value() ?? []; track h.id) {
+            <mat-option [value]="h.id">{{ h.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Step 2: Category -->
+    @if (selectedHeaderId()) {
+    <div class="step">
+      <span class="step-indicator">2</span>
+      <div class="step-content">
+        <mat-form-field appearance="outline">
+          <mat-label
+            >{{ 'admin.ig.export.category.label' | transloco }}</mat-label
+          >
+          <mat-select
+            [value]="selectedCategoryId()"
+            (selectionChange)="onCategoryChange($event.value)"
+          >
+            @for (c of categoriesResource.value() ?? []; track c.id) {
+            <mat-option [value]="c.id">{{ c.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+    }
+
+    <!-- Step 3: Interest Group -->
+    @if (selectedCategoryId()) {
+    <div class="step">
+      <span class="step-indicator">3</span>
+      <div class="step-content">
+        @if (igsResource.isLoading()) {
+        <mat-progress-bar mode="indeterminate" />
+        } @else if ((igsResource.value() ?? []).length === 0) {
+        <p class="empty-state">{{ 'admin.ig.export.no.ig' | transloco }}</p>
+        } @else {
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'admin.ig.export.ig.label' | transloco }}</mat-label>
+          <mat-select
+            [value]="selectedIgId()"
+            (selectionChange)="onIgChange($event.value)"
+          >
+            @for (ig of igsResource.value() ?? []; track ig.id) {
+            <mat-option [value]="ig.id">{{ ig.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        }
+      </div>
+    </div>
+    }
+  </div>
+
+  <!-- Export Action -->
+  @if (selectedIgId()) {
+  <div class="export-action">
+    <button class="export-btn" [disabled]="!canExport()" (click)="export()">
+      <i class="fa fa-download"></i>
+      {{ 'admin.ig.export.button' | transloco }}
+    </button>
+    @if (loading()) {
+    <mat-progress-bar mode="indeterminate" />
+    }
+  </div>
+  } @if (error()) {
+  <div class="error-banner" role="alert">{{ error() }}</div>
+  }
+</div>

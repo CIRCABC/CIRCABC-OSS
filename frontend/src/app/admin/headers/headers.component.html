@@ -1,0 +1,59 @@
+@if (isAdmin()) {
+<div class="wrap page-container">
+  <h1 class="visually-hidden">{{ 'label.administer.headers' | transloco }}</h1>
+  <section class="table-container">
+    <header class="header">
+      <div style="float: right; font-size: 14px">
+        <a tabindex="0" (click)="loadHeaders()">
+          <img src="img/icon-autoupload-20x20.png" alt="Refresh Icon" />&nbsp;{{
+          'label.refresh' | transloco }}&nbsp;&nbsp;
+        </a>
+      </div>
+    </header>
+
+    <table class="main">
+      <thead>
+        <tr>
+          <th><span class="visually-hidden">Actions</span></th>
+          <th style="width: 22px"
+            ><span class="visually-hidden">Select</span></th
+          >
+          <th> {{ 'label.name' | transloco }} </th>
+          <th> {{ 'label.description' | transloco }} </th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr class="row empty-row">
+          @if (headers().length === 0) {
+          <td style="padding-left: 22px" colspan="4"
+            >{{ 'headers.display.none' | transloco }}</td
+          >
+          }
+        </tr>
+        @for (header of headers(); track header.id) {
+        <tr class="row">
+          <td class="cell-left-border"></td>
+          <td class="cell-checkbox"></td>
+          <td class="cell-file-name" style="width: 80px">
+            {{ header.name }}
+            <div class="actions" style="width: 300px">
+              @if (!hasCategories(header)) {
+              <span>
+                <cbc-inline-delete
+                  (deletionConfirmed)="deleteHeader(header)"
+                ></cbc-inline-delete>
+              </span>
+              } @if (hasCategories(header)) {
+              <span> {{ 'headers.has.categories' | transloco }} </span>
+              }
+            </div>
+          </td>
+          <td>{{ getDescription(header) }} </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+</div>
+}

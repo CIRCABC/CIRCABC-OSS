@@ -1,0 +1,197 @@
+@if (loading()) {
+<cbc-horizontal-loader />
+}
+<div class="wrap page-container">
+  <div class="page-header">
+    <span
+      class="page-header__title"
+      [innerHtml]="'agenda-list.page.title' | transloco"
+    ></span>
+    <div class="page-header__actions">
+      <cbc-reponsive-sub-menu>
+        <a [routerLink]="['..']">{{ 'label.view.as.calendar' | transloco }}</a>
+      </cbc-reponsive-sub-menu>
+    </div>
+  </div>
+  <section class="table-container">
+    <header class="header">
+      <cbc-pager
+        [length]="appointments().length"
+        [pageSize]="listingOptions().limit"
+        [page]="listingOptions().page"
+        (pageChange)="goToPage($event)"
+      ></cbc-pager>
+
+      <span class="icons">
+        <div class="dropdown-trigger">
+          <img src="img/icon-admin-blue.png" alt="Settings" />
+          <div class="dropdown dropdown--library-settings">
+            <div class="number-of-items">
+              {{ 'label.show' | transloco }}:
+              <a tabindex="0" (click)="changeLimit(10)">10</a>
+              <a tabindex="0" (click)="changeLimit(25)">25</a>
+              <a tabindex="0" (click)="changeLimit(50)">50</a>
+              <a tabindex="0" (click)="changeLimit(100)">100</a>
+              <a tabindex="0" (click)="changeLimit(-1)"
+                >{{ 'label.all' | transloco }}</a
+              >
+            </div>
+          </div>
+        </div>
+        <cbc-hint
+          [title]="'agenda-list.description' | transloco"
+          [text]="'agenda-list.page.help' | transloco"
+        ></cbc-hint>
+      </span>
+    </header>
+
+    <form [formGroup]="changeDateForm">
+      <div class="filtering">
+        {{ 'label.filter.by' | transloco }}:
+        <a
+          tabindex="0"
+          [class.link-underline]="filter === 'Previous'"
+          (click)="changeFilter('Previous')"
+          >{{ 'agenda-list.past.events' | transloco }}</a
+        >
+        |
+        <a
+          tabindex="0"
+          [class.link-underline]="filter === 'Future'"
+          (click)="changeFilter('Future')"
+          >{{ 'agenda-list.future.events' | transloco }}</a
+        >
+        |
+        <a
+          tabindex="0"
+          [class.link-underline]="filter === 'Exact'"
+          (click)="changeFilter('Exact')"
+          >{{ 'agenda-list.exact.date' | transloco }}</a
+        >
+        @if (filter === 'Exact') {
+        <mat-form-field>
+          <label for="exactDate" class="visually-hidden"
+            >{{ 'agenda-list.exact.date' | transloco }}</label
+          >
+          <input
+            id="exactDate"
+            matInput
+            [matDatepicker]="dp_date"
+            formControlName="date"
+            [placeholder]="getFormattedTodaysDate()"
+          />
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="dp_date"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #dp_date></mat-datepicker>
+        </mat-form-field>
+        }
+      </div>
+    </form>
+
+    <table class="main">
+      <thead>
+        <tr>
+          <th><span class="visually-hidden">Actions</span></th>
+          <th style="width: 22px"
+            ><span class="visually-hidden">Select</span></th
+          >
+          <th>
+            <a tabindex="0" (click)="changeSort('title')"
+              >{{ 'label.title' | transloco }}</a
+            >
+            @if (listingOptions().sort === 'title_ASC') {
+            <span class="order-arrow-up"></span>
+            } @if (listingOptions().sort === 'title_DESC') {
+            <span class="order-arrow-down"></span>
+            }
+          </th>
+          <th>
+            <a tabindex="0" (click)="changeSort('appointmentDate')"
+              >{{ 'label.date' | transloco }}</a
+            >
+            @if (listingOptions().sort === 'appointmentDate_ASC') {
+            <span class="order-arrow-up"></span>
+            } @if (listingOptions().sort === 'appointmentDate_DESC') {
+            <span class="order-arrow-down"></span>
+            }
+          </th>
+          <th class="col-hidable">
+            <a tabindex="0" (click)="changeSort('appointmentType')"
+              >{{ 'label.type' | transloco }}</a
+            >
+            @if (listingOptions().sort === 'appointmentType_ASC') {
+            <span class="order-arrow-up"></span>
+            } @if (listingOptions().sort === 'appointmentType_DESC') {
+            <span class="order-arrow-down"></span>
+            }
+          </th>
+          <th>
+            <a tabindex="0" (click)="changeSort('contact')"
+              >{{ 'welcome.contact' | transloco }}</a
+            >
+            @if (listingOptions().sort === 'contact_ASC') {
+            <span class="order-arrow-up"></span>
+            } @if (listingOptions().sort === 'contact_DESC') {
+            <span class="order-arrow-down"></span>
+            }
+          </th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @if (appointments() !== undefined) {
+        <tr class="row empty-row">
+          @if (appointments().length === 0) {
+          <td style="padding-left: 22px" colspan="7">
+            {{ 'event.display.none' | transloco }}
+          </td>
+          }
+        </tr>
+        } @for (appointment of appointments(); track appointment.id) {
+        <tr class="row">
+          <td class="cell-left-border"></td>
+          <td class="cell-checkbox"></td>
+          <td class="cell-file-name">
+            <div class="file-name">{{ appointment.title }}</div>
+            <div class="actions">
+              @if (isEveAdmin()) {
+              <span>
+                <a tabindex="0" (click)="popupDeleteEvent(appointment)"
+                  >{{ 'label.delete' | transloco }}</a
+                >
+              </span>
+              }
+              <span>
+                <a [routerLink]="['..', appointment.id, 'details']"
+                  >{{ 'event.view.details' | transloco }}</a
+                >
+              </span>
+            </div>
+          </td>
+          <td>{{ appointment.appointmentDate }}</td>
+          <td>{{ appointment.appointmentType }}</td>
+          <td>{{ appointment.contact }}</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+
+    <div class="footer">
+      <cbc-pager
+        [length]="appointments().length"
+        [pageSize]="listingOptions().limit"
+        [page]="listingOptions().page"
+        (pageChange)="goToPage($event)"
+      ></cbc-pager>
+    </div>
+  </section>
+
+  <cbc-delete-event
+    [showModal]="deleteEventShowModal"
+    [event]="eventToDelete"
+    (modalHide)="deleteEventShowModal = false"
+    (eventMeetingDeleted)="redisplayListAfterDelete()"
+  ></cbc-delete-event>
+</div>

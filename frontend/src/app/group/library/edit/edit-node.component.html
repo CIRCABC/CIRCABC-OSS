@@ -1,0 +1,417 @@
+@if (node) {
+<div class="wrap admin page-container">
+  <form [formGroup]="editNodeForm">
+    <section class="box">
+      <header class="header">
+        @if (isFile() && !isLink()) {
+        <span class="title"
+          >{{ 'label.edit.content.properties' | transloco }}</span
+        >
+        } @if (!isFile() && !isLink()) {
+        <span class="title"
+          >{{ 'label.edit.folder.properties' | transloco }}</span
+        >
+        } @if (isLink()) {
+        <span class="title">{{ 'label.edit.url.properties' | transloco }}</span>
+        }
+      </header>
+    </section>
+
+    <section class="box box--tabs">
+      <ul class="header">
+        <li>
+          <a
+            tabindex="0"
+            class="tab"
+            [class.tab--current]="isGeneralTab()"
+            (click)="setTab('GeneralInformation')"
+          >
+            <img
+              src="img/newspaper-818181.png"
+              width="20"
+              height="20"
+              alt="Newspaper icon"
+            />
+            <span class="tab-text"
+              >{{ 'label.general.information' | transloco }}</span
+            >
+          </a>
+        </li>
+        @if (isFile()) {
+        <li>
+          <a
+            tabindex="0"
+            class="tab"
+            [class.tab--current]="isDetailsTab()"
+            (click)="setTab('Details')"
+          >
+            <img
+              src="img/details-818181.png"
+              width="20"
+              height="20"
+              alt="Details icon"
+            />
+            <span class="tab-text">{{ 'label.details' | transloco }}</span>
+          </a>
+        </li>
+        } @if (isFile()) {
+        <li>
+          <a
+            tabindex="0"
+            class="tab"
+            [class.tab--current]="isDynamicPropertiesTab()"
+            (click)="setTab('DynamicProperties')"
+          >
+            <img
+              src="img/dynamic-prop-818181.png"
+              width="20"
+              height="20"
+              alt="Dynamic properties icon"
+            />
+            <span class="tab-text"
+              >{{ 'label.dynamic.properties' | transloco }}</span
+            >
+          </a>
+        </li>
+        }
+      </ul>
+
+      <div class="main">
+        <section class="file-informations">
+          @if (isGeneralTab()) {
+          <div>
+            <div class="field">
+              <label for="name" style="padding-bottom: 5px"
+                >{{ 'label.name' | transloco }}</label
+              >
+              <input
+                type="text"
+                id="name"
+                value=""
+                formControlName="name"
+                style="width: 100%"
+              />
+              <cbc-control-message
+                [control]="nameControl"
+              ></cbc-control-message>
+            </div>
+
+            <cbc-multilingual-input
+              formControlName="title"
+              [label]="'label.title' | transloco"
+              [placeholder]="'label.title' | transloco"
+              [lang]="'en'"
+            ></cbc-multilingual-input>
+            <br />
+
+            <cbc-multilingual-input
+              formControlName="description"
+              [label]="'label.description' | transloco"
+              [placeholder]="'label.description' | transloco"
+              [lang]="'en'"
+              [textarea]="true"
+            ></cbc-multilingual-input>
+            <br />
+
+            @if (isFile()) {
+            <div class="field">
+              <label for="author" style="padding-bottom: 5px"
+                >{{ 'label.author' | transloco }}</label
+              >
+              <input
+                type="text"
+                id="author"
+                value=""
+                formControlName="author"
+                style="width: 100%"
+              />
+              <cbc-control-message
+                [control]="authorControl"
+              ></cbc-control-message>
+            </div>
+            } @if (!isLink()) {
+            <div
+              class="field field--with-icon field--date"
+              style="line-height: 40px; display: flex"
+            >
+              <mat-slide-toggle
+                style="width: 50px"
+                formControlName="expirationDateActived"
+              ></mat-slide-toggle>
+              <label for="expirationDate" style="padding-right: 10px"
+                >{{ 'label.expiration.date' | transloco }}</label
+              >
+
+              @if (editNodeForm.value.expirationDateActived) {
+              <mat-form-field>
+                <input
+                  id="expirationDate"
+                  matInput
+                  [matDatepicker]="dp_expirationDate"
+                  formControlName="expirationDate"
+                  placeholder="dd/mm/yyyy, HH:mm"
+                  [class.expired]="isExpired()"
+                />
+                <mat-datepicker-toggle
+                  matIconSuffix
+                  [for]="dp_expirationDate"
+                ></mat-datepicker-toggle>
+                <mat-datepicker #dp_expirationDate></mat-datepicker>
+              </mat-form-field>
+              }
+            </div>
+            @if (isExpired() && editNodeForm.value.expirationDateActived) {
+            <span class="text-error" style="padding-bottom: 5px"
+              >{{ 'label.expiration.date.alert' | transloco }}</span
+            >
+            } }
+
+            <div class="notification-box">
+              <div>
+                <label for="notifyToggle">
+                  {{ 'label.send.email.notification' | transloco }}</label
+                >
+              </div>
+
+              <div style="padding: 0 10px">
+                <mat-slide-toggle
+                  [formControl]="notify"
+                  id="notifyToggle"
+                ></mat-slide-toggle>
+              </div>
+              <div>
+                <span>{{ notify.value ? 'Yes' : 'No' }}</span>
+              </div>
+
+              <div>
+                <span>
+                  <i>
+                    ({{ notify.value ? ("label.notifications.send" | transloco):
+                    "label.notifications.no-send" | transloco }})</i
+                  >
+                </span>
+              </div>
+            </div>
+          </div>
+          } @if (isDetailsTab()) {
+          <div>
+            @if (isLink()) {
+            <div class="field">
+              <label for="url">{{ 'label.url' | transloco }}</label>
+              <input type="text" id="url" value="" formControlName="url" />
+              <cbc-control-message [control]="urlControl"></cbc-control-message>
+            </div>
+            } @if (isFile()) {
+            <div class="field">
+              <label for="reference">{{ 'label.reference' | transloco }}</label>
+              <input
+                type="text"
+                id="reference"
+                value=""
+                formControlName="reference"
+              />
+            </div>
+            } @if (isFile()) {
+            <cbc-mimetype-input
+              [disabled]="isLink()"
+              formControlName="mimetype"
+            ></cbc-mimetype-input>
+            } @if (isFile()) {
+            <cbc-encoding-input
+              [disabled]="isLink()"
+              formControlName="encoding"
+            ></cbc-encoding-input>
+            } @if (isFile()) {
+            <div class="field">
+              <label for="status">{{ 'label.status' | transloco }}</label>
+              <div class="custom-select select--form">
+                <select name="" id="status" formControlName="status">
+                  <option value="DRAFT">{{ 'label.draft' | transloco }}</option>
+                  <option value="FINAL">{{ 'label.final' | transloco }}</option>
+                  <option value="RELEASE">
+                    {{ 'label.released' | transloco }}
+                  </option>
+                </select>
+              </div>
+            </div>
+            } @if (isFile()) {
+            <div class="field">
+              <label for="security"
+                >{{ 'label.security.marking' | transloco }}</label
+              >
+              <div class="custom-select select--form">
+                <select name="" id="security" formControlName="security">
+                  <option value="NORMAL">
+                    {{ 'label.normal' | transloco }}
+                  </option>
+                  <option value="SENSITIVE">
+                    {{ 'label.sensitive' | transloco }}
+                  </option>
+                  <option value="SPECIAL_HANDLING">
+                    {{ 'label.special.handling' | transloco }}
+                  </option>
+                  <option value="PUBLIC">
+                    {{ 'label.public' | transloco }}
+                  </option>
+                  <option value="INTERNAL">
+                    {{ 'label.internal' | transloco }}
+                  </option>
+                  <option value="LIMITED">
+                    {{ 'label.limited' | transloco }}
+                  </option>
+                </select>
+              </div>
+            </div>
+            } @if (isFile()) {
+            <div
+              class="field field--with-icon field--date label-calendar-container"
+            >
+              <label for="issueDate"
+                >{{ 'label.issue.date' | transloco }}</label
+              >
+              <mat-form-field>
+                <input
+                  id="issueDate"
+                  matInput
+                  [matDatepicker]="dp_issueDate"
+                  formControlName="issueDate"
+                  placeholder="dd/mm/yyyy"
+                />
+                <mat-datepicker-toggle
+                  matIconSuffix
+                  [for]="dp_issueDate"
+                ></mat-datepicker-toggle>
+                <mat-datepicker #dp_issueDate></mat-datepicker>
+              </mat-form-field>
+            </div>
+            }
+          </div>
+          } @if (isDynamicPropertiesTab()) {
+          <div>
+            @if (dynamicPropertiesModel.length === 0) {
+            <div>
+              <div
+                style="
+                  color: #767676;
+                  font-size: 18px;
+                  text-align: center;
+                  padding: 15px;
+                  background-color: #fff;
+                  line-height: 64px;
+                "
+              >
+                {{ 'dynamic-property.empty.list' | transloco }}
+                <img
+                  src="img/dynamic-prop-cecfce.png"
+                  width="45"
+                  height="45"
+                  style="vertical-align: middle; margin: 0 25px"
+                  alt="Dynamic property icon"
+                />
+              </div>
+            </div>
+            } @for (dynprop of dynamicPropertiesModel; track dynprop.id) {
+            <div
+              class="field field--textarea"
+              [class.field--with-icon]="isDateField(dynprop)"
+              [class.field--date]="isDateField(dynprop)"
+            >
+              <label for="{{ 'dynAttr' + getIndex(dynprop) }}"
+                >{{ dynprop.title | cbcI18n }}</label
+              >
+
+              @if (isTextField(dynprop)) {
+              <input
+                type="text"
+                id="{{ 'dynAttr' + getIndex(dynprop) }}"
+                formControlName="{{ 'dynAttr' + getIndex(dynprop) }}"
+              />
+              } @if (isDateField(dynprop)) {
+              <mat-form-field>
+                <input
+                  [id]="'dynAttr' + getIndex(dynprop)"
+                  matInput
+                  [matDatepicker]="dynDatePicker"
+                  [formControlName]="'dynAttr' + getIndex(dynprop)"
+                  placeholder="dd/mm/yyyy"
+                />
+                <mat-datepicker-toggle
+                  matIconSuffix
+                  [for]="dynDatePicker"
+                ></mat-datepicker-toggle>
+                <mat-datepicker #dynDatePicker></mat-datepicker>
+              </mat-form-field>
+              } @if (isTextArea(dynprop)) {
+              <div class="editor-container">
+                <cbc-rich-text-editor
+                  id="{{ 'dynAttr' + getIndex(dynprop) }}"
+                  formControlName="{{ 'dynAttr' + getIndex(dynprop) }}"
+                  ><span class="ql-formats">
+                    <button class="ql-bold" aria-label="Bold"></button>
+                    <button class="ql-italic" aria-label="Italic"></button>
+                    <button
+                      class="ql-underline"
+                      aria-label="Underline"
+                    ></button> </span
+                ></cbc-rich-text-editor>
+              </div>
+              } @if (isSelectionOrMultiSelection(dynprop)) {
+              <div
+                class="custom-select"
+                [class.select--form]="!isMultiSelection(dynprop)"
+                [class.select--multiple]="isMultiSelection(dynprop)"
+              >
+                @if (isMultiSelection(dynprop)) {
+                <select
+                  id="{{ 'dynAttr' + getIndex(dynprop) }}"
+                  formControlName="{{ 'dynAttr' + getIndex(dynprop) }}"
+                  multiple
+                  [compareWith]="compareFn"
+                >
+                  @if (!isMultiSelection(dynprop)) {
+                  <option value=""></option>
+                  } @for (opt of dynprop.possibleValues; track opt) {
+                  <option [ngValue]="opt">{{ opt }}</option>
+                  }
+                </select>
+                } @if (isSelection(dynprop)) {
+                <select
+                  id="{{ 'dynAttr' + getIndex(dynprop) }}"
+                  formControlName="{{ 'dynAttr' + getIndex(dynprop) }}"
+                >
+                  @if (!isMultiSelection(dynprop)) {
+                  <option value=""></option>
+                  } @for (opt of dynprop.possibleValues; track opt) {
+                  <option [value]="opt">{{ opt }}</option>
+                  }
+                </select>
+                }
+              </div>
+              } @if (isDateField(dynprop)) {
+              <span class="icon"></span>
+              }
+            </div>
+            }
+          </div>
+          }
+
+          <!-- Buttons -->
+          <div class="buttons-group">
+            <button
+              tabindex="0"
+              class="cta"
+              (click)="updateProperties()"
+              [disabled]="(isExpired() || expirationDateRequired()) ? true : false"
+            >
+              {{ 'label.save.all' | transloco }}
+            </button>
+            <a class="button" [routerLink]="['../details']"
+              >{{ 'label.cancel' | transloco }}</a
+            >
+          </div>
+        </section>
+      </div>
+    </section>
+  </form>
+</div>
+}

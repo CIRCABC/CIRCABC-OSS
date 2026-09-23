@@ -1,0 +1,133 @@
+@use 'css/global/variables-mixins-keyframes';
+
+.share {
+  position: relative;
+  display: inline-block;
+
+  .share-box {
+    width: 300px;
+    position: absolute;
+    display: inline-block;
+    margin-top: 5px;
+    z-index: 5;
+    border-radius: variables-mixins-keyframes.$radius-md;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    padding: 7px;
+    box-shadow: 0 0 8px variables-mixins-keyframes.$shadow-color-lg;
+    font-size: 13px;
+
+    input {
+      width: 100%;
+    }
+
+    .action {
+      float: left;
+      margin-top: 3px;
+      margin-right: 10px;
+    }
+
+    .close {
+      margin-top: 3px;
+      float: right;
+    }
+  }
+
+  .left {
+    left: -275px;
+  }
+}
+
+/* The snackbar - position it at the bottom and in the middle of the screen */
+#snackbar {
+  visibility: hidden;
+  min-width: 250px;
+  margin-left: -125px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: variables-mixins-keyframes.$radius-sm;
+  padding: 16px;
+  position: fixed;
+  z-index: 1;
+  left: 50%;
+  bottom: 30px;
+}
+
+/* Show the snackbar when clicking on a button (class added with JavaScript) */
+#snackbar.show {
+  visibility: visible;
+  animation:
+    fadein 0.5s,
+    fadeout 0.5s 2.5s;
+}
+
+@keyframes fadein {
+  from {
+    bottom: 0;
+    opacity: 0;
+  }
+
+  to {
+    bottom: 30px;
+    opacity: 1;
+  }
+}
+
+@keyframes fadeout {
+  from {
+    bottom: 30px;
+    opacity: 1;
+  }
+
+  to {
+    bottom: 0;
+    opacity: 0;
+  }
+}
+
+.parameters {
+  font-size: 10px;
+  color: #5b5b5b;
+
+  input.cmn-toggle-round + label {
+    padding: 2px;
+    width: 40px;
+    height: 20px;
+    background-color: var(--theme-border-color);
+    border-radius: variables-mixins-keyframes.$radius-pill;
+  }
+
+  input.cmn-toggle-round + label::before,
+  input.cmn-toggle-round + label::after {
+    display: block;
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    bottom: 1px;
+    content: '';
+  }
+
+  input.cmn-toggle-round + label::before {
+    right: 1px;
+    background-color: var(--theme-input-bg);
+    border-radius: variables-mixins-keyframes.$radius-pill;
+    transition: background 0.4s;
+  }
+
+  input.cmn-toggle-round + label::after {
+    width: 19px;
+    background-color: #fff;
+    border-radius: variables-mixins-keyframes.$radius-full;
+    box-shadow: 0 2px 5px variables-mixins-keyframes.$shadow-color-lg;
+    transition: margin 0.4s;
+  }
+
+  input.cmn-toggle-round:checked + label::before {
+    background-color: #8ce196;
+  }
+
+  input.cmn-toggle-round:checked + label::after {
+    margin-left: 20px;
+  }
+}

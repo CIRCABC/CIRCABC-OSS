@@ -1,0 +1,70 @@
+<cbc-modal
+  [title]="'members.manage.expiration'"
+  [okLabel]="'label.update'"
+  [visible]="showModal()"
+  (cancelModal)="cancel()"
+  (ok)="editExpiration()"
+  [executing]="processing()"
+  [executingLabel]="'label.updating'"
+  [contentClass]="'modal-content-visible'"
+  [showOkButton]="expirationForm.controls.showOkButton.value"
+>
+  <div class="members">
+    <section>
+      @for (member of membersDisplay; track member) {
+      <p>
+        {{ member.user?.firstname + ' ' + member.user?.lastname }} @if
+        (member.expirationDate) {
+        <span style="font-weight: bold"
+          >{{ 'members.current.user.will.expire.on' | transloco }}
+        </span>
+        } @else {
+
+        <span style="font-weight: bold"
+          >{{ 'members.current.user.will.not.expire' | transloco }}
+        </span>
+
+        } {{ member.expirationDate | date: 'dd-MM-yyyy HH:mm' }}
+      </p>
+      }
+    </section>
+
+    <form [formGroup]="expirationForm">
+      <span class="cell-checkbox">
+        <input
+          id="expirationDate"
+          class="cmn-toggle cmn-toggle-round"
+          type="checkbox"
+          formControlName="expiration"
+        />
+        <label
+          for="expirationDate"
+          class="nonBlockLabel"
+          aria-label="{{ 'label.expiration.date' | transloco }}"
+        ></label>
+        <span class="label"> {{ 'label.expiry.date' | transloco }} </span>
+      </span>
+
+      <span class="field field--with-icon field--date">
+        <mat-form-field>
+          <label for="expirationDateTime" class="visually-hidden"
+            >{{ 'label.expiry.date' | transloco }}</label
+          >
+          <input
+            id="expirationDateTime"
+            matInput
+            [matDatepicker]="dp_expirationDateTime"
+            formControlName="expirationDateTime"
+            placeholder="dd/mm/yyyy, HH:mm"
+            [min]="minDate"
+          />
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="dp_expirationDateTime"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #dp_expirationDateTime></mat-datepicker>
+        </mat-form-field>
+      </span>
+    </form>
+  </div>
+</cbc-modal>

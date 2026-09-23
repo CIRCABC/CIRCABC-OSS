@@ -1,0 +1,301 @@
+<!-- MODAL BOX -->
+@if (showDialog()) {
+<div
+  class="black-overlayer"
+  [class.overlayer-shown]="showDialog()"
+  [class.overlayer-hidden]="!showDialog()"
+></div>
+} @if (showDialog()) {
+<section
+  class="flexContainer modal modal--select-files"
+  [class.modal-shown]="showDialog()"
+  [class.modal-hidden]="!showDialog()"
+  style="margin-top: 0; max-width: 600px"
+>
+  <button
+    type="button"
+    class="close-icon"
+    aria-label="{{ 'label.cancel.wizard' | transloco }}"
+    (click)="cancelWizard()"
+  ></button>
+
+  <header class="flexFullRow">
+    @if (!profileToEdit()) {
+    <h2 class="title">{{ 'label.new.profile' | transloco }}</h2>
+    } @if (profileToEdit()) {
+    <h2 class="title">{{ 'label.edit.profile' | transloco }}</h2>
+    }
+  </header>
+
+  <section class="flexFullRow modal-content">
+    <form [formGroup]="createProfileForm" class="flexContainer">
+      @if (isGuest()) {
+      <div class="flexFullRowWarn">
+        <p>
+          <strong>{{'permissions.edition.note'| transloco}}: </strong
+          >{{'permissions.edition.granting'|transloco }}
+          <strong>{{'permissions.edition.guest.users'|transloco }}</strong>
+          {{'permissions.edition.for.any.service'|transloco }}
+          <u>{{'permissions.edition.any.users'|transloco }}</u>
+          {{'permissions.edition.can.access.service'|transloco }}.
+        </p>
+      </div>
+      } @if (isRegistered()) {
+      <div class="flexFullRowWarn">
+        <p>
+          <strong>{{'permissions.edition.note'| transloco}}: </strong>
+          {{'permissions.edition.granting'|transloco }}
+          <strong>{{'permissions.edition.registered.users'|transloco }}</strong>
+          {{'permissions.edition.for.any.service'|transloco }}
+          <u>{{'permissions.edition.any.circabc.users'|transloco }}</u>
+          {{'permissions.edition.can.access.service'|transloco }}.
+        </p>
+      </div>
+      }
+
+      <div class="flexFullRow">
+        <cbc-multilingual-input
+          formControlName="title"
+          [label]="'Title'"
+          [placeholder]="'Title'"
+          [lang]="'EN'"
+          [enabled]="!isGuestOrRegistered()"
+          data-cy="profile-title"
+        ></cbc-multilingual-input>
+      </div>
+
+      @if (isEditable()) {
+      <div class="slide-container">
+        <div class="slide-box">
+          <div class="slide-label">
+            <label for="name">{{ 'label.information' | transloco }}</label>
+          </div>
+          <div class="slide">
+            <mat-slider
+              id="information"
+              min="0"
+              [step]="1"
+              [max]="getMaxInfoPerm()"
+              ><input
+                matSliderThumb
+                formControlName="information"
+                aria-label="{{ 'label.information.permission' | transloco }}"
+            /></mat-slider>
+          </div>
+          <div class="slide-permission">
+            <span>
+              {{ 'permissions.' +
+              getInfPerms(createProfileForm.value.information) | transloco }}
+            </span>
+          </div>
+        </div>
+      </div>
+      }
+
+      <div class="flexFullRow">
+        <cbc-permission-descriptor
+          [label]="
+            'permissions.' +
+            getInfPerms(createProfileForm.value.information) +
+            '.help'
+          "
+        >
+        </cbc-permission-descriptor>
+      </div>
+
+      @if (isEditable()) {
+      <div class="slide-container">
+        <div class="slide-box">
+          <div class="slide-label">
+            <label for="name">{{ 'label.library' | transloco }}</label>
+          </div>
+          <div class="slide">
+            <mat-slider id="library" min="0" [step]="1" [max]="getMaxLibPerm()"
+              ><input
+                matSliderThumb
+                formControlName="library"
+                aria-label="{{ 'label.library.permission' | transloco }}"
+            /></mat-slider>
+          </div>
+          <div class="slide-permission">
+            <span
+              >{{ 'permissions.' + getLibPerms(createProfileForm.value.library)
+              | transloco }}</span
+            >
+          </div>
+        </div>
+      </div>
+      }
+
+      <div class="flexFullRow">
+        <cbc-permission-descriptor
+          [label]="
+            'permissions.' +
+            getLibPerms(createProfileForm.value.library) +
+            '.help'
+          "
+        ></cbc-permission-descriptor>
+      </div>
+
+      @if (!isGuestOrRegistered() && isEditable()) {
+      <div class="slide-container">
+        <div class="slide-box">
+          <div class="slide-label">
+            <label for="name">{{ 'label.members' | transloco }}</label>
+          </div>
+          <div class="slide">
+            <mat-slider
+              id="members"
+              min="0"
+              [step]="1"
+              [max]="getMaxMembersPerm()"
+              ><input
+                matSliderThumb
+                formControlName="members"
+                aria-label="{{ 'label.members.permission' | transloco }}"
+            /></mat-slider>
+          </div>
+          <div class="slide-permission">
+            <span
+              >{{ 'permissions.' + getMemPerms(createProfileForm.value.members)
+              | transloco }}</span
+            >
+          </div>
+        </div>
+      </div>
+      }
+
+      <div class="flexFullRow">
+        <cbc-permission-descriptor
+          [label]="
+            'permissions.' +
+            getMemPerms(createProfileForm.value.members) +
+            '.help'
+          "
+        ></cbc-permission-descriptor>
+      </div>
+
+      @if (isEditable()) {
+      <div class="slide-container">
+        <div class="slide-box">
+          <div class="slide-label">
+            <label for="name">{{ 'label.agenda' | transloco }}</label>
+          </div>
+          <div class="slide">
+            <mat-slider
+              id="events"
+              min="0"
+              [step]="1"
+              [max]="getMaxEventsPerm()"
+              ><input
+                matSliderThumb
+                formControlName="events"
+                aria-label="{{ 'label.events.permission' | transloco }}"
+            /></mat-slider>
+          </div>
+          <div class="slide-permission">
+            <span
+              >{{ 'permissions.' + getEvtPerms(createProfileForm.value.events) |
+              transloco }}</span
+            >
+          </div>
+        </div>
+      </div>
+      }
+
+      <div class="flexFullRow">
+        <cbc-permission-descriptor
+          [label]="
+            'permissions.' +
+            getEvtPerms(createProfileForm.value.events) +
+            '.help'
+          "
+        ></cbc-permission-descriptor>
+      </div>
+
+      @if (isEditable()) {
+      <div class="slide-container">
+        <div class="slide-box">
+          <div class="slide-label">
+            <label for="name">{{ 'label.forums' | transloco }}</label>
+          </div>
+          <div class="slide">
+            <mat-slider
+              id="newsgroups"
+              data-cy="newsgroups-slider"
+              min="0"
+              [step]="1"
+              [max]="getMaxForumsPerm()"
+              ><input
+                matSliderThumb
+                formControlName="newsgroups"
+                aria-label="{{ 'label.forums.permission' | transloco }}"
+            /></mat-slider>
+          </div>
+          <div class="slide-permission">
+            <span
+              >{{ 'permissions.' +
+              getNwsPerms(createProfileForm.value.newsgroups) | transloco
+              }}</span
+            >
+          </div>
+        </div>
+      </div>
+      }
+      <div class="flexFullRow">
+        <cbc-permission-descriptor
+          [label]="
+            'permissions.' +
+            getNwsPerms(createProfileForm.value.newsgroups) +
+            '.help'
+          "
+        ></cbc-permission-descriptor>
+      </div>
+
+      @if (!isEditable()) {
+      <div class="field">
+        <label for="name">{{ 'label.information' | transloco }}</label>
+        <p>{{ 'permissions.leader.exception.explanation' | transloco }}</p>
+      </div>
+      } @if (processing()) {
+      <div class="field">
+        @if (isEdition()) {
+        <span
+          >{{ 'label.updating' | transloco }}...
+          <cbc-spinner></cbc-spinner>
+        </span>
+        } @if (!isEdition()) {
+        <span
+          >{{ 'label.creating' | transloco }}...
+          <cbc-spinner></cbc-spinner>
+        </span>
+        }
+      </div>
+      }
+    </form>
+  </section>
+
+  <section class="flexFullRow modal-footer">
+    <!-- Buttons -->
+    @if (!processing()) {
+    <div class="buttons-group">
+      <a
+        tabindex="0"
+        class="cta"
+        data-cy="save-profile"
+        (click)="!createProfileForm.valid ? '' : createOrEditProfile()"
+        [class.disabled]="!createProfileForm.valid"
+        >{{ getLabel() | transloco }}</a
+      >
+      <a
+        tabindex="0"
+        class="button"
+        (click)="cancelWizard()"
+        (keydown.enter)="cancelWizard()"
+        >{{ 'label.cancel' | transloco }}</a
+      >
+    </div>
+    }
+  </section>
+</section>
+}

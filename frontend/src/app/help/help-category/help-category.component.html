@@ -1,0 +1,92 @@
+@if (loading()) {
+<cbc-horizontal-loader />
+} @if (category(); as category) {
+<div class="help-category-container">
+  <h1 class="visually-hidden">{{ category.title | cbcI18n }}</h1>
+  <header class="breadcrumb">
+    <span class="crumb">
+      <a [routerLink]="['/help']" class="home">
+        <img src="img/icon-dashboard-blue.png" alt="Dashboard Icon" /> {{
+        'label.help' | transloco }}
+      </a>
+      <img src="img/small-arrow-right.png" class="separator" alt="Arrow Icon" />
+      <span> {{ category.title | cbcI18n }} </span>
+    </span>
+  </header>
+  <br class="cleaner" />
+
+  <section class="category-contained">
+    <aside
+      class="category-list"
+      aria-label="{{ 'label.category.list' | transloco }}"
+    >
+      <cbc-category-list-select
+        [categories]="categories()"
+        [currentId]="category.id"
+      ></cbc-category-list-select>
+    </aside>
+
+    <aside
+      class="article-list"
+      aria-label="{{ 'label.article.list' | transloco }}"
+    >
+      @if (isAdminOrSupport()) {
+      <header class="actions">
+        <a data-cy="edit-category" tabindex="0" (click)="showUpdateModal = true"
+          >{{ 'label.edit' | transloco }}</a
+        >
+        <a
+          data-cy="delete-category"
+          tabindex="0"
+          (click)="showDeleteModal = true"
+          >{{ 'label.delete' | transloco }}</a
+        >
+        <a
+          data-cy="add-article"
+          tabindex="0"
+          class="cta"
+          (click)="showCreateModal = true"
+          >{{ 'help.add.article' | transloco }}</a
+        >
+      </header>
+      }
+
+      <h2>{{ 'help.articles' | transloco }}</h2>
+
+      <ul>
+        @for (article of articles(); track article.id) {
+        <li>
+          <a data-cy="article-link" [routerLink]="['article', article.id]">
+            {{ article.title | cbcI18n }}
+            <p class="metadata">
+              {{ 'label.last.updated.on' | transloco }} {{ article.lastUpdate |
+              date }}
+            </p>
+          </a>
+        </li>
+        } @if (articles().length === 0) {
+        <li class="empty-category"> {{ 'help.no.article' | transloco }} </li>
+        }
+      </ul>
+    </aside>
+  </section>
+</div>
+} @if (category(); as category) {
+<cbc-add-help-article
+  [(showModal)]="showCreateModal"
+  [categoryId]="category.id"
+  (articleCreated)="refresh($event)"
+/>
+} @if (category(); as category) {
+<cbc-delete-help-category
+  [(showModal)]="showDeleteModal"
+  [categoryId]="category.id"
+  (categoryDeleted)="redirect()"
+/>
+} @if (category(); as category) {
+<cbc-add-help-category
+  [categoryId]="category.id"
+  [(showModal)]="showUpdateModal"
+  (categoryCreated)="reload($event)"
+/>
+}

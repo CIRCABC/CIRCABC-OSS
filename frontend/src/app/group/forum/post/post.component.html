@@ -1,0 +1,171 @@
+@if (post()) {
+<div class="post">
+  <div class="comment-author">
+    @if (avatar) {
+    <div
+      >@if (creator) {
+      <img
+        [attr.src]="avatar | cbcDownload | cbcSecure"
+        width="50"
+        height="50"
+        alt="User avatar"
+      />
+      }</div
+    >
+    }
+  </div>
+  <div class="comment-content">
+    @if (waitingForApproval()) {
+    <cbc-hint [text]="'post.waiting.approval' | transloco"></cbc-hint>
+    }
+    <cbc-user-card [userId]="creator"></cbc-user-card>
+    {{ 'label.on' | transloco }} {{ created | date: 'y MMM d, H:mm' }} @if
+    (hasBeenEdited()) {
+    <button type="button" class="popup-sm" (click)="toggleShowModifiedDate()"
+      >({{ 'label.edited' | transloco }})
+      <div
+        class="popuptext"
+        [class.show]="showModifiedDate"
+        style="min-width: 230px; background-color: #abdbe7; color: #555"
+      >
+        &nbsp;&nbsp;{{ 'label.modified' | transloco }}: {{ modified | date: 'y
+        MMM d, H:mm' }}<br />
+        &nbsp;&nbsp;{{ 'label.by' | transloco }}
+        <cbc-user-card [userId]="modifier"></cbc-user-card>
+      </div>
+    </button>
+    } @if (hasBeenRejected()) {
+    <span class="text-error"
+      >- {{ 'label.rejected.by' | transloco }}: {{ rejectedBy }} ({{ rejectedOn
+      | date: 'y MMM d, H:mm' }})</span
+    >
+    } @if (hasBeenRejected()) {
+    <img
+      src="img/prohibition.png"
+      width="15"
+      height="15"
+      alt="Prohibition icon"
+    />
+    } @if (abuseSignaled()) {
+    <button
+      type="button"
+      class="popup-sm"
+      aria-label="{{ 'label.show.abuse.reports' | transloco }}"
+      (click)="toggleShowAbuses()"
+      (keydown.enter)="toggleShowAbuses()"
+    >
+      <img
+        src="img/danger-signs.png"
+        width="15"
+        height="15"
+        alt="Danger signs"
+      />
+    </button>
+    }
+    <div class="popuptext" [class.show]="showSignaledAbuses()"
+      >&nbsp;{{ 'label.abuse.reports' | transloco }}:<br /><br />
+      @for (abuse of abuses(); track abuse) {
+      <div>
+        &nbsp;{{ abuse.reportDate }} {{ 'label.by' | transloco }}
+        <cbc-user-card [userId]="abuse.reporter"></cbc-user-card>:<br />
+        &nbsp;{{ abuse.message }}<br />
+      </div>
+      }
+    </div>
+    @if (abuseSignaled() && isModerator()) {
+    <span
+      ><a
+        tabindex="0"
+        (click)="removeAbuses()"
+        style="float: right; font-size: 12px"
+        ><img
+          src="img/delete.png"
+          width="12"
+          height="12"
+          alt="Delete icon"
+        />&nbsp;{{ 'label.remove.abuse' | transloco }}</a
+      ><br /><br
+    /></span>
+    } @if (waitingForApproval() && isModerator()) {
+    <div style="float: right; font-size: 12px">
+      <a tabindex="0" data-cy="approve-comment" (click)="approve()"
+        ><img
+          src="img/checked.png"
+          width="13"
+          height="13"
+          alt="Checked icon"
+        />&nbsp;{{ 'label.approve' | transloco }}&nbsp;&nbsp;</a
+      >
+      <a tabindex="0" data-cy="reject-comment" (click)="reject()"
+        ><img
+          src="img/cancel.png"
+          width="13"
+          height="13"
+          alt="Cancel icon"
+        />&nbsp;{{ 'label.reject' | transloco }}&nbsp;&nbsp;</a
+      >
+    </div>
+    } @if (message) {
+    <p class="comment-message" [innerHtml]="message"></p>
+    }
+
+    <div>
+      @for (attachment of post().attachments; track attachment.id) {
+      <span class="attachment">
+        <a
+          tabindex="0"
+          (click)="accessAttachment(attachment)"
+          title="{{ attachment.name }}"
+        >
+          <div class="attachment-icon">
+            @if (!attachment.isLink) {
+            <img
+              src="img/paper-clip-155D79.png"
+              width="20"
+              height="20"
+              alt="Paper clip icon"
+            />
+            } @if (attachment.isLink) {
+            <img
+              src="img/bigicon-link.png"
+              width="24"
+              height="24"
+              alt="Link icon"
+            />
+            }
+          </div>
+          {{ displayName(attachment.name) }}
+        </a>
+      </span>
+      }
+    </div>
+
+    <div class="comment-actions">
+      @if (canPostComment() && !waitingForApproval() && !hasBeenRejected()) {
+      <a tabindex="0" (click)="fireReply()">{{ 'label.reply' | transloco }}</a>
+      } @if (canEditComment()) {
+      <a tabindex="0" (click)="fireEdit()">{{ 'label.edit' | transloco }}</a>
+      } @if ( !waitingForApproval() && !isOwner() | cbcIfRoleGE: [topic(),
+      'NwsAccess', []] ) {
+      <a tabindex="0" (click)="signalAbuse()"
+        >{{ 'label.signal.abuse' | transloco }}</a
+      >
+      } @if (canDeleteComment()) {
+      <cbc-inline-delete (deletionConfirmed)="deletePost()"></cbc-inline-delete>
+      } </div
+    ><br />
+  </div>
+</div>
+}
+
+<cbc-reject-post
+  [showModal]="showRejectModal"
+  [post]="post()"
+  (modalHide)="refreshPostAfterReject($event)"
+/>
+
+<cbc-signal-abuse
+  [showModal]="showSignalModal"
+  [post]="post()"
+  (modalHide)="refreshPostAfterAbuse($event)"
+/>

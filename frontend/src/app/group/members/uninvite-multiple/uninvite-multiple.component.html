@@ -1,0 +1,19 @@
+<cbc-modal
+  [executing]="deleting()"
+  [executingLabel]="'label.removing'"
+  [(visible)]="showModal"
+  [okLabel]="'label.remove'"
+  [title]="'label.delete.multiple.user'"
+  (ok)="deleteMembers()"
+  (cancelModal)="cancel()"
+>
+  <p>{{ 'members.remove.multiple.confirmation' | transloco }}</p>
+  <ul>
+    @for (user of users(); track user) {
+    <li>
+      {{ user.user?.firstname + ' ' + user.user?.lastname + ' [ ' +
+      ($safeNavigationMigration(user.profile?.title) | cbcI18n) + ' ] ' }}
+    </li>
+    }
+  </ul>
+</cbc-modal>

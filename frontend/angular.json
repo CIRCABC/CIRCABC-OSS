@@ -1,0 +1,209 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "cli": {
+    "analytics": false,
+    "cache": {
+      "enabled": true,
+      "path": ".cache",
+      "environment": "all"
+    }
+  },
+  "newProjectRoot": "projects",
+  "projects": {
+    "circabc": {
+      "root": "",
+      "sourceRoot": "src",
+      "projectType": "application",
+      "prefix": "cbc",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        },
+        "@schematics/angular:application": {
+          "strict": true
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "externalDependencies": [
+              "img/*"
+            ],
+            "allowedCommonJsDependencies": [
+              "file-saver",
+              "event-emitter",
+              "quill-delta",
+              "superagent"
+            ],
+            "outputPath": "dist/circabc",
+            "index": "src/index.html",
+            "browser": "src/main.ts",
+            "polyfills": [
+              "src/polyfills.ts"
+            ],
+            "tsConfig": "src/tsconfig.app.json",
+            "assets": [
+              "src/favicon.ico",
+              "src/assets",
+              "src/img",
+              "src/fonts",
+              "src/manifest.webmanifest",
+              {
+                "glob": "**/*",
+                "input": "node_modules/ngx-extended-pdf-viewer/assets/",
+                "output": "/assets/"
+              }
+            ],
+            "styles": [
+              "src/css/main.scss",
+              "./node_modules/font-awesome/css/font-awesome.min.css",              "./node_modules/quill/dist/quill.core.css",
+              "./node_modules/quill/dist/quill.snow.css"
+            ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "./src",
+                "./src/css/scss-responsive"
+              ]
+            },
+            "scripts": [
+              "./node_modules/quill/dist/quill.js"
+            ],
+            "serviceWorker": "ngsw-config.json"
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "4mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kb",
+                  "maximumError": "32kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "outputHashing": "all",
+              "security": {"autoCsp": false}
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "security": {"autoCsp": false}
+            },
+            "next": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.next.ts"
+                }
+              ],
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true,
+              "baseHref": "/ui/",
+              "security": {"autoCsp": false}
+            },
+            "ec2": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.ec2.ts"
+                }
+              ],
+              "serviceWorker": false,
+              "security": {"autoCsp": false}
+            },
+            "localhost-serve": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.localhost-serve.ts"
+                }
+              ],
+              "sourceMap": true,
+              "security": {"autoCsp": false}
+            },
+            "docker": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.docker.ts"
+                }
+              ],
+              "security": {"autoCsp": false}
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "options": {
+            "buildTarget": "circabc:build"
+          },
+          "configurations": {
+            "next": {
+              "buildTarget": "circabc:build:next",
+              "proxyConfig": "src/proxy.conf.json"
+            },
+            "next-docker": {
+              "buildTarget": "circabc:build:next",
+              "proxyConfig": "src/proxy.conf.docker.json"
+            },
+            "fabi": {
+              "buildTarget": "circabc:build:next",
+              "proxyConfig": "src/proxy.conf.fabi.json"
+            },
+            "next-aws": {
+              "buildTarget": "circabc:build:next",
+              "proxyConfig": "src/proxy.conf.aws.json"
+            },
+            "ec2": {
+              "buildTarget": "circabc:build:ec2"
+            },
+            "localhost-serve": {
+              "buildTarget": "circabc:build:localhost-serve"
+            },
+            "development": {
+              "buildTarget": "circabc:build:development"
+            },
+            "production": {
+              "buildTarget": "circabc:build:production"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "tsconfig.spec.json",
+            "coverage": true,
+            "coverageReporters": ["html", "lcov", "text"],
+            "buildTarget": "circabc:build",
+            "setupFiles": ["src/test-setup.ts"]
+          }
+        }
+      }
+    }
+  }
+}

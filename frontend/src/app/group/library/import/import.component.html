@@ -1,0 +1,182 @@
+<!-- MODAL BOX -->
+@if (showModal()) {
+<div
+  class="black-overlayer"
+  [class.overlayer-shown]="showModal()"
+  [class.overlayer-hidden]="!showModal()"
+></div>
+} @if (showModal()) {
+<section
+  class="modal modal--select-files"
+  [class.modal-shown]="showModal()"
+  [class.modal-hidden]="!showModal()"
+  style="margin-top: 0"
+>
+  <button
+    type="button"
+    class="close-icon"
+    aria-label="{{ 'label.cancel' | transloco }}"
+    (click)="cancel('close')"
+  ></button>
+  <header>
+    <h2 class="title">{{ 'import.select.zip.file' | transloco }}</h2>
+  </header>
+
+  <section class="modal-content">
+    <!--  file -->
+    <div class="field field--file">
+      <!-- Note: You need javascript here to know when the files are selected, see in the footer -->
+      <span style="margin-right: 35px">{{ 'label.file' | transloco }}</span>
+      <input
+        type="file"
+        id="file"
+        class="inputfile inputfile-6"
+        (change)="fileChangeEvent($event)"
+        data-multiple-caption="{count} files selected"
+        multiple
+      />
+      <label for="file"
+        ><span class="result"></span
+        ><span class="button">{{ 'label.browse' | transloco }}</span></label
+      >
+    </div>
+
+    <div
+      class="drop-zone"
+      (dragenter)="dragenter($event)"
+      (dragover)="dragover($event)"
+      (drop)="drop($event)"
+    >
+      {{ 'label.drag.drop.file' | transloco }}
+    </div>
+
+    @if (fileToUpload(); as fileToUpload) {
+    <div class="field">
+      <span class="label">{{ 'label.file.uploaded' | transloco }}</span> ( {{
+      'label.upload.total.size' | transloco }}: {{ fileToUpload.size | cbcSize:
+      true }}@if (importExceeds(fileToUpload.size)) {
+      <span class="text-error"
+        >, {{ 'import.maximum.size' | transloco: { size: importMaxSize }
+        }}</span
+      >
+      } )
+      <br />
+      <div class="listToBeUploaded">
+        <ul>
+          <li>{{ fileToUpload.name }}</li>
+        </ul>
+      </div>
+      <br />
+      <br />
+      <form [formGroup]="importForm">
+        <div class="field switch">
+          <div class="label">{{ 'import.notify.user' | transloco }}</div>
+          <input
+            id="notifyUser"
+            class="cmn-toggle cmn-toggle-round"
+            type="checkbox"
+            formControlName="notifyUser"
+          />
+          <label
+            for="notifyUser"
+            class="nonBlockLabel"
+            aria-label="{{ 'label.notify.user' | transloco }}"
+          ></label>
+          <span
+            >{{ (importForm.controls['notifyUser'].value === true ? 'label.yes'
+            : 'label.no' ) | transloco }}</span
+          >
+        </div>
+        <div class="field switch">
+          <div class="label">{{ 'import.delete.file' | transloco }}</div>
+          <input
+            id="deleteFile"
+            class="cmn-toggle cmn-toggle-round"
+            type="checkbox"
+            formControlName="deleteFile"
+          />
+          <label
+            for="deleteFile"
+            class="nonBlockLabel"
+            aria-label="{{ 'label.delete.file' | transloco }}"
+          ></label>
+          <span
+            >{{ (importForm.controls['deleteFile'].value === true ? 'label.yes'
+            : 'label.no' ) | transloco }}</span
+          >
+        </div>
+        <div class="field switch">
+          <div class="label">
+            {{ 'import.disable.notification' | transloco }}
+          </div>
+          <input
+            id="disableNotification"
+            class="cmn-toggle cmn-toggle-round"
+            type="checkbox"
+            formControlName="disableNotification"
+          />
+          <label
+            for="disableNotification"
+            class="nonBlockLabel"
+            aria-label="{{ 'label.disable.notification' | transloco }}"
+          ></label>
+          <span
+            >{{ (importForm.controls['disableNotification'].value === true ?
+            'label.yes' : 'label.no' ) | transloco }}</span
+          >
+        </div>
+        <br />
+        <div class="field">
+          <label for="encoding">{{ 'label.encoding' | transloco }}</label>
+          <div class="custom-select select--form reset-width select-align">
+            <select name="" id="encoding" formControlName="encoding">
+              <option value="CP437">CP437</option>
+              <option value="UTF-8">UTF-8</option>
+            </select>
+          </div>
+        </div>
+      </form>
+    </div>
+    } @if (uploading()) {
+    <div class="field">
+      <span
+        >{{ 'label.importing' | transloco }}<cbc-spinner></cbc-spinner
+      ></span>
+    </div>
+    }
+
+    <span style="font-size: 13px"
+      >{{ 'import.need.empty.template' | transloco }}&nbsp;<button
+        type="button"
+        (click)="getImportIndexFileTemplate()"
+        (keydown.enter)="getImportIndexFileTemplate()"
+        ><img
+          src="img/download-2.png"
+          width="15"
+          height="15"
+          alt="Download template" /></button
+    ></span>
+  </section>
+  <section class="modal-footer">
+    <!-- Buttons -->
+    <div class="buttons-group">
+      <a
+        tabindex="0"
+        [class.disabled]="
+          fileToUpload() === undefined || importExceeds(fileToUpload()!.size)
+        "
+        class="cta"
+        (click)="import()"
+        >{{ 'label.import' | transloco }}</a
+      >
+      <a
+        tabindex="0"
+        class="button"
+        (click)="cancel('close')"
+        (keydown.enter)="cancel('close')"
+        >{{ 'label.cancel' | transloco }}</a
+      >
+    </div>
+  </section>
+</section>
+}

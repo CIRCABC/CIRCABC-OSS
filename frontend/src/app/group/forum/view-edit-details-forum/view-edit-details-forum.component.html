@@ -1,0 +1,142 @@
+<div class="fluid page-container">
+  <div class="file-details">
+    <div class="wrap">
+      <div class="page-header">
+        <div class="page-header__actions">
+          <ul class="links">
+            <li>
+              @if (isForumAdmin()) {
+              <a
+                [routerLink]="['../../../permissions', forum()?.id]"
+                [queryParams]="{ from: 'forum' }"
+                >{{ 'label.permissions' | transloco }}</a
+              >
+              }
+            </li>
+            &nbsp;&nbsp;&nbsp;
+            <li>
+              @if (isForumAdmin()) {
+              <a
+                [routerLink]="['../../../notification-status', forum()?.id]"
+                [queryParams]="{ from: 'forum' }"
+                >{{ 'label.notifications' | transloco }}</a
+              >
+              }
+            </li>
+          </ul>
+        </div>
+      </div>
+      <section class="box">
+        <header class="header">
+          @if (viewing) {
+          <span class="title">{{ 'forum.view.details' | transloco }}</span>
+          } @if (!viewing) {
+          <span class="title">{{ 'forum.edit.details' | transloco }}</span>
+          }
+        </header>
+        <div class="main">
+          <section class="file-informations">
+            <form [formGroup]="updateForumForm">
+              <div class="field switch">
+                <!-- Forum details -->
+                <cbc-multilingual-input
+                  formControlName="title"
+                  [enabled]="!viewing"
+                  [label]="'label.title' | transloco"
+                  [lang]="'EN'"
+                ></cbc-multilingual-input>
+                <cbc-control-message
+                  [control]="updateForumForm.controls['title']"
+                ></cbc-control-message>
+                <cbc-multilingual-input
+                  formControlName="description"
+                  [enabled]="!viewing"
+                  [textarea]="true"
+                  [label]="'label.description' | transloco"
+                  [lang]="'EN'"
+                ></cbc-multilingual-input>
+                <div class="field">
+                  <span class="label">{{ 'label.version' | transloco }}</span>
+                  @if (forum()) {
+                  <span>{{ versionLabel }}</span>
+                  }
+                </div>
+                <div class="field">
+                  <span class="label">{{ 'label.creator' | transloco }}</span>
+                  @if (forum() && creator() !== undefined) {
+                  <span
+                    >{{ creator()?.firstname }} {{ creator()?.lastname }}</span
+                  >
+                  }
+                </div>
+                <div class="field">
+                  <span class="label">{{ 'label.created' | transloco }}</span>
+                  @if (forum()) {
+                  <span>{{ created }}</span>
+                  }
+                </div>
+                <div class="field">
+                  <span class="label">{{ 'label.modifier' | transloco }}</span>
+                  @if (forum() && modifier() !== undefined) {
+                  <span
+                    >{{ modifier()?.firstname }} {{ modifier()?.lastname
+                    }}</span
+                  >
+                  }
+                </div>
+                <div class="field">
+                  <span class="label">{{ 'label.modified' | transloco }}</span>
+                  @if (forum()) {
+                  <span>{{ modified }}</span>
+                  }
+                </div>
+                <div class="field">
+                  <span class="label">{{ 'label.moderated' | transloco }}</span>
+                  @if (forum()) {
+                  <span
+                    >{{ (ismoderated === 'true' ? 'label.yes' : 'label.no') |
+                    transloco }}</span
+                  >
+                  }
+                </div>
+              </div>
+            </form>
+            @if (processing) {
+            <div class="field">
+              <span
+                >{{ 'label.updating' | transloco }}...
+                <cbc-spinner></cbc-spinner>
+              </span>
+            </div>
+            } @if (!processing && viewing) {
+            <br />
+            } @if (!processing && viewing) {
+            <section class="actions" style="height: 127px">
+              <ul class="actions__secondary-actions--left">
+                <li>
+                  <a tabindex="0" class="edit" (click)="enableEdit()"
+                    >{{ 'label.edit' | transloco }}</a
+                  >
+                </li>
+              </ul>
+            </section>
+            }
+            <!-- Buttons -->
+            @if (!processing && !viewing) {
+            <div class="buttons-group center">
+              @if (updateForumForm.status === 'VALID') {
+              <a class="cta" [routerLink]="['.']" (click)="update()"
+                >{{ 'label.update' | transloco }}</a
+              >
+              }
+              <a class="button" [routerLink]="['.']" (click)="cancel()"
+                >{{ 'label.cancel' | transloco }}</a
+              >
+            </div>
+            }
+          </section>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

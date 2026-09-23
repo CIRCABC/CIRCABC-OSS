@@ -1,0 +1,238 @@
+{{ 'label.information.title' | transloco: { groupName:
+$safeNavigationMigration(group()?.name) } | cbcSetTitle }} @if (loading()) {
+<cbc-horizontal-loader />
+}
+<div class="fluid page-container">
+  <div class="page-header">
+    <span
+      class="page-header__title"
+      [innerHtml]="'information.page.title' | transloco"
+    ></span>
+    <div class="warning-top-header">
+      @if (informationNode(); as informationNode) {
+      <cbc-notification-message
+        [severity]="1"
+        [message]="'group.information.public' | transloco"
+        [guestAllowed]="informationNode.hasGuestAccess"
+      ></cbc-notification-message>
+      }
+    </div>
+    <div class="page-header__actions">
+      <ul class="links">
+        @if ( informationPage() !== undefined | cbcIfRole: [informationPage()!,
+        'InfAdmin', []] ) {
+        <li>
+          <a tabindex="0" (click)="showConfigureModal = true"
+            >{{ 'label.configure' | transloco }}</a
+          >
+        </li>
+        } @if (canAddNews()) {
+        <li>
+          <a
+            class="cta"
+            data-cy="add-news"
+            [routerLink]="['./add', $safeNavigationMigration(informationNode()?.id)]"
+            >{{ 'information.add.news' | transloco }}</a
+          >
+        </li>
+        }
+      </ul>
+    </div>
+  </div>
+
+  <section class="information--layout">
+    <aside class="information--sidebar box box-alternate">
+      @if (hasCards()) {
+      <header class="header">
+        <span class="title"
+          >{{ 'label.latest.news' | transloco }} ({{ hasOldInformation() ?
+          infoNews().total + 1 : infoNews().total }})</span
+        >
+        @if (highlightedMode()) {
+        <span class="clear--filter">
+          <a tabindex="0" (click)="highlight(highlightedNews())"
+            >{{ 'label.clear.filter' | transloco }}</a
+          >
+        </span>
+        }
+      </header>
+      } @if (hasCards()) {
+      <div class="main">
+        @if (totalItems > 1) {
+        <div class="pager">
+          <cbc-pager
+            [length]="totalItems"
+            [pageSize]="listingOptions.limit"
+            [page]="listingOptions.page"
+            (pageChange)="changePage($event)"
+          ></cbc-pager>
+        </div>
+        }
+        <ul class="news-list">
+          @for (news of infoNews().data; track news.id) {
+          <li>
+            <button
+              type="button"
+              class="news-item-btn"
+              (click)="highlight(news)"
+              (keydown.enter)="highlight(news)"
+            >
+              <span
+                class="news-type-icon"
+                [class.news-type-icon--date]="news.pattern === 'date'"
+                [class.news-type-icon--text]="news.pattern === 'text'"
+                [class.news-type-icon--file]="news.pattern === 'document'"
+                [class.news-type-icon--image]="news.pattern === 'image'"
+                [class.news-type-icon--iframe]="news.pattern === 'iframe'"
+                aria-hidden="true"
+              ></span>
+
+              <span class="news-item-content">
+                <span class="news-item-title">
+                  {{ news.pattern === 'iframe' ? news.url : (news.title |
+                  cbcI18n) }}
+                </span>
+                <span class="news-item-date"
+                  >{{ news.modified | date: 'dd-MM-yyyy' }}</span
+                >
+              </span>
+
+              @if (highlightedNews() === news) {
+              <img
+                src="img/check.png"
+                class="news-item-check"
+                alt="Check mark"
+              />
+              }
+            </button>
+          </li>
+          } @if (hasOldInformation()) {
+          <li>
+            <button
+              type="button"
+              class="news-item-btn"
+              (click)="highlightIFrame()"
+              (keydown.enter)="highlightIFrame()"
+            >
+              <span
+                class="news-type-icon news-type-icon--image"
+                aria-hidden="true"
+              ></span>
+              <span class="news-item-content">
+                <span class="news-item-title">
+                  {{ 'information.old.information.title' | transloco }}
+                </span>
+              </span>
+              @if (highlightedIframeMode()) {
+              <img
+                src="img/check.png"
+                class="news-item-check"
+                alt="Check mark"
+              />
+              }
+            </button>
+          </li>
+          }
+        </ul>
+      </div>
+      } @if (totalItems > 1 && hasCards()) {
+      <div class="pager">
+        <cbc-pager
+          [length]="totalItems"
+          [pageSize]="listingOptions.limit"
+          [page]="listingOptions.page"
+          (pageChange)="changePage($event)"
+        ></cbc-pager>
+      </div>
+      }
+    </aside>
+
+    <div class="information--main">
+      <section class="information--toolbar">
+        <span class="icons">
+          <cbc-share [showLabel]="false" [orientationRight]="false"></cbc-share>
+          @if (!isGuest()) {
+          <div class="dropdown-trigger dropdown-trigger--with-icons">
+            @if (isSubscribedToNotifications()) {
+            <img src="img/visibility.png" alt="Notifications" />
+            } @if (!isSubscribedToNotifications()) {
+            <img src="img/no-visibility.png" alt="Notifications" />
+            }
+            <div class="dropdown dropdown--library-settings">
+              <div class="number-of-items">
+                {{ 'label.notifications' | transloco }}: @if
+                (!isSubscribedToNotifications()) {
+                <a tabindex="0" (click)="changeNotificationSubscription('on')"
+                  >{{ 'label.subscribe' | transloco }}
+                  <img src="img/visibility.png" alt="Notifications" />
+                </a>
+                } @if (isSubscribedToNotifications()) {
+                <a tabindex="0" (click)="changeNotificationSubscription('off')"
+                  >{{ 'label.unsubscribe' | transloco }}
+                  <img src="img/no-visibility.png" alt="Notifications" />
+                </a>
+                }
+              </div>
+            </div>
+          </div>
+          }
+        </span>
+      </section>
+
+      @if (!highlightedMode() && !highlightedIframeMode()) {
+      <div class="container--news">
+        @for (news of infoNews().data; track news.id) {
+        <div
+          class="newsColumn"
+          [class.newsColumn--iframe]="news.pattern === 'iframe'"
+        >
+          <cbc-news-card
+            [news]="news"
+            (newsDeleted)="refresh($event)"
+            (newsClicked)="highlight(news)"
+          >
+          </cbc-news-card>
+        </div>
+        } @if (hasOldInformation()) {
+        <div class="newsColumn newsColumn--iframe">
+          <cbc-news-card [news]="getOldInformation()" [hideActions]="true">
+          </cbc-news-card>
+        </div>
+        } @if (!hasCards() && !loading()) {
+        <div class="container--empty">
+          {{ 'information.empty.configuration' | transloco }}
+          <img src="img/rounded-block-sign.png" alt="Rounded block sign" />
+        </div>
+        }
+      </div>
+      } @if (highlightedMode() && !loading()) {
+      <div class="container--news">
+        <cbc-news-card
+          [class.span-column]="highlightedMode()"
+          [class.span-column-max-window]="highlightedMaxWindow"
+          [news]="highlightedNews()"
+          (newsDeleted)="refresh($event)"
+          [highlighted]="true"
+          (newsClicked)="highlight(highlightedNews())"
+          (highlightedMaxWindow)="maxWindowHighlighted($event)"
+        >
+        </cbc-news-card>
+      </div>
+      } @if (highlightedIframeMode() && !loading()) {
+      <div class="container--news">
+        @if (hasOldInformation()) {
+        <div class="newsColumn newsColumn--iframe">
+          <cbc-news-card [news]="getOldInformation()" [hideActions]="true">
+          </cbc-news-card>
+        </div>
+        }
+      </div>
+      }
+    </div>
+  </section>
+</div>
+<cbc-configure-information
+  [showModal]="showConfigureModal"
+  [groupId]="groupId()"
+  (modalHide)="refresh($event)"
+/>

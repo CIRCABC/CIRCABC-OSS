@@ -1,0 +1,103 @@
+<section class="right-actions">
+  <a tabindex="0" (click)="downloadExport()"
+    >{{ 'label.download' | transloco }}</a
+  >&nbsp;
+  <a tabindex="0" class="cta" (click)="showModal = true"
+    >{{ 'label.add.email' | transloco }}</a
+  >
+</section>
+
+<p>{{ 'label.distribution.list.page.explanation' | transloco }}</p>
+
+<header class="header">
+  <cbc-pager
+    [length]="distributionEmails().total"
+    [pageSize]="listingOptions().limit"
+    [page]="listingOptions().page"
+    (pageChange)="goToPage($event)"
+  ></cbc-pager>
+</header>
+<br />
+<section class="explorer-main box box--alternate-lines">
+  <div class="main main--listing">
+    <div style="margin-bottom: 15px">
+      <label style="margin-right: 35px; margin-left: 40px">
+        <!-- NOSONAR: Native checkbox is keyboard accessible -->
+        <input
+          type="checkbox"
+          (click)="selectAll()"
+          (keydown.enter)="selectAll()"
+          [checked]="allSelected"
+          style="margin-right: 10px"
+        />
+        {{ 'label.select.all' | transloco }}
+      </label>
+      @if (hasSelectedDistribution()) {
+      <span class="selection-actions">
+        <cbc-number-badge
+          [number]="countSelectedDistribution()"
+        ></cbc-number-badge>
+        <cbc-inline-delete
+          (deletionConfirmed)="unsubscribeSelectedEmail()"
+          [useIcon]="true"
+          [useText]="true"
+        ></cbc-inline-delete>
+        @if (deletingAll()) {
+        <cbc-spinner></cbc-spinner>
+        }
+      </span>
+      }
+    </div>
+    <ul class="mail-list">
+      @for (distribEmail of distributionEmails().data; track distribEmail.id) {
+      <li class="row">
+        <!-- NOSONAR: Native checkbox is keyboard accessible -->
+        <input
+          type="checkbox"
+          [attr.aria-label]="distribEmail.emailAddress"
+          (click)="tickDistributionMail(distribEmail)"
+          (keydown.enter)="tickDistributionMail(distribEmail)"
+          [checked]="distribEmail.selected"
+        />
+
+        <span class="distribution-mail">{{ distribEmail.emailAddress }}</span>
+
+        <cbc-inline-delete
+          (deletionConfirmed)="unsubscribeEmail(distribEmail)"
+          [useIcon]="true"
+          [useText]="false"
+        ></cbc-inline-delete>
+      </li>
+      }
+    </ul>
+    @if (hasSelectedDistribution()) {
+    <div class="selection-actions" style="margin-top: 15px; padding-left: 40px">
+      <cbc-number-badge
+        [number]="countSelectedDistribution()"
+      ></cbc-number-badge>
+      <cbc-inline-delete
+        (deletionConfirmed)="unsubscribeSelectedEmail()"
+        [useIcon]="true"
+        [useText]="true"
+      ></cbc-inline-delete>
+      @if (deletingAll()) {
+      <cbc-spinner></cbc-spinner>
+      }
+    </div>
+    }
+  </div>
+</section>
+<br />
+<div class="footer">
+  <cbc-pager
+    [length]="distributionEmails().total"
+    [pageSize]="listingOptions().limit"
+    [page]="listingOptions().page"
+    (pageChange)="goToPage($event)"
+  ></cbc-pager>
+</div>
+
+<cbc-add-distribution-email
+  [(showModal)]="showModal"
+  (modalClosed)="loadDistributionEmails()"
+/>

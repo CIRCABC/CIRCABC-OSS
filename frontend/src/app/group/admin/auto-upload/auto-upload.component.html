@@ -1,0 +1,172 @@
+{{ 'admin.tab.auto.upload' | transloco | cbcSetTitle }} @if (loading()) {
+<cbc-horizontal-loader />
+}
+<div class="fluid page-container">
+  <a
+    tabindex="0"
+    data-cy="add-configuration"
+    class="cta cta--plus"
+    style="float: right"
+    (click)="showAddModal = true"
+    >{{ 'label.add.configuration' | transloco }}</a
+  >
+  <br />
+  <section class="table-container">
+    <header class="header">
+      <cbc-pager
+        [length]="totalItems()"
+        [pageSize]="listingOptions.limit"
+        [page]="listingOptions.page"
+        (pageChange)="goToPage($event)"
+      ></cbc-pager>
+      <cbc-pager-configuration
+        (pageSizeChanged)="changeLimit($event)"
+      ></cbc-pager-configuration>
+      <div style="float: right; font-size: 12px">
+        <img
+          src="img/light-bulb-3355.png"
+          width="17"
+          height="17"
+          alt="Enabled"
+        />&nbsp;{{ 'label.enabled' | transloco }}&nbsp;&nbsp;
+        <img
+          src="img/cancel.png"
+          width="15"
+          height="15"
+          alt="Disabled"
+        />&nbsp;{{ 'label.disabled' | transloco }}&nbsp;&nbsp;
+        <img
+          src="img/problem-003355.png"
+          width="15"
+          height="15"
+          alt="Problem"
+        />&nbsp;{{ 'label.problem.verify' | transloco }}
+      </div>
+    </header>
+
+    <table class="main">
+      <thead>
+        <tr>
+          <th><span class="visually-hidden">Actions</span></th>
+          <th style="width: 22px"
+            ><span class="visually-hidden">Select</span></th
+          >
+          <th>{{ 'label.status' | transloco }}</th>
+          <th>{{ 'label.path.to.file' | transloco }}</th>
+          <th>{{ 'label.file.name' | transloco }}</th>
+          <th>{{ 'label.ftp.host' | transloco }}</th>
+          <th>{{ 'label.job.notification' | transloco }}</th>
+          <th>{{ 'label.auto.extract' | transloco }}</th>
+          <th>{{ 'label.date.restriction' | transloco }}</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @if (configurations() !== undefined) {
+        <tr class="row empty-row">
+          @if (configurations().length === 0) {
+          <td style="padding-left: 22px" colspan="9">
+            {{ 'auto.upload.display.none' | transloco }}
+          </td>
+          }
+        </tr>
+        } @for (configuration of configurations(); track
+        configuration.idConfiguration) {
+        <tr class="row">
+          <td class="cell-left-border"></td>
+          <td class="cell-checkbox"></td>
+          <td class="cell-file-name" style="width: 30px">
+            <a tabindex="0" (click)="toggleConfiguration(configuration)">
+              @if (configuration.status === 1) {
+              <img
+                src="img/light-bulb-3355.png"
+                width="17"
+                height="17"
+                alt="Enabled"
+              />
+              } @if (configuration.status === 0) {
+              <img src="img/cancel.png" width="15" height="15" alt="Disabled" />
+              } @if (configuration.status === 2) {
+              <img
+                src="img/problem-003355.png"
+                width="15"
+                height="15"
+                alt="Problem"
+              />
+              }
+            </a>
+            <div class="actions" style="width: 80px">
+              <span>
+                <cbc-inline-delete
+                  (deletionConfirmed)="deleteConfiguration(configuration)"
+                ></cbc-inline-delete>
+              </span>
+            </div>
+          </td>
+          <td>{{ configuration.parentId }}</td>
+          <td>{{ configuration.fileId }}</td>
+          <td>{{ configuration.ftpHost }}</td>
+          <td>
+            @if (configuration.jobNotifications) {
+            <img
+              class="center-img"
+              src="img/light-bulb-3355.png"
+              width="17"
+              height="17"
+              alt="Job notification enabled"
+            />
+            } @if (!configuration.jobNotifications) {
+            <img
+              class="center-img"
+              src="img/cancel.png"
+              width="15"
+              height="15"
+              alt="Cancel"
+            />
+            }
+          </td>
+          <td>
+            @if (configuration.autoExtract) {
+            <img
+              class="center-img"
+              src="img/light-bulb-3355.png"
+              width="17"
+              height="17"
+              alt="Job notification enabled"
+            />
+            } @if (!configuration.autoExtract) {
+            <img
+              class="center-img"
+              src="img/cancel.png"
+              width="15"
+              height="15"
+              alt="Cancel"
+            />
+            }
+          </td>
+          <td>{{ configuration.dateRestriction }}</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+
+    <div class="footer">
+      <cbc-pager
+        [length]="totalItems()"
+        [pageSize]="listingOptions.limit"
+        [page]="listingOptions.page"
+        (pageChange)="goToPage($event)"
+      ></cbc-pager>
+      <cbc-pager-configuration
+        (pageSizeChanged)="changeLimit($event)"
+      ></cbc-pager-configuration>
+    </div>
+  </section>
+
+  <cbc-add-configuration
+    [showWizard]="showAddModal"
+    [igId]="igId()"
+    (configurationAdded)="configurationAdded()"
+    (canceled)="showAddModal = false"
+  ></cbc-add-configuration>
+</div>

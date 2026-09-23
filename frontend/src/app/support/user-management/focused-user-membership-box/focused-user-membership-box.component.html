@@ -1,0 +1,39 @@
+@if (loading()) {
+<cbc-horizontal-loader />
+}
+<h2
+  >{{ 'label.memberships' | transloco }} @if (loading()) {
+  <cbc-spinner></cbc-spinner>
+  }</h2
+>
+<div class="actions"> </div>
+<h3>{{ 'explorer.categories' | transloco }}</h3>
+@if (!error()) {
+<ul>
+  @for (category of categories(); track category.id) {
+  <li>
+    <cbc-category-box
+      [category]="category"
+      [userId]="userId()"
+      (userUninvited)="mustRefresh()"
+    ></cbc-category-box>
+  </li>
+  }
+</ul>
+}
+<h3>{{ 'label.group' | transloco }}</h3>
+@if (!error()) {
+<ul>
+  @for (membership of memberships(); track membership) {
+  <li>
+    <cbc-group-box
+      [membership]="membership"
+      [userId]="userId()"
+      (userUninvited)="mustRefresh()"
+    ></cbc-group-box>
+  </li>
+  }
+</ul>
+} @if (error()) {
+<p> {{ 'label.nothing.to.display' | transloco }} </p>
+}

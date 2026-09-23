@@ -1,0 +1,26 @@
+<button
+  type="button"
+  class="user-box"
+  [class.focused]="focusedUserId() === user().userId"
+  (click)="toggleFocus()"
+  (keydown.enter)="toggleFocus()"
+>
+  <div class="select-box">
+    @if (showSelect()) {
+    <a tabindex="0" (click)="triggerSelect($event)"
+      >{{ 'label.select' | transloco }}</a
+    >
+    } @if (showRemove() && showSelect()) {
+    <span>&nbsp;|&nbsp;</span>
+    } @if (showRemove()) {
+    <a tabindex="0" (click)="triggerRemove($event)"
+      >{{ 'label.unselect' | transloco }}</a
+    >
+    }
+  </div>
+  <div class="display-holder">
+    {{ user().firstname + ' ' + user().lastname }}
+    <br />
+    <span class="bolder">{{ user().userId + ' - ' + user().email }}</span>
+  </div>
+</button>

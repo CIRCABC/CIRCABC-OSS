@@ -1,0 +1,91 @@
+<section class="request--card">
+  <div class="request--date">
+    {{ applicant().submitted | date: 'y MMM d, H:mm' }}
+  </div>
+  @if (applicant().user) {
+  <div class="request--user">
+    {{ firstname }} {{ lastname }}
+    <br />
+    <span class="email--field">{{ email }}</span>
+  </div>
+  }
+  <div class="request--content">
+    {{ 'applicants.justification' | transloco }}:
+    <br />
+    <br />
+    <div [innerHTML]="applicant().justification"> </div>
+  </div>
+  <div class="request--footer">
+    @if (!showAcceptForm && !showDeclineForm) {
+    <div class="buttons-group">
+      <a tabindex="0" class="cta" (click)="prepareAccept()"
+        >{{ 'label.accept' | transloco }}</a
+      >
+      <a tabindex="0" class="button" (click)="prepareDecline()"
+        >{{ 'label.decline' | transloco }}</a
+      >
+    </div>
+    } @if (showAcceptForm) {
+    <div class="request--accept-form">
+      <form [formGroup]="inviteForm">
+        <div class="field">
+          <label for="profileName">{{ 'label.profile' | transloco }}</label>
+          <div class="custom-select select--form">
+            <select
+              name="profileName"
+              id="profileName"
+              formControlName="selectedProfile"
+            >
+              @for (profile of availableProfiles(); track profile.id) {
+              <option value="{{ profile.id }}"
+                >{{ profile.title | cbcI18n }}</option
+              >
+              }
+            </select>
+          </div>
+          <cbc-control-message
+            [control]="selectedProfileControl"
+          ></cbc-control-message>
+        </div>
+        @if (processing()) {
+        <div>
+          <div
+            >{{ 'label.inviting' | transloco }}...
+            <cbc-spinner></cbc-spinner>
+          </div>
+        </div>
+        }
+      </form>
+      @if (!processing()) {
+      <div class="buttons-group">
+        @if (inviteForm.valid) {
+        <a tabindex="0" class="cta" (click)="invite()"
+          >{{ 'label.invite' | transloco }}</a
+        >
+        }
+        <a tabindex="0" class="button" (click)="cancel()"
+          >{{ 'label.cancel' | transloco }}</a
+        >
+      </div>
+      }
+    </div>
+    } @if (showDeclineForm) {
+    <div class="request--decline-form">
+      <form [formGroup]="declineForm">
+        <div class="field">
+          <label for="declineText">{{ 'label.message' | transloco }}</label>
+          <textarea id="declineText" formControlName="declineText"></textarea>
+        </div>
+      </form>
+      <div class="buttons-group">
+        <a tabindex="0" class="cta" (click)="decline()"
+          >{{ 'label.decline' | transloco }}</a
+        >
+        <a tabindex="0" class="button" (click)="cancel()"
+          >{{ 'label.cancel' | transloco }}</a
+        >
+      </div>
+    </div>
+    }
+  </div>
+</section>

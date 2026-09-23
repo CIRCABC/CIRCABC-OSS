@@ -1,0 +1,72 @@
+{{ 'label.help' | transloco | cbcSetTitle }} @if (loading()) {
+<cbc-horizontal-loader />
+} @if (isAdminOrSupport()) {
+<header class="actions">
+  <a tabindex="0" (click)="showCreateLinkModal = true"
+    >{{ 'help.add.link' | transloco }}</a
+  >
+  <a tabindex="0" class="cta" (click)="showCreateModal = true"
+    >{{ 'help.add.section' | transloco }}</a
+  >
+</header>
+}
+
+<header class="help-header">
+  <div class="help-header-container">
+    <img src="img/help-message.png" alt="Help message" />
+    <h1> {{ 'help.header.title' | transloco }}</h1>
+  </div>
+</header>
+
+<section class="start-container">
+  <section class="contact-section">
+    <a [routerLink]="['/help/contact']"
+      >{{ 'label.contact' | transloco }}
+      <img src="img/email.png" alt="Email icon"
+    /></a>
+  </section>
+
+  <section class="help-highlights">
+    <cbc-faq-highlights></cbc-faq-highlights>
+  </section>
+
+  <section class="help-categories">
+    <h2>{{ 'help.faq' | transloco }}</h2>
+    <ul>
+      @for (category of categories(); track category.id) {
+      <li>
+        <a data-cy="category-link" [routerLink]="['../category', category.id]">
+          <span class="number-article">
+            <img src="img/icon-forums-grey.png" alt="Forum icon" />{{
+            category.numberOfArticles }} {{ (category.numberOfArticles === 1 ?
+            'help.article' : 'help.articles' ) | transloco }} </span
+          >{{ category.title | cbcI18n }}</a
+        >
+      </li>
+      } @if (categories().length === 0) {
+      <li>
+        <a>{{ 'help.no.sections' | transloco }}</a>
+      </li>
+      }
+    </ul>
+  </section>
+
+  <section class="help-links">
+    <cbc-help-links
+      [links]="links()"
+      (linkDeleted)="refreshLinks()"
+      (clickedForEdition)="openForEdit($event)"
+    >
+    </cbc-help-links>
+  </section>
+</section>
+
+<cbc-add-help-category
+  [(showModal)]="showCreateModal"
+  (categoryCreated)="refresh($event)"
+/>
+<cbc-add-link
+  [(showModal)]="showCreateLinkModal"
+  (linkCreated)="refreshLinks($event)"
+  [(linkId)]="linkId"
+/>

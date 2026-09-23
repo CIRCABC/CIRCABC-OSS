@@ -1,0 +1,11 @@
+ul li {
+  display: inline-block;
+  margin-right: 10px;
+  font-size: 12px;
+  color: var(--theme-text-muted);
+
+  img {
+    vertical-align: bottom;
+    margin-right: 10px;
+  }
+}

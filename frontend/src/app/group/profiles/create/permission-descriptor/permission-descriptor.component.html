@@ -1,0 +1,14 @@
+<div class="description">
+  @if (label()) {
+  <button
+    type="button"
+    class="clickable"
+    [class.text]="!mustExpand"
+    [class.expanded]="mustExpand"
+    #textExplanation
+    (click)="toggleExpand()"
+  >
+    {{ label() | transloco }}
+  </button>
+  }
+</div>

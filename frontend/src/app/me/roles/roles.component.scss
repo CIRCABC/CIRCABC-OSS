@@ -1,0 +1,47 @@
+h1 {
+  font-weight: bold;
+  text-align: center;
+}
+
+h2,
+h3 {
+  padding: 0 15px;
+  font-weight: normal;
+}
+
+.row {
+  .group-title {
+    font-size: 13px;
+    font-weight: bold;
+  }
+
+  .grey-name {
+    color: var(--theme-text-aa);
+    font-size: 11px;
+  }
+
+  .profile {
+    float: right;
+    font-size: 14px;
+    color: var(--theme-text-aa);
+    line-height: 24px;
+    padding: 5px;
+
+    a {
+      background-image: url(img/logout-grey.png);
+      height: 16px;
+      width: 16px;
+      display: inline-block;
+      vertical-align: middle;
+
+      &:hover {
+        background-image: url(img/logout-blue.png);
+      }
+    }
+  }
+}
+
+.flex {
+  display: flex;
+  justify-content: space-between;
+}

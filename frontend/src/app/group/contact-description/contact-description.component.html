@@ -1,0 +1,15 @@
+@let _group = group(); @if (_group) {
+<section class="box box--contact">
+  <div class="header">
+    <span class="title">{{ 'label.contact.information' | transloco }}</span>
+  </div>
+  <div class="main">
+    @if (_group.contact && hasContact()) {
+    <p [innerHtml]="getLang() | i18nSelect: _group.contact"></p>
+    } @if (!hasContact()) {
+    <p> {{ 'descriptor.no-group-contact' | transloco }} </p>
+    }
+    <div style="clear: both"> </div>
+  </div>
+</section>
+}

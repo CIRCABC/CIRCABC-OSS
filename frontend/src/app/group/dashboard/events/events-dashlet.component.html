@@ -1,0 +1,48 @@
+<section class="box box--alternate-lines box--button">
+  <header class="header">
+    <span class="title">{{ 'label.events' | transloco }}</span>
+  </header>
+  @if (loading()) {
+  <cbc-horizontal-loader></cbc-horizontal-loader>
+  } @if (!loading()) {
+  <div class="main main--listing">
+    @if (events() !== undefined && events().length > 0 && !restCallError()) {
+    <ul>
+      @for (event of getListOfEvents(); track event.id) {
+      <li class="row">
+        <span class="date"
+          >{{ event.appointmentDate | cbcDate: event.startTime: event.timeZone
+          }} - {{ event.appointmentDate | cbcTime: event.startTime:
+          event.timeZone}}</span
+        >&nbsp;&nbsp;&nbsp;
+        <a [routerLink]="['/group', event.igId, 'agenda', event.id, 'details']"
+          >{{ event.title }}</a
+        >
+      </li>
+      }
+    </ul>
+    } @if ((events() === undefined || events().length === 0) &&
+    !restCallError()) {
+    <ul>
+      <li class="row">{{ 'events.dashlet.no-event' | transloco }}</li>
+    </ul>
+    } @if (restCallError()) {
+    <ul>
+      <li class="row">{{ 'forums.dashlet.not.available' | transloco }}</li>
+    </ul>
+    }
+  </div>
+  } @if (events() !== undefined && events().length > 8) {
+  <footer class="footer">
+    @if (!more) {
+    <a tabindex="0" (click)="more = true" class="footer__button"
+      >{{ 'label.show.more' | transloco }}</a
+    >
+    } @if (more) {
+    <a tabindex="0" (click)="more = false" class="footer__button"
+      >{{ 'label.show.less' | transloco }}</a
+    >
+    }
+  </footer>
+  }
+</section>

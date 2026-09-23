@@ -1,0 +1,46 @@
+<h2>{{ 'admin.general.page.title' | transloco }}</h2>
+<form [formGroup]="igForm">
+  <div class="field">
+    <label for="name">{{ 'label.name' | transloco }}</label>
+    <input type="text" id="name" formControlName="name" [cbcFocus]="true" />
+    <cbc-control-message [control]="nameControl"></cbc-control-message>
+  </div>
+  <cbc-multilingual-input
+    formControlName="title"
+    [label]="'label.title' | transloco"
+    [placeholder]="'label.title' | transloco"
+    [lang]="'en'"
+  ></cbc-multilingual-input>
+  <cbc-multilingual-input
+    formControlName="description"
+    [label]="'label.description' | transloco"
+    [placeholder]="'label.description' | transloco"
+    [lang]="'en'"
+    [textarea]="true"
+  ></cbc-multilingual-input>
+  <cbc-multilingual-input
+    formControlName="contact"
+    [label]="'label.contact' | transloco"
+    [placeholder]="'label.contact' | transloco"
+    [lang]="'en'"
+    [textarea]="true"
+  ></cbc-multilingual-input>
+  @if (saving()) {
+  <div class="field">
+    <div
+      >{{ 'label.saving' | transloco }}...
+      <cbc-spinner></cbc-spinner>
+    </div>
+  </div>
+  }
+</form>
+@if (!saving()) {
+<div class="buttons-group">
+  <a tabindex="0" class="cta" (click)="save()" [class.disabled]="!igForm.valid"
+    >{{ 'label.save' | transloco }}</a
+  >
+  <a tabindex="0" class="button" (click)="cancel()"
+    >{{ 'label.cancel' | transloco }}</a
+  >
+</div>
+}

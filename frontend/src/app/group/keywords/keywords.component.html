@@ -1,0 +1,204 @@
+@if (loading()) {
+<cbc-horizontal-loader />
+}
+<div class="wrap page-container">
+  <div class="page-header">
+    <span
+      class="page-header__title"
+      [innerHTML]="'keywords.manage.page.title' | transloco"
+    ></span>
+    <div class="page-header__actions">
+      @if (currentLibrary(); as currentLibrary) {
+      <cbc-reponsive-sub-menu>
+        <a [routerLink]="['../library', currentLibrary.id]"
+          >{{ 'label.library' | transloco }}</a
+        >
+        <a [routerLink]="['.']" class="selected"
+          >{{ 'label.keywords' | transloco }}</a
+        >
+        @if (isLibAdmin()) {
+        <a [routerLink]="['../dynamic-properties']"
+          >{{ 'label.dynamic.properties' | transloco }}</a
+        >
+        } @if (isLibAdmin()) {
+        <a [routerLink]="['../admin/documents']" [queryParams]="{ expired: 1 }"
+          >{{ 'label.expired.items' | transloco }}</a
+        >
+        }
+      </cbc-reponsive-sub-menu>
+      }
+      <button
+        type="button"
+        class="cta cta--plus dropdown-trigger"
+        data-cy="add-keyword"
+        (click)="showAddDropdown = !showAddDropdown"
+        (keydown.enter)="showAddDropdown = !showAddDropdown"
+      >
+        {{ 'keywords.add' | transloco }} @if (showAddDropdown) {
+        <div class="dropdown dropdown--add-file">
+          <ul>
+            <li>
+              <a
+                tabindex="0"
+                class="keyword"
+                data-cy="create-keyword"
+                (click)="showCreateModal = true"
+              >
+                {{ 'label.keyword' | transloco }}
+              </a>
+            </li>
+            <li>
+              <a tabindex="0" class="import" (click)="showImportModal = true">
+                {{ 'label.import' | transloco }}
+              </a>
+            </li>
+          </ul>
+        </div>
+        }
+      </button>
+    </div>
+  </div>
+  <section class="table-container">
+    <header class="header">
+      <div class="float-left">
+        <div class="nav-pages"> </div>
+      </div>
+      <span class="icons"> </span>
+    </header>
+    <table class="main">
+      <thead>
+        @if (keywords().length > 0) {
+        <tr>
+          <th><span class="visually-hidden">Actions</span></th>
+          <th class="cell-checkbox">
+            <span class="visually-hidden">Select</span>
+            <input
+              type="checkbox"
+              name=""
+              value=""
+              aria-label="{{ 'label.select.all' | transloco }}"
+              (click)="toggleSelect()"
+              (keydown.enter)="toggleSelect()"
+              [checked]="allSelected()"
+            />
+          </th>
+          <th> {{ 'label.keyword' | transloco }} </th>
+        </tr>
+        }
+      </thead>
+      <tbody>
+        <tr>
+          @if (selection() !== undefined && selection().length > 0) {
+          <td colspan="3">
+            <ul class="bulk-actions">
+              <li>
+                <cbc-number-badge
+                  [number]="selection().length"
+                ></cbc-number-badge>
+              </li>
+              <li>
+                <a tabindex="0" (click)="showDeleteAllModal()"
+                  >{{ 'label.delete' | transloco }}</a
+                >
+              </li>
+            </ul>
+          </td>
+          }
+        </tr>
+        @for (keyword of keywords(); track keyword.id) {
+        <tr class="row">
+          <td class="cell-left-border"></td>
+          <td class="cell-checkbox">
+            <!-- NOSONAR: Native checkbox is keyboard accessible -->
+            <input
+              type="checkbox"
+              name=""
+              value=""
+              aria-label="Select keyword"
+              [checked]="keyword.selected"
+              (click)="toggleSelected(keyword)"
+              (keydown.enter)="toggleSelected(keyword)"
+            />
+          </td>
+          <td class="cell-file-name">
+            <div class="file-name">
+              <cbc-keyword-tag [keyword]="keyword"></cbc-keyword-tag>
+            </div>
+            <div class="actions">
+              <span>
+                <cbc-delete-keyword
+                  [keyword]="keyword"
+                  (modalHide)="afterKeywordDeletion($event)"
+                ></cbc-delete-keyword>
+              </span>
+              <span>
+                <a tabindex="0" (click)="showUpdateKeyword(keyword)"
+                  >{{ 'label.edit' | transloco }}</a
+                >
+              </span>
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+    @if (keywords().length === 0) {
+    <div
+      style="
+        color: #767676;
+        font-size: 18px;
+        text-align: center;
+        padding: 15px;
+        background-color: #fff;
+        line-height: 64px;
+      "
+    >
+      {{ 'keywords.empty.list' | transloco }}
+      <img
+        src="img/rounded-block-sign.png"
+        alt="No keywords available"
+        style="vertical-align: middle; margin: 0 25px"
+      />
+    </div>
+    } @if (selection() !== undefined && selection().length > 0) {
+    <ul class="bulk-actions">
+      <li>
+        <cbc-number-badge [number]="selection().length"></cbc-number-badge>
+      </li>
+      <li>
+        <a tabindex="0" (click)="showDeleteAllModal()"
+          >{{ 'label.delete' | transloco }}</a
+        >
+      </li>
+    </ul>
+    }
+    <div class="footer">
+      <div class="float-left">
+        <div class="nav-pages"> </div>
+      </div>
+      @if (keywords().length !== 0) {
+      <div class="right-actions">
+        <a tabindex="0" (click)="bulkDownload()"
+          >{{ 'label.download.all.keywords' | transloco }}</a
+        >
+      </div>
+      }
+    </div>
+  </section>
+</div>
+<cbc-delete-multi-keywords
+  [keywords]="selection()"
+  [showModal]="showMultipleDeleteWizard()"
+  (modalHide)="refreshAfterAllDeletion($event)"
+/>
+<cbc-create-keyword
+  [showModal]="showCreateModal"
+  [keyword]="selectedKeyword"
+  [parentIgId]="nodeId()"
+  (modalHide)="refreshAfterCreation($event)"
+/>
+<cbc-import-keyword
+  [showModal]="showImportModal"
+  [parentIgId]="nodeId()"
+  (modalHide)="refreshAfterCreation($event)"
+/>

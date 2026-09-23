@@ -1,0 +1,75 @@
+<h1 class="visually-hidden">
+  {{ 'label.appearance.title' | transloco: { groupName:
+  $safeNavigationMigration(group()?.name) } }}
+</h1>
+{{ 'label.appearance.title' | transloco: { groupName:
+$safeNavigationMigration(group()?.name) } | cbcSetTitle }}
+<a
+  tabindex="0"
+  class="cta cta--plus cta--upload"
+  (click)="showUploadModal.set(true)"
+  >{{ 'admin.upload.logo.action' | transloco }}</a
+>
+
+<h2 class="h3-style">{{ 'label.appearance' | transloco }}</h2>
+
+<section class="table-container">
+  <table class="main">
+    <thead>
+      <tr>
+        <th class="fixedWidth">{{ 'label.logo' | transloco }}</th>
+        <th class="fixedWidth">{{ 'label.image' | transloco }}</th>
+        <th class="fixedWidth">{{ 'label.actions' | transloco }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td colspan="3"></td>
+      </tr>
+      @for (logo of logos(); track logo.id) {
+      <tr class="row">
+        <td class="logoCell fixedWidth">
+          <img
+            [attr.src]="logo.id | cbcDownload | cbcSecure"
+            [attr.alt]="logo.name"
+          />
+        </td>
+        <td class="fixedWidth">{{ logo.name }}</td>
+        <td class="fixedWidth">
+          <ul style="display: flex">
+            <li>
+              <a
+                tabindex="0"
+                (click)="select(logo.id)"
+                class="selectAction"
+                title="{{ 'label.select' | transloco }}"
+              >
+                @if (isSelected(logo.id)) {
+                <img src="img/check.png" alt="Selected" />
+                } @if (!isSelected(logo.id)) {
+                <img src="img/check-grey.png" alt="Not Selected" />
+                }
+              </a>
+            </li>
+            <li>
+              <cbc-inline-delete
+                (deletionConfirmed)="delete($safeNavigationMigration(logo?.id))"
+                [useIcon]="true"
+                [useText]="false"
+              ></cbc-inline-delete>
+            </li>
+          </ul>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+</section>
+
+@if (group(); as group) {
+<cbc-add-group-logo
+  [groupId]="group.id"
+  [showModal]="showUploadModal()"
+  (modalHide)="refresh($event)"
+/>
+}

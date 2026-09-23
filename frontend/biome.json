@@ -1,0 +1,86 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "files": {
+    "includes": [
+      "src/**/*",
+      "!src/app/core/generated/**",
+      "!src/**/*.html",
+      "!src/**/*.svg",
+      "!src/**/*.spec.ts"
+    ]
+  },
+  "formatter": {
+    "enabled": false,
+    "indentWidth": 2,
+    "indentStyle": "space"
+  },
+  "overrides": [
+    {
+      "includes": ["**/*.html"],
+      "linter": { "enabled": false }
+    }
+  ],
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+
+      "style": {
+        "noNegationElse": "error",
+        "useTemplate": "error",
+        "noUnusedTemplateLiteral": "error",
+        "useEnumInitializers": "error",
+        "noParameterAssign": "error",
+        "noUselessElse": "error",
+        "useNumberNamespace":"error",
+        "useImportType":"off",
+        "noDescendingSpecificity": "off"
+      },
+      "complexity": {
+        "useSimplifiedLogicExpression": "error",
+        "useOptionalChain": "error",
+        "useLiteralKeys": "off",
+        "noStaticOnlyClass": "error",
+        "noBannedTypes":"off",
+        "noForEach":"off"
+      },
+      "correctness": {
+        "noUndeclaredVariables": "error",
+        "noUnusedVariables": "error",
+        "noUnknownPseudoElement": "off",
+        "noUnknownMediaFeatureName": "off"
+      },
+      "nursery": {
+      },
+      "suspicious": {
+        "noExplicitAny": "off",
+        "noRedeclare": "error",
+        "noAssignInExpressions": "error",
+        "noImplicitAnyLet": "error",
+        "noDuplicateProperties": "off",
+        "noShorthandPropertyOverrides": "off"
+      },
+      "a11y": {
+        "useButtonType": "off",
+        "useAnchorContent": "off",
+        "useMediaCaption": "off",
+        "useAltText": "off",
+        "noSvgWithoutTitle": "off"
+      },
+      "performance": {
+        "noDelete": "off"
+      }
+    }
+  },
+  "html": {
+    "parser": {
+      "interpolation": true
+    }
+  },
+  "javascript": {
+    "formatter": { "quoteStyle": "single", "trailingCommas": "all" },
+    "parser": {
+      "unsafeParameterDecoratorsEnabled": true
+    }
+  }
+}

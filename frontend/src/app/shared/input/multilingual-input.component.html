@@ -1,0 +1,66 @@
+<div
+  class="flexContainer"
+  [formGroup]="formSelector"
+  [class.field--textarea]="textarea()"
+  [class.field--with-icon]="!textarea()"
+>
+  <div class="flexFullRow">
+    <label for="title" [class.label--top-align]="textarea()"
+      >{{ label() }}@if (required()) {
+      <span class="text-error">*</span>
+      }
+    </label>
+  </div>
+
+  <div class="flexWrap">
+    @if (!textarea()) {
+    <input
+      data-cy="text"
+      type="text"
+      [attr.aria-label]="label()"
+      placeholder="{{ placeholder() }}"
+      formControlName="text"
+      class="multilang-input"
+    />
+    } @if (textarea()) {
+    <div>
+      <cbc-rich-text-editor
+        [spellcheck]="
+          formSelector.controls.language.value === 'en' ? true : false
+        "
+        data-cy="textarea"
+        formControlName="text"
+        editorHeight="126px"
+        ><span class="ql-formats">
+          <button class="ql-bold" aria-label="Bold"></button>
+          <button class="ql-italic" aria-label="Italic"></button>
+          <button class="ql-underline" aria-label="Underline"></button>
+        </span>
+        <span class="ql-formats">
+          <button class="ql-list" aria-label="list" value="ordered"></button>
+          <button class="ql-list" aria-label="list" value="bullet"></button>
+        </span>
+        <span class="ql-formats">
+          <button class="ql-blockquote" aria-label="Strike"></button>
+          <button class="ql-link" aria-label="link"></button>
+          <button class="ql-code-block" aria-label="code-block"></button> </span
+      ></cbc-rich-text-editor>
+    </div>
+    }
+  </div>
+
+  <div class="flex0">
+    <div class="lang-selector" [class.lang-selector--textarea]="textarea()">
+      <label for="langSelect" class="visually-hidden"
+        >{{ 'label.language' | transloco }}</label
+      >
+      <select id="langSelect" formControlName="language">
+        @for (availableLang of availableLangs; track availableLang.code) {
+        <option value="{{ availableLang.code }}">
+          {{ availableLang.code }}
+        </option>
+        }
+      </select>
+    </div>
+  </div>
+</div>

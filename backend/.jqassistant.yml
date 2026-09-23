@@ -1,0 +1,8 @@
+jqassistant:
+  plugins:
+    - group-id: org.jqassistant.plugin
+      artifact-id: jqassistant-spring-plugin
+      version: 2.2.1
+  analyze:
+    groups:
+     - spring-boot:Default

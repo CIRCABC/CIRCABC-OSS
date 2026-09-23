@@ -1,0 +1,1010 @@
+@if (loading()) {
+<cbc-horizontal-loader />
+}
+<div class="fluid page-container">
+  @if (node) {
+  <div class="file-details">
+    <div class="page-header">
+      <h1
+        class="page-header__title"
+        [attr.aria-label]="getPageTitle() | transloco"
+        [innerHtml]="getPageTitle() | transloco"
+      >
+        {{ getPageTitle() | transloco }}
+      </h1>
+      <div class="page-header__actions">
+        <cbc-reponsive-sub-menu>
+          <a
+            tabindex="0"
+            (click)="backToContainer()"
+            class="page-header__backlink"
+            >{{ 'label.back' | transloco }}</a
+          >
+          <a [routerLink]="['.']" class="selected"
+            >{{ 'label.details' | transloco }}</a
+          >
+          @if ( !isVersion() | cbcIfRoleGE: [node, 'LibAdmin', ['LibManageOwn']]
+          ) {
+          <a
+            data-cy="permissions"
+            [routerLink]="[
+              versionLabel === undefined
+                ? '../../../permissions'
+                : '../../../../permissions',
+              node.id
+            ]"
+            [queryParams]="{ from: 'library' }"
+            >{{ 'label.permissions' | transloco }}</a
+          >
+          } @if (!isVersion() | cbcIfRoleGE: [node, 'LibAdmin', []]) {
+          <a
+            [routerLink]="[
+              versionLabel === undefined
+                ? '../../../notification-status'
+                : '../../../../notification-status',
+              nodeId
+            ]"
+            [queryParams]="{ from: 'library' }"
+            >{{ 'label.notifications' | transloco }}</a
+          >
+          }
+        </cbc-reponsive-sub-menu>
+      </div>
+    </div>
+
+    @if (!restrictedMode) {
+    <cbc-group-breadcrumb
+      [node]="nodeId"
+      [noMarginBottom]="true"
+      [displayName]="false"
+    ></cbc-group-breadcrumb>
+    }
+
+    <section class="details-container">
+      <section class="box details-metadata-container">
+        <header class="header-details">
+          <div class="title">
+            {{ node.name }}<br />
+            @if (isFile()) {
+            <span class="visibility"
+              >({{ 'label.version.number' | transloco: { number:
+              nodeVersionLabel } }})</span
+            >
+            }
+          </div>
+
+          <div class="icons">
+            <cbc-favourite-switch
+              [node]="node"
+              class="favourite-no-float"
+            ></cbc-favourite-switch>
+
+            @if (!isGuest()) {
+            <div class="dropdown-trigger dropdown-trigger--with-icons">
+              @if (isSubscribedToNotifications()) {
+              <img src="img/visibility.png" alt="Notifications" />
+              } @if (!isSubscribedToNotifications()) {
+              <img src="img/no-visibility.png" alt="Notifications" />
+              }
+              <div class="dropdown dropdown--library-settings">
+                <div class="number-of-items">
+                  {{ 'label.notifications' | transloco }}:
+                  <br />
+                  <br />
+                  @if (!isSubscribedToNotifications()) {
+                  <a tabindex="0" (click)="changeNotificationSubscription('on')"
+                    >{{ 'label.subscribe' | transloco }}
+                    <img src="img/visibility.png" alt="Notifications" />
+                  </a>
+                  } @if (isSubscribedToNotifications()) {
+                  <a
+                    tabindex="0"
+                    (click)="changeNotificationSubscription('off')"
+                    >{{ 'label.unsubscribe' | transloco }}
+                    <img src="img/no-visibility.png" alt="Notifications" />
+                  </a>
+                  }
+                </div>
+              </div>
+            </div>
+            } @if (isFile() && isAiEnabled()) {
+            <span class="summarize-icon">
+              <a
+                tabindex="0"
+                (click)="summarizeDocument()"
+                [attr.aria-label]="'summarize.button' | transloco"
+                title="{{ 'summarize.button' | transloco }}"
+                >Σ</a
+              >
+            </span>
+            }
+
+            <cbc-share
+              [sensitive]="isSensitive()"
+              [showLabel]="false"
+              [orientationRight]="false"
+              [enableDirectDownload]="isFile() && !isLink()"
+              [securityRanking]="node.properties!.security_ranking"
+            >
+            </cbc-share>
+
+            @if (processing) {
+            <cbc-spinner></cbc-spinner>
+            }
+          </div>
+        </header>
+        <div class="main">
+          <section class="file-informations">
+            @if (isPreviewable()) {
+            <a tabindex="0" (click)="previewContent()">
+              @if (node.id && node.name && isFile() && !isLink()) {
+              <img
+                class="thumbnail"
+                [attr.src]="node.id | cbcThumbnail: isVersion() | cbcSecure"
+                alt="{{ node.name }}"
+              />
+              } @if (isLink()) {
+              <img
+                src="img/icon-link-big-818181.png"
+                class="thumbnail-default"
+                width="130"
+                height="130"
+                alt=""
+              />
+              } @if (isSharedSpaceLink(node)) {
+              <img
+                src="img/linked-folder-155D79.png"
+                class="thumbnail-default"
+                alt=""
+              />
+              } @if (isFolder(node)) {
+              <img
+                src="img/bigicon-folder.png"
+                class="thumbnail-default"
+                alt=""
+              />
+              }
+            </a>
+            } @if (!isPreviewable()) {
+            <span>
+              @if (node.id && node.name && isFile() && !isLink()) {
+              <img
+                class="thumbnail"
+                [attr.src]="node.id | cbcThumbnail: isVersion() | cbcSecure"
+                alt="{{ node.name }}"
+              />
+              } @if (isLink()) {
+              <img
+                src="img/icon-link-big-818181.png"
+                class="thumbnail-default"
+                width="130"
+                height="130"
+                alt=""
+              />
+              } @if (isSharedSpaceLink(node)) {
+              <img
+                src="img/linked-folder-155D79.png"
+                class="thumbnail-default"
+                alt=""
+              />
+              } @if (isFolder(node)) {
+              <img
+                src="img/bigicon-folder.png"
+                class="thumbnail-default"
+                alt=""
+              />
+              }
+            </span>
+            }
+
+            <div class="items">
+              @if (!isFolder(node)) {
+              <a
+                tabindex="0"
+                class="step-link"
+                [class.step-link-selected]="step === 'metadata'"
+                (click)="step = 'metadata'"
+                >{{ 'label.details' | transloco }}</a
+              >
+              } @if (!isFolder(node)) {
+              <a
+                tabindex="0"
+                class="step-link"
+                [class.step-link-selected]="step === 'dynprop'"
+                (click)="step = 'dynprop'"
+                >{{ 'label.group.medatada' | transloco }}</a
+              >
+              } @if (step === 'metadata') {
+              <dl class="main-infos">
+                <div class="main-infos__row">
+                  <dt class="title">{{ 'label.title' | transloco }}:</dt>
+                  <dd class="metadata-value">{{ title }}</dd>
+                </div>
+                <div class="main-infos__row">
+                  <dt class="title">
+                    {{ 'label.description' | transloco }}:&nbsp;
+                  </dt>
+                  <dd [innerHTML]="description" class="span-description"></dd>
+                </div>
+                <div class="main-infos__row">
+                  <dt class="title">{{ 'label.Size' | transloco }}:&nbsp;</dt>
+                  @if (isFile()) {
+                  <dd class="metadata-value">{{ size | cbcSize: true }}</dd>
+                  } @if (isFolder(node)) {
+                  <dd class="metadata-value">
+                    {{ folderSize | cbcSize: true }}
+                  </dd>
+                  }
+                </div>
+                @if (isFile()) {
+                <div class="main-infos__row">
+                  <dt class="title">
+                    {{ 'label.language' | transloco }}:&nbsp;
+                  </dt>
+                  <dd class="metadata-value">{{ language }}</dd>
+                </div>
+                } @if (isFile()) {
+                <div class="main-infos__row">
+                  <dt class="title">
+                    {{ 'label.content.type' | transloco }}:&nbsp;
+                  </dt>
+                  <dd class="metadata-value">{{ mimetypeName }}</dd>
+                </div>
+                }
+                <div class="main-infos__row">
+                  <dt class="title">
+                    {{ 'label.last.modification' | transloco }}:&nbsp;
+                  </dt>
+                  <dd class="metadata-value">
+                    {{ modified | date: 'y MMM d, H:mm' }} {{ 'label.by' |
+                    transloco }}
+                    <cbc-user-card [userId]="modifier"></cbc-user-card>
+                  </dd>
+                </div>
+                @if (isFile()) {
+                <div class="main-infos__row">
+                  <dt class="title">
+                    {{ 'label.keywords' | transloco }}:&nbsp;
+                  </dt>
+                  <dd>
+                    @for (keyword of keywords; track keyword.id) {
+                    <cbc-keyword-tag
+                      [keyword]="keyword"
+                      [lang]="currentLang"
+                      [removable]="
+                          !isLocked()
+                            | cbcIfRoleGE
+                              : [node, 'LibEditOnly', ['LibManageOwn']]
+                        "
+                      [documentNode]="node"
+                      (removed)="onKeywordRemoved()"
+                      [showLang]="false"
+                    ></cbc-keyword-tag>
+                    } @if ( isLastVersionOfContent() | cbcIfRoleGE : [node,
+                    'LibEditOnly', ['LibManageOwn']] ) {
+                    <cbc-add-keyword
+                      [documentNode]="node"
+                      [groupNode]="group"
+                      (addedKeyword)="onKeywordAdded($event)"
+                    >
+                    </cbc-add-keyword>
+                    }
+                  </dd>
+                </div>
+                }
+              </dl>
+              }
+              <br />
+              <mat-accordion multi>
+                @if (step === 'metadata') {
+                <mat-expansion-panel>
+                  <mat-expansion-panel-header>
+                    <mat-panel-title
+                      >{{ 'label.metadata' | transloco }}</mat-panel-title
+                    >
+                  </mat-expansion-panel-header>
+                  @if (step === 'metadata') {
+                  <dl class="metadata-details">
+                    @if (isFile()) {
+                    <div class="metadata-details__row">
+                      <dt class="title">
+                        {{ 'label.author' | transloco }}:&nbsp;
+                      </dt>
+                      <dd class="metadata-value">{{ author }}</dd>
+                    </div>
+                    } @if (isLink()) {
+                    <div class="metadata-details__row">
+                      <dt class="title">
+                        {{ 'label.url' | transloco }}:&nbsp;
+                      </dt>
+                      <dd class="metadata-value">{{ url }}</dd>
+                    </div>
+                    } @if (isFile()) {
+                    <div class="metadata-details__row">
+                      <dt class="title">
+                        {{ 'label.encoding' | transloco }}:&nbsp;
+                      </dt>
+                      <dd class="metadata-value">{{ encoding }}</dd>
+                    </div>
+                    } @if (isFile()) {
+                    <div class="metadata-details__row">
+                      <dt class="title">
+                        {{ 'label.status' | transloco }}:&nbsp;
+                      </dt>
+                      <dd class="metadata-value">
+                        {{ status === 'RELEASE' ? 'RELEASED' : status }}
+                      </dd>
+                    </div>
+                    }
+                    <div class="metadata-details__row">
+                      <dt class="title">
+                        {{ 'label.created' | transloco }}:&nbsp;
+                      </dt>
+                      <dd class="metadata-value">
+                        {{ created | date: 'y MMM d, H:mm' }} {{ 'label.by' |
+                        transloco }}
+                        <cbc-user-card [userId]="creator"></cbc-user-card>
+                      </dd>
+                    </div>
+                    @if (isFile()) {
+                    <div class="metadata-details__row">
+                      <dt class="title">
+                        {{ 'label.reference' | transloco }}:&nbsp;
+                      </dt>
+                      <dd class="metadata-value">{{ reference }}</dd>
+                    </div>
+                    } @if (isFile()) {
+                    <div class="metadata-details__row">
+                      <dt class="title">
+                        {{ 'label.version' | transloco }}:&nbsp;
+                      </dt>
+                      <dd class="metadata-value">{{ nodeVersionLabel }}</dd>
+                    </div>
+                    } @if (isFile()) {
+                    <div class="metadata-details__row">
+                      <dt class="title">
+                        {{ 'label.security.marking' | transloco }}:&nbsp;
+                      </dt>
+                      <dd class="metadata-value">{{ securityRanking }}</dd>
+                    </div>
+                    } @if (isFile()) {
+                    <div class="metadata-details__row">
+                      <dt class="title">
+                        {{ 'label.issue.date' | transloco }}:&nbsp;
+                      </dt>
+                      <dd class="metadata-value">
+                        {{ issueDate | date: 'y MMM d, H:mm' }}
+                      </dd>
+                    </div>
+                    } @if (isFile() || isFolder(node)) {
+                    <div class="metadata-details__row">
+                      <dt class="title">
+                        {{ 'label.expiration.date' | transloco }}:&nbsp;
+                      </dt>
+                      <dd class="metadata-value">
+                        {{ expirationDate | date: 'y MMM d' }}
+                      </dd>
+                    </div>
+                    }
+                  </dl>
+                  }
+                </mat-expansion-panel>
+                } @if (isFile() && hasAresLogVersion) {
+                <mat-expansion-panel>
+                  <mat-expansion-panel-header>
+                    <mat-panel-title
+                      >{{ 'admin.tab.external.repositories' | transloco
+                      }}</mat-panel-title
+                    >
+                  </mat-expansion-panel-header>
+                  <h4>Ares</h4>
+                  <div class="ares-info">
+                    <dl class="ares-details">
+                      @if (formAresInfo) {
+                      <div class="ares-details__row">
+                        <dt class="title">
+                          {{ 'label.save.number' | transloco }}:&nbsp;
+                        </dt>
+                        <dd class="metadata-value">
+                          <a [href]="aresDocumentLink" target="_blank"
+                            >{{ formAresInfo.value.saveNumber }}</a
+                          >
+                        </dd>
+                      </div>
+                      } @if (formAresInfo && !isEmptyRegistrationNumber()) {
+                      <div class="ares-details__row">
+                        <dt class="title">
+                          {{ 'label.registration.number' | transloco }}:&nbsp;
+                        </dt>
+                        <dd class="metadata-value">
+                          <a [href]="aresDocumentLink" target="_blank"
+                            >{{ formAresInfo.value.registrationNumber }}</a
+                          >
+                        </dd>
+                      </div>
+                      }
+                    </dl>
+                  </div>
+                </mat-expansion-panel>
+                }
+              </mat-accordion>
+
+              @if (isFile() && step === 'dynprop') {
+              <span>
+                @if (node.properties) {
+                <dl class="dynprop-details">
+                  @for (dynprop of dynamicPropertiesModel; track dynprop.id) {
+                  <div class="dynprop-details__row">
+                    <dt class="title">{{ dynprop.title | cbcI18n }}:&nbsp;</dt>
+                    @if (isDateField(dynprop)) {
+                    <dd>
+                      {{ node.properties['dynAttr' + getIndex(dynprop)] | date:
+                      'y MMM d, H:mm' }}
+                    </dd>
+                    } @if (isSelectionField(dynprop)) {
+                    <dd>
+                      {{ humanReadableSelectionDynProp(
+                      node.properties['dynAttr' + getIndex(dynprop)] ) }}
+                    </dd>
+                    } @if ( !isSelectionField(dynprop) && !isDateField(dynprop)
+                    ) {
+                    <dd
+                      [innerHTML]="
+                          node.properties['dynAttr' + getIndex(dynprop)]
+                        "
+                      class="dyn-text-display"
+                    ></dd>
+                    }
+                  </div>
+                  }
+                </dl>
+                }
+              </span>
+              }
+            </div>
+
+            @if (isLibraryLink(node)) {
+            <div class="library-link">
+              <a class="cta" [routerLink]="['../..', destinationId, 'details']"
+                >{{ 'label.visit.link.target' | transloco }}</a
+              >
+            </div>
+            }
+          </section>
+        </div>
+        @if (isLocked() && isFile()) {
+        <div
+          id="lockedContentId"
+          style="
+            color: #767676;
+            font-size: 18px;
+            text-align: center;
+            padding: 15px;
+            background-color: #fff;
+            line-height: 64px;
+          "
+        >
+          {{ 'label.content.locked.by' | transloco }}
+
+          <cbc-user-card
+            [userId]="$safeNavigationMigration(node.properties?.lockOwner)"
+          ></cbc-user-card>
+
+          <img
+            src="img/locked-padlock.png"
+            style="vertical-align: middle; margin: 0 25px"
+            alt=""
+          />
+          @if (showWorkingCopy()) {
+          <a
+            class="more dropdown-toggle"
+            style="text-decoration: underline"
+            [routerLink]="
+              endsWithDetails()
+                ? ['../../', workingCopyId, 'details']
+                : ['../../../', workingCopyId, 'details']
+            "
+            >{{ 'label.go.to.working.copy' | transloco }} &rarr;</a
+          >
+          }
+        </div>
+        }
+      </section>
+
+      <section class="box actions details-actions-container">
+        <header class="header-details">
+          <div class="title">{{ 'label.actions' | transloco }}</div>
+        </header>
+
+        <div class="main">
+          @if (!isFolder(node)) {
+          <ul class="actions__main-actions">
+            @if (!isLibraryLink(node)) {
+            <li>
+              <cbc-save-as
+                [id]="node.id"
+                [name]="node.name"
+                [sensitive]="isSensitive()"
+              ></cbc-save-as>
+            </li>
+            } @if ( isLastVersionOfContent() && !isWorkingCopy() && !isLocked()
+            && !isLink() && !isLibraryLink(node) ) {
+            <li>
+              <a
+                tabindex="0"
+                *cbcIfRoleGE="[node, 'LibEditOnly', ['LibManageOwn']]"
+                class="update"
+                (click)="showUpdateWizard = true"
+                >{{ 'label.update' | transloco }}</a
+              >
+            </li>
+            } @if (isLastVersionOfContent() && isWorkingCopy() && !isLink() &&
+            currentUserHasAccess()) {
+            <li>
+              <a
+                tabindex="0"
+                *cbcIfRoleGE="[node, 'LibEditOnly', ['LibManageOwn']]"
+                class="update"
+                (click)="showUpdateWizard = true"
+                >{{ 'label.update.working.copy' | transloco }}</a
+              >
+            </li>
+            } @if (isLastVersionOfContent() && !isLocked() &&
+            currentUserHasAccess() && isEditOnline()) {
+            <li>
+              <a
+                tabindex="0"
+                (click)="openDocInOffice()"
+                *cbcIfRoleGE="[node, 'LibEditOnly', ['LibManageOwn']]"
+                class="edit-in-office-big"
+                >{{ 'label.end.editing.in.office' | transloco }}</a
+              >
+            </li>
+            } @if (isLastVersionOfContent() && !isLocked() &&
+            currentUserHasAccess()) {
+            <li>
+              <a
+                *cbcIfRoleGE="[node, 'LibEditOnly', ['LibManageOwn']]"
+                class="edit"
+                [routerLink]="['../edit']"
+                >{{ 'label.edit' | transloco }}</a
+              >
+            </li>
+            }
+          </ul>
+          } @if (isFolder(node)) {
+          <ul class="actions__main-actions" [class.no-margin]="isAccess()">
+            <li>
+              <a
+                class="edit"
+                [routerLink]="['../edit']"
+                *cbcIfRoleGE="[node, 'LibEditOnly', ['LibManageOwn']]"
+                >{{ 'label.edit' | transloco }}</a
+              >
+            </li>
+          </ul>
+          } @if (isFile() && isWorkingCopy() && (currentUserHasAccess() ||
+          isLibAdmin())) {
+          <ul class="actions__secondary-actions--left">
+            @if (isFile() && isWorkingCopy() && currentUserHasAccess()) {
+            <li>
+              <a
+                tabindex="0"
+                class="checkin"
+                data-cy="checkin"
+                (click)="checkinShowModal = true"
+                >{{ 'label.checkin' | transloco }}</a
+              >
+            </li>
+            } @if (isFile() && isWorkingCopy() && (currentUserHasAccess() ||
+            isLibAdmin())) {
+            <li>
+              <a
+                tabindex="0"
+                class="cancel-checkout"
+                data-cy="cancel-checkout"
+                (click)="cancelCheckoutShowModal = true"
+                >{{ 'label.cancel.checkout' | transloco }}</a
+              >
+            </li>
+            }
+          </ul>
+          } @if (isFolder(node)) {
+          <ul class="actions__secondary-actions--left">
+            <li>
+              <a tabindex="0" class="copy" (click)="addToClipboard()"
+                >{{ 'label.copy' | transloco }}</a
+              >
+            </li>
+            @if (!isCurrentOwner() | cbcIfRole: [node, 'LibAdmin', []]) {
+            <li>
+              <a tabindex="0" class="ownership" (click)="takeOwnership()"
+                >{{ 'label.take.ownership' | transloco }}</a
+              >
+            </li>
+            }
+            <li *cbcIfRoleGE="[node, 'LibEditOnly', ['LibManageOwn']]">
+              <a tabindex="0" class="history" (click)="historyShowModal = true"
+                >{{ 'label.history' | transloco }}</a
+              >
+            </li>
+            <li
+              *cbcIfRoles="[
+                node,
+                ['LibAdmin', 'LibManageOwn', 'LibFullEdit'],
+                ['LibFullEdit', 'LibManageOwn']
+              ]"
+            >
+              <cbc-delete-action
+                [node]="node"
+                (modalHide)="onDeletedElement($event)"
+              >
+              </cbc-delete-action>
+            </li>
+            @if (isFolder(node)) {
+            <li>
+              <a
+                tabindex="0"
+                class="file-size"
+                (click)="getFolderSize(node.id)"
+                (keydown.enter)="getFolderSize(node.id)"
+                >{{ 'label.calculate.size' | transloco }}</a
+              >
+            </li>
+            }
+          </ul>
+          } @if (!isLocked() && !isWorkingCopy() && isFile()) {
+          <ul class="actions__secondary-actions--left">
+            @if ( isFile() && isMultiLingual() && !isLink() &&
+            !isLibraryLink(node) | cbcIfRoleGE: [node, 'LibEditOnly',
+            ['LibManageOwn']] ) {
+            <li>
+              <a
+                class="translation"
+                [routerLink]="['../..', pivotId, 'translations', 'add']"
+                >{{ 'label.add.translation' | transloco }}</a
+              >
+            </li>
+            } @if ( isFile() && !isMultiLingual() && !isLink() &&
+            !isLibraryLink(node) | cbcIfRoleGE: [node, 'LibEditOnly',
+            ['LibManageOwn']] ) {
+            <li>
+              <a
+                tabindex="0"
+                class="translation"
+                (click)="showEnableMultilingualModal = true"
+                >{{ 'label.make.multilingual' | transloco }}</a
+              >
+            </li>
+            } @if (!isCurrentOwner() | cbcIfRole: [node, 'LibAdmin', []]) {
+            <li>
+              <a tabindex="0" class="ownership" (click)="takeOwnership()"
+                >{{ 'label.take.ownership' | transloco }}</a
+              >
+            </li>
+            } @if ( isFile() && !isLink() && !isLibraryLink(node) | cbcIfRoleGE:
+            [node, 'LibEditOnly', ['LibManageOwn']] ) {
+            <li>
+              <a
+                class="checkout"
+                data-cy="checkout"
+                [routerLink]="['.']"
+                (click)="checkout()"
+                >{{ 'label.checkout' | transloco }}</a
+              >
+            </li>
+            } @if ( isFile() && !isLink() && !isLibraryLink(node) | cbcIfRoleGE:
+            [node, 'LibEditOnly', ['LibManageOwn']] ) {
+            <li>
+              <a class="auto-upload" [routerLink]="['..', 'auto-upload']"
+                >{{ 'label.configure.auto.upload' | transloco }}</a
+              >
+            </li>
+            } @if (!isLibraryLink(node)) {
+            <li>
+              <a tabindex="0" class="copy" (click)="addToClipboard()"
+                >{{ 'label.copy' | transloco }}</a
+              >
+            </li>
+            }
+            <li *cbcIfRoleGE="[node, 'LibEditOnly', ['LibManageOwn']]">
+              <a tabindex="0" class="history" (click)="historyShowModal = true"
+                >{{ 'label.history' | transloco }}</a
+              >
+            </li>
+            @if (isPreviewable()) {
+            <li>
+              <a tabindex="0" class="content-preview" (click)="previewContent()"
+                >{{ 'label.preview' | transloco }}</a
+              >
+            </li>
+            }
+
+            <li
+              *cbcIfRoles="[
+                node,
+                ['LibAdmin', 'LibManageOwn', 'LibFullEdit'],
+                ['LibFullEdit', 'LibManageOwn']
+              ]"
+            >
+              <cbc-delete-action
+                [node]="node"
+                (modalHide)="onDeletedElement($event)"
+              >
+              </cbc-delete-action>
+            </li>
+          </ul>
+          } @if (canSendToAresBridge()) {
+          <mat-divider></mat-divider>
+          } @if (canSendToAresBridge()) {
+          <ul class="actions__secondary-actions--left">
+            <li>
+              <a
+                tabindex="0"
+                class="ares"
+                (click)="sendToAresBridge()"
+                title="{{ 'label.send.to.ares' | transloco }}"
+              >
+                {{ 'label.send.to.ares' | transloco }}</a
+              >
+            </li>
+          </ul>
+          }
+
+          <cbc-history
+            [itemId]="nodeId"
+            [historyText]="
+              (isFile() ? 'label.content.history' : 'label.folder.history')
+                | transloco
+            "
+            [showModal]="historyShowModal"
+            (modalHide)="historyShowModal = false"
+          ></cbc-history>
+        </div>
+
+        @if (isContent() && isFile()) {
+        <section class="file-history fixed-height--scrollable">
+          <h2>{{ 'label.file.history' | transloco }}</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>{{ 'label.version' | transloco }}</th>
+                <th>{{ 'label.creator' | transloco }}</th>
+                <th>{{ 'label.date' | transloco }}</th>
+                <th class="col-hidable">{{ 'label.notes' | transloco }}</th>
+              </tr>
+            </thead>
+            @for (version of versions; track version.versionLabel) {
+            <tr>
+              <td>
+                @if (versionLabel) {
+                <a [routerLink]="['../', version.versionLabel]"
+                  >{{ version.versionLabel }}</a
+                >
+                } @if (!versionLabel) {
+                <a [routerLink]="['../details', version.versionLabel]"
+                  >{{ version.versionLabel }}</a
+                >
+                }
+              </td>
+              <td>
+                <cbc-user-card
+                  [userId]="getVersionModifier(version)"
+                  [rightSide]="true"
+                ></cbc-user-card>
+              </td>
+              <td>{{ getVersionModifed(version) | date: 'y MMM d, H:mm' }}</td>
+              <td class="col-hidable">{{ version.notes }}</td>
+            </tr>
+            } @if (hasMoreVersions && versions.length <= 10) {
+            <tr>
+              <td colspan="3">
+                <a tabindex="0" (click)="loadAllVersions()"
+                  >{{ 'label.versions.load.all' | transloco }}</a
+                >
+              </td>
+            </tr>
+            }
+          </table>
+        </section>
+        } @if (isNotFolder && translationSet) {
+        <section class="file-history fixed-height--scrollable">
+          <h2>{{ 'label.file.translations' | transloco }}</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>{{ 'label.language' | transloco }}</th>
+                <th>{{ 'label.name' | transloco }}</th>
+                <th><span class="visually-hidden">Actions</span></th>
+              </tr>
+            </thead>
+            @for (translation of translationSet.translations; track
+            translation.id) {
+            <tr>
+              <td>{{ translation.properties?.locale }}</td>
+              <td>
+                <a [routerLink]="['../../', translation.id, 'details']"
+                  >{{ translation.name }}</a
+                >
+              </td>
+              <td>
+                @if (translation.id === pivotId) {
+                <span>{{ 'label.pivot.document' | transloco }}</span>
+                }
+              </td>
+            </tr>
+            }
+          </table>
+        </section>
+        }
+      </section>
+
+      <section class="details-comments-container">
+        @if (isContent() && !isFolderLink(node) && !isLibraryLink(node)) {
+        <div class="page-header" style="height: 14px">
+          <span class="page-header__title"
+            >{{ 'label.comments' | transloco }}</span
+          >
+        </div>
+        } @if (isContent() && !isFolderLink(node) && !isLibraryLink(node)) {
+        <section class="box box--tabs">
+          <ul class="header">
+            @for (topic of topics; track topic.id) {
+            <li>
+              <a
+                tabindex="0"
+                class="tab"
+                [class.tab--current]="topic.id === currentTopic.id"
+                (click)="loadTopic(topic.id)"
+              >
+                <span class="tab-text">{{ topic.name }}</span>
+                <a
+                  tabindex="0"
+                  class="sub-actions"
+                  (click)="prepareEdition(topic)"
+                  title="{{ 'label.edit' | transloco }}"
+                  *cbcIfRoleGE="[node, 'LibManageOwn', ['LibManageOwn']]"
+                >
+                  <img src="img/icon-edit-20x20.png" alt="edit" />
+                </a>
+                <a
+                  tabindex="0"
+                  class="sub-actions"
+                  (click)="prepareDeletion(topic)"
+                  title="{{ 'label.delete' | transloco }}"
+                  *cbcIfRoleGE="[node, 'LibManageOwn', ['LibManageOwn']]"
+                >
+                  <img src="img/icon-close-20x20.png" alt="edit" />
+                </a>
+              </a>
+            </li>
+            } @if ( !isLocked() | cbcIfRoleGE: [node, 'LibManageOwn',
+            ['LibManageOwn']] ) {
+            <li>
+              <a
+                tabindex="0"
+                class="tab"
+                title="New thread"
+                (click)="showCreateTopic = true"
+              >
+                <img
+                  src="img/add-plus-button.png"
+                  alt="Add"
+                  title="{{ 'label.new.comment.thread' | transloco }}"
+                />
+                <span class="tab-text"></span>
+              </a>
+            </li>
+            }
+          </ul>
+
+          <div class="main">
+            @if (hasComments()) {
+            <div class="table-container" style="margin: 0">
+              @for (post of comments.data; track post.id) {
+              <cbc-post
+                [post]="post"
+                [topic]="currentTopic"
+                (replyClicked)="prepareQuote($event)"
+                (deleted)="refreshComments($event)"
+                (editClicked)="prepareEdit($event)"
+              ></cbc-post>
+              }
+
+              <div class="footer">
+                <cbc-pager
+                  [length]="totalCommentItems"
+                  [pageSize]="listingCommentOptions.limit"
+                  [page]="listingCommentOptions.page"
+                  (pageChange)="changeCommentPage($event)"
+                ></cbc-pager>
+              </div>
+            </div>
+            } @if (!hasComments()) {
+            <div class="container--empty">
+              {{ (!hasTopics() ? 'label.no.topic' : 'label.no.comment') |
+              transloco }}
+              <img src="img/chat.png" alt="chat" />
+            </div>
+            }
+          </div>
+          @if (topics.length > 0) {
+          <div class="postFooter">
+            <cbc-add-post
+              [topic]="currentTopic"
+              (postedComment)="refreshComments($event)"
+              [futureQuote]="futureQuote"
+              [editPost]="editPost"
+            ></cbc-add-post>
+          </div>
+          }
+        </section>
+        }
+      </section>
+    </section>
+
+    @if (isNotItemToClipboardUndefined) {
+    <cbc-snackbar
+      [message]="'clipboard.item.added' | transloco: { name: itemToClipboard }"
+      (snackFinished)="itemToClipboard = undefined"
+    ></cbc-snackbar>
+    }
+
+    <cbc-cancel-checkout
+      [showModal]="cancelCheckoutShowModal"
+      (modalHide)="cancelCheckoutShowModal = false"
+      (checkoutCanceled)="cancelCheckout()"
+    ></cbc-cancel-checkout>
+
+    @if (node && node.properties) {
+    <cbc-checkin
+      [nodeId]="node.properties.originalNodeId"
+      [showModal]="checkinShowModal"
+      (modalHide)="checkinShowModal = false"
+      (checkedIn)="checkinDone()"
+    ></cbc-checkin>
+    } @if (!isContent()) {
+    <div class="clean--bottom"></div>
+    }
+  </div>
+  }
+</div>
+
+@if (node && currentUserHasAccess()) {
+<cbc-update-content
+  [updateCheckedOut]="isWorkingCopy()"
+  [showWizard]="showUpdateWizard"
+  [targetNode]="node"
+  (modalHide)="onCloseUpdateWizard($event)"
+/>
+} @if (node) {
+<cbc-create-details-topic
+  [showModal]="showCreateTopic"
+  [forum]="node"
+  (modalHide)="refreshCreateTopic($event)"
+/>
+} @if (currentDeletedTopic) {
+<cbc-delete-topic
+  [showModal]="showDeleteTopic"
+  [topic]="currentDeletedTopic"
+  (modalHide)="refreshDeleteTopic($event)"
+/>
+}
+<cbc-edit-topic
+  [showModal]="showEditTopic"
+  [topic]="currentEditedTopic"
+  (modalHide)="refreshEditTopic($event)"
+/>
+<cbc-enable-multilingual
+  [showModal]="showEnableMultilingualModal"
+  (modalCanceled)="showEnableMultilingualModal = false"
+  [targetNode]="node"
+  (mutlilingualEnabled)="onCloseMakeMultiModal($event)"
+/>
+<cbc-content-preview-ext
+  [showModal]="showPreview"
+  [contentURL]="contentURL"
+  [documentId]="previewDocumentId"
+  [content]="node"
+  (contentPreviewed)="closePreview()"
+/>

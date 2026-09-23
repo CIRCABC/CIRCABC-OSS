@@ -1,0 +1,63 @@
+<!-- MODAL BOX -->
+@if (showModal()) {
+<div
+  class="black-overlayer"
+  [class.overlayer-shown]="showModal()"
+  [class.overlayer-hidden]="!showModal()"
+></div>
+} @if (showModal()) {
+<section
+  class="modal"
+  [class.modal-shown]="showModal()"
+  [class.modal-hidden]="!showModal()"
+  style="margin-top: 0"
+>
+  <button
+    type="button"
+    class="close-icon"
+    aria-label="{{ 'label.cancel' | transloco }}"
+    (click)="cancel('close')"
+  ></button>
+  <header>
+    <h2 class="title">{{ 'label.refuse.post' | transloco }}</h2>
+  </header>
+
+  <section class="modal-content">
+    <div class="wrapping">
+      <form [formGroup]="rejectPostForm">
+        <div class="field">
+          <label for="rejectReason"
+            >{{ 'label.reject.reason' | transloco }}</label
+          >
+          <textarea id="rejectReason" formControlName="rejectReason"></textarea>
+        </div>
+      </form>
+      @if (executing()) {
+      <div class="field">
+        <div>
+          {{ 'label.running' | transloco }}... <cbc-spinner></cbc-spinner>
+        </div>
+      </div>
+      }
+    </div>
+  </section>
+
+  <section class="modal-footer">
+    <!-- Buttons -->
+    @if (!executing()) {
+    <div class="buttons-group">
+      <a tabindex="0" class="cta" (click)="accept()"
+        >{{ 'label.reject' | transloco }}</a
+      >
+      <a
+        tabindex="0"
+        class="button"
+        (click)="cancel('close')"
+        (keydown.enter)="cancel('close')"
+        >{{ 'label.cancel' | transloco }}</a
+      >
+    </div>
+    }
+  </section>
+</section>
+}

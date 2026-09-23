@@ -1,0 +1,60 @@
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+# compiled output
+/dist
+/tmp
+
+# dependencies
+/node_modules
+node_modules
+
+# maven plugin for node
+/node
+node
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# misc
+/.angular/cache
+/.sass-cache
+/connect.lock
+/coverage/*
+/libpeerconnection.log
+npm-debug.log
+testem.log
+/typings
+
+# e2e
+/e2e/*.map
+
+#System Files
+.DS_Store
+Thumbs.db
+
+# npm
+package-lock.json
+
+# app-info.ts is generated with : npm run get-build-date
+/src/app/app-info.ts
+# documentation
+/documentation
+# deployment scripts
+/deploy
+
+#sonnar files
+.scannerwork/
+
+angular/node/node

@@ -1,0 +1,58 @@
+@use 'css/global/variables-mixins-keyframes';
+
+.access-denied-container {
+  width: 100%;
+  max-width: 640px;
+  margin: 80px auto;
+  padding: 48px;
+  background-color: #fff;
+  border-radius: variables-mixins-keyframes.$radius-lg;
+  box-shadow: 0 2px 12px rgb(0 40 70 / 0.08);
+  position: relative;
+  overflow: hidden;
+  border-left: 4px solid #c00;
+
+  h1 {
+    color: #9a0018;
+    font-size: 24px;
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+
+  p {
+    color: #595959;
+    font-size: 15px;
+    line-height: 1.6;
+    max-width: 420px;
+
+    &.actions {
+      margin-top: 24px;
+      text-align: left;
+    }
+  }
+
+  .right-decoration {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 120px;
+    height: 100%;
+    background: #fef2f2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      max-width: 60px;
+      opacity: 0.6;
+    }
+  }
+}
+
+.must-login {
+  border-left-color: #035;
+
+  h1 {
+    color: #035;
+  }
+}

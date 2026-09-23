@@ -1,0 +1,123 @@
+@use 'css/global/variables-mixins-keyframes';
+
+.searchBox {
+  color: grey;
+}
+
+.searchHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--theme-green, #2e7d53);
+  }
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: variables-mixins-keyframes.$radius-full;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--theme-green, #2e7d53);
+    background: var(--theme-green-subtle, #e8f5ee);
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, transform 0.15s;
+
+    &:hover {
+      background: var(--theme-green, #2e7d53);
+      color: #fff;
+      transform: scale(1.1);
+    }
+
+    &:active {
+      background: var(--theme-green-active, #1b6341);
+      color: #fff;
+      transform: scale(0.95);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--theme-green, #2e7d53);
+      outline-offset: 2px;
+    }
+  }
+}
+
+.flexForm {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 5px;
+  gap: 15px;
+  flex: 1 1 300px;
+}
+
+::ng-deep cbc-lang-selector {
+  input,
+  .select--multiple,
+  .select--form select,
+  select,
+  .select--form {
+    width: 100%;
+    margin: 0;
+  }
+}
+
+input,
+.select--multiple,
+.select--form select,
+select,
+.select--form {
+  width: 100%;
+  margin: 0;
+}
+
+.custom-select .select--form {
+  width: 100%;
+}
+
+::ng-deep .flex {
+  span {
+    width: 100%;
+  }
+}
+
+.flexGroupField {
+  flex: 1 1 400px;
+}
+
+.flexField {
+  padding-bottom: 15px;
+}
+
+.save-as-box {
+  display: flex;
+  flex-wrap: wrap;
+
+  .save-as-form {
+    flex: 1 1 300px;
+  }
+
+  .save-as-buttons {
+    margin-top: 20px;
+    margin-left: 10px;
+  }
+}
+
+.custom-buttons-group {
+  display: flex;
+  margin-top: 20px;
+
+  .button,
+  .cta {
+    width: unset;
+    flex: 1 1 148px;
+    max-width: 150px;
+  }
+}

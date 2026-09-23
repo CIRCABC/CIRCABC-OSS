@@ -1,0 +1,57 @@
+<!-- MODAL BOX -->
+@if (visible()) {
+<div
+  class="black-overlayer"
+  [class.overlayer-shown]="visible()"
+  [class.overlayer-hidden]="!visible()"
+></div>
+} @if (visible()) {
+<section
+  class="modal modal--select-files"
+  [class.modal-shown]="visible()"
+  [class.modal-hidden]="!visible()"
+  [ngStyle]="{ 'margin-top.px': 0 }"
+>
+  <button
+    type="button"
+    class="close-icon"
+    aria-label="{{ 'label.cancel' | transloco }}"
+    (click)="onCancel()"
+  ></button>
+  <header>
+    <h2>{{ title() | transloco }}</h2>
+  </header>
+  <section [ngClass]="contentClass()">
+    <ng-content></ng-content>
+    @if (executing()) {
+    <div class="field">
+      <div>
+        {{ executingLabel() | transloco }}... <cbc-spinner></cbc-spinner>
+      </div>
+    </div>
+    }
+  </section>
+
+  @if (!executing()) {
+  <section class="modal-footer">
+    <!-- Buttons -->
+    <div class="buttons-group">
+      <a
+        tabindex="0"
+        data-cy="ok"
+        class="cta"
+        (click)="!showOkButton() ? '' : onOk()"
+        [class.disabled]="!showOkButton()"
+      >
+        {{ okLabel() | transloco }}</a
+      >
+      @if (displayCloseButton()) {
+      <a tabindex="0" class="button" (click)="onCancel()"
+        >{{ cancelLabel() | transloco }}
+      </a>
+      }
+    </div>
+  </section>
+  }
+</section>
+}

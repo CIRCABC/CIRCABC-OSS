@@ -1,0 +1,5 @@
+{"properties": [{
+  "name": "expiry.time.in.seconds",
+  "type": "java.lang.Long",
+  "description": "time in seconds before captcha expire"
+}]}

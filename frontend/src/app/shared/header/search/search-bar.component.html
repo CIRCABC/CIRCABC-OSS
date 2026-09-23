@@ -1,0 +1,435 @@
+<div class="search-bar-box">
+  <form [formGroup]="searchForm" (submit)="requestRefresh()">
+    <input
+      class="search-bar"
+      type="text"
+      placeholder="{{ ((forExplorer())? 'label.search.igs': 'label.search.foldersfilesforums') | transloco }}"
+      title="{{ ((forExplorer())? 'label.search.igs.help': 'label.search.foldersfilesforums.help') | transloco }}"
+      formControlName="searchString"
+      attr.aria-label="{{'label.search' | transloco}}"
+    />
+  </form>
+  @if(!isRouteHelp()) {
+  <a
+    tabindex="0"
+    (click)="openCloseCustonSearch()"
+    style="margin-left: 8px; height: 25px"
+    matTooltip="{{ 'label.search.advanced.options'| transloco }}"
+  >
+    <img src="img/search-controls-white.svg" alt="Custom search" width="25px"
+  /></a>
+  }
+</div>
+
+<div class="panel-result-box">
+  <mat-card>
+    <mat-card-content class="panel-result">
+      <mat-expansion-panel #panelResultIG>
+        <div class="resultsBox">
+          @if(noResult()) {
+          <div class="no-result">
+            <span> {{ 'search.empty.result' | transloco }} </span>
+            <button
+              type="button"
+              class="link-button reset-button"
+              aria-label="{{ 'label.reset.search' | transloco }}"
+              (click)="resetForm()"
+            >
+              X
+            </button>
+          </div>
+          } @if (searching()) {
+          <div class="searching-spinner">
+            <div>
+              {{ 'label.searching' | transloco }}...
+              <cbc-spinner> </cbc-spinner>
+            </div>
+          </div>
+          } @if (hasResults()) {
+          <button
+            type="button"
+            class="link-button reset-button"
+            aria-label="{{ 'label.reset.search' | transloco }}"
+            (click)="resetForm()"
+          >
+            X
+          </button>
+          <div style="width: 100%">
+            <div class="lineResult">
+              <div class="columnEllipsis">{{ 'label.name' | transloco}}</div>
+              <div class="column">
+                {{ 'label.last.modification' | transloco}}
+              </div>
+              <div class="column">{{ 'label.creator' | transloco}}</div>
+            </div>
+          </div>
+          @if (hasFileResults()) {
+          <h2>{{ 'label.files' | transloco }}:</h2>
+          <div style="width: 100%">
+            @for (result of fileResults(); track result.id) {
+            <div class="lineResult">
+              <div class="columnEllipsis">
+                <img
+                  src="img/icon-file-grey.svg"
+                  alt="file icon"
+                  class="icon"
+                />
+                <a [routerLink]="['./library', result.id, 'details']">
+                  <span
+                    [ngClass]="isExpired(result.properties!.expiration_date)? 'expiredTitle' : ''"
+                  >
+                    {{ cutBigText(result.name) }}</span
+                  >
+                  @if(isExpired(result.properties!.expiration_date)){
+                  <img
+                    src="img/icon-alert-orange.svg"
+                    alt="file icon"
+                    class="icon"
+                  />
+                  <span class="expiredAlert"
+                    >{{'label.expired' | transloco}} </span
+                  >}
+                </a>
+              </div>
+              <div class="column">
+                <span class="item--modified">
+                  {{ getModified(result) | date: 'y MMM d, H:mm' }}
+                </span>
+              </div>
+              <div class="column">
+                <cbc-user-card
+                  [userId]="result.properties!.creator"
+                ></cbc-user-card>
+              </div>
+            </div>
+            }
+          </div>
+          } @if (hasFolderResults()) {
+          <h2>{{ 'label.folders' | transloco }}:</h2>
+          <div style="width: 100%">
+            @for (result of folderResults(); track result.id) {
+            <div class="lineResult">
+              <div class="columnEllipsis">
+                <img
+                  src="img/icon-library-grey.svg"
+                  alt="file icon"
+                  class="icon"
+                />
+                <a [routerLink]="['./library', result.id]">
+                  <span
+                    [ngClass]="isExpired(result.properties!.expiration_date)? 'expiredTitle' : ''"
+                  >
+                    {{ cutBigText(result.name) }}</span
+                  >
+                  @if(isExpired(result.properties!.expiration_date)){
+                  <img
+                    src="img/icon-alert-orange.svg"
+                    alt="file icon"
+                    class="icon"
+                  />
+                  <span class="expiredAlert"
+                    >{{'label.expired' | transloco}} </span
+                  >}
+                </a>
+              </div>
+              <div class="column">
+                <span class="item--modified">
+                  {{ getModified(result) | date: 'y MMM d, H:mm' }}
+                </span>
+              </div>
+              <div class="column">
+                <cbc-user-card
+                  [userId]="result.properties!.creator"
+                ></cbc-user-card>
+              </div>
+            </div>
+            }
+          </div>
+          } @if (hasForumResults()) {
+          <h2>{{ 'label.forums' | transloco }}:</h2>
+          <div style="width: 100%">
+            @for (result of forumResults(); track result.id) {
+            <div class="lineResult">
+              <div class="columnEllipsis">
+                <img
+                  src="img/icon-speech-forums-grey.svg"
+                  alt="file icon"
+                  class="icon"
+                />
+                <a [routerLink]="['./forum', result.id]">
+                  {{ cutBigText(result.name) }}
+                </a>
+              </div>
+
+              <div class="column">
+                <span class="item--modified">
+                  {{ getModified(result) | date: 'y MMM d, H:mm' }}
+                </span>
+              </div>
+              <div class="column">
+                <cbc-user-card
+                  [userId]="result.properties!.creator"
+                ></cbc-user-card>
+              </div>
+            </div>
+            }
+          </div>
+          } @if (hasTopicResults()) {
+          <h2>{{ 'label.topics' | transloco }}:</h2>
+          <div style="width: 100%">
+            @for (result of topicResults(); track result.id) { @if
+            (result.service === 'library') {
+            <div class="lineResult">
+              <div class="columnEllipsis">
+                <a [routerLink]="['./library', result.targetNode, 'details']">
+                  {{ cutBigText(result.name) }}
+                </a>
+              </div>
+
+              <div class="column">
+                <span class="item--modified">
+                  {{ 'label.on' | transloco }} {{ getModified(result) | date: 'y
+                  MMM d, H:mm' }}
+                </span>
+              </div>
+              <div class="column">
+                <cbc-user-card
+                  [userId]="result.properties!.creator"
+                ></cbc-user-card>
+              </div>
+            </div>
+            } @if (result.service === 'newsgroups') {
+            <div class="lineResult">
+              <div class="columnEllipsis">
+                <a [routerLink]="['./forum/topic', result.targetNode]">
+                  {{ cutBigText(result.name) }}
+                </a>
+              </div>
+
+              <div class="column">
+                <span class="item--modified">
+                  {{ getModified(result) | date: 'y MMM d, H:mm' }}
+                </span>
+              </div>
+              <div class="column">
+                <cbc-user-card
+                  [userId]="result.properties!.creator"
+                ></cbc-user-card>
+              </div>
+            </div>
+            } }
+          </div>
+          } @if (hasPostResults()) {
+          <h2>{{ 'label.posts' | transloco }}:</h2>
+          <div style="width: 100%">
+            @for (result of postResults(); track result.id) { @if
+            (result.service === 'library') {
+            <div class="lineResult">
+              <div class="columnEllipsis">
+                <a [routerLink]="['./library', result.targetNode, 'details']">
+                  {{ cutBigText(result.name) }}
+                </a>
+              </div>
+
+              <div class="column">
+                <span class="item--modified">
+                  {{ 'label.on' | transloco }} {{ getModified(result) | date: 'y
+                  MMM d, H:mm' }}
+                </span>
+              </div>
+              <div class="column">
+                <cbc-user-card
+                  [userId]="result.properties!.creator"
+                ></cbc-user-card>
+              </div>
+            </div>
+            } @if (result.service === 'newsgroups') {
+            <div class="lineResult">
+              <div class="columnEllipsis">
+                <a [routerLink]="['./forum/topic', result.targetNode]">
+                  {{ cutBigText(result.name) }}
+                </a>
+              </div>
+
+              <div class="column">
+                <span class="item--modified">
+                  {{ 'label.on' | transloco }} {{ getModified(result) | date: 'y
+                  MMM d, H:mm' }}
+                </span>
+              </div>
+              <div class="column">
+                <cbc-user-card
+                  [userId]="result.properties!.creator"
+                ></cbc-user-card>
+              </div>
+            </div>
+            }}
+          </div>
+          } @if (hasEventResults()) {
+          <h2>{{ 'label.events' | transloco }}:</h2>
+          <div style="width: 100%">
+            @for (result of eventResults(); track result.id) {
+            <div class="lineResult">
+              <div class="columnEllipsis">
+                <a
+                  [routerLink]="['agenda',  cutBigText(result.name) , 'details']"
+                >
+                  {{ getName(result) }}
+                </a>
+              </div>
+              <div class="column">
+                <span class="item--modified">
+                  {{ getModified(result) | date: 'y MMM d, H:mm' }}
+                </span>
+              </div>
+              <div class="column">
+                <cbc-user-card
+                  [userId]="result.properties!.creator"
+                ></cbc-user-card>
+              </div>
+            </div>
+            }
+          </div>
+          } @if (hasInformationResults()) {
+          <h2>{{ 'label.information' | transloco }}:</h2>
+          <div style="width: 100%">
+            @for (result of informationResults(); track result.id) {
+            <div class="lineResult">
+              <div class="columnEllipsis">
+                <a
+                  [routerLink]="['information']"
+                  [queryParams]="{ filterId: result.id}"
+                >
+                  {{ getName(result) }}
+                </a>
+              </div>
+              <div class="column">
+                <span class="item--modified">
+                  {{ getModified(result) | date: 'y MMM d, H:mm' }}
+                </span>
+              </div>
+              <div class="column">
+                <cbc-user-card
+                  [userId]="result.properties!.creator"
+                ></cbc-user-card>
+              </div>
+            </div>
+            }
+          </div>
+          } }
+        </div>
+      </mat-expansion-panel>
+      <mat-expansion-panel #advancedSearchIG>
+        <cbc-advanced-search
+          [searchString]="lastSearchString"
+          [groupId]="groupId()"
+          (closeAdvancedSearchIG)="advancedSearchIG.close()"
+          (advancedSearch)="onValueChanged($event)"
+        ></cbc-advanced-search>
+      </mat-expansion-panel>
+      <mat-expansion-panel #panelResultHelp>
+        <div class="resultsBox">
+          @if(!searching() && !hasResult()) {
+          <div class="no-result">
+            <span> {{ 'help.search.empty.result' | transloco }} </span>
+            <button
+              type="button"
+              class="link-button reset-button"
+              aria-label="{{ 'label.reset.search' | transloco }}"
+              (click)="resetForm()"
+            >
+              X
+            </button>
+          </div>
+          } @if (searching()) {
+          <div class="searching-spinner">
+            <div>
+              {{ 'label.searching' | transloco }}...
+              <cbc-spinner> </cbc-spinner>
+            </div>
+          </div>
+          } @if (!searching() && hasResult()) {
+
+          <button
+            type="button"
+            class="link-button reset-button"
+            aria-label="{{ 'label.reset.search' | transloco }}"
+            (click)="resetForm()"
+          >
+            X
+          </button>
+          <div class="search-help-results">
+            @if (helpResult()?.categories; as categories) {
+            <div class="categories-list">
+              <h2>
+                {{ 'help.sections' | transloco }} ({{ categories.length }})
+              </h2>
+              <ul>
+                @for (category of categories; track category.id) {
+                <li>
+                  <a
+                    tabindex="0"
+                    (click)="goToCategoryLink($safeNavigationMigration(category?.id))"
+                  >
+                    <span class="number-article">
+                      <img src="img/icon-forums-grey.png" alt="Forums Icon" />
+                      {{category?.numberOfArticles }}
+                      {{(category?.numberOfArticles === 1 ? 'help.article'
+                      :'help.articles' ) | transloco }}
+                    </span>
+                    {{ category.title | cbcI18n }}</a
+                  >
+                </li>
+                }
+              </ul>
+            </div>
+            } @if (helpResult()?.articles; as articles) {
+            <div class="article-list">
+              <h2>
+                {{ 'help.articles' | transloco }} ({{ articles.length }})
+              </h2>
+              <ul>
+                @for (article of articles; track article.id) {
+                <li>
+                  <a
+                    tabindex="0"
+                    (click)="goToArticleLink(article.parentId, article.id)"
+                  >
+                    {{ article.title | cbcI18n }}
+                    <p class="metadata">
+                      {{ 'label.last.updated.on' | transloco }} {{
+                      article.lastUpdate | date }}
+                    </p>
+                  </a>
+                </li>
+                }
+              </ul>
+            </div>
+            } @if (helpResult()?.links; as links) {
+            <div class="links-list">
+              <h2>
+                {{ 'help.userful.links.title' | transloco }} ({{ links.length
+                }})
+              </h2>
+              <ul>
+                @for (link of links; track link.id) {
+                <li>
+                  <a
+                    class="alink"
+                    [href]="sanitizeLinkRef(link.href)"
+                    target="_blank"
+                    >{{ link.title | cbcI18n }}</a
+                  >
+                </li>
+                }
+              </ul>
+            </div>
+            }
+          </div>
+
+          }
+        </div>
+      </mat-expansion-panel>
+    </mat-card-content>
+  </mat-card>
+</div>

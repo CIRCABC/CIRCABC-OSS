@@ -1,0 +1,118 @@
+@use 'css/global/variables-mixins-keyframes';
+
+.g-request {
+  padding: 10px;
+  border: 1px solid;
+  border-radius: variables-mixins-keyframes.$radius-md;
+  border-color: var(--theme-border-color);
+
+  .request-details {
+    tr td {
+      vertical-align: top;
+      padding: 5px 0;
+    }
+  }
+
+  .label {
+    font-weight: bold;
+    margin-right: 15px;
+
+    &::first-letter {
+      text-transform: uppercase;
+    }
+  }
+
+  .big-label {
+    min-width: 150px;
+    display: inline-block;
+  }
+
+  .spacer {
+    display: inline-block;
+    width: 50px;
+  }
+
+  .leaders {
+    li {
+      display: inline-block;
+    }
+  }
+
+  aside {
+    a {
+      margin-right: 15px;
+    }
+
+    h4.approved {
+      background-color: #1b6341;
+      color: #fff;
+      padding: 10px;
+      border-radius: variables-mixins-keyframes.$radius-md;
+
+      img {
+        vertical-align: middle;
+        width: 24px;
+        margin-right: 15px;
+      }
+    }
+
+    h4.rejected {
+      background-color: rgb(141 47 47 / 1);
+      color: #fff;
+      padding: 10px;
+      border-radius: variables-mixins-keyframes.$radius-md;
+
+      img {
+        vertical-align: middle;
+        width: 24px;
+        margin-right: 15px;
+      }
+    }
+  }
+}
+
+.waiting {
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-left-width: 10px;
+  border-left-style: solid;
+  border-left-color: #76a3ad;
+}
+
+.approved {
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-left-width: 10px;
+  border-left-style: solid;
+  border-left-color: #2e7d53;
+}
+
+.rejected {
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-left-width: 10px;
+  border-left-style: solid;
+  border-left-color: rgb(141 47 47 / 1);
+}
+
+.red-bordered-row {
+  border-bottom: 4px solid #d32f2f;
+  color: var(--theme-h3);
+  font-weight: 700;
+}
+
+.label-padding {
+  padding-left: 10px;
+}
+
+.text-content {
+  overflow-wrap: anywhere;
+  word-break: normal;
+  white-space: normal;
+  max-width: 100%;
+  display: block;
+}
+
+.text-content p {
+  margin: 0; /* Removes extra spacing between paragraphs */
+}

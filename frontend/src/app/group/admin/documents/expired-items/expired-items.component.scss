@@ -1,0 +1,22 @@
+.cell-archive-item-name {
+  width: 150px;
+}
+
+.actions {
+  float: right;
+  position: relative;
+  top: 5px;
+  right: 5px;
+}
+
+.dropdown-trigger--with-icons {
+  a img {
+    vertical-align: middle;
+  }
+}
+
+.loader {
+  display: inline-block;
+  margin-left: 15px;
+  vertical-align: text-top;
+}

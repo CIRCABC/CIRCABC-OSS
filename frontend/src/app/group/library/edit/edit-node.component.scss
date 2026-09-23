@@ -1,0 +1,16 @@
+.main {
+  padding-bottom: 50px;
+}
+
+.field--date {
+  min-height: 39px;
+}
+
+::ng-deep mat-slide-toggle .mat-mdc-slide-toggle-label {
+  width: auto;
+  padding: 0 10px;
+}
+
+.label-calendar-container label {
+  display: inline-block;
+}

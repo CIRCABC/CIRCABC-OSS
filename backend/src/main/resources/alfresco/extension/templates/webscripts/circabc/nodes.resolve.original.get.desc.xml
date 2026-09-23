@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Resolve a migrated node by its original node reference</shortname>
+  <description>Resolve the migrated node whose ci:originalNodeRef matches the given original node id. Any user; the current user must have READ permission on the resolved node (403 if found but not permitted, 404 if none).</description>
+    <url>/circabc/nodes/resolve/{originalId}</url>
+  <format default="json" />
+  <authentication>guest</authentication>
+  <transaction>required</transaction>
+</webscript>

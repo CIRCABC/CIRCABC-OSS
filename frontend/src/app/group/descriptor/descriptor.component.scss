@@ -1,0 +1,52 @@
+.disable_a_href {
+  background: linear-gradient(to bottom, #ccc 0%, #999 100%);
+  background-color: #ccc;
+}
+
+.box--group-summary ::ng-deep {
+  ul {
+    list-style: disc;
+    margin-left: 20px;
+  }
+
+  ol {
+    list-style: decimal;
+    margin-left: 20px;
+  }
+
+  .description-container {
+    max-height: 150px;
+    overflow: auto;
+
+    ::ng-deep p {
+      margin: 0;
+    }
+  }
+}
+
+img.descriptor-icon {
+  float: left;
+  margin: 2em;
+}
+
+::ng-deep .mat-mdc-menu-content {
+  padding: 20px;
+  text-align: center;
+}
+
+.title {
+  color: #757575;
+  font-size: 14px;
+}
+
+.menu-button {
+  border: 0;
+  width: 100%;
+}
+
+.menu-button-first {
+  border: 0;
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}

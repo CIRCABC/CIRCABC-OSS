@@ -1,0 +1,364 @@
+@let _date = date(); {{ 'label.my.calendar' | transloco | cbcSetTitle }}
+<div class="fluid page-container">
+  <div class="page-header">
+    <h1 class="page-header__title"
+      >{{ 'label.view.anounce.events.meetings' | transloco }}</h1
+    >
+  </div>
+  <section class="calendar-container">
+    <header class="header">
+      <div class="float-left">
+        <div class="nav-months">
+          @if (view === 'month') {
+          <div class="buttons">
+            <a tabindex="0" class="previous-month" (click)="previousMonth()"
+              >{{ 'label.previous.month' | transloco }}</a
+            >
+            <span class="current-month"
+              >{{ _date.getMonth() + 1 + '' | i18nSelect: monthNames }} {{
+              _date.getFullYear() }}</span
+            >
+            <a tabindex="0" class="next-month" (click)="nextMonth()"
+              >{{ 'label.next.month' | transloco }}</a
+            >
+          </div>
+          } @if (view === 'day') {
+          <div class="buttons">
+            <a tabindex="0" class="previous-month" (click)="previousDay()"
+              >{{ 'label.previous.day' | transloco }}</a
+            >
+            <span class="current-day"
+              >{{ _date.getDay() + '' | i18nSelect: completeDayNames }} {{
+              getFormattedDate() }}</span
+            >
+            <a tabindex="0" class="next-month" (click)="nextDay()"
+              >{{ 'label.next.day' | transloco }}</a
+            >
+          </div>
+          } @if (view === 'week') {
+          <div class="buttons">
+            <a tabindex="0" class="previous-month" (click)="previousWeek()"
+              >{{ 'label.previous.week' | transloco }}</a
+            >
+            <span class="current-week"
+              >{{ 'label.week.for' | transloco }} {{ _date.getDay() + '' |
+              i18nSelect: completeDayNames }} {{ getFormattedDate() }}</span
+            >
+            <a tabindex="0" class="next-month" (click)="nextWeek()"
+              >{{ 'label.next.week' | transloco }}</a
+            >
+          </div>
+          }
+        </div>
+      </div>
+      @if (!processing && (view === 'day' || view === 'week')) {
+      <div class="field field-select">
+        @if (view === 'week') {
+        <span>
+          <label class="view-label" for="workWeekSelect"
+            >{{ 'label.workweek' | transloco }}</label
+          >
+          <input
+            id="workWeekSelect"
+            class="cmn-toggle cmn-toggle-round"
+            type="checkbox"
+            [checked]="workWeek"
+            (change)="toggleWorkWeek()"
+          />
+          <label
+            for="workWeekSelect"
+            class="nonBlockLabel"
+            style="width: 60px !important"
+            aria-label="{{ 'label.work.week.select' | transloco }}"
+          ></label>
+          <span>{{ (workWeek ? 'label.yes' : 'label.no') | transloco }}</span
+          >&nbsp;&nbsp;
+        </span>
+        }
+        <label class="view-label" for="from"
+          >{{ 'label.from' | transloco }}</label
+        >
+        <div class="custom-select select--form view-select">
+          <select
+            id="from"
+            #fromSelect
+            (change)="selectFrom(fromSelect.value)"
+            [value]="from"
+          >
+            @for ( hour of [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
+            15, 16, 17, 18, 19, 20, 21, 22, 23 ] ; track hour) {
+            <option [value]="hour"> {{ hour }} </option>
+            }
+          </select>
+        </div>
+        <label class="view-label" for="to">{{ 'label.to' | transloco }}</label>
+        <div class="custom-select select--form view-select">
+          <select id="to" #to (change)="selectTo(to.value)" [value]="to">
+            @for ( hour of [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
+            15, 16, 17, 18, 19, 20, 21, 22, 23 ] ; track hour) {
+            <option [value]="hour"> {{ hour }} </option>
+            }
+          </select>
+        </div>
+      </div>
+      } @if (!processing && view === 'day') {
+      <div class="field">
+        <form [formGroup]="changeDateForm">
+          <mat-form-field>
+            <label for="dateDayView" class="visually-hidden"
+              >{{ 'label.date' | transloco }}</label
+            >
+            <input
+              id="dateDayView"
+              matInput
+              [matDatepicker]="dp_dateDayView"
+              formControlName="dateDayView"
+              [placeholder]="getFormattedDate()"
+            />
+            <mat-datepicker-toggle
+              matIconSuffix
+              [for]="dp_dateDayView"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #dp_dateDayView></mat-datepicker>
+          </mat-form-field>
+          <a
+            tabindex="0"
+            class="button apply-button"
+            (click)="applyToCurrentDate()"
+            >{{ 'label.apply' | transloco }}</a
+          >
+        </form>
+      </div>
+      } @if (!processing) {
+      <div class="field field-select field-view-as">
+        <label class="view-label" for="view"
+          >{{ 'label.view.as' | transloco }}</label
+        >
+        <div class="custom-select select--form view-select">
+          <select
+            id="view"
+            #viewSelect
+            (change)="selectView(viewSelect.value)"
+            [value]="view"
+          >
+            <option value="month">{{ 'label.month' | transloco }}</option>
+            <option value="day">{{ 'label.day' | transloco }}</option>
+            <option value="week">{{ 'label.week' | transloco }}</option>
+          </select>
+        </div>
+      </div>
+      } @if (processing) {
+      <div class="div-spinner">
+        <span class="padding-spinner-text"
+          >{{ 'label.loading' | transloco }}...</span
+        ><cbc-spinner></cbc-spinner>
+      </div>
+      }
+    </header>
+    <!-- Actual calendar -->
+    @if (view === 'month') {
+    <div class="flex-calendar main" style="margin-top: 5px">
+      @for (item of calendarDays(); track item) {
+      <div
+        class="day flex-day"
+        [class.day--previous-month]="item.type === 'previousMonth'"
+        [class.day--next-month]="item.type === 'nextMonth'"
+        [class.weekend-day]="isWeekendDay(item)"
+        [class.today]="isToday(item)"
+        (mouseenter)="enableDetailsBox(item.date)"
+        (mouseleave)="disableDetailsBox(item.date)"
+      >
+        <div class="date">
+          {{ item.date.getDate() }} {{ item.date.getDay() + '' | i18nSelect:
+          dayNames }}
+        </div>
+        <div style="overflow-y: auto; height: 80%">
+          @for (event of item.events; track event.id) {
+          <div class="event-line">
+            @if (event.appointmentType === 'Event') {
+            <a
+              [routerLink]="[
+                '/group',
+                event.igId,
+                'agenda',
+                event.id,
+                'details'
+              ]"
+              ><img
+                width="10"
+                height="10"
+                src="img/event-155D79.png"
+                alt="Event icon"
+              />
+              <span style="color: #155d79"
+                >{{ event.startTime }} {{ event.endTime }}</span
+              >
+              <span style="color: black">{{ event.title }}</span></a
+            >
+            } @if (event.appointmentType === 'Meeting') {
+            <a
+              [routerLink]="[
+                '/group',
+                event.igId,
+                'agenda',
+                event.id,
+                'details'
+              ]"
+              ><img
+                width="10"
+                height="10"
+                src="img/meeting-155D79.png"
+                alt="Meeting icon"
+              />
+              <span style="color: #155d79"
+                >{{ event.startTime }} {{ event.endTime }}</span
+              >
+              <span style="color: black">{{ event.title }}</span></a
+            >
+            }
+          </div>
+          }
+        </div>
+        <!-- Hover popup with meeting details -->
+        @if ( !( item.date.getDay() === 0 || item.date.getDay() === 5 ||
+        item.date.getDay() === 6 ) && item.showDetailsBox ) {
+        <div id="detailsPopup" class="popup popup--calendar">
+          <div class="events-of-the-day">
+            <div class="title">{{ item.date | date }}</div>
+            <ul class="events">
+              @for (event of item.events; track event.id) {
+              <li class="event">
+                <div>
+                  <span class="hour">{{ event.startTime }}</span>
+                  <a
+                    [routerLink]="[
+                      '/group',
+                      event.igId,
+                      'agenda',
+                      event.id,
+                      'details'
+                    ]"
+                    class="event-name"
+                    >{{ event.title }}</a
+                  >
+                </div>
+                <div class="details">
+                  <span class="abstract"
+                    >{{ event.eventAbstract === '' ? ('label.na' | transloco) :
+                    event.eventAbstract }}</span
+                  >
+                  <br /><br />
+                  <span class="duration">{{ event.endTime }}</span>
+                  <span class="location"
+                    >{{ event.location === '' ? ('label.na' | transloco) :
+                    event.location }}</span
+                  >
+                  @if (getRepetition(event.occurrenceRate).length === 1) {
+                  <span class="repetition"
+                    >{{ 'label.' + getRepetition(event.occurrenceRate)[0] |
+                    transloco }}</span
+                  >
+                  } @if (getRepetition(event.occurrenceRate).length === 3) {
+                  <span class="repetition"
+                    >{{ 'update-event.repeats.legend.when' | transloco : {
+                    timesOccurrence: 'label.' +
+                    getRepetition(event.occurrenceRate)[1] | transloco, times:
+                    getRepetition(event.occurrenceRate)[2] } }}</span
+                  >
+                  } @if (getRepetition(event.occurrenceRate).length === 4) {
+                  <span class="repetition"
+                    >{{ 'update-event.repeats.legend.every' | transloco : {
+                    everyTime: getRepetition(event.occurrenceRate)[2],
+                    everyTimesOccurence: getRepetition(event.occurrenceRate)[1]
+                    | transloco, times: getRepetition(event.occurrenceRate)[3] }
+                    }}</span
+                  >
+                  }
+                </div>
+              </li>
+              }
+            </ul>
+          </div>
+        </div>
+        } @if ( (item.date.getDay() === 0 || item.date.getDay() === 5 ||
+        item.date.getDay() === 6) && item.showDetailsBox ) {
+        <div class="left-popup left-popup--calendar">
+          <div class="events-of-the-day">
+            <div class="title">{{ item.date | date }}</div>
+            <ul class="events">
+              @for (event of item.events; track event.id) {
+              <li class="event">
+                <div>
+                  <span class="hour">{{ event.startTime }}</span>
+                  <a
+                    [routerLink]="[
+                      '/group',
+                      event.igId,
+                      'agenda',
+                      event.id,
+                      'details'
+                    ]"
+                    class="event-name"
+                    >{{ event.title }}</a
+                  >
+                </div>
+                <div class="details">
+                  <span class="abstract"
+                    >{{ event.eventAbstract === '' ? ('label.na' | transloco) :
+                    event.eventAbstract }}</span
+                  >
+                  <br /><br />
+                  <span class="duration">{{ event.endTime }}</span>
+                  <span class="location"
+                    >{{ event.location === '' ? ('label.na' | transloco) :
+                    event.location }}</span
+                  >
+                  @if (getRepetition(event.occurrenceRate).length === 1) {
+                  <span class="repetition"
+                    >{{ 'label.' + getRepetition(event.occurrenceRate)[0] |
+                    transloco }}</span
+                  >
+                  } @if (getRepetition(event.occurrenceRate).length === 3) {
+                  <span class="repetition"
+                    >{{ 'update-event.repeats.legend.when' | transloco : {
+                    timesOccurrence: 'label.' +
+                    getRepetition(event.occurrenceRate)[1] | transloco, times:
+                    getRepetition(event.occurrenceRate)[2] } }}</span
+                  >
+                  } @if (getRepetition(event.occurrenceRate).length === 4) {
+                  <span class="repetition"
+                    >{{ 'update-event.repeats.legend.every' | transloco : {
+                    everyTime: getRepetition(event.occurrenceRate)[2],
+                    everyTimesOccurence: getRepetition(event.occurrenceRate)[1]
+                    | transloco, times: getRepetition(event.occurrenceRate)[3] }
+                    }}</span
+                  >
+                  }
+                </div>
+              </li>
+              }
+            </ul>
+          </div>
+        </div>
+        }
+      </div>
+      }
+    </div>
+    } @if (view === 'day') {
+    <cbc-day
+      [date]="_date"
+      [displayFromHour]="from"
+      [displayToHour]="to"
+      [meMode]="true"
+    ></cbc-day>
+    } @if (view === 'week') {
+    <cbc-week
+      [date]="_date"
+      [displayFromHour]="from"
+      [displayToHour]="to"
+      [workWeek]="workWeek"
+      [meMode]="true"
+    ></cbc-week>
+    }
+  </section>
+</div>

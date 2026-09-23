@@ -1,0 +1,370 @@
+<!-- MODAL BOX -->
+@if (showWizard()) {
+<div
+  class="black-overlayer"
+  [class.overlayer-shown]="showWizard()"
+  [class.overlayer-hidden]="!showWizard()"
+></div>
+} @if (showCreateWizard()) {
+<section
+  class="modal modal--select-files"
+  [class.modal-shown]="showCreateWizard()"
+  [class.modal-hidden]="!showCreateWizard()"
+  style="margin-top: 0"
+>
+  <button
+    type="button"
+    class="close-icon"
+    aria-label="{{ 'label.cancel.wizard' | transloco }}"
+    (click)="cancelWizard()"
+  ></button>
+  <header>
+    <h2 class="title">{{ 'user.create' | transloco }}</h2>
+  </header>
+
+  <section class="modal-content">
+    <form [formGroup]="addUserForm">
+      <div class="field">
+        <label for="username"
+          >{{ 'label.username' | transloco }}
+          <span class="text-error">&nbsp;*</span>
+        </label>
+        <input
+          type="text"
+          id="username"
+          data-cy="username"
+          value=""
+          formControlName="username"
+        />
+        <cbc-control-message [control]="usernameControl"></cbc-control-message>
+      </div>
+      <div class="field">
+        <label for="firstname"
+          >{{ 'label.firstname' | transloco }}
+          <span class="text-error">&nbsp;*</span>
+        </label>
+        <input
+          type="text"
+          id="firstname"
+          data-cy="firstname"
+          value=""
+          formControlName="firstname"
+        />
+        <cbc-control-message [control]="firstnameControl"></cbc-control-message>
+      </div>
+      <div class="field">
+        <label for="lastname"
+          >{{ 'label.lastname' | transloco }}
+          <span class="text-error">&nbsp;*</span>
+        </label>
+        <input
+          type="text"
+          id="lastname"
+          data-cy="lastname"
+          value=""
+          formControlName="lastname"
+        />
+        <cbc-control-message [control]="lastnameControl"></cbc-control-message>
+      </div>
+      <div class="field">
+        <label for="email"
+          >{{ 'label.email' | transloco }}
+          <span class="text-error">&nbsp;*</span>
+        </label>
+        <input
+          type="text"
+          id="email"
+          data-cy="email"
+          value=""
+          formControlName="email"
+        />
+        <cbc-control-message [control]="emailControl"></cbc-control-message>
+      </div>
+      <div class="field">
+        <label for="phone"
+          >{{ 'label.phone' | transloco }}
+          <span class="text-error">&nbsp;*</span>
+        </label>
+        <input
+          type="text"
+          id="phone"
+          data-cy="phone"
+          value=""
+          formControlName="phone"
+        />
+        <cbc-control-message [control]="phoneControl"></cbc-control-message>
+      </div>
+      <div class="field">
+        <label for="title">{{ 'label.title' | transloco }}</label>
+        <input type="text" id="title" value="" formControlName="title" />
+      </div>
+      <div class="field">
+        <label for="companyId">{{ 'label.companyId' | transloco }}</label>
+        <input
+          type="text"
+          id="companyId"
+          value=""
+          formControlName="companyId"
+        />
+      </div>
+      <div class="field">
+        <label for="fax">{{ 'label.fax' | transloco }}</label>
+        <input type="text" id="fax" value="" formControlName="fax" />
+        <cbc-control-message [control]="faxControl"></cbc-control-message>
+      </div>
+      <div class="field">
+        <label for="urlAddress">{{ 'label.url' | transloco }}</label>
+        <input
+          type="text"
+          id="urlAddress"
+          value=""
+          formControlName="urlAddress"
+        />
+        <cbc-control-message
+          [control]="urlAddressControl"
+        ></cbc-control-message>
+      </div>
+      <div class="field">
+        <label for="postalAddress"
+          >{{ 'label.postal.address' | transloco }}
+          <span class="text-error">&nbsp;*</span>
+        </label>
+        <textarea
+          id="postalAddress"
+          data-cy="postalAddress"
+          value=""
+          formControlName="postalAddress"
+        ></textarea>
+        <cbc-control-message
+          [control]="postalAddressControl"
+        ></cbc-control-message>
+      </div>
+      <div class="field">
+        <label for="description">{{ 'label.description' | transloco }}</label>
+        <textarea
+          id="description"
+          value=""
+          formControlName="description"
+        ></textarea>
+      </div>
+      <div class="field">
+        <label for="password"
+          >{{ 'label.password' | transloco }}
+          <span class="text-error">&nbsp;*</span>
+        </label>
+        <input
+          type="password"
+          id="password"
+          data-cy="password"
+          value=""
+          formControlName="password"
+        />
+        <cbc-control-message [control]="passwordControl"></cbc-control-message>
+      </div>
+      <div class="field">
+        <label for="passwordVerify"
+          >{{ 'label.password.confirm' | transloco }}
+          <span class="text-error">&nbsp;*</span>
+        </label>
+        <input
+          type="password"
+          id="passwordVerify"
+          data-cy="passwordVerify"
+          value=""
+          formControlName="passwordVerify"
+        />
+        <cbc-control-message
+          [control]="passwordVerifyControl"
+        ></cbc-control-message>
+      </div>
+      @if (creating()) {
+      <div>
+        <span
+          >{{ 'label.creating' | transloco }}...
+          <cbc-spinner></cbc-spinner>
+        </span>
+      </div>
+      }
+    </form>
+  </section>
+  <section class="modal-footer">
+    <!-- Buttons -->
+    <div class="buttons-group">
+      <a
+        tabindex="0"
+        data-cy="create"
+        class="cta"
+        (click)="submitNewUser()"
+        [class.disabled]="!addUserForm.valid"
+        >{{ 'label.create' | transloco }}</a
+      >
+      <a
+        tabindex="0"
+        class="button"
+        data-cy="cancel"
+        (click)="cancelWizard()"
+        (keydown.enter)="cancelWizard()"
+        >{{ 'label.cancel' | transloco }}</a
+      >
+    </div>
+  </section>
+</section>
+} @if (showInviteWizard()) {
+<section
+  class="modal modal--select-files"
+  [class.modal-shown]="showInviteWizard()"
+  [class.modal-hidden]="!showInviteWizard()"
+  style="margin-top: 0"
+>
+  <button
+    type="button"
+    class="close-icon"
+    aria-label="{{ 'label.cancel.wizard' | transloco }}"
+    (click)="cancelWizard()"
+  ></button>
+  <header>
+    <h2 class="title">{{ 'user.invite' | transloco }}</h2>
+  </header>
+
+  <section class="modal-content">
+    <form [formGroup]="notificationForm">
+      <div class="field">
+        <label for="profileName">{{ 'label.profile' | transloco }}</label>
+        <div class="custom-select select--form">
+          <select
+            name="profileName"
+            id="profileName"
+            formControlName="selectedProfile"
+          >
+            @for (profile of availableProfiles(); track profile.id) {
+            <option value="{{ profile.id }}">
+              {{ profile.title | cbcI18n }}
+            </option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="field switch">
+        <div class="label longer">
+          {{ 'label.memberships.expiry.date' | transloco }}
+        </div>
+        <label for="expiration" class="visually-hidden"
+          >{{ 'label.memberships.expiry.date' | transloco }}</label
+        >
+        <input
+          id="expiration"
+          class="cmn-toggle cmn-toggle-round"
+          type="checkbox"
+          formControlName="expiration"
+        />
+        <label
+          for="expiration"
+          class="nonBlockLabel"
+          aria-label="{{ 'label.expiration' | transloco }}"
+        ></label>
+        <span
+          >{{ (notificationForm.value.expiration === true ? 'label.yes' :
+          'label.no' ) | transloco }}</span
+        >
+      </div>
+      @if (notificationForm.value.expiration) {
+      <div class="field field--with-icon field--date">
+        <label for="expirationDateTime">{{ 'label.when' | transloco }}</label>
+        <mat-form-field>
+          <input
+            id="expirationDateTime"
+            matInput
+            [matDatepicker]="dp_expirationDateTime"
+            formControlName="expirationDateTime"
+            placeholder="dd/mm/yyyy"
+          />
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="dp_expirationDateTime"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #dp_expirationDateTime></mat-datepicker>
+        </mat-form-field>
+
+        <cbc-control-message
+          [control]="expirationDateTimeControl"
+        ></cbc-control-message>
+      </div>
+      }
+      <div class="field--separator"></div>
+      <div class="field switch">
+        <div class="label" style="width: 340px">
+          {{ 'label.user.notifications.invite' | transloco }}
+        </div>
+        <input
+          id="cmn-toggle-1"
+          class="cmn-toggle cmn-toggle-round"
+          type="checkbox"
+          formControlName="userNotifications"
+        />
+        <label
+          for="cmn-toggle-1"
+          class="nonBlockLabel"
+          aria-label="{{ 'label.cmn.toggle.1' | transloco }}"
+        ></label>
+        <span
+          >{{ notificationForm.controls['userNotifications'].value === true ?
+          'Yes' : 'No' }}</span
+        >
+      </div>
+
+      <div class="field switch">
+        <div class="label" style="width: 340px">
+          {{ 'label.admin.notifications.invite' | transloco }}
+        </div>
+        <input
+          id="cmn-toggle-2"
+          class="cmn-toggle cmn-toggle-round"
+          type="checkbox"
+          formControlName="adminNotifications"
+        />
+        <label
+          for="cmn-toggle-2"
+          class="nonBlockLabel"
+          aria-label="{{ 'label.cmn.toggle.2' | transloco }}"
+        ></label>
+        <span
+          >{{ notificationForm.controls['adminNotifications'].value === true ?
+          'Yes' : 'No' }}</span
+        >
+      </div>
+
+      @if (inviting()) {
+      <div>
+        <span
+          >{{ 'label.inviting' | transloco }}...
+          <cbc-spinner></cbc-spinner>
+        </span>
+      </div>
+      }
+    </form>
+  </section>
+
+  <section class="modal-footer">
+    <!-- Buttons -->
+    @if (!inviting()) {
+    <div class="buttons-group">
+      <a
+        tabindex="0"
+        class="cta"
+        (click)="hasSelectedProfile() ? submitMembers() : ''"
+        [class.disabled]="!hasSelectedProfile()"
+        >{{ 'label.invite' | transloco }}</a
+      >
+      <a
+        tabindex="0"
+        class="button"
+        (click)="cancelWizard()"
+        (keydown.enter)="cancelWizard()"
+        >{{ 'label.cancel' | transloco }}</a
+      >
+    </div>
+    }
+  </section>
+</section>
+}

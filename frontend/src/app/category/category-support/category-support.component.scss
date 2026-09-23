@@ -1,0 +1,17 @@
+.list-of-admins {
+  margin-left: 25px;
+
+  .row {
+    height: 24px;
+
+    .admin-user {
+      font-weight: bold;
+      line-height: 24px;
+    }
+
+    img {
+      margin-left: 25px;
+      vertical-align: middle;
+    }
+  }
+}

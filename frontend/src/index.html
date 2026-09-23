@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>CIRCABC</title>
+    <base href="/" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="CIRCABC — Communication and Information Resource Centre for Administrations, Businesses and Citizens. A collaboration platform by the European Commission."
+    />
+    <meta property="og:title" content="CIRCABC" />
+    <meta
+      property="og:description"
+      content="Collaboration platform for the European Commission — document management, workspaces, forums, and information sharing."
+    />
+    <meta property="og:type" content="website" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <meta name="theme-color" content="#b6dee8" />
+    <!-- Load environment variables at runtime -->
+    <script src="assets/env.js"></script>
+    <style>
+      /* Pre-bootstrap hint: follow system only when no explicit theme attribute is set */
+      @media (prefers-color-scheme: dark) {
+        :root:not([theme]) {
+          background: #182737;
+          color-scheme: dark;
+        }
+      }
+
+      /* Default to light native UI when theme attribute is missing or set to white */
+      :root:not([theme]),
+      :root[theme='white'] {
+        color-scheme: light;
+      }
+    </style>
+
+    <script
+      defer
+      src="https://webtools.europa.eu/load.js"
+      type="text/javascript"
+    ></script>
+  </head>
+
+  <body>
+    <cbc-app style="display: flex; flex-flow: column">Loading...</cbc-app>
+    <script type="application/json">
+      { "utility": "cck", "url": "https://ec.europa.eu/info/cookies_{lang}" }
+    </script>
+  </body>
+</html>

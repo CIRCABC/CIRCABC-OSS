@@ -1,0 +1,23 @@
+<cbc-modal
+  [title]="'label.delete'"
+  (ok)="delete()"
+  (cancelModal)="cancelWizard()"
+  [okLabel]="'label.delete'"
+  [(visible)]="showModal"
+  [(executing)]="deleting"
+  [executingLabel]="'label.deleting'"
+>
+  @let _profile = profile(); @if (_profile) {
+  <p>
+    {{ 'profile.delete.confirmation' | transloco }}
+    <br />
+    <br />
+    {{ 'label.name' | transloco }}: {{ _profile.title | cbcI18n }}
+    <br />
+    <br />
+    <span class="hint"
+      >{{ 'profile.delete.more.information' | transloco }}</span
+    >
+  </p>
+  }
+</cbc-modal>

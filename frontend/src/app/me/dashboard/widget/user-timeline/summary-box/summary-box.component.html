@@ -1,0 +1,13 @@
+<div class="summary-box">
+  <section class="big-icon">
+    @if (label() === 'uploads') {
+    <img src="img/upload-white-64.png" alt="" aria-hidden="true" />
+    } @if (label() === 'updates') {
+    <img src="img/update-white-64.png" alt="" aria-hidden="true" />
+    } @if (label() === 'comments') {
+    <img src="img/chat-white-64.png" alt="" aria-hidden="true" />
+    }
+  </section>
+  <section class="content-top"> {{ number() }} </section>
+  <section class="content-bottom">{{ 'label.' + label() | transloco }}</section>
+</div>

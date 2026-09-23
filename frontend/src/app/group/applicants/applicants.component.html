@@ -1,0 +1,76 @@
+@if (loading()) {
+<cbc-horizontal-loader />
+}
+<div class="wrap page-container">
+  <div class="page-header">
+    <h1 class="page-header__title"
+      >{{ 'applicants.page.title' | transloco }}</h1
+    >
+    <div class="page-header__actions">
+      <ul class="links">
+        <cbc-reponsive-sub-menu>
+          @if (currentGroup(); as group) { @if (isDirAdmin() ||
+          isDirManageMembers()) {
+          <a [routerLink]="['../members/bulk-invite', group.id]"
+            >{{ 'label.bulk.invite' | transloco }}</a
+          >
+          } } @if (currentGroup() && isMember()) {
+          <a [routerLink]="['../members/contact']"
+            >{{ 'label.send.email' | transloco }}</a
+          >
+          }
+          <a [routerLink]="['.']" class="selected"
+            >{{ 'label.member.requests' | transloco }}</a
+          >
+          <a [routerLink]="['../members']">{{ 'label.members' | transloco }}</a>
+          @if (currentGroup() && isDirAdmin()) {
+          <a [routerLink]="['../profiles']"
+            >{{ 'label.profiles' | transloco }}</a
+          >
+          }
+        </cbc-reponsive-sub-menu>
+      </ul>
+    </div>
+  </div>
+  @if (applicants().length > 1) {
+  <section class="table-container no-margin">
+    <div class="header">
+      @if (applicants()) {
+      <div class="total-container">
+        {{ 'applicants.total.sentence' | transloco : { currentIndex:
+        currentIndex(), total: applicants().length } }}
+      </div>
+      }
+      <div class="nav-pages">
+        <div class="buttons">
+          <a tabindex="0" class="previous-page" (click)="previousPage()"
+            >{{ 'label.previous.page' | transloco }}</a
+          >
+          <a tabindex="0" class="next-page" (click)="nextPage()"
+            >{{ 'label.next.page' | transloco }}</a
+          >
+        </div>
+      </div>
+    </div>
+  </section>
+  } @if (applicants().length === 0) {
+  <section class="empty-request">
+    {{ 'applicants.requests.none' | transloco }}
+    <img src="img/group-64.png" alt="Group Icon" />
+  </section>
+  }
+  <section
+    class="request-container"
+    [class.slide-dec]="state() === 'dec'"
+    [class.slide-inc]="state() === 'inc'"
+  >
+    @if (currentApplicant(); as applicant) {
+    <cbc-request
+      [applicant]="applicant"
+      [availableProfiles]="profiles()"
+      [groupId]="igId()"
+      (requestProcessed)="onRequestProcessed($event)"
+    ></cbc-request>
+    }
+  </section>
+</div>

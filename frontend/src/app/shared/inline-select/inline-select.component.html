@@ -1,0 +1,9 @@
+<form [formGroup]="form">
+  <mat-button-toggle-group formControlName="selectValue">
+    @for (option of options; track option.value) {
+    <mat-button-toggle [value]="option.value"
+      >{{ option.label }}</mat-button-toggle
+    >
+    }
+  </mat-button-toggle-group>
+</form>

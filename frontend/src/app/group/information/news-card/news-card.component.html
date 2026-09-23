@@ -1,0 +1,187 @@
+@let _news = news(); @if (_news) {
+<div
+  class="news-card"
+  [class.important]="isImportant()"
+  [class.reminder]="isReminder()"
+  [class.news-card--height-2]="isIframe()"
+  [class.highlighted]="highlighted()"
+>
+  @if (highlighted()) {
+  <footer style="text-align: end; cursor: pointer">
+    @if (highlightedMaximized) {
+    <button
+      type="button"
+      (click)="highlightedMaxWindowAction(false)"
+      (keydown.enter)="highlightedMaxWindowAction(false)"
+    >
+      <img src="img/min-windows-grey.svg" alt="min-windows-icon" width="16px" />
+    </button>
+    } @if (!highlightedMaximized) {
+    <button
+      type="button"
+      (click)="highlightedMaxWindowAction(true)"
+      (keydown.enter)="highlightedMaxWindowAction(true)"
+    >
+      <img src="img/max-windows-grey.svg" alt="max-window-icon" width="16px" />
+    </button>
+    }
+  </footer>
+  } @if (!isIframe()) {
+  <div class="container">
+    @if (isImage() || isDocument() || isDate()) {
+    <section class="news-complement">
+      @if (isImage() && !preview()) {
+      <div
+        class="imageContainer"
+        [style.backgroundPositionX]="'center'"
+        [style.backgroundPositionY]="'center'"
+        [style.backgroundSize]="'cover'"
+        [style.backgroundImage]="
+          prepareUrl(getNewsFileId() | cbcDownload | cbcSecure)
+        "
+      ></div>
+      } @if (isImage() && preview() && hasPreviewImage()) {
+      <div
+        class="imageContainer"
+        [style.backgroundPositionX]="'center'"
+        [style.backgroundPositionY]="'center'"
+        [style.backgroundSize]="'cover'"
+        [style.backgroundImage]="prepareUrl(getPreviewImage())"
+      ></div>
+      } @if (isImage() && preview() && !hasPreviewImage() && !hasFile()) {
+      <div
+        class="imageContainer"
+        [style.backgroundPositionX]="'center'"
+        [style.backgroundPositionY]="'center'"
+        [style.backgroundSize]="'cover'"
+        [style.backgroundImage]="'url(img/image-place-holder.png)'"
+      ></div>
+      } @if (isImage() && preview() && !hasPreviewImage() && hasFile()) {
+      <div
+        class="imageContainer"
+        [style.backgroundPositionX]="'center'"
+        [style.backgroundPositionY]="'center'"
+        [style.backgroundSize]="'cover'"
+        [style.backgroundImage]="
+          prepareUrl(getNewsFileId() | cbcDownload | cbcSecure)
+        "
+      ></div>
+      } @if (_news && isDate()) {
+      <div class="dayContainer">
+        <span class="dayDate">{{ _news.date | date: 'dd' }}</span>
+        <br />
+        <span class="monthDate">{{ _news.date | date: 'MMM yyyy' }}</span>
+      </div>
+      } @if (isDocument()) {
+      <div class="docContainer">
+        @if (!isPDFDocument()) {
+        <div>
+          <img src="img/bigicon-file.png" title="file" alt="file" />
+        </div>
+        } @if (isPDFDocument() && !highlighted() && !preview() ) {
+        <div>
+          <img src="img/bigicon-file.png" title="file" alt="file" />
+        </div>
+        } @if (isPDFDocument() && (highlighted() || preview())) {
+        <div>
+          <ngx-extended-pdf-viewer
+            [src]="getPreviewPDF()"
+            height="30vh"
+            [showToolbar]="false"
+            [zoom]="30"
+            [showBorders]="false"
+            [rotation]="0"
+            [textLayer]="true"
+            [showHandToolButton]="true"
+          ></ngx-extended-pdf-viewer>
+        </div>
+        }
+
+        <br />
+        {{ 'label.attached.file' | transloco }}
+        <br />
+        <section class="fileLink">
+          <a tabindex="0" (click)="saveFile()">{{ getNewsFileName() }}</a>
+        </section>
+      </div>
+      }
+    </section>
+    } @if (!isIframe()) {
+    <section
+      class="metadata-created"
+      [class.more-margin]="!(isImage() || isDate() || isDocument())"
+    >
+      @if (!isIframe()) {
+      <span class="metadata-author">
+        {{ 'label.by' | transloco }} @if (preview()) {
+        <span>John Doe</span>
+        } @if (_news && !preview()) {
+        <cbc-user-card [userId]="_news.creator"></cbc-user-card>
+        }
+      </span>
+      } {{ getDateCreated() | date: 'MMMM d yyyy HH:mm' }} @if (isEdited()) {
+      <button
+        type="button"
+        class="edition-indicator"
+        (click)="showCreator = !showCreator"
+      >
+        ({{ 'label.edited' | transloco }})
+      </button>
+      } @if (showCreator) {
+      <div class="original-matatada">
+        {{ 'label.modified' | transloco }}:&nbsp;{{ getDate() | date: 'MMMM d
+        yyyy HH:mm' }}
+        <br />
+        {{ 'label.by' | transloco }} @if (preview()) {
+        <span>John Doe</span>
+        } @if (_news && !preview()) {
+        <cbc-user-card [userId]="_news.modifier"></cbc-user-card>
+        }
+      </div>
+      }
+    </section>
+    } @if (titleIsNotEmpty()) {
+    <button
+      type="button"
+      class="clickable"
+      (click)="propagateClick()"
+      (keydown.enter)="propagateClick()"
+    >
+      @if (isReminder()) {
+      <img
+        class="news-icon"
+        src="img/school-calendar-green-32.png"
+        alt="reminder.png"
+      />
+      } @if (isImportant()) {
+      <img
+        class="news-icon"
+        src="img/error-triangle-orange-32.png"
+        alt="imporant.png"
+      />
+      } {{ _news.title | cbcI18n }}
+    </button>
+    }
+    <section class="content" [innerHTML]="getSanitizedContent()"></section>
+  </div>
+  } @if (_news && _news.url && isIframe() && hasValidUrl()) {
+  <iframe [src]="_news.url | cbcSafe" title="News Content"></iframe>
+  } @if (isIframe() && !hasValidUrl()) {
+  <div class="container">
+    <p>{{ 'label.invalid.url' | transloco }}</p>
+  </div>
+  } @if (isNewsManage() && !hideActions()) {
+  <footer>
+    <a
+      [routerLink]="['.', _news.id, 'edit']"
+      *cbcIfRoleGE="[_news, 'InfManage', ['InfManage']]"
+      >{{ 'label.edit' | transloco }}</a
+    >
+    <cbc-inline-delete
+      (deletionConfirmed)="deleteNews()"
+      *cbcIfRoleGE="[_news, 'InfManage', ['InfManage']]"
+    ></cbc-inline-delete>
+  </footer>
+  }
+</div>
+}

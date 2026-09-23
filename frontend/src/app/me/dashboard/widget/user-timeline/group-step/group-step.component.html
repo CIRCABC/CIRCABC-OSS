@@ -1,0 +1,77 @@
+<header>
+  <a [routerLink]="['/group', groupFeed().id]"> {{ getGroupNameOrTitle() }} </a>
+</header>
+<section class="feed">
+  <ul>
+    @for (itemFeed of getDisplayableFeed(); track itemFeed) {
+    <li>
+      @if (type() === 'today') {
+      <span class="date"> {{ itemFeed.actionDate | date: 'HH:mm' }} </span>
+      } @if (type() !== 'today') {
+      <span class="date"> {{ itemFeed.actionDate | date: 'dd-MM' }} </span>
+      }
+      <span class="file">
+        @if ( itemFeed.action === 'upload' || itemFeed.action === 'update' ||
+        itemFeed.action === 'translate' ) {
+        <a
+          class="file-link"
+          [routerLink]="[
+            '/group',
+            groupFeed().id,
+            'library',
+            $safeNavigationMigration(itemFeed.node?.id),
+            'details'
+          ]"
+          title="{{ itemFeed.node?.name }}"
+          >{{ getDisplayProperty(itemFeed.node) }}</a
+        >
+        } @if ( itemFeed.action === 'comment' && itemFeed.node?.service ===
+        'newsgroups' ) {
+        <a
+          class="file-link"
+          [routerLink]="[
+            '/group',
+            groupFeed().id,
+            'forum',
+            'topic',
+            $safeNavigationMigration(itemFeed.node.id)
+          ]"
+          title="{{ itemFeed.node.name }}"
+          >{{ getDisplayProperty(itemFeed.node) }}</a
+        >
+        } @if ( itemFeed.action === 'comment' && itemFeed.node?.service ===
+        'library' ) {
+        <a
+          class="file-link"
+          [routerLink]="[
+            '/group',
+            groupFeed().id,
+            'library',
+            $safeNavigationMigration(itemFeed.node.id),
+            'details'
+          ]"
+          title="{{ itemFeed.node.name }}"
+          >{{ getDisplayProperty(itemFeed.node) }}</a
+        >
+        } @if (itemFeed.action === 'upload') {
+        <span>{{ 'label.uploaded.by' | transloco }}</span>
+        } @if (itemFeed.action === 'update') {
+        <span>{{ 'label.updated.by' | transloco }}</span>
+        } @if (itemFeed.action === 'comment') {
+        <span>{{ 'label.commented.by' | transloco }}</span>
+        } @if (itemFeed.action === 'translate') {
+        <span>{{ 'label.add.translation.by' | transloco }}</span>
+        }
+        <cbc-user-card [userId]="itemFeed.username"></cbc-user-card>
+      </span>
+    </li>
+    }
+  </ul>
+</section>
+@if (hasMoreThan15 && !showAll) {
+<p class="show-all">
+  <a tabindex="0" (click)="showAllFeed()" class="button"
+    >{{ 'label.show.all' | transloco }}</a
+  >
+</p>
+}

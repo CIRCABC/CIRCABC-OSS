@@ -1,0 +1,5 @@
+@for (errorKeys of getErrorsKeys(); track errorKeys.key) {
+<span class="error-message">
+  {{ errorKeys.key | transloco: errorKeys.value }}
+</span>
+}

@@ -1,0 +1,74 @@
+# Optional EU Login overlay for the CircaBC docker-test environment.
+#
+# The DEFAULT stack (docker-compose.yml) uses BASIC username/password login.
+# Enable the mock EU Login (CAS) provider by adding this file:
+#
+#   docker compose \
+#     -f docker-test/docker-compose.yml \
+#     -f docker-test/compose.eulogin.yml \
+#     up -d
+#
+# What it does:
+#   1. eulogin-mock writes its self-signed cert to a shared volume.
+#   2. eulogin-truststore-init imports that cert into a JVM truststore on a
+#      second shared volume (so the backend trusts the mock over HTTPS).
+#   3. circabc-rest-acs is pointed at the mock (CAS_BASE_URL) and started with
+#      that truststore, so server-to-server CAS ticket validation succeeds.
+#
+# DEV ONLY. The mock and its certificate are throwaway.
+
+services:
+  eulogin-mock:
+    # Persist the generated cert to a shared volume for the truststore init step.
+    volumes:
+      - eulogin-cert:/shared
+    # Copy the build-time cert into the shared volume on start.
+    command: >-
+      sh -c "cp /app/cert.pem /shared/eulogin.pem && python app.py"
+
+  eulogin-truststore-init:
+    image: eclipse-temurin:21-jre
+    depends_on:
+      - eulogin-mock
+    volumes:
+      - eulogin-cert:/shared
+      - eulogin-truststore:/truststore
+    # Wait for the cert, seed a truststore from the JRE cacerts, import the mock cert.
+    entrypoint:
+      - sh
+      - -c
+      - |
+        set -e
+        echo "Waiting for mock certificate..."
+        for i in $$(seq 1 30); do [ -f /shared/eulogin.pem ] && break; sleep 2; done
+        cp "$$JAVA_HOME/lib/security/cacerts" /truststore/truststore.jks
+        keytool -importcert -noprompt -trustcacerts \
+          -alias eulogin-mock -file /shared/eulogin.pem \
+          -keystore /truststore/truststore.jks -storepass changeit
+        echo "EU Login mock certificate imported into truststore."
+    networks: [circabc]
+
+  circabc-rest-acs:
+    depends_on:
+      - circabc-rest-postgres
+      - circabc-rest-ass
+      - eulogin-truststore-init
+    environment:
+      # Point CAS at the mock and trust its certificate. Enterprise flavour
+      # (build.circabc.release != oss) enables the EU Login authentication path.
+      JAVA_OPTS: "
+        -Dsolr.secureComms=secret
+        -Dsolr.sharedSecret=secret
+        -Dcircabc.admin.password=${CIRCABC_ADMIN_PASSWORD:-admin}
+        -Dbuild.circabc.release=${BUILD_CIRCABC_RELEASE:-ent}
+        -Dcas.baseUrl=${CAS_BASE_URL:-https://eulogin:7002/cas}
+        -Dcas.serviceUrl=${CAS_SERVICE_URL:-http://localhost:8080/alfresco/service/circabc/eulogin}
+        -Dcas.frontendRedirectUrl=${CAS_FRONTEND_REDIRECT_URL:-http://localhost:4200/ui/welcome}
+        "
+      CATALINA_OPTS: "-Djavax.net.ssl.trustStore=/truststore/truststore.jks -Djavax.net.ssl.trustStorePassword=changeit"
+    volumes:
+      - eulogin-truststore:/truststore:ro
+
+volumes:
+  eulogin-cert:
+  eulogin-truststore:

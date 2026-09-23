@@ -1,0 +1,12 @@
+<section class="menu-container">
+  <div class="{{ className }}">
+    <ng-content></ng-content>
+    <button
+      type="button"
+      class="link-button icon"
+      aria-label="{{ 'label.toggle.menu' | transloco }}"
+      (click)="toggle()"
+      >&#9776;</button
+    >
+  </div>
+</section>

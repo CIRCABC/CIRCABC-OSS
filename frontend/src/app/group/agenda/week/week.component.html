@@ -1,0 +1,256 @@
+<div
+  class="flex-calendar main"
+  [class.work-week]="workWeek()"
+  style="margin-top: 5px"
+>
+  <div class="day day-hour day--previous-month day--header"> </div>
+  @for (weekDay of getDisplayableDays(); track weekDay) {
+  <div
+    class="day flex-day day-events day--header day--previous-month"
+    [class.percentage-7-days]="!workWeek()"
+    [class.percentage-5-days]="workWeek()"
+    [class.weekend-day]="isWeekendDay(weekDay)"
+    [class.today]="isToday(weekDay)"
+  >
+    <span class="show-names">{{ dayNames[weekDay] }},</span>
+    {{ weekDates[weekDay].getDate() }}
+  </div>
+  } @for (item of viewRowElements(); track item) {
+  <div
+    class="day"
+    [class.day-hour]="item.isHour"
+    [class.day--previous-month]="item.isHour"
+    [class.flex-day]="!item.isHour"
+    [class.day-events]="!item.isHour"
+    [class.percentage-7-days]="!workWeek() && !item.isHour"
+    [class.percentage-5-days]="workWeek() && !item.isHour"
+    [class.weekend-day]="item.isWeekendDay"
+    [class.today]="item.isToday"
+    [class.day-events-multiple]="
+      !item.isHour && coversMultipleMinuteRanges(item)
+    "
+    (mouseenter)="item.showDetailsBox = true"
+    (mouseleave)="item.showDetailsBox = false"
+  >
+    @if (item.isHour) {
+    <span>{{ item.value }}</span>
+    } @if (!item.isHour) {
+    <div class="events--container">
+      @for (showableEvent of getValueAsArray(item.value); track showableEvent) {
+      <span>
+        @if (isEvent(showableEvent.event) && showableEvent.show && meMode()) {
+        <a
+          [routerLink]="[
+            '/group',
+            showableEvent.event.igId,
+            'agenda',
+            showableEvent.event.id,
+            'details'
+          ]"
+          ><img
+            width="10"
+            height="10"
+            src="img/event-155D79.png"
+            alt="Event icon" />
+          <span style="color: #155d79"
+            >{{ showableEvent.event.startTime }} {{ showableEvent.event.endTime
+            }}</span
+          >
+          <span style="color: black">{{ showableEvent.event.title }}</span><br
+        /></a>
+        } @if (isMeeting(showableEvent.event) && showableEvent.show && meMode())
+        {
+        <a
+          [routerLink]="[
+            '/group',
+            showableEvent.event.igId,
+            'agenda',
+            showableEvent.event.id,
+            'details'
+          ]"
+          ><img
+            width="10"
+            height="10"
+            src="img/meeting-155D79.png"
+            alt="Meeting icon" />
+          <span style="color: #155d79"
+            >{{ showableEvent.event.startTime }} {{ showableEvent.event.endTime
+            }}</span
+          >
+          <span style="color: black">{{ showableEvent.event.title }}</span><br
+        /></a>
+        } @if (isEvent(showableEvent.event) && showableEvent.show && !meMode())
+        {
+        <a
+          [routerLink]="[
+            '/group',
+            id(),
+            'agenda',
+            showableEvent.event.id,
+            'details'
+          ]"
+          ><img
+            width="10"
+            height="10"
+            src="img/event-155D79.png"
+            alt="Event icon" />
+          <span style="color: #155d79"
+            >{{ showableEvent.event.startTime }} {{ showableEvent.event.endTime
+            }}</span
+          >
+          <span style="color: black">{{ showableEvent.event.title }}</span><br
+        /></a>
+        } @if ( isMeeting(showableEvent.event) && showableEvent.show &&
+        !meMode() ) {
+        <a
+          [routerLink]="[
+            '/group',
+            id(),
+            'agenda',
+            showableEvent.event.id,
+            'details'
+          ]"
+          ><img
+            width="10"
+            height="10"
+            src="img/meeting-155D79.png"
+            alt="Meeting icon" />
+          <span style="color: #155d79"
+            >{{ showableEvent.event.startTime }} {{ showableEvent.event.endTime
+            }}</span
+          >
+          <span style="color: black">{{ showableEvent.event.title }}</span><br
+        /></a>
+        }
+      </span>
+      }
+    </div>
+    }
+
+    <!-- Hover popup with meeting details -->
+    @if (showRightDetailsBox(item)) {
+    <div id="detailsPopup" class="popup popup--calendar">
+      <div class="events-of-the-day">
+        <div class="title">{{ item.dayName }}, {{ item.dayDate }}</div>
+        <ul class="events">
+          @for (showableEvent of getValueAsArray(item.value); track
+          showableEvent) {
+          <li class="event">
+            <div>
+              <span class="hour">{{ showableEvent.event.startTime }}</span>
+              <a
+                [routerLink]="[showableEvent.event.id, 'details']"
+                class="event-name"
+                >{{ showableEvent.event.title }}</a
+              >
+            </div>
+            <div class="details">
+              <span class="abstract"
+                >{{ showableEvent.event.eventAbstract === '' ? ('label.na' |
+                transloco) : showableEvent.event.eventAbstract }}</span
+              >
+              <br /><br />
+              <span class="duration">{{ showableEvent.event.endTime }}</span>
+              <span class="location"
+                >{{ showableEvent.event.location === '' ? ('label.na' |
+                transloco) : showableEvent.event.location }}</span
+              >
+              <!-- see how to refactor this with a variable or something, not to call the function so much -->
+              @if ( getRepetition(showableEvent.event.occurrenceRate).length ===
+              1 ) {
+              <span class="repetition"
+                >{{ 'label.' +
+                getRepetition(showableEvent.event.occurrenceRate)[0] | transloco
+                }}</span
+              >
+              } @if ( getRepetition(showableEvent.event.occurrenceRate).length
+              === 3 ) {
+              <span class="repetition"
+                >{{ 'update-event.repeats.legend.when' | transloco : {
+                timesOccurrence: 'label.' + getRepetition(
+                showableEvent.event.occurrenceRate )[1] | transloco, times:
+                getRepetition( showableEvent.event.occurrenceRate )[2] }
+                }}</span
+              >
+              } @if ( getRepetition(showableEvent.event.occurrenceRate).length
+              === 4 ) {
+              <span class="repetition"
+                >{{ 'update-event.repeats.legend.every' | transloco : {
+                everyTime: getRepetition( showableEvent.event.occurrenceRate
+                )[2], everyTimesOccurence:
+                getRepetition(showableEvent.event.occurrenceRate)[1] |
+                transloco, times: getRepetition(
+                showableEvent.event.occurrenceRate )[3] } }}</span
+              >
+              }
+            </div>
+          </li>
+          }
+        </ul>
+      </div>
+    </div>
+    } @if (showLeftDetailsBox(item)) {
+    <div class="left-popup left-popup--calendar">
+      <div class="events-of-the-day">
+        <div class="title">{{ item.dayName }}, {{ item.dayDate }}</div>
+        <ul class="events">
+          @for (showableEvent of getValueAsArray(item.value); track
+          showableEvent) {
+          <li class="event">
+            <div>
+              <span class="hour">{{ showableEvent.event.startTime }}</span>
+              <a
+                [routerLink]="[showableEvent.event.id, 'details']"
+                class="event-name"
+                >{{ showableEvent.event.title }}</a
+              >
+            </div>
+            <div class="details">
+              <span class="abstract"
+                >{{ showableEvent.event.eventAbstract === '' ? ('label.na' |
+                transloco) : showableEvent.event.eventAbstract }}</span
+              >
+              <br /><br />
+              <span class="duration">{{ showableEvent.event.endTime }}</span>
+              <span class="location"
+                >{{ showableEvent.event.location === '' ? ('label.na' |
+                transloco) : showableEvent.event.location }}</span
+              >
+              <!-- see how to refactor this with a variable or something, not to call the function so much -->
+              @if ( getRepetition(showableEvent.event.occurrenceRate).length ===
+              1 ) {
+              <span class="repetition"
+                >{{ 'label.' +
+                getRepetition(showableEvent.event.occurrenceRate)[0] | transloco
+                }}</span
+              >
+              } @if ( getRepetition(showableEvent.event.occurrenceRate).length
+              === 3 ) {
+              <span class="repetition"
+                >{{ 'update-event.repeats.legend.when' | transloco : {
+                timesOccurrence: 'label.' + getRepetition(
+                showableEvent.event.occurrenceRate )[1] | transloco, times:
+                getRepetition( showableEvent.event.occurrenceRate )[2] }
+                }}</span
+              >
+              } @if ( getRepetition(showableEvent.event.occurrenceRate).length
+              === 4 ) {
+              <span class="repetition"
+                >{{ 'update-event.repeats.legend.every' | transloco : {
+                everyTime: getRepetition( showableEvent.event.occurrenceRate
+                )[2], everyTimesOccurence:
+                getRepetition(showableEvent.event.occurrenceRate)[1] |
+                transloco, times: getRepetition(
+                showableEvent.event.occurrenceRate )[3] } }}</span
+              >
+              }
+            </div>
+          </li>
+          }
+        </ul>
+      </div>
+    </div>
+    }
+  </div>
+  }
+</div>

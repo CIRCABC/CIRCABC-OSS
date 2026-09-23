@@ -1,0 +1,10 @@
+<webscript>
+    <shortname>ftp.connection.test</shortname>
+    <description>
+        Check if the FTP connection on the server side is working
+    </description>
+    <url>/circabc/ftp/connection</url>
+    <format default="json" />
+    <authentication>user</authentication>
+    <transaction>required</transaction>
+</webscript>

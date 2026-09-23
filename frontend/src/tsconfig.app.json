@@ -1,0 +1,34 @@
+{
+  "extends": "../tsconfig.json",
+  "angularCompilerOptions": {
+    "enableIvy": true,
+    "preserveWhitespaces": true,
+    "fullTemplateTypeCheck": true,
+    "strictTemplates": true,
+    "strictNullInputTypes": true,
+    "strictAttributeTypes": true,
+    "strictSafeNavigationTypes": true,
+    "strictDomLocalRefTypes": true,
+    "strictOutputEventTypes": true,
+    "strictContextGenerics": true,
+    "strictDomEventTypes": true,
+    "strictInputTypes": true,
+    "uninvokedFunctionInTextInterpolation": "error",
+    "extendedDiagnostics": {
+      "defaultCategory": "error",
+      "checks": {
+        "nullishCoalescingNotNullable": "error",
+        "optionalChainNotNullable": "error"
+      }
+    },
+    "strictStandalone": true,
+    "typeCheckHostBindings": true
+  },
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "outDir": "../out-tsc/app",
+    "types": []
+  },
+  "files": ["main.ts", "polyfills.ts"],
+  "include": ["**/*.d.ts"]
+}

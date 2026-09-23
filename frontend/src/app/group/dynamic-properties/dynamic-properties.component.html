@@ -1,0 +1,102 @@
+@if (loading()) {
+<cbc-horizontal-loader />
+}
+<div class="wrap page-container">
+  <div class="page-header">
+    <span
+      class="page-header__title"
+      [innerHTML]="'dynamic-property.page.create.title' | transloco"
+    ></span>
+    <div class="page-header__actions">
+      @if (currentLibrary(); as currentLibrary) {
+      <cbc-reponsive-sub-menu>
+        <a [routerLink]="['../library', currentLibrary.id]"
+          >{{ 'label.library' | transloco }}</a
+        >
+        @if (isLibAdmin()) {
+        <a [routerLink]="['../keywords']">{{ 'label.keywords' | transloco }}</a>
+        }
+        <a [routerLink]="['.']" class="selected"
+          >{{ 'label.dynamic.properties' | transloco }}</a
+        >
+        @if (isLibAdmin()) {
+        <a [routerLink]="['../admin/documents']" [queryParams]="{ expired: 1 }"
+          >{{ 'label.expired.items' | transloco }}</a
+        >
+        }
+      </cbc-reponsive-sub-menu>
+      }
+      <a
+        tabindex="0"
+        class="cta cta--plus"
+        data-cy="add-dynamic-property"
+        (click)="prepareCreateModal()"
+        [class.disabled]="dynamicProperties().length === 20"
+        >{{ 'dynamic-property.add' | transloco }}</a
+      >
+    </div>
+  </div>
+  @if (dynamicProperties().length === 20) {
+  <div>
+    <br />
+    <br />
+    <div
+      style="
+        color: #9a4000;
+        font-size: 14px;
+        text-align: center;
+        padding: 15px;
+        background-color: #fff;
+      "
+    >
+      <img
+        src="img/error-triangle-orange-32.png"
+        style="vertical-align: middle; margin: 0 25px"
+        alt="Error triangle"
+      />
+      {{ 'dynamic-property.max.reached' | transloco }}
+    </div>
+  </div>
+  } @for (dynProp of dynamicProperties(); track dynProp.id) {
+  <cbc-dynamic-property-box
+    [property]="dynProp"
+    (dynnamicPropDelete)="showModalDelete($event)"
+    (dynamicPropEdit)="showModalEdit($event)"
+  ></cbc-dynamic-property-box>
+  } @if (dynamicProperties().length === 0) {
+  <div>
+    <br />
+    <br />
+    <div
+      style="
+        color: #767676;
+        font-size: 18px;
+        text-align: center;
+        padding: 15px;
+        background-color: #fff;
+        line-height: 64px;
+      "
+    >
+      {{ 'dynamic-property.empty.list' | transloco }}
+      <img
+        src="img/dynamic-prop-cecfce.png"
+        width="45"
+        height="45"
+        style="vertical-align: middle; margin: 0 25px"
+        alt="Dynamic property icon"
+      />
+    </div>
+  </div>
+  }
+</div>
+<cbc-dynamic-property-delete
+  [showModal]="deleteModalShown()"
+  [property]="selectedProperty()"
+  (modalHide)="refresh($event)"
+/>
+<cbc-create-dynamic-property
+  [showModal]="createModalShown()"
+  [groupId]="groupId()"
+  (modalHide)="refresh($event)"
+  [property]="propertyToUpdate()"
+/>

@@ -1,0 +1,251 @@
+@let _showWizard = showWizard();
+<!-- MODAL BOX -->
+@if (_showWizard) {
+<div
+  class="black-overlayer"
+  [class.overlayer-shown]="_showWizard"
+  [class.overlayer-hidden]="!_showWizard"
+></div>
+} @if (_showWizard) {
+<section
+  class="modal modal--select-files"
+  [class.modal-shown]="_showWizard"
+  [class.modal-hidden]="!_showWizard"
+  style="margin-top: 0"
+>
+  <button
+    type="button"
+    class="close-icon"
+    aria-label="{{ 'label.cancel.wizard' | transloco }}"
+    (click)="cancelWizard()"
+  ></button>
+
+  <header>
+    @if (canGoBack()) {
+    <a tabindex="0" class="back-link" (click)="previousWizardStep()"
+      >{{ 'label.back' | transloco }}</a
+    >
+    }
+    <h2 class="title">{{ 'label.add.configuration' | transloco }}</h2>
+  </header>
+
+  <section class="modal-content">
+    <form [formGroup]="autoUploadForm">
+      <!-- first wizard step -->
+      @if (wizardStep() === 1) {
+      <div>
+        <div class="field">
+          <label for="ftpHost">{{ 'label.ftp.host' | transloco }}</label>
+          <input
+            type="text"
+            id="ftpHost"
+            (change)="resetConnection()"
+            formControlName="ftpHost"
+          />
+          <cbc-control-message
+            [showInvalid]="true"
+            [control]="ftpHostControl"
+          ></cbc-control-message>
+        </div>
+        <div class="field">
+          <label for="ftpPort">{{ 'label.ftp.port' | transloco }}</label>
+          <input
+            type="text"
+            id="ftpPort"
+            (change)="resetConnection()"
+            formControlName="ftpPort"
+          />
+          <cbc-control-message
+            [showInvalid]="true"
+            [control]="ftpPortControl"
+          ></cbc-control-message>
+        </div>
+        <br />
+        <div class="field">
+          <label for="pathToFile">{{ 'label.path.to.file' | transloco }}</label>
+          <input
+            type="text"
+            id="pathToFile"
+            (change)="resetConnection()"
+            formControlName="pathToFile"
+          />
+        </div>
+        <br />
+        <div class="field">
+          <label for="username">{{ 'label.login' | transloco }}</label>
+          <input
+            type="text"
+            id="username"
+            (change)="resetConnection()"
+            formControlName="username"
+          />
+        </div>
+        <div class="field">
+          <label for="password">{{ 'label.password' | transloco }}</label>
+          <input
+            type="password"
+            id="password"
+            (change)="resetConnection()"
+            formControlName="password"
+          />
+        </div>
+        <div style="margin-left: 165px">
+          <a
+            tabindex="0"
+            class="button apply-button"
+            data-cy="test-connection"
+            (click)="testConnection()"
+            >{{ 'label.test.connection' | transloco }}</a
+          >
+          @if (connectionResult() === 1) {
+          <span class="text-success">{{ 'label.success' | transloco }}</span>
+          } @if (connectionResult() === 0 && testedOnce()) {
+          <span class="text-warning"
+            >{{ 'label.ftp.ok.no.file' | transloco }}</span
+          >
+          } @if (connectionResult() < 0) {
+          <span class="text-error">{{ 'label.failure' | transloco }}</span>
+          }
+        </div>
+      </div>
+      }
+
+      <!-- second wizard step -->
+      @if (wizardStep() === 2) {
+      <div>
+        @if (destinationSelected()) {
+        <div class="nonBlockLabel">
+          {{ 'auto.upload.select.destination' | transloco }}
+        </div>
+        } @if (!destinationSelected()) {
+        <div class="nonBlockLabel text-error">
+          {{ 'auto.upload.select.destination' | transloco }}
+        </div>
+        }
+        <br />
+        @if (libraryRoot(); as libraryRootNode) {
+        <cbc-tree-view
+          [root]="libraryRootNode"
+          [folderId]="destinationValue"
+          (selectedNodeEmitter)="setDestination($event)"
+          [displayedPath]="path()"
+        ></cbc-tree-view>
+        }
+        <br />
+        <br />
+        <div class="field">
+          <label for="uploadDay"
+            >{{ 'auto.upload.file.upload.day' | transloco }}</label
+          >
+          <div class="custom-select select--form short-width select-align">
+            <select name="" id="uploadDay" formControlName="uploadDay">
+              <option value="-1">{{ 'label.every.day' | transloco }}</option>
+              <option value="1">{{ 'label.monday' | transloco }}</option>
+              <option value="2">{{ 'label.tuesday' | transloco }}</option>
+              <option value="3">{{ 'label.wednesday' | transloco }}</option>
+              <option value="4">{{ 'label.thursday' | transloco }}</option>
+              <option value="5">{{ 'label.friday' | transloco }}</option>
+              <option value="6">{{ 'label.saturday' | transloco }}</option>
+              <option value="7">{{ 'label.sunday' | transloco }}</option>
+            </select>
+          </div>
+          <label for="uploadHour" style="width: 35px"
+            >{{ 'auto.upload.file.upload.hour' | transloco }}</label
+          >
+          <div class="custom-select select--form short-width select-align">
+            <select name="" id="uploadHour" formControlName="uploadHour">
+              <option value="-1">{{ 'label.every.hour' | transloco }}</option>
+              @for ( hour of [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
+              15, 16, 17, 18, 19, 20, 21, 22, 23 ] ; track hour) {
+              <option [value]="hour">{{ hour }}:00</option>
+              }
+            </select>
+          </div>
+        </div>
+        <div class="field switch">
+          <div class="label">
+            {{ 'auto.upload.auto.extract.zip' | transloco }}
+          </div>
+          <input
+            id="autoExtractZip"
+            class="cmn-toggle cmn-toggle-round"
+            type="checkbox"
+            formControlName="autoExtractZip"
+          />
+          <label
+            for="autoExtractZip"
+            class="nonBlockLabel"
+            aria-label="{{ 'auto.upload.auto.extract.zip' | transloco }}"
+          ></label>
+          <span
+            >{{ (autoUploadForm.value.autoExtractZip === true ? 'label.yes' :
+            'label.no' ) | transloco }}</span
+          >
+        </div>
+        <div class="field switch">
+          <div class="label">{{ 'label.job.notification' | transloco }}</div>
+          <input
+            id="jobNotifications"
+            class="cmn-toggle cmn-toggle-round"
+            type="checkbox"
+            formControlName="jobNotifications"
+          />
+          <label
+            for="jobNotifications"
+            class="nonBlockLabel"
+            aria-label="{{ 'label.job.notifications' | transloco }}"
+          ></label>
+          <span
+            >{{ (autoUploadForm.value.jobNotifications === true ? 'label.yes' :
+            'label.no' ) | transloco }}</span
+          >
+        </div>
+        <div class="field">
+          <div class="label">{{ 'label.email.recipients' | transloco }}</div>
+          <label for="emailRecipients" class="visually-hidden"
+            >{{ 'label.email.recipients' | transloco }}</label
+          >
+          <textarea
+            id="emailRecipients"
+            formControlName="emailRecipients"
+          ></textarea>
+          <cbc-control-message
+            [showInvalid]="true"
+            [control]="emailRecipientsControl"
+          ></cbc-control-message>
+        </div>
+        <span style="margin-left: 165px"
+          >{{ 'label.email.recipients.multiple' | transloco }}</span
+        >
+      </div>
+      }
+    </form>
+  </section>
+
+  <section class="modal-footer">
+    <!-- Buttons -->
+    <div class="buttons-group">
+      @if (wizardStep() === 1) {
+      <a
+        tabindex="0"
+        class="cta"
+        [class.disabled]="connectionResult() < 0 || !testedOnce()"
+        (click)="nextWizardStep()"
+        >{{ 'label.next' | transloco }}</a
+      >
+      } @if (wizardStep() === 2) {
+      <a
+        class="cta"
+        [routerLink]="['.']"
+        (click)="!autoUploadForm.valid ? '' : addConfiguration()"
+        [class.disabled]="!autoUploadForm.valid"
+        >{{ 'label.add' | transloco }}</a
+      >
+      }
+      <a tabindex="0" class="button" (click)="cancelWizard()"
+        >{{ 'label.cancel' | transloco }}</a
+      >
+    </div>
+  </section>
+</section>
+}

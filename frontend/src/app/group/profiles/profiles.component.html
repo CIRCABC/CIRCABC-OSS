@@ -1,0 +1,185 @@
+@if (loading) {
+<cbc-horizontal-loader />
+}
+<div class="wrap page-container">
+  <div class="page-header">
+    <h1
+      class="page-header__title"
+      [attr.aria-label]="'profile.manage.page.title' | transloco"
+      [innerHTML]="'profile.manage.page.title' | transloco"
+    >
+      {{ 'profile.manage.page.title' | transloco }}
+    </h1>
+    <div class="page-header__actions">
+      <div class="links">
+        <cbc-reponsive-sub-menu>
+          @if (currentGroup && (isDirAdmin() || isDirManageMembers())) {
+          <a [routerLink]="['../members/bulk-invite', currentGroup.id]"
+            >{{ 'label.bulk.invite' | transloco }}</a
+          >
+          } @if (currentGroup && isMember()) {
+          <a [routerLink]="['../members/contact']"
+            >{{ 'label.send.email' | transloco }}</a
+          >
+          } @if (currentGroup && (isDirAdmin() || isDirManageMembers())) {
+          <a [routerLink]="['../applicants']"
+            >{{ 'label.member.requests' | transloco }}</a
+          >
+          }
+          <a [routerLink]="['../members']">{{ 'label.members' | transloco }}</a>
+          <a [routerLink]="['.']" class="selected"
+            >{{ 'label.profiles' | transloco }}</a
+          >
+        </cbc-reponsive-sub-menu>
+
+        <span>
+          <a
+            tabindex="0"
+            class="cta cta--plus"
+            data-cy="add-profile"
+            (click)="showAddProfile()"
+            >{{ 'label.add.profile' | transloco }}</a
+          >
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <section class="table-container">
+    <header class="header"></header>
+
+    <table class="main">
+      <thead>
+        <tr>
+          <th><span class="visually-hidden">Actions</span></th>
+          <th><span class="visually-hidden">Select</span></th>
+          <th class="header-profile">{{ 'label.name' | transloco }}</th>
+          <th class="header-profile th--fixed-width">
+            {{ 'label.information' | transloco }}
+          </th>
+          <th class="header-profile th--fixed-width">
+            {{ 'label.library' | transloco }}
+          </th>
+          <th class="header-profile th--fixed-width">
+            {{ 'label.members' | transloco }}
+          </th>
+          <th class="header-profile th--fixed-width">
+            {{ 'label.agenda' | transloco }}
+          </th>
+          <th class="header-profile th--fixed-width">
+            {{ 'label.forums' | transloco }}
+          </th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @if (profiles !== undefined) {
+        <tr class="row empty-row">
+          @if (profiles.length === 0) {
+          <td colspan="7">{{ 'label.nothing.to.display' | transloco }}</td>
+          }
+        </tr>
+        } @for (profile of profiles; track profile.id) {
+        <tr class="row">
+          <td class="cell-left-border"></td>
+          <td class="cell-profile-icon">
+            @if (profile.imported) {
+            <img
+              src="img/download-to-storage-drive.png"
+              alt="imported"
+              title="imported"
+            />
+            } @if (profile.exported) {
+            <img src="img/rss-symbol.png" alt="exported" title="exported" />
+            }
+          </td>
+          <td class="cell-name cell-profile-name">
+            @if (profile.title) {
+            <div class="file-name text-capitalize">
+              {{ profile.title | cbcI18n }}
+            </div>
+            } @if (!profile.title) {
+            <div class="file-name text-capitalize">{{ profile.name }}</div>
+            }
+            <div class="actions">
+              <span></span>
+              <span>
+                <a tabindex="0" (click)="prepareEdit(profile)"
+                  >{{ 'label.edit' | transloco }}</a
+                >
+              </span>
+              @if (isDeletable(profile)) {
+              <span>
+                <a
+                  data-cy="delete-profile"
+                  tabindex="0"
+                  (click)="prepareDelete(profile)"
+                  >{{ 'label.delete' | transloco }}</a
+                >
+              </span>
+              } @if (isExportable(profile)) {
+              <span>
+                <a tabindex="0" (click)="export(profile)"
+                  >{{ 'label.export' | transloco }}</a
+                >
+              </span>
+              } @if (isUnexportable(profile)) {
+              <span>
+                <a tabindex="0" (click)="unexport(profile)"
+                  >{{ 'label.export.stop' | transloco }}</a
+                >
+              </span>
+              }
+            </div>
+          </td>
+          <td>
+            {{ 'permissions.' +
+            $safeNavigationMigration(profile.permissions?.information) |
+            transloco }}
+          </td>
+          <td>
+            {{ 'permissions.' +
+            $safeNavigationMigration(profile.permissions?.library) | transloco
+            }}
+          </td>
+          <td>
+            {{ 'permissions.' +
+            $safeNavigationMigration(profile.permissions?.members) | transloco
+            }}
+          </td>
+          <td>
+            {{ 'permissions.' +
+            $safeNavigationMigration(profile.permissions?.events) | transloco }}
+          </td>
+          <td>
+            {{ 'permissions.' +
+            $safeNavigationMigration(profile.permissions?.newsgroups) |
+            transloco }}
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+
+    <footer class="footer"></footer>
+  </section>
+</div>
+
+<cbc-create-profile
+  [groupId]="nodeId"
+  [showDialog]="showModal"
+  [profileToEdit]="selectedProfile"
+  (profileCreated)="onProfileCreated($event)"
+  (profileUpdated)="onProfileEdited($event)"
+  (canceled)="onModalCancel()"
+/>
+<cbc-delete-profile
+  [profile]="selectedProfile"
+  [showModal]="showDeleteModal"
+  (profileDeleted)="onProfileDeleted($event)"
+/>
+<cbc-import-profile
+  [igNodeId]="nodeId"
+  [showModal]="showImportModal"
+  (profileImported)="onProfileImport($event)"
+/>

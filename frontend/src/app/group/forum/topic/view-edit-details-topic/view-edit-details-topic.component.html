@@ -1,0 +1,177 @@
+<div class="fluid page-container">
+  <div class="file-details">
+    <div class="wrap">
+      <div class="page-header">
+        <div class="page-header__actions">
+          <ul class="links">
+            <li
+              >@if (isTopicAdmin()) {
+              <a
+                [routerLink]="['../../../permissions', topic()?.id]"
+                [queryParams]="{ from: 'topic' }"
+                >{{ 'label.permissions' | transloco }}</a
+              >
+              }</li
+            >&nbsp;&nbsp;&nbsp;
+            <li
+              >@if (isTopicAdmin()) {
+              <a
+                [routerLink]="['../../../notification-status', topic()?.id]"
+                [queryParams]="{ from: 'topic' }"
+                >{{ 'label.notifications' | transloco }}</a
+              >
+              }</li
+            >
+          </ul>
+        </div>
+      </div>
+
+      <section class="box">
+        <header class="header">
+          @if (viewing) {
+          <span class="title">{{ 'topic.view.details' | transloco }}</span>
+          } @if (!viewing) {
+          <span class="title">{{ 'topic.edit.details' | transloco }}</span>
+          }
+        </header>
+        <div class="main">
+          <section class="file-informations">
+            <form [formGroup]="updateTopicForm">
+              <div class="field switch">
+                <!-- Topic details -->
+                <cbc-multilingual-input
+                  formControlName="title"
+                  [enabled]="!viewing"
+                  [label]="'label.title' | transloco"
+                  [lang]="'EN'"
+                ></cbc-multilingual-input>
+                <cbc-control-message
+                  [control]="updateTopicForm.controls['title']"
+                ></cbc-control-message>
+                <cbc-multilingual-input
+                  formControlName="description"
+                  [enabled]="!viewing"
+                  [textarea]="true"
+                  [label]="'label.description' | transloco"
+                  [lang]="'EN'"
+                ></cbc-multilingual-input>
+                <div class="field">
+                  <span class="label">{{ 'label.version' | transloco }}</span>
+                  @if (topic()) {
+                  <span>{{ versionLabel }}</span>
+                  }
+                </div>
+                <div class="field">
+                  <span class="label">{{ 'label.creator' | transloco }}</span>
+                  @if (topic() && creator(); as creatorUser) {
+                  <span
+                    >{{ creatorUser.firstname }} {{ creatorUser.lastname
+                    }}</span
+                  >
+                  }
+                </div>
+                <div class="field">
+                  <span class="label">{{ 'label.created' | transloco }}</span>
+                  @if (topic()) {
+                  <span>{{ created }}</span>
+                  }
+                </div>
+                <div class="field">
+                  <span class="label">{{ 'label.modifier' | transloco }}</span>
+                  @if (topic() && modifier(); as modifierUser) {
+                  <span
+                    >{{ modifierUser.firstname }} {{ modifierUser.lastname
+                    }}</span
+                  >
+                  }
+                </div>
+                <div class="field">
+                  <span class="label">{{ 'label.modified' | transloco }}</span>
+                  @if (topic()) {
+                  <span>{{ modified }}</span>
+                  }
+                </div>
+                <div class="field">
+                  <label for="securityRanking"
+                    >{{ 'label.security.marking' | transloco }}</label
+                  >
+                  <div
+                    class="custom-select select--form reset-width select-align"
+                  >
+                    <select
+                      name=""
+                      id="securityRanking"
+                      formControlName="securityRanking"
+                    >
+                      <option value="NORMAL">
+                        {{ 'label.normal' | transloco }}
+                      </option>
+                      <option value="SENSITIVE">
+                        {{ 'label.sensitive' | transloco }}
+                      </option>
+                      <option value="SPECIAL_HANDLING">
+                        {{ 'label.special.handling' | transloco }}
+                      </option>
+                      <option value="PUBLIC"
+                        >{{ 'label.public' | transloco }}</option
+                      >
+                      <option value="INTERNAL"
+                        >{{ 'label.internal' | transloco }}</option
+                      >
+                      <option value="LIMITED"
+                        >{{ 'label.limited' | transloco }}</option
+                      >
+                    </select>
+                  </div>
+                </div>
+                <div class="field">
+                  <span class="label">{{ 'label.moderated' | transloco }}</span>
+                  @if (topic()) {
+                  <span
+                    >{{ (ismoderated === 'true' ? 'label.yes' : 'label.no') |
+                    transloco }}</span
+                  >
+                  }
+                </div>
+              </div>
+            </form>
+
+            @if (processing()) {
+            <div class="field">
+              <span
+                >{{ 'label.updating' | transloco }}...<cbc-spinner></cbc-spinner
+              ></span>
+            </div>
+            } @if (!processing() && viewing) {
+            <br />
+            } @if (!processing() && viewing) {
+            <section class="actions" style="height: 127px">
+              <ul class="actions__secondary-actions--left">
+                <li
+                  ><a tabindex="0" class="edit" (click)="enableEdit()"
+                    >{{ 'label.edit' | transloco }}</a
+                  ></li
+                >
+              </ul>
+            </section>
+            }
+
+            <!-- Buttons -->
+            @if (!processing() && !viewing) {
+            <div class="buttons-group center">
+              @if (updateTopicForm.status === 'VALID') {
+              <a class="cta" [routerLink]="['.']" (click)="update()"
+                >{{ 'label.update' | transloco }}</a
+              >
+              }
+              <a class="button" [routerLink]="['.']" (click)="cancel()"
+                >{{ 'label.cancel' | transloco }}</a
+              >
+            </div>
+            }
+          </section>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

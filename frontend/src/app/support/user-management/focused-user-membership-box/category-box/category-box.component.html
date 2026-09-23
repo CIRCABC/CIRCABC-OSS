@@ -1,0 +1,19 @@
+@let _category = category();
+<section class="group-box">
+  <div class="profile">
+    <strong>{{ 'label.category.administrator' | transloco }}</strong>
+  </div>
+  @if (_category && _category.title) {
+  <div class="group">
+    <strong>{{ _category.title | cbcI18n }}</strong>
+    <br />
+    {{ _category.name }}
+  </div>
+  }
+  <div class="actions">
+    <cbc-inline-delete
+      [deleteLabel]="'label.remove' | transloco"
+      (deletionConfirmed)="uninviteUSer()"
+    ></cbc-inline-delete>
+  </div>
+</section>

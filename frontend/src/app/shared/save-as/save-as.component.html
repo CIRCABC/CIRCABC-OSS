@@ -1,0 +1,8 @@
+<!-- NOSONAR: This component is designed to be used inside a <ul> in parent components -->
+<a
+  tabindex="0"
+  data-cy="download"
+  [class.download]="showIcon()"
+  (click)="download()"
+  >{{ 'label.download' | transloco }}</a
+>

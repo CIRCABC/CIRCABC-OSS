@@ -1,0 +1,30 @@
+<section class="box box--alternate-lines box--button">
+  <header class="header">
+    <span class="title">{{ 'label.members' | transloco }}</span>
+  </header>
+  @if (loading()) {
+  <cbc-horizontal-loader></cbc-horizontal-loader>
+  } @if (!loading()) {
+  <div class="main main--listing">
+    @if (!restCallError()) {
+    <p class="members--number">
+      <span>
+        <a [routerLink]="['members']">{{ nbMembers() }}</a>
+      </span>
+      {{ 'members.count.in.group' | transloco }}
+    </p>
+    } @if (restCallError()) {
+    <p class="members--number">
+      {{ 'members.count.in.group.not.available' | transloco }}
+    </p>
+    } @if (isDirAdmin() && !restCallError()) {
+    <p class="members--number">
+      <span>
+        <a [routerLink]="['applicants']">{{ nbApplicants() }}</a>
+      </span>
+      {{ 'members.applications.in.group' | transloco }}
+    </p>
+    }
+  </div>
+  }
+</section>

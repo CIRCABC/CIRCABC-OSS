@@ -1,0 +1,64 @@
+<section class="box box--alternate-lines box--button">
+  <header class="header">
+    <span class="title">{{ 'forum.recent.discussions' | transloco }}</span>
+  </header>
+  @if (loading()) {
+  <cbc-horizontal-loader></cbc-horizontal-loader>
+  } @if (!loading()) {
+  <div class="main main--listing">
+    @if ( discussions() !== undefined && discussions().length > 0 &&
+    !restCallError() ) {
+    <ul>
+      @for (recentPost of getRecentDiscussions(); track recentPost) {
+      <li class="row post-preview">
+        <div class="preview-link">
+          <img
+            class="message-icon"
+            src="img/icon-forums-grey.png"
+            alt="msg.png"
+          />
+          <a [routerLink]="['./forum/topic', recentPost.topic.id]"
+            >{{ recentPost.post.properties?.message }}</a
+          >
+        </div>
+        <p class="sub-text">
+          {{ 'label.in' | transloco }}&nbsp;
+          <span class="topic-title-name"
+            >{{ getTitleOrName(recentPost.topic) }}</span
+          >&nbsp; {{ 'label.by' | transloco }}&nbsp;
+          <cbc-user-card
+            [userId]="$safeNavigationMigration(recentPost.post.properties?.modifier)"
+            [rightSide]="true"
+          ></cbc-user-card
+          >&nbsp; {{ 'label.on' | transloco }}&nbsp; {{
+          $safeNavigationMigration(recentPost.post.properties?.modified) | date:
+          'y MMM d, H:mm' }}
+        </p>
+      </li>
+      }
+    </ul>
+    } @if ( (discussions() === undefined || discussions().length === 0) &&
+    !restCallError() ) {
+    <ul>
+      <li class="row">{{ 'forums.dashlet.empty' | transloco }}</li>
+    </ul>
+    } @if (restCallError()) {
+    <ul>
+      <li class="row">{{ 'forums.dashlet.not.available' | transloco }}</li>
+    </ul>
+    }
+  </div>
+  } @if (discussions() !== undefined && discussions().length > 8) {
+  <footer class="footer">
+    @if (!more) {
+    <a tabindex="0" (click)="more = true" class="footer__button"
+      >{{ 'label.show.more' | transloco }}</a
+    >
+    } @if (more) {
+    <a tabindex="0" (click)="more = false" class="footer__button"
+      >{{ 'label.show.less' | transloco }}</a
+    >
+    }
+  </footer>
+  }
+</section>

@@ -1,0 +1,54 @@
+<h2>{{ 'admin.paste.notifications.page.title' | transloco }}</h2>
+<br />
+<form [formGroup]="pasteNotificationsForm">
+  <div class="field switch">
+    <div class="label longer"
+      >{{ 'admin.paste.notifications.paste.all' | transloco }}</div
+    >
+    <input
+      id="notifyPasteAll"
+      class="cmn-toggle cmn-toggle-round"
+      type="checkbox"
+      formControlName="notifyPasteAll"
+    />
+    <label
+      for="notifyPasteAll"
+      class="nonBlockLabel"
+      aria-label="{{ 'admin.paste.notifications.paste.all' | transloco }}"
+    ></label>
+    <span
+      >{{ (pasteNotificationsForm.value.notifyPasteAll === true ? 'label.yes' :
+      'label.no' ) | transloco }}</span
+    >
+  </div>
+  <div class="field switch">
+    <div class="label longer"
+      >{{ 'admin.paste.notifications.paste' | transloco }}</div
+    >
+    <input
+      id="notifyPaste"
+      class="cmn-toggle cmn-toggle-round"
+      type="checkbox"
+      formControlName="notifyPaste"
+    />
+    <label
+      for="notifyPaste"
+      class="nonBlockLabel"
+      aria-label="{{ 'admin.paste.notifications.paste' | transloco }}"
+    ></label>
+    <span
+      >{{ (pasteNotificationsForm.value.notifyPaste === true ? 'label.yes' :
+      'label.no' ) | transloco }}</span
+    >
+  </div>
+</form>
+@if (!saving()) {
+<div class="buttons-group">
+  <a tabindex="0" class="cta" (click)="save()"
+    >{{ 'label.save' | transloco }}</a
+  >
+  <a tabindex="0" class="button" (click)="cancel()"
+    >{{ 'label.cancel' | transloco }}</a
+  >
+</div>
+}

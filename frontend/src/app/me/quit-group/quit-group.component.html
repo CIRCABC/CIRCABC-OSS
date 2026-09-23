@@ -1,0 +1,16 @@
+<cbc-modal
+  [visible]="show()"
+  [title]="'label.leave.group.confirmation' | transloco"
+  [executing]="processing()"
+  [okLabel]="'label.yes' | transloco"
+  (cancelModal)="cancel()"
+  (ok)="removeMembership()"
+>
+  @if (group()) {
+  <p>
+    {{ 'label.leave.group.question' | transloco }}
+    <br /><br />
+    {{ getGroupLabel() }}
+  </p>
+  }
+</cbc-modal>

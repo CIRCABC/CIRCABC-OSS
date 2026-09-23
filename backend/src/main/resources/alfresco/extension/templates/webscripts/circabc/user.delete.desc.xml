@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Delete User</shortname>
+  <description>Delete a user by ID</description>
+  <url>/circabc/users/{userId}</url>
+  <format default="json" />
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

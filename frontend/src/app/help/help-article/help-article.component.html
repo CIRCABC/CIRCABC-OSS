@@ -1,0 +1,124 @@
+@if (loading()) {
+<cbc-horizontal-loader />
+}
+<div class="help-article-container">
+  @if (category()) {
+  <h1 class="visually-hidden">{{ 'label.help' | transloco }}</h1>
+  <header class="breadcrumb">
+    <aside
+      class="switch-to"
+      aria-label="{{ 'label.category.selector' | transloco }}"
+    >
+      <form [formGroup]="switchCategoryForm">
+        <div class="field">
+          <div class="custom-select select--form">
+            <label for="categorySelect" class="visually-hidden"
+              >{{ 'label.category' | transloco }}</label
+            >
+            <select
+              id="categorySelect"
+              formControlName="categoryId"
+              (change)="refreshAfterSelection()"
+            >
+              @for (category of categories(); track category.id) {
+              <option value="{{ category.id }}"
+                >{{ category.title | cbcI18n }}</option
+              >
+              }
+            </select>
+          </div>
+        </div>
+      </form>
+    </aside>
+
+    <span class="crumb">
+      <a [routerLink]="['/help']" class="home">
+        <img src="img/icon-dashboard-blue.png" alt="Dashboard Icon" />
+        {{ 'label.help' | transloco }}
+      </a>
+      @if (category()) {
+      <img
+        src="img/small-arrow-right.png"
+        class="separator"
+        alt="Arrow Right"
+      />
+      }
+      <a [routerLink]="['../..']"> {{ category()?.title | cbcI18n }} </a>
+      @if (article()) {
+      <img
+        src="img/small-arrow-right.png"
+        class="separator"
+        alt="Arrow Right"
+      />
+      } @if (article()) {
+      <span> {{ article()?.title | cbcI18n }} </span>
+      }
+    </span>
+  </header>
+  }
+  <br class="cleaner" />
+
+  @if (isAdminOrSupport() && !loadingError() && article()) {
+  <header class="actions">
+    <a data-cy="edit-article" tabindex="0" (click)="showEditModal = true"
+      >{{ 'label.edit' | transloco }}</a
+    >
+    <a data-cy="toggle-highlight" tabindex="0" (click)="toggleHighlight()"
+      >{{ (article()?.highlighted ? 'help.article.demote' :
+      'help.article.promote') | transloco }}</a
+    >
+    <a data-cy="delete-article" tabindex="0" (click)="showDeleteModal = true"
+      >{{ 'label.delete' | transloco }}</a
+    >
+  </header>
+  }
+
+  <section class="article-contained">
+    @if (article()) {
+    <aside
+      class="list-articles"
+      aria-label="{{ 'label.article.list' | transloco }}"
+    >
+      <cbc-article-list-select
+        [currentId]="article()?.id"
+        [articles]="articles()"
+      ></cbc-article-list-select>
+    </aside>
+    } @if (article()) {
+    <section class="article">
+      @if (article()?.highlighted) {
+      <img src="img/bookmark.png" class="promoted" alt="Promoted Article" />
+      }
+      <h2>{{ getTitle() }}</h2>
+      <p class="metadata">
+        {{ 'label.last.updated.on' | transloco }} {{ article()?.lastUpdate |
+        date }}
+      </p>
+      <hr />
+      <p class="content-container" [innerHTML]="getContent()"> </p>
+    </section>
+    } @if (loadingError()) {
+    <section class="article">
+      <h2>{{ 'help.error.loading.article' | transloco }}</h2>
+      <hr />
+      <p class="content-container">
+        {{ 'help.error.loading.article.description' | transloco }}
+      </p>
+    </section>
+    }
+  </section>
+</div>
+
+@if (article()) {
+<cbc-delete-help-article
+  [articleId]="article()?.id"
+  [(showModal)]="showDeleteModal"
+  (articleDeleted)="redirectAfterDeletion($event)"
+/>
+} @if (article()) {
+<cbc-add-help-article
+  [articleId]="article()?.id"
+  [(showModal)]="showEditModal"
+  (articleUpdated)="refresh($event)"
+/>
+}

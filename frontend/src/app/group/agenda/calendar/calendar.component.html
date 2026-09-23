@@ -1,0 +1,204 @@
+<div class="flex-calendar main" style="margin-top: 5px">
+  @for (item of calendarDays(); track item) {
+  <div
+    class="day flex-day"
+    [class.day--previous-month]="item.type === 'previousMonth'"
+    [class.day--next-month]="item.type === 'nextMonth'"
+    [class.weekend-day]="isWeekendDay(item)"
+    [class.today]="isToday(item)"
+    (mouseenter)="enableDetailsBox(item.date)"
+    (mouseleave)="disableDetailsBox(item.date)"
+  >
+    <div class="date"
+      >{{ item.date.getDate() }} {{ item.date.getDay() + '' | i18nSelect:
+      dayNames }}</div
+    >
+    @if (checkIfDateAfterToday(item.date)) {
+    <div class="events">
+      @if (item.events.length === 0 && isEveAdmin()) {
+      <a
+        tabindex="0"
+        class="empty-events"
+        (click)="onPopupCreateEventWithCalendarDate(item.date)"
+      >
+        <img src="img/add-plus-grey.png" alt="Add event" />
+      </a>
+      }
+    </div>
+    }
+    <div style="overflow-y: auto; height: 80%">
+      @for (event of item.events; track event.id) {
+      <div class="event-line">
+        @if (event.appointmentType === 'Event') {
+        <span>
+          <img
+            width="10"
+            height="10"
+            src="img/event-155D79.png"
+            alt="Event icon"
+          />
+          @if (isEveAdmin()) {
+          <a
+            tabindex="0"
+            (click)="deleteEvent(event)"
+            title="{{ 'label.delete.appointment' | transloco }}"
+          >
+            <img
+              width="10"
+              height="10"
+              src="img/icon-delete-818181.png"
+              alt="Delete icon"
+            />
+          </a>
+          }
+          <a [routerLink]="[event.id, 'details']">
+            <span style="color: #155d79"
+              >{{ event.startTime }} {{ event.endTime }}</span
+            >
+            <span style="color: black">{{ event.title }}</span>
+          </a>
+        </span>
+        } @if (event.appointmentType === 'Meeting') {
+        <span>
+          <img
+            width="10"
+            height="10"
+            src="img/meeting-155D79.png"
+            alt="Meeting icon"
+          />
+          @if (isEveAdmin()) {
+          <a
+            tabindex="0"
+            (click)="deleteEvent(event)"
+            title="{{ 'label.delete.appointment' | transloco }}"
+          >
+            <img
+              width="10"
+              height="10"
+              src="img/icon-delete-818181.png"
+              alt="Delete icon"
+            />
+          </a>
+          }
+          <a [routerLink]="[event.id, 'details']">
+            <span style="color: #155d79"
+              >{{ event.startTime }} {{ event.endTime }}</span
+            >
+            <span style="color: black">{{ event.title }}</span>
+          </a>
+        </span>
+        }
+      </div>
+      }
+    </div>
+    <!-- Hover popup with meeting details -->
+    @if ( !( item.date.getDay() === 0 || item.date.getDay() === 5 ||
+    item.date.getDay() === 6 ) && item.showDetailsBox ) {
+    <div id="detailsPopup" class="popup popup--calendar">
+      <div class="events-of-the-day">
+        <div class="title">{{ item.date | date }}</div>
+        <ul class="events">
+          @for (event of item.events; track event.id) {
+          <li class="event">
+            <div>
+              <span class="hour">{{ event.startTime }}</span>
+              <a [routerLink]="[event.id, 'details']" class="event-name"
+                >{{ event.title }}</a
+              >
+            </div>
+            <div class="details">
+              <span class="abstract"
+                >{{ event.eventAbstract === '' ? ('label.na' | transloco) :
+                event.eventAbstract }}</span
+              >
+              <br />
+              <br />
+              <span class="duration">{{ event.endTime }}</span>
+              <span class="location"
+                >{{ event.location === '' ? ('label.na' | transloco) :
+                event.location }}</span
+              >
+              @if (getRepetition(event.occurrenceRate).length === 1) {
+              <span class="repetition"
+                >{{ 'label.' + getRepetition(event.occurrenceRate)[0] |
+                transloco }}</span
+              >
+              } @if (getRepetition(event.occurrenceRate).length === 3) {
+              <span class="repetition"
+                >{{ 'update-event.repeats.legend.when' | transloco : {
+                timesOccurrence: 'label.' +
+                getRepetition(event.occurrenceRate)[1] | transloco, times:
+                getRepetition(event.occurrenceRate)[2] } }}</span
+              >
+              } @if (getRepetition(event.occurrenceRate).length === 4) {
+              <span class="repetition"
+                >{{ 'update-event.repeats.legend.every' | transloco : {
+                everyTime: getRepetition(event.occurrenceRate)[2],
+                everyTimesOccurence: getRepetition(event.occurrenceRate)[1] |
+                transloco, times: getRepetition(event.occurrenceRate)[3] }
+                }}</span
+              >
+              }
+            </div>
+          </li>
+          }
+        </ul>
+      </div>
+    </div>
+    } @if ( (item.date.getDay() === 0 || item.date.getDay() === 5 ||
+    item.date.getDay() === 6) && item.showDetailsBox ) {
+    <div class="left-popup left-popup--calendar">
+      <div class="events-of-the-day">
+        <div class="title">{{ item.date | date }}</div>
+        <ul class="events">
+          @for (event of item.events; track event.id) {
+          <li class="event">
+            <div>
+              <span class="hour">{{ event.startTime }}</span>
+              <a [routerLink]="[event.id, 'details']" class="event-name"
+                >{{ event.title }}</a
+              >
+            </div>
+            <div class="details">
+              <span class="abstract"
+                >{{ event.eventAbstract === '' ? ('label.na' | transloco) :
+                event.eventAbstract }}</span
+              >
+              <br />
+              <br />
+              <span class="duration">{{ event.endTime }}</span>
+              <span class="location"
+                >{{ event.location === '' ? ('label.na' | transloco) :
+                event.location }}</span
+              >
+              @if (getRepetition(event.occurrenceRate).length === 1) {
+              <span class="repetition"
+                >{{ 'label.' + getRepetition(event.occurrenceRate)[0] |
+                transloco }}</span
+              >
+              } @if (getRepetition(event.occurrenceRate).length === 3) {
+              <span class="repetition"
+                >{{ 'update-event.repeats.legend.when' | transloco : {
+                timesOccurrence: 'label.' +
+                getRepetition(event.occurrenceRate)[1] | transloco, times:
+                getRepetition(event.occurrenceRate)[2] } }}</span
+              >
+              } @if (getRepetition(event.occurrenceRate).length === 4) {
+              <span class="repetition"
+                >{{ 'update-event.repeats.legend.every' | transloco : {
+                everyTime: getRepetition(event.occurrenceRate)[2],
+                everyTimesOccurence: getRepetition(event.occurrenceRate)[1] |
+                transloco, times: getRepetition(event.occurrenceRate)[3] }
+                }}</span
+              >
+              }
+            </div>
+          </li>
+          }
+        </ul>
+      </div>
+    </div>
+    }
+  </div>
+  }
+</div>

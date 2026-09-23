@@ -1,0 +1,113 @@
+@use '@angular/material' as mat;
+
+html {
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$green-palette,
+        tertiary: mat.$green-palette,
+        theme-type: light,
+      ),
+      typography: (
+        plain-family: (Geist, system-ui, -apple-system, sans-serif),
+        brand-family: (Geist, system-ui, -apple-system, sans-serif),
+        bold-weight: 700,
+        medium-weight: 500,
+        regular-weight: 400,
+      ),
+      density: 0,
+    )
+  );
+}
+
+:root {
+  @include mat.datepicker-overrides(
+    (
+      calendar-date-selected-state-background-color: #2e7d53,
+      calendar-date-selected-state-text-color: #fff,
+      calendar-date-today-selected-state-outline-color: #2e7d53,
+      calendar-date-today-outline-color: #2e7d53,
+      calendar-date-focus-state-background-color: #e8f5ee,
+      calendar-date-hover-state-background-color: #e8f5ee,
+      calendar-date-in-range-state-background-color: #e8f5ee,
+      calendar-date-in-comparison-range-state-background-color: #e8f5ee,
+      toggle-active-state-icon-color: #2e7d53,
+      toggle-icon-color: #2e7d53,
+      calendar-header-text-color: #1a3a50,
+      calendar-period-button-text-color: #1a3a50,
+      calendar-navigation-button-icon-color: #2e7d53,
+      calendar-container-background-color: #fff,
+      calendar-container-text-color: #1a3a50,
+    )
+  );
+  @include mat.form-field-overrides(
+    (
+      filled-container-color: #f9fafb,
+      filled-focus-active-indicator-color: #2e7d53,
+      filled-focus-label-text-color: #2e7d53,
+      filled-caret-color: #2e7d53,
+      outlined-outline-color: #dde3e8,
+      outlined-focus-outline-color: #2e7d53,
+      outlined-hover-outline-color: #34915f,
+    )
+  );
+  @include mat.slider-overrides(
+    (
+      active-track-color: #2e7d53,
+      active-track-shape: #2e7d53,
+      handle-color: #2e7d53,
+      hover-handle-color: #34915f,
+      ripple-color: #2e7d53,
+      focus-handle-color: #1b6341,
+    )
+  );
+  @include mat.slide-toggle-overrides(
+    (
+      selected-handle-color: #2e7d53,
+      selected-track-color: #a8e6c3,
+      selected-focus-handle-color: #1b6341,
+      selected-hover-handle-color: #34915f,
+      selected-pressed-handle-color: #1b6341,
+      selected-focus-track-color: #a8e6c3,
+      selected-hover-track-color: #a8e6c3,
+      selected-pressed-track-color: #a8e6c3,
+      selected-focus-state-layer-color: #2e7d53,
+      selected-hover-state-layer-color: #2e7d53,
+      selected-pressed-state-layer-color: #2e7d53,
+    )
+  );
+  @include mat.radio-overrides(
+    (
+      ripple-color: #2e7d53,
+      checked-ripple-color: #2e7d53,
+      selected-icon-color: #2e7d53,
+      selected-focus-icon-color: #1b6341,
+      selected-hover-icon-color: #34915f,
+    )
+  );
+  @include mat.tabs-overrides(
+    (
+      active-focus-indicator-color: #2e7d53,
+      active-focus-label-text-color: #2e7d53,
+      label-text-size: 14px,
+    )
+  );
+  @include mat.expansion-overrides(
+    (
+      header-text-color: #1a3a50,
+      container-text-color: #1a3a50,
+      container-background-color: #fff,
+      header-indicator-color: #2e7d53,
+      header-focus-state-layer-color: #e8f5ee,
+      header-hover-state-layer-color: #e8f5ee,
+    )
+  );
+  @include mat.select-overrides(
+    (
+      enabled-trigger-text-color: #1a3a50,
+      enabled-arrow-color: #2e7d53,
+      focused-arrow-color: #1b6341,
+      panel-background-color: #fff,
+    )
+  );
+}

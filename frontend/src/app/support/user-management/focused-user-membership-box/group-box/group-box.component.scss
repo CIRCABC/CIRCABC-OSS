@@ -1,0 +1,24 @@
+@use 'css/global/variables-mixins-keyframes';
+
+.group-box {
+  min-height: 50px;
+  padding: 10px;
+  display: grid;
+  column-gap: 10px;
+  row-gap: 10px;
+  grid-template-columns: 33% 63%;
+  font-size: 12px;
+  background-color: #fcfcfc;
+  border-radius: variables-mixins-keyframes.$radius-md;
+  margin-bottom: 10px;
+  margin-right: 20px;
+
+  .profile {
+    border-right: 1px solid #ccc;
+  }
+
+  .actions {
+    text-align: right;
+    grid-column: 1 / span 2;
+  }
+}

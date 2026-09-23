@@ -1,0 +1,261 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!--+
+    |     Copyright European Community 2006 - Licensed under the EUPL V.1.0
+    |
+    |          http://ec.europa.eu/idabc/en/document/6523
+    |
+    +-->
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN'
+    'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+    <!-- MyBatis config for Alfresco (using common datasource) -->
+    <bean
+        id="circabcReportingSqlSessionFactory"
+        class="org.alfresco.ibatis.HierarchicalSqlSessionFactoryBean"
+    >
+        <property name="resourceLoader" ref="dialectResourceLoader" />
+        <property name="dataSource" ref="dataSource" />
+        <property name="configLocation">
+            <!-- prettier-ignore-start -->
+            <value>classpath:alfresco/extension/circabc-ibatis-reporting-SqlMapConfig.xml</value>
+            <!-- prettier-ignore-end -->
+        </property>
+    </bean>
+
+    <bean
+        id="circabcSqlSessionFactory"
+        class="org.alfresco.ibatis.HierarchicalSqlSessionFactoryBean"
+    >
+        <property name="resourceLoader" ref="dialectResourceLoader" />
+        <property name="dataSource" ref="dataSource" />
+        <property name="configLocation">
+            <!-- prettier-ignore-start -->
+            <value>classpath:alfresco/extension/circabc-ibatis-SqlMapConfig.xml</value>
+            <!-- prettier-ignore-end -->
+        </property>
+    </bean>
+
+    <!-- MyBatis session template declarations -->
+
+    <bean
+        id="dynamicAuthoritySqlSessionTemplate"
+        class="org.mybatis.spring.SqlSessionTemplate"
+    >
+        <constructor-arg index="0" ref="circabcSqlSessionFactory" />
+    </bean>
+
+    <bean
+        id="autoUploadConfigurationSqlSessionTemplate"
+        class="org.mybatis.spring.SqlSessionTemplate"
+    >
+        <constructor-arg index="0" ref="circabcSqlSessionFactory" />
+    </bean>
+
+    <bean
+        id="lockDaoSqlSessionTemplate"
+        class="org.mybatis.spring.SqlSessionTemplate"
+    >
+        <constructor-arg index="0" ref="circabcSqlSessionFactory" />
+    </bean>
+
+    <bean
+        id="logDaoSqlSessionTemplate"
+        class="org.mybatis.spring.SqlSessionTemplate"
+    >
+        <constructor-arg index="0" ref="circabcSqlSessionFactory" />
+    </bean>
+
+    <bean
+        id="reportDaoSqlSessionTemplate"
+        class="org.mybatis.spring.SqlSessionTemplate"
+    >
+        <constructor-arg index="0" ref="circabcReportingSqlSessionFactory" />
+    </bean>
+
+    <bean
+        id="circabcDaoSqlSessionTemplate"
+        class="org.mybatis.spring.SqlSessionTemplate"
+    >
+        <constructor-arg index="0" ref="circabcReportingSqlSessionFactory" />
+    </bean>
+
+    <bean
+        id="ecordaDaoSqlSessionTemplate"
+        class="org.mybatis.spring.SqlSessionTemplate"
+    >
+        <constructor-arg index="0" ref="circabcSqlSessionFactory" />
+    </bean>
+
+    <bean
+        id="translationDaoSqlSessionTemplate"
+        class="org.mybatis.spring.SqlSessionTemplate"
+    >
+        <constructor-arg index="0" ref="circabcSqlSessionFactory" />
+    </bean>
+
+    <bean
+        id="appMessageDaoSqlSessionTemplate"
+        class="org.mybatis.spring.SqlSessionTemplate"
+    >
+        <constructor-arg index="0" ref="circabcSqlSessionFactory" />
+    </bean>
+
+    <bean
+        id="groupRequestsDaoSqlSessionTemplate"
+        class="org.mybatis.spring.SqlSessionTemplate"
+    >
+        <constructor-arg index="0" ref="circabcSqlSessionFactory" />
+    </bean>
+
+    <bean
+        id="historyDaoSqlSessionTemplate"
+        class="org.mybatis.spring.SqlSessionTemplate"
+    >
+        <constructor-arg index="0" ref="circabcSqlSessionFactory" />
+    </bean>
+
+    <bean
+        id="igStatisticsDaoServiceSqlSessionTemplate"
+        class="org.mybatis.spring.SqlSessionTemplate"
+    >
+        <constructor-arg index="0" ref="circabcSqlSessionFactory" />
+    </bean>
+
+    <!-- MyBatis usage bean declarations -->
+    <bean
+        id="autoUploadConfigurationDaoService"
+        class="eu.europa.ec.digit.circabc.rest.service.auto.upload.AutoUploadConfigurationServiceImpl"
+    >
+        <property
+            name="sqlSessionTemplate"
+            ref="autoUploadConfigurationSqlSessionTemplate"
+        />
+    </bean>
+
+    <bean
+        id="lockDaoService"
+        class="eu.europa.ec.digit.circabc.rest.service.lock.IBatisLockDaoServiceImpl"
+    >
+        <property name="sqlSessionTemplate" ref="lockDaoSqlSessionTemplate" />
+    </bean>
+
+    <bean
+        id="logDaoService"
+        class="eu.europa.ec.digit.circabc.rest.service.log.IBatisLogDaoServiceImpl"
+    >
+        <property name="sqlSessionTemplate" ref="logDaoSqlSessionTemplate" />
+    </bean>
+
+    <bean
+        id="LogDaoService"
+        class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="target" ref="logDaoService" />
+        <property name="transactionAttributes">
+            <props>
+                <prop key="insertActivity">PROPAGATION_REQUIRED</prop>
+                <prop key="log">PROPAGATION_REQUIRED</prop>
+                <prop key="*">PROPAGATION_REQUIRED,readOnly</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean
+        id="reportDaoService"
+        class="eu.europa.ec.digit.circabc.rest.service.report.ReportDaoServiceImpl"
+    >
+        <property name="sqlSessionTemplate" ref="reportDaoSqlSessionTemplate" />
+    </bean>
+
+    <bean
+        id="circabcDaoService"
+        class="eu.europa.ec.digit.circabc.rest.service.app.CircabcDaoServiceImpl"
+        init-method="init"
+    >
+        <property name="hibernateDialect" value="${hibernate.dialect}" />
+        <property
+            name="sqlSessionTemplate"
+            ref="circabcDaoSqlSessionTemplate"
+        />
+    </bean>
+
+    <bean
+        id="ecordaDaoServiceImpl"
+        class="eu.europa.ec.digit.circabc.rest.service.iam.EcordaDaoServiceImpl"
+    >
+        <property name="sqlSessionTemplate" ref="ecordaDaoSqlSessionTemplate" />
+    </bean>
+
+    <bean
+        id="translationDaoService"
+        class="eu.europa.ec.digit.circabc.rest.service.translation.TranslationDaoServiceImpl"
+    >
+        <property
+            name="sqlSessionTemplate"
+            ref="translationDaoSqlSessionTemplate"
+        />
+    </bean>
+
+    <bean
+        id="aresBridgeDaoService"
+        class="eu.europa.ec.digit.circabc.rest.service.ares.AresBridgeDaoServiceImpl"
+    >
+        <property
+            name="sqlSessionTemplate"
+            ref="translationDaoSqlSessionTemplate"
+        />
+    </bean>
+
+    <bean
+        id="appMessageDaoService"
+        class="eu.europa.ec.digit.circabc.rest.service.app.message.AppMessageDaoServiceImpl"
+    >
+        <property
+            name="sqlSessionTemplate"
+            ref="appMessageDaoSqlSessionTemplate"
+        />
+    </bean>
+
+    <bean
+        id="groupRequestsDaoService"
+        class="eu.europa.ec.digit.circabc.rest.service.group.request.GroupRequestsDaoServiceImpl"
+    >
+        <property
+            name="sqlSessionTemplate"
+            ref="groupRequestsDaoSqlSessionTemplate"
+        />
+    </bean>
+
+    <bean
+        id="historyDaoService"
+        class="eu.europa.ec.digit.circabc.rest.service.history.HistoryDaoServiceImpl"
+    >
+        <property
+            name="sqlSessionTemplate"
+            ref="historyDaoSqlSessionTemplate"
+        />
+    </bean>
+
+    <bean
+        id="circabcDynamicAuthorityDAO"
+        class="eu.europa.ec.digit.circabc.rest.dynamic.authority.ibatis.CircabcDynamicAuthorityDAOImpl"
+    >
+        <property
+            name="sqlSessionTemplate"
+            ref="dynamicAuthoritySqlSessionTemplate"
+        />
+    </bean>
+
+    <bean
+        id="igStatisticsDaoService"
+        class="eu.europa.ec.digit.circabc.rest.service.statistic.ig.IgStatisticsDaoServiceImpl"
+    >
+        <property
+            name="sqlSessionTemplate"
+            ref="igStatisticsDaoServiceSqlSessionTemplate"
+        />
+    </bean>
+</beans>

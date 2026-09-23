@@ -1,0 +1,419 @@
+@if (perms() !== undefined) {
+<section class="fix-margin-responsive">
+  @if (loading()) {
+  <cbc-horizontal-loader></cbc-horizontal-loader>
+  }
+
+  <div class="wrap page-container">
+    <div class="page-header">
+      <span
+        class="page-header__title"
+        [innerHtml]="'permissions.manage.page.title' | transloco"
+      ></span>
+      <div class="page-header__actions">
+        <cbc-reponsive-sub-menu>
+          @if (from() === 'library') {
+          <a
+            tabindex="0"
+            (click)="goBackToFolder()"
+            class="page-header__backlink"
+            >{{ 'label.back' | transloco }}</a
+          >
+          } @if (from() === 'library') {
+          <a tabindex="0" (click)="goBack()"
+            >{{ 'label.details' | transloco }}</a
+          >
+          } @if (from() === 'forum' || from() === 'topic') {
+          <a tabindex="0" (click)="goBack()" class="page-header__backlink"
+            >{{ 'label.back' | transloco }}</a
+          >
+          }
+          <a
+            class="selected"
+            [routerLink]="['.']"
+            [queryParams]="{ from: from() }"
+            >{{ 'label.permissions' | transloco }}</a
+          >
+          <a
+            [routerLink]="['../../notification-status', getNodeId()]"
+            [queryParams]="{ from: from() }"
+            *cbcIfRoleGE="[currentNode(), 'LibAdmin', []]"
+            >{{ 'label.notifications' | transloco }}</a
+          >
+        </cbc-reponsive-sub-menu>
+
+        @if (!isFolder()) {
+        <a
+          tabindex="0"
+          class="cta cta--plus"
+          [class.disabled]="shouldDisablePermissionSetting()"
+          (click)="showAddPermissionModal()"
+          title="{{
+            shouldDisablePermissionSetting()
+              ? ('members.no.permission' | transloco)
+              : ''
+          }}"
+          >{{ 'permissions.add.configuration' | transloco }}</a
+        >
+        } @if (isFolder()) {
+        <cbc-add-permission-dropdown
+          [disabled]="shouldDisablePermissionSetting()"
+          (launchCreate)="addPermission($event)"
+          title="{{
+            shouldDisablePermissionSetting()
+              ? ('members.no.permission' | transloco)
+              : ''
+          }}"
+        ></cbc-add-permission-dropdown>
+        }
+      </div>
+    </div>
+
+    @if (perms()) {
+    <section>
+      <div class="main switch-container">
+        <h3>
+          {{ 'label.permissions.on' | transloco }}: @if (!isFolder()) {
+          <span
+            >{{(isForumNewsgroupsName(currentNode().name!,currentNode().type!))?
+            ('label.forums' | transloco) : currentNode().name }}</span
+          >
+          } @if (isFolder()) {
+          <a
+            [routerLink]="['../../library/', currentNode().id]"
+            [queryParams]="{
+           p: '1',
+           n: '10',
+           sort: 'modified_DESC'
+         }"
+            style="color: #003355"
+            >{{currentNode().name}}</a
+          >
+          }
+        </h3>
+        <div class="field switch inheritance-box">
+          <div class="label">
+            {{ 'label.inherit.permissions' | transloco }}
+            <cbc-hint
+              [text]="'permissions.hint.text' | transloco"
+              [floatEnable]="false"
+              style="margin-left: 5px"
+            ></cbc-hint>
+          </div>
+          <!-- NOSONAR: Native checkbox is keyboard accessible -->
+          <input
+            id="cmn-toggle-1"
+            class="cmn-toggle cmn-toggle-round"
+            type="checkbox"
+            [checked]="perms().inherited"
+            [disabled]="processing"
+            (click)="toggleInheritance()"
+            (keydown.enter)="toggleInheritance()"
+          />
+          <label
+            for="cmn-toggle-1"
+            class="nonBlockLabel"
+            data-cy="toggle-inheritance"
+            aria-label="{{ 'label.cmn.toggle.1' | transloco }}"
+          ></label>
+          <span id="changePerm{{ perms().inherited ? 'Yes' : 'No' }}"
+            >{{ (perms().inherited ? 'label.yes' : 'label.no') | transloco
+            }}</span
+          >
+        </div>
+        @if (processing) {
+        <div>
+          <span
+            >{{ 'label.updating' | transloco }}...
+            <cbc-spinner></cbc-spinner>
+          </span>
+        </div>
+        }
+      </div>
+
+      <div class="grid-container">
+        <div class="box">
+          <header class="header">
+            <span class="title">{{ 'label.profiles' | transloco }}</span>
+            @if (deletingProfilePermissions) {
+            <span class="div-spinner">
+              <cbc-spinner></cbc-spinner>
+            </span>
+            }
+          </header>
+          <div class="table-container permission-container">
+            <table class="main">
+              <thead>
+                <tr>
+                  <th><span class="visually-hidden">Actions</span></th>
+                  <th><span class="visually-hidden">Select</span></th>
+                  <th class="header-profile">{{ 'label.name' | transloco }}</th>
+                  <th class="header-profile">
+                    {{ 'label.permission' | transloco }}
+                  </th>
+                  <th class="header-profile"></th>
+                </tr>
+              </thead>
+
+              <tbody>
+                @if (perms().permissions.profiles; as profilesList) {
+                <tr class="row" [class.empty-row]="profilesList.length === 0">
+                  @if (profilesList.length === 0) {
+                  <td class="cell-left-border"></td>
+                  } @if (profilesList.length === 0) {
+                  <td class="cell-checkbox"></td>
+                  } @if (profilesList.length === 0) {
+                  <td colspan="3">
+                    {{ 'permissions.empty.configuration' | transloco }}
+                  </td>
+                  }
+                </tr>
+                } @for (groupName of getMapKeys(profilePermissionMap()); track
+                groupName) {
+                <tr class="row">
+                  <td class="cell-left-border"></td>
+                  <td class="cell-checkbox"></td>
+                  <td style="text-transform: capitalize">
+                    {{ getProfileTitle(groupName) | cbcI18n }}
+                  </td>
+                  <td>
+                    @for (perm of splitProfilePermissions(groupName); track
+                    perm) {
+                    <span
+                      >{{ 'permissions.' + perm | transloco }} @if (
+                      splitProfilePermissions(groupName).length > 1 ) {
+                      <br />
+                      }</span
+                    >
+                    }
+                  </td>
+                  <td>
+                    @if (hasProfilePermissionDeletable(groupName)) {
+                    <a
+                      tabindex="0"
+                      (click)="prepareDeletePermissionEntry(groupName, 'group')"
+                    >
+                      <img
+                        src="img/icon-delete-818181.png"
+                        width="20"
+                        alt="{{ 'label.delete' | transloco }}"
+                        title="{{ 'label.delete' | transloco }}"
+                      />
+                    </a>
+                    }
+                  </td>
+                </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          @if (libAdmin().length > 0) {
+          <div class="box">
+            <header class="header">
+              <span class="title"
+                >{{ 'label.profiles.permanent' | transloco }}</span
+              >
+            </header>
+            <div class="table-container permission-container">
+              <table class="main">
+                <thead>
+                  <tr>
+                    <th><span class="visually-hidden">Actions</span></th>
+                    <th><span class="visually-hidden">Select</span></th>
+                    <th class="header-profile">
+                      {{ 'label.name' | transloco }}
+                    </th>
+                    <th class="header-profile">
+                      {{ 'label.permission' | transloco }}
+                    </th>
+                    <th class="header-profile"></th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr></tr>
+                  @for (lib of libAdmin(); track lib) {
+                  <tr class="row">
+                    <td class="cell-left-border"></td>
+                    <td class="cell-checkbox"></td>
+                    <td>{{lib}}</td>
+                    <td>{{ 'permissions.LibAdmin' | transloco }}</td>
+                  </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+          }
+        </div>
+
+        <div class="box">
+          <div id="usersPermissionTableId">
+            <header class="header">
+              <span class="title">{{ 'label.users' | transloco }}</span>
+              @if (deletingUserPermissions) {
+              <span class="div-spinner">
+                <cbc-spinner></cbc-spinner>
+              </span>
+              }
+            </header>
+            <div class="table-container permission-container">
+              <table class="main">
+                <thead>
+                  <tr>
+                    <th><span class="visually-hidden">Actions</span></th>
+                    <th><span class="visually-hidden">Select</span></th>
+                    <th class="header-profile">
+                      {{ 'label.name' | transloco }}
+                    </th>
+                    <th class="header-profile">
+                      {{ 'label.permission' | transloco }}
+                    </th>
+                    <th class="header-profile"></th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr></tr>
+                  @for (userid of getMapKeys(userPermissionMap()); track userid)
+                  {
+                  <tr class="row">
+                    <td class="cell-left-border"></td>
+                    <td class="cell-checkbox"></td>
+                    <td>{{ getDisplayUser(userid) }}</td>
+                    <td>
+                      @for (perm of splitUserPermissions(userid); track perm) {
+                      <span
+                        >{{ 'permissions.' + perm | transloco }} @if (
+                        splitUserPermissions(userid).length > 1 ) {
+                        <br />
+                        }</span
+                      >
+                      }
+                    </td>
+                    <td>
+                      @if (hasUserPermissionDeletable(userid)) {
+                      <a
+                        tabindex="0"
+                        (click)="prepareDeletePermissionEntry(userid, 'user')"
+                      >
+                        <img
+                          src="img/icon-delete-818181.png"
+                          width="20"
+                          alt="{{ 'label.delete' | transloco }}"
+                          title="{{ 'label.delete' | transloco }}"
+                        />
+                      </a>
+                      }
+                    </td>
+                  </tr>
+                  }
+
+                  <tr class="row">
+                    <td class="cell-left-border"></td>
+                    <td class="cell-checkbox"></td>
+                    <td>{{ownerName()}} ({{ 'label.owner' | transloco }})</td>
+                    <td>{{ 'permissions.LibAdmin' | transloco }}</td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          @if (isFolder()) {
+          <div id="igShareTableId">
+            <header class="header">
+              <span class="title"
+                >{{ 'label.interest.groups' | transloco }}</span
+              >
+            </header>
+            <div class="table-container permission-container">
+              <table class="main">
+                <thead>
+                  <tr>
+                    <th><span class="visually-hidden">Actions</span></th>
+                    <th><span class="visually-hidden">Select</span></th>
+                    <th class="header-profile">
+                      {{ 'label.name' | transloco }}
+                    </th>
+                    <th class="header-profile">
+                      {{ 'label.permission' | transloco }}
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  @if (!hasShares()) {
+                  <tr class="row" [class.empty-row]="!hasShares()">
+                    <td class="cell-checkbox"></td>
+                    <td colspan="3">
+                      {{ 'spaces.sharing.display.none' | transloco }}
+                    </td>
+                  </tr>
+                  }
+
+                  <!-- this row is added to start with blue/gray color.
+                  It's defined in the CSS and it interferes with the @if above -->
+                  <tr class="row"></tr>
+
+                  @for (share of shares(); track share) {
+                  <tr class="row">
+                    <td class="cell-left-border"></td>
+                    <td class="cell-checkbox"></td>
+                    <td class="cell-file-name" style="max-width: 400px">
+                      {{ share.igName }}
+                      <div class="actions" style="width: 160px">
+                        <span>
+                          <a tabindex="0" (click)="editSharePermission(share)"
+                            >{{ 'label.edit' | transloco }}</a
+                          >
+                        </span>
+                        <span>
+                          <cbc-inline-delete
+                            (deletionConfirmed)="removeShare(share)"
+                          ></cbc-inline-delete>
+                        </span>
+                      </div>
+                    </td>
+                    <td>{{ 'permissions.' + share.permission | transloco }}</td>
+                  </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+    </section>
+    }
+  </div>
+
+  @if (currentNode()) {
+  <cbc-add-permissions
+    [inherited]="perms().inherited"
+    [showModal]="showAddModal"
+    [node]="currentNode()"
+    [ig]="currentIgId()"
+    (finished)="addPermissionFinished($event)"
+  ></cbc-add-permissions>
+  } @if (isFolder()) {
+  <cbc-share-space
+    [showModal]="showShareSpaceModal"
+    [spaceId]="nodeId()"
+    [igId]="igId"
+    [currentPermission]="currentPermission"
+    (modalHide)="refreshShares($event)"
+  ></cbc-share-space>
+  }
+  <cbc-modal-delete
+    [title]="'permissions.delete'"
+    [text]="'permissions.delete.text'"
+    [showModal]="showModalDelete"
+    (deletionConfirmed)="deletePreparedPermissionEntry()"
+    (deletionCanceled)="cancelPreparedPermissionEntry()"
+  ></cbc-modal-delete>
+</section>
+}

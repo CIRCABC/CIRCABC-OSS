@@ -1,0 +1,32 @@
+.listToBeUploaded {
+  max-height: 250px;
+  overflow: auto;
+  margin-top: 15px;
+  margin-bottom: 15px;
+
+  ul {
+    li {
+      font-size: 13px;
+      color: #777;
+      display: block;
+    }
+  }
+}
+
+.drop-zone:hover {
+  border-color: yellowgreen;
+}
+
+.progressUploadBar {
+  width: 100%;
+}
+
+.vertical-align {
+  max-height: 350px;
+  overflow: auto;
+}
+
+.vertical-wrapper {
+  max-height: 400px;
+  overflow: auto;
+}

@@ -1,0 +1,225 @@
+@use 'css/global/variables-mixins-keyframes';
+
+input {
+  width: 100%;
+  margin: 0;
+}
+
+.search-bar-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  form {
+    flex: 1 1 400px;
+    max-width: 400px;
+
+    .search-bar {
+      border: 1px solid #fff;
+      background-color: #1a3d5e;
+      background-image: url(img/icon-search-white.svg);
+      background-repeat: no-repeat;
+      background-size: 20px;
+      background-position: 3% center;
+      border-radius: variables-mixins-keyframes.$radius-sm;
+      color: #fff;
+      font-family: inherit;
+      font-size: 12px;
+      padding-left: 35px;
+      width: 100%;
+    }
+
+    ::placeholder {
+      opacity: 0.7;
+      color: #fff;
+    }
+
+    .search-bar:focus {
+      background-color: white;
+      background-image: url(img/icon-search-blue.svg);
+      background-repeat: no-repeat;
+      background-size: 20px;
+      background-position: 3% center;
+      outline: none;
+      color: #035;
+    }
+  }
+}
+
+.panel-result-box {
+  display: flex;
+  justify-content: center;
+
+  .panel-result {
+    height: 48px;
+    padding: 0;
+  }
+
+  .search-help-results {
+    display: flex;
+    justify-content: space-between;
+
+    div {
+      font-size: 13px;
+
+      h2 {
+        text-align: center;
+        text-transform: uppercase;
+        color: var(--theme-green);
+      }
+    }
+
+    .links-list {
+      .alink {
+        display: inline-block;
+        margin-bottom: 10px;
+
+        &::before {
+          content: '';
+          width: 5px;
+          height: 7px;
+          display: inline-block;
+          margin-right: 15px;
+        }
+      }
+
+      .alink:hover {
+        &::before {
+          background-image: url(img/small-arrow-right.png);
+          animation-name: link-icon-move;
+          animation-duration: 1s;
+          animation-iteration-count: infinite;
+          animation-timing-function: ease-out;
+        }
+      }
+    }
+
+    .article-list {
+      ul {
+        li {
+          background-color: #fff;
+          border-radius: variables-mixins-keyframes.$radius-sm;
+          box-shadow: 0 3px 5px 0 rgb(160 159 159 / 0.432);
+          padding: 25px;
+          margin: 10px 0;
+
+          a {
+            display: inline-block;
+            width: 100%;
+
+            .metadata {
+              color: var(--theme-input-text, #757575);
+              padding: 10px 10px 0;
+              margin: 0;
+            }
+          }
+        }
+      }
+    }
+
+    .categories-list {
+      color: var(--theme-green);
+
+      ul li {
+        font-size: 13px;
+
+        a {
+          .number-article {
+            float: right;
+            color: var(--theme-input-text, #595959);
+
+            img {
+              vertical-align: middle;
+              margin-right: 10px;
+            }
+          }
+
+          border-radius: variables-mixins-keyframes.$radius-md;
+          padding: 20px;
+          margin: 10px 0;
+          display: inline-block;
+          width: 100%;
+
+          &:hover {
+            background-color: var(--theme-green-subtle, #f5f5f5);
+          }
+        }
+      }
+    }
+  }
+}
+
+.resultsBox {
+  color: var(--theme-input-text, #595959);
+
+  .no-result,
+  .searching-spinner {
+    margin-top: 18px;
+  }
+
+  .reset-button {
+    float: right;
+  }
+
+  .item--modified {
+    font-style: italic;
+  }
+}
+
+h2 {
+  margin-bottom: 0;
+}
+
+.icon {
+  width: 15px;
+  margin-bottom: -4px;
+}
+
+mat-expansion-panel {
+  z-index: variables-mixins-keyframes.$z-dropdown;
+  max-width: 1200px;
+}
+
+mat-card-content {
+  place-self: center;
+}
+
+::ng-deep .mat-expansion-panel-body {
+  padding: 0 10px;
+}
+
+.mat-mdc-card {
+  flex: 1;
+  height: 0;
+}
+
+.mat-mdc-card-content {
+  padding: 0;
+}
+
+.lineResult:nth-child(even) {
+  background-color: var(--theme-green-subtle, #e8f5ee);
+}
+
+.lineResult {
+  display: flex;
+}
+
+.columnEllipsis {
+  flex: 3;
+  white-space: nowrap;
+}
+
+.column {
+  flex: 1;
+  white-space: nowrap;
+}
+
+.expiredTitle {
+  background-color: #c75000;
+  color: #fff;
+}
+
+.expiredAlert {
+  color: #ff6c0d;
+}

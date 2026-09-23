@@ -1,0 +1,48 @@
+@use 'css/global/variables-mixins-keyframes';
+
+:host {
+  font-size: 13px;
+  padding: 25px;
+
+  ul {
+    border-radius: variables-mixins-keyframes.$radius-sm;
+
+    li {
+      padding: 25px;
+
+      a {
+        display: inline-block;
+        width: 100%;
+        color: #035;
+
+        .metadata {
+          color: #757575;
+          padding: 10px 10px 0;
+          margin: 0;
+        }
+      }
+
+      &.selected {
+        border-left: 4px solid #2e7d53;
+        background-color: #fff;
+        border-radius: variables-mixins-keyframes.$radius-sm;
+        box-shadow: 0 3px 5px 0 rgb(194 194 194 / 0.432);
+
+        a {
+          font-weight: bold;
+        }
+      }
+
+      &:hover {
+        border-left: 4px solid #00548b;
+        background-color: rgb(255 255 255 / 0.521);
+        border-radius: variables-mixins-keyframes.$radius-sm;
+      }
+    }
+  }
+}
+
+h2 {
+  color: #035;
+  text-transform: uppercase;
+}

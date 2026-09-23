@@ -1,0 +1,79 @@
+<article class="timeline">
+  @if (informationEntries.length === 0 && libraryEntries.length === 0) {
+  <section class="box box--day">
+    <header class="header">
+      <span class="title">{{ 'label.whats.new' | transloco }}</span>
+    </header>
+
+    <div class="main">
+      <section class="seen-content">
+        {{ 'timeline.empty-group' | transloco }}
+      </section>
+    </div>
+  </section>
+  } @if (informationEntries.length > 0 || libraryEntries.length > 0) {
+  <section class="box box--day">
+    <header class="header">
+      <span class="title">{{ 'label.whats.new' | transloco }}</span>
+    </header>
+    <div class="main">
+      <section class="not-seen-content">
+        @if (libraryEntries.length > 0) {
+        <a
+          tabindex="0"
+          class="step-link"
+          (click)="showLibrary()"
+          [class.step-link-selected]="showLibraryPanel"
+          >{{ 'label.latest.documents' | transloco }}</a
+        >
+        } @if (informationEntries.length > 0) {
+        <a
+          tabindex="0"
+          class="step-link"
+          (click)="showNews()"
+          [class.step-link-selected]="showNewsPanel"
+          >{{ 'label.latest.news' | transloco }}</a
+        >
+        }
+      </section>
+      <section class="not-seen-content">
+        @if (showLibraryPanel) {
+        <ul class="listing-rows">
+          @for (item of getLibraryEntries(); track item) {
+          <li
+            class="row"
+            [class.row__folder]="isFolder($safeNavigationMigration(item.node?.type))"
+            [class.row__file]="!isFolder($safeNavigationMigration(item.node?.type))"
+          >
+            @let _group = group(); {{ item.information }} @if (_group.id) {
+            <a
+              class="link-max-width"
+              [routerLink]="getRouterLinkParts(_group.id, item.node)"
+              >{{ getDisplayProperty(item.node) }}</a
+            >
+            } {{ (item?.node?.properties?.modified !==
+            item?.node?.properties?.created ? 'label.updated-on' :
+            'label.created-on' ) | transloco }}&nbsp;{{
+            $safeNavigationMigration(item?.node?.properties?.modified) | date:
+            'y MMM d, H:mm' }}
+          </li>
+          }
+        </ul>
+        } @if (hasMoreThan15 && !showAll && showLibraryPanel) {
+        <p class="show-all">
+          <a tabindex="0" (click)="showAllFeed()" class="button"
+            >{{ 'label.show.all' | transloco }}</a
+          >
+        </p>
+        } @if (showNewsPanel) {
+        <div class="listing-news">
+          @for (item of informationEntries; track item) {
+          <cbc-simple-news-card [news]="item.node"> </cbc-simple-news-card>
+          }
+        </div>
+        }
+      </section>
+    </div>
+  </section>
+  }
+</article>

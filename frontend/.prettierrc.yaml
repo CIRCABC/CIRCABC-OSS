@@ -1,0 +1,9 @@
+singleQuote: true
+trailingComma: es5
+overrides:
+  - files: "*.component.html"
+    options:
+      parser: angular
+  - files: "*.html"
+    options:
+      parser: html

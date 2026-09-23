@@ -1,0 +1,19 @@
+@use 'css/global/variables-mixins-keyframes';
+
+.availableKeywords {
+  max-height: 350px;
+  overflow: auto;
+}
+
+.nothing {
+  color: #ccc;
+}
+
+.add--button {
+  border: 1px solid;
+  border-radius: variables-mixins-keyframes.$radius-md;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 2px 5px;
+  white-space: nowrap;
+}

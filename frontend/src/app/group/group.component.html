@@ -1,0 +1,16 @@
+<div class="dashboards">
+  <cbc-header></cbc-header>
+  @if (group(); as group) {
+  <cbc-navigator [currentIg]="group"></cbc-navigator>
+  } @if (isAccessingAsVisitor()) {
+  <div class="wrap">
+    @if (isAccessingAsVisitor()) {
+    <cbc-flat-message
+      [message]="'text.group-guest-access' | transloco"
+    ></cbc-flat-message>
+    }
+  </div>
+  }
+
+  <router-outlet></router-outlet>
+</div>

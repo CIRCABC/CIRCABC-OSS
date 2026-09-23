@@ -1,0 +1,50 @@
+.footer-main {
+  background: #1f3341;
+  background: url(img/header.jpg) no-repeat center bottom;
+  background-size: cover;
+  color: #fff;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  padding: 16px 24px;
+  font-size: 12px;
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.footer-title {
+  padding-top: 4px;
+}
+
+.footer-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px 0;
+  padding: 10px 0;
+}
+
+.footer-version {
+  display: block;
+  opacity: 0.6;
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+a {
+  margin-left: 10px;
+  color: #999;
+  text-decoration: underline;
+
+  &:hover {
+    color: #ccc;
+    text-decoration: none;
+  }
+}

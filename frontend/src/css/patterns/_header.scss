@@ -1,0 +1,364 @@
+@use '../global/variables-mixins-keyframes';
+
+/* HEADER */
+
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 50px;
+  width: 100%;
+  background: #1f3341;
+  background: url(img/header.jpg) no-repeat center bottom;
+  flex-wrap: wrap;
+  color: #fff;
+  font-size: 11.5px;
+  font-size: 1.15rem;
+
+  .header-left-side {
+    display: flex;
+    align-items: center;
+  }
+
+  .header-right-side {
+    display: flex;
+    align-items: center;
+  }
+
+  .header-search-bar {
+    flex: 1 1 400px;
+    display: flex;
+    align-items: center;
+
+    cbc-search-bar {
+      width: 100%;
+    }
+  }
+
+  @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+    padding: 12px 10px;
+    gap: 10px;
+
+    .header-search-bar {
+      flex: 0 0 100%;
+      order: 2;
+    }
+  }
+
+  @include variables-mixins-keyframes.background-cover();
+  @include variables-mixins-keyframes.responsive-break-medium();
+
+  .home-link {
+    text-decoration: none;
+  }
+
+  .personal-menu {
+    display: flex;
+    align-items: center;
+    padding-right: 10px;
+    color: #fff;
+    text-decoration: none;
+
+    .personal-menu__name {
+      padding-right: 5px;
+      max-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      @media screen and (max-width: variables-mixins-keyframes.$break-small) {
+        display: none;
+      }
+    }
+
+    .ctn-img {
+      display: inline-block;
+      vertical-align: middle;
+      background: variables-mixins-keyframes.$fluo-green;
+      border: 1px solid transparent;
+      border-radius: variables-mixins-keyframes.$radius-full;
+      overflow: hidden;
+      height: 36px;
+      width: 36px;
+      text-align: center;
+      line-height: 59px;
+
+      .img-default {
+        @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+          display: none;
+          visibility: hidden;
+        }
+      }
+
+      a {
+        display: none;
+
+        @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+          display: inline;
+        }
+      }
+    }
+
+    img {
+      border-radius: variables-mixins-keyframes.$radius-full;
+      border: 2px solid variables-mixins-keyframes.$link;
+      transition: transform 200ms ease, border-color 200ms ease;
+      height: 34px;
+
+      &:hover {
+        transform: scale(1.05);
+      }
+    }
+
+    .notif-box {
+      margin-left: -10px;
+      display: inline-block;
+      vertical-align: middle;
+      font-size: 13px;
+      font-size: 1.3rem;
+      font-weight: 500;
+      background: variables-mixins-keyframes.$green-primary;
+      padding: 5px;
+      border-radius: variables-mixins-keyframes.$radius-full;
+    }
+  }
+
+  .personal-menu:hover {
+    .dropdown--personal-menu {
+      display: block;
+    }
+  }
+}
+
+.main-nav {
+  display: flex;
+  justify-content: flex-end;
+  background-color: var(--theme-menu);
+  box-shadow: 0 1px 3px rgb(0 40 70 / 0.08);
+  height: 52px;
+
+  .tab {
+    font-size: 13px;
+    display: inline-block;
+    font-family: variables-mixins-keyframes.$titling;
+    text-decoration: none;
+    color: var(--theme-text-aa);
+    height: 52px;
+    line-height: 52px;
+    padding: 0 18px;
+    transition: background-color 200ms ease, transform 200ms ease;
+  }
+
+  .tab:hover {
+    background: var(--theme-menu-hover);
+    transform: translateY(-1px);
+  }
+
+  .tab--group-name {
+    max-width: 400px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--theme-text-aa);
+  }
+
+  .tab--group-name.tab--current {
+    color: var(--theme-h3);
+  }
+
+  .tab--info,
+  .tab--library,
+  .tab--members,
+  .tab--agenda,
+  .tab--roles,
+  .tab--share,
+  .tab--forums,
+  .tab--admin,
+  .tab--dashboard,
+  .tab--tasks,
+  .tab--searches,
+  .tab--last,
+  .tab--group-browser,
+  .tab--help,
+  .tab--group-name {
+    position: relative;
+
+    &::before {
+      position: absolute;
+      left: calc(50% - 9px);
+      top: 8px;
+      content: '';
+      display: block;
+      width: 22px;
+      height: 22px;
+    }
+
+    .label {
+      position: relative;
+      top: 10px;
+    }
+  }
+
+  .tab--info::before {
+    background: url(img/icon-dashboard-grey.svg) no-repeat;
+    background-size: 19px;
+  }
+
+  .tab--library::before {
+    background: url(img/icon-library-grey.svg) no-repeat;
+    background-size: 20px;
+  }
+
+  .tab--members::before {
+    background: url(img/icon-members-grey.svg) no-repeat;
+    background-size: 20px;
+  }
+
+  .tab--agenda::before {
+    background: url(img/icon-agenda-grey.svg) no-repeat;
+    background-size: 18px;
+  }
+
+  .tab--forums::before {
+    background: url(img/icon-speech-forums-grey.svg) no-repeat;
+    background-size: 22px;
+  }
+
+  .tab--admin::before {
+    background: url(img/icon-admin-grey.svg) no-repeat;
+    background-size: 20px;
+  }
+
+  .tab--roles::before {
+    background: url(img/business-card-grey.svg) no-repeat;
+    background-size: 20px;
+  }
+
+  .tab--share::before {
+    background: url(img/icon-circabc-share-grey.svg) no-repeat;
+    background-size: 18px 18px;
+  }
+
+  /* Tabs from personal/other pages */
+  .tab--dashboard::before {
+    background: url(img/icon-dashboard-grey.png) no-repeat;
+  }
+
+  .tab--tasks::before {
+    background: url(img/icon-tasks-grey.png) no-repeat;
+  }
+
+  .tab--searches::before {
+    background: url(img/icon-search-grey.png) no-repeat;
+  }
+
+  .tab--last::before {
+    background: url(img/icon-last-grey.png) no-repeat;
+  }
+
+  .tab--group-browser::before {
+    background: url(img/icon-group-browser-grey.svg) no-repeat;
+    background-size: 21px;
+  }
+
+  .tab--help::before {
+    background: url(img/icon-help-grey.svg) no-repeat;
+    background-size: 20px;
+  }
+
+  /* States */
+  .tab--has-notif .notification {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    position: relative;
+    top: 10px;
+    border-radius: variables-mixins-keyframes.$radius-full;
+    margin-left: 5px;
+    background: variables-mixins-keyframes.$green-primary;
+  }
+
+  .tab--current {
+    color: var(--theme-header-link);
+    position: relative;
+
+    &::after {
+      content: '';
+      height: 3px;
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: 0;
+      background: variables-mixins-keyframes.$green-primary;
+      border-radius: variables-mixins-keyframes.$radius-sm variables-mixins-keyframes.$radius-sm 0 0;
+    }
+
+    &.tab--info::before {
+      background: url(img/icon-dashboard-blue.svg) no-repeat;
+      background-size: 19px;
+    }
+
+    &.tab--library::before {
+      background: url(img/icon-library-blue.svg) no-repeat;
+      background-size: 20px;
+    }
+
+    &.tab--members::before {
+      background: url(img/icon-members-blue.svg) no-repeat;
+      background-size: 20px;
+    }
+
+    &.tab--agenda::before {
+      background: url(img/icon-agenda-blue.svg) no-repeat;
+      background-size: 18px;
+    }
+
+    &.tab--roles::before {
+      background: url(img/business-card-blue.svg) no-repeat;
+      background-size: 20px;
+    }
+
+    &.tab--forums::before {
+      background: url(img/icon-speech-forums-blue.svg) no-repeat;
+      background-size: 22px;
+    }
+
+    &.tab--admin::before {
+      background: url(img/icon-admin-blue.svg) no-repeat;
+      background-size: 20px;
+    }
+
+    &.tab--dashboard::before {
+      background: url(img/icon-dashboard-blue.png) no-repeat;
+    }
+
+    &.tab--tasks::before {
+      background: url(img/icon-tasks-blue.png) no-repeat;
+    }
+
+    &.tab--searches::before {
+      background: url(img/icon-search-blue.png) no-repeat;
+    }
+
+    &.tab--last::before {
+      background: url(img/icon-last-blue.png) no-repeat;
+    }
+
+    &.tab--group-browser::before {
+      background: url(img/icon-group-browser-blue.svg) no-repeat;
+      background-size: 21px;
+    }
+
+    &.tab--help::before {
+      background: url(img/icon-help-blue.svg) no-repeat;
+      background-size: 20px;
+    }
+  }
+}
+
+.page-header__backlink {
+  background: url(img/icon-back.png) no-repeat;
+  padding: 4px 30px 5px;
+  font-size: 13px;
+}

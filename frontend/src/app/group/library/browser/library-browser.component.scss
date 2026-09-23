@@ -1,0 +1,145 @@
+@use 'css/global/variables-mixins-keyframes';
+
+.dropdown-trigger--with-icons {
+  a img {
+    vertical-align: middle;
+  }
+}
+
+.shared-link-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  padding: 8px 12px;
+  background-color: #fff8e1;
+  border: 1px solid #ffe082;
+  border-radius: variables-mixins-keyframes.$radius-md;
+  margin-bottom: 16px;
+
+  .fa-exclamation-triangle {
+    color: #e65100;
+  }
+
+  .button {
+    margin-left: auto;
+  }
+}
+
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  border-radius: variables-mixins-keyframes.$radius-md;
+  color: var(--theme-link);
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+
+  &:hover {
+    background-color: var(--theme-menu-hover);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--theme-green);
+    outline-offset: 2px;
+  }
+
+  .icon-active {
+    color: var(--theme-green);
+  }
+}
+
+.notification-actions {
+  margin-top: 12px;
+
+  a,
+  button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+}
+
+.underline-selector {
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+.normal-selector {
+  text-decoration: none;
+  font-weight: normal;
+}
+
+/* Empty state */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  background-color: var(--theme-box-background);
+  text-align: center;
+
+  .empty-state__icon {
+    font-size: 48px;
+    color: var(--theme-text-muted);
+    margin-bottom: 16px;
+  }
+
+  .empty-state__message {
+    color: var(--theme-text-muted);
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 0;
+  }
+}
+
+/* Processing overlay */
+.processing-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(255 255 255 / 0.6);
+  z-index: variables-mixins-keyframes.$z-overlay;
+}
+
+/* Override action link size for better touch targets */
+:host ::ng-deep .table-container .main .row {
+  .cell-file-name .actions li,
+  .cell-title .actions li,
+  .cell-name .actions li {
+    font-size: 13px;
+
+    a,
+    button {
+      display: inline-block;
+      padding: 4px 0;
+      min-height: 28px;
+      line-height: 20px;
+    }
+  }
+}
+
+/* Bulk action icons spacing */
+.bulk-actions {
+  .fa {
+    margin-right: 4px;
+    font-size: 14px;
+    vertical-align: middle;
+  }
+}
+
+::ng-deep .hint {
+  padding-left: unset;
+}
+
+::ng-deep .hinttext {
+  margin-left: -205px;
+}

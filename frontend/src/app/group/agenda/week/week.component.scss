@@ -1,0 +1,58 @@
+@use 'css/global/variables-mixins-keyframes';
+
+.flex-calendar {
+  display: grid;
+  grid-template-columns: 33px repeat(7, 1fr);
+  width: 100%;
+
+  &.work-week {
+    grid-template-columns: 33px repeat(5, 1fr);
+  }
+
+  .day-hour {
+    height: 48px;
+    color: var(--theme-text-aa);
+    border: 1px solid var(--theme-border-color);
+  }
+
+  .day-events {
+    height: 48px;
+    color: var(--theme-text-aa);
+    border: 1px solid var(--theme-border-color);
+
+    .events--container {
+      overflow-x: auto;
+      width: 90%;
+      height: 100%;
+    }
+  }
+
+  .day--header {
+    text-align: center;
+    height: 32px;
+    border: 1px solid var(--theme-border-color);
+  }
+}
+
+@media screen and (max-width: 760px) {
+  .show-names {
+    display: none;
+  }
+}
+
+.day-events-multiple {
+  background: #cce8ec;
+}
+
+.appointment-ribbon {
+  border-radius: variables-mixins-keyframes.$radius-pill;
+  height: 10px;
+  margin-top: 2px;
+  display: inline-block;
+}
+
+.arrow--start {
+  height: 8px;
+  margin-top: 4px;
+  display: inline-block;
+}

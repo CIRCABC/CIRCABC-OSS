@@ -1,0 +1,299 @@
+@if (loaded()) {
+<div class="wrap admin page-container">
+  <div class="page-header">
+    <span
+      class="page-header__title"
+      [innerHtml]="'members.contact.page.title' | transloco"
+    ></span>
+    <div class="page-header__actions">
+      <cbc-reponsive-sub-menu>
+        @if (currentIg(); as ig) { @if (isDirAdmin() || isDirManageMembers()) {
+        <a [routerLink]="['../bulk-invite', ig.id]"
+          >{{ 'label.bulk.invite' | transloco }}</a
+        >
+        } }
+        <a [routerLink]="['.']" class="selected"
+          >{{ 'label.send.email' | transloco }}</a
+        >
+        @if (currentIg() && (isDirAdmin() || isDirManageMembers())) {
+        <a [routerLink]="['../../applicants']"
+          >{{ 'label.member.requests' | transloco }}</a
+        >
+        }
+        <a [routerLink]="['../../members']"
+          >{{ 'label.members' | transloco }}</a
+        >
+        @if (currentIg() && isDirAdmin()) {
+        <a [routerLink]="['../../profiles']"
+          >{{ 'label.profiles' | transloco }}</a
+        >
+        }
+      </cbc-reponsive-sub-menu>
+    </div>
+  </div>
+
+  @if (currentIg(); as ig) {
+  <section class="box box--tabs">
+    <ul class="header">
+      <li>
+        <a
+          tabindex="0"
+          class="tab"
+          [class.tab--current]="isEmailTab()"
+          (click)="setTab('email')"
+        >
+          <img src="img/icon-contact-grey.png" title="General" alt="" />
+          <span class="tab-text">{{ 'label.email' | transloco }}</span>
+        </a>
+      </li>
+      <li>
+        <a
+          tabindex="0"
+          class="tab"
+          [class.tab--current]="isFileTab()"
+          (click)="setTab('file')"
+        >
+          <img
+            src="img/icon-file-grey.png"
+            title="AutoUpload"
+            alt="autoupload"
+          />
+          <span class="tab-text">{{ 'label.attachments' | transloco }}</span>
+        </a>
+      </li>
+      <li>
+        <a
+          tabindex="0"
+          class="tab"
+          [class.tab--current]="isUserTab()"
+          (click)="setTab('user')"
+        >
+          <img src="img/icon-group-browser-grey.png" title="security" alt="" />
+          <span class="tab-text">{{ 'label.recipient' | transloco }}</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="main" [class.hide]="!isEmailTab()">
+      <form [formGroup]="emailForm">
+        @if (templates().length > 1) {
+        <div class="field field-select view-down">
+          <label class="view-label" for="view"
+            >{{ 'label.use.template' | transloco }}</label
+          >
+          <div class="custom-select select--form view-select">
+            <select
+              id="view"
+              #viewSelect
+              (change)="selectTemplate(viewSelect.value)"
+              [value]="selectedTemplateId()"
+            >
+              @for (template of templates(); track template.id) {
+              <option value="{{ template.id }}">{{ template.name }}</option>
+              }
+            </select>
+          </div>
+          @if (isRemovableTemplate()) {
+          <a
+            tabindex="0"
+            (click)="isRemovableTemplate() ? removeTemplate() : ''"
+            title="{{ 'label.template.remove' | transloco }}"
+          >
+            <img
+              src="img/icon-delete-818181.png"
+              style="vertical-align: middle"
+              alt="delete"
+            />
+          </a>
+          }
+        </div>
+        }
+        <div class="field">
+          <label for="subject"
+            >{{ 'label.subject' | transloco }}
+            <span class="text-error">&nbsp;*</span>
+          </label>
+          <input
+            formControlName="subject"
+            type="text"
+            id="subject"
+            placeholder="{{ 'label.subject' | transloco }}"
+          />
+          <cbc-control-message [control]="subjectControl"></cbc-control-message>
+        </div>
+
+        <div class="field">
+          <label for="subject"
+            >{{ 'label.email' | transloco }}
+            <span class="text-error">&nbsp;*</span>
+          </label>
+          <br />
+          <br />
+          <cbc-rich-text-editor formControlName="content" editorHeight="320px"
+            ><span class="ql-formats">
+              <button class="ql-bold" aria-label="Bold"></button>
+              <button class="ql-italic" aria-label="Italic"></button>
+              <button class="ql-underline" aria-label="Underline"></button>
+              <button class="ql-strike" aria-label="Strike"></button>
+            </span>
+            <span class="ql-formats">
+              <button
+                class="ql-list"
+                aria-label="list"
+                value="ordered"
+              ></button>
+              <button class="ql-list" aria-label="list" value="bullet"></button>
+            </span>
+            <span class="ql-formats">
+              <button class="ql-link" aria-label="link"></button> </span
+          ></cbc-rich-text-editor>
+          <cbc-control-message [control]="contentControl"></cbc-control-message>
+        </div>
+
+        <div class="field">
+          <input
+            type="checkbox"
+            id="checkTemplate"
+            name="checkTemplate"
+            formControlName="checkSaveTemplate"
+          />
+          <label style="width: auto !important" for="checkTemplate"
+            >{{ 'label.save.template' | transloco }}</label
+          >
+          @if (saveTemplateChecked()) {
+          <span>
+            <br /><br />
+            <label for="templateName"
+              >{{ 'label.template.name' | transloco }}
+              <span class="text-error">&nbsp;*</span>
+            </label>
+            <input
+              formControlName="templateName"
+              type="text"
+              id="templateName"
+            />
+            <span class="buttons-group">
+              <a
+                tabindex="0"
+                class="button"
+                [class.disabled]="!isSaveTemplate()"
+                (click)="isSaveTemplate() ? saveTemplate() : ''"
+                >{{ 'label.save' | transloco }}</a
+              >
+            </span>
+            <cbc-control-message
+              [control]="templateNameControl"
+            ></cbc-control-message>
+          </span>
+          }
+        </div>
+      </form>
+      <div class="buttons-group" style="text-align: center">
+        <p class="email-summary">
+          {{ 'members.mail.summary' | transloco : { nbRecipients:
+          getNumberRecipients(), nbAttachments: getNumberAttachments() } }}
+        </p>
+        <a tabindex="0" class="button" (click)="setTab('file')">
+          {{ 'label.next' | transloco }}
+        </a>
+        <a
+          tabindex="0"
+          class="cta"
+          [class.disabled]="!isSendable()"
+          (click)="isSendable() ? sendEmail() : ''"
+          >{{ 'label.send' | transloco }}</a
+        >
+        <a tabindex="0" class="button" (click)="cancel()"
+          >{{ 'label.cancel' | transloco }}</a
+        >
+      </div>
+      @if (sending()) {
+      <div>
+        <span
+          >{{ 'label.sending' | transloco }}...
+          <cbc-spinner></cbc-spinner>
+        </span>
+      </div>
+      }
+    </div>
+    <div class="main" [class.hide]="!isUserTab()">
+      <form [formGroup]="membersForm">
+        <label for="invitedUsersOrProfiles"
+          >{{ 'label.search' | transloco }}</label
+        >
+        <cbc-users-picker
+          [igId]="ig.id"
+          [profilesTip]="'label.non.empty.profiles' | transloco"
+          formControlName="invitedUsersOrProfiles"
+        ></cbc-users-picker>
+      </form>
+      <div class="buttons-group" style="text-align: center">
+        <p class="email-summary">
+          {{ 'members.mail.summary' | transloco : { nbRecipients:
+          getNumberRecipients(), nbAttachments: getNumberAttachments() } }}
+        </p>
+        <a tabindex="0" class="button" (click)="setTab('file')"
+          >{{ 'label.previous' | transloco }}</a
+        >
+        <a
+          tabindex="0"
+          class="cta"
+          [class.disabled]="!isSendable()"
+          (click)="isSendable() ? sendEmail() : ''"
+          >{{ 'label.send' | transloco }}</a
+        >
+        <a tabindex="0" class="button" (click)="cancel()"
+          >{{ 'label.cancel' | transloco }}</a
+        >
+      </div>
+      @if (sending()) {
+      <div>
+        <span
+          >{{ 'label.sending' | transloco }}...
+          <cbc-spinner></cbc-spinner>
+        </span>
+      </div>
+      }
+    </div>
+    <div class="main" [class.hide]="!isFileTab()">
+      @if (ig) {
+      <cbc-file-picker
+        [nodeId]="ig.libraryId"
+        [(selection)]="selectedNodes"
+      ></cbc-file-picker>
+      }
+      <div class="buttons-group" style="text-align: center">
+        <p class="email-summary">
+          {{ 'members.mail.summary' | transloco : { nbRecipients:
+          getNumberRecipients(), nbAttachments: getNumberAttachments() } }}
+        </p>
+        <a tabindex="0" class="button" (click)="setTab('email')"
+          >{{ 'label.previous' | transloco }}</a
+        >
+        <a tabindex="0" class="button" (click)="setTab('user')"
+          >{{ 'label.next' | transloco }}</a
+        >
+        <a
+          tabindex="0"
+          class="cta"
+          [class.disabled]="!isSendable()"
+          (click)="isSendable() ? sendEmail() : ''"
+          >{{ 'label.send' | transloco }}</a
+        >
+        <a tabindex="0" class="button" (click)="cancel()"
+          >{{ 'label.cancel' | transloco }}</a
+        >
+      </div>
+      @if (sending()) {
+      <div>
+        <span
+          >{{ 'label.sending' | transloco }}...
+          <cbc-spinner></cbc-spinner>
+        </span>
+      </div>
+      }
+    </div>
+  </section>
+  }
+</div>
+}

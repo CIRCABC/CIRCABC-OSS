@@ -1,0 +1,12 @@
+<webscript>
+    <shortname>EU Login Authentication</shortname>
+    <description>
+        Handles EU Login (ECAS) CAS authentication flow.
+        Redirects to ECAS if no ticket is present, validates the CAS ticket,
+        ensures the user exists in Alfresco, and sets authentication cookies.
+    </description>
+    <url>/circabc/eulogin</url>
+    <format default="json" />
+    <authentication>none</authentication>
+    <transaction>none</transaction>
+</webscript>

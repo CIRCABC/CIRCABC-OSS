@@ -1,0 +1,32 @@
+<div class="black-overlayer overlayer-shown"></div>
+<section class="modal modal--select-files modal-shown">
+  <button
+    type="button"
+    class="close-icon"
+    aria-label="{{ 'label.cancel' | transloco }}"
+    (click)="dialogRef.close()"
+  ></button>
+  <header>
+    <h2>{{ 'summarize.title' | transloco }}</h2>
+  </header>
+  <section class="modal-content">
+    @if (data.loading()) {
+    <div class="field">
+      <div>{{ 'summarize.processing' | transloco }} <cbc-spinner /></div>
+    </div>
+    } @else if (data.error()) {
+    <p class="error-text">{{ data.error() }}</p>
+    } @else {
+    <p class="summary-text">{{ data.summary() }}</p>
+    }
+  </section>
+  @if (!data.loading()) {
+  <section class="modal-footer">
+    <div class="buttons-group">
+      <a tabindex="0" class="cta" (click)="dialogRef.close()">
+        {{ 'summarize.close' | transloco }}
+      </a>
+    </div>
+  </section>
+  }
+</section>

@@ -1,0 +1,8 @@
+<webscript>
+    <shortname>add new circabc administrators</shortname>
+    <description>invite new circabc administrators</description>
+    <url>/circabc/admins</url>
+    <format default="json" />
+    <authentication>user</authentication>
+    <transaction>required</transaction>
+</webscript>

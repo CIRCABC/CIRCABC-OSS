@@ -1,0 +1,68 @@
+<!-- MODAL BOX -->
+@if (showModal()) {
+<div
+  class="black-overlayer"
+  [class.overlayer-shown]="showModal()"
+  [class.overlayer-hidden]="!showModal()"
+></div>
+} @if (showModal()) {
+<section
+  class="modal"
+  [class.modal-shown]="showModal()"
+  [class.modal-hidden]="!showModal()"
+  style="margin-top: 0"
+>
+  <button
+    type="button"
+    class="close-icon"
+    aria-label="{{ 'label.cancel' | transloco }}"
+    (click)="cancel('close')"
+  ></button>
+  <header>
+    <h2 class="title">{{ 'label.signal.abuse' | transloco }}</h2>
+  </header>
+
+  <section class="modal-content">
+    <div class="wrapping">
+      <form [formGroup]="signalPostForm">
+        <div class="field">
+          <label for="abuseText"
+            >{{ 'label.message.optional' | transloco }}</label
+          >
+          <textarea id="abuseText" formControlName="abuseText"></textarea>
+        </div>
+      </form>
+      {{ 'label.original.post.text' | transloco }}:<br /><br />
+      @if (message) {
+      <p class="comment-message" [innerHtml]="message"></p>
+      }
+      <br /><br />
+      @if (executing()) {
+      <div class="field">
+        <div>
+          {{ 'label.running' | transloco }}... <cbc-spinner></cbc-spinner>
+        </div>
+      </div>
+      }
+    </div>
+  </section>
+
+  <section class="modal-footer">
+    <!-- Buttons -->
+    @if (!executing()) {
+    <div class="buttons-group">
+      <a tabindex="0" class="cta" (click)="accept()"
+        >{{ 'label.submit' | transloco }}</a
+      >
+      <a
+        tabindex="0"
+        class="button"
+        (click)="cancel('close')"
+        (keydown.enter)="cancel('close')"
+        >{{ 'label.cancel' | transloco }}</a
+      >
+    </div>
+    }
+  </section>
+</section>
+}

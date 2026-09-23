@@ -1,0 +1,109 @@
+@use 'css/global/variables-mixins-keyframes';
+
+h1 {
+  color: #035;
+
+  img {
+    height: 22px;
+    float: right;
+    margin-top: 2px;
+  }
+}
+
+.file-list {
+  li {
+    padding: 10px;
+    border: 1px solid #cdcdcd;
+    background-color: #fff;
+    border-radius: variables-mixins-keyframes.$radius-md;
+    cursor: pointer;
+    margin-bottom: 5px;
+    font-size: 12px;
+    position: relative;
+
+    &.completed-border {
+      border-color: #2e7d53;
+      cursor: initial;
+    }
+
+    &.error-border {
+      border-color: #cb6c6c;
+      cursor: initial;
+    }
+
+    .info {
+      z-index: variables-mixins-keyframes.$z-dropdown;
+      position: relative;
+
+      span.file-name {
+        display: inline-block;
+        color: #035;
+        max-width: 90%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      span {
+        color: #757575;
+      }
+
+      img {
+        vertical-align: bottom;
+        margin-left: 5px;
+      }
+    }
+
+    &:hover {
+      border-left: 3px solid #2e7d53;
+      padding-left: 8px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background-color: #e1faff;
+      position: absolute;
+      top: 0;
+      left: 0;
+      transition: 100ms;
+      z-index: 5;
+      border-radius: variables-mixins-keyframes.$radius-md;
+    }
+
+    .completed {
+      background-color: #ebffe1;
+    }
+
+    .error {
+      background-color: #ffe1e1;
+    }
+
+    .actions {
+      position: relative;
+      float: right;
+      padding: 7px 0;
+      line-height: 20px;
+      z-index: variables-mixins-keyframes.$z-overlay;
+
+      .file--upload--status {
+        img {
+          vertical-align: bottom;
+          width: 20px;
+        }
+      }
+    }
+  }
+
+  li.selected {
+    border-left: 3px solid #035;
+    padding-left: 8px;
+  }
+
+  .empty-list {
+    border: 0;
+
+    &:hover {
+      border-left: 0;
+    }
+  }
+}

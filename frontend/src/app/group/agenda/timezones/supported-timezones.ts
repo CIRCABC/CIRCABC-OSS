@@ -1,0 +1,616 @@
+/**
+ * Describes a single selectable timezone used by the agenda feature.
+ *
+ * Each entry holds both the raw GMT offset metadata and a human-readable
+ * label so it can be displayed in timezone pickers while still carrying the
+ * information needed to compute or persist the selected offset.
+ */
+export interface TimezoneEntry {
+  /** Stable, unique identifier of the entry (a numeric string, e.g. `'34'`). */
+  id: string;
+  /** GMT offset in `GMT±HH:MM` format, e.g. `'GMT+01:00'`. */
+  gmtAdjustment: string;
+  /** Flag indicating whether the zone observes daylight saving time (`'1'`) or not (`'0'`). */
+  useDaylightTime: string;
+  /** Short offset value token, e.g. `'GMT+1'` or `'GMT+5.5'`. */
+  value: string;
+  /** Human-readable label combining the offset and representative locations. */
+  text: string;
+}
+
+/**
+ * Static, ordered catalogue of every timezone the agenda feature offers.
+ *
+ * Entries are sorted from the westernmost offset (GMT-12:00) to the
+ * easternmost (GMT+13:00) and are used to populate timezone selection
+ * controls.
+ */
+export const availableTimezones: TimezoneEntry[] = [
+  {
+    id: '1',
+    gmtAdjustment: 'GMT-12:00',
+    useDaylightTime: '0',
+    value: 'GMT-12',
+    text: '(GMT-12:00) International Date Line West',
+  },
+  {
+    id: '2',
+    gmtAdjustment: 'GMT-11:00',
+    useDaylightTime: '0',
+    value: 'GMT-11',
+    text: '(GMT-11:00) Midway Island, Samoa',
+  },
+  {
+    id: '3',
+    gmtAdjustment: 'GMT-10:00',
+    useDaylightTime: '0',
+    value: 'GMT-10',
+    text: '(GMT-10:00) Hawaii',
+  },
+  {
+    id: '4',
+    gmtAdjustment: 'GMT-09:00',
+    useDaylightTime: '1',
+    value: 'GMT-9',
+    text: '(GMT-09:00) Alaska',
+  },
+  {
+    id: '5',
+    gmtAdjustment: 'GMT-08:00',
+    useDaylightTime: '1',
+    value: 'GMT-8',
+    text: '(GMT-08:00) Pacific Time (US & Canada)',
+  },
+  {
+    id: '6',
+    gmtAdjustment: 'GMT-08:00',
+    useDaylightTime: '1',
+    value: 'GMT-8',
+    text: '(GMT-08:00) Tijuana, Baja California',
+  },
+  {
+    id: '7',
+    gmtAdjustment: 'GMT-07:00',
+    useDaylightTime: '0',
+    value: 'GMT-7',
+    text: '(GMT-07:00) Arizona',
+  },
+  {
+    id: '8',
+    gmtAdjustment: 'GMT-07:00',
+    useDaylightTime: '1',
+    value: 'GMT-7',
+    text: '(GMT-07:00) Chihuahua, La Paz, Mazatlan',
+  },
+  {
+    id: '9',
+    gmtAdjustment: 'GMT-07:00',
+    useDaylightTime: '1',
+    value: 'GMT-7',
+    text: '(GMT-07:00) Mountain Time (US & Canada)',
+  },
+  {
+    id: '10',
+    gmtAdjustment: 'GMT-06:00',
+    useDaylightTime: '0',
+    value: 'GMT-6',
+    text: '(GMT-06:00) Central America',
+  },
+  {
+    id: '11',
+    gmtAdjustment: 'GMT-06:00',
+    useDaylightTime: '1',
+    value: 'GMT-6',
+    text: '(GMT-06:00) Central Time (US & Canada)',
+  },
+  {
+    id: '12',
+    gmtAdjustment: 'GMT-06:00',
+    useDaylightTime: '1',
+    value: 'GMT-6',
+    text: '(GMT-06:00) Guadalajara, Mexico City, Monterrey',
+  },
+  {
+    id: '13',
+    gmtAdjustment: 'GMT-06:00',
+    useDaylightTime: '0',
+    value: 'GMT-6',
+    text: '(GMT-06:00) Saskatchewan',
+  },
+  {
+    id: '14',
+    gmtAdjustment: 'GMT-05:00',
+    useDaylightTime: '0',
+    value: 'GMT-5',
+    text: '(GMT-05:00) Bogota, Lima, Quito, Rio Branco',
+  },
+  {
+    id: '15',
+    gmtAdjustment: 'GMT-05:00',
+    useDaylightTime: '1',
+    value: 'GMT-5',
+    text: '(GMT-05:00) Eastern Time (US & Canada)',
+  },
+  {
+    id: '16',
+    gmtAdjustment: 'GMT-05:00',
+    useDaylightTime: '1',
+    value: 'GMT-5',
+    text: '(GMT-05:00) Indiana (East)',
+  },
+  {
+    id: '17',
+    gmtAdjustment: 'GMT-04:00',
+    useDaylightTime: '1',
+    value: 'GMT-4',
+    text: '(GMT-04:00) Atlantic Time (Canada)',
+  },
+  {
+    id: '18',
+    gmtAdjustment: 'GMT-04:00',
+    useDaylightTime: '0',
+    value: 'GMT-4',
+    text: '(GMT-04:00) Caracas, La Paz',
+  },
+  {
+    id: '19',
+    gmtAdjustment: 'GMT-04:00',
+    useDaylightTime: '0',
+    value: 'GMT-4',
+    text: '(GMT-04:00) Manaus',
+  },
+  {
+    id: '20',
+    gmtAdjustment: 'GMT-04:00',
+    useDaylightTime: '1',
+    value: 'GMT-4',
+    text: '(GMT-04:00) Santiago',
+  },
+  {
+    id: '21',
+    gmtAdjustment: 'GMT-03:30',
+    useDaylightTime: '1',
+    value: 'GMT-3.5',
+    text: '(GMT-03:30) Newfoundland',
+  },
+  {
+    id: '22',
+    gmtAdjustment: 'GMT-03:00',
+    useDaylightTime: '1',
+    value: 'GMT-3',
+    text: '(GMT-03:00) Brasilia',
+  },
+  {
+    id: '23',
+    gmtAdjustment: 'GMT-03:00',
+    useDaylightTime: '0',
+    value: 'GMT-3',
+    text: '(GMT-03:00) Buenos Aires, Georgetown',
+  },
+  {
+    id: '24',
+    gmtAdjustment: 'GMT-03:00',
+    useDaylightTime: '1',
+    value: 'GMT-3',
+    text: '(GMT-03:00) Greenland',
+  },
+  {
+    id: '25',
+    gmtAdjustment: 'GMT-03:00',
+    useDaylightTime: '1',
+    value: 'GMT-3',
+    text: '(GMT-03:00) Montevideo',
+  },
+  {
+    id: '26',
+    gmtAdjustment: 'GMT-02:00',
+    useDaylightTime: '1',
+    value: 'GMT-2',
+    text: '(GMT-02:00) Mid-Atlantic',
+  },
+  {
+    id: '27',
+    gmtAdjustment: 'GMT-01:00',
+    useDaylightTime: '0',
+    value: 'GMT-1',
+    text: '(GMT-01:00) Cape Verde Is.',
+  },
+  {
+    id: '28',
+    gmtAdjustment: 'GMT-01:00',
+    useDaylightTime: '1',
+    value: 'GMT-1',
+    text: '(GMT-01:00) Azores',
+  },
+  {
+    id: '29',
+    gmtAdjustment: 'GMT+00:00',
+    useDaylightTime: '0',
+    value: 'GMT',
+    text: '(GMT+00:00) Casablanca, Monrovia, Reykjavik',
+  },
+  {
+    id: '30',
+    gmtAdjustment: 'GMT+00:00',
+    useDaylightTime: '1',
+    value: 'GMT',
+    text: '(GMT+00:00) Greenwich Mean Time : Dublin, Edinburgh, Lisbon, London',
+  },
+  {
+    id: '31',
+    gmtAdjustment: 'GMT+01:00',
+    useDaylightTime: '1',
+    value: 'GMT+1',
+    text: '(GMT+01:00) West Central Africa',
+  },
+  {
+    id: '32',
+    gmtAdjustment: 'GMT+01:00',
+    useDaylightTime: '1',
+    value: 'GMT+1',
+    text: '(GMT+01:00) Belgrade, Bratislava, Budapest, Ljubljana, Prague',
+  },
+  {
+    id: '33',
+    gmtAdjustment: 'GMT+01:00',
+    useDaylightTime: '1',
+    value: 'GMT+1',
+    text: '(GMT+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna',
+  },
+  {
+    id: '34',
+    gmtAdjustment: 'GMT+01:00',
+    useDaylightTime: '1',
+    value: 'GMT+1',
+    text: '(GMT+01:00) Sarajevo, Skopje, Warsaw, Zagreb',
+  },
+  {
+    id: '35',
+    gmtAdjustment: 'GMT+01:00',
+    useDaylightTime: '1',
+    value: 'GMT+1',
+    text: '(GMT+01:00) Brussels, Copenhagen, Luxembourg, Madrid, Paris',
+  },
+  {
+    id: '36',
+    gmtAdjustment: 'GMT+02:00',
+    useDaylightTime: '1',
+    value: 'GMT+2',
+    text: '(GMT+02:00) Amman',
+  },
+  {
+    id: '37',
+    gmtAdjustment: 'GMT+02:00',
+    useDaylightTime: '1',
+    value: 'GMT+2',
+    text: '(GMT+02:00) Athens, Bucharest, Istanbul',
+  },
+  {
+    id: '38',
+    gmtAdjustment: 'GMT+02:00',
+    useDaylightTime: '1',
+    value: 'GMT+2',
+    text: '(GMT+02:00) Beirut',
+  },
+  {
+    id: '39',
+    gmtAdjustment: 'GMT+02:00',
+    useDaylightTime: '1',
+    value: 'GMT+2',
+    text: '(GMT+02:00) Cairo',
+  },
+  {
+    id: '40',
+    gmtAdjustment: 'GMT+02:00',
+    useDaylightTime: '0',
+    value: 'GMT+2',
+    text: '(GMT+02:00) Harare, Pretoria',
+  },
+  {
+    id: '41',
+    gmtAdjustment: 'GMT+02:00',
+    useDaylightTime: '1',
+    value: 'GMT+2',
+    text: '(GMT+02:00) Helsinki, Kyiv, Riga, Sofia, Tallinn, Vilnius',
+  },
+  {
+    id: '42',
+    gmtAdjustment: 'GMT+02:00',
+    useDaylightTime: '1',
+    value: 'GMT+2',
+    text: '(GMT+02:00) Jerusalem',
+  },
+  {
+    id: '43',
+    gmtAdjustment: 'GMT+02:00',
+    useDaylightTime: '1',
+    value: 'GMT+2',
+    text: '(GMT+02:00) Minsk',
+  },
+  {
+    id: '44',
+    gmtAdjustment: 'GMT+02:00',
+    useDaylightTime: '1',
+    value: 'GMT+2',
+    text: '(GMT+02:00) Windhoek',
+  },
+  {
+    id: '45',
+    gmtAdjustment: 'GMT+03:00',
+    useDaylightTime: '0',
+    value: 'GMT+3',
+    text: '(GMT+03:00) Kuwait, Riyadh, Baghdad',
+  },
+  {
+    id: '46',
+    gmtAdjustment: 'GMT+03:00',
+    useDaylightTime: '1',
+    value: 'GMT+3',
+    text: '(GMT+03:00) Moscow, St. Petersburg, Volgograd',
+  },
+  {
+    id: '47',
+    gmtAdjustment: 'GMT+03:00',
+    useDaylightTime: '0',
+    value: 'GMT+3',
+    text: '(GMT+03:00) Nairobi',
+  },
+  {
+    id: '48',
+    gmtAdjustment: 'GMT+03:00',
+    useDaylightTime: '0',
+    value: 'GMT+3',
+    text: '(GMT+03:00) Tbilisi',
+  },
+  {
+    id: '49',
+    gmtAdjustment: 'GMT+03:30',
+    useDaylightTime: '1',
+    value: 'GMT+3.5',
+    text: '(GMT+03:30) Tehran',
+  },
+  {
+    id: '50',
+    gmtAdjustment: 'GMT+04:00',
+    useDaylightTime: '0',
+    value: 'GMT+4',
+    text: '(GMT+04:00) Abu Dhabi, Muscat',
+  },
+  {
+    id: '51',
+    gmtAdjustment: 'GMT+04:00',
+    useDaylightTime: '1',
+    value: 'GMT+4',
+    text: '(GMT+04:00) Baku',
+  },
+  {
+    id: '52',
+    gmtAdjustment: 'GMT+04:00',
+    useDaylightTime: '1',
+    value: 'GMT+4',
+    text: '(GMT+04:00) Yerevan',
+  },
+  {
+    id: '53',
+    gmtAdjustment: 'GMT+04:30',
+    useDaylightTime: '0',
+    value: 'GMT+4.5',
+    text: '(GMT+04:30) Kabul',
+  },
+  {
+    id: '54',
+    gmtAdjustment: 'GMT+05:00',
+    useDaylightTime: '1',
+    value: 'GMT+5',
+    text: '(GMT+05:00) Yekaterinburg',
+  },
+  {
+    id: '55',
+    gmtAdjustment: 'GMT+05:00',
+    useDaylightTime: '0',
+    value: 'GMT+5',
+    text: '(GMT+05:00) Islamabad, Karachi, Tashkent',
+  },
+  {
+    id: '56',
+    gmtAdjustment: 'GMT+05:30',
+    useDaylightTime: '0',
+    value: 'GMT+5.5',
+    text: '(GMT+05:30) Sri Jayawardenapura',
+  },
+  {
+    id: '57',
+    gmtAdjustment: 'GMT+05:30',
+    useDaylightTime: '0',
+    value: 'GMT+5.5',
+    text: '(GMT+05:30) Chennai, Kolkata, Mumbai, New Delhi',
+  },
+  {
+    id: '58',
+    gmtAdjustment: 'GMT+05:45',
+    useDaylightTime: '0',
+    value: 'GMT+5.75',
+    text: '(GMT+05:45) Kathmandu',
+  },
+  {
+    id: '59',
+    gmtAdjustment: 'GMT+06:00',
+    useDaylightTime: '1',
+    value: 'GMT+6',
+    text: '(GMT+06:00) Almaty, Novosibirsk',
+  },
+  {
+    id: '60',
+    gmtAdjustment: 'GMT+06:00',
+    useDaylightTime: '0',
+    value: 'GMT+6',
+    text: '(GMT+06:00) Astana, Dhaka',
+  },
+  {
+    id: '61',
+    gmtAdjustment: 'GMT+06:30',
+    useDaylightTime: '0',
+    value: 'GMT+6.5',
+    text: '(GMT+06:30) Yangon (Rangoon)',
+  },
+  {
+    id: '62',
+    gmtAdjustment: 'GMT+07:00',
+    useDaylightTime: '0',
+    value: 'GMT+7',
+    text: '(GMT+07:00) Bangkok, Hanoi, Jakarta',
+  },
+  {
+    id: '63',
+    gmtAdjustment: 'GMT+07:00',
+    useDaylightTime: '1',
+    value: 'GMT+7',
+    text: '(GMT+07:00) Krasnoyarsk',
+  },
+  {
+    id: '64',
+    gmtAdjustment: 'GMT+08:00',
+    useDaylightTime: '0',
+    value: 'GMT+8',
+    text: '(GMT+08:00) Beijing, Chongqing, Hong Kong, Urumqi',
+  },
+  {
+    id: '65',
+    gmtAdjustment: 'GMT+08:00',
+    useDaylightTime: '0',
+    value: 'GMT+8',
+    text: '(GMT+08:00) Kuala Lumpur, Singapore',
+  },
+  {
+    id: '66',
+    gmtAdjustment: 'GMT+08:00',
+    useDaylightTime: '0',
+    value: 'GMT+8',
+    text: '(GMT+08:00) Irkutsk, Ulaan Bataar',
+  },
+  {
+    id: '67',
+    gmtAdjustment: 'GMT+08:00',
+    useDaylightTime: '0',
+    value: 'GMT+8',
+    text: '(GMT+08:00) Perth',
+  },
+  {
+    id: '68',
+    gmtAdjustment: 'GMT+08:00',
+    useDaylightTime: '0',
+    value: 'GMT+8',
+    text: '(GMT+08:00) Taipei',
+  },
+  {
+    id: '69',
+    gmtAdjustment: 'GMT+09:00',
+    useDaylightTime: '0',
+    value: 'GMT+9',
+    text: '(GMT+09:00) Osaka, Sapporo, Tokyo',
+  },
+  {
+    id: '70',
+    gmtAdjustment: 'GMT+09:00',
+    useDaylightTime: '0',
+    value: 'GMT+9',
+    text: '(GMT+09:00) Seoul',
+  },
+  {
+    id: '71',
+    gmtAdjustment: 'GMT+09:00',
+    useDaylightTime: '1',
+    value: 'GMT+9',
+    text: '(GMT+09:00) Yakutsk',
+  },
+  {
+    id: '72',
+    gmtAdjustment: 'GMT+09:30',
+    useDaylightTime: '0',
+    value: 'GMT+9.5',
+    text: '(GMT+09:30) Adelaide',
+  },
+  {
+    id: '73',
+    gmtAdjustment: 'GMT+09:30',
+    useDaylightTime: '0',
+    value: 'GMT+9.5',
+    text: '(GMT+09:30) Darwin',
+  },
+  {
+    id: '74',
+    gmtAdjustment: 'GMT+10:00',
+    useDaylightTime: '0',
+    value: 'GMT+10',
+    text: '(GMT+10:00) Brisbane',
+  },
+  {
+    id: '75',
+    gmtAdjustment: 'GMT+10:00',
+    useDaylightTime: '1',
+    value: 'GMT+10',
+    text: '(GMT+10:00) Canberra, Melbourne, Sydney',
+  },
+  {
+    id: '76',
+    gmtAdjustment: 'GMT+10:00',
+    useDaylightTime: '1',
+    value: 'GMT+10',
+    text: '(GMT+10:00) Hobart',
+  },
+  {
+    id: '77',
+    gmtAdjustment: 'GMT+10:00',
+    useDaylightTime: '0',
+    value: 'GMT+10',
+    text: '(GMT+10:00) Guam, Port Moresby',
+  },
+  {
+    id: '78',
+    gmtAdjustment: 'GMT+10:00',
+    useDaylightTime: '1',
+    value: 'GMT+10',
+    text: '(GMT+10:00) Vladivostok',
+  },
+  {
+    id: '79',
+    gmtAdjustment: 'GMT+11:00',
+    useDaylightTime: '1',
+    value: 'GMT+11',
+    text: '(GMT+11:00) Magadan, Solomon Is., New Caledonia',
+  },
+  {
+    id: '80',
+    gmtAdjustment: 'GMT+12:00',
+    useDaylightTime: '1',
+    value: 'GMT+12',
+    text: '(GMT+12:00) Auckland, Wellington',
+  },
+  {
+    id: '81',
+    gmtAdjustment: 'GMT+12:00',
+    useDaylightTime: '0',
+    value: 'GMT+12',
+    text: '(GMT+12:00) Fiji, Kamchatka, Marshall Is.',
+  },
+  {
+    id: '82',
+    gmtAdjustment: 'GMT+13:00',
+    useDaylightTime: '0',
+    value: 'GMT+13',
+    text: '(GMT+13:00) Nuku`alofa',
+  },
+];
+
+/**
+ * Index of the Brussels timezone (GMT+01:00) within {@link availableTimezones},
+ * used as the platform's default since CIRCABC is hosted by the European
+ * Commission in Brussels.
+ */
+const brusselsTimezoneIndex = 34;
+
+/**
+ * Default timezone applied when no explicit selection has been made,
+ * resolving to the Brussels (GMT+01:00) entry of {@link availableTimezones}.
+ */
+export const defaultTimezone = availableTimezones[brusselsTimezoneIndex];

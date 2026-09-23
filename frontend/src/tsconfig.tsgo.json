@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "outDir": "../out-tsc/app",
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "paths": { "*": ["./*"] },
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "bundler",
+    "experimentalDecorators": true,
+    "target": "ES2022",
+    "typeRoots": ["../node_modules/@types"],
+    "lib": ["es2022", "dom"],
+    "noUnusedLocals": false,
+    "noUnusedParameters": true,
+    "importHelpers": true,
+    "skipLibCheck": true,
+    "useUnknownInCatchVariables": false,
+    "noImplicitOverride": true,
+    "useDefineForClassFields": true,
+    "types": [],
+    "noEmit": true
+  },
+  "files": ["main.ts", "polyfills.ts"],
+  "include": ["**/*.ts", "**/*.d.ts"],
+  "exclude": ["**/*.spec.ts", "**/test.ts"]
+}

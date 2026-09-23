@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!-- NOTE: although we use iBatis here rather than Hibernate, for consistency we make use of single SQL dialect property (hibernate.dialect) -->
+    <properties
+        resource="alfresco/module/circabc-rest/alfresco-global.properties"
+    />
+
+    <typeAliases>
+        <typeAlias
+            alias="ContentNumberParametersDAO"
+            type="io.swagger.model.db.ContentNumberParametersDAO"
+        />
+        <typeAlias
+            alias="ShareSpaceQueryParameter"
+            type="io.swagger.model.db.ShareSpaceQueryParameter"
+        />
+        <typeAlias alias="Header" type="io.swagger.model.db.Header" />
+        <typeAlias alias="Category" type="io.swagger.model.db.Category" />
+        <typeAlias alias="User" type="io.swagger.model.db.User" />
+        <typeAlias alias="CatAdmin" type="io.swagger.model.db.CategoryAdmin" />
+        <typeAlias
+            alias="CircabcAdmin"
+            type="io.swagger.model.db.CircabcAdmin"
+        />
+        <typeAlias
+            alias="InterestGroup"
+            type="io.swagger.model.db.InterestGroup"
+        />
+        <typeAlias alias="Profile" type="io.swagger.model.db.Profile" />
+        <typeAlias alias="ProfileUser" type="io.swagger.model.db.ProfileUser" />
+        <typeAlias
+            alias="InterestGroupResult"
+            type="io.swagger.model.db.InterestGroupResult"
+        />
+        <typeAlias
+            alias="ExportedProfileItem"
+            type="io.swagger.model.db.ExportedProfileItem"
+        />
+        <typeAlias
+            alias="UserIGMembership"
+            type="io.swagger.model.db.UserIGMembership"
+        />
+        <typeAlias alias="KeyValue" type="io.swagger.model.db.KeyValue" />
+        <typeAlias
+            alias="KeyValueString"
+            type="io.swagger.model.db.KeyValueString"
+        />
+        <typeAlias
+            alias="HeaderCategory"
+            type="io.swagger.model.db.HeaderCategory"
+        />
+        <typeAlias
+            alias="ProfileWithUsersCount"
+            type="io.swagger.model.db.ProfileWithUsersCount"
+        />
+        <typeAlias
+            alias="UserWithProfile"
+            type="io.swagger.model.db.UserWithProfile"
+        />
+        <typeAlias
+            alias="TranslationEntry"
+            type="io.swagger.model.db.TranslationEntry"
+        />
+        <typeAlias alias="IGData" type="io.swagger.model.db.IGData" />
+    </typeAliases>
+
+    <mappers>
+        <!-- note: dialect property is set in properties resource above -->
+        <mapper
+            resource="alfresco/extension/sql/report/${hibernate.dialect}/CircabcReporting.xml"
+        />
+        <mapper
+            resource="alfresco/extension/sql/app/${hibernate.dialect}/Circabc.xml"
+        />
+    </mappers>
+</configuration>

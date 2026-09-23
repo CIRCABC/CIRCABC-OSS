@@ -1,0 +1,18 @@
+@use 'css/global/variables-mixins-keyframes';
+
+.login-form {
+  padding: 32px;
+  background: #1f3341;
+  border-radius: variables-mixins-keyframes.$radius-md;
+  box-shadow: 0 0 15px #5b5b5b;
+}
+
+.header-login {
+  background: #fff;
+}
+
+.loggin {
+  background: #6f8594;
+  border-radius: variables-mixins-keyframes.$radius-md;
+  padding: 5px;
+}

@@ -1,0 +1,24 @@
+@let _membership = membership();
+<section class="group-box">
+  @if (_membership && _membership.profile) {
+  <div class="profile">
+    <strong>{{ _membership.profile.title | cbcI18n }}</strong>
+    <br />
+    {{ _membership.profile.name }}
+  </div>
+  } @if (_membership && _membership.interestGroup) {
+  <div class="group">
+    <strong>{{ _membership.interestGroup.title | cbcI18n }}</strong>
+    <br />
+    <a [routerLink]="['/group', _membership.interestGroup.id]"
+      >{{ _membership.interestGroup.name }}</a
+    >
+  </div>
+  }
+  <div class="actions">
+    <cbc-inline-delete
+      [deleteLabel]="'label.remove' | transloco"
+      (deletionConfirmed)="uninviteUSer()"
+    ></cbc-inline-delete>
+  </div>
+</section>

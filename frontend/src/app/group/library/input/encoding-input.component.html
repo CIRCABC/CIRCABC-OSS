@@ -1,0 +1,10 @@
+<div class="field" [formGroup]="form">
+  <label for="encoding">{{ 'label.encoding' | transloco }}</label>
+  <div class="custom-select select--form">
+    <select id="encoding" formControlName="encoding">
+      @for (encoding of getAvailableEncodings(); track encoding) {
+      <option value="{{ encoding }}">{{ encoding }}</option>
+      }
+    </select>
+  </div>
+</div>

@@ -1,0 +1,97 @@
+@use 'css/global/variables-mixins-keyframes';
+
+.half-oval {
+  width: 32px;
+  margin-top: 60px;
+  position: fixed;
+  z-index: variables-mixins-keyframes.$z-sticky;
+
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 40px;
+    background-color: var(--theme-link);
+    border-radius: 0 variables-mixins-keyframes.$radius-md variables-mixins-keyframes.$radius-md 0;
+    color: #fff;
+    font-size: 16px;
+    transition: background-color 150ms ease;
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+      background-color: var(--theme-link-hover);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--theme-green);
+      outline-offset: 2px;
+    }
+  }
+}
+
+.info-badge {
+  margin-top: 48px;
+  margin-left: 20px;
+  background-color: var(--theme-green);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  position: fixed;
+  z-index: calc(#{variables-mixins-keyframes.$z-sticky} + 1);
+  line-height: 1;
+  border-radius: variables-mixins-keyframes.$radius-xl;
+}
+
+.hide-badge {
+  display: none;
+}
+
+.library-breadcrumb {
+  margin-bottom: 16px;
+}
+
+.library-toolbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+
+  .library-toolbar__notification {
+    flex: 1;
+  }
+}
+
+.library-content {
+  margin-bottom: 24px;
+}
+
+.explorer {
+  float: right;
+  width: 100%;
+  transition: width 0.3s ease;
+}
+
+.explorer--small {
+  width: 80%;
+  transition: width 0.3s ease;
+}
+
+@media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+  .explorer--small {
+    width: 100%;
+    transition: width 0.3s ease;
+
+    ::ng-deep .table-container {
+      margin-top: 0;
+    }
+  }
+}

@@ -1,0 +1,82 @@
+@keyframes showbox {
+  0% {
+    display: none;
+    opacity: 0;
+  }
+
+  100% {
+    display: block;
+    opacity: 1;
+  }
+}
+
+@keyframes hidebox {
+  0% {
+    display: block;
+    opacity: 1;
+  }
+
+  100% {
+    display: none;
+    opacity: 0;
+  }
+}
+
+.filterActionColumn {
+  width: 170px;
+  text-align: center;
+
+  a {
+    font-size: 12px;
+  }
+}
+
+.filterColumn {
+  font-size: 12px;
+  padding: 5px;
+
+  .select--form {
+    width: 200px;
+    height: 37px;
+
+    select {
+      width: 200px;
+      padding: 10px;
+    }
+  }
+}
+
+.centered {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.empty-row td {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.export-select {
+  padding-left: 25px;
+}
+
+.export-box {
+  padding-bottom: 25px;
+}
+
+.paddingMain {
+  padding: 10px 25px;
+}
+
+.cell-user-name .cell-user-lastname .cell-user-email {
+  width: 100%;
+  height: 45px;
+}
+
+.inputTable {
+  width: 100%;
+}
+
+.wrap {
+  max-width: unset;
+}

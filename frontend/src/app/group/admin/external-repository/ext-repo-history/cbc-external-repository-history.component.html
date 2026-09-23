@@ -1,0 +1,76 @@
+<section class="modal-content table-container">
+  <div class="wrapping scroll-body">
+    @if (groupLog() !== undefined && groupLog().length > 0) {
+    <p>
+      {{ 'label.records.found' | transloco: { total: groupLog().length } }}
+    </p>
+    }
+    <table class="main no-border-spacing">
+      <thead style="color: #035">
+        <tr>
+          <th>
+            <div>{{ 'label.areslog.repository' | transloco }}</div>
+          </th>
+          <th>
+            <div>{{ 'label.areslog.registrationnumber' | transloco }}</div>
+          </th>
+          <th>
+            <div>{{ 'label.areslog.savenumber' | transloco }}</div>
+          </th>
+          <th>
+            <div>{{ 'label.name' | transloco }}</div>
+          </th>
+          <th>
+            <div>{{ 'label.areslog.versionlabel' | transloco }}</div>
+          </th>
+          <th>
+            <div>{{ 'label.areslog.action' | transloco }}</div>
+          </th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @if (groupLog() !== undefined) {
+        <tr class="row empty-row">
+          @if (groupLog().length === 0) {
+          <td colspan="6"> {{ 'label.nothing.to.display' | transloco }} </td>
+          }
+        </tr>
+        } @for (item of groupLog(); track item) {
+        <tr class="row left-text">
+          <td>ARES</td>
+          <td>
+            @if (!isExternalUser()) {
+            <a href="{{aresDocumentLink(item.documentId)}}" target="_blank"
+              >{{ item.registrationNumber }}</a
+            >
+            } @if (isExternalUser()) {
+            <span>{{ item.registrationNumber }}</span>
+            }
+          </td>
+          <td>
+            @if (!isExternalUser()) {
+            <a href="{{aresDocumentLink(item.documentId)}}" target="_blank"
+              >{{ item.saveNumber }}</a
+            >
+            } @if (isExternalUser()) {
+            <span>{{ item.saveNumber }}</span>
+            }
+          </td>
+          <td>
+            @if (!isExternalUser()) {
+            <a href="{{circabcDocumentLink(item.nodeId)}}" target="_blank"
+              >{{ item.nodeName }}</a
+            >
+            } @if (isExternalUser()) {
+            <span>{{ item.nodeName }}</span>
+            }
+          </td>
+          <td>{{ item.versionLabel }}</td>
+          <td>{{ item.requestType }}</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

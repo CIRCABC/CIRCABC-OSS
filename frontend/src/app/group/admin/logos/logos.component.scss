@@ -1,0 +1,23 @@
+.cta--upload {
+  float: right;
+}
+
+table {
+  .fixedWidth {
+    width: 25%;
+  }
+
+  tbody {
+    .logoCell {
+      img {
+        max-width: 200px;
+      }
+    }
+  }
+}
+
+.selectAction {
+  img {
+    width: 20px;
+  }
+}

@@ -1,0 +1,24 @@
+span.complement {
+  margin-left: 25px;
+  margin-right: 25px;
+}
+
+span.yesno {
+  display: inline-block;
+  width: 50px;
+}
+
+.field--date {
+  min-height: 39px;
+}
+
+::ng-deep mat-slide-toggle .mat-mdc-slide-toggle-label {
+  width: auto;
+  padding: 0 10px;
+}
+
+::ng-deep .field .label,
+.field label {
+  width: auto;
+  vertical-align: unset;
+}

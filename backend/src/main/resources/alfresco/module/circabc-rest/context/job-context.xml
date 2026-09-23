@@ -1,0 +1,335 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<beans
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"
+>
+    <bean
+        id="schedulerAccessor"
+        class="org.springframework.scheduling.quartz.SchedulerAccessorBean"
+    >
+        <property name="scheduler" ref="schedulerFactory" />
+        <property name="triggers">
+            <list>
+                <ref bean="logJobTrigger" />
+                <ref bean="autoUploadFtpTrigger" />
+                <ref bean="globalStatisticsTrigger" />
+                <ref bean="emailListenersTrigger" />
+                <ref bean="unlockJobTrigger" />
+                <ref bean="expiredMembersTrigger" />
+                <ref bean="revocationTrigger" />
+                <ref bean="cleanGroupPermissionTrigger" />
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="logJobTrigger"
+        class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
+    >
+        <property name="jobDetail">
+            <bean
+                id="logJobDetail"
+                class="org.springframework.scheduling.quartz.JobDetailFactoryBean"
+            >
+                <property name="jobClass">
+                    <value>eu.europa.ec.digit.circabc.rest.job.LogJob</value>
+                </property>
+                <property name="jobDataAsMap">
+                    <map>
+                        <entry key="serviceRegistry">
+                            <ref bean="ServiceRegistry" />
+                        </entry>
+                        <entry key="circabcServiceRegistry">
+                            <ref bean="circabcServiceRegistry" />
+                        </entry>
+                        <entry key="enabled">
+                            <value>${log.job.enabled}</value>
+                        </entry>
+                    </map>
+                </property>
+            </bean>
+        </property>
+        <property name="startDelay">
+            <value>90000</value>
+        </property>
+        <property name="cronExpression" value="0 0/5 * * * ?" />
+        <!-- run every 5 minutes -->
+    </bean>
+    <bean
+        id="autoUploadFtpTrigger"
+        class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
+    >
+        <property name="jobDetail">
+            <bean
+                id="autoUploadFtpJobDetail"
+                class="org.springframework.scheduling.quartz.JobDetailFactoryBean"
+            >
+                <property name="jobClass">
+                    <value>
+                        eu.europa.ec.digit.circabc.rest.job.AutoUploadJobListener
+                    </value>
+                </property>
+                <property name="jobDataAsMap">
+                    <map>
+                        <entry key="autoUploadManagementService">
+                            <ref bean="AutoUploadManagementService" />
+                        </entry>
+                        <entry
+                            key="enabledOnHostname"
+                            value="${app.autoupload.enabled.on.hostname}"
+                        />
+                        <entry key="circabcLockService">
+                            <ref bean="circabcLockService" />
+                        </entry>
+                        <entry key="enabled">
+                            <value>${app.autoupload.enabled}</value>
+                        </entry>
+                    </map>
+                </property>
+            </bean>
+        </property>
+        <property name="startDelay">
+            <value>90000</value>
+        </property>
+        <property name="cronExpression">
+            <!-- every hour-->
+            <value>0 0 */1 * * ?</value>
+        </property>
+    </bean>
+    <bean
+        id="globalStatisticsTrigger"
+        class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
+    >
+        <property name="jobDetail">
+            <bean
+                id="globalStatisticsJobDetail"
+                class="org.springframework.scheduling.quartz.JobDetailFactoryBean"
+            >
+                <property name="jobClass">
+                    <value>
+                        eu.europa.ec.digit.circabc.rest.job.GlobalStatisticsJobListener
+                    </value>
+                </property>
+                <property name="jobDataAsMap">
+                    <map>
+                        <entry key="globalStatisticsService">
+                            <ref bean="GlobalStatisticsService" />
+                        </entry>
+                        <entry key="circabcLockService">
+                            <ref bean="CircabcLockService" />
+                        </entry>
+                        <entry
+                            key="enabledOnHostname"
+                            value="${circabc.global.statistics.enabled.on.hostname}"
+                        />
+                        <entry key="enabled">
+                            <value>${circabc.global.statistics.enabled}</value>
+                        </entry>
+                    </map>
+                </property>
+            </bean>
+        </property>
+        <property name="cronExpression">
+            <value>${circabc.global.statistics.cron.expression}</value>
+        </property>
+        <property name="startDelay">
+            <value>90000</value>
+        </property>
+    </bean>
+
+    <bean
+        id="emailListenersTrigger"
+        class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
+    >
+        <property name="jobDetail">
+            <bean
+                id="emailListenersJobDetail"
+                class="org.springframework.scheduling.quartz.JobDetailFactoryBean"
+            >
+                <property name="jobClass">
+                    <value>
+                        eu.europa.ec.digit.circabc.rest.job.MeetingResponseListener
+                    </value>
+                </property>
+                <property name="jobDataAsMap">
+                    <map>
+                        <entry key="serviceRegistry">
+                            <ref bean="ServiceRegistry" />
+                        </entry>
+                        <entry key="circabcServiceRegistry">
+                            <ref bean="circabcServiceRegistry" />
+                        </entry>
+                        <entry key="enabled">
+                            <value>${is_email_listener_active}</value>
+                        </entry>
+                    </map>
+                </property>
+            </bean>
+        </property>
+        <property name="startDelay">
+            <value>60000</value>
+        </property>
+        <property name="cronExpression">
+            <value>0 0/5 * * * ?</value>
+            <!-- Every 5 minutes-->
+        </property>
+    </bean>
+
+    <bean
+        id="unlockJobTrigger"
+        class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
+    >
+        <property name="jobDetail">
+            <bean
+                id="unlockJobDetail"
+                class="org.springframework.scheduling.quartz.JobDetailFactoryBean"
+            >
+                <property name="jobClass">
+                    <value>eu.europa.ec.digit.circabc.rest.job.UnlockJob</value>
+                </property>
+                <property name="jobDataAsMap">
+                    <map>
+                        <entry key="serviceRegistry">
+                            <ref bean="ServiceRegistry" />
+                        </entry>
+                        <entry key="circabcServiceRegistry">
+                            <ref bean="circabcServiceRegistry" />
+                        </entry>
+                        <entry key="maxJobLockTimeInHours">
+                            <value>${max.job.lock.time.in.hours}</value>
+                        </entry>
+                        <entry key="enabled">
+                            <value>${unlock.job.enabled}</value>
+                        </entry>
+                    </map>
+                </property>
+            </bean>
+        </property>
+        <property name="startDelay">
+            <value>60000</value>
+        </property>
+        <property name="cronExpression">
+            <value>0 0/5 * * * ?</value>
+            <!-- Every 5 minutes-->
+        </property>
+    </bean>
+
+    <bean
+        id="expiredMembersTrigger"
+        class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
+    >
+        <property name="jobDetail">
+            <bean
+                id="expiredMembersJobDetail"
+                class="org.springframework.scheduling.quartz.JobDetailFactoryBean"
+            >
+                <property name="jobClass">
+                    <value>
+                        eu.europa.ec.digit.circabc.rest.job.ExpiredMembersJob
+                    </value>
+                </property>
+                <property name="jobDataAsMap">
+                    <map>
+                        <entry key="groupsApi">
+                            <ref bean="GroupsApi" />
+                        </entry>
+                        <entry key="historyApi">
+                            <ref bean="HistoryApi" />
+                        </entry>
+                        <entry key="lockService">
+                            <ref bean="CircabcLockService" />
+                        </entry>
+                        <entry key="enabled">
+                            <value>${member.expiration.job.enabled}</value>
+                        </entry>
+                    </map>
+                </property>
+            </bean>
+        </property>
+        <property name="cronExpression">
+            <value>0 */5 * * * ?</value>
+            <!-- Every 5 minutes-->
+        </property>
+    </bean>
+
+    <bean
+        id="revocationTrigger"
+        class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
+    >
+        <property name="jobDetail">
+            <bean
+                id="revocationJobDetail"
+                class="org.springframework.scheduling.quartz.JobDetailFactoryBean"
+            >
+                <property name="jobClass">
+                    <value>
+                        eu.europa.ec.digit.circabc.rest.job.RevocationJob
+                    </value>
+                </property>
+                <property name="jobDataAsMap">
+                    <map>
+                        <entry key="personService">
+                            <ref bean="personService" />
+                        </entry>
+                        <entry key="groupsApi">
+                            <ref bean="groupsApi" />
+                        </entry>
+                        <entry key="usersApi">
+                            <ref bean="usersApi" />
+                        </entry>
+                        <entry key="historyApi">
+                            <ref bean="historyApi" />
+                        </entry>
+                        <entry key="transactionService">
+                            <ref bean="transactionService" />
+                        </entry>
+                        <entry key="lockService">
+                            <ref bean="circabcLockService" />
+                        </entry>
+                        <entry key="enabled">
+                            <value>${revocation.job.enabled}</value>
+                        </entry>
+                    </map>
+                </property>
+            </bean>
+        </property>
+        <property name="cronExpression">
+            <value>0 0 */1 * * ?</value>
+            <!-- every hour-->
+        </property>
+    </bean>
+
+    <bean
+        id="cleanGroupPermissionTrigger"
+        class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"
+    >
+        <property name="jobDetail">
+            <bean
+                id="cleanGroupPermissionJobDetail"
+                class="org.springframework.scheduling.quartz.JobDetailFactoryBean"
+            >
+                <property name="jobClass">
+                    <value>
+                        eu.europa.ec.digit.circabc.rest.job.CleanGroupPermissionJob
+                    </value>
+                </property>
+                <property name="jobDataAsMap">
+                    <map>
+                        <entry key="historyApi">
+                            <ref bean="historyApi" />
+                        </entry>
+                        <entry key="lockService">
+                            <ref bean="circabcLockService" />
+                        </entry>
+                        <entry key="enabled">
+                            <value>${clean.permission.job.enabled}</value>
+                        </entry>
+                    </map>
+                </property>
+            </bean>
+        </property>
+        <property name="cronExpression">
+            <value>0 */5 * * * ?</value>
+        </property>
+    </bean>
+</beans>

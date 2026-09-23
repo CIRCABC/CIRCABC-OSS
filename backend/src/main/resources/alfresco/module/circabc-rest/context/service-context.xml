@@ -1,0 +1,3488 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<beans
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"
+>
+    <bean class="liquibase.integration.spring.SpringLiquibase" id="liquibase">
+        <property name="dataSource" ref="dataSource" />
+        <property name="changeLog">
+            <!-- prettier-ignore-start -->
+            <value>classpath:alfresco/module/circabc-rest/context/db-changelog.xml</value>
+            <!-- prettier-ignore-end -->
+        </property>
+        <property name="contexts" value="" />
+    </bean>
+    <bean
+        class="liquibase.integration.spring.SpringLiquibase"
+        id="liquibasePatchAlfresco"
+    >
+        <property name="dataSource" ref="dataSource" />
+        <property name="changeLog">
+            <!-- prettier-ignore-start -->
+            <value>classpath:alfresco/module/circabc-rest/context/db-changelog-alfresco-patch.xml</value>
+            <!-- prettier-ignore-end -->
+        </property>
+        <property name="contexts" value="" />
+    </bean>
+    <!-- A CIRCABC module component that will be executed once.
+         Note. this module component will only be executed once, and then there will be an entry for it in
+    the Repo DB.
+         So doing for example $ mvn clean install alfresco:run twice will only execute this component the
+    first time.
+         You need to remove /alf_data_dev for it to be executed again. -->
+    <bean
+        id="eu.europa.ec.digit.circabc.rest.CircabcComponent"
+        class="eu.europa.ec.digit.circabc.rest.platformsample.CircabcComponent"
+        parent="module.baseComponent"
+    >
+        <property name="moduleId" value="circabc-rest" />
+        <!-- See module.properties -->
+        <property name="name" value="CircabcComponent" />
+        <property name="description" value="A CIRCABC component" />
+        <property name="sinceVersion" value="1.0" />
+        <property name="appliesFromVersion" value="0.99" />
+    </bean>
+    <!--DA-->
+    <bean
+        id="circabcDynamicAuthorityService"
+        class="eu.europa.ec.digit.circabc.rest.dynamic.authority.CircabcDynamicAuthorityServiceImpl"
+    />
+    <bean
+        id="permissionServiceImpl"
+        class="org.alfresco.repo.security.permissions.impl.PermissionServiceImpl"
+        init-method="init"
+    >
+        <property name="nodeService">
+            <ref bean="mtAwareNodeService" />
+        </property>
+        <property name="tenantService">
+            <ref bean="tenantService" />
+        </property>
+        <property name="dictionaryService">
+            <ref bean="dictionaryService" />
+        </property>
+        <property name="permissionsDaoComponent">
+            <ref bean="permissionsDaoComponent" />
+        </property>
+        <property name="modelDAO">
+            <ref bean="permissionsModelDAO" />
+        </property>
+        <property name="authorityService">
+            <ref bean="authorityService" />
+        </property>
+        <property name="accessCache">
+            <ref bean="permissionsAccessCache" />
+        </property>
+        <property name="readersCache">
+            <ref bean="readersCache" />
+        </property>
+        <property name="readersDeniedCache">
+            <ref bean="readersDeniedCache" />
+        </property>
+        <property name="policyComponent">
+            <ref bean="policyComponent" />
+        </property>
+        <property name="aclDAO">
+            <ref bean="aclDAO" />
+        </property>
+        <property name="ownableService">
+            <ref bean="ownableService" />
+        </property>
+        <property name="anyDenyDenies">
+            <value>${security.anyDenyDenies}</value>
+        </property>
+        <property name="dynamicAuthorities">
+            <list>
+                <ref bean="circabcOwnerDynamicAuthority" />
+                <ref bean="lockOwnerDynamicAuthority" />
+                <ref bean="circabcInterestGroupLeaderDynamicAuthority" />
+            </list>
+        </property>
+        <property name="fixedAclUpdater">
+            <ref bean="fixedAclUpdater" />
+        </property>
+        <property name="policyIgnoreUtil" ref="policyIgnoreUtil" />
+    </bean>
+
+    <bean
+        id="circabcOwnerDynamicAuthority"
+        class="eu.europa.ec.digit.circabc.rest.dynamic.authority.CircabcOwnerDynamicAuthority"
+    />
+
+            <!-- Custom action: execute AddFeatures as system user to avoid access denied -->
+            <bean
+                id="system-add-features"
+                class="eu.europa.ec.digit.circabc.rest.action.SystemAddFeaturesActionExecuter"
+                parent="action-executer"
+            >
+                <property name="nodeService">
+                    <ref bean="NodeService" />
+                </property>
+                <property name="transactionService">
+                    <ref bean="TransactionService" />
+                </property>
+            </bean>
+    <bean
+        id="circabcInterestGroupLeaderDynamicAuthority"
+        class="eu.europa.ec.digit.circabc.rest.dynamic.authority.CircabcInterestGroupLeaderDynamicAuthority"
+    />
+
+    <!--DA-->
+
+    <bean id="usersApi" class="io.swagger.api.UsersApiImpl" />
+    <bean
+        id="UsersApi"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>io.swagger.api.UsersApi</value>
+        </property>
+        <property name="target">
+            <ref bean="usersApi" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>usersApi_transaction</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="usersApi_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean id="circabcConfig" class="io.swagger.config.CircabcConfig">
+        <property name="buildRelease" value="${build.circabc.release}" />
+        <property name="globalProperties">
+            <ref bean="global-properties" />
+        </property>
+    </bean>
+    <bean
+        id="circabcService"
+        class="eu.europa.ec.digit.circabc.rest.service.app.CircabcServiceImpl"
+    />
+
+    <bean
+        id="cociContentBusinessSrv"
+        class="eu.europa.ec.digit.circabc.rest.service.CociContentBusinessImpl"
+    />
+
+    <bean
+        id="CociContentBusinessSrv"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.CociContentBusinessSrv
+            </value>
+        </property>
+        <property name="target">
+            <ref bean="cociContentBusinessSrv" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>CociContentBusinessSrv_transaction</value>
+                <value>CociContentBusinessSrv_security</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Transaction interceptor for Coci Content Business Service  -->
+    <bean
+        id="CociContentBusinessSrv_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="get*">${server.transaction.mode.readOnly}</prop>
+                <prop key="is*">${server.transaction.mode.readOnly}</prop>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean
+        id="CociContentBusinessSrv_security"
+        class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor"
+    >
+        <property name="authenticationManager">
+            <ref bean="authenticationManager" />
+        </property>
+        <property name="accessDecisionManager">
+            <ref bean="accessDecisionManager" />
+        </property>
+        <property name="afterInvocationManager">
+            <ref bean="afterInvocationManager" />
+        </property>
+        <property name="objectDefinitionSource">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.CociContentBusinessSrv.checkOut=ACL_NODE.0.cm:lockable.CheckOut
+                eu.europa.ec.digit.circabc.rest.service.CociContentBusinessSrv.checkIn=ACL_NODE.0.cm:workingcopy.CheckIn
+                eu.europa.ec.digit.circabc.rest.service.CociContentBusinessSrv.cancelCheckOut=ACL_NODE.0.cm:workingcopy.CancelCheckOut
+                eu.europa.ec.digit.circabc.rest.service.CociContentBusinessSrv.getWorkingCopy=ACL_NODE.0.sys:base.Read
+                eu.europa.ec.digit.circabc.rest.service.CociContentBusinessSrv.update=ACL_NODE.0.sys:base.WriteContent
+                eu.europa.ec.digit.circabc.rest.service.CociContentBusinessSrv.*=ACL_DENY
+            </value>
+        </property>
+    </bean>
+
+    <bean
+        id="currentUserPermissionCheckerService"
+        class="io.swagger.util.CurrentUserPermissionCheckerService"
+    />
+    <bean
+        id="userService"
+        class="eu.europa.ec.digit.circabc.rest.service.user.UserServiceImpl"
+    />
+    <bean
+        id="UserService"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.user.UserService
+            </value>
+        </property>
+        <property name="target">
+            <ref bean="userService" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>UserService_transaction</value>
+                <value>AuditMethodInterceptor</value>
+                <value>UserService_security</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="UserService_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="get*">${server.transaction.mode.readOnly}</prop>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="UserService_security"
+        class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+    >
+        <property name="authenticationManager">
+            <ref bean="authenticationManager" />
+        </property>
+        <property name="accessDecisionManager">
+            <ref bean="accessDecisionManager" />
+        </property>
+        <property name="afterInvocationManager">
+            <ref bean="afterInvocationManager" />
+        </property>
+        <property name="objectDefinitionSource">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.user.UserService.createLdapUser=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.user.UserService.createUser=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.user.UserService.getCategories=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.user.UserService.getCircabcUserDataBean=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.user.UserService.getEventRootNodes=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.user.UserService.getInterestGroups=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.user.UserService.getLDAPUserDataByUid=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.user.UserService.getLDAPUserDataNoFilterByUid=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.user.UserService.getLDAPUserIDByIdMonikerEmailCn=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.user.UserService.getPerson=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.user.UserService.getPreference=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.user.UserService.getUserByEmail=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.user.UserService.getUserDomain=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.user.UserService.getUserEmail=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.user.UserService.getUserFullName=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.user.UserService.getUserNameByEmail=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.user.UserService.getUsersByDomainFirstNameLastNameEmail=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.user.UserService.getUsersByMailDomain=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.user.UserService.getUsersWithPermission=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.user.UserService.setPassword=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.user.UserService.updateUser=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.user.UserService.setAuthenticationEnabled=ACL_METHOD.ROLE_ADMINISTRATOR
+                eu.europa.ec.digit.circabc.rest.service.user.UserService.getAuthenticationEnabled=ACL_METHOD.ROLE_ADMINISTRATOR
+                eu.europa.ec.digit.circabc.rest.service.user.UserService.*=ACL_DENY
+            </value>
+        </property>
+    </bean>
+    <bean id="groupsApi" class="io.swagger.api.GroupsApiImpl" />
+    <bean
+        id="GroupsApi"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>io.swagger.api.GroupsApi</value>
+        </property>
+        <property name="target">
+            <ref bean="groupsApi" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>groupsApi_transaction</value>
+                <value>GroupsApi_security</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="groupsApi_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="GroupsApi_security"
+        class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+    >
+        <property name="authenticationManager">
+            <ref bean="authenticationManager" />
+        </property>
+        <property name="accessDecisionManager">
+            <ref bean="accessDecisionManager" />
+        </property>
+        <property name="afterInvocationManager">
+            <ref bean="afterInvocationManager" />
+        </property>
+        <property name="objectDefinitionSource">
+            <value>
+                io.swagger.api.GroupsApi.groupsIdMembersPost=ACL_NODE.0.ci:circaIGRoot.DirManageMembers
+                io.swagger.api.GroupsApi.groupsIdMembersPut=ACL_NODE.0.ci:circaIGRoot.DirManageMembers
+                io.swagger.api.GroupsApi.groupsIdMembersGet=ACL_ALLOW
+                io.swagger.api.GroupsApi.groupsIdMembersUserIdDelete=ACL_ALLOW
+                io.swagger.api.GroupsApi.groupsIdPut=ACL_ALLOW
+                io.swagger.api.GroupsApi.getInterestGroupDetails=ACL_ALLOW
+                io.swagger.api.GroupsApi.getInterestGroup=ACL_ALLOW
+                io.swagger.api.GroupsApi.getGroupDashboard=ACL_ALLOW
+                io.swagger.api.GroupsApi.groupsIdMembersApplicantsGet=ACL_ALLOW
+                io.swagger.api.GroupsApi.groupsIdMembersApplicantsPut=ACL_ALLOW
+                io.swagger.api.GroupsApi.groupsIdMembersApplicantsPost=ACL_ALLOW
+                io.swagger.api.GroupsApi.getIGSummaryStatistics=ACL_ALLOW
+                io.swagger.api.GroupsApi.getIGSummaryTimeline=ACL_ALLOW
+                io.swagger.api.GroupsApi.getIGSummaryStructure=ACL_ALLOW
+                io.swagger.api.GroupsApi.exportSummary=ACL_ALLOW
+                io.swagger.api.GroupsApi.generateImportIndexFileTemplate=ACL_ALLOW
+                io.swagger.api.GroupsApi.importZipFile=ACL_ALLOW
+                io.swagger.api.GroupsApi.getGroupRecentDiscussions=ACL_ALLOW
+                io.swagger.api.GroupsApi.getVisitedGroups=ACL_ALLOW
+                io.swagger.api.GroupsApi.getInterestGroupConfiguration=ACL_ALLOW
+                io.swagger.api.GroupsApi.putInterestGroupConfiguration=ACL_ALLOW
+                io.swagger.api.GroupsApi.getInterestGroupLogos=ACL_ALLOW
+                io.swagger.api.GroupsApi.postGroupLogoByGroupId=ACL_ALLOW
+                io.swagger.api.GroupsApi.putSelectedLogo=ACL_ALLOW
+                io.swagger.api.GroupsApi.deleteLogo=ACL_ALLOW
+                io.swagger.api.GroupsApi.countMembersInIg=ACL_ALLOW
+                io.swagger.api.GroupsApi.groupsIdMembersUserIdExpirationDelete=ACL_ALLOW
+                io.swagger.api.GroupsApi.groupsIdMembersUserIdExpirationPut=ACL_ALLOW
+                io.swagger.api.GroupsApi.groupsIdMembersUserIdExpirationPost=ACL_ALLOW
+                io.swagger.api.GroupsApi.groupsIdDelete=ACL_ALLOW
+                io.swagger.api.GroupsApi.*=ACL_DENY
+            </value>
+        </property>
+    </bean>
+    <bean
+        name="ldapEcasDomainServiceCache"
+        factory-bean="cacheFactory"
+        factory-method="createCache"
+    >
+        <constructor-arg
+            value="eu.europa.ec.digit.circabc.rest.service.user.ldapEcasDomainServiceCache"
+        />
+    </bean>
+    <bean
+        id="ldapEcasDomainService"
+        class="eu.europa.ec.digit.circabc.rest.service.user.LdapEcasDomainServiceImpl"
+        init-method="init"
+    >
+        <property name="ldapECASDomainsCache">
+            <ref bean="ldapEcasDomainServiceCache" />
+        </property>
+    </bean>
+    <bean
+        id="ldapUserService"
+        class="eu.europa.ec.digit.circabc.rest.service.user.LdapUserServiceImpl"
+        init-method="init"
+        depends-on="ldapEcasDomainService"
+    />
+
+    <bean
+        id="luceneUserService"
+        class="eu.europa.ec.digit.circabc.rest.service.user.LuceneUserServiceImpl"
+        init-method="init"
+    />
+
+    <bean id="appMessageApi" class="io.swagger.api.AppMessageApiImpl" />
+    <bean
+        id="AppMessageApi"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>io.swagger.api.AppMessageApi</value>
+        </property>
+        <property name="target">
+            <ref bean="appMessageApi" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>appMessageApi_transaction</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="appMessageApi_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="logService"
+        class="eu.europa.ec.digit.circabc.rest.service.log.DBLogServiceImpl"
+    />
+    <bean
+        id="logTransformService"
+        class="eu.europa.ec.digit.circabc.rest.service.log.LogTransformServiceImpl"
+    />
+    <bean id="apiToolBox" class="io.swagger.util.ApiToolBox" />
+    <bean id="headerApi" class="io.swagger.api.HeadersApiImpl">
+        <property name="nodeService">
+            <ref bean="nodeService" />
+        </property>
+        <property name="secureNodeService">
+            <ref bean="NodeService" />
+        </property>
+    </bean>
+    <bean
+        id="HeaderApi"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>io.swagger.api.HeadersApi</value>
+        </property>
+        <property name="target">
+            <ref bean="headerApi" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>headerApi_transaction</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="headerApi_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean id="favouritesApi" class="io.swagger.api.FavouritesApiImpl" />
+    <bean
+        id="FavouritesApi"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>io.swagger.api.FavouritesApi</value>
+        </property>
+        <property name="target">
+            <ref bean="favouritesApi" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>favouritesApi_transaction</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="favouritesApi_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean id="circabcApi" class="io.swagger.api.CircabcApiImpl" />
+    <bean id="categoriesApi" class="io.swagger.api.CategoriesApiImpl" />
+    <bean
+        id="CategoriesApi"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>io.swagger.api.CategoriesApi</value>
+        </property>
+        <property name="target">
+            <ref bean="categoriesApi" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>categoriesApi_transaction</value>
+                <value>CategoriesApi_security</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="categoriesApi_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="CategoriesApi_security"
+        class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+    >
+        <property name="authenticationManager">
+            <ref bean="authenticationManager" />
+        </property>
+        <property name="accessDecisionManager">
+            <ref bean="accessDecisionManager" />
+        </property>
+        <property name="afterInvocationManager">
+            <ref bean="afterInvocationManager" />
+        </property>
+        <property name="objectDefinitionSource">
+            <value>
+                io.swagger.api.CategoriesApi.getCategories=ACL_ALLOW
+                io.swagger.api.CategoriesApi.getInterestGroups=ACL_ALLOW
+                io.swagger.api.CategoriesApi.getInterestGroupByCategoryId=ACL_ALLOW
+                io.swagger.api.CategoriesApi.categoriesIdGroupsPost=ACL_ALLOW
+                io.swagger.api.CategoriesApi.getIGStatisticsContents=ACL_ALLOW
+                io.swagger.api.CategoriesApi.calculateIGStatistics=ACL_ALLOW
+                io.swagger.api.CategoriesApi.categoriesIdGroupRequestPost=ACL_ALLOW
+                io.swagger.api.CategoriesApi.categoriesIdExportedProfilesGet=ACL_ALLOW
+                io.swagger.api.CategoriesApi.getCategoryLogoByCategoryId=ACL_ALLOW
+                io.swagger.api.CategoriesApi.postCategoryLogoByCategoryId=ACL_ALLOWF
+                io.swagger.api.CategoriesApi.selectCategoryLogoByLogoId=ACL_ALLOW
+                io.swagger.api.CategoriesApi.deleteCategoryLogoByLogoId=ACL_ALLOW
+                io.swagger.api.CategoriesApi.categoriesIdPut=ACL_ALLOW
+                io.swagger.api.CategoriesApi.categoriesIdAdminsGet=ACL_ALLOW
+                io.swagger.api.CategoriesApi.categoriesIdAdminsPost=ACL_ALLOW
+                io.swagger.api.CategoriesApi.categoriesIdAdminsDelete=ACL_ALLOW
+                io.swagger.api.CategoriesApi.headersIdCategoryPost=ACL_ALLOW
+                io.swagger.api.CategoriesApi.categoriesIdGet=ACL_ALLOW
+                io.swagger.api.CategoriesApi.categoriesIdAdminContactPost=ACL_ALLOW
+                io.swagger.api.CategoriesApi.existsGroupDeleteRequest=ACL_ALLOW
+                io.swagger.api.CategoriesApi.categoriesIdGroupRequestsGet=ACL_ALLOW
+                io.swagger.api.CategoriesApi.categoriesIdGroupDeleteRequestsGet=ACL_ALLOW
+                io.swagger.api.CategoriesApi.categoriesIdGroupRequestDeleteApprovalPost=ACL_ALLOW
+                io.swagger.api.CategoriesApi.groupIdDeleteRequestPost=ACL_ALLOW
+                io.swagger.api.CategoriesApi.categoriesIdGroupRequestApprovalPost=ACL_ALLOW
+                io.swagger.api.CategoriesApi.categoriesGroupRequestPut=ACL_ALLOW
+                io.swagger.api.CategoriesApi.*=ACL_DENY
+            </value>
+        </property>
+    </bean>
+    <bean id="guardsApi" class="io.swagger.api.GuardsApiImpl" />
+    <bean
+        id="GuardsApi"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>io.swagger.api.GuardsApi</value>
+        </property>
+        <property name="target">
+            <ref bean="guardsApi" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>guardsApi_transaction</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="guardsApi_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean id="nodesApi" class="io.swagger.api.NodesApiImpl" />
+    <bean
+        id="NodesApi"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>io.swagger.api.NodesApi</value>
+        </property>
+        <property name="target">
+            <ref bean="nodesApi" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>nodeApi_transaction</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="nodeApi_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean id="profilesApi" class="io.swagger.api.ProfilesApiImpl" />
+    <bean
+        id="ProfilesApi"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>io.swagger.api.ProfilesApi</value>
+        </property>
+        <property name="target">
+            <ref bean="profilesApi" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>profilesApi_transaction</value>
+                <value>ProfilesApi_security</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="profilesApi_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="ProfilesApi_security"
+        class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+    >
+        <property name="authenticationManager">
+            <ref bean="authenticationManager" />
+        </property>
+        <property name="accessDecisionManager">
+            <ref bean="accessDecisionManager" />
+        </property>
+        <property name="afterInvocationManager">
+            <ref bean="afterInvocationManager" />
+        </property>
+        <property name="objectDefinitionSource">
+            <value>
+                io.swagger.api.ProfilesApi.groupsIdProfilesGet=ACL_ALLOW
+                io.swagger.api.ProfilesApi.groupsIdProfilesPost=ACL_NODE.0.ci:circaIGRoot.DirAdmin
+                io.swagger.api.ProfilesApi.groupsIdImportedProfilesPost=ACL_NODE.0.ci:circaIGRoot.DirAdmin
+                io.swagger.api.ProfilesApi.profilesIdDelete=ACL_ALLOW
+                io.swagger.api.ProfilesApi.profilesIdPut=ACL_ALLOW
+                io.swagger.api.ProfilesApi.getInvitedUsers=ACL_ALLOW
+                io.swagger.api.ProfilesApi.profilesIdGet=ACL_ALLOW
+                io.swagger.api.ProfilesApi.*=ACL_DENY
+            </value>
+        </property>
+    </bean>
+    <bean id="historyApi" class="io.swagger.api.HistoryApiImpl" />
+    <bean
+        id="HistoryApi"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>io.swagger.api.HistoryApi</value>
+        </property>
+        <property name="target">
+            <ref bean="historyApi" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>historyApi_transaction</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="historyApi_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="circabcNotificationService"
+        class="eu.europa.ec.digit.circabc.rest.service.notification.NotificationServiceImpl"
+    />
+    <bean
+        id="CircabcNotificationService"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.notification.NotificationService
+            </value>
+        </property>
+        <property name="target">
+            <ref bean="circabcNotificationService" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>CircabcNotificationService_transaction</value>
+                <value>AuditMethodInterceptor</value>
+                <value>CircabcNotificationService_security</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="CircabcNotificationService_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="get*">${server.transaction.mode.readOnly}</prop>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="CircabcNotificationService_security"
+        class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor"
+    />
+    <bean
+        id="circabcMailService"
+        class="eu.europa.ec.digit.circabc.rest.service.mail.MailServiceImpl"
+        init-method="init"
+    >
+        <property name="noReply">
+            <value>${mail.from.default}</value>
+        </property>
+        <property name="support">
+            <value>${mail.from.circabc.support}</value>
+        </property>
+        <property name="devTeam">
+            <value>${mail.from.circabc.devteam}</value>
+        </property>
+        <property name="helpdeskAddress">
+            <value>${mail.from.circabc.helpdesk}</value>
+        </property>
+        <property name="disclamerHtml">
+            <value>${mail.disclamer.html}</value>
+        </property>
+        <property name="disclamerText">
+            <value>${mail.disclamer.text}</value>
+        </property>
+        <property name="logoCid">
+            <value>${mail.disclamer.logo.cid}</value>
+        </property>
+        <property name="headerLogoCid">
+            <value>mailHeaderLogoCid</value>
+        </property>
+        <property name="environmentNameEnabled">
+            <value>${mail.environment.name.enabled}</value>
+        </property>
+        <property name="environmentName">
+            <value>${mail.environment.name}</value>
+        </property>
+        <property name="redirectEmailAddressEnabled">
+            <value>${mail.redirect.email.address.enabled}</value>
+        </property>
+        <property name="redirectEmailAddress">
+            <value>${mail.redirect.email.address}</value>
+        </property>
+    </bean>
+    <bean
+        id="CircabcMailService"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.mail.MailService
+            </value>
+        </property>
+        <property name="target">
+            <ref bean="circabcMailService" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>CircabcMailService_transaction</value>
+                <value>AuditMethodInterceptor</value>
+                <value>CircabcMailService_security</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="CircabcMailService_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.readOnly}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="CircabcMailService_security"
+        class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor"
+    />
+    <bean
+        id="nodePreferencesService"
+        class="eu.europa.ec.digit.circabc.rest.service.customization.NodePreferencesServiceImpl"
+    >
+        <property name="containerCache">
+            <ref bean="customization.containerCache" />
+        </property>
+        <property name="customizationFolderCache">
+            <ref bean="customization.foldersCache" />
+        </property>
+        <property name="rootPreferencesUpdater">
+            <ref bean="rootPreferencesUpdater" />
+        </property>
+        <property name="multilingualContentService">
+            <ref bean="multilingualContentService" />
+        </property>
+        <property name="mimetypeService">
+            <ref bean="mimetypeService" />
+        </property>
+    </bean>
+    <bean
+        id="NodePreferencesService"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.customization.NodePreferencesService
+            </value>
+        </property>
+        <property name="target">
+            <ref bean="nodePreferencesService" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>NodePreferencesService_transaction</value>
+                <value>AuditMethodInterceptor</value>
+                <value>NodePreferencesService_security</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="NodePreferencesService_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="get*">${server.transaction.mode.readOnly}</prop>
+                <prop key="build*">${server.transaction.mode.readOnly}</prop>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="NodePreferencesService_security"
+        class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+    >
+        <property name="authenticationManager">
+            <ref bean="authenticationManager" />
+        </property>
+        <property name="accessDecisionManager">
+            <ref bean="accessDecisionManager" />
+        </property>
+        <property name="afterInvocationManager">
+            <ref bean="afterInvocationManager" />
+        </property>
+        <property name="objectDefinitionSource">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.customization.NodePreferencesService.addCustomizationFile=ACL_NODE.0.sys:base.WriteContent
+                eu.europa.ec.digit.circabc.rest.service.customization.NodePreferencesService.customizationFileExists=ACL_NODE.0.sys:base.Read
+                eu.europa.ec.digit.circabc.rest.service.customization.NodePreferencesService.getConfigurationFiles=ACL_NODE.0.sys:base.Read
+                eu.europa.ec.digit.circabc.rest.service.customization.NodePreferencesService.getCustomization=ACL_NODE.0.sys:base.Read
+                eu.europa.ec.digit.circabc.rest.service.customization.NodePreferencesService.getCustomizationFromNode=ACL_NODE.0.sys:base.Read
+                eu.europa.ec.digit.circabc.rest.service.customization.NodePreferencesService.getDefaultConfigurationFile=ACL_NODE.0.sys:base.Read
+                eu.europa.ec.digit.circabc.rest.service.customization.NodePreferencesService.isNodeConfigurable=ACL_NODE.0.sys:base.Read
+                eu.europa.ec.digit.circabc.rest.service.customization.NodePreferencesService.makeConfigurable=ACL_NODE.0.sys:base.WriteContent
+                eu.europa.ec.digit.circabc.rest.service.customization.NodePreferencesService.removeCustomization=ACL_NODE.0.sys:base.Read
+                eu.europa.ec.digit.circabc.rest.service.customization.NodePreferencesService.updateRootReference=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.customization.NodePreferencesService.*=ACL_DENY
+            </value>
+        </property>
+    </bean>
+    <bean
+        id="mailPreferencesService"
+        class="eu.europa.ec.digit.circabc.rest.service.mail.MailPreferencesServiceImpl"
+    />
+    <bean
+        id="MailPreferencesService"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.mail.MailPreferencesService
+            </value>
+        </property>
+        <property name="target">
+            <ref bean="mailPreferencesService" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>MailPreferencesService_transaction</value>
+                <value>AuditMethodInterceptor</value>
+                <value>MailPreferencesService_security</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="MailPreferencesService_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="get*">${server.transaction.mode.readOnly}</prop>
+                <prop key="build*">${server.transaction.mode.readOnly}</prop>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="MailPreferencesService_security"
+        class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+    >
+        <property name="authenticationManager">
+            <ref bean="authenticationManager" />
+        </property>
+        <property name="accessDecisionManager">
+            <ref bean="accessDecisionManager" />
+        </property>
+        <property name="afterInvocationManager">
+            <ref bean="afterInvocationManager" />
+        </property>
+        <property name="objectDefinitionSource">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.mail.MailPreferencesService.addMailTemplate=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.mail.MailPreferencesService.buildDefaultModel=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.mail.MailPreferencesService.getDefaultMailTemplate=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.mail.MailPreferencesService.getDisclamerLogo=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.mail.MailPreferencesService.getMailTemplates=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.mail.MailPreferencesService.getTemplateUserDetails=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.mail.MailPreferencesService.replaceDefaultMailTemplate=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.mail.MailPreferencesService.*=ACL_DENY
+            </value>
+        </property>
+    </bean>
+    <bean
+        id="profileService"
+        class="eu.europa.ec.digit.circabc.rest.service.profile.ProfileServiceImpl"
+    />
+    <bean
+        id="ProfileService"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.profile.ProfileService
+            </value>
+        </property>
+        <property name="target">
+            <ref bean="profileService" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>ProfileService_transaction</value>
+                <value>AuditMethodInterceptor</value>
+                <value>ProfileService_security</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="ProfileService_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="get*">${server.transaction.mode.readOnly}</prop>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="ProfileService_security"
+        class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor"
+    />
+    <bean
+        id="logoPreferencesService"
+        class="eu.europa.ec.digit.circabc.rest.service.customization.logo.LogoPreferencesServiceImpl"
+    />
+    <bean
+        id="LogoPreferencesService"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.customization.logo.LogoPreferencesService
+            </value>
+        </property>
+        <property name="target">
+            <ref bean="logoPreferencesService" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>LogoPreferencesService_transaction</value>
+                <value>AuditMethodInterceptor</value>
+                <value>LogoPreferencesService_security</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="LogoPreferencesService_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="get*">${server.transaction.mode.readOnly}</prop>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="LogoPreferencesService_security"
+        class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor"
+    />
+    <bean
+        name="customization.logo.imagesSharedCache"
+        factory-bean="cacheFactory"
+        factory-method="createCache"
+    >
+        <constructor-arg value="eu.cec.digit.circabc.cache.custom.logoImages" />
+    </bean>
+    <bean
+        name="customization.logo.imagesCache"
+        class="org.alfresco.repo.cache.TransactionalCache"
+    >
+        <property name="sharedCache">
+            <ref bean="customization.logo.imagesSharedCache" />
+        </property>
+        <property name="name">
+            <!-- prettier-ignore-start -->
+            <value>eu.cec.digit.circabc.custom.logoImagesTransactionalContainer</value>
+            <!-- prettier-ignore-end -->
+        </property>
+        <property
+            name="maxCacheSize"
+            value="${eu.cec.digit.circabc.cache.custom.logoImages.tx.maxItems}"
+        />
+        <property name="mutable" value="false" />
+        <property
+            name="disableSharedCache"
+            value="${system.cache.disableImmutableSharedCaches}"
+        />
+    </bean>
+    <bean
+        name="customization.logo.configSharedCache"
+        factory-bean="cacheFactory"
+        factory-method="createCache"
+    >
+        <constructor-arg value="eu.cec.digit.circabc.cache.custom.logoConfig" />
+    </bean>
+    <bean
+        name="customization.logo.configCache"
+        class="org.alfresco.repo.cache.TransactionalCache"
+    >
+        <property name="sharedCache">
+            <ref bean="customization.logo.configSharedCache" />
+        </property>
+        <property name="name">
+            <!-- prettier-ignore-start -->
+            <value>eu.cec.digit.circabc.custom.logoConfigTransactionalContainer</value>
+            <!-- prettier-ignore-end -->
+        </property>
+        <property
+            name="maxCacheSize"
+            value="${eu.cec.digit.circabc.cache.custom.logoConfig.tx.maxItems}"
+        />
+        <property name="mutable" value="false" />
+        <property
+            name="disableSharedCache"
+            value="${system.cache.disableImmutableSharedCaches}"
+        />
+    </bean>
+    <bean
+        name="customization.containerSharedCache"
+        factory-bean="cacheFactory"
+        factory-method="createCache"
+    >
+        <constructor-arg
+            value="eu.cec.digit.circabc.cache.custom.customizationContainer"
+        />
+    </bean>
+    <bean
+        name="customization.containerCache"
+        class="org.alfresco.repo.cache.TransactionalCache"
+    >
+        <property name="sharedCache">
+            <ref bean="customization.containerSharedCache" />
+        </property>
+        <property name="name">
+            <!-- prettier-ignore-start -->
+            <value>eu.cec.digit.circabc.custom.customizationTransactionalContainer</value>
+            <!-- prettier-ignore-end -->
+        </property>
+        <property
+            name="maxCacheSize"
+            value="${eu.cec.digit.circabc.cache.custom.customizationContainer.tx.maxItems}"
+        />
+        <property name="mutable" value="false" />
+        <property
+            name="disableSharedCache"
+            value="${system.cache.disableImmutableSharedCaches}"
+        />
+    </bean>
+    <bean
+        name="customization.foldersSharedCache"
+        factory-bean="cacheFactory"
+        factory-method="createCache"
+    >
+        <constructor-arg
+            value="eu.cec.digit.circabc.cache.custom.customizationContainerFolders"
+        />
+    </bean>
+    <bean
+        name="customization.foldersCache"
+        class="org.alfresco.repo.cache.TransactionalCache"
+    >
+        <property name="sharedCache">
+            <ref bean="customization.foldersSharedCache" />
+        </property>
+        <property name="name">
+            <!-- prettier-ignore-start -->
+            <value>eu.cec.digit.circabc.custom.customizationFoldersTransactionalContainer</value>
+            <!-- prettier-ignore-end -->
+        </property>
+        <property
+            name="maxCacheSize"
+            value="${eu.cec.digit.circabc.cache.custom.customizationContainerFolders.tx.maxItems}"
+        />
+        <property name="mutable" value="false" />
+        <property
+            name="disableSharedCache"
+            value="${system.cache.disableImmutableSharedCaches}"
+        />
+    </bean>
+    <bean
+        id="rootPreferencesUpdater"
+        class="eu.europa.ec.digit.circabc.rest.service.customization.RootPreferencesUpdater"
+    >
+        <property name="configService">
+            <ref bean="rootPreferenceConfigService" />
+        </property>
+        <property name="nodeService">
+            <ref bean="nodeService" />
+        </property>
+        <property name="contentService">
+            <ref bean="contentService" />
+        </property>
+        <property name="mimetypeService">
+            <ref bean="mimetypeService" />
+        </property>
+        <property name="fileFolderService">
+            <ref bean="fileFolderService" />
+        </property>
+        <property name="permissionService">
+            <ref bean="permissionService" />
+        </property>
+        <property name="configCondition">
+            <value>Circabc Root Customization</value>
+        </property>
+    </bean>
+    <bean
+        id="rootPreferenceConfigService"
+        class="org.springframework.extensions.config.xml.XMLConfigService"
+        init-method="init"
+    >
+        <constructor-arg>
+            <bean
+                class="org.springframework.extensions.config.source.UrlConfigSource"
+            >
+                <constructor-arg>
+                    <list>
+                        <!-- prettier-ignore-start -->
+                        <value>classpath:alfresco/extension/customisation/root-preferences-config.xml</value>
+                        <!-- prettier-ignore-end -->
+                    </list>
+                </constructor-arg>
+            </bean>
+        </constructor-arg>
+    </bean>
+    <bean id="dashboardApi" class="io.swagger.api.DashboardApiImpl" />
+    <bean
+        id="DashboardApi"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>io.swagger.api.DashboardApi</value>
+        </property>
+        <property name="target">
+            <ref bean="dashboardApi" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>dashboardApi_transaction</value>
+                <value>DashboardApi_security</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="dashboardApi_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="DashboardApi_security"
+        class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+    >
+        <property name="authenticationManager">
+            <ref bean="authenticationManager" />
+        </property>
+        <property name="accessDecisionManager">
+            <ref bean="accessDecisionManager" />
+        </property>
+        <property name="afterInvocationManager">
+            <ref bean="afterInvocationManager" />
+        </property>
+        <property name="objectDefinitionSource">
+            <value>
+                io.swagger.api.DashboardApi.usersUserIdDashboardDownloadsGet=ACL_ALLOW
+                io.swagger.api.DashboardApi.usersUserIdDashboardUploadsGet=ACL_ALLOW
+                io.swagger.api.DashboardApi.usersUserIdDashboardNewsfeedGet=ACL_ALLOW
+                io.swagger.api.DashboardApi.*=ACL_DENY
+            </value>
+        </property>
+    </bean>
+    <bean id="eventsApi" class="io.swagger.api.EventsApiImpl" />
+    <bean
+        id="EventsApi"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>io.swagger.api.EventsApi</value>
+        </property>
+        <property name="target">
+            <ref bean="eventsApi" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>eventsApi_transaction</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="eventsApi_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="eventService"
+        class="eu.europa.ec.digit.circabc.rest.service.event.EventServiceImpl"
+    />
+    <bean
+        id="EventService"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.event.EventService
+            </value>
+        </property>
+        <property name="target">
+            <ref bean="eventService" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>EventService_transaction</value>
+                <value>AuditMethodInterceptor</value>
+                <value>EventService_security</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="EventService_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="get*">${server.transaction.mode.readOnly}</prop>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="EventService_security"
+        class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+    >
+        <property name="authenticationManager">
+            <ref bean="authenticationManager" />
+        </property>
+        <property name="accessDecisionManager">
+            <ref bean="accessDecisionManager" />
+        </property>
+        <property name="afterInvocationManager">
+            <ref bean="afterInvocationManager" />
+        </property>
+        <property name="objectDefinitionSource">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.event.EventService.createEvent=ACL_NODE.0.sys:base.CreateChildren
+                eu.europa.ec.digit.circabc.rest.service.event.EventService.createMeeting=ACL_NODE.0.sys:base.CreateChildren
+                eu.europa.ec.digit.circabc.rest.service.event.EventService.deleteAppointment=ACL_NODE.0.sys:base.DeleteNode
+                eu.europa.ec.digit.circabc.rest.service.event.EventService.getAllAppointments=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.event.EventService.getAllOccurences=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.event.EventService.getAppointmentByNodeRef=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.event.EventService.getAppointments=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.event.EventService.getCalendarEventsOnDate=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.event.EventService.getEventsBetweenDates=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.event.EventService.getMeetingNodeRef=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.event.EventService.getMeetingStatus=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.event.EventService.setMeetingRequestStatus=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.event.EventService.updateAppointment=ACL_NODE.0.sys:base.WriteProperties
+                eu.europa.ec.digit.circabc.rest.service.event.EventService.*=ACL_DENY
+            </value>
+        </property>
+    </bean>
+    <bean id="libraryApi" class="io.swagger.api.LibraryApiImpl" />
+    <bean
+        id="LibraryApi"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>io.swagger.api.LibraryApi</value>
+        </property>
+        <property name="target">
+            <ref bean="libraryApi" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>libraryApi_transaction</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="libraryApi_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean id="spacesApi" class="io.swagger.api.SpacesApiImpl" />
+    <bean
+        id="SpacesApi"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>io.swagger.api.SpacesApi</value>
+        </property>
+        <property name="target">
+            <ref bean="spacesApi" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>spacesApi_transaction</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="spacesApi_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="shareSpaceService"
+        class="eu.europa.ec.digit.circabc.rest.service.ShareSpaceServiceImpl"
+    />
+    <bean
+        id="ShareSpaceService"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.ShareSpaceService
+            </value>
+        </property>
+        <property name="target">
+            <ref bean="shareSpaceService" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>ShareSpaceService_transaction</value>
+                <value>AuditMethodInterceptor</value>
+                <value>ShareSpaceService_security</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="ShareSpaceService_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="get*">${server.transaction.mode.readOnly}</prop>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="ShareSpaceService_security"
+        class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+    >
+        <property name="authenticationManager">
+            <ref bean="authenticationManager" />
+        </property>
+        <property name="accessDecisionManager">
+            <ref bean="accessDecisionManager" />
+        </property>
+        <property name="afterInvocationManager">
+            <ref bean="afterInvocationManager" />
+        </property>
+        <property name="objectDefinitionSource">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.ShareSpaceService.getAllSharedSpaceInInterestGroup=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.ShareSpaceService.getAvailableInterestGroups=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.ShareSpaceService.getAvailableShareSpaces=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.ShareSpaceService.getInvitedInterestGroups=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.ShareSpaceService.inviteInterestGroup=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.ShareSpaceService.linkSharedSpace=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.ShareSpaceService.unInviteInterestGroup=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.ShareSpaceService.*=ACL_DENY
+            </value>
+        </property>
+    </bean>
+    <bean
+        id="linksBusinessSrv"
+        class="eu.europa.ec.digit.circabc.rest.service.LinksBusinessImpl"
+    />
+    <bean
+        id="LinksBusinessSrv"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.LinksBusinessSrv
+            </value>
+        </property>
+        <property name="target">
+            <ref bean="linksBusinessSrv" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>LinksBusinessSrv_transaction</value>
+                <value>LinksBusinessSrv_security</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="LinksBusinessSrv_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="create*">${server.transaction.mode.default}</prop>
+                <prop key="apply*">${server.transaction.mode.default}</prop>
+                <prop key="remove*">${server.transaction.mode.default}</prop>
+                <prop key="*">${server.transaction.mode.readOnly}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="LinksBusinessSrv_security"
+        class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor"
+    >
+        <property name="authenticationManager">
+            <ref bean="authenticationManager" />
+        </property>
+        <property name="accessDecisionManager">
+            <ref bean="accessDecisionManager" />
+        </property>
+        <property name="afterInvocationManager">
+            <ref bean="afterInvocationManager" />
+        </property>
+        <property name="objectDefinitionSource">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.LinksBusinessSrv.applySharing=ACL_NODE.0.sys:base.WriteContent
+                eu.europa.ec.digit.circabc.rest.service.LinksBusinessSrv.createLink=ACL_NODE.0.sys:base.CreateChildren
+                eu.europa.ec.digit.circabc.rest.service.LinksBusinessSrv.createSharedSpaceLink=ACL_NODE.0.sys:base.CreateChildren
+                eu.europa.ec.digit.circabc.rest.service.LinksBusinessSrv.findSharedSpaces=ACL_NODE.0.sys:base.Read
+                eu.europa.ec.digit.circabc.rest.service.LinksBusinessSrv.getAvailableSharedSpaces=ACL_NODE.0.sys:base.Read
+                eu.europa.ec.digit.circabc.rest.service.LinksBusinessSrv.getInterestGroupForSharing=ACL_NODE.0.sys:base.Read
+                eu.europa.ec.digit.circabc.rest.service.LinksBusinessSrv.removeSharing=ACL_NODE.0.sys:base.WriteContent
+            </value>
+        </property>
+    </bean>
+    <bean id="notificationsApi" class="io.swagger.api.NotificationsApiImpl" />
+    <bean
+        id="NotificationsApi"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>io.swagger.api.NotificationsApi</value>
+        </property>
+        <property name="target">
+            <ref bean="notificationsApi" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>nodeApi_transaction</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="notificationsApi_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="notificationManagerService"
+        class="eu.europa.ec.digit.circabc.rest.service.notification.NotificationManagerServiceImpl"
+    />
+    <bean
+        id="NotificationManagerService"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.notification.NotificationManagerService
+            </value>
+        </property>
+        <property name="target">
+            <ref bean="notificationManagerService" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>NotificationManagerService_transaction</value>
+                <value>NotificationManagerService_security</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="NotificationManagerService_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="is*">${server.transaction.mode.readOnly}</prop>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="NotificationManagerService_security"
+        class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor"
+    />
+    <bean
+        id="notificationSubscriptionService"
+        class="eu.europa.ec.digit.circabc.rest.service.notification.NotificationSubscriptionServiceImpl"
+    />
+    <bean
+        id="NotificationSubscriptionService"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.notification.NotificationSubscriptionService
+            </value>
+        </property>
+        <property name="target">
+            <ref bean="notificationSubscriptionService" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>NotificationSubscriptionService_transaction</value>
+                <value>NotificationSubscriptionService_security</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="NotificationSubscriptionService_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="get*">${server.transaction.mode.readOnly}</prop>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="NotificationSubscriptionService_security"
+        class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+    >
+        <property name="authenticationManager">
+            <ref bean="authenticationManager" />
+        </property>
+        <property name="accessDecisionManager">
+            <ref bean="accessDecisionManager" />
+        </property>
+        <property name="afterInvocationManager">
+            <ref bean="afterInvocationManager" />
+        </property>
+        <property name="objectDefinitionSource">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.notification.NotificationSubscriptionService.getAuthorityNotificationStatus=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.notification.NotificationSubscriptionService.getNotifiableUsers=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.notification.NotificationSubscriptionService.getNotifications=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.notification.NotificationSubscriptionService.getUserNotificationReport=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.notification.NotificationSubscriptionService.removeNotification=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.notification.NotificationSubscriptionService.setNotificationStatus=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.notification.NotificationSubscriptionService.*=ACL_DENY
+            </value>
+        </property>
+    </bean>
+    <bean
+        id="circabcLockService"
+        class="eu.europa.ec.digit.circabc.rest.service.lock.DBLockServiceImpl"
+    />
+    <bean
+        id="CircabcLockService"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.lock.LockService
+            </value>
+        </property>
+        <property name="target">
+            <ref bean="circabcLockService" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>CircabcLockService_transaction</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="CircabcLockService_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="isLocked">${server.transaction.mode.readOnly}</prop>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="circabcServiceRegistry"
+        class="eu.europa.ec.digit.circabc.rest.service.CircabcServiceDescriptor"
+    />
+    <bean
+        name="dynamicPropertyCache"
+        factory-bean="cacheFactory"
+        factory-method="createCache"
+    >
+        <constructor-arg
+            value="eu.europa.ec.digit.circabc.rest.service.dynamic.property.dynamicPropertiesService"
+        />
+    </bean>
+    <bean
+        id="dynamicPropertyService"
+        class="eu.europa.ec.digit.circabc.rest.service.dynamic.property.DynamicPropertyServiceImpl"
+    >
+        <property name="dynamicPropertyCache">
+            <ref bean="dynamicPropertyCache" />
+        </property>
+    </bean>
+    <bean
+        id="DynamicPropertyService"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.dynamic.property.DynamicPropertyService
+            </value>
+        </property>
+        <property name="target">
+            <ref bean="dynamicPropertyService" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>DynamicPropertyService_transaction</value>
+                <value>AuditMethodInterceptor</value>
+                <value>DynamicPropertyService_security</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="DynamicPropertyService_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="get*">${server.transaction.mode.readOnly}</prop>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="DynamicPropertyService_security"
+        class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+    >
+        <property name="authenticationManager">
+            <ref bean="authenticationManager" />
+        </property>
+        <property name="accessDecisionManager">
+            <ref bean="accessDecisionManager" />
+        </property>
+        <property name="afterInvocationManager">
+            <ref bean="afterInvocationManager" />
+        </property>
+        <property name="objectDefinitionSource">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.dynamic.property.DynamicPropertyService.addDynamicProperty=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.dynamic.property.DynamicPropertyService.deleteDynamicProperty=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.dynamic.property.DynamicPropertyService.getDynamicProperties=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.dynamic.property.DynamicPropertyService.getDynamicPropertyByID=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.dynamic.property.DynamicPropertyService.getPropertyQname=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.dynamic.property.DynamicPropertyService.updateDynamicPropertyLabel=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.dynamic.property.DynamicPropertyService.updateDynamicPropertyValidValues=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.dynamic.property.DynamicPropertyService.*=ACL_DENY
+            </value>
+        </property>
+    </bean>
+    <bean id="captchaApi" class="io.swagger.api.CaptchaApiImpl">
+        <property name="captchaUrl">
+            <value>${eu.captcha.url}</value>
+        </property>
+        <property name="useProxy">
+            <value>${eu.captcha.use.proxy}</value>
+        </property>
+        <property name="proxyHost">
+            <value>${proxy.host}</value>
+        </property>
+        <property name="proxyPort">
+            <value>${proxy.port}</value>
+        </property>
+        <property name="proxyUserName">
+            <value>${proxy.username}</value>
+        </property>
+        <property name="proxyPassword">
+            <value>${proxy.password}</value>
+        </property>
+    </bean>
+    <bean id="helpApi" class="io.swagger.api.HelpApiImpl" />
+    <bean id="emailApi" class="io.swagger.api.EmailApiImpl" />
+    <bean
+        id="EmailApi"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>io.swagger.api.EmailApi</value>
+        </property>
+        <property name="target">
+            <ref bean="emailApi" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>emailApi_transaction</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="emailApi_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean id="contentApi" class="io.swagger.api.ContentApiImpl" />
+    <bean
+        id="ContentApi"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>io.swagger.api.ContentApi</value>
+        </property>
+        <property name="target">
+            <ref bean="contentApi" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>contentApi_transaction</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="contentApi_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="translationService"
+        class="eu.europa.ec.digit.circabc.rest.service.translation.TranslationServiceImpl"
+        init-method="init"
+    >
+        <property name="machineTranslationService">
+            <ref bean="machineTranslationService" />
+        </property>
+        <property name="authenticationService">
+            <ref bean="authenticationService" />
+        </property>
+        <property name="userService">
+            <ref bean="userService" />
+        </property>
+        <property name="translationDaoService">
+            <ref bean="translationDaoService" />
+        </property>
+        <property name="nodeService">
+            <ref bean="NodeService" />
+        </property>
+        <property name="contentService">
+            <ref bean="ContentService" />
+        </property>
+        <property name="multilingualContentService">
+            <ref bean="MultilingualContentService" />
+        </property>
+        <property name="ownableService">
+            <ref bean="OwnableService" />
+        </property>
+        <property name="dictionaryService">
+            <ref bean="DictionaryService" />
+        </property>
+        <property name="ftpUrl">
+            <value>
+                ${mt.protocol}://${mt.user}:${mt.password}@${mt.host}:${mt.port}/Alfresco
+            </value>
+        </property>
+        <property name="mtRootSpace">
+            <value>${mt.root.space}</value>
+        </property>
+        <property name="mailService">
+            <ref bean="circabcMailService" />
+        </property>
+        <property name="mailPreferencesService">
+            <ref bean="MailPreferencesService" />
+        </property>
+        <property name="personService">
+            <ref bean="personService" />
+        </property>
+        <property name="actionService">
+            <ref bean="actionService" />
+        </property>
+        <property name="languages">
+            <set>
+                <value>BG</value>
+                <value>CS</value>
+                <value>DA</value>
+                <value>DE</value>
+                <value>EL</value>
+                <value>EN</value>
+                <value>ES</value>
+                <value>ET</value>
+                <value>FI</value>
+                <value>FR</value>
+                <value>GA</value>
+                <value>HR</value>
+                <value>HU</value>
+                <value>IT</value>
+                <value>LT</value>
+                <value>LV</value>
+                <value>MT</value>
+                <value>NL</value>
+                <value>PL</value>
+                <value>PT</value>
+                <value>RO</value>
+                <value>SK</value>
+                <value>SL</value>
+                <value>SV</value>
+            </set>
+        </property>
+        <property name="fileExtensions">
+            <set>
+                <value>doc</value>
+                <value>docx</value>
+                <value>xls</value>
+                <value>xlsx</value>
+                <value>ppt</value>
+                <value>pptx</value>
+                <value>odt</value>
+                <value>rtf</value>
+                <value>txt</value>
+                <value>html</value>
+                <value>tmx</value>
+                <value>xliff</value>
+                <value>pdf</value>
+            </set>
+        </property>
+        <property name="maxFileSizeInBytes">
+            <value>5242880</value>
+        </property>
+    </bean>
+    <bean
+        id="TranslationService"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.translation.TranslationService
+            </value>
+        </property>
+        <property name="target">
+            <ref bean="translationService" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>TranslationService_transaction</value>
+                <value>AuditMethodInterceptor</value>
+                <value>TranslationService_security</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="TranslationService_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="TranslationService_security"
+        class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+    >
+        <property name="authenticationManager">
+            <ref bean="authenticationManager" />
+        </property>
+        <property name="accessDecisionManager">
+            <ref bean="accessDecisionManager" />
+        </property>
+        <property name="afterInvocationManager">
+            <ref bean="afterInvocationManager" />
+        </property>
+        <property name="objectDefinitionSource">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.translation.TranslationService.getAvailableLanguages=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.translation.TranslationService.translateProperty=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.translation.TranslationService.translateDocument=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.translation.TranslationService.getMTUserDetails=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.translation.TranslationService.copyDocumentToBeTranslated=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.translation.TranslationService.processTranslatedFiles=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.translation.TranslationService.canBeTranslated=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.translation.TranslationService.cleanTempSpace=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.translation.TranslationService.*=ACL_DENY
+            </value>
+        </property>
+    </bean>
+    <bean
+        id="machineTranslationService"
+        class="eu.europa.ec.digit.circabc.rest.service.translation.MachineTranslationServiceImpl"
+        init-method="init"
+    />
+    <bean
+        id="zipService"
+        class="eu.europa.ec.digit.circabc.rest.service.compress.ZipServiceImpl"
+    />
+    <bean
+        id="ZipService"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.compress.ZipService
+            </value>
+        </property>
+        <property name="target">
+            <ref bean="zipService" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>ZipService_transaction</value>
+                <value>AuditMethodInterceptor</value>
+                <value>ZipService_security</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="ZipService_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="get*">${server.transaction.mode.readOnly}</prop>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="ZipService_security"
+        class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor"
+    />
+    <bean
+        id="indexService"
+        class="eu.europa.ec.digit.circabc.rest.service.bulk.indexes.IndexServiceImpl"
+    >
+        <property name="serviceRegistry">
+            <ref bean="ServiceRegistry" />
+        </property>
+    </bean>
+    <bean
+        id="IndexService"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.bulk.indexes.IndexService
+            </value>
+        </property>
+        <property name="target">
+            <ref bean="indexService" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>IndexService_transaction</value>
+                <value>AuditMethodInterceptor</value>
+                <value>IndexService_security</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="IndexService_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="get*">${server.transaction.mode.readOnly}</prop>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="IndexService_security"
+        class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor"
+    />
+    <bean
+        id="bulkService"
+        class="eu.europa.ec.digit.circabc.rest.service.bulk.BulkServiceImpl"
+    >
+        <property name="fileFolderService">
+            <ref bean="fileFolderService" />
+        </property>
+        <property name="nodeService">
+            <ref bean="nodeService" />
+        </property>
+        <property name="contentService">
+            <ref bean="contentService" />
+        </property>
+        <property name="zipService">
+            <ref bean="zipService" />
+        </property>
+        <property name="indexService">
+            <ref bean="indexService" />
+        </property>
+        <property name="contentFilterLanguagesService">
+            <ref bean="contentFilterLanguagesService" />
+        </property>
+        <property name="keywordsService">
+            <ref bean="keywordsService" />
+        </property>
+        <property name="multilingualContentService">
+            <ref bean="multilingualContentService" />
+        </property>
+        <property name="dictionaryService">
+            <ref bean="dictionaryService" />
+        </property>
+        <property name="permissionService">
+            <ref bean="permissionService" />
+        </property>
+    </bean>
+    <bean
+        id="BulkService"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.bulk.BulkService
+            </value>
+        </property>
+        <property name="target">
+            <ref bean="bulkService" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>BulkService_transaction</value>
+                <value>AuditMethodInterceptor</value>
+                <value>BulkService_security</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="BulkService_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="get*">${server.transaction.mode.readOnly}</prop>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="BulkService_security"
+        class="org.alfresco.repo.security.permissions.impl.AlwaysProceedMethodInterceptor"
+    />
+    <bean
+        id="keywordsService"
+        class="eu.europa.ec.digit.circabc.rest.service.keyword.KeywordsServiceImpl"
+    >
+        <property name="nodeService">
+            <ref bean="nodeService" />
+        </property>
+        <property name="permissionService">
+            <ref bean="permissionService" />
+        </property>
+        <property name="namespaceService">
+            <ref bean="namespaceService" />
+        </property>
+        <property name="searchService">
+            <ref bean="searchService" />
+        </property>
+        <property name="apiToolBox">
+            <ref bean="apiToolBox" />
+        </property>
+    </bean>
+    <bean
+        id="KeywordsService"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.keyword.KeywordsService
+            </value>
+        </property>
+        <property name="target">
+            <ref bean="keywordsService" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>KeywordsService_transaction</value>
+                <value>AuditMethodInterceptor</value>
+                <value>KeywordsService_security</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="KeywordsService_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="get*">${server.transaction.mode.readOnly}</prop>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="KeywordsService_security"
+        class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+    >
+        <property name="authenticationManager">
+            <ref bean="authenticationManager" />
+        </property>
+        <property name="accessDecisionManager">
+            <ref bean="accessDecisionManager" />
+        </property>
+        <property name="afterInvocationManager">
+            <ref bean="afterInvocationManager" />
+        </property>
+        <property name="objectDefinitionSource">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.keyword.KeywordsService.addKeywordToNode=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.keyword.KeywordsService.buildKeywordWithId=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.keyword.KeywordsService.createKeyword=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.keyword.KeywordsService.exists=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.keyword.KeywordsService.getKeywords=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.keyword.KeywordsService.getKeywordsForNode=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.keyword.KeywordsService.getNodesForKeywords=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.keyword.KeywordsService.isKeywordMultilingual=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.keyword.KeywordsService.removeKeyword=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.keyword.KeywordsService.setKeywordsToNode=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.keyword.KeywordsService.updateKeyword=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.keyword.KeywordsService.*=ACL_DENY
+            </value>
+        </property>
+    </bean>
+    <bean id="forumsApi" class="io.swagger.api.ForumsApiImpl" />
+    <bean
+        id="ForumsApi"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>io.swagger.api.ForumsApi</value>
+        </property>
+        <property name="target">
+            <ref bean="forumsApi" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>forumsApi_transaction</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="forumsApi_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="moderationService"
+        class="eu.europa.ec.digit.circabc.rest.service.newsgroup.ModerationServiceImpl"
+    />
+    <bean
+        id="ModerationService"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.newsgroup.ModerationService
+            </value>
+        </property>
+        <property name="target">
+            <ref bean="moderationService" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>ModerationService_transaction</value>
+                <value>AuditMethodInterceptor</value>
+                <value>ModerationService_security</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="ModerationService_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="get*">${server.transaction.mode.readOnly}</prop>
+                <prop key="is*">${server.transaction.mode.readOnly}</prop>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="ModerationService_security"
+        class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+    >
+        <property name="authenticationManager">
+            <ref bean="authenticationManager" />
+        </property>
+        <property name="accessDecisionManager">
+            <ref bean="accessDecisionManager" />
+        </property>
+        <property name="afterInvocationManager">
+            <ref bean="afterInvocationManager" />
+        </property>
+        <property name="objectDefinitionSource">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.newsgroup.ModerationService.accept=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.newsgroup.ModerationService.applyModeration=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.newsgroup.ModerationService.getAbuses=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.newsgroup.ModerationService.isApproved=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.newsgroup.ModerationService.isContainerModerated=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.newsgroup.ModerationService.isRejected=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.newsgroup.ModerationService.isWaitingForApproval=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.newsgroup.ModerationService.reject=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.newsgroup.ModerationService.signalAbuse=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.newsgroup.ModerationService.signalNotAbuse=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.newsgroup.ModerationService.waitForApproval=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.newsgroup.ModerationService.stopModeration=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.newsgroup.ModerationService.*=ACL_DENY
+            </value>
+        </property>
+    </bean>
+    <bean
+        id="userDetailsService"
+        class="eu.europa.ec.digit.circabc.rest.service.user.UserDetailsServiceImpl"
+    />
+    <bean
+        id="UserDetailsService"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.user.UserDetailsService
+            </value>
+        </property>
+        <property name="target">
+            <ref bean="userDetailsService" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>UserDetailsService_transaction</value>
+                <value>AuditMethodInterceptor</value>
+                <value>UserDetailsService_security</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="UserDetailsService_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="update*">${server.transaction.mode.default}</prop>
+                <prop key="remove*">${server.transaction.mode.default}</prop>
+                <prop key="*">${server.transaction.mode.readOnly}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="UserDetailsService_security"
+        class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor"
+    >
+        <property name="authenticationManager">
+            <ref bean="authenticationManager" />
+        </property>
+        <property name="accessDecisionManager">
+            <ref bean="accessDecisionManager" />
+        </property>
+        <property name="afterInvocationManager">
+            <ref bean="afterInvocationManager" />
+        </property>
+        <property name="objectDefinitionSource">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.user.UserDetailsService.getAvatar=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.user.UserDetailsService.getDefaultAvatar=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.user.UserDetailsService.getUserDetails=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.user.UserDetailsService.removeAvatar=ACL_NODE.0.sys:base.WriteProperties
+                eu.europa.ec.digit.circabc.rest.service.user.UserDetailsService.updateAvatar=ACL_NODE.0.sys:base.WriteProperties
+                eu.europa.ec.digit.circabc.rest.service.user.UserDetailsService.updateUserDetails=ACL_NODE.0.sys:base.WriteProperties
+            </value>
+        </property>
+    </bean>
+    <bean id="keywordsApi" class="io.swagger.api.KeywordsApiImpl" />
+    <bean
+        id="KeywordsApi"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>io.swagger.api.KeywordsApi</value>
+        </property>
+        <property name="target">
+            <ref bean="keywordsApi" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>keywordsApi_transaction</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="keywordsApi_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="dynamicPropertiesApi"
+        class="io.swagger.api.DynamicPropertiesApiImpl"
+    />
+    <bean
+        id="DynamicPropertiesApi"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>io.swagger.api.DynamicPropertiesApi</value>
+        </property>
+        <property name="target">
+            <ref bean="dynamicPropertiesApi" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>dynamicPropertiesApi_transaction</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="dynamicPropertiesApi_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean id="informationApi" class="io.swagger.api.InformationApiImpl">
+        <property name="webRoolUrl">
+            <value>${web.root.url}</value>
+        </property>
+    </bean>
+    <bean
+        id="InformationApi"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>io.swagger.api.InformationApi</value>
+        </property>
+        <property name="target">
+            <ref bean="informationApi" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>informationApi_transaction</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="informationApi_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean id="searchApi" class="io.swagger.api.SearchApiImpl" />
+    <bean
+        id="SearchApi"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>io.swagger.api.SearchApi</value>
+        </property>
+        <property name="target">
+            <ref bean="searchApi" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>searchApi_transaction</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="searchApi_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean id="topicsApi" class="io.swagger.api.TopicsApiImpl" />
+    <bean
+        id="TopicsApi"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>io.swagger.api.TopicsApi</value>
+        </property>
+        <property name="target">
+            <ref bean="topicsApi" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>topicsApi_transaction</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="topicsApi_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="attachmentService"
+        class="eu.europa.ec.digit.circabc.rest.service.attachment.AttachmentServiceImpl"
+    />
+    <bean
+        id="AttachmentService"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.attachment.AttachmentService
+            </value>
+        </property>
+        <property name="target">
+            <ref bean="attachmentService" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>AttachmentService_transaction</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="AttachmentService_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="get*">${server.transaction.mode.readOnly}</prop>
+                <prop key="is*">${server.transaction.mode.readOnly}</prop>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="temporaryFileManager"
+        class="eu.europa.ec.digit.circabc.rest.service.helper.TemporaryFileManager"
+    >
+        <property name="tempRootFolderName">
+            <value>${business.temp.folder.name}</value>
+        </property>
+        <property name="timeBeforeDeletion">
+            <value>${business.temp.time.before.deletion}</value>
+        </property>
+    </bean>
+    <bean
+        id="nodeTypeManager"
+        class="eu.europa.ec.digit.circabc.rest.service.helper.NodeTypeManager"
+    />
+    <bean
+        id="contentManager"
+        class="eu.europa.ec.digit.circabc.rest.service.helper.ContentManager"
+    />
+    <bean
+        id="metadataManager"
+        class="eu.europa.ec.digit.circabc.rest.service.helper.MetadataManager"
+    />
+    <bean
+        id="aspectManager"
+        class="eu.europa.ec.digit.circabc.rest.service.helper.AspectManager"
+    />
+    <bean id="archiveApi" class="io.swagger.api.ArchiveApiImpl" />
+    <bean
+        id="ArchiveApi"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>io.swagger.api.ArchiveApi</value>
+        </property>
+        <property name="target">
+            <ref bean="archiveApi" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>archiveApi_transaction</value>
+                <value>ArchiveApi_security</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="archiveApi_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="ArchiveApi_security"
+        class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+    >
+        <property name="authenticationManager">
+            <ref bean="authenticationManager" />
+        </property>
+        <property name="accessDecisionManager">
+            <ref bean="accessDecisionManager" />
+        </property>
+        <property name="afterInvocationManager">
+            <ref bean="afterInvocationManager" />
+        </property>
+        <property name="objectDefinitionSource">
+            <value>
+                io.swagger.api.ArchiveApi.groupsIdDocumentsDeletedGet=ACL_ALLOW
+                io.swagger.api.ArchiveApi.groupsIdDocumentsDeletedPost=ACL_ALLOW
+                io.swagger.api.ArchiveApi.groupsIdDocumentsDeletedNodeIdDelete=ACL_ALLOW
+                io.swagger.api.ArchiveApi.*=ACL_DENY
+            </value>
+        </property>
+    </bean>
+    <bean id="expiredApi" class="io.swagger.api.ExpiredApiImpl" />
+    <bean
+        id="ExpiredApi"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>io.swagger.api.ExpiredApi</value>
+        </property>
+        <property name="target">
+            <ref bean="expiredApi" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>expiredApi_transaction</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="expiredApi_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean id="autoUploadApi" class="io.swagger.api.AutoUploadApiImpl" />
+    <bean
+        id="AutoUploadApi"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>io.swagger.api.AutoUploadApi</value>
+        </property>
+        <property name="target">
+            <ref bean="autoUploadApi" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>autoUploadApi_transaction</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="autoUploadApi_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="autoUploadManagementService"
+        class="eu.europa.ec.digit.circabc.rest.service.auto.upload.AutoUploadManagementServiceImpl"
+    />
+    <bean
+        id="AutoUploadManagementService"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.auto.upload.AutoUploadManagementService
+            </value>
+        </property>
+        <property name="target">
+            <ref bean="autoUploadManagementService" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>AutoUploadManagementService_transaction</value>
+                <value>AutoUploadManagementService_security</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="AutoUploadManagementService_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="get*">${server.transaction.mode.readOnly}</prop>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="AutoUploadManagementService_security"
+        class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor"
+    >
+        <property name="authenticationManager">
+            <ref bean="authenticationManager" />
+        </property>
+        <property name="accessDecisionManager">
+            <ref bean="accessDecisionManager" />
+        </property>
+        <property name="afterInvocationManager">
+            <ref bean="afterInvocationManager" />
+        </property>
+        <property name="objectDefinitionSource">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.auto.upload.AutoUploadManagementService.registerConfiguration=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.auto.upload.AutoUploadManagementService.listConfigurations=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.auto.upload.AutoUploadManagementService.deleteConfiguration=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.auto.upload.AutoUploadManagementService.updateConfiguration=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.auto.upload.AutoUploadManagementService.getConfigurationById=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.auto.upload.AutoUploadManagementService.getConfigurationByNodeRef=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.auto.upload.AutoUploadManagementService.buildDefaultExtractRule=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.auto.upload.AutoUploadManagementService.addAutoExtractRuleToSpace=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.auto.upload.AutoUploadManagementService.listAllConfigurations=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.auto.upload.AutoUploadManagementService.updateContent=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.auto.upload.AutoUploadManagementService.logJobResult=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.auto.upload.AutoUploadManagementService.sendJobNofitication=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.auto.upload.AutoUploadManagementService.extractZip=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.auto.upload.AutoUploadManagementService.documentExists=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.auto.upload.AutoUploadManagementService.createContent=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.auto.upload.AutoUploadManagementService.lockJobFile=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.auto.upload.AutoUploadManagementService.unlockJobFile=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.auto.upload.AutoUploadManagementService.*=ACL_DENY
+            </value>
+        </property>
+    </bean>
+    <bean
+        id="circabc-import"
+        class="eu.europa.ec.digit.circabc.rest.action.CircabcImporterActionExecuter"
+        parent="import"
+    />
+    <bean id="permissionsApi" class="io.swagger.api.PermissionsApiImpl" />
+    <bean
+        id="PermissionsApi"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>io.swagger.api.PermissionsApi</value>
+        </property>
+        <property name="target">
+            <ref bean="permissionsApi" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>permissionsApi_transaction</value>
+            </list>
+        </property>
+    </bean>
+    <bean
+        id="permissionsApi_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean id="clipboardApi" class="io.swagger.api.ClipboardApiImpl" />
+
+    <bean
+        id="ClipboardApi"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>io.swagger.api.ClipboardApi</value>
+        </property>
+        <property name="target">
+            <ref bean="clipboardApi" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>clipboardApi_transaction</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean
+        id="clipboardApi_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean
+        id="globalStatisticsService"
+        class="eu.europa.ec.digit.circabc.rest.service.statistic.global.GlobalStatisticsServiceImpl"
+    />
+
+    <!-- Proxied statistics service -->
+    <bean
+        id="GlobalStatisticsService"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.statistic.global.GlobalStatisticsService
+            </value>
+        </property>
+        <property name="target">
+            <ref bean="globalStatisticsService" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>GlobalStatisticsService_transaction</value>
+                <value>AuditMethodInterceptor</value>
+                <value>GlobalStatisticsService_security</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean
+        id="GlobalStatisticsService_security"
+        class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor"
+    >
+        <property name="authenticationManager">
+            <ref bean="authenticationManager" />
+        </property>
+        <property name="accessDecisionManager">
+            <ref bean="accessDecisionManager" />
+        </property>
+        <property name="afterInvocationManager">
+            <ref bean="afterInvocationManager" />
+        </property>
+        <property name="objectDefinitionSource">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.statistic.global.GlobalStatisticsService.prepareFolderRecipient=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.statistic.global.GlobalStatisticsService.makeGlobalStats=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.statistic.global.GlobalStatisticsService.saveStatsToExcel=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.statistic.global.GlobalStatisticsService.getReportSaveFolder=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.statistic.global.GlobalStatisticsService.isReportSaveFolderExisting=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.statistic.global.GlobalStatisticsService.getLastLoginDateOfUser=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.statistic.global.GlobalStatisticsService.getListOfReportFiles=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.statistic.global.GlobalStatisticsService.cleanAndZipPreviousReportFiles=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.statistic.global.GlobalStatisticsService.makeDetailedIgStats=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.statistic.global.GlobalStatisticsService.saveDetailedIgStatsToExcel=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.statistic.global.GlobalStatisticsService.getListOfCircabcInterestGroups=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.statistic.global.GlobalStatisticsService.getListOfCircabcInterestGroups=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.statistic.global.GlobalStatisticsService.prepareCategoryReportsFolderRecipient=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.statistic.global.GlobalStatisticsService.getCategoryReportsFolderRecipient=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.statistic.global.GlobalStatisticsService.getCategoryGroupStatsFiles=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.statistic.global.GlobalStatisticsService.computeCategoryGroupStatistics=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.statistic.global.GlobalStatisticsService.saveCategoryGroupStatistics=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.statistic.global.GlobalStatisticsService.*=ACL_DENY
+            </value>
+        </property>
+    </bean>
+
+    <!-- Transaction interceptor for NotificationService -->
+    <bean
+        id="GlobalStatisticsService_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="get*">${server.transaction.mode.readOnly}</prop>
+                <prop key="getCategoryGroupStatsFiles">
+                    ${server.transaction.mode.default}
+                </prop>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean
+        id="igStatisticsService"
+        class="eu.europa.ec.digit.circabc.rest.service.statistic.ig.IgStatisticsServiceImpl"
+    />
+
+    <!-- Proxied statistics service -->
+    <bean
+        id="IgStatisticsService"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.statistic.ig.IgStatisticsService
+            </value>
+        </property>
+        <property name="target">
+            <ref bean="igStatisticsService" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>IgStatisticsService_transaction</value>
+                <value>AuditMethodInterceptor</value>
+                <value>IgStatisticsService_security</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Transaction interceptor for NotificationService -->
+    <bean
+        id="IgStatisticsService_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="get*">${server.transaction.mode.readOnly}</prop>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean
+        id="IgStatisticsService_security"
+        class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor"
+    >
+        <property name="authenticationManager">
+            <ref bean="authenticationManager" />
+        </property>
+        <property name="accessDecisionManager">
+            <ref bean="accessDecisionManager" />
+        </property>
+        <property name="afterInvocationManager">
+            <ref bean="afterInvocationManager" />
+        </property>
+        <property name="objectDefinitionSource">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.statistic.ig.IgStatisticsService.getIGTitle=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.statistic.ig.IgStatisticsService.getLibraryStructure=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.statistic.ig.IgStatisticsService.getInformationStructure=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.statistic.ig.IgStatisticsService.getNewsgroupsStructure=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.statistic.ig.IgStatisticsService.getListOfActivityCount=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.statistic.ig.IgStatisticsService.buildStatsData=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.statistic.ig.IgStatisticsService.*=ACL_DENY
+            </value>
+        </property>
+    </bean>
+
+    <!--NodeServicePolicies
+  and ContentServicePolicies-->
+
+    <bean
+        id="dossierModelType"
+        class="eu.europa.ec.digit.circabc.rest.model.DossierModelType"
+    />
+    <bean
+        id="urlModelAspect"
+        class="eu.europa.ec.digit.circabc.rest.model.UrlModelAspect"
+    />
+    <bean
+        id="moderationAspect"
+        class="eu.europa.ec.digit.circabc.rest.model.ModerationAspect"
+    />
+    <bean
+        id="postType"
+        class="eu.europa.ec.digit.circabc.rest.model.PostType"
+    />
+    <bean
+        id="circabcRootAspect"
+        class="eu.europa.ec.digit.circabc.rest.aspect.CircabcRootAspect"
+    />
+    <bean
+        id="bPropertiesAspect"
+        class="eu.europa.ec.digit.circabc.rest.aspect.BPropertiesAspect"
+    />
+    <bean
+        id="categoryAspect"
+        class="eu.europa.ec.digit.circabc.rest.aspect.CategoryAspect"
+    />
+    <bean
+        id="igRootAspect"
+        class="eu.europa.ec.digit.circabc.rest.aspect.IGRootAspect"
+    />
+    <bean
+        id="libraryAspect"
+        class="eu.europa.ec.digit.circabc.rest.aspect.LibraryAspect"
+    />
+    <bean
+        id="mlDocumentAspect"
+        class="eu.europa.ec.digit.circabc.rest.aspect.MLDocumentAspect"
+    />
+    <!-- Define the thread pool for notification aspect -->
+    <bean
+        id="notificationAspectThreadPoolExecutor"
+        class="org.alfresco.util.ThreadPoolExecutorFactoryBean"
+    >
+        <property name="poolName">
+            <value>notificationAspectThread</value>
+        </property>
+        <property name="corePoolSize">
+            <value>10</value>
+        </property>
+        <property name="maximumPoolSize">
+            <value>40</value>
+        </property>
+        <property name="threadPriority">
+            <value>5</value>
+        </property>
+    </bean>
+    <bean
+        id="notificationAspect"
+        class="eu.europa.ec.digit.circabc.rest.aspect.ContentNotifyAspect"
+    />
+
+    <!-- NodeServicePolicies and ContentServicePolicies -->
+
+    <!-- Bean in charge of calling IAM web service -->
+    <bean
+        id="iamWSClient"
+        class="eu.europa.ec.digit.circabc.rest.service.iam.IamWSClientImpl"
+    />
+
+    <!-- Bean in charge of CIRCABC IAM synchronization -->
+    <bean
+        id="synchronizationService"
+        class="eu.europa.ec.digit.circabc.rest.service.iam.SynchronizationServiceImpl"
+    />
+
+    <!-- Proxied Synchronization Service -->
+    <bean
+        id="SynchronizationService"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.iam.SynchronizationService
+            </value>
+        </property>
+        <property name="target">
+            <ref bean="synchronizationService" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>SynchronizationService_transaction</value>
+                <value>AuditMethodInterceptor</value>
+                <value>SynchronizationService_security</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Transaction interceptor for SynchronizationService -->
+    <bean
+        id="SynchronizationService_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">${server.transaction.mode.readOnly}</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean
+        id="SynchronizationService_security"
+        class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+    >
+        <property name="authenticationManager">
+            <ref bean="authenticationManager" />
+        </property>
+        <property name="accessDecisionManager">
+            <ref bean="accessDecisionManager" />
+        </property>
+        <property name="afterInvocationManager">
+            <ref bean="afterInvocationManager" />
+        </property>
+        <property name="objectDefinitionSource">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.iam.SynchronizationService.grantThemeRole=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.iam.SynchronizationService.grantThemeRoles=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.iam.SynchronizationService.revokeThemeRole=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.iam.SynchronizationService.getEcordaThemeIds=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.iam.SynchronizationService.*=ACL_DENY
+            </value>
+        </property>
+    </bean>
+
+    <bean
+        id="synchronizationTaskExecutor"
+        class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor"
+    >
+        <property name="corePoolSize" value="4" />
+    </bean>
+
+    <!-- EU Login (ECAS) CAS configuration service -->
+    <bean
+        id="euLoginService"
+        class="eu.europa.ec.digit.circabc.rest.service.eulogin.EULoginServiceImpl"
+    />
+
+    <bean
+        id="bulkUserImportService"
+        class="eu.europa.ec.digit.circabc.rest.service.user.BulkUserImportServiceImpl"
+    />
+
+    <!-- Proxied statistics service -->
+    <bean
+        id="BulkUserImportService"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.user.BulkUserImportService
+            </value>
+        </property>
+        <property name="target">
+            <ref bean="bulkUserImportService" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>BulkUserImportService_transaction</value>
+                <value>AuditMethodInterceptor</value>
+                <value>BulkUserImportService_security</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Transaction interceptor for NotificationService -->
+    <bean
+        id="BulkUserImportService_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="get*">${server.transaction.mode.readOnly}</prop>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+    <bean
+        id="BulkUserImportService_security"
+        class="org.alfresco.repo.security.permissions.impl.acegi.MethodSecurityInterceptor"
+    >
+        <property name="authenticationManager">
+            <ref bean="authenticationManager" />
+        </property>
+        <property name="accessDecisionManager">
+            <ref bean="accessDecisionManager" />
+        </property>
+        <property name="afterInvocationManager">
+            <ref bean="afterInvocationManager" />
+        </property>
+        <property name="objectDefinitionSource">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.user.BulkUserImportService.listMembers=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.user.BulkUserImportService.loadWork=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.user.BulkUserImportService.saveWork=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.user.BulkUserImportService.parseProfilesToBeCreated=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.user.BulkUserImportService.listGroupProfiles=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.user.BulkUserImportService.inviteUsers=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.user.BulkUserImportService.addAll=ACL_ALLOW
+                eu.europa.ec.digit.circabc.rest.service.user.BulkUserImportService.*=ACL_DENY
+            </value>
+        </property>
+    </bean>
+
+    <bean
+        id="aresBridgeService"
+        class="eu.europa.ec.digit.circabc.rest.service.ares.AresBridgeServiceImpl"
+    />
+
+    <!-- External Repositories Management Service definitions -->
+    <bean
+        id="externalRepositoriesManagementService"
+        class="eu.europa.ec.digit.circabc.rest.service.external.repositories.ExternalRepositoriesManagementServiceImpl"
+    />
+
+    <bean
+        id="ExternalRepositoriesManagementService"
+        class="org.springframework.aop.framework.ProxyFactoryBean"
+    >
+        <property name="proxyInterfaces">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.external.repositories.ExternalRepositoriesManagementService
+            </value>
+        </property>
+        <property name="target">
+            <ref bean="externalRepositoriesManagementService" />
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>ExternalRepositoriesManagementService_transaction</value>
+                <value>AuditMethodInterceptor</value>
+                <value>ExternalRepositoriesManagementService_security</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean
+        id="ExternalRepositoriesManagementService_transaction"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor"
+    >
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="get*">${server.transaction.mode.readOnly}</prop>
+                <prop key="*">${server.transaction.mode.default}</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean
+        id="ExternalRepositoriesManagementService_security"
+        class="net.sf.acegisecurity.intercept.method.aopalliance.MethodSecurityInterceptor"
+    >
+        <property name="authenticationManager">
+            <ref bean="authenticationManager" />
+        </property>
+        <property name="accessDecisionManager">
+            <ref bean="accessDecisionManager" />
+        </property>
+        <property name="afterInvocationManager">
+            <ref bean="afterInvocationManager" />
+        </property>
+        <property name="objectDefinitionSource">
+            <value>
+                eu.europa.ec.digit.circabc.rest.service.external.repositories.ExternalRepositoriesManagementService.*=ACL_ALLOW
+            </value>
+        </property>
+    </bean>
+
+    <bean id="AresBridgeApi" class="io.swagger.api.AresBridgeApiImpl" />
+
+    <!-- Define Factory Bean -->
+    <bean
+        id="ldapOrLuceneUserServiceFactoryBean"
+        class="eu.europa.ec.digit.circabc.rest.service.user.LdapOrLuceneUserServiceFactoryBean"
+    >
+        <constructor-arg ref="circabcConfig" />
+        <constructor-arg ref="ldapUserService" />
+        <constructor-arg ref="luceneUserService" />
+    </bean>
+
+    <!-- Define the conditional UserService bean -->
+    <bean
+        id="ldapOrLuceneUserService"
+        factory-bean="ldapOrLuceneUserServiceFactoryBean"
+        factory-method="ldapOrLuceneUserService"
+    />
+
+    <!-- Enforce admin password from configuration on startup -->
+    <bean
+        id="adminPasswordBootstrap"
+        class="eu.europa.ec.digit.circabc.rest.configuration.AdminPasswordBootstrap"
+    />
+</beans>

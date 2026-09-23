@@ -1,0 +1,124 @@
+<!-- MODAL BOX -->
+@if (showWizard()) {
+<div
+  class="black-overlayer"
+  [class.overlayer-shown]="showWizard()"
+  [class.overlayer-hidden]="!showWizard()"
+></div>
+} @if (showAddWizardStep1) {
+<section
+  class="modal modal--select-files"
+  [class.modal-shown]="showAddWizardStep1"
+  [class.modal-hidden]="!showAddWizardStep1"
+  style="margin-top: 0"
+>
+  <button
+    type="button"
+    class="close-icon"
+    aria-label="{{ 'label.cancel.wizard' | transloco }}"
+    (click)="cancelWizard('close')"
+  ></button>
+  <header>
+    <a
+      tabindex="0"
+      class="back-link"
+      (click)="cancelWizard('close')"
+      (keydown.enter)="cancelWizard('close')"
+      >{{ 'label.back' | transloco }}</a
+    >
+    <h2 class="title">{{ 'avatar.select.image' | transloco }}</h2>
+  </header>
+
+  <section class="modal-content">
+    <!--  file -->
+    <div class="field field--file">
+      <!-- Note: You need javascript here to know when the files are selected, see in the footer -->
+      <span style="margin-right: 35px">{{ 'label.image' | transloco }}</span>
+      <input
+        type="file"
+        id="file"
+        class="inputfile inputfile-6"
+        (change)="fileChangeEvent($event)"
+      />
+      <label for="file"
+        ><span class="result"></span
+        ><span class="button">{{ 'label.browse' | transloco }}</span></label
+      >
+    </div>
+
+    <div
+      class="drop-zone"
+      (dragenter)="dragenter($event)"
+      (dragover)="dragover($event)"
+      (drop)="drop($event)"
+    >
+      {{ 'avatar.drag.drop' | transloco }}
+    </div>
+
+    @if (fileToUpload(); as file) {
+    <div class="field">
+      <span class="label">{{ 'avatar.file.upload' | transloco }}</span> ( {{
+      'label.size' | transloco }}: {{ file.size | cbcSize: true }} )
+      <br />
+      <div class="listToBeUploaded">
+        <ul>
+          <li>{{ file.name }}</li>
+        </ul>
+      </div>
+    </div>
+    }
+
+    <div class="text-success">{{ 'image.upload.1mb' | transloco }}</div>
+    @if (!fileNameValid()) {
+    <span class="text-error">{{ 'error.image.upload' | transloco }}</span>
+    }
+  </section>
+  <section class="modal-footer">
+    <!-- Buttons -->
+    <div class="buttons-group">
+      @if (fileToUpload() !== undefined) {
+      <a
+        tabindex="0"
+        class="cta"
+        (click)="launchAddWizardStep2()"
+        [class.disabled]="!fileNameValid()"
+        >{{ 'label.upload' | transloco }}</a
+      >
+      }
+    </div>
+  </section>
+</section>
+} @if (showAddWizardStep2) {
+<section
+  class="modal"
+  [class.modal-shown]="showAddWizardStep2"
+  [class.modal-hidden]="!showAddWizardStep2"
+  style="margin-top: 0"
+>
+  <button
+    type="button"
+    class="close-icon"
+    aria-label="{{ 'label.cancel.wizard' | transloco }}"
+    (click)="cancelWizard('close')"
+  ></button>
+  <header>
+    <h2 class="title">{{ 'avatar.uploading' | transloco }}</h2>
+  </header>
+
+  <section class="modal-content">
+    <div class="field">
+      <span
+        >{{ 'label.progress' | transloco }} @if (progressValue() !==
+        progressMax) {
+        <cbc-spinner></cbc-spinner>
+        }</span
+      >
+      <progress
+        class="progressUploadBar"
+        [value]="progressValue()"
+        [max]="progressMax"
+      ></progress>
+    </div>
+  </section>
+</section>
+}

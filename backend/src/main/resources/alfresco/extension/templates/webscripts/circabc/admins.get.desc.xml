@@ -1,0 +1,8 @@
+<webscript>
+    <shortname>CIRCABC administrators</shortname>
+    <description>Get all CIRCABC administrators</description>
+    <url>/circabc/admins</url>
+    <format default="json" />
+    <authentication>user</authentication>
+    <transaction>required</transaction>
+</webscript>

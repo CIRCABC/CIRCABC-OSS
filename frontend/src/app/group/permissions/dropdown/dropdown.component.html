@@ -1,0 +1,24 @@
+<button
+  type="button"
+  class="cta cta--plus dropdown-trigger"
+  [class.disabled]="disabled()"
+  (click)="toggleAddDropdown($event)"
+  (keydown.enter)="toggleAddDropdown($event)"
+>
+  {{ 'permissions.add.configuration' | transloco }} @if (showCreateDropdown) {
+  <div class="dropdown dropdown--add-file adjust">
+    <ul>
+      <li>
+        <a tabindex="0" class="user" (click)="launchAddPermissionWizard()"
+          >{{ 'permissions.selection.label' | transloco }}</a
+        >
+      </li>
+      <li>
+        <a tabindex="0" class="users" (click)="launchAddShareWizard()"
+          >{{ 'label.interest.groups' | transloco }}</a
+        >
+      </li>
+    </ul>
+  </div>
+  }
+</button>

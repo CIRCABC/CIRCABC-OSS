@@ -1,0 +1,8 @@
+<div
+  class="box--messages"
+  [class.box--messages--prepare]="messages().length > 0"
+>
+  @for (msg of messages(); track msg) {
+  <cbc-ui-message-rendered [message]="msg"></cbc-ui-message-rendered>
+  }
+</div>

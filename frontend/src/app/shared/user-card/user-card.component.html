@@ -1,0 +1,37 @@
+@if (user(); as user) { @if (!user.visibility) {
+<span>{{ fullName() }}</span>
+} @if (user.visibility) {
+<a
+  tabindex="0"
+  class="user-link"
+  [class.disabled]="disabled()"
+  (click)="toggleVisible()"
+  >{{ fullName() }}</a
+>
+} @if (visible) {
+<section class="user-card" [class.right-side]="rightSide()">
+  <button
+    type="button"
+    class="link-button close"
+    aria-label="{{ 'label.close.user.card' | transloco }}"
+    (click)="toggleVisible()"
+    >x</button
+  >
+  <div class="avatar">
+    <img
+      [attr.src]="user.avatar | cbcDownload | cbcSecure"
+      [attr.alt]="'User avatar'"
+      width="50"
+      height="50"
+    />
+  </div>
+  <div class="details">
+    {{ user.firstname }}
+    <br />
+    <span class="lastname">{{ user.lastname }}</span>
+    <span class="email">
+      <a href="mailto:{{ user.email }}">{{ user.email }}</a>
+    </span>
+  </div>
+</section>
+} }

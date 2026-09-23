@@ -1,0 +1,171 @@
+@if (loading()) {
+<cbc-horizontal-loader />
+}
+
+<div class="wrap page-container my-account">
+  <div class="page-header">
+    <span
+      class="page-header__title"
+      [innerHtml]="'notifications.manage.page.title' | transloco"
+    ></span>
+    <div class="page-header__actions">
+      <cbc-reponsive-sub-menu>
+        @if (from() === 'library') {
+        <a tabindex="0" (click)="goBackToFolder()" class="page-header__backlink"
+          >{{ 'label.back' | transloco }}</a
+        >
+        } @if (from() === 'library') {
+        <a tabindex="0" (click)="goBack()">{{ 'label.details' | transloco }}</a>
+        } @if (from() === 'forum' || from() === 'topic') {
+        <a tabindex="0" (click)="goBack()" class="page-header__backlink"
+          >{{ 'label.back' | transloco }}</a
+        >
+        }
+        <a
+          [routerLink]="['../../permissions', getNodeId()]"
+          [queryParams]="{ from: from() }"
+          >{{ 'label.permissions' | transloco }}</a
+        >
+        <a
+          class="selected"
+          [routerLink]="['.']"
+          [queryParams]="{ from: from() }"
+          >{{ 'label.notifications' | transloco }}</a
+        >
+      </cbc-reponsive-sub-menu>
+      <a tabindex="0" class="cta cta--plus" (click)="showAddModal.set(true)"
+        >{{ 'notifications.add.configuration' | transloco }}</a
+      >
+    </div>
+  </div>
+
+  <section>
+    @if (notifs()) {
+    <div class="main fixH3">
+      <h3>
+        {{ 'label.notifications.on' | transloco }}: {{ currentNode()?.name }}
+      </h3>
+    </div>
+    } @if (notifs()) {
+    <div class="box half-width-fluid">
+      <header class="header">
+        <span class="title">{{ 'label.profiles' | transloco }}</span>
+      </header>
+      <div class="table-container permission-container">
+        <table class="main">
+          <thead>
+            <tr>
+              <th><span class="visually-hidden">Actions</span></th>
+              <th><span class="visually-hidden">Select</span></th>
+              <th class="header-profile">{{ 'label.name' | transloco }}</th>
+              <th class="header-profile">
+                {{ 'label.subscription' | transloco }}
+              </th>
+              <th class="header-profile"></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @if (notifs()?.profiles) {
+            <tr
+              class="row"
+              [class.empty-row]="notifs()?.profiles?.length === 0"
+            >
+              @if (notifs()?.profiles?.length === 0) {
+              <td class="cell-left-border"></td>
+              } @if (notifs()?.profiles?.length === 0) {
+              <td class="cell-checkbox"></td>
+              } @if (notifs()?.profiles?.length === 0) {
+              <td colspan="3">
+                {{ 'notifications.empty.configuration' | transloco }}
+              </td>
+              }
+            </tr>
+            } @for (pNotif of notifs()?.profiles; track pNotif) {
+            <tr class="row">
+              <td class="cell-left-border"></td>
+              <td class="cell-checkbox"></td>
+              <td>
+                {{ $safeNavigationMigration(pNotif.profile?.title) | cbcI18n }}
+              </td>
+              <td>{{ 'notifications.' + pNotif.notifications | transloco }}</td>
+              <td>
+                @if (pNotif.inherited === false) {
+                <cbc-inline-delete
+                  (deletionConfirmed)="
+                    deleteNotification($safeNavigationMigration(pNotif.profile?.groupName))
+                  "
+                ></cbc-inline-delete>
+                }
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+    } @if (notifs()) {
+    <div class="box half-width-fluid">
+      <header class="header">
+        <span class="title">{{ 'label.users' | transloco }}</span>
+      </header>
+      <div class="table-container permission-container">
+        <table class="main">
+          <thead>
+            <tr>
+              <th><span class="visually-hidden">Actions</span></th>
+              <th><span class="visually-hidden">Select</span></th>
+              <th class="header-profile">{{ 'label.name' | transloco }}</th>
+              <th class="header-profile">
+                {{ 'label.subscription' | transloco }}
+              </th>
+              <th class="header-profile"></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @if (notifs()?.users) {
+            <tr class="row" [class.empty-row]="notifs()?.users?.length === 0">
+              @if (notifs()?.users?.length === 0) {
+              <td class="cell-left-border"></td>
+              } @if (notifs()?.users?.length === 0) {
+              <td class="cell-checkbox"></td>
+              } @if (notifs()?.users?.length === 0) {
+              <td colspan="3">
+                {{ 'notifications.empty.configuration' | transloco }}
+              </td>
+              }
+            </tr>
+            } @for (uNotif of notifs()?.users; track uNotif) {
+            <tr class="row">
+              <td class="cell-left-border"></td>
+              <td class="cell-checkbox"></td>
+              <td>
+                {{ uNotif.user?.firstname + ' ' + uNotif.user?.lastname }}
+              </td>
+              <td>{{ 'notifications.' + uNotif.notifications | transloco }}</td>
+              <td>
+                @if (uNotif.inherited === false) {
+                <cbc-inline-delete
+                  (deletionConfirmed)="deleteNotification($safeNavigationMigration(uNotif.user?.userId))"
+                ></cbc-inline-delete>
+                }
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+    }
+  </section>
+</div>
+
+@if (currentNode()) {
+<cbc-add-notifications
+  [showModal]="showAddModal()"
+  [node]="currentNode()!"
+  [ig]="currentIg()"
+  (finished)="refresh($event)"
+/>
+}

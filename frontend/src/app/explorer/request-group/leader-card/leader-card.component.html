@@ -1,0 +1,20 @@
+@let _user = user();
+<section class="user">
+  <div class="avatar">
+    @if (_user.avatar) {
+    <img [attr.src]="_user.avatar | cbcDownload | cbcSecure" alt="avatar" />
+    } @if (!_user.avatar) {
+    <img src="img/contact-info.png" alt="default avatar" />
+    }
+  </div>
+  {{ _user.firstname }}<br />
+  {{ _user.lastname }}<br />
+  <a href="mailto:{{ _user.email }}">{{ _user.email }}</a>
+  @if (showDelete()) {
+  <br />
+  } @if (showDelete()) {
+  <a tabindex="0" class="remove" (click)="onRemoveClick()"
+    >{{ 'label.remove' | transloco }}</a
+  >
+  }<br />
+</section>

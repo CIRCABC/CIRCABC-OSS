@@ -1,0 +1,40 @@
+<section class="box box--alternate-lines box--button limit-height">
+  <header class="header">
+    <span class="title"
+      >{{ 'label.user.favourites' | transloco }} ({{ totalItems() }})</span
+    >
+    <span class="icons">
+      <img class="header-icon" src="img/star.png" alt="" aria-hidden="true" />
+    </span>
+  </header>
+  @if (loading()) {
+  <cbc-horizontal-loader></cbc-horizontal-loader>
+  }
+  <div class="main main--listing">
+    @if (totalItems() > 0) {
+    <ul id="listOfFavourites">
+      @for (favourite of pagedFavourites().data; track favourite.id) {
+      <li class="row">
+        <a tabindex="0" (click)="openLink(favourite)">{{ favourite.name }}</a>
+        @if (isFile(favourite)) {
+        <span class="favouriteType">{{ 'label.file' | transloco }}</span>
+        } @if (!isFile(favourite)) {
+        <span class="favouriteType">{{ 'label.folder' | transloco }}</span>
+        }
+      </li>
+      } @if (totalItems() === 0) {
+      <li class="row">{{ 'label.nothing.to.display' | transloco }}</li>
+      }
+    </ul>
+    } @if (isPagerVisible()) {
+    <div class="footer">
+      <cbc-pager
+        [length]="totalItems()"
+        [pageSize]="limit"
+        [page]="page()"
+        (pageChange)="changePage($event)"
+      ></cbc-pager>
+    </div>
+    }
+  </div>
+</section>

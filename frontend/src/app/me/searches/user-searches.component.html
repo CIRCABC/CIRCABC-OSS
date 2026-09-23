@@ -1,0 +1,19 @@
+<section class="box box--two-tabs box--alternate-lines box--button">
+  <ul class="header">
+    <li
+      ><a class="tab tab-1 tab--current" [routerLink]="['.']"
+        >My last searches</a
+      ></li
+    >
+    <li><a class="tab tab-2" [routerLink]="['.']">My saved searches</a></li>
+  </ul>
+
+  <div class="main main--listing">
+    <ul>
+      <li class="row">{{ 'label.nothing.to.display' | transloco }}</li>
+    </ul>
+  </div>
+  <div class="footer">
+    <a class="footer__button" [routerLink]="['.']">All my searches</a>
+  </div>
+</section>

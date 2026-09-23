@@ -1,0 +1,146 @@
+@let _request = request();
+<section
+  class="g-request"
+  [class.waiting]="_request.agreement === 0"
+  [class.approved]="_request.agreement === 1"
+  [class.rejected]="_request.agreement === -1"
+>
+  <div>
+    <dl class="request-details">
+      <div class="red-bordered-row">
+        <dd colspan="2">{{ ('label.request.delete' | transloco)}}</dd>
+      </div>
+      <div class="request-details__row">
+        <dt class="label big-label">
+          {{ ('label.request' | transloco) + ' ' + ('label.by' | transloco) }}
+        </dt>
+        <dd>
+          <cbc-user-card
+            [userId]="_request.from.userId"
+            [rightSide]="true"
+          ></cbc-user-card>
+          <strong>{{ 'label.on' | transloco }}</strong>
+          {{ _request.requestDate | date: 'dd/MM/yyyy - HH:mm' }}
+        </dd>
+      </div>
+
+      <div class="request-details__row">
+        <dt>
+          <span class="label">{{ 'label.justification' | transloco }}: </span>
+        </dt>
+        <dd>
+          <span
+            [innerHTML]="cleanSpace(_request.justification)"
+            class="text-content"
+          ></span>
+        </dd>
+      </div>
+
+      <div class="request-details__row">
+        <dt>
+          <span class="label big-label">{{ 'label.name' | transloco }}</span>
+        </dt>
+        @if (_request.groupId) { @if (_request.agreement && _request.agreement
+        === 0) {
+        <dd>
+          <a [routerLink]="['/group', _request.groupId]">{{_request.name}}</a>
+        </dd>
+        } @else {
+        <dd>{{_request.name}}</dd>
+        } }
+      </div>
+      <div class="request-details__row">
+        <dt>
+          <span class="label big-label">{{ 'label.title' | transloco }}</span>
+        </dt>
+        <dd>
+          <span>{{_request.title}}</span>
+        </dd>
+      </div>
+      <div class="request-details__row">
+        <dt>
+          <span class="label big-label"
+            >{{ 'label.description' | transloco }}</span
+          >
+        </dt>
+        <dd>
+          <span
+            [innerHTML]="cleanSpace(_request.description)"
+            class="text-content"
+          ></span>
+        </dd>
+      </div>
+
+      <div class="request-details__row">
+        <dt>
+          <span class="label">{{ 'label.leaders' | transloco }}</span>
+        </dt>
+        <dd>
+          @for (user of _request.leaders; track user.userId) {
+          <div>
+            <span>- {{user?.firstname! + ' ' + user?.lastname!}} </span>
+            <span style="font-size: 0.8em"> ({{user?.email!}})</span>
+          </div>
+
+          }
+        </dd>
+      </div>
+    </dl>
+
+    <aside
+      class="actions"
+      aria-label="{{ 'label.request.actions' | transloco }}"
+    >
+      @if (_request.agreement === 0) {
+      <a tabindex="0" class="cta" (click)="acceptDialog()" data-cy="approve"
+        >{{ 'label.approve' | transloco }}</a
+      >
+      } @if (_request.agreement === 0) {
+      <a tabindex="0" class="button" (click)="rejectDialog()"
+        >{{ 'label.reject' | transloco }}</a
+      >
+      }
+    </aside>
+    @if (_request.agreement === -1) {
+    <aside
+      class="actions"
+      aria-label="{{ 'label.rejection.details' | transloco }}"
+    >
+      <h4 class="rejected">
+        <img src="img/Rejected-white.png" alt="rejected" /> {{ 'label.rejected'
+        | transloco }}
+      </h4>
+      <span class="label big-label">{{ 'label.by' | transloco }}</span>
+      @if (_request.reviewer && _request.reviewer.userId) {
+      <cbc-user-card
+        [userId]="_request.reviewer.userId"
+        [rightSide]="false"
+      ></cbc-user-card>
+      }
+      <br />
+      <span class="label big-label">{{ 'label.on' | transloco }}</span>{{
+      _request.agreementDate | date: 'dd/MM/yyy : HH:mm' }}
+    </aside>
+    } @if (_request.agreement === 1) {
+    <aside
+      class="actions"
+      aria-label="{{ 'label.approval.details' | transloco }}"
+    >
+      <h4 class="approved">
+        <img src="img/Accepted-white.png" alt="accepted" />{{ 'label.approved' |
+        transloco }}
+      </h4>
+      <span class="label big-label">{{ 'label.by' | transloco }}</span>
+      @if (_request.reviewer && _request.reviewer.userId) {
+      <cbc-user-card
+        [userId]="_request.reviewer.userId"
+        [rightSide]="false"
+      ></cbc-user-card>
+      }
+      <br />
+      <span class="label big-label">{{ 'label.on' | transloco }}</span>{{
+      _request.agreementDate | date: 'dd/MM/yyy : HH:mm' }}
+    </aside>
+    }
+  </div>
+</section>

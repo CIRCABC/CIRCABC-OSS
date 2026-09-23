@@ -1,0 +1,91 @@
+{{ 'label.login' | transloco | cbcSetTitle }}
+<div class="home-logout" style="background: none !important">
+  <div class="footer-bottom-stucker">
+    <div class=""></div>
+    <header class="header fluid header-login">
+      <div class="ec-links"></div>
+      <img
+        class="eu-logo"
+        src="img/all-ec-logo-neg/flag_yellow_low.jpg"
+        alt="European Union"
+      />
+    </header>
+
+    <div class="main" style="background: none !important">
+      <div class="wrap login-form">
+        @if (circabcRelease !== 'echa') {
+        <img
+          class="illustration"
+          src="img/logo-circabc-big.png"
+          alt="CIRCABC"
+        />
+        } @if (circabcRelease === 'echa') {
+        <img
+          class="illustration"
+          src="img/s-circabcLogo-white.svg"
+          alt="CIRCABC"
+          width="200px"
+        />
+        }
+
+        <h1>{{ 'label.login' | transloco }}</h1>
+        <form [formGroup]="loginForm" (ngSubmit)="login()">
+          <div class="field">
+            <label for="username">{{ 'label.username' | transloco }}</label>
+            <input
+              data-cy="username"
+              [cbcFocus]="true"
+              id="username"
+              formControlName="username"
+              type="text"
+              autocorrect="off"
+              autocapitalize="none"
+              placeholder="{{ 'label.username' | transloco }}"
+            />
+            @if (submitClicked()) {
+            <cbc-control-message
+              [control]="loginForm.controls.username"
+            ></cbc-control-message>
+            }
+          </div>
+          <div class="field">
+            <label for="password">{{ 'label.password' | transloco }}</label>
+            <input
+              data-cy="password"
+              id="password"
+              type="password"
+              formControlName="password"
+              placeholder="{{ 'label.password' | transloco }}"
+            />
+            @if (submitClicked()) {
+            <cbc-control-message
+              [control]="loginForm.controls.password"
+            ></cbc-control-message>
+            }
+          </div>
+          @if (loginDenied()) {
+          <div id="loginDeniedError" role="alert" class="error-message">
+            {{ 'error.login.denied' | transloco }}
+          </div>
+          } @if (loginError()) {
+          <div id="loginError" role="alert" class="error-message">
+            {{ 'error.login.impossible' | transloco }}
+          </div>
+          } @if (!loggingIn()) {
+          <button data-cy="login" type="submit" class="cta cta--homepage">
+            {{ 'label.login' | transloco }}
+          </button>
+          } @if (loggingIn()) {
+          <p class="loggin">
+            {{ 'label.logging.you.in' | transloco }}...
+            <cbc-spinner></cbc-spinner>
+          </p>
+          }
+          <a class="button" routerLink="/welcome"
+            >{{ 'label.cancel' | transloco }}</a
+          >
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

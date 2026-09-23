@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<web-fragment
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-fragment_3_0.xsd"
+    id="WebAppFragment_ID"
+    version="3.0"
+>
+  <filter>
+    <filter-name>SecurityHeadersFilter</filter-name>
+    <filter-class>eu.europa.ec.digit.circabc.rest.servlet.SecurityHeadersFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>SecurityHeadersFilter</filter-name>
+    <url-pattern>/service/api/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>SecurityHeadersFilter</filter-name>
+    <url-pattern>/service/circabc/*</url-pattern>
+  </filter-mapping>
+
+  <filter>
+    <filter-name>DisableBasicAuthenicationPopupFilter</filter-name>
+    <filter-class>eu.europa.ec.digit.circabc.rest.servlet.DisableBasicAuthenicationPopupFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>DisableBasicAuthenicationPopupFilter</filter-name>
+    <url-pattern>/service/api/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>DisableBasicAuthenicationPopupFilter</filter-name>
+    <url-pattern>/service/circabc/*</url-pattern>
+  </filter-mapping>
+</web-fragment>

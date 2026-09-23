@@ -1,0 +1,65 @@
+<footer class="footer-main">
+  <div class="footer-brand">
+    <div>
+      @if (circabcRelease !== 'echa') {
+      <img src="img/logo-white.png" width="50" alt="CIRCABC logo" />
+      } @if (circabcRelease === 'echa') {
+      <img src="img/s-circabcLogo-white.svg" width="80" alt="S-CIRCABC logo" />
+      }
+    </div>
+    @if (circabcRelease !== 'echa') {
+    <div class="footer-title">
+      {{'footer.title' | transloco }}
+      <a
+        href="https://github.com/CIRCABC/Circabc-OSS"
+        target="_blank"
+        rel="noopener noreferrer"
+        >{{ 'footer.message' | transloco }}</a
+      >
+    </div>
+    } @if (circabcRelease === 'echa') {
+    <div class="footer-title">
+      {{'footer.title.scircabc' | transloco }}
+      <a
+        href="https://github.com/CIRCABC/Circabc-OSS"
+        target="_blank"
+        rel="noopener noreferrer"
+        >{{ 'footer.message.scircabc' | transloco }}</a
+      >
+    </div>
+    }
+  </div>
+
+  <nav
+    class="footer-links"
+    aria-label="{{ 'label.footer.navigation' | transloco }}"
+  >
+    <a [routerLink]="['/help/legal-notice']"
+      >{{'label.privacy.statement' | transloco }}</a
+    >
+    <a [routerLink]="['/help/legal-notice/accessibility']"
+      >{{'label.accessibility.statement' | transloco }}</a
+    >
+    <a [routerLink]="['/help/legal-notice/terms']"
+      >{{'label.terms' | transloco }}</a
+    >
+    <a
+      href="https://ec.europa.eu/info/cookies_en"
+      target="_blank"
+      rel="noopener noreferrer"
+      >{{'cookie.title' | transloco }}</a
+    >
+    <a
+      href="https://ec.europa.eu/info/privacy-policy/europa-analytics_en"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      {{'label.europa-analytics' | transloco }}</a
+    >
+  </nav>
+
+  <span class="footer-version"
+    >V.{{ appVersion }} A.{{ appAlfVersion }} / {{ nodeName }} / {{ buildDate
+    }}</span
+  >
+</footer>

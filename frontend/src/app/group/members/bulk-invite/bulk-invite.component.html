@@ -1,0 +1,403 @@
+@if (loading()) {
+<cbc-horizontal-loader />
+}
+<div class="wrap admin page-container">
+  <div class="page-header">
+    <span
+      class="page-header__title"
+      [innerHtml]="'label.bulk.invite.users.description' | transloco"
+    ></span>
+    <div class="page-header__actions">
+      <cbc-reponsive-sub-menu>
+        <a class="selected" [routerLink]="['.']"
+          >{{ 'label.bulk.invite' | transloco }}</a
+        >
+        @if (currentGroup() && isMember()) {
+        <a [routerLink]="['../../contact']"
+          >{{ 'label.send.email' | transloco }}</a
+        >
+        } @if (currentGroup() && (isDirAdmin() || isDirManageMembers())) {
+        <a [routerLink]="['../../../applicants']"
+          >{{ 'label.member.requests' | transloco }}</a
+        >
+        }
+        <a [routerLink]="['../../../members']"
+          >{{ 'label.members' | transloco }}</a
+        >
+        @if (currentGroup() && isDirAdmin()) {
+        <a [routerLink]="['../../../profiles']"
+          >{{ 'label.profiles' | transloco }}</a
+        >
+        }
+      </cbc-reponsive-sub-menu>
+    </div>
+  </div>
+
+  <section class="box">
+    <form [formGroup]="bulkInviteForm">
+      <header class="header">
+        <span class="title">{{ 'label.bulk.invite.users' | transloco }}</span>
+      </header>
+      <div class="main">
+        <fieldset>
+          <legend>{{ 'label.select.invite.users' | transloco }}</legend>
+          <div class="field">
+            <label for="categories"
+              >{{ 'explorer.categories' | transloco }}</label
+            >
+            <div class="custom-select select--form">
+              <select
+                id="categories"
+                #categorySelect
+                (change)="setCategory(categorySelect.value)"
+              >
+                @for (availableCategory of availableCategories(); track
+                availableCategory.id) {
+                <option [value]="availableCategory.id">
+                  {{ availableCategory.name }}
+                </option>
+                }
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <span class="label">{{ 'label.interest.groups' | transloco }}</span>
+            <cbc-item-multiselector
+              [availableItems]="availableInterestGroups()"
+              [(selectedItems)]="selectedInterestGroups"
+            ></cbc-item-multiselector>
+          </div>
+          <div class="switch">
+            <span class="label"
+              >{{ 'label.bulk.invite.new.profiles' | transloco }}</span
+            >&nbsp;&nbsp;
+            <input
+              id="createNewProfiles"
+              name="createNewProfiles"
+              class="cmn-toggle cmn-toggle-round"
+              type="checkbox"
+              formControlName="createNewProfiles"
+            />
+            <label
+              for="createNewProfiles"
+              class="nonBlockLabel"
+              aria-label="{{ 'label.create.new.profiles' | transloco }}"
+            ></label>
+            <span
+              >{{ (bulkInviteForm.controls['createNewProfiles'].value === true ?
+              'label.yes' : 'label.no' ) | transloco }}</span
+            >
+          </div>
+
+          <br />
+        </fieldset>
+
+        <!--  file -->
+        <fieldset>
+          <legend>{{ 'label.user.list.import' | transloco }}</legend>
+          <div class="field field--file">
+            <span style="margin-right: 140px"
+              >{{ 'label.file' | transloco }}</span
+            >
+            <input
+              type="file"
+              id="file"
+              class="inputfile inputfile-6"
+              (change)="fileChangeEvent($event)"
+              [accept]="'.xls,.xlsx,.csv,.xml'"
+            />
+            <label for="file"
+              ><span class="result"></span
+              ><span class="button"
+                >{{ 'label.browse' | transloco }}</span
+              ></label
+            >
+            ({{ 'label.import.accepted.files' | transloco }})
+          </div>
+          <div class="field">
+            <span></span>
+            {{ 'label.need.bulk.template.download' | transloco }}&nbsp;<a
+              href="assets/files/Import_template.xlsx"
+              target="_blank"
+              ><img src="img/download-blue-small.png" alt="download"
+            /></a>
+            <br />
+            <span></span>
+            {{ 'label.need.bulk.template.restrictions' | transloco }}
+          </div>
+
+          @if (fileToUpload() !== undefined) {
+          <div class="field">
+            <span class="label">{{ 'label.file.imported' | transloco }}: </span>
+            <div style="display: inline-block" class="listToBeUploaded">
+              <ul>
+                <li>
+                  {{ fileToUpload()!.name }}&nbsp;<a
+                    tabindex="0"
+                    (click)="deleteFile()"
+                    ><img
+                      src="img/icon-delete-818181.png"
+                      height="15"
+                      width="15"
+                      alt="Delete icon"
+                  /></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          }
+        </fieldset>
+
+        <fieldset>
+          <legend>{{ 'label.edit.invite.users' | transloco }}</legend>
+
+          <section class="table-container">
+            <header class="header">
+              <cbc-pager
+                [length]="totalItems()"
+                [pageSize]="listingOptions().limit"
+                [page]="listingOptions().page"
+                (pageChange)="goToPage($event)"
+              ></cbc-pager>
+              <span class="icons col-hidable">
+                <div class="dropdown-trigger">
+                  <img src="img/icon-admin-blue.png" alt="Settings" />
+                  <div class="dropdown dropdown--library-settings">
+                    <div class="number-of-items">
+                      {{ 'label.show' | transloco }}:
+                      <a tabindex="0" (click)="changeLimit(10)">10</a>
+                      <a tabindex="0" (click)="changeLimit(25)">25</a>
+                      <a tabindex="0" (click)="changeLimit(50)">50</a>
+                      <a tabindex="0" (click)="changeLimit(-1)"
+                        >{{ 'label.all' | transloco }}</a
+                      >
+                    </div>
+                  </div>
+                </div>
+              </span>
+            </header>
+
+            <ul class="bulk-actions bulk-actions--grey">
+              <li>
+                <cbc-number-badge
+                  [number]="selectedMembers.length"
+                ></cbc-number-badge>
+              </li>
+              @if (selectedMembers.length > 0) {
+              <li>
+                <label for="bulkProfileSelect"
+                  >{{ 'label.profile' | transloco }}</label
+                >
+                <div class="custom-select select--form2 view-select">
+                  <select
+                    #profileSelect
+                    id="bulkProfileSelect"
+                    (change)="setSelectedProfiles(profileSelect.value)"
+                  >
+                    @for (profile of availableProfiles(); track profile.id) {
+                    <option [value]="profile.name">
+                      {{ truncateProfileTitle(profile.title) }}
+                    </option>
+                    }
+                  </select>
+                </div>
+              </li>
+              } @if (selectedMembers.length > 0) {
+              <li>
+                <cbc-inline-delete
+                  (deletionConfirmed)="deleteSelectedMembers()"
+                  [deleteInline]="false"
+                ></cbc-inline-delete>
+              </li>
+              }
+            </ul>
+
+            <table class="main">
+              <thead>
+                <tr>
+                  <th><span class="visually-hidden">Actions</span></th>
+                  <th class="cell-checkbox">
+                    <span class="visually-hidden">Select</span>
+                    <input
+                      type="checkbox"
+                      aria-label="{{ 'label.select.all' | transloco }}"
+                      (click)="selectAll()"
+                      (keydown.enter)="selectAll()"
+                      [checked]="allSelected"
+                    />
+                  </th>
+                  <th>{{ 'label.ig' | transloco }}</th>
+                  @if (fileToUpload() !== undefined) {
+                  <th>{{ 'label.file' | transloco }}</th>
+                  }
+                  <th>{{ 'label.username' | transloco }}</th>
+                  <th>{{ 'label.email' | transloco }}</th>
+                  <th>{{ 'label.profile' | transloco }}</th>
+                  <th>{{ 'label.status' | transloco }}</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                @if (members() !== undefined) {
+                <tr class="row empty-row">
+                  @if (members().length === 0 && !loading()) {
+                  <td colspan="7">
+                    {{ 'members.display.bulk.none' | transloco }}
+                  </td>
+                  } @if (loading()) {
+                  <span class="field">
+                    <span
+                      >{{ 'label.loading' | transloco }}...<cbc-spinner
+                      ></cbc-spinner
+                    ></span>
+                  </span>
+                  }
+                </tr>
+                } @for (member of members(); track trackMember($index, member))
+                {
+                <tr class="row">
+                  <td class="cell-left-border"></td>
+                  <td class="cell-checkbox">
+                    <!-- NOSONAR: Native checkbox is keyboard accessible -->
+                    <input
+                      type="checkbox"
+                      [attr.aria-label]="member.username"
+                      [checked]="member.selected"
+                      (click)="toggleSelectedUser(member)"
+                      (keydown.enter)="toggleSelectedUser(member)"
+                    />
+                  </td>
+                  <td class="cell-file-name">
+                    {{ member.igName === '' ? ('label.na' | transloco) :
+                    member.igName }}
+                    <div class="actions">
+                      <span>
+                        <cbc-inline-delete
+                          (deletionConfirmed)="deleteMember(member)"
+                        ></cbc-inline-delete>
+                      </span>
+                    </div>
+                  </td>
+                  @if (fileToUpload() !== undefined) {
+                  <td class="cell-access-level">
+                    {{ member.fromFile === '' ? ('label.na' | transloco) :
+                    member.fromFile }}
+                  </td>
+                  }
+                  <td class="cell-access-level">{{ member.username }}</td>
+                  <td class="cell-access-level">{{ member.email }}</td>
+                  <td class="cell-access-level" class="col-hidable">
+                    @if (member.status !== 'ok') {
+                    <span>{{ 'label.na' | transloco }}</span>
+                    } @if (member.status === 'ok') {
+                    <div class="custom-select select--form2 view-select">
+                      <select
+                        #profileSelect1
+                        aria-label="{{ 'label.profile' | transloco }}"
+                        (change)="
+                          setSelectedProfile(member, profileSelect1.value)
+                        "
+                      >
+                        @for (profile of availableProfiles(); track profile.id)
+                        {
+                        <option
+                          [selected]="member.profileId === profile.name"
+                          [value]="profile.name"
+                        >
+                          {{ truncateProfileTitle(profile.title) }}
+                        </option>
+                        }
+                      </select>
+                    </div>
+                    }
+                  </td>
+                  <td class="cell-access-level center-img">
+                    @if (member.status === 'ok') {
+                    <img
+                      src="img/Accepted.png"
+                      height="20"
+                      width="20"
+                      title="{{ 'label.ok.to.invite' | transloco }}"
+                      alt="invite"
+                    />
+                    } @if (member.status === 'member') {
+                    <img
+                      src="img/member.png"
+                      height="20"
+                      width="20"
+                      title="{{ 'label.already.member' | transloco }}"
+                      alt="menber"
+                    />
+                    } @if ( member.status === 'nok' || member.status ===
+                    'ignore' ) {
+                    <img
+                      src="img/error-triangle-orange-32.png"
+                      height="20"
+                      width="20"
+                      title="{{ 'label.error' | transloco }}"
+                      alt="alert"
+                    />
+                    }
+                  </td>
+                </tr>
+                }
+              </tbody>
+            </table>
+
+            <div class="footer">
+              <cbc-pager
+                [length]="totalItems()"
+                [pageSize]="listingOptions().limit"
+                [page]="listingOptions().page"
+                (pageChange)="goToPage($event)"
+              ></cbc-pager>
+            </div>
+          </section>
+
+          <div class="switch">
+            <span class="label">{{ 'label.notify.users' | transloco }}</span
+            >&nbsp;&nbsp;
+            <input
+              id="notifyUsers"
+              name="notifyUsers"
+              class="cmn-toggle cmn-toggle-round"
+              type="checkbox"
+              formControlName="notifyUsers"
+            />
+            <label
+              for="notifyUsers"
+              class="nonBlockLabel"
+              aria-label="{{ 'label.notify.users' | transloco }}"
+            ></label>
+            <span
+              >{{ (bulkInviteForm.controls['notifyUsers'].value === true ?
+              'label.yes' : 'label.no' ) | transloco }}</span
+            >
+          </div>
+
+          <!-- Buttons -->
+          @if (!processing()) {
+          <div class="buttons-group">
+            <a
+              class="cta"
+              [routerLink]="['.']"
+              (click)="!canInvite() ? '' : invite()"
+              [class.disabled]="!canInvite()"
+              >{{ 'label.invite' | transloco }}</a
+            >
+            <a class="button" [routerLink]="['.']" (click)="close()"
+              >{{ 'label.cancel' | transloco }}</a
+            >
+          </div>
+          } @if (processing()) {
+          <div class="field">
+            <span
+              >{{ 'label.inviting' | transloco }}...<cbc-spinner></cbc-spinner
+            ></span>
+          </div>
+          }
+        </fieldset>
+      </div>
+    </form>
+  </section>
+</div>

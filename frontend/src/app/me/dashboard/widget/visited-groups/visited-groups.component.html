@@ -1,0 +1,25 @@
+<section class="box box--alternate-lines box--button limit-height">
+  <header class="header">
+    <span class="title">{{ 'label.recent.ig.visit' | transloco }}</span>
+    <span class="icons">
+      <img
+        class="header-icon"
+        src="img/users-group.png"
+        alt="users-group.png"
+      />
+    </span>
+  </header>
+  <div class="main main--listing">
+    <ul>
+      @for (group of visitedIgs(); track group.id) {
+      <li class="row">
+        <a [routerLink]="['/group', group.id]"
+          >{{ getGroupNameOrTitle(group) }}</a
+        >
+      </li>
+      } @if (visitedIgs().length === 0) {
+      <li class="row"> {{ 'label.nothing.to.display' | transloco }} </li>
+      }
+    </ul>
+  </div>
+</section>

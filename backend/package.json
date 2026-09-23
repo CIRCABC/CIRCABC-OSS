@@ -1,0 +1,16 @@
+{
+  "scripts": {
+    "format": "npm run format-java && npm run format-xml",
+    "format-changed": "npm run format-java-changed && npm run format-xml-changed",
+    "format-java": "prettier --plugin=prettier-plugin-java --write **/*.java",
+    "format-java-changed": "prettier --plugin=prettier-plugin-java --write $(git diff --name-only --diff-filter=d | grep '^backend/.*\\.java$' | sed 's|^backend/||' | xargs)",
+    "format-xml": "prettier --plugin=@prettier/plugin-xml --tab-width 4 --xml-whitespace-sensitivity preserve --write **/*.xml",
+    "format-xml-changed": "prettier --plugin=@prettier/plugin-xml --tab-width 4 --xml-whitespace-sensitivity preserve --write $(git diff --name-only --diff-filter=d | grep '\\.xml$' | sed 's|^backend/||' | xargs)"
+  },
+  "devDependencies": {
+    "@prettier/plugin-xml": "3.4.2",
+    "prettier": "3.9.6",
+    "prettier-plugin-java": "2.10.3",
+    "zx": "^8.8.5"
+  }
+}

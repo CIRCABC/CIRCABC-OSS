@@ -1,0 +1,170 @@
+<p> {{ 'text.group.delete.introduction' | transloco }} </p>
+<h3>1 {{ 'label.verifications' | transloco }}</h3>
+<p>
+  {{ 'text.group.delete.step1.explanation' | transloco }}
+  <br /><br />
+  <a tabindex="0" data-cy="verify" class="button" (click)="verifyConditions()"
+    >{{ 'label.verify' | transloco }}</a
+  >
+  &nbsp;
+  <a tabindex="0" class="button" (click)="onCancelClick()"
+    >{{ 'label.cancel' | transloco }}</a
+  >
+  @if (verifying()) {
+  <span
+    >&nbsp;{{ 'label.verifying' | transloco }}... <cbc-spinner></cbc-spinner
+  ></span>
+  }
+</p>
+@if (!isReadyForDeletion() && verified()) {
+<div>
+  @let report = conditions(); @if (report.lockedNodes &&
+  report.lockedNodes.length > 0) {
+  <p> {{ 'text.list.locked.nodes' | transloco }} </p>
+  } @if (report.lockedNodes && report.lockedNodes.length > 0) {
+  <table>
+    <thead>
+      <tr>
+        <th>{{ 'label.name' | transloco }}</th>
+        <th>{{ 'label.path' | transloco }}</th>
+        <th class="actions"> {{ 'label.actions' | transloco }} </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td></td>
+        <td></td>
+        <td [attr.rowspan]="report.lockedNodes.length + 1">
+          <a tabindex="0" (click)="cleanLocks()"
+            >{{ 'label.remove.locks' | transloco }}</a
+          >
+          @if (cleaningLocks()) {
+          <cbc-horizontal-loader></cbc-horizontal-loader>
+          }
+          <br />
+          <img src="img/error-triangle-orange-16.png" alt="attention" />&nbsp;{{
+          'text.action.not.recoverable' | transloco }}
+        </td>
+      </tr>
+      @for (lockedNode of report.lockedNodes; track lockedNode.id) {
+      <tr>
+        <td class="name">{{ lockedNode.name }}</td>
+        <td>
+          <cbc-group-breadcrumb
+            [clickable]="false"
+            [node]="lockedNode.id"
+            [textColor]="'757575'"
+            [noMarginBottom]="true"
+            [displayName]="false"
+            [showHomeIcon]="false"
+          ></cbc-group-breadcrumb>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+  } @if (report.sharedNodes && report.sharedNodes.length > 0) {
+  <p> {{ 'text.list.shared.nodes' | transloco }} </p>
+  } @if (report.sharedNodes && report.sharedNodes.length > 0) {
+  <table>
+    <thead>
+      <tr>
+        <th>{{ 'label.name' | transloco }}</th>
+        <th>{{ 'label.path' | transloco }}</th>
+        <th class="actions"> {{ 'label.actions' | transloco }} </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td></td>
+        <td></td>
+        <td [attr.rowspan]="report.sharedNodes.length + 1">
+          <a tabindex="0" (click)="cleanSharedNodes()"
+            >{{ 'label.remove.shared.spaces' | transloco }}</a
+          >
+          @if (cleaningSharedNodes()) {
+          <cbc-horizontal-loader></cbc-horizontal-loader>
+          }
+          <br />
+          <img src="img/error-triangle-orange-16.png" alt="attention" />&nbsp;{{
+          'text.action.not.recoverable' | transloco }}
+        </td>
+      </tr>
+      @for (node of report.sharedNodes; track node.id) {
+      <tr>
+        <td class="name">{{ node.name }}</td>
+        <td>
+          <cbc-group-breadcrumb
+            [clickable]="false"
+            [node]="node.id"
+            [textColor]="'757575'"
+            [noMarginBottom]="true"
+            [displayName]="false"
+            [showHomeIcon]="false"
+          ></cbc-group-breadcrumb>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+  } @if (report.sharedProfiles && report.sharedProfiles.length > 0) {
+  <p> {{ 'text.list.shared.profiles' | transloco }} </p>
+  } @if (report.sharedProfiles && report.sharedProfiles.length > 0) {
+  <table>
+    <thead>
+      <tr>
+        <th>{{ 'label.profile' | transloco }}</th>
+        <th class="actions"> {{ 'label.actions' | transloco }} </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td></td>
+        <td [attr.rowspan]="report.sharedProfiles.length + 1">
+          <a tabindex="0" (click)="cleanSharedProfiles()"
+            >{{ 'label.remove.shared.profiles' | transloco }}</a
+          >
+          @if (cleaningSharedProfiles()) {
+          <cbc-horizontal-loader></cbc-horizontal-loader>
+          }
+          <br />
+          <img src="img/error-triangle-orange-16.png" alt="attention" />&nbsp;{{
+          'text.action.not.recoverable' | transloco }}
+        </td>
+      </tr>
+      @for (profile of report.sharedProfiles; track profile.id) {
+      <tr>
+        <td>{{ profile.name }}</td>
+      </tr>
+      }
+    </tbody>
+  </table>
+  }
+</div>
+} @if (isReadyForDeletion() && verified()) {
+<div>
+  <h3>2 {{ 'label.deletion' | transloco }}</h3>
+  @if (!deleting()) {
+  <p> {{ 'text.group.deletion' | transloco }} </p>
+  } @if (!deleting()) {
+  <p>
+    <a
+      tabindex="0"
+      data-cy="delete-button"
+      class="button button--red"
+      (click)="deleteGroup()"
+      >{{ 'label.delete' | transloco }}</a
+    >
+    &nbsp;
+    <a tabindex="0" class="button" (click)="onCancelClick()"
+      >{{ 'label.cancel' | transloco }}</a
+    >
+  </p>
+  } @if (deleting()) {
+  <p>
+    {{ 'label.deleting' | transloco }}
+    <cbc-spinner [float]="'left'"></cbc-spinner>
+  </p>
+  }
+</div>
+}

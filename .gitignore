@@ -1,0 +1,10 @@
+.vscode/settings.json
+e2e/.playwright-cli
+frontend/.scannerwork
+.DS_Store
+frontend/src/assets/[0-9]*.[0-9]*.[0-9]*.[0-9]*/
+e2e/fixtures/files/ig-export.xml
+.kiro/
+# Ignore the literal "?" directory (backslash-escaped; "?" is a glob wildcard in gitignore)
+/\?/
+frontend/.playwright-cli

@@ -1,0 +1,10 @@
+<webscript>
+    <shortname>CIRCABC headers</shortname>
+    <description>
+        Get all CIRCABC headers, get categories for one header
+    </description>
+    <url>/circabc/ticket/{id}</url>
+    <format default="json" />
+    <authentication>admin</authentication>
+    <transaction>required</transaction>
+</webscript>

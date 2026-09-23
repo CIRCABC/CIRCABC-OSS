@@ -1,0 +1,3 @@
+target
+src/main/resources/alfresco/module/circabc-rest-platform/context/db-changelog.xml
+src/main/resources/alfresco/module/circabc-rest-platform/context/db-changelog-alfresco-patch.xml

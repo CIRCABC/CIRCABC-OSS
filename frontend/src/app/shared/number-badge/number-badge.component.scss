@@ -1,0 +1,12 @@
+@use 'css/global/variables-mixins-keyframes';
+
+.number-badge {
+  display: inline-block;
+  min-width: 22px;
+  height: 22px;
+  padding: 4px;
+  border-radius: variables-mixins-keyframes.$radius-xl;
+  color: #fff;
+  text-align: center;
+  font-size: 10px;
+}

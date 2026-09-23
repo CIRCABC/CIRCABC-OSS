@@ -1,0 +1,698 @@
+@use 'variables-mixins-keyframes';
+
+/*  GLOBAL */
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 0;
+  z-index: variables-mixins-keyframes.$z-toast;
+  padding: 0.8rem 1.6rem;
+  background: var(--theme-primary, #004494);
+  color: #fff;
+  font-size: 1.4rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 0 0 variables-mixins-keyframes.$radius-sm 0;
+
+  &:focus {
+    top: 0;
+  }
+}
+
+.h3-style {
+  font-size: 1.7rem;
+  font-weight: 500;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+  color: var(--theme-h3);
+  letter-spacing: -0.01em;
+}
+
+html {
+  height: 100%;
+  font-size: 62.5%;
+  font-family: variables-mixins-keyframes.$standardText;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+}
+
+/* Global focus-visible for interactive elements that don't define their own */
+:focus-visible {
+  outline: 2px solid var(--theme-link);
+  outline-offset: 2px;
+}
+
+/* Remove default focus ring for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.wrap {
+  max-width: 1200px;
+  padding: 0 32px;
+  margin: 0 auto;
+
+  @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+    max-width: 100%;
+    padding: 0 16px;
+  }
+}
+
+.fluid {
+  max-width: 1400px;
+  padding: 0 32px;
+  margin: 0 auto;
+
+  @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+    width: 100%;
+    padding: 0 16px;
+  }
+}
+
+body {
+  position: relative;
+  min-height: 100%;
+  background: var(--theme-body-background);
+  background-size: cover;
+  font-size: 14px;
+  font-size: 1.4rem;
+  line-height: 1.55;
+  color: var(--theme-text-aa);
+}
+
+a {
+  text-decoration: none;
+  color: var(--theme-link);
+  cursor: pointer;
+  transition: color 200ms ease;
+
+  &:hover {
+    color: var(--theme-link-hover);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--theme-link);
+    outline-offset: 2px;
+    border-radius: variables-mixins-keyframes.$radius-sm;
+  }
+}
+
+/* Page layouts */
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 42px;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  .page-header__title {
+    font-family: variables-mixins-keyframes.$titling;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--theme-text-aa);
+    text-transform: none;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+
+  .page-header__actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    ul,
+    li {
+      display: inline-block;
+
+      a {
+        font-size: 13px;
+      }
+    }
+
+    .notification-number {
+      width: 28px;
+      height: 28px;
+      display: inline-block;
+      vertical-align: middle;
+      text-align: center;
+      font-size: 13px;
+      font-size: 1.3rem;
+      font-weight: 500;
+      color: #fff;
+      background: variables-mixins-keyframes.$green-primary;
+      padding: 5px;
+      border-radius: variables-mixins-keyframes.$radius-full;
+    }
+
+    .cta {
+      margin: 3px;
+    }
+  }
+}
+
+.page-footer {
+  clear: both;
+  padding-bottom: 30px;
+}
+
+.col-hidable,
+.hidable {
+  @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+    display: none;
+  }
+}
+
+.col-hidable-last,
+.hidable-last {
+  @media screen and (max-width: variables-mixins-keyframes.$break-small) {
+    display: none;
+  }
+}
+
+.button,
+input[type='button'],
+input[type='reset'],
+input[type='submit'] {
+  display: inline-block;
+  border-radius: variables-mixins-keyframes.$radius-md;
+  border: 1px solid variables-mixins-keyframes.$button-border;
+  font-size: 13px;
+  font-size: 1.3rem;
+  color: variables-mixins-keyframes.$link;
+  font-family: variables-mixins-keyframes.$standardText;
+  text-decoration: none;
+  text-align: center;
+  padding: 12px 20px;
+  background: transparent;
+  font-weight: 500;
+  transition:
+    background-color 200ms ease,
+    color 200ms ease,
+    border-color 200ms ease,
+    transform 120ms ease;
+
+  &:hover {
+    background: variables-mixins-keyframes.$button-filled;
+    border-color: variables-mixins-keyframes.$button-filled;
+    color: #fff;
+    text-decoration: none;
+  }
+
+  &:active {
+    transform: scale(0.97);
+    background: variables-mixins-keyframes.$button-filled-hover;
+    transition-duration: 60ms;
+  }
+
+  &:focus-visible {
+    outline: 2px solid variables-mixins-keyframes.$button-filled;
+    outline-offset: 2px;
+  }
+}
+
+.button--small {
+  padding: 4px 6px;
+  font-size: 10px;
+  font-size: 1rem;
+  font-weight: normal;
+}
+
+.button.selected {
+  background: variables-mixins-keyframes.$button-filled;
+  color: #fff;
+  text-decoration: none;
+}
+
+.buttons-group {
+  margin-top: 40px;
+  margin-bottom: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  .cta,
+  .button,
+  input[type='button'],
+  input[type='reset'],
+  input[type='submit'] {
+    width: 148px;
+  }
+}
+
+/* Old container--empty moved to end of file with improved styles */
+
+.page-container {
+  margin-top: 40px;
+
+  @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+    padding: 0 16px;
+  }
+}
+
+.step-link {
+  margin-right: 25px;
+  padding-bottom: 2px;
+  margin-bottom: 10px;
+  display: inline-block;
+  transition: border-color 200ms ease;
+
+  &:hover {
+    border-bottom: 2px solid variables-mixins-keyframes.$green-primary;
+    margin-bottom: 8px;
+  }
+}
+
+.step-link-selected {
+  border-bottom: 2px solid variables-mixins-keyframes.$green-primary;
+  margin-bottom: 8px;
+}
+
+/* ─── Date Picker Form Field ─── */
+/* Consistent styling for mat-form-field in date/datetime contexts */
+
+.field--date {
+  mat-form-field,
+  .mat-mdc-form-field {
+    display: inline-block;
+    vertical-align: middle;
+    width: 300px;
+    font-family: variables-mixins-keyframes.$standardText;
+
+    @media screen and (max-width: variables-mixins-keyframes.$break-small) {
+      width: 100%;
+    }
+
+    .mat-mdc-text-field-wrapper {
+      background: var(--theme-input-bg);
+      border-radius: variables-mixins-keyframes.$radius-md;
+      border: 1px solid var(--theme-input-border);
+      padding: 0 12px;
+      transition:
+        border-color 200ms ease,
+        background-color 200ms ease;
+    }
+
+    &.mat-focused .mat-mdc-text-field-wrapper {
+      border-color: var(--theme-green);
+      background: var(--theme-input-bg-focus);
+    }
+
+    .mat-mdc-form-field-flex {
+      align-items: center;
+    }
+
+    .mdc-text-field--filled:not(.mdc-text-field--disabled) {
+      background-color: transparent;
+    }
+
+    .mat-mdc-form-field-subscript-wrapper {
+      display: none;
+    }
+
+    /* Hide the default underline */
+    .mdc-line-ripple,
+    .mdc-line-ripple::before,
+    .mdc-line-ripple::after {
+      display: none;
+    }
+
+    input.mat-mdc-input-element {
+      font-size: 14px;
+      color: var(--theme-input-text);
+    }
+  }
+
+  /* Datepicker toggle button styling */
+  .mat-datepicker-toggle {
+    color: var(--theme-green);
+    transition: color 200ms ease;
+
+    &:hover {
+      color: var(--theme-green-hover);
+    }
+
+    .mat-mdc-icon-button {
+      width: 36px;
+      height: 36px;
+      padding: 6px;
+    }
+  }
+}
+
+/* Calendar popup panel — rendered in CDK overlay, so global styles needed */
+.mat-datepicker-content {
+  border-radius: variables-mixins-keyframes.$radius-xl;
+  box-shadow: 0 8px 24px rgb(0 40 70 / 0.14);
+  border: 1px solid #dde3e8;
+  overflow: hidden;
+
+  .mat-calendar {
+    font-family: variables-mixins-keyframes.$standardText;
+  }
+
+  .mat-calendar-header {
+    padding: 12px 16px 8px;
+  }
+
+  .mat-calendar-controls {
+    margin: 0;
+  }
+
+  /* Day cells hover/active states */
+  .mat-calendar-body-cell:not(.mat-calendar-body-disabled) {
+    &:hover .mat-calendar-body-cell-content {
+      background-color: var(--theme-green-subtle);
+      border-radius: variables-mixins-keyframes.$radius-full;
+    }
+
+    &:active .mat-calendar-body-cell-content {
+      transform: scale(0.92);
+      transition: transform 100ms ease;
+    }
+  }
+
+  /* Smooth transitions on day cells */
+  .mat-calendar-body-cell-content {
+    transition:
+      background-color 150ms ease,
+      transform 100ms ease;
+    border-radius: variables-mixins-keyframes.$radius-full;
+  }
+
+  /* Today indicator */
+  .mat-calendar-body-today:not(.mat-calendar-body-selected) {
+    border-color: var(--theme-green);
+  }
+}
+
+/* Legacy — keep for backwards compat with old markup */
+.ui-datepicker {
+  width: inherit;
+}
+
+.disabled-locked {
+  cursor: not-allowed;
+}
+
+.empty-list {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--theme-text-muted);
+  flex: 1;
+  min-height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.back-link {
+  color: var(--theme-link);
+  position: absolute;
+  left: 30px;
+}
+
+.back-link::before {
+  content: '';
+  display: inline-block;
+  width: 15px;
+  height: 13px;
+  background: url(img/arrow-previous.png);
+  margin-right: 5px;
+}
+
+.text-error {
+  color: var(--theme-error);
+}
+
+.text-warning {
+  color: #b45309;
+}
+
+.text-success {
+  color: #2e7d53;
+}
+
+/* Language selector menu panel (rendered in CDK overlay) */
+.mat-mdc-menu-panel:has(.lang-menu-name) {
+  border-radius: variables-mixins-keyframes.$radius-lg;
+  border: 1.5px solid #c2d3e0;
+  box-shadow: 0 8px 24px rgb(0 51 85 / 0.12);
+  max-height: 70vh;
+  background: #fff;
+
+  .mat-mdc-menu-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    padding: 8px;
+    background: #fff;
+  }
+
+  .mat-mdc-menu-item {
+    min-height: 36px;
+    border-radius: variables-mixins-keyframes.$radius-sm;
+    padding: 6px 12px;
+    background: #fff;
+    transition: background-color 150ms ease;
+
+    &:hover {
+      background-color: var(--theme-menu-hover);
+    }
+  }
+}
+
+.lang-menu-name {
+  text-transform: capitalize;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #1a3a50;
+}
+
+.lang-menu-flag {
+  margin-right: 6px;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.lang-menu-code {
+  text-transform: uppercase;
+  opacity: 0.5;
+  margin-left: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+/* ─── Typography Scale ─── */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: variables-mixins-keyframes.$titling;
+  line-height: 1.2;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: 2.8rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-size: 2.2rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+h3 {
+  font-size: 1.7rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--theme-h3);
+}
+
+h4 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+}
+
+p {
+  max-width: 68ch;
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+/* Tabular figures for data */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Utility text styles */
+.text-small {
+  font-size: 12px;
+  color: var(--theme-text-muted);
+  line-height: 1.5;
+}
+
+.text-mono {
+  font-family: variables-mixins-keyframes.$mono;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Skeleton Loaders ─── */
+/* Usage: <div class="skeleton skeleton--text"></div> or skeleton--heading, skeleton--avatar, skeleton--box */
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #edf1f5 25%, #f5f7fa 37%, #edf1f5 63%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  border-radius: variables-mixins-keyframes.$radius-sm;
+}
+
+.skeleton--text {
+  height: 14px;
+  width: 80%;
+  margin-bottom: 10px;
+
+  &:last-child {
+    width: 60%;
+  }
+}
+
+.skeleton--heading {
+  height: 22px;
+  width: 40%;
+  margin-bottom: 16px;
+}
+
+.skeleton--avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: variables-mixins-keyframes.$radius-full;
+  flex-shrink: 0;
+}
+
+.skeleton--box {
+  height: 120px;
+  width: 100%;
+  border-radius: variables-mixins-keyframes.$radius-md;
+  margin-bottom: 16px;
+}
+
+.skeleton--row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+/* ─── Empty State (improved) ─── */
+
+.container--empty {
+  color: var(--theme-text-muted);
+  font-size: 15px;
+  text-align: center;
+  padding: 48px 32px;
+  background-color: #f5f7fa;
+  border-radius: variables-mixins-keyframes.$radius-lg;
+  border: 1px dashed var(--theme-border-color);
+  line-height: 1.6;
+
+  img {
+    vertical-align: middle;
+    margin: 0 16px;
+    width: 42px;
+    opacity: 0.5;
+  }
+
+  .empty-title {
+    display: block;
+    font-weight: 500;
+    font-size: 16px;
+    color: var(--theme-text-aa);
+    margin-bottom: 6px;
+  }
+
+  .empty-description {
+    display: block;
+    font-size: 14px;
+    color: var(--theme-text-muted);
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .empty-action {
+    margin-top: 16px;
+  }
+}
+
+/* ─── Inline Messages (error, warning, success, info) ─── */
+
+.inline-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: variables-mixins-keyframes.$radius-md;
+  font-size: 13px;
+  line-height: 1.5;
+
+  &--error {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+  }
+
+  &--warning {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    color: #92400e;
+  }
+
+  &--success {
+    background: var(--theme-green-subtle);
+    border: 1px solid #a7f3d0;
+    color: #065f46;
+  }
+
+  &--info {
+    background: var(--theme-menu-hover);
+    border: 1px solid #bfdbfe;
+    color: #1e40af;
+  }
+}

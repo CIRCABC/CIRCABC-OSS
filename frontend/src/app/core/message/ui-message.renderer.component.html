@@ -1,0 +1,57 @@
+<section
+  class="box box--message ui-message-show"
+  style="width: 100%"
+  [class.box--message--information]="message().level === 0"
+  [class.box--message--warning]="message().level === 1"
+  [class.box--message--error]="message().level === 2"
+  [class.box--message--success]="message().level === 3"
+>
+  <header class="header">
+    <span class="title">
+      @switch (message().level) { @case (0) { {{ 'label.information' | transloco
+      }} } @case (1) { {{ 'label.warning' | transloco }} } @case (2) { {{
+      'label.error' | transloco }} } @case (3) { {{ 'label.success' | transloco
+      }} } }
+    </span>
+    <span style="float: right">
+      <a tabindex="0" (click)="closeMessage()"
+        >{{ 'label.close' | transloco }}</a
+      >
+    </span>
+  </header>
+  <div class="box--message--icon">
+    @switch (message().level) { @case (0) {
+
+    <img src="{{ imageInfoLink }}" alt="Information" />
+
+    } @case (1) {
+
+    <img src="{{ imageExclamationLink }}" alt="Warning" />
+
+    } @case (2) {
+
+    <img src="{{ imageErrorLink }}" alt="Error" />
+
+    } @case (3) {
+
+    <img src="{{ imageCheckMarkLink }}" alt="Success" />
+
+    } }
+  </div>
+  <div class="box--message--content">
+    <div [innerHTML]="message().body"></div>
+    @if (message().level === 2) {
+    <p>
+      {{ 'error.ui.additional.message' | transloco }}
+      <a [routerLink]="['/help']" (click)="closeMessage()"
+        >{{ 'error.ui.additional.message.help.service' | transloco }}</a
+      >
+      {{ 'error.ui.additional.message.bug.found' | transloco }}
+      <a [routerLink]="['/help/contact']" (click)="closeMessage()"
+        >{{ 'error.ui.additional.message.bug.found.contact' | transloco }}</a
+      >
+    </p>
+    }
+  </div>
+  <br style="clear: both" />
+</section>

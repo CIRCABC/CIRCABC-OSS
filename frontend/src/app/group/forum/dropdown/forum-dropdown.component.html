@@ -1,0 +1,52 @@
+<button
+  type="button"
+  data-cy="add"
+  class="cta cta--plus dropdown-trigger"
+  (click)="toggleAddDropdown($event)"
+  (keydown.enter)="toggleAddDropdown($event)"
+>
+  {{ 'label.add' | transloco }} @if (showAddDropdown) {
+  <div
+    class="dropdown dropdown--add-file"
+    [class.dropdown-one--column]="isOnlyOneAction()"
+  >
+    <ul>
+      @if (enableAddForum()) {
+      <li>
+        <a
+          tabindex="0"
+          class="forum"
+          data-cy="create-forum"
+          (click)="launchCreateForumWizard()"
+        >
+          {{ 'label.forum' | transloco }}
+        </a>
+      </li>
+      } @if (enableAddTopic()) {
+      <li>
+        <a
+          tabindex="0"
+          class="topic"
+          data-cy="create-topic"
+          (click)="launchCreateTopicWizard()"
+          >{{ 'label.topic' | transloco }}</a
+        >
+      </li>
+      }
+    </ul>
+  </div>
+  }
+</button>
+@let _currentNode = currentNode();
+<cbc-create-forum
+  [parentNode]="_currentNode"
+  [showWizard]="launchCreateForum"
+  (modalHide)="propagateCreateForumClosure($event)"
+/>
+@if (_currentNode) {
+<cbc-create-topic
+  [showWizard]="launchAddTopic"
+  [forum]="_currentNode"
+  (modalHide)="propagateCreateTopic($event)"
+/>
+}

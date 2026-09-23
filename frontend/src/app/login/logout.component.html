@@ -1,0 +1,28 @@
+<div class="home-logout" style="background: none !important">
+  <div class="footer-bottom-stucker">
+    <div class=""></div>
+    <header class="header fluid header-login">
+      <div class="ec-links"></div>
+      <img
+        class="ec-logo"
+        src="img/logo-european-commission.png"
+        alt="European Commission"
+      />
+    </header>
+    <div class="main" style="background: none !important">
+      <div class="wrap login-form">
+        @if (circabcRelease === 'echa') {
+        <h1>
+          {{ 'label.loging.out' | transloco }}
+          <img class="logo" src="img/logo-circabc-big.png" alt="CIRCABC" />
+        </h1>
+        } @if (circabcRelease !== 'echa') {
+        <h1>
+          {{ 'label.loging.out' | transloco }}
+          <img class="logo" src="img/s-circabcLogo-white.svg" alt="CIRCABC" />
+        </h1>
+        }
+      </div>
+    </div>
+  </div>
+</div>

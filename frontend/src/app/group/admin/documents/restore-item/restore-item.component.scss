@@ -1,0 +1,14 @@
+.archive-list {
+  max-height: 250px;
+  overflow: auto;
+  margin-bottom: 15px;
+}
+
+a.selected {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+span.highlighted {
+  font-weight: bold;
+}

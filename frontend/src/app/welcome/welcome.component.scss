@@ -1,0 +1,69 @@
+@use 'css/global/variables-mixins-keyframes';
+
+.no-margin {
+  margin-left: 0;
+}
+
+.ec-links__indicator {
+  position: relative;
+  top: 8px;
+}
+
+.ec-links__lang {
+  position: relative;
+  top: 6px;
+}
+
+.spacing {
+  margin: 15px 0;
+  display: inline-block;
+}
+
+.login-loader {
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  h1 {
+    text-align: center;
+    width: 100%;
+    font-weight: 300;
+    margin-bottom: 24px;
+  }
+}
+
+.loader,
+.loader::after {
+  border-radius: variables-mixins-keyframes.$radius-full;
+  width: 48px;
+  height: 48px;
+}
+
+.loader {
+  margin: 32px auto;
+  font-size: 10px;
+  position: relative;
+  text-indent: -9999em;
+  border: 3px solid rgb(255 255 255 / 0.2);
+  border-top-color: #fff;
+  transform: translateZ(0);
+  animation: load8 0.8s infinite linear;
+}
+
+@keyframes load8 {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.menu {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}

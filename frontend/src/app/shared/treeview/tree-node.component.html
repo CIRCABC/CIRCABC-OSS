@@ -1,0 +1,77 @@
+@let _node = node();
+<ul>
+  @if (loading()) {
+  <li>
+    <cbc-spinner [white]="true"></cbc-spinner> {{ 'label.loading' | transloco }}
+  </li>
+  }
+  <li>
+    @if (!canBeExpanded()) {
+    <span class="expander"></span>
+    } @if (_node.expanded && canBeExpanded() && showExpander()) {
+    <button
+      type="button"
+      class="flaticon-chevron-arrow-down"
+      aria-label="{{ 'label.toggle.expand' | transloco }}"
+      (click)="toggleExpand()"
+    ></button>
+    } @if (!_node.expanded && canBeExpanded() && showExpander()) {
+    <button
+      type="button"
+      class="flaticon-right-chevron"
+      aria-label="{{ 'label.toggle.expand' | transloco }}"
+      (click)="toggleExpand()"
+    ></button>
+    } @if (showSelector()) {
+    <span>
+      <!-- NOSONAR: Native radio button is keyboard accessible -->
+      <input
+        type="radio"
+        name="tree"
+        aria-label="{{ _node.name }}"
+        (click)="selectNode(_node)"
+        (keydown.enter)="selectNode(_node)"
+        [checked]="markSelected()"
+        [disabled]="disabled()"
+      />
+    </span>
+    }
+    <a
+      tabindex="0"
+      (click)="clickNode(_node)"
+      [class.underlined]="markSelected() && !showSelector()"
+      [cbcHtmlTooltip]="_node.description"
+      cbcHtmlTooltipPosition="above"
+      >{{(_node.name !== "Newsgroups")? _node.name :'label.forums'
+      |transloco}}</a
+    >
+
+    @if (isNew()) {
+    <span
+      class="pennant--new"
+      matTooltip="{{ 'label.within.last' | transloco: { nbDays: flagNewDays() } }}"
+      matTooltipPosition="above"
+      >{{ 'label.new' | transloco }}</span
+    >
+    } @if (_node.expanded) {
+    <div>
+      @for (child of _node.children; track child.nodeId) {
+      <div>
+        <cbc-tree-node
+          [disabled]="disabled()"
+          [searchedNodeId]="searchedNodeId()"
+          [node]="child"
+          (selectedNodeEmitter)="selectNode($event)"
+          [showSelector]="showSelector()"
+          (clickedNodeEmitter)="clickNode($event)"
+          [displayedPath]="displayedPath()"
+          [rootId]="rootId()"
+          [service]="service()"
+          [flagNewDays]="flagNewDays()"
+        ></cbc-tree-node>
+      </div>
+      }
+    </div>
+    }
+  </li>
+</ul>

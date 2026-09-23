@@ -1,0 +1,273 @@
+@use 'sass:color';
+@use '../global/variables-mixins-keyframes';
+
+/* BUTTONS */
+
+/* cta is for Call-To-Action */
+.cta {
+  display: inline-block;
+  border-radius: variables-mixins-keyframes.$radius-md;
+  font-size: 13px;
+  font-size: 1.3rem;
+  background: variables-mixins-keyframes.$green-primary;
+  color: #fff;
+  font-family: variables-mixins-keyframes.$titling;
+  font-weight: 600;
+  text-decoration: none;
+  text-align: center;
+  padding: 12px 20px;
+  cursor: pointer;
+  letter-spacing: -0.01em;
+  transition:
+    background-color 200ms ease,
+    transform 120ms ease,
+    box-shadow 200ms ease;
+
+  &:hover {
+    background: variables-mixins-keyframes.$green-hover;
+    color: #fff;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgb(0 40 70 / 0.12);
+  }
+
+  &:active {
+    transform: scale(0.97);
+    background: variables-mixins-keyframes.$green-active;
+    transition-duration: 60ms;
+  }
+
+  &:focus-visible {
+    outline: 2px solid variables-mixins-keyframes.$green-primary;
+    outline-offset: 2px;
+  }
+
+  &:disabled,
+  &.disabled {
+    background: variables-mixins-keyframes.$light-grey;
+    border: 0;
+    cursor: default;
+    /* Dark text on light-grey ($light-grey #ccc) gives ~6.5:1 contrast (WCAG AA).
+       White text here would only reach ~1.6:1 and fails color-contrast. */
+    color: #404040;
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+.cta--plus,
+.cta--dots {
+  position: relative;
+  padding: 12px 47px 12px 12px;
+
+  &::after {
+    content: '';
+    display: inline-block;
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    padding: 12px;
+    width: 35px;
+    background-color: rgb(0 0 0 / 0.3);
+    background-position: center center;
+    background-repeat: no-repeat;
+    border-radius: 0 variables-mixins-keyframes.$radius-sm variables-mixins-keyframes.$radius-sm 0;
+  }
+}
+
+.cta--plus {
+  &::after {
+    background-image: url(img/icon-plus.png);
+  }
+}
+
+.cta--dots {
+  &::after {
+    background-image: url(img/icon-more-white.png);
+  }
+}
+
+.cta--homepage {
+  position: relative;
+  border: 0;
+  padding: 12px 12px 12px 47px;
+
+  &::before {
+    content: '';
+    display: inline-block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding: 12px;
+    width: 35px;
+    height: 100%;
+    background-color: rgb(0 0 0 / 0.3);
+    background-image: url(img/icon-cadenas.svg);
+    background-size: 25px;
+    background-position: center center;
+    background-repeat: no-repeat;
+    border-radius: variables-mixins-keyframes.$radius-sm 0 0 variables-mixins-keyframes.$radius-sm;
+  }
+}
+
+.button {
+  display: inline-block;
+  border-radius: variables-mixins-keyframes.$radius-md;
+  border: 1px solid variables-mixins-keyframes.$button-border;
+  font-size: 13px;
+  font-size: 1.3rem;
+  /* Use theme-aware link color */
+  color: var(--theme-link);
+  font-family: variables-mixins-keyframes.$titling;
+  font-weight: 500;
+  text-decoration: none;
+  text-align: center;
+  padding: 12px 20px;
+  transition:
+    background-color 200ms ease,
+    color 200ms ease,
+    border-color 200ms ease,
+    transform 120ms ease,
+    box-shadow 200ms ease;
+
+  &:hover:enabled {
+    background: variables-mixins-keyframes.$button-filled;
+    border-color: variables-mixins-keyframes.$button-filled;
+    color: #fff;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgb(0 40 70 / 0.1);
+  }
+
+  &:active:enabled {
+    transform: scale(0.97);
+    background: variables-mixins-keyframes.$button-filled-hover;
+    transition-duration: 60ms;
+  }
+
+  &:focus-visible {
+    outline: 2px solid variables-mixins-keyframes.$button-filled;
+    outline-offset: 2px;
+  }
+
+  &:disabled,
+  &.disabled {
+    color: #767676;
+    border: 1px solid lightgray;
+  }
+
+  &:disabled:hover,
+  &.disabled:hover {
+    background: white;
+    color: #767676;
+    text-decoration: none;
+    cursor: default;
+  }
+}
+
+.button--red {
+  border: 1px solid variables-mixins-keyframes.$dark-red;
+  background: #fff;
+  color: variables-mixins-keyframes.$dark-red;
+
+  &:hover {
+    background: color.adjust(
+      variables-mixins-keyframes.$light-red,
+      $lightness: 4%
+    );
+    color: #fff;
+    text-decoration: none;
+  }
+
+  &:hover:enabled {
+    background: color.adjust(
+      variables-mixins-keyframes.$dark-red,
+      $lightness: 4%
+    );
+    color: #fff;
+    text-decoration: none;
+  }
+
+  &:disabled,
+  &.disabled {
+    color: #767676;
+    border: 1px solid lightgray;
+  }
+
+  &:disabled:hover,
+  &.disabled:hover {
+    background: white;
+    color: #767676;
+    text-decoration: none;
+    cursor: default;
+  }
+}
+
+.buttons-group {
+  .cta,
+  .button {
+    width: 148px;
+  }
+
+  .button {
+    font-weight: 500;
+  }
+}
+
+/* Tertiary — text-link style button for low-priority actions */
+.button--tertiary {
+  display: inline-block;
+  background: none;
+  border: none;
+  color: var(--theme-link);
+  font-family: variables-mixins-keyframes.$titling;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 12px 8px;
+  cursor: pointer;
+  text-decoration: none;
+  border-radius: variables-mixins-keyframes.$radius-sm;
+  transition:
+    color 200ms ease,
+    background-color 200ms ease;
+
+  &:hover {
+    color: variables-mixins-keyframes.$link-hover;
+    background: #f0f5fa;
+    text-decoration: none;
+  }
+
+  &:active {
+    background: #e2eaf1;
+    transition-duration: 60ms;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--theme-link);
+    outline-offset: 2px;
+  }
+
+  &:disabled,
+  &.disabled {
+    color: #767676;
+    cursor: default;
+    background: none;
+  }
+}
+
+/* Unstyled button — resets a native <button> so it renders like inline text/an
+   anchor. Use when converting elements that used `role="button"` on an
+   <a>/<span>/<div> to a semantic <button> (rule Web:S6819), so the existing
+   element/parent class styles keep controlling the appearance.
+   `display` is intentionally not set so layout stays driven by those styles. */
+.link-button {
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+  text-align: inherit;
+  cursor: pointer;
+}

@@ -1,0 +1,100 @@
+<div class="import-page">
+  <h3 class="page-title">{{ 'admin.ig.import.title' | transloco }}</h3>
+  <p class="page-subtitle">Import an Interest Group from an XML file</p>
+
+  <div class="form-steps">
+    <!-- Step 1: Header -->
+    <div class="step">
+      <span class="step-indicator">1</span>
+      <div class="step-content">
+        <mat-form-field appearance="outline">
+          <mat-label
+            >{{ 'admin.ig.export.header.label' | transloco }}</mat-label
+          >
+          <mat-select
+            [value]="selectedHeaderId()"
+            (selectionChange)="onHeaderChange($event.value)"
+          >
+            @for (h of headersResource.value() ?? []; track h.id) {
+            <mat-option [value]="h.id">{{ h.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Step 2: Category -->
+    @if (selectedHeaderId()) {
+    <div class="step">
+      <span class="step-indicator">2</span>
+      <div class="step-content">
+        <mat-form-field appearance="outline">
+          <mat-label
+            >{{ 'admin.ig.export.category.label' | transloco }}</mat-label
+          >
+          <mat-select
+            [value]="selectedCategoryId()"
+            (selectionChange)="onCategoryChange($event.value)"
+          >
+            @for (c of categoriesResource.value() ?? []; track c.id) {
+            <mat-option [value]="c.id">{{ c.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+    }
+
+    <!-- Step 3: File -->
+    @if (selectedCategoryId()) {
+    <div class="step">
+      <span class="step-indicator">3</span>
+      <div class="step-content">
+        <label for="ig-import-file"
+          >{{ 'admin.ig.import.file.label' | transloco }}</label
+        >
+        <div class="file-drop-zone">
+          <input
+            id="ig-import-file"
+            type="file"
+            accept=".xml"
+            (change)="onFileChange($event)"
+          />
+          <i class="fa fa-cloud-upload"></i>
+          <p class="drop-text">Click to select XML file</p>
+          <p class="drop-hint">Only .xml files are accepted</p>
+        </div>
+        @if (file(); as f) {
+        <div class="file-selected">
+          <i class="fa fa-check-circle"></i>
+          {{ f.name }}
+        </div>
+        }
+      </div>
+    </div>
+    }
+  </div>
+
+  <!-- Import Action -->
+  @if (canImport()) {
+  <div class="import-action">
+    <button class="import-btn" [disabled]="!canImport()" (click)="import()">
+      <i class="fa fa-upload"></i>
+      {{ 'admin.ig.import.button' | transloco }}
+    </button>
+    @if (loading()) {
+    <mat-progress-bar mode="indeterminate" />
+    }
+  </div>
+  } @if (error()) {
+  <div class="error-banner" role="alert">{{ error() }}</div>
+  } @if (result(); as r) {
+  <output class="result-banner">
+    <p class="result-title">{{ r.message }}</p>
+    <div class="result-stats">
+      <span>Nodes created: {{ r.nodesCreated }}</span>
+      <span>Errors: {{ r.errors }}</span>
+    </div>
+  </output>
+  }
+</div>

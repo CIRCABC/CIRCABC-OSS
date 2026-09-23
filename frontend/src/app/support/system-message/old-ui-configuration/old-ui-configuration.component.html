@@ -1,0 +1,41 @@
+<div>
+  <form [formGroup]="form">
+    <div class="field switch">
+      <div class="label">{{ 'admin.enable.old.message' | transloco }}</div>
+      <input
+        id="enabled"
+        class="cmn-toggle cmn-toggle-round"
+        type="checkbox"
+        formControlName="enableOld"
+      />
+      <label
+        for="enabled"
+        class="nonBlockLabel"
+        aria-label="{{ 'label.enabled' | transloco }}"
+      ></label>
+      <span
+        >{{ (form.value.enableOld ? 'label.yes' : 'label.no') | transloco
+        }}</span
+      >
+    </div>
+    @if (form.value.enableOld === true) {
+    <div class="field switch">
+      <div class="label">{{ 'admin.display.old.message' | transloco }}</div>
+      <input
+        id="displayed"
+        class="cmn-toggle cmn-toggle-round"
+        type="checkbox"
+        formControlName="display"
+      />
+      <label
+        for="displayed"
+        class="nonBlockLabel"
+        aria-label="{{ 'label.displayed' | transloco }}"
+      ></label>
+      <span
+        >{{ (form.value.display ? 'label.yes' : 'label.no') | transloco }}</span
+      >
+    </div>
+    }
+  </form>
+</div>

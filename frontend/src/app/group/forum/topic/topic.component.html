@@ -1,0 +1,414 @@
+@if (loading()) {
+<cbc-horizontal-loader />
+}
+<div class="wrap page-container">
+  <div class="page-header">
+    <h1 class="page-header__title">
+      @if (topicNode(); as topicNode) {
+      <a
+        [routerLink]="['../../', topicNode.parentId]"
+        class="page-header__backlink"
+        >{{ 'label.back' | transloco }}</a
+      >
+      }
+    </h1>
+    <div class="page-header__actions">
+      @if (topicNode(); as topicNode) {
+      <cbc-reponsive-sub-menu>
+        @if (isNewsgroupAdmin()) {
+        <a [routerLink]="['../..', topicNode.id, 'topic-details']"
+          >{{ 'label.details' | transloco }}</a
+        >
+        } @if (isNewsgroupAdmin()) {
+        <a
+          [routerLink]="['../../../permissions', topicNode.id]"
+          [queryParams]="{ from: 'topic' }"
+          >{{ 'label.permissions' | transloco }}</a
+        >
+        } @if (isNewsgroupAdmin()) {
+        <a
+          [routerLink]="['../../../notification-status', topicNode.id]"
+          [queryParams]="{ from: 'topic' }"
+          >{{ 'label.notifications' | transloco }}</a
+        >
+        }
+      </cbc-reponsive-sub-menu>
+      }
+    </div>
+    <br /><br /><br />
+    <div>
+      @if (topicNode(); as topicNode) {
+      <cbc-group-breadcrumb
+        [displayName]="false"
+        [clickable]="true"
+        [node]="topicNode.id"
+        [textColor]="'757575'"
+        [noMarginBottom]="false"
+      ></cbc-group-breadcrumb>
+      }
+    </div>
+  </div>
+  <br />
+  <article class="article-content">
+    <div class="box">
+      <header class="header">
+        @if (topicNode(); as topicNode) {
+        <span
+          class="title"
+          title="{{ topicNode.description | cbcI18n | cbcTaggedToPlainText }}"
+          >{{ 'label.topic' | transloco }}:&nbsp; @if ( topicNode.title !==
+          undefined && (topicNode.title | cbcI18n) !== '' ) {
+          <span>{{ topicNode.title | cbcI18n }}</span>
+          } @if ((topicNode.title | cbcI18n) === '') {
+          <span>{{ topicNode.name }}</span>
+          } @if ((topicNode.title | cbcI18n) === '' && !nameExists(topicNode)) {
+          <span>{{ 'label.no.name' | transloco }}</span>
+          }
+        </span>
+        }
+        <div class="float-right">
+          <span class="icons">
+            @if (!isGuest()) {
+            <div
+              class="dropdown-trigger dropdown-trigger--with-icons force-inline"
+            >
+              @if (isSubscribedToNotifications()) {
+              <img src="img/visibility.png" alt="Notifications" />
+              } @if (!isSubscribedToNotifications()) {
+              <img src="img/no-visibility.png" alt="Notifications" />
+              }
+              <div class="dropdown dropdown--library-settings">
+                <div class="number-of-items">
+                  {{ 'label.notifications' | transloco }}: <br /><br />
+                  @if (!isSubscribedToNotifications()) {
+                  <a tabindex="0" (click)="changeNotificationSubscription('on')"
+                    >{{ 'label.subscribe' | transloco }}
+                    <img src="img/visibility.png" alt="Notifications"
+                  /></a>
+                  } @if (isSubscribedToNotifications()) {
+                  <a
+                    tabindex="0"
+                    (click)="changeNotificationSubscription('off')"
+                    >{{ 'label.unsubscribe' | transloco }}
+                    <img src="img/no-visibility.png" alt="Notifications"
+                  /></a>
+                  }
+                </div>
+              </div>
+            </div>
+            }
+          </span>
+        </div>
+      </header>
+
+      <div class="main">
+        <section class="topic-content">
+          <div class="table-container" style="margin-top: 0">
+            <div class="header">
+              <cbc-pager
+                [length]="totalItems()"
+                [pageSize]="listingOptions.limit"
+                [page]="listingOptions.page"
+                (pageChange)="changePage($event)"
+              ></cbc-pager>
+            </div>
+
+            @if (posts(); as posts) {
+            <div class="comments">
+              @for (post of posts.data; track post.id) {
+              <div class="row">
+                <cbc-post
+                  [post]="post"
+                  [igId]="group().id"
+                  [topic]="topicNode()"
+                  (replyClicked)="prepareQuote($event)"
+                  (deleted)="refreshComments($event)"
+                  (editClicked)="prepareEdit($event)"
+                  (verified)="refreshComments($event)"
+                ></cbc-post>
+              </div>
+              } @if (posts.data.length === 0) {
+              <div class="container--empty">
+                {{ 'label.not.any.discussion' | transloco }}
+                <img src="img/chat.png" alt="Chat icon" />
+              </div>
+              }
+            </div>
+            }
+
+            <div class="footer">
+              <cbc-pager
+                [length]="totalItems()"
+                [pageSize]="listingOptions.limit"
+                [page]="listingOptions.page"
+                (pageChange)="changePage($event)"
+              ></cbc-pager>
+            </div>
+          </div>
+        </section>
+
+        @if (topicNode(); as topicNode) {
+
+        <div
+          style="background-color: #eef5f4"
+          *cbcIfRoleGE="[topicNode, 'NwsPost', []]"
+        >
+          <div style="padding: 30px; font-size: 16px">
+            <a tabindex="0" data-cy="add-comment" (click)="openNewPost()"
+              >{{ 'forum.add.comment' | transloco }}</a
+            >
+          </div>
+          @if (postOpen()) {
+          <span class="right-left-margin">
+            <form [formGroup]="addPostForm">
+              <div class="field field--textarea right-left-margin">
+                <div style="margin-bottom: 25px">
+                  <cbc-notification-message
+                    [message]="'forum.post.comment.public' | transloco"
+                    [severity]="1"
+                    [guestAllowed]="topicNode.hasGuestAccess"
+                  ></cbc-notification-message>
+                </div>
+                <label for="editor">{{ 'label.comment' | transloco }}</label>
+                <div class="editor-container">
+                  <cbc-rich-text-editor
+                    id="editor"
+                    data-cy="comment-text"
+                    formControlName="text"
+                    editorHeight="320px"
+                    (textChange)="checkValidity($event)"
+                    ><span class="ql-formats">
+                      <button class="ql-bold" aria-label="Bold"></button>
+                      <button class="ql-italic" aria-label="Italic"></button>
+                      <button
+                        class="ql-underline"
+                        aria-label="Underline"
+                      ></button>
+                      <button class="ql-strike" aria-label="Strike"></button>
+                    </span>
+                    <span class="ql-formats">
+                      <button
+                        class="ql-list"
+                        aria-label="list"
+                        value="ordered"
+                      ></button>
+                      <button
+                        class="ql-list"
+                        aria-label="list"
+                        value="bullet"
+                      ></button>
+                    </span>
+                    <span class="ql-formats">
+                      <button
+                        class="ql-blockquote"
+                        aria-label="Strike"
+                      ></button>
+                      <button class="ql-link" aria-label="link"></button>
+                      <button
+                        class="ql-image"
+                        aria-label="image"
+                        value=""
+                      ></button>
+                      <button
+                        class="ql-code-block"
+                        aria-label="code-block"
+                      ></button> </span
+                  ></cbc-rich-text-editor>
+                </div>
+              </div>
+
+              @if (posting()) {
+              <div class="field right-left-margin">
+                <span
+                  >{{ 'label.posting' | transloco }}...
+                  <cbc-spinner></cbc-spinner>
+                </span>
+              </div>
+              } @if (editPost() !== undefined) {
+              <div class="left-big-margin" style="margin-bottom: 15px">
+                @for (attachment of attachmentsAndLinksToEdit(); track
+                attachment.id) {
+                <span class="attachment" title="{{ attachment.name }}">
+                  <div>
+                    @if (!attachment.isLink) {
+                    <img
+                      src="img/paper-clip-155D79.png"
+                      width="30"
+                      height="30"
+                      alt="Attachment icon"
+                    />
+                    } @if (attachment.isLink) {
+                    <img
+                      src="img/bigicon-link.png"
+                      width="40"
+                      height="40"
+                      alt="Link icon"
+                    />
+                    }
+                  </div>
+                  {{ displayName(attachment.name) }}
+                  <cbc-inline-delete
+                    (deletionConfirmed)="removeAttachment(attachment)"
+                    [useIcon]="true"
+                  ></cbc-inline-delete>
+                </span>
+                }
+              </div>
+              } @if (!posting()) {
+              <div class="field field--file-t right-left-margin">
+                <label
+                  style="vertical-align: top; margin-top: 11px"
+                  for="attach"
+                  >{{ 'label.attach.a.file' | transloco }}</label
+                >
+                <input
+                  type="file"
+                  id="file"
+                  class="inputfile inputfile-6"
+                  (change)="fileChangeEvent($event)"
+                  multiple
+                />
+                <label style="width: 400px" for="file"
+                  ><span class="result"></span
+                  ><span class="button"
+                    >{{ 'label.browse' | transloco }}</span
+                  ></label
+                >
+                @if (attachmentRemainingSize().remainingSize > 0) {
+                <span class="text-success"
+                  >{{ 'post.attachment.size' | transloco: { size:
+                  getRemainingSizeInMB() } }}</span
+                >
+                } @if (attachmentRemainingSize().remainingSize <= 0) {
+                <span class="text-error"
+                  >{{ 'post.attachment.size' | transloco: { size:
+                  getRemainingSizeInMB() } }}</span
+                >
+                }
+              </div>
+              }
+
+              <div class="listToBeUploaded left-big-margin">
+                <ul>
+                  @for (file of filesToUpload(); track file.id) {
+                  <li>
+                    {{ file.file.name }}&nbsp;<a
+                      tabindex="0"
+                      (click)="deleteSelectedFile(file)"
+                      ><img
+                        src="img/icon-delete-818181.png"
+                        height="15"
+                        width="15"
+                        alt="Delete icon"
+                    /></a>
+                  </li>
+                  }
+                </ul>
+              </div>
+
+              <br />
+
+              @if (!posting()) {
+              <div class="field field--file-t right-left-margin">
+                <label style="vertical-align: top" for="attach"
+                  >{{ 'label.attach.a.link' | transloco }}</label
+                >
+                @if (!linkPickerOpen()) {
+                <a tabindex="0" (click)="openLinkPicker()"
+                  >{{ 'label.attach.a.link.open' | transloco }}</a
+                >
+                } @if (loadingPicker) {
+                <div style="display: inline-block">
+                  <span style="min-width: 200px"
+                    >{{ 'label.loading.picker' | transloco }}...
+                    <cbc-spinner></cbc-spinner>
+                  </span>
+                </div>
+                } @if (linkPickerOpen()) {
+                <cbc-file-picker
+                  [nodeId]="group().libraryId"
+                  [(selection)]="pickedNodes"
+                  [canSelectFolders]="true"
+                  (pickerLoaded)="linkPickerOpened()"
+                  style="display: inline-block; width: calc(100% - 170px)"
+                ></cbc-file-picker>
+                } @if (linkPickerOpen() && !loadingPicker) {
+                <br />
+                }@if (linkPickerOpen() && !loadingPicker) {
+                <br />
+                } @if (linkPickerOpen() && !loadingPicker) {
+                <a
+                  tabindex="0"
+                  class="left-big-margin"
+                  (click)="closeLinkPicker()"
+                  >{{ 'label.attach.a.link.close' | transloco }}</a
+                >
+                }
+              </div>
+              }
+            </form>
+            <div class="notification-box">
+              <div>
+                <label for="notifyToggle">
+                  {{ 'label.send.email.notification' | transloco }}</label
+                >
+              </div>
+
+              <div>
+                <mat-slide-toggle
+                  [formControl]="notify"
+                  id="notifyToggle"
+                ></mat-slide-toggle>
+              </div>
+              <div>
+                <span
+                  >{{ (notify.value ? 'label.yes' : 'label.no')| transloco
+                  }}</span
+                >
+              </div>
+
+              <div>
+                <span>
+                  <i>
+                    ({{ notify.value ? ("label.notifications.send" | transloco):
+                    "label.notifications.no-send" | transloco }})</i
+                  >
+                </span>
+              </div>
+            </div>
+            <section class="modal-footer left-big-margin">
+              @if (!posting()) {
+              <div class="buttons-group field">
+                @if (editPost() === undefined) {
+                <a
+                  tabindex="0"
+                  class="cta"
+                  data-cy="submit-comment"
+                  (click)="addPost()"
+                  [class.disabled]="!isAllValid()"
+                  >{{ 'label.post' | transloco }}</a
+                >
+                } @if (editPost() !== undefined) {
+                <a
+                  tabindex="0"
+                  class="cta"
+                  (click)="updatePost()"
+                  [class.disabled]="!isAllValid()"
+                  >{{ 'label.edit' | transloco }}</a
+                >
+                }
+                <a tabindex="0" class="button" (click)="resetPost()"
+                  >{{ 'label.reset' | transloco }}</a
+                >
+              </div>
+              }
+            </section>
+          </span>
+          }
+        </div>
+
+        }
+      </div>
+    </div>
+  </article>
+</div>

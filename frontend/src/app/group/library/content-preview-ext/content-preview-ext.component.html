@@ -1,0 +1,60 @@
+<cbc-preview
+  [title]="'label.preview'"
+  (ok)="close()"
+  (cancelPreview)="close()"
+  [okLabel]="'label.close'"
+  [(visible)]="showModal"
+  [displayCloseButton]="false"
+  (visibleChange)="visibleChange($event)"
+>
+  @if (previewReady()) {
+  <div>
+    <div class="page-content" style="width: 100%">
+      @if (isDocumentPreview()) {
+      <ngx-extended-pdf-viewer
+        [src]="contentURL()"
+        (pdfLoadingFailed)="onError($event)"
+        (progress)="onProgress($event)"
+        [height]="'100vh'"
+        [textLayer]="true"
+        [showHandToolButton]="true"
+      >
+      </ngx-extended-pdf-viewer>
+      } @if (isImagePreview()) {
+      <img [src]="contentURL()" style="width: 100%" alt="Document preview" />
+      } @if (isVideoPreview()) {
+      <video controls style="width: 100%">
+        <source [src]="mediaContentURL()" />
+        <track kind="captions" />
+        <p>{{ 'error.video' | transloco }}</p>
+      </video>
+      } @if (isAudioPreview()) {
+      <audio controls style="width: 100%">
+        <source [src]="mediaContentURL()" />
+        <p>{{ 'error.video' | transloco }}</p>
+      </audio>
+      } @if (progressing()) {
+      <span
+        >{{ 'preview.messages.opening.document' | transloco }} @if
+        (progressPercent() > 0) {
+        <span>{{ progressPercent() }}%</span>
+        }
+      </span>
+      } @if (error()) {
+      <span>{{ 'label.error' | transloco }}: {{ theError }}</span>
+      }
+    </div>
+    @if (isSpinner()) {
+    <div style="padding-left: 44%">
+      <br />
+      <img
+        width="60"
+        height="60"
+        src="img/spinner-dark.gif"
+        alt="Loading spinner"
+      />
+    </div>
+    }
+  </div>
+  }
+</cbc-preview>

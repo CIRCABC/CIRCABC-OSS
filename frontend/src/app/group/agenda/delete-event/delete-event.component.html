@@ -1,0 +1,59 @@
+@let _event = event();
+<cbc-modal
+  [title]="'delete-event.delete.event'"
+  (ok)="delete()"
+  (cancelModal)="closePopupWindow()"
+  [okLabel]="'label.delete'"
+  [(executing)]="processing"
+  [executingLabel]="'label.deleting'"
+  [(visible)]="showModal"
+  [contentClass]="'modal-content section-scroll'"
+>
+  @if (_event !== undefined) {
+  <span
+    >{{ 'label.delete.appointment.question' | transloco: { title: _event.title }
+    }}</span
+  >
+  }
+  <br /><br />
+  @if (!isSingleEvent()) {
+  <form [formGroup]="form">
+    <!-- Single, AllOccurences, FuturOccurences -->
+    <div class="field field--radio">
+      <div class="move-to-center">
+        <input
+          id="single"
+          type="radio"
+          formControlName="occurrenceSelection"
+          value="Single"
+        />
+        <label for="single"
+          >{{ 'delete-event.occurrence.single' | transloco }}</label
+        >
+      </div>
+      <div class="move-to-center">
+        <input
+          type="radio"
+          id="allOccurences"
+          formControlName="occurrenceSelection"
+          value="AllOccurences"
+        />
+        <label for="allOccurences"
+          >{{ 'delete-event.occurrence.all' | transloco }}</label
+        >
+      </div>
+      <div class="move-to-center">
+        <input
+          type="radio"
+          id="futurOccurences"
+          formControlName="occurrenceSelection"
+          value="FuturOccurences"
+        />
+        <label for="futurOccurences"
+          >{{ 'delete-event.occurrence.future' | transloco }}</label
+        >
+      </div>
+    </div>
+  </form>
+  }
+</cbc-modal>

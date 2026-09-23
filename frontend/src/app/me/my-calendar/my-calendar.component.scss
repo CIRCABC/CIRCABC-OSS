@@ -1,0 +1,184 @@
+@use 'css/global/variables-mixins-keyframes';
+
+.flex-calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  width: 100%;
+
+  @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media screen and (max-width: variables-mixins-keyframes.$break-small) {
+    grid-template-columns: 1fr;
+  }
+
+  .day {
+    .events {
+      width: 100%;
+
+      a.empty-events {
+        display: none;
+        cursor: pointer;
+        width: 100%;
+        text-align: center;
+        vertical-align: middle;
+      }
+    }
+
+    &:hover {
+      .events {
+        a.empty-events {
+          display: block;
+        }
+      }
+    }
+  }
+}
+
+/* Override left-popup arrow position for my-calendar context */
+.left-popup::after {
+  top: 25px;
+}
+
+.left-popup--calendar .events-of-the-day {
+  min-height: 280px;
+}
+
+.event-line {
+  margin-bottom: 0;
+  font-size: 11px;
+}
+
+.div-spinner {
+  margin-right: 0;
+  font-size: small;
+  float: right;
+  padding-top: 3px;
+}
+
+.padding-spinner-text {
+  padding-right: 10px;
+}
+
+.field label {
+  width: unset;
+}
+
+.view-select {
+  width: auto;
+  min-width: 80px;
+  height: 32px;
+}
+
+.select--form select {
+  width: 100%;
+  min-width: 80px;
+  height: 32px;
+  padding-top: 0;
+  padding-bottom: 1px;
+  padding-left: 10px;
+}
+
+.field-select {
+  margin-bottom: 0;
+  font-size: 13px;
+  float: right;
+  color: var(--theme-text-muted);
+}
+
+.field-in-date {
+  width: 150px;
+  padding: 0;
+  font-size: 13px;
+  float: right;
+  height: 32px;
+  margin-right: 10px;
+  padding-left: 10px;
+}
+
+.apply-button {
+  float: right;
+  height: 32px;
+  padding-top: 6px;
+  margin-right: 10px;
+}
+
+.field {
+  float: right;
+  margin-bottom: 0;
+}
+
+/* Improved calendar header toolbar */
+.calendar-container > header.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--theme-border-color);
+  margin-bottom: 8px;
+
+  .float-left {
+    float: none;
+    min-width: 0;
+  }
+
+  .field,
+  .field-select {
+    float: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 0;
+  }
+
+  .field-view-as {
+    margin-left: auto;
+  }
+
+  .custom-select {
+    overflow: visible;
+  }
+
+  .view-label {
+    white-space: nowrap;
+    font-size: 13px;
+    color: var(--theme-text-muted);
+  }
+
+  .nav-months .buttons {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .previous-month,
+    .next-month {
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .current-month,
+    .current-day,
+    .current-week {
+      font-weight: 600;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+  }
+
+  form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .apply-button {
+      float: none;
+      margin-right: 0;
+    }
+
+    mat-form-field {
+      width: 160px;
+    }
+  }
+}

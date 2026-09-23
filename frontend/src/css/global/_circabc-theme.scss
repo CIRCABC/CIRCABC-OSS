@@ -1,0 +1,41 @@
+:root {
+  --theme-body-background: url(img/background.jpg) no-repeat center top fixed;
+  --theme-header-link: #2b6ea1;
+  --theme-header-text: rgb(89 89 89 / 1);
+  --theme-header-text-inbox: #132735;
+  /* Semi-transparent white for box headers over light background */
+  --theme-box-header-background: rgb(255 255 255 / 0.5);
+  --theme-box-background: #fff;
+  --theme-menu: #fff;
+  --theme-menu-hover: #f0f5fa;
+  --theme-link: rgb(0 51 85 / 1);
+  --theme-link-hover: #0a2540;
+  --theme-h3: #035;
+  --theme-table-alternative-lines: #f0f4f7;
+  --theme-table-container-backgroundcolor: #f0f4f7;
+  --theme-table-container-alt-row: #fff;
+  --theme-timeline-header: #035;
+  --theme-border-color: #dde3e8;
+  --theme-text-aa: rgb(89 89 89 / 1);
+  --theme-text-muted: #6b7280;
+  --theme-input-bg: #f9fafb;
+  --theme-input-bg-focus: #f0f5fa;
+  --theme-input-border: #dde3e8;
+  --theme-input-text: rgb(89 89 89 / 1);
+  --theme-error: #c00;
+  --theme-green: #2e7d53;
+  --theme-green-dark: #2d7b52;
+  --theme-green-hover: #34915f;
+  --theme-green-subtle: #e8f5ee;
+  /* Force light native UI (form controls, scrollbars, etc.) in light theme */
+  color-scheme: light;
+}
+
+input[type='checkbox'] {
+  accent-color: #2e7d53;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}

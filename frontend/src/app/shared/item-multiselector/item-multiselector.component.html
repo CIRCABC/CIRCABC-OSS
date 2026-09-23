@@ -1,0 +1,43 @@
+<div class="align-component">
+  <form [formGroup]="multiSelectForm">
+    <div class="custom-select select--multiple select-style">
+      <label for="originMultiple" class="visually-hidden"
+        >{{ 'label.available.items' | transloco }}</label
+      >
+      <select
+        multiple
+        id="originMultiple"
+        class="select-style"
+        formControlName="availableSelectedItems"
+      >
+        @for (item of availableItems(); track item.value) {
+        <option value="{{ item.value }}">{{ item.name }}</option>
+        }
+      </select>
+    </div>
+    <div style="display: inline-block">
+      <a tabindex="0" (click)="selectItems()">
+        <span style="font-size: 20px">&#9658;</span>
+      </a>
+      <br />
+      <a tabindex="0" (click)="unselectItems()">
+        <span style="font-size: 20px">&#9668;</span>
+      </a>
+    </div>
+    <div class="custom-select select--multiple select-style">
+      <label for="destinationMultiple" class="visually-hidden"
+        >{{ 'label.selected.items' | transloco }}</label
+      >
+      <select
+        multiple
+        id="destinationMultiple"
+        class="select-style"
+        formControlName="selectedSelectedItems"
+      >
+        @for (item of selectedItems(); track item.value) {
+        <option value="{{ item.value }}">{{ item.name }}</option>
+        }
+      </select>
+    </div>
+  </form>
+</div>

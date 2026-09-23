@@ -1,0 +1,61 @@
+{
+  "extends": "stylelint-config-standard",
+  "customSyntax": "postcss-scss",
+  "rules": {
+    "media-query-no-invalid": null,
+    "comment-empty-line-before":null,
+    "color-function-notation": "modern",
+    "alpha-value-notation": "number",
+    "shorthand-property-no-redundant-values": true,
+    "media-feature-name-no-vendor-prefix": null,
+    "keyframes-name-pattern": null,
+    "value-no-vendor-prefix": null,
+    "function-no-unknown": null,
+    "at-rule-no-vendor-prefix": null,
+    "selector-no-vendor-prefix": null,
+    "function-url-quotes": null,
+    "selector-class-pattern": null,
+    "property-no-vendor-prefix": null,
+    "declaration-block-no-redundant-longhand-properties": null,
+    "declaration-property-value-no-unknown": null,
+    "media-feature-range-notation": null,
+    "no-descending-specificity": null,
+    "function-name-case": [
+      "lower",
+      { "ignoreFunctions": ["DXImageTransform.Microsoft.gradient"] }
+    ],
+    "at-rule-no-unknown": [
+      true,
+      {
+        "ignoreAtRules": ["extend", "include", "mixin", "use"]
+      }
+    ],
+    "selector-pseudo-element-no-unknown": [
+      true,
+      { "ignorePseudoElements": ["hover", "/^ng-/"] }
+    ],
+    "property-no-unknown": [
+      true,
+      { "ignoreProperties": ["animate", "font-smoothing", "font-display", "src"] }
+    ],
+    "declaration-block-no-duplicate-properties": [
+      true,
+      { "ignore": ["consecutive-duplicates-with-different-values"] }
+    ],
+    "font-family-no-missing-generic-family-keyword": [
+      true,
+      { "ignoreFontFamilies": ["Flaticon", "Geist", "Geist Mono"] }
+    ],
+    "value-keyword-case": [
+      "lower",
+      {
+        "ignoreKeywords": ["fadeIn", "optimizeLegibility"]
+      }
+    ],
+    "selector-type-no-unknown": [true, { "ignore": ["custom-elements"] }],
+    "font-family-no-duplicate-names": null,
+    "block-no-redundant-nested-style-rules": null,
+    "nesting-selector-no-missing-scoping-root": null,
+    "no-invalid-position-declaration": null
+  }
+}

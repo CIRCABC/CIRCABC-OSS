@@ -1,0 +1,32 @@
+{{ $safeNavigationMigration(group()?.name) | cbcSetTitle }} @if (loading()) {
+<cbc-horizontal-loader />
+}
+<h1 class="visually-hidden">{{ group()?.name }}</h1>
+<div class="fluid page-container dashboard-container">
+  @if (group(); as group) {
+  <section class="dahsboard-section-left" id="description">
+    <cbc-group-location [group]="group"></cbc-group-location>
+
+    <cbc-group-desciptor [group]="group"></cbc-group-desciptor>
+
+    @if (!(displayMembersBox() || displayForumsBox() || displayEventsBox())) {
+    <cbc-contact-description [group]="group"></cbc-contact-description>
+    } @if (displayWhatsnewBox() && timeline(); as timeline) {
+    <cbc-timeline [entries]="timeline.entries" [group]="group"></cbc-timeline>
+    }
+  </section>
+  } @if (group(); as group) { @if (displayMembersBox() || displayForumsBox() ||
+  displayEventsBox()) {
+  <section class="dahsboard-section-right add-top-margin">
+    @if (displayMembersBox() || displayForumsBox() || displayEventsBox()) {
+    <cbc-contact-description [group]="group"></cbc-contact-description>
+    } @if (displayMembersBox()) {
+    <cbc-members-dashlet [group]="group"></cbc-members-dashlet>
+    } @if (displayForumsBox()) {
+    <cbc-events-dashlet [igId]="igId()"></cbc-events-dashlet>
+    } @if (displayEventsBox()) {
+    <cbc-recent-discussions [igId]="igId()"></cbc-recent-discussions>
+    }
+  </section>
+  } }
+</div>

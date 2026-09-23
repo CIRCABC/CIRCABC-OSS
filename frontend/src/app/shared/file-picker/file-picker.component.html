@@ -1,0 +1,78 @@
+@if (content(); as content) {
+<section class="explorer">
+  <header>
+    @if (!isLibrary()) {
+    <a
+      tabindex="0"
+      class="backButton"
+      (click)="getContent(currentNode()?.parentId)"
+      ><img src="img/arrow-previous.png" alt="Previous" />
+    </a>
+    }&nbsp; @if (targetFolderMode()) {
+    <!-- NOSONAR: Native checkbox is keyboard accessible -->
+    <input
+      type="checkbox"
+      aria-label="{{ currentNode()?.name }}"
+      (click)="toggleSelect(currentNode()?.id)"
+      (keydown.enter)="toggleSelect(currentNode()?.id)"
+      [checked]="isSelected(currentNode()?.id)"
+    />
+    }
+    <img src="img/icon-library-blue.png" alt="Library Icon" /> &nbsp; {{
+    currentNode()?.name }} @if (loading()) {
+    <cbc-spinner></cbc-spinner>
+    }
+  </header>
+  <section>
+    <table>
+      <thead>
+        <tr>
+          <th class="selector"></th>
+          <th class="name width-2-3">{{ 'label.name' | transloco }}</th>
+          <th class="date width-1-3">{{ 'label.modified' | transloco }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (node of content.data; track node.id) {
+        <tr>
+          <td
+            >@if (!isFolder(node) || targetFolderMode() || canSelectFolders()) {
+            <!-- NOSONAR: Native checkbox is keyboard accessible -->
+            <input
+              type="checkbox"
+              aria-label="{{ node.name }}"
+              (click)="toggleSelect(node.id)"
+              (keydown.enter)="toggleSelect(node.id)"
+              [checked]="isSelected(node.id)"
+            />
+            }</td
+          >
+          @if (!isFolder(node)) {
+          <td class="width-2-3"
+            ><img src="img/icon-file-blue.png" alt="File Icon" /> {{ node.name
+            }}</td
+          >
+          } @if (isFolder(node)) {
+          <td class="width-2-3"
+            ><img src="img/icon-library-blue.png" alt="Folder Icon" />
+            <a tabindex="0" (click)="getContent(node.id)"
+              >{{ node.name }}</a
+            ></td
+          >
+          }
+          <td class="width-1-3"
+            >{{ getModified(node) | date: 'y MMM d, H:mm' }}</td
+          >
+        </tr>
+        } @if (isEmpty()) {
+        <tr>
+          <td class="empty" colspan="3"
+            >{{ 'label.empty.library' | transloco }}</td
+          >
+        </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+</section>
+}

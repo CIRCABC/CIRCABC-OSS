@@ -1,0 +1,25 @@
+<div
+  class="sidenav"
+  [class.open-sidenav]="shown()"
+  [class.close-sidenav]="!shown()"
+>
+  <a tabindex="0" class="close-button" (click)="close()"
+    >{{ 'label.close' | transloco }}</a
+  >
+  <h1
+    ><img src="img/icon-folder-white.png" alt="icon" /> {{
+    'label.folder.structure' | transloco }}</h1
+  >
+
+  @if (root && path()) {
+  <cbc-tree-view
+    [disabled]="false"
+    [folderId]="getSearchedNodeId()"
+    [root]="root"
+    [showSelector]="false"
+    [displayedPath]="path()"
+    (clickedNodeEmitter)="propagateNavigation($event)"
+  >
+  </cbc-tree-view>
+  }
+</div>

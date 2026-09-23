@@ -1,0 +1,45 @@
+<cbc-modal
+  [title]="'label.expired.update.date'"
+  (ok)="saveConfiguration()"
+  (cancelModal)="cancel()"
+  [okLabel]="'label.save'"
+  [(visible)]="showModal"
+  [executing]="processing"
+  [executingLabel]="'label.saving'"
+>
+  <form [formGroup]="editExpiedDateNodeForm" style="padding: 10px">
+    <h2> {{editExpiedDateNodeForm.value.name}} </h2>
+    <div class="field field--with-icon field--date" style="line-height: 40px">
+      <mat-slide-toggle
+        formControlName="expirationDateActived"
+      ></mat-slide-toggle>
+
+      <label for="expirationDate" style="padding-right: 10px"
+        >{{ 'label.expiration.date' | transloco }}</label
+      >
+
+      @if (editExpiedDateNodeForm.value.expirationDateActived) {
+      <mat-form-field>
+        <input
+          id="expirationDate"
+          matInput
+          [matDatepicker]="dp_expirationDate"
+          formControlName="expirationDate"
+          placeholder="dd/mm/yyyy, HH:mm"
+          [class.expired]="isExpired()"
+        />
+        <mat-datepicker-toggle
+          matIconSuffix
+          [for]="dp_expirationDate"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #dp_expirationDate></mat-datepicker>
+      </mat-form-field>
+      }
+    </div>
+    @if (isExpired() && editExpiedDateNodeForm.value.expirationDateActived) {
+    <div class="text-error"
+      >{{ 'label.expiration.date.alert' | transloco }}</div
+    >
+    }
+  </form>
+</cbc-modal>

@@ -1,0 +1,252 @@
+<nav class="main-nav">
+  <div [ngClass]="sidebarActive? 'menu1-sidebar': 'menu1'">
+    <div>
+      @switch (location) { @case ('default') {
+
+      <div
+        [ngClass]="sidebarActive? 'menuitemsGroup-sidebar': 'menuitemsGroup'"
+      >
+        @if (sidebarActive) {
+        <div class="sidebarCloseBtn">
+          <a
+            tabindex="0"
+            (click)="sidebarActive = false"
+            (keydown.enter)="sidebarActive = false"
+          >
+            <img src="img/icon-close-grey.svg" width="10" alt="icon close" />
+          </a>
+        </div>
+        }
+
+        <div class="menuitem">
+          @if (!isGuest()) {
+          <a
+            data-cy="me"
+            [class.tab--current]="isMe()"
+            class="tab tab--info"
+            [routerLink]="['/me']"
+          >
+            <span class="label">{{ 'label.dashboard' | transloco }}</span>
+          </a>
+          }
+        </div>
+        <div class="menuitem">
+          @if (!isGuest()) {
+          <a
+            data-cy="me-calendar"
+            [class.tab--current]="isCalendar()"
+            class="tab tab--agenda"
+            [routerLink]="['/me/calendar']"
+          >
+            <span class="label">{{ 'label.my.calendar' | transloco }}</span>
+          </a>
+          }
+        </div>
+        <div class="menuitem">
+          @if (!isGuest()) {
+          <a
+            data-cy="roles"
+            [class.tab--current]="isRoles()"
+            class="tab tab--roles"
+            [routerLink]="['/me/roles']"
+          >
+            <span class="label">{{ 'label.my.roles' | transloco }}</span>
+          </a>
+          }
+        </div>
+        <div class="menuitem">
+          <a
+            data-cy="explore"
+            [class.tab--current]="isExplore()"
+            class="tab tab--group-browser"
+            [routerLink]="['/explore']"
+          >
+            <span class="label"
+              >{{ 'navigator.browse-groups' | transloco }}</span
+            >
+          </a>
+        </div>
+        @if (isShareEnabled()) {
+        <div class="menuitem">
+          <a
+            data-cy="share"
+            tabindex="0"
+            class="tab tab--share"
+            (click)="loadShareURL()"
+          >
+            <span class="label">{{ 'label.share' | transloco }}</span>
+          </a>
+        </div>
+        }
+      </div>
+
+      } @case ('in-group') {
+
+      <div
+        [ngClass]="sidebarActive? 'menuitemsGroup-sidebar': 'menuitemsGroup'"
+      >
+        @if (sidebarActive) {
+        <div class="sidebarCloseBtn">
+          <a
+            tabindex="0"
+            (click)="sidebarActive = false"
+            (keydown.enter)="sidebarActive = false"
+          >
+            <img src="img/icon-close-grey.svg" width="10" alt="icon close" />
+          </a>
+        </div>
+        }
+        <div class="menuitem">
+          @let currentIgTitle = $safeNavigationMigration(currentIg()?.title);
+          @let currentIgName = $safeNavigationMigration(currentIg()?.name); @if
+          (currentIgTitle) {
+          <a
+            [class.tab--current]="isGroupDashboard()"
+            class="tab tab--group-name"
+            [routerLink]="['.']"
+            title="{{
+              (currentIgTitle | cbcI18n) !== ''
+                ? (currentIgTitle | cbcI18n)
+                : ('en' | i18nSelect: currentIgTitle) !== ''
+                ? ('en' | i18nSelect: currentIgTitle)
+                : currentIg.name
+            }}"
+          >
+            {{ (currentIgTitle | cbcI18n) !== '' ? (currentIgTitle | cbcI18n) :
+            ('en' | i18nSelect: currentIgTitle) !== '' ? ('en' | i18nSelect:
+            currentIgTitle) : currentIgName }}</a
+          >
+          }
+        </div>
+        @if (canSeeInformation()) {
+        <div class="menuitem">
+          <a
+            data-cy="information"
+            [class.tab--current]="isInformation()"
+            class="tab tab--info"
+            [routerLink]="['information']"
+          >
+            <span class="label">{{ 'label.information' | transloco }}</span>
+          </a>
+        </div>
+        } @if (canSeeLibrary() && currentIg()?.libraryId) {
+        <div class="menuitem">
+          <a
+            data-cy="library"
+            [class.tab--current]="isInsideLibrary()"
+            class="tab tab--library"
+            [routerLink]="['library', $safeNavigationMigration(currentIg()?.libraryId)]"
+          >
+            <span class="label">{{ 'label.library' | transloco }}</span>
+          </a>
+        </div>
+        } @if (canSeeMembers()) {
+        <div class="menuitem">
+          <a
+            data-cy="members"
+            [class.tab--current]="isInsideMembers()"
+            class="tab tab--members"
+            [routerLink]="['members']"
+          >
+            <span class="label">{{ 'label.members' | transloco }}</span>
+          </a>
+        </div>
+        } @if (canSeeEvents()) {
+        <div class="menuitem">
+          <a
+            data-cy="agenda"
+            [class.tab--current]="isAgenda()"
+            class="tab tab--agenda"
+            [routerLink]="['agenda']"
+          >
+            <span class="label">{{ 'label.agenda' | transloco }}</span>
+          </a>
+        </div>
+        } @if (canSeeNewsgroups()) {
+        <div class="menuitem">
+          <a
+            data-cy="forums"
+            [class.tab--current]="isForum()"
+            class="tab tab--forums"
+            [routerLink]="['forum', $safeNavigationMigration(currentIg()?.newsgroupId)]"
+          >
+            <span class="label">{{ 'label.forums' | transloco }}</span>
+          </a>
+        </div>
+        } @if (isGroupAdmin()) {
+        <div class="menuitem">
+          <a
+            data-cy="admin"
+            class="tab tab--admin"
+            [class.tab--current]="isAdmin()"
+            [routerLink]="['admin']"
+          >
+            <span class="label">{{ 'label.admin' | transloco }}</span>
+          </a>
+        </div>
+        }
+      </div>
+
+      } }
+    </div>
+  </div>
+
+  <div class="menu2">
+    @if (uiSwitchEnabled()) {
+    <div class="menuitem switch-ui">
+      <a
+        class="switch-ui--link"
+        title="{{ 'navigator.switch.ui.help' | transloco }}"
+        [href]="environmentServerUrl()"
+      >
+      </a>
+    </div>
+    }
+
+    <div class="menuitem">
+      <div class="personal-menu-help">
+        <a data-cy="help" [class.tab--current]="isHelp()" class="tab tab--help">
+          <span class="label">{{ 'label.help' | transloco }}</span>
+        </a>
+
+        <div class="dropdown-help">
+          <div class="arrow"></div>
+          <div class="links-group">
+            <a [routerLink]="['/help']"
+              >{{ 'label.help-center' | transloco }}</a
+            >
+
+            <a [routerLink]="['/help/contact']"
+              >{{ 'welcome.contact.support' | transloco }}</a
+            >
+
+            <a target="_blank" href="https://github.com/CIRCABC/Circabc-OSS"
+              >{{ 'label.download.source' | transloco }}</a
+            >
+
+            @if (circabcRelease !== 'echa') {
+            <a [routerLink]="['/help/about']"
+              >{{ 'label.about' | transloco }}</a
+            >
+            } @if (isAppAdmin()) {
+            <a [routerLink]="['/support']"
+              >{{ 'label.support.area' | transloco }}</a
+            >
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="menuitem" style="width: 40px">
+      <a tabindex="0" class="sidebarOpenBtn" (click)="sidebarActive = true">
+        <img
+          src="./img/icon-menu-grey.svg"
+          title="menu"
+          width="20"
+          alt="menu-icon"
+        />
+      </a>
+    </div>
+  </div>
+</nav>

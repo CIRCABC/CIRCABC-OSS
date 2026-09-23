@@ -1,0 +1,69 @@
+@let _user = user(); @if (_user) {
+<section class="member-card">
+  <header>
+    @if (_user.firstname && _user.lastname) {
+    <img
+      class="avatar"
+      [attr.src]="_user.avatar | cbcDownload | cbcSecure"
+      title="avatar"
+      alt="avatar"
+    />
+    } {{ _user.firstname }} <br />
+    {{ _user.lastname }}
+  </header>
+  <div class="details">
+    <h3>{{ 'user.contact.information' | transloco }}</h3>
+    <dl class="member-details">
+      @if (_user.userId) {
+      <div class="member-details__row">
+        <dt class="label">{{ 'label.userid' | transloco }}</dt>
+        <dd class="value">{{ _user.userId }}</dd>
+      </div>
+      } @if (_user.email && getUserVisibility()) {
+      <div class="member-details__row">
+        <dt class="label">{{ 'label.email' | transloco }}</dt>
+        <dd class="value">{{ _user.email }}</dd>
+      </div>
+      } @if (_user.phone && getUserVisibility()) {
+      <div class="member-details__row">
+        <dt class="label">{{ 'label.phone' | transloco }}</dt>
+        <dd class="value">{{ _user.phone }}</dd>
+      </div>
+      } @if (_user.properties && getUserVisibility()) {
+      <div class="member-details__row">
+        <dt class="label">{{ 'label.title' | transloco }}</dt>
+        <dd class="value">{{ _user.properties.title }}</dd>
+      </div>
+      } @if (_user.properties && getUserVisibility()) {
+      <div class="member-details__row">
+        <dt class="label">{{ 'label.organisation' | transloco }}</dt>
+        <dd class="value">{{ _user.properties.organisation }}</dd>
+      </div>
+      } @if (_user.properties && getUserVisibility()) {
+      <div class="member-details__row">
+        <dt class="label">{{ 'label.postal.address' | transloco }}</dt>
+        <dd class="value">{{ _user.properties.address }}</dd>
+      </div>
+      } @if (_user.properties && getUserVisibility()) {
+      <div class="member-details__row">
+        <dt class="label">{{ 'label.fax' | transloco }}</dt>
+        <dd class="value">{{ _user.properties.fax }}</dd>
+      </div>
+      } @if (_user.properties && getUserVisibility()) {
+      <div class="member-details__row">
+        <dt class="label">{{ 'label.description' | transloco }}</dt>
+        <dd class="value">{{ _user.properties.description }}</dd>
+      </div>
+      } @if (_user.properties) {
+      <div class="member-details__row">
+        <dt class="label">{{ 'label.global.notification' | transloco }}</dt>
+        <dd class="value">
+          {{ _user.properties.globalNotificationEnabled === 'true' ? 'ON' :
+          'OFF' }}
+        </dd>
+      </div>
+      }
+    </dl>
+  </div>
+</section>
+}

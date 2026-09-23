@@ -1,0 +1,173 @@
+<section
+  id="theSidenav"
+  class="sidenav"
+  tabindex="-1"
+  aria-label="{{ 'label.my.clipboard' | transloco }}"
+  (click)="clickedInside($event)"
+  (keydown.enter)="clickedInside($event)"
+  (mouseover)="visible = true"
+  (focus)="visible = true"
+  [class.open-sidenav]="opened()"
+  [class.close-sidenav]="!opened()"
+>
+  <button
+    type="button"
+    class="link-button closebtn clipboard-title"
+    aria-label="{{ 'label.close.clipboard' | transloco }}"
+    (click)="close()"
+    >&times;</button
+  >
+  <p class="clipboard-title">{{ 'label.my.clipboard' | transloco }}</p>
+
+  @if (nodes().length === 0) {
+  <p class="sidenav-item">{{ 'label.clipboard.empty' | transloco }}</p>
+  }
+
+  <ul>
+    @for (node of nodes(); track node.id) {
+    <li class="sidenav-item">
+      <div class="item-actions">
+        <div
+          id="removeItemFromClipboardId"
+          class="tooltip"
+          title="{{ 'label.remove' | transloco }}"
+        >
+          <a tabindex="0" (click)="removeItem(node)">
+            <img
+              src="img/icon-delete-white.png"
+              width="16"
+              height="16"
+              alt="Delete"
+            />
+          </a>
+        </div>
+        <div
+          id="copyItemFromClipboardId"
+          data-cy="clipboard-copy"
+          class="tooltip"
+          title="{{ 'label.copy.here' | transloco }}"
+        >
+          @if (isAuthorized(node, 'Copy')) {
+          <a tabindex="0" (click)="copyPasteItem(node)">
+            <img
+              src="img/icon-paste-white.png"
+              width="16"
+              height="16"
+              alt="Paste"
+            />
+          </a>
+          }
+        </div>
+        <div
+          id="cutItemFromClipboardId"
+          class="tooltip"
+          title="{{ 'label.move.here' | transloco }}"
+        >
+          @if (isAuthorized(node, 'Move')) {
+          <a tabindex="0" (click)="cutPasteItem(node)">
+            <img
+              src="img/icon-move-white.png"
+              width="16"
+              height="16"
+              alt="Move"
+            />
+          </a>
+          }
+        </div>
+        <div
+          id="linkItemFromClipboardId"
+          data-cy="clipboard-link"
+          class="tooltip"
+          title="{{ 'label.link.here' | transloco }}"
+        >
+          @if (isAuthorized(node, 'Link')) {
+          <a tabindex="0" (click)="linkPasteItem(node)">
+            <img
+              src="img/icon-link-white.png"
+              width="16"
+              height="16"
+              alt="Link"
+            />
+          </a>
+          }
+        </div>
+      </div>
+      <div class="item-name" title="{{ node.name }}">{{ node.name }}</div>
+    </li>
+    }
+  </ul>
+
+  @if (nodes().length !== 0) {
+  <div class="sidenav-all">
+    <br />
+    <br />
+    <br />
+    <div class="tooltip" title="{{ 'label.remove.all' | transloco }}">
+      <a tabindex="0" (click)="removeAll()">
+        <img
+          src="img/icon-delete-white.png"
+          width="20"
+          height="20"
+          alt="Delete All"
+        />
+      </a> </div
+    >&nbsp;
+    <div class="tooltip" title="{{ 'label.copy.all.here' | transloco }}">
+      @if (allAuthorized('Copy')) {
+      <a tabindex="0" (click)="copyPasteAll()">
+        <img
+          src="img/icon-paste-white.png"
+          width="25"
+          height="25"
+          alt="Paste All"
+        />
+      </a>
+      } </div
+    >&nbsp;
+    <div class="tooltip" title="{{ 'label.move.all.here' | transloco }}">
+      @if (allAuthorized('Move')) {
+      <a tabindex="0" (click)="cutPasteAll()">
+        <img
+          src="img/icon-move-white.png"
+          width="25"
+          height="25"
+          alt="Move All"
+        />
+      </a>
+      } </div
+    >&nbsp;
+    <div class="tooltip" title="{{ 'label.link.all.here' | transloco }}">
+      @if (allAuthorized('Link')) {
+      <a tabindex="0" (click)="linkPasteAll()">
+        <img
+          src="img/icon-link-white.png"
+          width="25"
+          height="25"
+          alt="Link All"
+        />
+      </a>
+      } </div
+    >&nbsp;
+    <div class="tooltip" title="{{ 'label.bulk.download' | transloco }}">
+      <a href="#" (click)="bulkDownload()">
+        <img
+          src="img/icon-download-white.png"
+          width="20"
+          height="20"
+          alt="Download"
+        />
+        <span class="sr-only">{{ 'label.bulk.download' | transloco }}</span>
+      </a>
+    </div>
+  </div>
+  } @if (processing()) {
+  <div style="padding-left: 30%">
+    <br />
+    <br />
+    <span id="clipboardSpinnerId" class="clipboard-spinner"
+      >{{ 'label.processing' | transloco }}...</span
+    >
+    <img width="40" height="40" src="img/spinner.gif" alt="Loading spinner" />
+  </div>
+  }
+</section>

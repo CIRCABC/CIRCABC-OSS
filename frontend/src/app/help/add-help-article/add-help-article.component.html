@@ -1,0 +1,78 @@
+<cbc-modal
+  [title]="editMode() ? 'help.update.article' : 'help.add.article'"
+  (ok)="editMode() ? updateArticle() : createArticle()"
+  (cancelModal)="cancel()"
+  [okLabel]="editMode() ? 'label.update' : 'label.create'"
+  [(visible)]="showModal"
+  [executing]="creating()"
+  [executingLabel]="editMode() ? 'label.updating' : 'label.creating'"
+  [showOkButton]="isValid() && !creating()"
+>
+  <form [formGroup]="newArticlForm">
+    <cbc-multilingual-input
+      formControlName="title"
+      [label]="'label.title' | transloco"
+      [placeholder]="'label.title' | transloco"
+      [lang]="'en'"
+      [required]="true"
+    ></cbc-multilingual-input>
+
+    <div class="field">
+      <label for="currentLang">{{ 'label.content' | transloco }}</label>
+      <div class="custom-select select--form">
+        <select id="currentLang" formControlName="currentLang">
+          @for (lang of availableLangs; track lang.code) {
+          <option
+            value="{{ lang.code }}"
+            [selected]="lang.code === newArticlForm.value.currentLang"
+            >{{ lang.name }}</option
+          >
+          }
+        </select>
+      </div>
+      <span class="hint">{{ 'help.add.lang.select.info' | transloco }}</span>
+
+      <div class="editor-container">
+        <cbc-rich-text-editor
+          (textChange)="syncText($event)"
+          editorHeight="320px"
+          formControlName="content"
+          [readOnly]="newArticlForm.value.currentLang === ''"
+          ><span class="ql-formats">
+            <button class="ql-bold" aria-label="Bold"></button>
+            <button class="ql-italic" aria-label="Italic"></button>
+            <button class="ql-underline" aria-label="Underline"></button>
+            <button class="ql-strike" aria-label="Strike"></button>
+            <select class="ql-color" aria-label="Font color"> </select>
+            <select class="ql-background" aria-label="Background color">
+            </select>
+          </span>
+          <span class="ql-formats">
+            <button class="ql-list" aria-label="list" value="ordered"></button>
+            <button class="ql-list" aria-label="list" value="bullet"></button>
+          </span>
+          <span class="ql-formats">
+            <button class="ql-indent" aria-label="Indent" value="-1"></button>
+            <button class="ql-indent" aria-label="Indent" value="+1"></button>
+          </span>
+          <span class="ql-formats">
+            <select class="ql-align" aria-label="Text alignment">
+              <option selected>></option>
+              <option value="center"></option>
+              <option value="right"></option>
+              <option value="justify"></option>
+            </select>
+          </span>
+          <span class="ql-formats">
+            <button class="ql-blockquote" aria-label="Quote"></button>
+            <button class="ql-link" aria-label="link"></button>
+            <button class="ql-image" aria-label="image" value=""></button>
+            <button
+              class="ql-code-block"
+              aria-label="code-block"
+            ></button> </span
+        ></cbc-rich-text-editor>
+      </div>
+    </div>
+  </form>
+</cbc-modal>

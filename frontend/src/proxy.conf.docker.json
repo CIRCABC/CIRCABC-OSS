@@ -1,0 +1,36 @@
+{
+  "/alfresco_api": {
+    "target": "http://circabc-rest-acs:8080/alfresco/service/api",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/alfresco_api": ""
+    }
+  },
+  "/circabc_api": {
+    "target": "http://circabc-rest-acs:8080/alfresco/service/circabc",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/circabc_api": ""
+    }
+  },
+
+  "/alfresco_root": {
+    "target": "http://circabc-rest-acs:8080/alfresco",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/alfresco_root": ""
+    }
+  },
+
+  "/alfresco_host": {
+    "target": "http://circabc-rest-acs:8080",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/alfresco_host": ""
+    }
+  }
+}

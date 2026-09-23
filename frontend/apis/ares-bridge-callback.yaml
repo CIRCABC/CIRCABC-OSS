@@ -1,0 +1,233 @@
+openapi: 3.0.0
+servers:
+  - url: 'http://server/path/AresBridgeCallback/v1'
+info:
+  title: AresBridge Callback
+  description: AresBridge callback services which enable to receive event messages
+  contact:
+    name: AresBridge Support
+    url: https://webgate.ec.europa.eu/CITnet/confluence/display/DIGITHAN/AresBridge+-+Technical+Integration+Guide
+    email: DIGIT-ARESBRIDGE-SUPPORT@ec.europa.eu
+  version: 1.0.0
+security:
+  - AresBridgeToken: []
+paths:
+  /save:
+    post:
+      summary: Document saved (but not registered) in Ares/Hermes
+      description: Notification message when the user saves the document in AresBridge UI
+      operationId: onSave
+      parameters:
+        - name: Date
+          in: header
+          description: The date and time when the request is sent in RFC1123 format
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/AresBridgeErrorResponse'
+        '401':
+          $ref: '#/components/responses/AuthenticationFailureResponse'
+        '403':
+          $ref: '#/components/responses/AuthorizationFailureResponse'
+        '500':
+          $ref: '#/components/responses/ClientApplicationErrorResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaveMessage'
+        description: The actual JSON callback message
+        required: true
+  /register:
+    post:
+      summary: Document registration in Ares/Hermes
+      description: |
+        Notification message when any user registers the document in AresBridge
+        UI / Ares / HRS / ...
+      operationId: onRegister
+      parameters:
+        - name: Date
+          in: header
+          description: The date and time when the request is sent in RFC1123 format
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/AresBridgeErrorResponse'
+        '401':
+          $ref: '#/components/responses/AuthenticationFailureResponse'
+        '403':
+          $ref: '#/components/responses/AuthorizationFailureResponse'
+        '500':
+          $ref: '#/components/responses/ClientApplicationErrorResponse'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrationMessage'
+        description: The actual JSON callback message
+        required: true
+  /cancel:
+    post:
+      summary: Document save/registration cancelled by user
+      description: |
+        Notification message when the user cancels the document save / registration in AresBridge UI
+      operationId: onCancel
+      parameters:
+        - name: Date
+          in: header
+          description: The date and time when the request is sent in RFC1123 format
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/AresBridgeErrorResponse'
+        '401':
+          $ref: '#/components/responses/AuthenticationFailureResponse'
+        '403':
+          $ref: '#/components/responses/AuthorizationFailureResponse'
+        '500':
+          $ref: '#/components/responses/ClientApplicationErrorResponse'
+      requestBody:
+        $ref: '#/components/requestBodies/BaseMessage'
+  /timeout:
+    post:
+      summary: Transaction timed out
+      description: |
+        Notification message when the client application did never sent user to AresBridge UI, the user closed the browser or
+        the user's AresBridge session timed out before saving / registering the document.
+      operationId: onTimeout
+      parameters:
+        - name: Date
+          in: header
+          description: The date and time when the request is sent in RFC1123 format
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/AresBridgeErrorResponse'
+        '401':
+          $ref: '#/components/responses/AuthenticationFailureResponse'
+        '403':
+          $ref: '#/components/responses/AuthorizationFailureResponse'
+        '500':
+          $ref: '#/components/responses/ClientApplicationErrorResponse'
+      requestBody:
+        $ref: '#/components/requestBodies/BaseMessage'
+components:
+  schemas:
+    BaseMessage:
+      type: object
+      required:
+        - transactionId
+      properties:
+        transactionId:
+          type: string
+          pattern: '^ABT-[0-9]+-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+          description: |
+            The AresBridge transaction ID that was initially used for redirecting the user to AresBridge UI. Allows to correlate
+            this callback with the initial request.
+          example: ABT-1504699787697-d64c-4d67-877b-7b0f7936da59
+    SaveMessage:
+      allOf:
+        - $ref: '#/components/schemas/BaseMessage'
+        - type: object
+          required:
+            - saveNumber
+            - documentId
+          properties:
+            saveNumber:
+              description: An Ares/Hermes save number
+              type: string
+              pattern: '^[a-z0-9_.-]+\([0-9]{4}\)[1-9][0-9]*$'
+              example: digit.b.2.0004(2017)123
+            documentId:
+              description: An Ares/Hermes document ID
+              type: string
+              pattern: '^08[a-f0-9]{14}$'
+              example: 080166e58003bacc
+    RegistrationMessage:
+      allOf:
+        - type: object
+          required:
+            - registrationNumber
+          properties:
+            registrationNumber:
+              description: An Ares/Hermes registration number
+              type: string
+              pattern: '^Ares\([0-9]{4}\)[1-9][0-9]*$'
+              example: Ares(2017)123
+        - $ref: '#/components/schemas/SaveMessage'
+    Error:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: ea731365-b121-4a73-a49e-0f7ebeaac203
+          description: |
+            A unique error ID.\
+            Ensure that it's properly logged in order it can be provided to the AresBridge support
+            team in case of problems.
+        message:
+          type: string
+          description: A meaningful error message.
+        stacktrace:
+          type: string
+          description: |
+            An optional stacktrace in order AresBridge support team has additional info to troubleshoot callback failures.
+  responses:
+    SuccessResponse:
+      description: The callback has succeeded
+    AuthenticationFailureResponse:
+      description: Authentication failed. Authentication information missing or invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    AuthorizationFailureResponse:
+      description: Not authorized to perform the callback.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    AresBridgeErrorResponse:
+      description: AresBridge has sent an invalid callback message
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ClientApplicationErrorResponse:
+      description: An internal server error occured on the client application server.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  requestBodies:
+    BaseMessage:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BaseMessage'
+      description: The actual JSON callback message
+      required: true
+  securitySchemes:
+    AresBridgeToken:
+      type: apiKey
+      in: header
+      name: Authorization

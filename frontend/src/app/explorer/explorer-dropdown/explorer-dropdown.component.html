@@ -1,0 +1,32 @@
+<div class="cta cta--dots dropdown-trigger">
+  {{ 'label.actions' | transloco }} @if (showActionsDropdown) {
+  <div class="dropdown dropdown--add-file">
+    <ul>
+      <li>
+        <a
+          class="contact"
+          [routerLink]="['./contact-category']"
+          [queryParams]="{
+          header: currentHeader()?.id ?? '',
+          category: currentCategory()?.id ?? ''
+        }"
+        >
+          {{ 'label.contact.category.admins' | transloco }}
+        </a>
+      </li>
+      <li>
+        <a
+          class="request--group"
+          [routerLink]="['./group-request']"
+          [queryParams]="{
+            header: currentHeader()?.id ?? '',
+            category: currentCategory()?.id ?? ''
+          }"
+        >
+          {{ 'label.request.interest-group' | transloco }}
+        </a>
+      </li>
+    </ul>
+  </div>
+  }
+</div>

@@ -1,0 +1,201 @@
+<section class="table-container">
+  <header class="header">
+    <cbc-pager
+      [length]="totalItems()"
+      [pageSize]="limit()"
+      [page]="page()"
+      (pageChange)="goToPage($event)"
+    ></cbc-pager>
+    <cbc-pager-configuration
+      (pageSizeChanged)="changeLimit($event)"
+    ></cbc-pager-configuration>
+  </header>
+
+  <table class="main">
+    <thead>
+      <tr>
+        <th><span class="visually-hidden">Actions</span></th>
+        <th class="cell-checkbox">
+          <span class="visually-hidden">Select</span>
+          <input
+            type="checkbox"
+            name=""
+            value=""
+            aria-label="{{ 'label.select.all' | transloco }}"
+            (click)="toggleAllPrepared()"
+            (keydown.enter)="toggleAllPrepared()"
+            [checked]="allSelected"
+          />
+        </th>
+        <th class="col-hidable"></th>
+        <th>
+          <a tabindex="0" (click)="changeSort('name')"
+            >{{ 'label.name' | transloco }}</a
+          >
+          @if (sort() === 'name_ASC') {
+          <span class="order-arrow-up"></span>
+          } @if (sort() === 'name_DESC') {
+          <span class="order-arrow-down"></span>
+          }
+        </th>
+        <th class="col-hidable">
+          <a tabindex="0" (click)="changeSort('archivedBy')"
+            >{{ 'label.deleted.by' | transloco }}</a
+          >
+          @if (sort() === 'archivedBy_ASC') {
+          <span class="order-arrow-up"></span>
+          } @if (sort() === 'archivedBy_DESC') {
+          <span class="order-arrow-down"></span>
+          }
+        </th>
+        <th class="col-hidable">
+          <a tabindex="0" (click)="changeSort('archivedDate')"
+            >{{ 'label.deleted.date' | transloco }}</a
+          >
+          @if (sort() === 'archivedDate_ASC') {
+          <span class="order-arrow-up"></span>
+          } @if (sort() === 'archivedDate_DESC') {
+          <span class="order-arrow-down"></span>
+          }
+        </th>
+        <th>{{ 'label.actions' | transloco }}</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        @if (restorableNodes().length > 0) {
+        <td colspan="7">
+          <ul class="bulk-actions">
+            <li>
+              <cbc-number-badge
+                [number]="restorableNodes().length"
+              ></cbc-number-badge>
+            </li>
+            <li>
+              <a tabindex="0" (click)="restoreNodes()"
+                ><img src="img/icon-last-blue.png" alt="Restore" />{{
+                'label.restore' | transloco }}</a
+              >
+            </li>
+            <li>
+              <a tabindex="0" (click)="purgeNodes()"
+                ><img src="img/rubbish-bin-blue-small.png" alt="Delete" />{{
+                'label.delete' | transloco }}</a
+              >
+            </li>
+          </ul>
+        </td>
+        }
+      </tr>
+
+      @if ( deletedNodes() !== undefined && deletedNodes().total === 0 &&
+      !loading() ) {
+      <tr class="row empty-row">
+        <td colspan="7">
+          {{ 'admin.deleted.items.display.none' | transloco }}
+        </td>
+      </tr>
+      } @if (loading()) {
+      <tr class="row empty-row">
+        <td class="cell-left-border"></td>
+        <td class="cell-checkbox"></td>
+        <td class="col-hidable"></td>
+        <td class="cell-file-name">{{ 'label.loading' | transloco }}</td>
+        <td class="cell-email" colspan="3"></td>
+      </tr>
+      } @for (archiveNode of deletedNodes().data; track archiveNode.id) {
+      <tr class="row">
+        <td class="cell-left-border"></td>
+        <td class="cell-checkbox">
+          <!-- NOSONAR: Native checkbox is keyboard accessible -->
+          <input
+            type="checkbox"
+            aria-label="{{ archiveNode.name }}"
+            [checked]="isPrepared(archiveNode)"
+            (click)="prepareRestoreNode(archiveNode)"
+            (keydown.enter)="prepareRestoreNode(archiveNode)"
+          />
+        </td>
+        <td
+          class="cell-icon col-hidable"
+          [class.cell-icon--folder]="isFolder(archiveNode)"
+          [class.cell-icon--file]="isFile(archiveNode) && !isLink(archiveNode)"
+          [class.cell-icon--link]="isLink(archiveNode)"
+        >
+          <div class="icon"></div>
+        </td>
+        <td class="cell-file-name">{{ archiveNode.name }}</td>
+        <td class="cell-email col-hidable">
+          <cbc-user-card [userId]="archiveNode.deletedBy"></cbc-user-card>
+        </td>
+        <td class="cell-dateTime col-hidable">
+          {{ archiveNode.deletedDate | date: 'yyyy MM dd, HH:mm' }}
+        </td>
+        <td class="cell-access-level">
+          <a
+            tabindex="0"
+            title="{{ 'label.restore' | transloco }}"
+            (click)="restoreNode(archiveNode)"
+          >
+            <img
+              src="img/icon-last-blue.png"
+              alt="restore"
+              style="vertical-align: middle"
+            />
+          </a>
+          <cbc-inline-delete
+            (deletionConfirmed)="purgeNode(archiveNode)"
+            [useIcon]="true"
+            [useText]="false"
+          ></cbc-inline-delete>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+
+  @if (restorableNodes().length > 0) {
+  <ul class="bulk-actions bulk-actions--grey">
+    <li>
+      <cbc-number-badge [number]="restorableNodes().length"></cbc-number-badge>
+    </li>
+    <li>
+      <a tabindex="0" (click)="restoreNodes()"
+        ><img src="img/icon-last-blue.png" alt="Restore" />{{ 'label.restore' |
+        transloco }}</a
+      >
+    </li>
+    <li>
+      <a tabindex="0" (click)="purgeNodes()"
+        ><img src="img/rubbish-bin-blue-small.png" alt="Delete" />{{
+        'label.delete' | transloco }}</a
+      >
+    </li>
+  </ul>
+  }
+
+  <div class="footer">
+    <cbc-pager
+      [length]="totalItems()"
+      [pageSize]="limit()"
+      [page]="page()"
+      (pageChange)="goToPage($event)"
+    ></cbc-pager>
+  </div>
+</section>
+
+<cbc-restore-item
+  [restorableNodes]="restorableNodes()"
+  [showModal]="showModal()"
+  [currentIg]="currentIg()"
+  (cancelRestore)="canceled()"
+  (finishRestore)="restoreFinish($event)"
+/>
+<cbc-purge-item
+  [purgeableNodes]="restorableNodes()"
+  [showModal]="showPurgeModal()"
+  [currentIg]="currentIg()"
+  (cancelPurge)="canceled()"
+  (finishPurge)="purgeFinish($event)"
+/>

@@ -1,0 +1,37 @@
+{
+  "name": "circabc-e2e",
+  "version": "4.1.0",
+  "license": "EUPL-1.1",
+  "description": "CircaBC E2E tests — Playwright",
+  "scripts": {
+    "test": "playwright test --max-failures=1",
+    "tsc": "tsc --noEmit --pretty",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "test:create-users": "playwright test tests/10-user-create-page.spec.ts",
+    "test:create-ig": "playwright test tests/30-ig-create-page.spec.ts",
+    "test:create-all": "playwright test tests/10-user-create-page.spec.ts tests/20-circabc-create-page.spec.ts tests/21-header-create-page.spec.ts tests/22-category-lifecycle-page.spec.ts:12 tests/30-ig-create-page.spec.ts",
+    "test:import": "playwright test tests/10-user-create-page.spec.ts tests/20-circabc-create-page.spec.ts tests/21-header-create-page.spec.ts tests/22-category-lifecycle-page.spec.ts:12 tests/89b-ig-import-uploaded-page.spec.ts:27",
+    "test:delete-ig": "playwright test tests/99-ig-delete-page.spec.ts",
+    "test:ig-export-flow": "playwright test tests/30-ig-create-page.spec.ts tests/52-library-upload-page.spec.ts:6 tests/45-event-create-page.spec.ts tests/62a-forum-create-page.spec.ts tests/46-information-news-create-for-export.spec.ts tests/88c-ig-export-page.spec.ts",
+    "test:a11y": "playwright test tests/90-accessibility.spec.ts",
+    "test:after": "bash scripts/run-tests-after.sh",
+    "test:list": "playwright test --list",
+    "test:remote": "env BASE_URL='http://localhost:4200/ui' ALFRESCO_URL='http://localhost:8080/alfresco' playwright test --max-failures=1",
+    "test:remote:create-users": "env BASE_URL='http://localhost:4200/ui' ALFRESCO_URL='http://localhost:8080/alfresco' playwright test tests/10-user-create-page.spec.ts",
+    "test:remote:create-ig": "env BASE_URL='http://localhost:4200/ui' ALFRESCO_URL='http://localhost:8080/alfresco' playwright test tests/30-ig-create-page.spec.ts",
+    "test:remote:create-all": "env BASE_URL='http://localhost:4200/ui' ALFRESCO_URL='http://localhost:8080/alfresco' playwright test tests/10-user-create-page.spec.ts tests/20-circabc-create-page.spec.ts tests/21-header-create-page.spec.ts tests/22-category-lifecycle-page.spec.ts:12 tests/30-ig-create-page.spec.ts",
+    "test:remote:delete-ig": "env BASE_URL='http://localhost:4200/ui' ALFRESCO_URL='http://localhost:8080/alfresco' playwright test tests/99-ig-delete-page.spec.ts",
+    "test:remote:ig-export-flow": "env BASE_URL='http://localhost:4200/ui' ALFRESCO_URL='http://localhost:8080/alfresco' playwright test tests/30-ig-create-page.spec.ts tests/52-library-upload-page.spec.ts:6 tests/45-event-create-page.spec.ts tests/62a-forum-create-page.spec.ts tests/46-information-news-create-for-export.spec.ts tests/88c-ig-export-page.spec.ts",
+    "test:119": "env BASE_URL='http://localhost:4200/ui' ALFRESCO_URL='http://localhost:8080/alfresco' playwright test --max-failures=10",
+    "report": "playwright show-report",
+    "format-fix": "prettier --write \"tests/**/*.ts\""
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@playwright/test": "1.62.1",
+    "@types/node": "^26.4.1",
+    "prettier": "^3.9.4",
+    "typescript": "^7.0.2"
+  }
+}

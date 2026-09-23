@@ -1,0 +1,106 @@
+<cbc-header />
+<cbc-navigator />
+<div class="fluid admin page-container">
+  <header class="page-header">
+    <h2 class="page-header__title">{{ 'label.support.area' | transloco }}</h2>
+  </header>
+  <section class="box box--tabs">
+    <ul class="header">
+      <li>
+        <a
+          class="tab"
+          [class.tab--current]="isRoute('system-message')"
+          [routerLink]="['system-message']"
+        >
+          <img
+            src="img/icon-forums-grey.png"
+            height="20"
+            width="20"
+            alt="System Message Icon"
+          />
+          <span class="tab-text"
+            >{{ 'admin.system.message.title' | transloco }}</span
+          >
+        </a>
+      </li>
+      <li>
+        <a
+          class="tab"
+          [class.tab--current]="isRoute('user-management')"
+          [routerLink]="['user-management']"
+        >
+          <img
+            src="img/icon-members-grey.png"
+            height="20"
+            width="20"
+            alt="User Management Icon"
+          />
+          <span class="tab-text"
+            >{{ 'admin.user.management.title' | transloco }}</span
+          >
+        </a>
+      </li>
+      <li>
+        <a
+          class="tab"
+          [class.tab--current]="isRoute('revocation-requests')"
+          [routerLink]="['revocation-requests']"
+        >
+          <img
+            src="img/icon-agenda-grey.png"
+            height="20"
+            width="20"
+            alt="Revocation Requests Icon"
+          />
+          <span class="tab-text"
+            >{{ 'admin.revocation.requests.title' | transloco }}</span
+          >
+        </a>
+      </li>
+      <li>
+        <a
+          class="tab"
+          [class.tab--current]="isRoute('distribution-list')"
+          [routerLink]="['distribution-list']"
+        >
+          <img
+            src="img/box.png"
+            height="20"
+            width="20"
+            alt="Distribution List Icon"
+          />
+          <span class="tab-text"
+            >{{ 'admin.distribution.list.title' | transloco }}</span
+          >
+        </a>
+      </li>
+      @if (isAlfrescoAdmin) {
+      <li>
+        <a
+          class="tab"
+          [class.tab--current]="isRoute('ig-export')"
+          [routerLink]="['ig-export']"
+        >
+          <span class="tab-text"
+            >{{ 'admin.ig.export.title' | transloco }}</span
+          >
+        </a>
+      </li>
+      <li>
+        <a
+          class="tab"
+          [class.tab--current]="isRoute('ig-import')"
+          [routerLink]="['ig-import']"
+        >
+          <span class="tab-text"
+            >{{ 'admin.ig.import.title' | transloco }}</span
+          >
+        </a>
+      </li>
+      }
+    </ul>
+    <div class="main">
+      <router-outlet></router-outlet>
+    </div>
+  </section>
+</div>

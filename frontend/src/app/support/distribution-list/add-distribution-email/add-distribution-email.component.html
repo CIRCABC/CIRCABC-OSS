@@ -1,0 +1,48 @@
+<cbc-modal
+  [title]="'label.add.distribution.email'"
+  (ok)="cancel()"
+  [okLabel]="'label.close'"
+  (cancelModal)="cancel()"
+  [(visible)]="showModal"
+  [displayCloseButton]="false"
+>
+  <form [formGroup]="emailForm" (keyup.enter)="addDistributionEmail()">
+    <div class="field">
+      <label for="email">{{ 'label.email' | transloco }}</label>
+      <input type="text" id="email" formControlName="emailAddress" />
+      <button
+        class="button"
+        type="submit"
+        (click)="addDistributionEmail()"
+        style="margin-left: 15px"
+        >{{ 'label.add' | transloco }}</button
+      >
+      @if (emailForm) {
+      <cbc-control-message
+        [showInvalid]="true"
+        [control]="emailAddressControl"
+      ></cbc-control-message>
+      }
+    </div>
+
+    @if (processing()) {
+    <div class="field">
+      <div
+        >{{ 'label.creating' | transloco }}...
+        <cbc-spinner></cbc-spinner>
+      </div>
+    </div>
+    }
+
+    <div class="field">
+      <span class="label-align-top"
+        >{{ 'label.created.newly.email.address' | transloco }}</span
+      >
+      <ul class="mails-created">
+        @for (email of emailCreated(); track email.id) {
+        <li> {{ email.emailAddress }} </li>
+        }
+      </ul>
+    </div>
+  </form>
+</cbc-modal>

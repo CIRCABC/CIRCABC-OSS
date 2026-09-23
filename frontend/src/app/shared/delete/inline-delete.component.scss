@@ -1,0 +1,23 @@
+@use 'css/global/variables-mixins-keyframes';
+
+.confirmation {
+  background-color: #bb3d50;
+  padding: 2px 4px;
+  border-radius: variables-mixins-keyframes.$radius-md;
+  display: inline-block;
+  color: white;
+
+  img {
+    vertical-align: middle;
+  }
+
+  a {
+    color: white;
+  }
+}
+
+.question {
+  img {
+    vertical-align: middle;
+  }
+}

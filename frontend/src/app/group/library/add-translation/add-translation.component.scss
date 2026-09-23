@@ -1,0 +1,48 @@
+.main {
+  margin-top: -10px;
+  padding: 15px;
+
+  .file-metadata {
+    font-size: 18px;
+    line-height: 14px;
+
+    img {
+      width: 48px;
+      float: left;
+      margin-right: 15px;
+    }
+
+    .file-title {
+      color: #035;
+    }
+  }
+
+  .form-translations {
+    margin-top: 60px;
+
+    .step {
+      margin-top: 30px;
+      min-height: 64px;
+      clear: both;
+      height: 100px;
+
+      .step-action {
+        margin-left: 285px;
+      }
+
+      .file-span-label {
+        width: 200px;
+        display: inline-block;
+      }
+    }
+
+    .section-number {
+      float: left;
+      margin-right: 15px;
+      width: 64px;
+      text-align: center;
+      font-size: 36px;
+      color: #035;
+    }
+  }
+}

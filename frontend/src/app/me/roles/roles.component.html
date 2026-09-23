@@ -1,0 +1,105 @@
+{{ 'label.my.roles' | transloco | cbcSetTitle }}
+<h1>{{ 'label.my.roles' | transloco}}</h1>
+@if (loadingMemberships() || loadingCategories()) {
+<cbc-horizontal-loader />
+}
+<div class="wrap page-container">
+  @if (isAdmin) {
+  <h1>
+    {{ 'label.alfresco' | transloco }} {{ 'label.administrator' | transloco }}
+  </h1>
+  } @if (isCicabcAdmin) {
+  <div class="flex">
+    <div>
+      <h1>
+        {{ 'label.circabc' | transloco }} {{ 'label.administrator' | transloco
+        }}
+      </h1>
+    </div>
+  </div>
+  } @if (isAdmin || isCicabcAdmin) {
+  <div>
+    <a
+      tabindex="0"
+      data-cy="create-user"
+      type="submit"
+      class="cta cta--plus"
+      (click)="showWizard = true"
+    >
+      {{ 'user.create.action' | transloco }}
+    </a>
+  </div>
+  }
+  <cbc-create-user
+    [showWizard]="showWizard"
+    (modalHide)="createUserWizardClosed($event)"
+  ></cbc-create-user>
+
+  @if (categories().length > 0) {
+  <section class="box box--alternate-lines">
+    <header class="header">
+      <span class="title"> {{ 'explorer.categories' | transloco }} </span>
+    </header>
+    <div class="main main--listing">
+      <h2>{{ 'user.categories.roles.help' | transloco }}</h2>
+      <ul>
+        <li class="row"></li>
+        @for (category of categories(); track category.id) {
+        <li data-cy="categories" class="row">
+          <div class="profile">{{ 'label.administrator' | transloco }}</div>
+          <span class="group-title"
+            ><a [routerLink]="['/category', category.id, 'details']"
+              >{{ getNameOrTitle(category) }}</a
+            ></span
+          >
+          <br />
+          <span class="grey-name"> {{ category.name }} </span>
+        </li>
+        }
+      </ul>
+    </div>
+  </section>
+  }
+  <section class="box box--alternate-lines">
+    <header class="header">
+      <span class="title"> {{ 'explorer.groups' | transloco }} </span>
+    </header>
+    <div class="main main--listing">
+      <h2>{{ 'user.groups.roles.help' | transloco }}</h2>
+      <ul>
+        <li class="row"></li>
+        @for (membership of memberships(); track membership) {
+        <li data-cy="groups" class="row">
+          <div class="profile">
+            {{ getNameOrTitle(membership.profile) }} &nbsp;|&nbsp;
+            <a
+              tabindex="0"
+              data-cy="leave-group"
+              title="{{ 'label.leave' | transloco }}"
+              (click)="showConfirmation(membership.interestGroup)"
+            ></a>
+          </div>
+          <a
+            [routerLink]="['/group', $safeNavigationMigration(membership.interestGroup?.id)]"
+            class="group-title"
+            >{{ getNameOrTitle(membership.interestGroup) }}</a
+          >
+          <br />
+          <span class="grey-name"> {{ membership.interestGroup?.name }} </span>
+        </li>
+        } @if (memberships().length === 0) {
+        <li class="row">
+          <p>{{ 'label.nothing.to.display' | transloco }}</p>
+        </li>
+        }
+      </ul>
+    </div>
+  </section>
+</div>
+
+<cbc-quit-group
+  [(show)]="displayQuitGroup"
+  [group]="selectedGroup"
+  [username]="username"
+  (membershipRemoved)="refresh()"
+/>

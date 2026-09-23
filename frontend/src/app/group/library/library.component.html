@@ -1,0 +1,145 @@
+{{ 'label.library.title' | transloco: { groupName:
+$safeNavigationMigration(group()?.name) } | cbcSetTitle }}
+<h1 class="visually-hidden">
+  {{ 'label.library.title' | transloco: { groupName:
+  $safeNavigationMigration(group()?.name) } }}
+</h1>
+@if (loading()) {
+<cbc-horizontal-loader />
+}
+
+<span [class.hide-badge]="amountOfItemsInClipboard <= 0" class="info-badge"
+  >{{ amountOfItemsInClipboard > 9 ? '9+' : amountOfItemsInClipboard }}</span
+>
+<div class="half-oval">
+  <button
+    type="button"
+    class="link-button"
+    data-cy="open-clipboard"
+    (click)="clipboardOpen = true"
+    [attr.aria-label]="'label.clipboard.items' | transloco: { count: amountOfItemsInClipboard }"
+  >
+    <i class="fa fa-clipboard" aria-hidden="true"></i>
+  </button>
+</div>
+
+@if (ready()) {
+<div class="fluid page-container">
+  <div class="page-header">
+    @if (!restrictedMode()) {
+    <h1 class="page-header__title">
+      {{ 'label.library.stock.share' | transloco }}
+    </h1>
+    } @if (restrictedMode()) {
+    <cbc-flat-message
+      [message]="'label.library.restricted.access' | transloco"
+    ></cbc-flat-message>
+    }
+  </div>
+
+  <div class="library-breadcrumb">
+    @if (node() && !restrictedMode()) {
+    <cbc-group-breadcrumb
+      [node]="node().id"
+      [textColor]="'757575'"
+      [noMarginBottom]="true"
+      [displayName]="false"
+    ></cbc-group-breadcrumb>
+    }
+  </div>
+
+  <div class="library-toolbar">
+    <div class="library-toolbar__notification">
+      @if (isFolder(node())) {
+      <cbc-notification-message
+        [message]="'library.folder.public' | transloco"
+        [severity]="1"
+        [guestAllowed]="node().hasGuestAccess ? node().hasGuestAccess : false"
+      ></cbc-notification-message>
+      }
+    </div>
+
+    <div class="page-header__actions">
+      @if (!restrictedMode()) {
+      <cbc-reponsive-sub-menu>
+        @if (!isLibraryRoot()) {
+        <a [routerLink]="['../', nodeId(), 'details']"
+          >{{ 'label.details' | transloco }}</a
+        >
+        } @if (isGroupAdmin()) {
+        <a [routerLink]="['../../keywords']"
+          >{{ 'label.keywords' | transloco }}</a
+        >
+        } @if (isGroupAdmin()) {
+        <a [routerLink]="['../../dynamic-properties']"
+          >{{ 'label.dynamic.properties' | transloco }}</a
+        >
+        } @if (isGroupAdmin()) {
+        <a
+          [routerLink]="['../../admin/documents']"
+          [queryParams]="{ expired: 1 }"
+          >{{ 'label.expired.items' | transloco }}</a
+        >
+        } @if (isLibAdmin()) {
+        <a
+          data-cy="notifications"
+          [routerLink]="['../../notification-status', nodeId()]"
+          [queryParams]="{ from: 'library' }"
+          >{{ 'label.notifications' | transloco }}</a
+        >
+        }
+      </cbc-reponsive-sub-menu>
+      } @if ( isLibAdmin() | cbcIfOrRoles : [node(), ['LibManageOwn',
+      'LibFullEdit', 'LibAdmin'], []] ) {
+      <cbc-add-dropdown
+        [currentNode]="node()"
+        [enableAddImport]="isLibAdmin()"
+        [enableAddFile]="isLibAdmin()"
+        [enableAddFolder]="isLibAdmin()"
+        [enableAddUrl]="isLibAdmin()"
+        (actionFinished)="refresh($event)"
+      ></cbc-add-dropdown>
+      }
+    </div>
+  </div>
+
+  <div class="library-content">
+    @if (!restrictedMode()) {
+    <cbc-folder-tree-view
+      [(shown)]="treeView"
+      [group]="group()"
+      [currentNode]="node()"
+    ></cbc-folder-tree-view>
+    }
+  </div>
+
+  @if (nodeIsFolder && currentContents()) {
+  <cbc-library-browser
+    [contents]="currentContents()!.data"
+    [parent]="node()"
+    (needRefresh)="refresh($event)"
+    [preferences]="preferences()"
+    [totalItems]="currentContents()!.total"
+    (changedPage)="changePage($event)"
+    (changedListing)="changeListing($event)"
+    [(treeView)]="treeView"
+    class="explorer"
+    [class.explorer--small]="treeView && !restrictedMode()"
+    [restrictedMode]="restrictedMode()"
+    [igId]="$safeNavigationMigration(group()?.id)"
+    [resetPage]="resetPage"
+  >
+  </cbc-library-browser>
+  } @if (currentContents()) {
+  <cbc-clipboard
+    [opened]="clipboardOpen"
+    [contents]="currentContents()!.data"
+    [currentStandingNode]="node()"
+    [currentStandingNodeIsFolder]="nodeIsFolder"
+    (closeEmitter)="clipboardSidebarClosed()"
+    (actionFinished)="refresh($event)"
+    (itemsAmount)="itemsInClipboard($event)"
+  ></cbc-clipboard>
+  }
+</div>
+}

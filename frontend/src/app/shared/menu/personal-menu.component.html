@@ -1,0 +1,65 @@
+<div class="personal-menu">
+  <span class="personal-menu__name">
+    @if (isGuest() && !useEULogin) {
+    <a [routerLink]="['/login']" style="color: #fff"
+      >{{ 'label.login' | transloco }}</a
+    >
+    } @if (isGuest() && useEULogin) {
+    <a tabindex="0" (click)="euLogin()" style="color: #fff"
+      >{{ 'label.login' | transloco }}</a
+    >
+    } @if (isUser()) {
+    <span style="color: #fff"
+      >{{ user()!.firstname + ' ' + user()!.lastname }}</span
+    >
+    }
+  </span>
+  @if (isGuest()) {
+  <span class="ctn-img">
+    <img src="img/thumbnail-profile.png" alt="Guest" class="img-default" />
+    @if (isGuest() && useEULogin) {
+    <a tabindex="0" (click)="euLogin()" style="color: #fff"
+      ><img src="img/thumbnail-profile.png" alt="Guest"
+    /></a>
+    } @if (isGuest() && !useEULogin) {
+    <a [routerLink]="['/login']" style="color: #fff"
+      ><img src="img/thumbnail-profile.png" alt="Guest"
+    /></a>
+    }
+  </span>
+  } @if (isUser()) {
+  <span class="ctn-img">
+    @if (user()?.lastname) {
+    <img [attr.src]="user()!.avatar | cbcDownload | cbcSecure" alt="Guest" />
+    }
+  </span>
+  }
+  <!-- DEMO DROPDOWN MENU -->
+  @if (!isGuest()) {
+  <div class="dropdown dropdown--personal-menu">
+    <section class="dropdown--personal-menu__sidebar">
+      <nav>
+        <div class="links-group">
+          <a [routerLink]="['/me/account']"
+            >{{ 'personal-menu.account' | transloco }}</a
+          >
+        </div>
+
+        <div class="links-group">
+          <a [routerLink]="['/me']">{{ 'label.dashboard' | transloco }}</a>
+          <a [routerLink]="['/me/calendar']"
+            >{{ 'personal-menu.calendar' | transloco }}</a
+          >
+          <a [routerLink]="['/me/roles']">{{ 'label.my.roles' | transloco }}</a>
+        </div>
+
+        <div class="links-group">
+          <a [routerLink]="['/login/logout']"
+            >{{ 'label.logout' | transloco }}</a
+          >
+        </div>
+      </nav>
+    </section>
+  </div>
+  }
+</div>

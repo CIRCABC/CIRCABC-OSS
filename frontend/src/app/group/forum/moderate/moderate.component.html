@@ -1,0 +1,103 @@
+<!-- MODAL BOX -->
+@if (showModal()) {
+<div
+  class="black-overlayer"
+  [class.overlayer-shown]="showModal()"
+  [class.overlayer-hidden]="!showModal()"
+></div>
+} @if (showModal()) {
+<section
+  class="modal"
+  [class.modal-shown]="showModal()"
+  [class.modal-hidden]="!showModal()"
+  style="margin-top: 0"
+>
+  <button
+    type="button"
+    class="close-icon"
+    aria-label="{{ 'label.cancel' | transloco }}"
+    (click)="cancel('close')"
+  ></button>
+  <header>
+    <h2 class="title">{{ 'label.toggle.moderation' | transloco }}</h2>
+  </header>
+  <section class="modal-content">
+    <div class="wrapping">
+      <div class="field switch">
+        <div class="label">{{ 'label.moderation' | transloco }}</div>
+        <input
+          id="moderation"
+          data-cy="enable-moderation"
+          class="cmn-toggle cmn-toggle-round"
+          type="checkbox"
+          [checked]="moderationEnabled"
+          (change)="toggleModeration()"
+        />
+        <label
+          for="moderation"
+          class="nonBlockLabel"
+          aria-label="{{ 'label.moderation' | transloco }}"
+        ></label>
+        <span
+          >{{ (moderationEnabled === true ? 'label.enabled' : 'label.disabled')
+          | transloco }}</span
+        >
+      </div>
+      @if (forumModerated() && !moderationEnabled) {
+      <div>
+        <br />
+        {{ 'forum.moderate.validation.title' | transloco }}:
+        <br />
+        <br />
+        <div class="field switch">
+          <div class="label">{{ 'label.post.validation' | transloco }}</div>
+          <input
+            id="postValidation"
+            class="cmn-toggle cmn-toggle-round"
+            type="checkbox"
+            [checked]="acceptPostValidation"
+            (change)="togglePostValidation()"
+          />
+          <label
+            for="postValidation"
+            class="nonBlockLabel"
+            aria-label="{{ 'label.post.validation.title' | transloco }}"
+          ></label>
+          <span
+            >{{ (acceptPostValidation === true ? 'label.accept.all' :
+            'label.refuse.all' ) | transloco }}</span
+          >
+        </div>
+        {{ 'forum.moderate.validation.explanation' | transloco }}
+        <br />
+        <br />
+      </div>
+      } @if (executing()) {
+      <div class="field">
+        <div>
+          {{ 'label.moderating' | transloco }}...
+          <cbc-spinner></cbc-spinner>
+        </div>
+      </div>
+      }
+    </div>
+  </section>
+  <section class="modal-footer">
+    <!-- Buttons -->
+    @if (!executing()) {
+    <div class="buttons-group">
+      <a tabindex="0" class="cta" (click)="accept()" data-cy="save-moderation"
+        >{{ 'label.accept' | transloco }}</a
+      >
+      <a
+        tabindex="0"
+        class="button"
+        (click)="cancel('close')"
+        (keydown.enter)="cancel('close')"
+        >{{ 'label.cancel' | transloco }}</a
+      >
+    </div>
+    }
+  </section>
+</section>
+}

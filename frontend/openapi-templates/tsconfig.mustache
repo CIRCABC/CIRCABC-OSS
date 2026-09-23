@@ -1,0 +1,32 @@
+{
+    "compilerOptions": {
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "noImplicitAny": false,
+        "target": "{{#supportsES6}}es6{{/supportsES6}}{{^supportsES6}}es5{{/supportsES6}}",
+        "module": "{{#supportsES6}}es6{{/supportsES6}}{{^supportsES6}}commonjs{{/supportsES6}}",
+        {{^supportsES6}}
+        "downlevelIteration": true,
+        {{/supportsES6}}
+        "moduleResolution": "{{#ngVersion21}}bundler{{/ngVersion21}}{{^ngVersion21}}node{{/ngVersion21}}",
+        "removeComments": true,
+        "strictNullChecks": true,
+        "exactOptionalPropertyTypes": true,
+        "sourceMap": true,
+        "outDir": "./dist",
+        "noLib": false,
+        "declaration": true,
+        "lib": [ "es6", "dom" ],
+        "typeRoots": [
+            "node_modules/@types"
+        ]
+    },
+    "exclude": [
+        "node_modules",
+        "dist"
+    ],
+    "filesGlob": [
+        "./model/*.ts",
+        "./api/*.ts"
+    ]
+}

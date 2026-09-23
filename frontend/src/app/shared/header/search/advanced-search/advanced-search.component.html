@@ -1,0 +1,244 @@
+<div class="searchBox">
+  <div class="searchHeader">
+    <h2>{{ 'label.search.advanced' | transloco }}</h2>
+    <a
+      tabindex="0"
+      (click)="closeAdvancedSearchIG.emit()"
+      aria-label="{{ 'label.close.advanced.search' | transloco }}"
+      title="Close"
+      >×</a
+    >
+  </div>
+
+  <form [formGroup]="searchAdvancedForm" class="flexForm">
+    <div class="flexGroupField">
+      <div class="flexField">
+        <label for="searchString"
+          >{{ 'label.search.search.for' | transloco }}</label
+        >
+        <span class="text-error">&nbsp;*</span>
+        <input
+          type="text"
+          id="searchString"
+          formControlName="searchString"
+          placeholder="{{ 'label.search.foldersfilesforums' | transloco }}"
+        />
+        <cbc-control-message
+          [control]="searchStringControl"
+        ></cbc-control-message>
+      </div>
+
+      <div class="flexField">
+        <label for="searchIn">{{ 'label.search.search.in' | transloco }}</label>
+        <div class="custom-select select--form">
+          <select id="searchIn" formControlName="searchIn">
+            <option value="ALL" selected>{{'label.all'| transloco}}</option>
+            <option value="INFORMATION">
+              {{'label.information' | transloco }}
+            </option>
+            <option value="LIBRARY">{{'label.library' | transloco }}</option>
+            <option value="AGENDA">{{'label.agenda' | transloco }}</option>
+            <option value="FORUMS">{{'label.forums' | transloco }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flexField">
+        <div>
+          <span class="label"
+            >{{ 'label.search.creationDate' | transloco }}</span
+          >
+        </div>
+        <div style="display: flex; gap: 10px">
+          <div style="flex: 1">
+            <label for="creationDateFrom">{{ 'label.from' | transloco }}</label>
+            <mat-form-field class="flex">
+              <input
+                id="creationDateFrom"
+                matInput
+                [matDatepicker]="dp_creationDateFrom"
+                formControlName="creationDateFrom"
+                placeholder="dd/mm/yyyy"
+              />
+              <mat-datepicker-toggle
+                matIconSuffix
+                [for]="dp_creationDateFrom"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #dp_creationDateFrom></mat-datepicker>
+            </mat-form-field>
+          </div>
+          <div style="flex: 1">
+            <label for="creationDateTo">{{ 'label.to' | transloco }}</label>
+            <mat-form-field class="flex">
+              <input
+                id="creationDateTo"
+                matInput
+                [matDatepicker]="dp_creationDateTo"
+                formControlName="creationDateTo"
+                placeholder="dd/mm/yyyy"
+              />
+              <mat-datepicker-toggle
+                matIconSuffix
+                [for]="dp_creationDateTo"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #dp_creationDateTo></mat-datepicker>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+
+      <div class="flexField">
+        <div>
+          <span class="label"
+            >{{ 'label.search.lastmodification' | transloco }}</span
+          >
+        </div>
+        <div style="display: flex; gap: 10px">
+          <div style="flex: 1">
+            <label for="modifiedDateFrom">{{ 'label.from' | transloco }}</label>
+            <mat-form-field class="flex">
+              <input
+                id="modifiedDateFrom"
+                matInput
+                [matDatepicker]="dp_modifiedDateFrom"
+                formControlName="modifiedDateFrom"
+                placeholder="dd/mm/yyyy"
+              />
+              <mat-datepicker-toggle
+                matIconSuffix
+                [for]="dp_modifiedDateFrom"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #dp_modifiedDateFrom></mat-datepicker>
+            </mat-form-field>
+          </div>
+          <div style="flex: 1">
+            <label for="modifiedDateTo">{{ 'label.to' | transloco }}</label>
+            <mat-form-field class="flex">
+              <input
+                id="modifiedDateTo"
+                matInput
+                [matDatepicker]="dp_modifiedDateTo"
+                formControlName="modifiedDateTo"
+                placeholder="dd/mm/yyyy"
+              />
+              <mat-datepicker-toggle
+                matIconSuffix
+                [for]="dp_modifiedDateTo"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #dp_modifiedDateTo></mat-datepicker>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+
+      <div class="flexField">
+        <span class="label">{{ 'label.search.language' | transloco }}</span>
+        <div class="custom-select select--form">
+          <cbc-lang-selector
+            formControlName="language"
+            [worldwide]="true"
+            [noSelectLangOption]="true"
+          >
+          </cbc-lang-selector>
+        </div>
+      </div>
+    </div>
+
+    <div class="flexGroupField">
+      <div class="flexField">
+        <cbc-form-keyword-finder
+          [label]="'label.keywords'"
+          [groupId]="groupId()"
+          [searchAdvancedForm]="searchAdvancedForm"
+        ></cbc-form-keyword-finder>
+      </div>
+
+      <div class="flexField">
+        <cbc-form-user-finder
+          [label]="'label.search.creator'"
+          [searchAdvancedForm]="searchAdvancedForm"
+        >
+        </cbc-form-user-finder>
+      </div>
+
+      <div class="flexField">
+        <label for="status">{{ 'label.search.status' | transloco }}</label>
+        <div class="custom-select select--form">
+          <select id="status" formControlName="status">
+            <option value="" selected></option>
+            <option value="DRAFT">{{ 'label.draft' | transloco }}</option>
+            <option value="FINAL">{{ 'label.final' | transloco }}</option>
+            <option value="RELEASE">{{ 'label.released' | transloco }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flexField">
+        <label for="securityRanking"
+          >{{ 'label.security.marking' | transloco }}</label
+        >
+        <div class="custom-select select--form">
+          <select id="securityRanking" formControlName="securityRanking">
+            <option value="" selected></option>
+            <option value="NORMAL">{{ 'label.normal' | transloco }}</option>
+            <option value="SENSITIVE">
+              {{ 'label.sensitive' | transloco }}
+            </option>
+            <option value="SPECIAL_HANDLING">
+              {{ 'label.special.handling' | transloco }}
+            </option>
+            <option value="PUBLIC">{{ 'label.public' | transloco }}</option>
+            <option value="INTERNAL">{{ 'label.internal' | transloco }}</option>
+            <option value="LIMITED">{{ 'label.limited' | transloco }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flexField">
+        <label for="version">{{ 'label.search.version' | transloco }}</label>
+        <div>
+          <input
+            type="text"
+            id="version"
+            style="width: 100px"
+            cbcVersionMask
+            formControlName="version"
+          />
+        </div>
+      </div>
+    </div>
+  </form>
+
+  @if(!saveAsWindow) {
+  <div class="actions buttons-group custom-buttons-group">
+    <button
+      class="cta"
+      (click)="search()"
+      [class.disabled]="!searchAdvancedForm.valid"
+    >
+      {{ 'label.search' | transloco }}
+    </button>
+  </div>
+  }@if(saveAsWindow) {
+  <div class="save-as-box">
+    <form [formGroup]="searchAdvancedForm" class="save-as-form">
+      <div class="flexField">
+        <label for="searchName"
+          >{{ 'label.search.search.for' | transloco }}</label
+        >
+
+        <input type="text" id="searchName" formControlName="searchName" />
+      </div>
+    </form>
+
+    <div class="actions buttons-group save-as-buttons">
+      <button class="cta" (click)="saveSearch()">
+        {{ 'label.save' | transloco }}
+      </button>
+      <button class="button" (click)="saveAsWindow=false">
+        {{ 'label.cancel' | transloco }}
+      </button>
+    </div>
+  </div>
+  }
+</div>

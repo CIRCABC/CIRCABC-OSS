@@ -1,0 +1,139 @@
+@if (loading()) {
+<cbc-horizontal-loader />
+}
+<div class="wrap page-container file-details">
+  <div class="page-header">
+    <span class="page-header__title"
+      >{{ 'label.add.translation' | transloco }}</span
+    >
+  </div>
+
+  <section class="box">
+    <header class="header">
+      <span class="title"></span>
+    </header>
+    @if (currentNode() && translations()) {
+    <div class="main">
+      <div class="file-metadata">
+        <img src="img/text-file.png" alt="document" />
+        <p class="file-title">
+          {{ 'translations.add.translation.document.title' | transloco: {
+          docName: currentNode()?.name } }} [{{ pivotLocale }}]
+        </p>
+        <p>
+          {{ 'translations.add.translation.document.translations' | transloco: {
+          nbTranslations: getNbTranslations() } }}
+        </p>
+      </div>
+      <div class="form-translations">
+        <form [formGroup]="addTranslationForm">
+          <section class="step">
+            <div class="section-number"> 1 </div>
+
+            @if (translations()) {
+            <div class="field">
+              <label for="lang" style="width: 200px"
+                >{{ 'translations.add.translation.select.language' | transloco
+                }}</label
+              >
+              <div class="custom-select select--form reset-width">
+                <cbc-lang-selector
+                  formControlName="lang"
+                  [worldwide]="false"
+                  [disabledLangs]="disabledLangs()"
+                ></cbc-lang-selector>
+              </div>
+            </div>
+            } @if (!processing() && hasLanguageSelected()) {
+            <div class="step-action">
+              {{ 'label.by' | transloco }}
+              <a
+                tabindex="0"
+                class="button"
+                [class.selected]="isModeFileUpload()"
+                (click)="setModeFileUpload()"
+                >{{ 'label.file.upload' | transloco }}</a
+              >
+              {{ 'label.or' | transloco }}
+              <a
+                tabindex="0"
+                class="button"
+                [class.selected]="isModeMachineTranslation()"
+                (click)="setModeMachineTranslation()"
+                >{{ 'label.machine.translation' | transloco }}</a
+              >
+              @if (!isModeSet()) {
+              <a tabindex="0" class="button" (click)="cancel()"
+                >{{ 'label.cancel' | transloco }}</a
+              >
+              }
+            </div>
+            }
+          </section>
+
+          @if (isModeFileUpload()) {
+          <section class="step">
+            <div class="section-number"> 2 </div>
+
+            <div class="field field--file">
+              <!-- Note: You need javascript here to know when the files are selected, see in the footer -->
+              <span class="file-span-label"
+                >{{ 'translations.add.translation.select.file' | transloco
+                }}</span
+              >
+              <input
+                type="file"
+                id="file"
+                class="inputfile inputfile-6"
+                (change)="fileChangeEvent($event)"
+              />
+              <label for="file"
+                ><span class="result"
+                  >{{ myfile !== undefined ? myfile.name : '' }}</span
+                ><span class="button"
+                  >{{ 'label.browse' | transloco }}</span
+                ></label
+              >
+              <br />
+            </div>
+            @if (!processing() && hasFileSelected()) {
+            <div class="step-action">
+              <a tabindex="0" (click)="submit()" class="cta"
+                >{{ 'label.upload' | transloco }}</a
+              >
+              <a tabindex="0" class="button" (click)="cancel()"
+                >{{ 'label.cancel' | transloco }}</a
+              >
+            </div>
+            }
+          </section>
+          } @if (isModeMachineTranslation()) {
+          <section class="step">
+            <div class="section-number"> 2 </div>
+            @if (!processing()) {
+            <div class="step-action">
+              <a
+                tabindex="0"
+                (click)="submitMachineTranlationRequest()"
+                class="cta"
+                >{{ 'label.machine.translation' | transloco }}</a
+              >
+              <a tabindex="0" class="button" (click)="cancel()"
+                >{{ 'label.cancel' | transloco }}</a
+              >
+            </div>
+            }
+          </section>
+          } @if (processing()) {
+          <div class="field">
+            <span
+              >{{ labelProcessing | transloco }}... <cbc-spinner></cbc-spinner
+            ></span>
+          </div>
+          }
+        </form>
+      </div>
+    </div>
+    }
+  </section>
+</div>

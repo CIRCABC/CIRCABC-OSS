@@ -1,0 +1,152 @@
+<div class="fluid admin page-container">
+  <div class="page-header">
+    <h1 class="page-header__title"
+      >{{ (updateMode() ? 'admin.system.message.update.title' :
+      'admin.system.message.create.title' ) | transloco }}</h1
+    >
+    <div class="page-header__actions"></div>
+  </div>
+
+  <section class="box">
+    <form [formGroup]="templateForm">
+      <div class="field field--textarea">
+        <label class="label--top-align" for="content"
+          >{{ 'label.text' | transloco }}
+          <span class="text-error">&nbsp;*</span>
+        </label>
+
+        <div class="editor-container">
+          <cbc-rich-text-editor
+            id="content"
+            formControlName="content"
+            editorHeight="126px"
+            [required]="true"
+            ><span class="ql-formats">
+              <button class="ql-bold" aria-label="Bold"></button>
+              <button class="ql-italic" aria-label="Italic"></button>
+              <button class="ql-underline" aria-label="Underline"></button>
+              <button class="ql-strike" aria-label="Strike"></button>
+            </span>
+            <span class="ql-formats">
+              <button
+                class="ql-list"
+                aria-label="list"
+                value="ordered"
+              ></button>
+              <button class="ql-list" aria-label="list" value="bullet"></button>
+            </span>
+            <span class="ql-formats">
+              <button class="ql-link" aria-label="link"></button> </span
+          ></cbc-rich-text-editor>
+          <cbc-control-message [control]="contentControl"></cbc-control-message>
+        </div>
+      </div>
+      <div class="field field--with-icon field--date">
+        <label for="dateClosure"
+          >{{ 'label.auto.close.date' | transloco }}</label
+        >
+        <mat-form-field>
+          <input
+            id="dateClosure"
+            matInput
+            [matDatepicker]="dp_dateClosure"
+            formControlName="dateClosure"
+            placeholder="dd/mm/yyyy HH:MM"
+          />
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="dp_dateClosure"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #dp_dateClosure></mat-datepicker>
+        </mat-form-field>
+
+        <a tabindex="0" (click)="cleanClosure()"
+          >{{ 'label.remove' | transloco }}</a
+        >
+      </div>
+      <div class="field">
+        <label for="displayTime">{{ 'label.display.time' | transloco }}</label>
+        <div class="custom-select select--form">
+          <select
+            name="displayTime"
+            id="displayTime"
+            formControlName="displayTime"
+          >
+            <option value="15">15s</option>
+            <option value="30">30s</option>
+            <option value="45">45s</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label for="level">{{ 'label.level' | transloco }}</label>
+        <div class="custom-select select--form">
+          <select name="level" id="level" formControlName="level">
+            <option value="info">{{ 'label.information' | transloco }}</option>
+            <option value="error">{{ 'label.error' | transloco }}</option>
+            <option value="warning">{{ 'label.warning' | transloco }}</option>
+            <option value="success">{{ 'label.success' | transloco }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="field switch">
+        <div class="label">{{ 'label.enabled' | transloco }}</div>
+        <!-- NOSONAR: Native checkbox is keyboard accessible -->
+        <input
+          id="enabled"
+          class="cmn-toggle cmn-toggle-round"
+          type="checkbox"
+          formControlName="enabled"
+          (click)="checkNotification()"
+          (keydown.enter)="checkNotification()"
+        />
+        <label
+          for="enabled"
+          class="nonBlockLabel"
+          aria-label="{{ 'label.enabled' | transloco }}"
+        ></label>
+        <span>{{ (isEnabled() ? 'label.yes' : 'label.no') | transloco }}</span>
+      </div>
+      @if (isEnabled()) {
+      <div class="field switch">
+        <div class="label">
+          {{ 'label.notify.distribution.list' | transloco }}
+        </div>
+        <input
+          id="notification"
+          class="cmn-toggle cmn-toggle-round"
+          type="checkbox"
+          formControlName="notification"
+        />
+        <label
+          for="notification"
+          class="nonBlockLabel"
+          aria-label="{{ 'label.notification' | transloco }}"
+        ></label>
+        <span>{{ (isNotified() ? 'label.yes' : 'label.no') | transloco }}</span>
+      </div>
+      } @if (processing()) {
+      <div class="field">
+        <div
+          >{{ 'label.processing' | transloco }}...
+          <cbc-spinner></cbc-spinner>
+        </div>
+      </div>
+      }
+    </form>
+    @if (!processing()) {
+    <section class="buttons-group">
+      <a
+        tabindex="0"
+        class="cta"
+        (click)="isFormValid() ? saveOrUpdateTemplate() : ''"
+        [class.disabled]="!isFormValid()"
+        >{{ 'label.save' | transloco }}</a
+      >
+      <a tabindex="0" class="button" (click)="cancel()"
+        >{{ 'label.cancel' | transloco }}</a
+      >
+    </section>
+    }
+  </section>
+</div>

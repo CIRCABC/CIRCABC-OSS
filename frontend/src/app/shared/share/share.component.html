@@ -1,0 +1,75 @@
+<span class="share">
+  @if (showLabel()) {
+  <a tabindex="0" class="share-link" (click)="toggle()"
+    >{{ 'descriptor.share' | transloco }}</a
+  >
+  } @if (!showLabel()) {
+  <a tabindex="0" (click)="toggle()"
+    ><img src="{{ imageLink }}" alt="Share"
+  /></a>
+  } @if (showBox) {
+  <span class="share-box" [class.left]="!orientationRight()">
+    <input
+      type="text"
+      value="{{ getLink() }}"
+      aria-label="{{ 'descriptor.share' | transloco }}"
+    />
+    <br />
+
+    <a
+      class="action"
+      [cdkCopyToClipboard]="getLink()"
+      (cdkCopyToClipboardCopied)="showDialogModel('copyTarget')"
+      >{{ 'label.copy' | transloco }}</a
+    >
+
+    <a tabindex="0" class="action" (click)="showDialogModel('emailMe')"
+      >{{ 'label.email.me.link' | transloco }}</a
+    >
+    <a tabindex="0" (click)="hide()" class="close"
+      >{{ 'label.close' | transloco }}</a
+    >
+    <br />
+    @if (enableDirectDownload()) {
+    <form [formGroup]="customisationForm" class="parameters">
+      <br />
+      <h3>{{ 'descriptor.share.link.parameter' | transloco }}</h3>
+      <div class="field switch">
+        <div class="label">
+          {{ 'descriptor.share.direct.download' | transloco }}
+        </div>
+        <input
+          id="notifyUser"
+          class="cmn-toggle cmn-toggle-round"
+          type="checkbox"
+          formControlName="addDownload"
+        />
+        <label
+          for="notifyUser"
+          class="nonBlockLabel"
+          aria-label="{{ 'label.notify.user' | transloco }}"
+        ></label>
+        <span
+          >{{ (customisationForm.controls['addDownload'].value === true ?
+          'label.yes' : 'label.no' ) | transloco }}</span
+        >
+      </div>
+    </form>
+    }
+  </span>
+  }
+</span>
+<div id="snackbar" [class.show]="copied()">
+  {{ 'label.copied.to.clipboard' | transloco }}
+</div>
+
+<cbc-modal
+  [title]="'label.dialog.alert.snc.share.title'"
+  (ok)="dialogAccepted()"
+  (cancelModal)="dialogRefused()"
+  [(visible)]="acceptSncShowModal"
+  [okLabel]="'label.confirm'"
+  [contentClass]="'modal-content'"
+>
+  <p [innerHTML]="message" class="message"></p>
+</cbc-modal>

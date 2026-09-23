@@ -1,0 +1,144 @@
+@if (loading()) {
+<cbc-horizontal-loader />
+}
+<div class="wrap page-container">
+  <div class="page-header">
+    <span class="page-header__title"
+      >{{ 'dynamic-property.edit.page.title' | transloco }}</span
+    >
+  </div>
+
+  <section class="box">
+    <header class="header">
+      <span class="title">{{ 'label.edit' | transloco }}</span>
+    </header>
+    <div class="main">
+      <a
+        tabindex="0"
+        class="step-link"
+        [class.step-link-selected]="showDefinition"
+        (click)="showDefinition = true"
+        >{{ 'label.definition' | transloco }}</a
+      >
+      @if (hasValues()) {
+      <a
+        tabindex="0"
+        class="step-link"
+        [class.step-link-selected]="!showDefinition"
+        (click)="showDefinition = false"
+        >{{ 'label.values' | transloco }}</a
+      >
+      }
+      <br /><br />
+      <section [class.hidden]="!showDefinition">
+        <form [formGroup]="editDynPropForm">
+          <cbc-multilingual-input
+            formControlName="title"
+            [label]="'label.title' | transloco"
+            [placeholder]="'label.title' | transloco"
+            [lang]="'EN'"
+          ></cbc-multilingual-input>
+          <div class="field">
+            <label for="type">{{ 'label.type' | transloco }}</label>
+            <div class="custom-select select--form reset-width select-align">
+              <select id="type" formControlName="type">
+                @for (t of getTypes(); track t) {
+                <option value="{{ t.type }}">{{ t.display }}</option>
+                }
+              </select>
+            </div>
+            <p class="hint"
+              >{{ 'dynamic-property.input.disabled' | transloco }}</p
+            >
+          </div>
+        </form>
+      </section>
+      <section [class.hidden]="showDefinition" class="table-container">
+        <form [formGroup]="newValueForm">
+          <div class="field">
+            <label for="newValue">{{ 'label.value' | transloco }}</label>
+            <input type="text" id="newValue" formControlName="newValue" />
+            <input
+              type="submit"
+              (click)="currentIndex === -1 ? addValue() : finishEdit()"
+              value="{{
+                (currentIndex === -1 ? 'label.add' : 'label.edit') | transloco
+              }}"
+              [disabled]="!newValueFormValid()"
+              [class.disabled]="!newValueFormValid()"
+            />
+            <a tabindex="0" class="button" (click)="cancelAddValue()"
+              >{{ 'label.cancel' | transloco }}</a
+            >
+          </div>
+        </form>
+        <table class="main">
+          <thead>
+            <tr>
+              <th><span class="visually-hidden">Actions</span></th>
+              <th class="first-cell">{{ 'label.values' | transloco }}</th>
+              <th style="width: 150px">{{ 'label.actions' | transloco }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of values(); track item) {
+            <tr class="row">
+              <td class="cell-left-border"></td>
+              <td class="first-cell">
+                @if (item.status === 'deleted') {
+                <span class="tag">{{ 'label.removed' | transloco }}</span>
+                } @if (item.status === 'new') {
+                <span class="tag">{{ 'label.new' | transloco }}</span>
+                } @if (item.status === 'edited') {
+                <span class="tag">{{ 'label.edited' | transloco }}</span>
+                }
+                <span [class.striked]="item.status === 'deleted'"
+                  >{{ item.new }}</span
+                >
+              </td>
+              <td class="row-actions">
+                <button type="button" (click)="moveUp(item)"
+                  ><img src="img/sort-up.png" alt="Move up"
+                /></button>
+                <button type="button" (click)="moveDown(item)"
+                  ><img src="img/sort-down.png" alt="Move down"
+                /></button>
+                &nbsp;&nbsp;
+                <button type="button" (click)="tagAsEdited(item)"
+                  ><img src="img/icon-edit-20x20.png" alt="Edit"
+                /></button>
+                <button type="button" (click)="resetEdited(item)"
+                  >@if (item.status === 'edited') {
+                  <img src="img/icon-autoupload-20x20.png" alt="Reset edit" />
+                  }</button
+                >
+                <button
+                  type="button"
+                  (click)="tagAsRemoved(item)"
+                  (keydown.enter)="tagAsRemoved(item)"
+                  ><img src="img/icon-close-20x20.png" alt="Remove"
+                /></button>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </section>
+      @if (executing()) {
+      <div>
+        {{ 'label.updating' | transloco }}... <cbc-spinner></cbc-spinner>
+      </div>
+      }
+    </div>
+    @if (!executing()) {
+    <footer class="modal-footer">
+      <a tabindex="0" class="cta" (click)="ok()">
+        {{ 'label.update' | transloco }}</a
+      >
+      <a tabindex="0" class="button" (click)="cancel()"
+        >{{ 'label.cancel' | transloco }}</a
+      >
+    </footer>
+    }
+  </section>
+</div>

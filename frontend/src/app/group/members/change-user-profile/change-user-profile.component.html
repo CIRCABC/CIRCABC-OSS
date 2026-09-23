@@ -1,0 +1,78 @@
+<cbc-modal
+  [title]="'label.change.profile'"
+  [okLabel]="'label.update'"
+  [visible]="showModal()"
+  (cancelModal)="cancel()"
+  (ok)="changeProfile()"
+  [executing]="processing()"
+  [executingLabel]="'label.updating'"
+>
+  @let _member = member(); @if (_member && _member.user && _member.profile) {
+  <p>
+    {{ _member.user.firstname + ' ' + _member.user.lastname }}
+    <span style="font-weight: bold"
+      >{{ 'members.current.user.is' | transloco }}
+    </span>
+    {{ getProfileTitle(oldMember) }}
+  </p>
+  }
+  <form [formGroup]="changeProfileForm">
+    <div class="field">
+      <label for="profileName">{{ 'label.new.profile' | transloco }}</label>
+      <div class="custom-select select--form">
+        <select
+          name="profileName"
+          id="profileName"
+          formControlName="selectedProfile"
+        >
+          @for (profile of profiles(); track profile.id) {
+          <option value="{{ profile.id }}"
+            >{{ profile.title | cbcI18n }}</option
+          >
+          }
+        </select>
+      </div>
+    </div>
+    <div class="field switch">
+      <div class="label" style="width: 405px"
+        >{{ 'label.user.notifications.profile' | transloco }}</div
+      >
+      <input
+        id="cmn-toggle-1"
+        class="cmn-toggle cmn-toggle-round"
+        type="checkbox"
+        formControlName="userNotifications"
+      />
+      <label
+        for="cmn-toggle-1"
+        class="nonBlockLabel"
+        aria-label="{{ 'label.cmn.toggle.1' | transloco }}"
+      ></label>
+      <span
+        >{{ changeProfileForm.controls['userNotifications'].value === true ?
+        ('label.yes' | transloco) : ('label.no' | transloco) }}</span
+      >
+    </div>
+
+    <div class="field switch">
+      <div class="label" style="width: 405px"
+        >{{ 'label.admin.notifications.profile' | transloco }}</div
+      >
+      <input
+        id="cmn-toggle-2"
+        class="cmn-toggle cmn-toggle-round"
+        type="checkbox"
+        formControlName="adminNotifications"
+      />
+      <label
+        for="cmn-toggle-2"
+        class="nonBlockLabel"
+        aria-label="{{ 'label.cmn.toggle.2' | transloco }}"
+      ></label>
+      <span
+        >{{ changeProfileForm.controls['adminNotifications'].value === true ?
+        ('label.yes' | transloco) : ('label.no' | transloco) }}</span
+      >
+    </div>
+  </form>
+</cbc-modal>

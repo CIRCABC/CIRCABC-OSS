@@ -1,0 +1,75 @@
+<!-- MODAL BOX -->
+@if (showModal()) {
+<div
+  class="black-overlayer"
+  [class.overlayer-shown]="showModal()"
+  [class.overlayer-hidden]="!showModal()"
+></div>
+} @if (showModal()) {
+<section
+  class="modal"
+  [class.modal-shown]="showModal()"
+  [class.modal-hidden]="!showModal()"
+  style="margin-top: 0"
+>
+  <button
+    type="button"
+    class="close-icon"
+    aria-label="{{ 'label.cancel.wizard' | transloco }}"
+    (click)="cancelWizard('close')"
+  ></button>
+  <header>
+    <h2 class="title">{{ 'label.delete' | transloco }}</h2>
+  </header>
+
+  <section class="modal-content">
+    {{ 'keyword.delete-all.confirmation' | transloco }}
+    <br />
+    <div class="keywordList">
+      <ul>
+        @for (keyword of keywords(); track keyword.id) {
+        <li>
+          @if (keyword) {
+          <cbc-keyword-tag [keyword]="keyword"></cbc-keyword-tag>
+          }
+        </li>
+        }
+      </ul>
+    </div>
+    @if (deleting()) {
+    <div class="field deletingBox">
+      <span
+        >{{ 'label.deleting' | transloco }}... @if (progressValue() !==
+        progressMax) {
+        <cbc-spinner></cbc-spinner>
+        }</span
+      >
+      <progress
+        class="progressUploadBar"
+        [value]="progressValue()"
+        [max]="progressMax"
+      ></progress>
+    </div>
+    }
+  </section>
+
+  <section class="modal-footer">
+    <!-- Buttons -->
+    <div class="buttons-group">
+      @if (!deleting() && keywords() && keywords().length > 0) {
+      <a tabindex="0" class="cta" (click)="deleteAll()"
+        >{{ 'label.delete.all' | transloco }}</a
+      >
+      } @if (!deleting()) {
+      <a
+        tabindex="0"
+        class="button"
+        (click)="cancelWizard('close')"
+        (keydown.enter)="cancelWizard('close')"
+        >{{ 'label.cancel' | transloco }}</a
+      >
+      }
+    </div>
+  </section>
+</section>
+}

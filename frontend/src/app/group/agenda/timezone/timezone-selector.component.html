@@ -1,0 +1,18 @@
+<div>
+  <label for="timezoneSelect" class="visually-hidden"
+    >{{ 'label.timezone' | transloco }}</label
+  >
+  <select
+    class="reset-width"
+    id="timezoneSelect"
+    #timezoneSelect
+    (change)="onTimezoneChange(timezoneSelect.value)"
+    [disabled]="disable()"
+  >
+    @for (tz of availableTimezones; track tz.id) {
+    <option value="{{ tz.value }}" [selected]="tz.value === selectedTimezone()"
+      >{{ tz.text }}</option
+    >
+    }
+  </select>
+</div>

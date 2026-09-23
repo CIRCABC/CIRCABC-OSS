@@ -1,0 +1,62 @@
+<div class="breadcrumb" [class.no-margin-bottom]="noMarginBottom()">
+  <ul>
+    @for (part of clickablePath(); track part.id) {
+    <li>
+      @if (clickable()) {
+      <a [routerLink]="prepareArrayParts(part)" [ngStyle]="getStyle()">
+        @if (isRoot(part) && showHomeIcon()) {
+        <img src="img/icon-dashboard-grey.png" alt="Home" />
+        } @if (!displayName()) {
+        <span title="{{ part.description | cbcI18n | cbcTaggedToPlainText }}">
+          {{(isForumNewsgroupsName(part.name!,part.type!))? ('label.forums' |
+          transloco) : part.title === undefined ? part.name : (part.title |
+          cbcI18n) !== '' ? (part.title | cbcI18n) : (part.title | cbcI18n) ===
+          '' ? part.name : ('label.no.name' | transloco)}}
+        </span>
+        } @if (displayName()) {
+        <span title="{{ part.description | cbcI18n | cbcTaggedToPlainText }}">
+          {{(part.name === "Newsgroups" && part.service === "newsgroups")?
+          ('label.forums' | transloco) : part.name }}
+        </span>
+        }
+      </a>
+      } @if (!clickable()) {
+      <span [ngStyle]="getStyle()">
+        @if (isRoot(part) && showHomeIcon()) {
+        <img src="img/icon-dashboard-grey.png" alt="Home" />
+        } @if (!displayName()) {
+        <span title="{{ part.description | cbcI18n | cbcTaggedToPlainText }}">
+          {{ (part.name === "Newsgroups" && part.service === "newsgroups")?
+          ('label.forums' | transloco) : part.title === undefined ? part.name :
+          (part.title | cbcI18n) !== '' ? (part.title | cbcI18n) : (part.title |
+          cbcI18n) === '' ? part.name : ('label.no.name' | transloco) }}
+        </span>
+        } @if (displayName()) {
+        <span title="{{ part.description | cbcI18n | cbcTaggedToPlainText }}">
+          {{ part.name }}
+        </span>
+        }
+      </span>
+      }
+    </li>
+    } @for (part of lastElement(); track part.id) {
+    <li>
+      @if (isRoot(part) && showHomeIcon()) {
+      <img src="img/icon-dashboard-grey.png" alt="Home" />
+      } @if (!displayName()) {
+      <span title="{{ part.description | cbcI18n | cbcTaggedToPlainText }}">
+        {{ part.title === undefined ? part.name : (part.title | cbcI18n) === ''
+        ? part.name : (isForumNewsgroupsName(part.name!,part.type!))?
+        ('label.forums' | transloco) : (part.title | cbcI18n) !== '' ?
+        (part.title | cbcI18n) : ('label.no.name' | transloco) }}
+      </span>
+      } @if (displayName()) {
+      <span title="{{ part.description | cbcI18n | cbcTaggedToPlainText }}">
+        {{(isForumNewsgroupsName(part.name!,part.type!))? ('label.forums' |
+        transloco) : part.name }}
+      </span>
+      }
+    </li>
+    }
+  </ul>
+</div>

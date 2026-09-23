@@ -1,0 +1,50 @@
+<cbc-modal
+  [title]="'keywords.import.title'"
+  (ok)="import()"
+  (cancelModal)="cancelWizard()"
+  [okLabel]="'label.import'"
+  [visible]="showModal()"
+  [executing]="uploading()"
+  [executingLabel]="'label.creating'"
+  [showOkButton]="!uploading()"
+>
+  <!--  file -->
+  <div class="field field--file">
+    <!-- Note: You need javascript here to know when the files are selected, see in the footer -->
+    <span style="margin-right: 35px">{{ 'label.file' | transloco }}</span>
+    <input
+      type="file"
+      id="file"
+      class="inputfile inputfile-6"
+      (change)="fileChangeEvent($event)"
+      data-multiple-caption="{count} files selected"
+      multiple
+    />
+    <label for="file"
+      ><span class="result"></span
+      ><span class="button">{{ 'label.browse' | transloco }}</span>
+    </label>
+  </div>
+
+  <div
+    class="drop-zone"
+    (dragenter)="dragenter($event)"
+    (dragover)="dragover($event)"
+    (drop)="drop($event)"
+  >
+    {{ 'label.drag.drop.file' | transloco }}
+  </div>
+
+  @if (fileToUpload(); as file) {
+  <div class="field">
+    <span class="label">{{ 'label.file.uploaded' | transloco }}</span> ( {{
+    'label.upload.total.size' | transloco }}: {{ file.size | cbcSize: true }} )
+    <br />
+    <div class="listToBeUploaded">
+      <ul>
+        <li>{{ file.name }}</li>
+      </ul>
+    </div>
+  </div>
+  }
+</cbc-modal>

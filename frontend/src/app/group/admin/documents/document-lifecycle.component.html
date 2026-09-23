@@ -1,0 +1,26 @@
+{{ 'admin.tab.document.lifecycle' | transloco | cbcSetTitle }}
+<span class="span-label">{{ 'label.show' | transloco }}:</span>
+<a
+  tabindex="0"
+  class="step-link"
+  (click)="showExpired()"
+  [class.selected]="isShowExpired()"
+  >{{ 'label.expired.documents' | transloco }}</a
+>
+<a
+  tabindex="0"
+  class="step-link"
+  (click)="showDeleted()"
+  [class.selected]="isShowDeleted()"
+  >{{ 'label.deleted.documents' | transloco }}</a
+>
+
+@if (isShowDeleted() && groupId()) {
+<section>
+  <cbc-deleted-items [groupId]="groupId()"></cbc-deleted-items>
+</section>
+} @if (isShowExpired() && groupId()) {
+<section>
+  <cbc-expired-items [groupId]="groupId()"></cbc-expired-items>
+</section>
+}

@@ -1,0 +1,148 @@
+{{ 'navigator.browse-groups' | transloco | cbcSetTitle }}
+<cbc-header
+  (searchPropagated)="filterGroups($event)"
+  [showSearchField]="isStepGroups()"
+/>
+<cbc-navigator />
+@if (loadingHeaders || loadingCategories() || loadingIGs() || preparing()) {
+<cbc-horizontal-loader />
+}
+<div class="fluid page-container">
+  <div class="page-header">
+    <h1 class="page-header__title"
+      >{{ 'text.browse.page.title.1' | transloco }} <br />{{
+      'text.browse.page.title.2' | transloco }}</h1
+    >
+    <div class="page-header__actions">
+      @if (shouldDisplayMenu()) {
+      <cbc-reponsive-sub-menu>
+        @if (isAdminOrCircabcAdmin()) {
+        <a [routerLink]="['/admin/circabc']"
+          >{{ 'label.administer.circabc' | transloco }}</a
+        >
+        } @if (isAdminOrCircabcAdmin()) {
+        <a [routerLink]="['/admin/headers']"
+          >{{ 'label.administer.headers' | transloco }}</a
+        >
+        } @if (isCategoryAdmin() && currentCategory()) {
+        <a
+          data-cy="administer-category"
+          [routerLink]="['/category', currentCategory()!.id]"
+          >{{ 'label.administer.category' | transloco }}</a
+        >
+        }
+      </cbc-reponsive-sub-menu>
+      } @if (isLoggedIn()) {
+      <cbc-explorer-dropdown
+        [currentHeader]="currentHeader()"
+        [currentCategory]="currentCategory()"
+      ></cbc-explorer-dropdown>
+      }
+    </div>
+  </div>
+  <section class="top-section">
+    @if (isStepCategories() || isStepGroups()) {
+    <div class="breadcrump">
+      <a tabindex="0" (click)="reset()">
+        <img src="img/icon-dashboard-grey.png" alt="" />
+      </a>
+      @if (currentHeader() && (isStepCategories() || isStepGroups())) {
+      <span>
+        &gt;
+        <a tabindex="0" (click)="listCategories(currentHeader())"
+          >{{ currentHeader()!.name }}</a
+        >
+      </span>
+      } @if (currentCategory() && isStepGroups()) {
+      <span>
+        &gt;
+        <a tabindex="0" (click)="listInterestGroups(currentCategory())"
+          >{{ getCategoryGroupDescription(currentCategory()!) }}</a
+        >
+      </span>
+      }
+    </div>
+    } @if (isStepHeaders()) {
+    <h2>{{ 'explorer.select.header' | transloco }}</h2>
+    } @if (isStepCategories()) {
+    <h2> {{ 'explorer.select.category' | transloco }} </h2>
+    }
+  </section>
+  @if (isStepHeaders()) {
+  <section class="grid--container">
+    @for (header of headers(); track header.id) {
+    <button
+      type="button"
+      class="header-category"
+      (click)="listCategories(header)"
+      (keydown.enter)="listCategories(header)"
+    >
+      <div class="logo-container">
+        <img [src]="getHeaderImgName(header)" alt="header" />
+      </div>
+      <div class="link"> {{ header.name }} </div>
+    </button>
+    }
+  </section>
+  } @if (isStepCategories()) {
+  <section class="grid--container">
+    @for (category of categories(); track category.id) {
+    <button
+      type="button"
+      class="header-category"
+      (click)="listInterestGroups(category)"
+      (keydown.enter)="listInterestGroups(category)"
+    >
+      <div class="logo-container">
+        @if (!hasCategoryLogo(category)) {
+        <img src="img/LOGO_circabc_category-128.png" alt="header" />
+        } @if (hasCategoryLogo(category)) {
+        <img
+          [attr.src]="category.logoRef | cbcDownload | cbcSecure"
+          alt="category logo"
+        />
+        }
+      </div>
+      <div
+        class="link"
+        [innerHTML]="getCategoryGroupDescription(category)"
+      ></div>
+    </button>
+    }
+  </section>
+  } @if (isStepGroups()) {
+  <section>
+    @if (currentCategory(); as currentCategory) {
+    <header class="category--header">
+      <div class="logo-container">
+        @if (!hasModelNodeLogo(currentCategory)) {
+        <img src="img/LOGO_circabc_category-128.png" alt="header" />
+        } @if (hasModelNodeLogo(currentCategory)) {
+        <img
+          [attr.src]="getLogoRef(currentCategory) | cbcDownload | cbcSecure"
+          alt="interest group logo"
+        />
+        }
+      </div>
+      <div
+        class="title"
+        [innerHTML]="getCategoryGroupDescription(currentCategory)"
+      ></div>
+    </header>
+    }
+    <h2 class="list-groups">{{ 'explorer.list.groups' | transloco }}</h2>
+    @for (letterKey of getKeysOfGroups(); track letterKey) {
+    <div>
+      <span class="letter">{{ letterKey }}</span>
+      <section class="box box--groups">
+        @if (getGroupInIndex(letterKey).length === 0) {
+        <p class="empty-list"> {{ 'label.nothing.to.display' | transloco }} </p>
+        } @for (ig of getGroupInIndex(letterKey); track ig.id) {
+        <cbc-group-card [group]="ig" [counter]="ig.index"></cbc-group-card>
+        }
+      </section>
+    </div>
+    }
+  </section>
+  }
+</div>

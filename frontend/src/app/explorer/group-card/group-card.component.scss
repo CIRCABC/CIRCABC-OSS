@@ -1,0 +1,123 @@
+@use 'css/global/variables-mixins-keyframes';
+
+:host {
+  width: 33%;
+
+  @media all and (max-width: 1500px) {
+    width: 50%;
+  }
+
+  @media all and (max-width: 853px) {
+    width: 100%;
+  }
+}
+
+.group-card {
+  height: 123px;
+  background-color: var(--theme-box-background);
+  padding: 12px 14px;
+  position: relative;
+  margin: 12px 20px;
+  box-shadow: 0 1px 4px rgb(0 40 70 / 0.08);
+  border-radius: variables-mixins-keyframes.$radius-lg;
+  border: 1px solid transparent;
+  transition:
+    box-shadow 200ms ease,
+    border-color 200ms ease,
+    transform 200ms ease;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgb(0 40 70 / 0.12);
+    border-color: #e0eaf2;
+    transform: translateY(-1px);
+  }
+
+  @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+    margin: 10px 16px;
+  }
+
+  @media screen and (max-width: variables-mixins-keyframes.$break-small) {
+    margin: 8px 12px;
+  }
+
+  .id {
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--theme-h3);
+    float: left;
+    margin-right: 20px;
+  }
+
+  .group-description {
+    margin-top: 8px;
+    padding-right: 125px;
+    color: var(--theme-text-muted);
+    max-height: 100px;
+    overflow: auto;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .group-title {
+    font-size: 18px;
+    font-weight: 500;
+    padding-right: 125px;
+
+    @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+      font-size: 16px;
+      padding-right: 95px;
+    }
+
+    @media screen and (max-width: variables-mixins-keyframes.$break-small) {
+      font-size: 14px;
+      padding-right: 65px;
+    }
+  }
+
+  .logo-container {
+    position: absolute;
+    right: -8px;
+    top: 10px;
+    border-radius: variables-mixins-keyframes.$radius-md;
+    box-shadow: 0 2px 8px rgb(0 40 70 / 0.1);
+    overflow: hidden;
+    z-index: 2;
+    width: 121px;
+    height: 103px;
+
+    @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+      width: 91px;
+      height: 73px;
+    }
+
+    @media screen and (max-width: variables-mixins-keyframes.$break-small) {
+      width: 61px;
+      height: 43px;
+    }
+
+    img {
+      border-radius: variables-mixins-keyframes.$radius-md;
+      width: 121px;
+      height: 103px;
+      background-color: #fff;
+
+      @media screen and (max-width: variables-mixins-keyframes.$break-medium) {
+        width: 91px;
+        height: 73px;
+      }
+
+      @media screen and (max-width: variables-mixins-keyframes.$break-small) {
+        width: 61px;
+        height: 43px;
+      }
+    }
+  }
+
+  .actions {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 5px 10px;
+  }
+}
